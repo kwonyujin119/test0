@@ -10,6 +10,24 @@
    "notes": "",
    "elements": [
     {
+     "id": "5hy4euqdd",
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 570,
+     "w": 1680,
+     "h": 120,
+     "html": "부제목 · 강의자 이름 · 날짜",
+     "style": {
+      "align": "center",
+      "valign": "top"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
      "id": "kukg7gqdd",
      "type": "text",
      "role": "title",
@@ -28,18 +46,16 @@
      "opacity": 1
     },
     {
-     "id": "5hy4euqdd",
-     "type": "text",
-     "role": "subtitle",
-     "x": 120,
-     "y": 570,
-     "w": 1680,
-     "h": 120,
-     "html": "부제목 · 강의자 이름 · 날짜",
-     "style": {
-      "align": "center",
-      "valign": "top"
-     },
+     "id": "gk2vzajdo",
+     "type": "image",
+     "x": 0,
+     "y": -78,
+     "w": 1997,
+     "h": 1236,
+     "src": "assets/clipboard-1793442761585-ijdnxzg.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -98,5 +114,5 @@
    ]
   }
  ],
- "modified": "2026-10-31T10:02:08.200Z"
+ "modified": "2026-10-31T11:24:18.181Z"
 }
