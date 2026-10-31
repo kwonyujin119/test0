@@ -66,7 +66,8 @@
       alert('저장 실패: ' + e.message);
     }
   }
-  window.addEventListener('beforeunload', (ev) => { if (S.dirty) { ev.preventDefault(); ev.returnValue = ''; } });
+  window.addEventListener('beforeunload', (ev) => { if (S.dirty || API.pending.size) { ev.preventDefault(); ev.returnValue = ''; } });
+  API.onPending = (n) => { const c = $('upStatus'); c.textContent = n ? `이미지 올리는 중 ${n}` : ''; c.classList.toggle('show', n > 0); };
 
   /* ---------- 렌더 ---------- */
   function renderAll() { renderThumbs(); renderStage(); renderProps(); updateTop(); }
@@ -242,15 +243,14 @@
   }
   async function insertImageFile(file, at) {
     if (!file || !file.type.startsWith('image/')) return;
-    toast('이미지 넣는 중…', 4000);
     try {
-      const src = await API.upload(file, file.name);
-      const dim = await imageSize(src);
+      const prep = await prepareImage(file);          // 크기·용량 최적화 (브라우저 안에서)
+      const src = await API.stage(prep.blob, prep.name); // 바로 넣고, 업로드는 뒤에서
+      const dim = { w: prep.w, h: prep.h };
       const maxW = 1200, maxH = 760; let w = dim.w, h = dim.h;
       const r = Math.min(1, maxW / w, maxH / h); w = Math.round(w * r); h = Math.round(h * r);
       const x = at ? Math.round(at.x - w / 2) : Math.round((SLIDE_W - w) / 2), y = at ? Math.round(at.y - h / 2) : Math.round((SLIDE_H - h) / 2);
       addElement(imageEl(clamp(x, 0, SLIDE_W - w), clamp(y, 0, SLIDE_H - h), w, h, src));
-      toast('이미지를 넣었습니다');
     } catch (e) { alert('이미지 삽입 실패: ' + e.message); }
   }
   function imageSize(src) {
@@ -259,7 +259,7 @@
   async function replaceImage(id, file) {
     const e = elById(id); if (!e) return;
     try {
-      const src = await API.upload(file, file.name); const dim = await imageSize(src);
+      const prep = await prepareImage(file); const src = await API.stage(prep.blob, prep.name); const dim = { w: prep.w, h: prep.h };
       e.src = src;
       // 비율 유지하여 현재 너비에 맞춤
       e.h = Math.round(e.w * dim.h / dim.w);
@@ -799,7 +799,7 @@
   $('fileReplace').onchange = async (ev) => { const f = ev.target.files[0]; if (f) await replaceImage(ev.target.dataset.id, f); ev.target.value = ''; };
   $('fileBg').onchange = async (ev) => {
     const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
-    try { const src = await API.upload(f, f.name); const s = curSlide(); s.bg = Object.assign({}, s.bg || {}, { image: src, fit: 'cover' }); delete s.bg.gradient; commit(); renderStage(); renderProps(); }
+    try { const prep = await prepareImage(f); const src = await API.stage(prep.blob, prep.name); const s = curSlide(); s.bg = Object.assign({}, s.bg || {}, { image: src, fit: 'cover' }); delete s.bg.gradient; commit(); renderStage(); renderProps(); }
     catch (e) { alert('배경 이미지 실패: ' + e.message); }
   };
   async function showAssetLibrary() {
@@ -842,7 +842,7 @@
     if (S.editing) endEdit();
     toast('HTML 만드는 중…', 5000);
     const deck = clone(S.deck);
-    const toData = async (src) => { if (!src || src.startsWith('data:')) return src; try { const b = await (await fetch(src)).blob(); return await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); } catch (e) { return src; } };
+    const toData = async (src) => { if (!src || src.startsWith('data:')) return src; try { const b = await (await fetch(API.resolveSrc(src))).blob(); return await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); } catch (e) { return src; } };
     for (const s of deck.slides) { if (s.bg && s.bg.image) s.bg.image = await toData(s.bg.image); for (const e of s.elements) if (e.type === 'image' && e.src) e.src = await toData(e.src); }
     const [slideCss, uiCss, commonJs, presentJs] = await Promise.all(['app/slide.css', 'app/ui.css', 'app/common.js', 'app/present.js'].map(u => fetch(u).then(r => r.text())));
     const json = JSON.stringify(deck).replace(/<\/script/gi, '<\\/script');
@@ -857,7 +857,7 @@
   main.addEventListener('drop', async (ev) => {
     main.classList.remove('dragover'); if (!ev.dataTransfer.files.length) return; ev.preventDefault();
     const r = overlay.getBoundingClientRect(); const at = { x: (ev.clientX - r.left) / S.k, y: (ev.clientY - r.top) / S.k };
-    for (const f of ev.dataTransfer.files) await insertImageFile(f, at);
+    let n = 0; for (const f of ev.dataTransfer.files) { await insertImageFile(f, { x: at.x + n * 40, y: at.y + n * 40 }); n++; }
   });
   document.addEventListener('paste', async (ev) => {
     const items = Array.from(ev.clipboardData.items || []);

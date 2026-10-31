@@ -298,7 +298,7 @@ function renderImage(e, node, theme, mode) {
     return;
   }
   const img = document.createElement('img');
-  img.src = API.resolveSrc(e.src); img.draggable = false; img.alt = '';
+  img.src = API.resolveSrc(e.src); img.draggable = false; img.alt = ''; img.decoding = 'async';
   if (API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(e.src)) img.onerror = () => { if (img.dataset.fb) return; img.dataset.fb = '1'; img.src = GH.rawUrl(e.src); };
   img.style.objectFit = e.fit || 'contain';
   if (e.flip) img.style.transform = 'scaleX(-1)';
@@ -352,6 +352,50 @@ function fitSlide(container, slideEl, pad) {
   slideEl.style.top = Math.round((container.clientHeight - SLIDE_H * k) / 2) + 'px';
   return k;
 }
+
+/* ---------- 이미지 최적화: 넣기 전에 브라우저에서 크기·용량을 줄임 ---------- */
+const IMG_MAX = 2560; // 긴 변 최대 픽셀 (슬라이드 1920 기준 + 확대 여유)
+async function prepareImage(file) {
+  const type = file.type || '';
+  const name = (file.name || 'image.png').replace(/^.*[\\/]/, '');
+  const asIs = async () => { const d = await imageDims(URL.createObjectURL(file)); return { blob: file, name, w: d.w, h: d.h }; };
+  if (/svg|gif/i.test(type) || /\.(svg|gif)$/i.test(name)) return asIs(); // 벡터·애니메이션은 그대로
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); } // EXIF 회전 반영
+  catch (e) { try { bmp = await createImageBitmap(file); } catch (e2) { return asIs(); } }
+  const w0 = bmp.width, h0 = bmp.height;
+  const k = Math.min(1, IMG_MAX / Math.max(w0, h0));
+  const w = Math.max(1, Math.round(w0 * k)), h = Math.max(1, Math.round(h0 * k));
+  const isPng = /png/i.test(type), isJpg = /jpe?g/i.test(type), isWebp = /webp/i.test(type);
+  // 이미 작고(300KB 미만) 줄일 필요도 없으면 원본 그대로
+  if (k === 1 && file.size < 300 * 1024 && (isPng || isJpg || isWebp)) { if (bmp.close) bmp.close(); return { blob: file, name, w, h }; }
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'); ctx.drawImage(bmp, 0, 0, w, h); if (bmp.close) bmp.close();
+  // 투명 픽셀이 있으면 PNG 유지, 없으면 JPEG (사진·캡처 모두 충분한 화질)
+  let alpha = false;
+  if (isPng || isWebp) {
+    const sc = document.createElement('canvas'); sc.width = sc.height = 64; const sx = sc.getContext('2d'); sx.drawImage(c, 0, 0, 64, 64);
+    const px = sx.getImageData(0, 0, 64, 64).data; for (let i = 3; i < px.length; i += 4) if (px[i] < 250) { alpha = true; break; }
+  }
+  // 투명 없는 PNG(캡처 등)는 1.5MB 까지는 또렷함을 위해 원본 유지
+  if (k === 1 && isPng && !alpha && file.size < 1.5 * 1024 * 1024) return { blob: file, name, w, h };
+  const out = alpha ? 'image/png' : 'image/jpeg';
+  const blob = await new Promise(r => c.toBlob(r, out, 0.86));
+  if (!blob || (k === 1 && blob.size >= file.size)) return { blob: file, name, w, h }; // 줄어들지 않으면 원본
+  return { blob, name: name.replace(/\.[^.]+$/, '') + (alpha ? '.png' : '.jpg'), w, h };
+}
+function imageDims(url) {
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => res({ w: im.naturalWidth || 800, h: im.naturalHeight || 600 }); im.onerror = () => rej(new Error('이미지를 열 수 없습니다')); im.src = url; });
+}
+/* 파일명을 안전하게 + 짧은 꼬리표로 유일하게 (서버 왕복 없이 바로 src 를 정하기 위해) */
+function uniqueAssetName(name) {
+  let n = (name || 'image.png').replace(/^.*[\\/]/, '').replace(/[^\w.\-가-힣]/g, '_');
+  const dot = n.lastIndexOf('.'); let base = dot > 0 ? n.slice(0, dot) : n; const ext = dot > 0 ? n.slice(dot).toLowerCase() : '.png';
+  base = base.replace(/-[a-z0-9]{7}$/, ''); if (base.length > 32) base = base.slice(0, 32);
+  const tag = Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 5);
+  return `${base}-${tag}${ext}`;
+}
+function blobToDataURL(blob) { return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); }); }
 
 /* ---------- GitHub 저장소 직접 읽기/쓰기 (GitHub Pages 에서 열었을 때) ---------- */
 const GH = {
@@ -430,6 +474,28 @@ const GH = {
     }
     throw new Error('저장이 계속 충돌합니다. 잠시 후 다시 시도해 주세요.');
   },
+  /* 변경을 모아 한 커밋으로: 이미지 여러 장을 연달아 넣어도 커밋 1개, 저장 시 이미지+교안이 커밋 1개 */
+  _queue: [], _timer: null, _chain: Promise.resolve(),
+  enqueue(change, opts) {
+    opts = opts || {};
+    return new Promise((res, rej) => {
+      this._queue.push({ change, res, rej, message: opts.message });
+      clearTimeout(this._timer);
+      if (opts.now) this._flush(); else this._timer = setTimeout(() => this._flush(), 700);
+    });
+  },
+  _flush() {
+    const items = this._queue.splice(0); if (!items.length) return;
+    this._chain = this._chain.then(async () => {
+      const main = items.find(x => x.message);
+      const imgs = items.filter(x => !x.message).map(x => x.change.path.replace(/^assets\//, ''));
+      let msg = main ? main.message : '이미지 추가: ' + imgs.join(', ');
+      if (main && imgs.length) msg += ` (+이미지 ${imgs.length})`;
+      try { await this.commit(msg, items.map(x => x.change)); items.forEach(x => x.res(true)); }
+      catch (e) { items.forEach(x => x.rej(e)); }
+    });
+    return this._chain;
+  },
   /* 연결 확인: 저장소 접근 가능 여부와 쓰기 권한 */
   async check() {
     const repo = await this.api('GET', '');
@@ -445,7 +511,37 @@ function blobToBase64(blob) {
 /* ---------- 저장 API (로컬 서버 ↔ GitHub 저장소 ↔ 브라우저 저장소 폴백) ---------- */
 const API = {
   mode: 'server', // 'server' | 'github' | 'local'
-  blobs: {},      // github 모드: 방금 올린 이미지(배포 전) 를 바로 보여주기 위한 blob URL
+  blobs: {},      // 방금 올린 이미지를 서버/배포를 기다리지 않고 바로 보여주기 위한 blob URL
+  pending: new Map(), // src → 진행 중인 업로드
+  failed: new Map(),  // src → blob (실패한 업로드, 저장 때 재시도)
+  onPending: null,    // 진행 중 개수가 바뀔 때 알림 (편집기 상태 표시)
+  _notify() { if (this.onPending) this.onPending(this.pending.size); },
+  /* 이미지를 넣을 때: src 를 즉시 돌려주고 업로드는 뒤에서 진행 */
+  async stage(blob, filename) {
+    if (this.mode === 'local') return blobToDataURL(blob);
+    const src = 'assets/' + uniqueAssetName(filename);
+    this.blobs[src] = URL.createObjectURL(blob);
+    this._start(src, blob);
+    return src;
+  },
+  _start(src, blob) {
+    let p;
+    if (this.mode === 'server') {
+      p = fetch('api/assets?name=' + encodeURIComponent(src.slice(7)), { method: 'POST', body: blob }).then(r => { if (!r.ok) throw new Error('업로드 실패 (' + r.status + ')'); });
+    } else {
+      p = blobToBase64(blob).then(b64 => GH.enqueue({ path: src, base64: b64 }));
+    }
+    p = p.then(() => { this.pending.delete(src); this._notify(); },
+      (e) => { this.pending.delete(src); this.failed.set(src, blob); this._notify(); toast('이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', 4000); });
+    this.pending.set(src, p); this._notify();
+  },
+  _retryFailed() { for (const [src, blob] of Array.from(this.failed)) { this.failed.delete(src); this._start(src, blob); } },
+  /* 저장 전에 호출: 실패한 업로드 재시도 + 진행 중인 업로드 완료 대기 */
+  async flush() {
+    this._retryFailed();
+    await Promise.all(Array.from(this.pending.values()));
+    if (this.failed.size) throw new Error(`이미지 ${this.failed.size}개를 올리지 못했습니다. 네트워크를 확인하고 다시 저장해 주세요`);
+  },
   async init() {
     if (location.protocol === 'file:') { this.mode = 'local'; return this.mode; }
     try {
@@ -489,12 +585,15 @@ const API = {
   async save(name, deck) {
     deck.modified = new Date().toISOString();
     if (this.mode === 'server') {
+      await this.flush();
       const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(deck, null, 1) });
       if (!r.ok) throw new Error('저장 실패 (' + r.status + ')');
       return r.json();
     }
     if (this.mode === 'github') {
-      await GH.commit('교안 저장: ' + (deck.title || name), [{ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }]);
+      this._retryFailed();
+      // 큐에 모인 이미지와 교안을 한 커밋으로
+      await GH.enqueue({ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }, { now: true, message: '교안 저장: ' + (deck.title || name) });
       return { ok: true, name };
     }
     const all = this._local(); all[name] = deck; this._saveLocal(all); return { ok: true };
@@ -504,25 +603,8 @@ const API = {
     if (this.mode === 'github') { await GH.commit('교안 삭제: ' + name, [{ path: 'decks/' + name + '.json', delete: true }]); return { ok: true }; }
     const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
   },
-  /* 이미지 업로드: 서버 모드면 assets/ 폴더, GitHub 모드면 저장소의 assets/ 에 커밋, 아니면 data URL */
-  async upload(blob, filename) {
-    if (this.mode === 'server') {
-      const r = await fetch('api/assets?name=' + encodeURIComponent(filename || 'image.png'), { method: 'POST', body: blob });
-      if (!r.ok) throw new Error('업로드 실패'); const j = await r.json(); return j.src;
-    }
-    if (this.mode === 'github') {
-      let orig = (filename || 'image.png').replace(/^.*[\\/]/, '').replace(/[^\w.\-가-힣]/g, '_');
-      const dot = orig.lastIndexOf('.'); let base = dot > 0 ? orig.slice(0, dot) : orig, ext = dot > 0 ? orig.slice(dot) : '';
-      if (base.length > 40) base = base.slice(0, 40);
-      const existing = new Set((await GH.dir('assets')).map(f => f.name));
-      let fname = base + ext, i = 1; while (existing.has(fname)) fname = `${base}-${i++}${ext}`;
-      const src = 'assets/' + fname;
-      await GH.commit('이미지 추가: ' + fname, [{ path: src, base64: await blobToBase64(blob) }]);
-      this.blobs[src] = URL.createObjectURL(blob);
-      return src;
-    }
-    return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
-  },
+  /* (호환용) 올리고 끝날 때까지 기다림 */
+  async upload(blob, filename) { const src = await this.stage(blob, filename); await this.flush(); return src; },
   async assets() {
     if (this.mode === 'server') { const r = await fetch('api/assets', { cache: 'no-store' }); return r.json(); }
     if (this.mode === 'github') return (await GH.dir('assets')).map(f => ({ name: f.name, src: 'assets/' + f.name, size: f.size }));

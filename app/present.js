@@ -99,6 +99,17 @@
     if (old) setTimeout(() => old.remove(), 600);
     st.idx = i; st.step = step;
     updateHud(); redraw(); broadcast();
+    preloadAround(i);
+  }
+  /* 다음 두 슬라이드의 이미지를 미리 받아 두어 넘길 때 끊김이 없게 */
+  const preloaded = new Set();
+  function preloadAround(i) {
+    for (let j = i + 1; j <= Math.min(N - 1, i + 2); j++) {
+      const s = slideOf(j); const srcs = [];
+      if (s.bg && s.bg.image) srcs.push(s.bg.image);
+      for (const e of s.elements || []) if (e.type === 'image' && e.src) srcs.push(e.src);
+      for (const src of srcs) { if (preloaded.has(src)) continue; preloaded.add(src); const im = new Image(); im.decoding = 'async'; im.src = API.resolveSrc(src); }
+    }
   }
   function applyStep() {
     if (!curNodes) return;
