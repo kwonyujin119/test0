@@ -1,0 +1,52 @@
+{
+ "title": "소방용수의 이해",
+ "theme": "clean",
+ "created": "2026-10-31T09:57:51.169Z",
+ "slides": [
+  {
+   "id": "1xrv2cqdd",
+   "bg": null,
+   "transition": "",
+   "notes": "",
+   "elements": [
+    {
+     "id": "kukg7gqdd",
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 330,
+     "w": 1680,
+     "h": 220,
+     "html": "소방용수의 이해",
+     "style": {
+      "align": "center",
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "5hy4euqdd",
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 570,
+     "w": 1680,
+     "h": 120,
+     "html": "부제목 · 강의자 이름 · 날짜",
+     "style": {
+      "align": "center",
+      "valign": "top"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  }
+ ],
+ "modified": "2026-10-31T09:57:51.169Z"
+}
