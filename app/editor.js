@@ -61,7 +61,10 @@
     try {
       await API.save(S.name, S.deck); S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name);
       toast('저장했습니다');
-    } catch (e) { alert('저장 실패: ' + e.message); }
+    } catch (e) {
+      if (e.noToken && confirm(e.message + '\n\n허브로 이동할까요? (임시본은 이 브라우저에 남아 있습니다)')) { Draft.put(S.name, S.deck); S.dirty = false; location.href = 'index.html'; return; }
+      alert('저장 실패: ' + e.message);
+    }
   }
   window.addEventListener('beforeunload', (ev) => { if (S.dirty) { ev.preventDefault(); ev.returnValue = ''; } });
 
@@ -251,7 +254,7 @@
     } catch (e) { alert('이미지 삽입 실패: ' + e.message); }
   }
   function imageSize(src) {
-    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res({ w: im.naturalWidth || 800, h: im.naturalHeight || 600 }); im.onerror = () => rej(new Error('이미지를 열 수 없습니다')); im.src = src; });
+    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res({ w: im.naturalWidth || 800, h: im.naturalHeight || 600 }); im.onerror = () => rej(new Error('이미지를 열 수 없습니다')); im.src = API.resolveSrc(src); });
   }
   async function replaceImage(id, file) {
     const e = elById(id); if (!e) return;

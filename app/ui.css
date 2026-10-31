@@ -79,7 +79,14 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .deck-actions { display: flex; gap: 6px; margin-top: 4px; }
 .deck-actions .spacer { flex: 1; }
 .hub-empty { text-align: center; color: var(--ui-muted); padding: 70px 0; border: 1px dashed var(--ui-border); border-radius: 14px; }
-.hub-notice { background: #2b2410; border: 1px solid #6b5416; color: #fde68a; padding: 10px 14px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; }
+.hub-notice { background: #2b2410; border: 1px solid #6b5416; color: #fde68a; padding: 10px 14px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; line-height: 1.5; }
+.hub-notice a { color: inherit; font-weight: 600; text-decoration: underline; }
+.hub-notice code { background: rgba(255,255,255,.1); padding: 1px 5px; border-radius: 4px; }
+.hub-notice.ok { background: #0f2a1c; border-color: #1f6b43; color: #a7f3c9; }
+.gh-howto { margin-top: 14px; padding: 12px 14px; background: var(--ui-bg); border: 1px solid var(--ui-border); border-radius: 10px; font-size: 13px; line-height: 1.6; }
+.gh-howto ol { margin: 6px 0 0; padding-left: 20px; }
+.gh-howto a { color: var(--ui-accent); }
+.gh-howto code { background: rgba(255,255,255,.08); padding: 1px 5px; border-radius: 4px; }
 .hub-help { margin-top: 36px; color: var(--ui-muted); font-size: 13px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .hub-help h4 { margin: 0 0 6px; color: var(--ui-fg); font-size: 13px; }
 .hub-help p { margin: 0 0 4px; }

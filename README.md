@@ -14,6 +14,22 @@ PowerPoint 처럼 텍스트·이미지·도형을 배치하지만, 설치 프로
 > Windows 10 에 기본으로 있는 PowerShell 만 사용합니다. 별도 설치가 필요 없습니다.
 > 포트를 바꾸려면 `powershell -ExecutionPolicy Bypass -File server.ps1 -Port 9000` 처럼 실행합니다.
 
+## 어디서나 열기 (GitHub Pages)
+
+`main` 브랜치에 푸시하면 GitHub Actions 가 자동으로 배포합니다 (`.github/workflows/pages.yml`).
+
+**https://kwonyujin119.github.io/test0/**
+
+- 토큰 없이 열면 **보기·발표** 만 됩니다. 강의실 PC 에서 주소만 열고 리모컨으로 발표하면 됩니다.
+- 허브의 **GitHub 연결** 에 토큰을 한 번 등록하면 그 브라우저에서는 **편집·저장** 도 됩니다.
+  저장할 때마다 저장소에 커밋이 하나씩 쌓이고(`교안 저장: …`, `이미지 추가: …`), 내 PC 에서는 `git pull` 로 받습니다.
+- 토큰 만들기: [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new) →
+  Repository access: *Only select repositories* → `test0` → Permissions: **Contents → Read and write**.
+  토큰은 브라우저(localStorage)에만 저장되고 GitHub 외에는 어디에도 보내지 않습니다. 공용 PC 에서는 발표만 하고, 연결하지 마세요.
+- 저장 직후 배포가 끝나기까지 30초~1분 걸립니다. 그 사이에도 교안은 GitHub API 로 바로 읽으므로 최신 내용이 보입니다.
+  방금 올린 이미지는 배포 전이면 `raw.githubusercontent.com` 에서 대신 불러옵니다.
+- 같은 교안을 PC(로컬 서버)와 웹에서 번갈아 편집할 때는, 로컬에서 작업하기 전에 `git pull`, 끝나면 `git push` 를 잊지 마세요.
+
 ## 폴더 구조
 
 ```
@@ -107,6 +123,14 @@ git push
 ```
 
 저장할 때마다 직전 버전이 `decks/<이름>.json.bak` 으로 남고(Git 제외), 삭제한 교안은 `decks/.trash/` 로 이동합니다.
+
+## 세 가지 실행 방식
+
+| 방식 | 저장 위치 | 용도 |
+|---|---|---|
+| `start.cmd` (로컬 서버) | `decks/`, `assets/` 폴더 파일 | 평소 작업. Git 으로 커밋·푸시 |
+| GitHub Pages 주소 | GitHub 저장소 (토큰 연결 시) | 어디서나 발표, 급한 수정 |
+| `index.html` 더블클릭 | 브라우저 localStorage | 임시 |
 
 ## 서버 없이 열면?
 

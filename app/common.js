@@ -165,7 +165,7 @@ function slideBackground(slide, theme) {
   const bg = slide.bg || {};
   const css = {};
   if (bg.image) {
-    css.backgroundImage = `url("${bg.image}")`;
+    css.backgroundImage = `url("${API.resolveSrc(bg.image)}")`;
     css.backgroundSize = bg.fit === 'contain' ? 'contain' : 'cover';
     css.backgroundPosition = 'center'; css.backgroundRepeat = 'no-repeat';
     css.backgroundColor = bg.color || theme.bg;
@@ -298,7 +298,8 @@ function renderImage(e, node, theme, mode) {
     return;
   }
   const img = document.createElement('img');
-  img.src = e.src; img.draggable = false; img.alt = '';
+  img.src = API.resolveSrc(e.src); img.draggable = false; img.alt = '';
+  if (API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(e.src)) img.onerror = () => { if (img.dataset.fb) return; img.dataset.fb = '1'; img.src = GH.rawUrl(e.src); };
   img.style.objectFit = e.fit || 'contain';
   if (e.flip) img.style.transform = 'scaleX(-1)';
   node.appendChild(img);
@@ -352,52 +353,181 @@ function fitSlide(container, slideEl, pad) {
   return k;
 }
 
-/* ---------- 저장 API (로컬 서버 ↔ 브라우저 저장소 폴백) ---------- */
+/* ---------- GitHub 저장소 직접 읽기/쓰기 (GitHub Pages 에서 열었을 때) ---------- */
+const GH = {
+  KEY: 'gyoan:gh',
+  cfg: null,
+  onPages: false,
+  /* kwonyujin119.github.io/test0/ → owner=kwonyujin119, repo=test0 */
+  detect() {
+    const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+    if (!m) return null;
+    const seg = location.pathname.split('/').filter(Boolean);
+    const repo = seg.length && !/\.html?$/i.test(seg[0]) ? decodeURIComponent(seg[0]) : m[1] + '.github.io';
+    return { owner: m[1], repo, branch: 'main' };
+  },
+  load() {
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(this.KEY) || 'null'); } catch (e) { }
+    const auto = this.detect(); this.onPages = !!auto;
+    if (!saved && !auto) return null;
+    this.cfg = Object.assign({ branch: 'main', token: '' }, auto || {}, saved || {});
+    return this.cfg;
+  },
+  save(c) { this.cfg = c; localStorage.setItem(this.KEY, JSON.stringify(c)); },
+  clear() { localStorage.removeItem(this.KEY); this.cfg = this.detect(); },
+  get token() { return (this.cfg && this.cfg.token) || ''; },
+  base() { return `https://api.github.com/repos/${this.cfg.owner}/${this.cfg.repo}`; },
+  headers(accept) {
+    const h = { 'Accept': accept || 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    if (this.token) h['Authorization'] = 'Bearer ' + this.token;
+    return h;
+  },
+  async api(method, path, body) {
+    const h = this.headers(); if (body) h['Content-Type'] = 'application/json';
+    const r = await fetch(this.base() + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
+    if (r.status === 404 && method === 'GET') return null;
+    if (!r.ok) {
+      let msg = r.status + ' ' + r.statusText; try { const j = await r.json(); if (j.message) msg = j.message; } catch (e) { }
+      if (r.status === 401) msg = 'GitHub 토큰이 올바르지 않거나 만료되었습니다';
+      else if (r.status === 403 && /rate limit/i.test(msg)) msg = 'GitHub 요청 한도를 넘었습니다. 잠시 후 다시 시도하거나 토큰을 연결하세요';
+      else if (r.status === 403 || r.status === 404) msg = '저장소에 쓸 권한이 없습니다 (토큰 권한: Contents → Read and write)';
+      const err = new Error(msg); err.status = r.status; throw err;
+    }
+    if (r.status === 204) return null;
+    return r.json();
+  },
+  /* 파일 내용(텍스트) 읽기 – 캐시 없이 최신 커밋 기준 */
+  async raw(path) {
+    const r = await fetch(`${this.base()}/contents/${encPath(path)}?ref=${encodeURIComponent(this.cfg.branch)}`, { headers: this.headers('application/vnd.github.raw+json'), cache: 'no-store' });
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error('GitHub 에서 읽지 못했습니다 (' + r.status + ')');
+    return r.text();
+  },
+  async dir(path) {
+    const list = await this.api('GET', `/contents/${encPath(path)}?ref=${encodeURIComponent(this.cfg.branch)}`);
+    return Array.isArray(list) ? list.filter(f => f.type === 'file') : [];
+  },
+  rawUrl(path) { return `https://raw.githubusercontent.com/${this.cfg.owner}/${this.cfg.repo}/${this.cfg.branch}/${encPath(path)}`; },
+  /* 여러 파일을 한 커밋으로 반영. changes = [{path, content} | {path, base64} | {path, delete: true}] */
+  async commit(message, changes) {
+    if (!this.token) { const e = new Error('GitHub 토큰이 연결되어 있지 않아 저장할 수 없습니다. 허브(첫 화면)의 [GitHub 연결] 을 눌러 주세요.'); e.noToken = true; throw e; }
+    const br = encodeURIComponent(this.cfg.branch);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const ref = await this.api('GET', `/git/ref/heads/${br}`);
+      if (!ref) throw new Error(`브랜치 "${this.cfg.branch}" 를 찾을 수 없습니다`);
+      const head = ref.object.sha;
+      const parent = await this.api('GET', `/git/commits/${head}`);
+      const tree = [];
+      for (const c of changes) {
+        if (c.delete) tree.push({ path: c.path, mode: '100644', type: 'blob', sha: null });
+        else if (c.base64 != null) { const b = await this.api('POST', '/git/blobs', { content: c.base64, encoding: 'base64' }); tree.push({ path: c.path, mode: '100644', type: 'blob', sha: b.sha }); }
+        else tree.push({ path: c.path, mode: '100644', type: 'blob', content: c.content });
+      }
+      const nt = await this.api('POST', '/git/trees', { base_tree: parent.tree.sha, tree });
+      const nc = await this.api('POST', '/git/commits', { message, tree: nt.sha, parents: [head] });
+      try { await this.api('PATCH', `/git/refs/heads/${br}`, { sha: nc.sha }); return nc; }
+      catch (e) { if (e.status !== 422 && e.status !== 409) throw e; } // 그 사이 다른 커밋이 들어옴 → 다시 시도
+    }
+    throw new Error('저장이 계속 충돌합니다. 잠시 후 다시 시도해 주세요.');
+  },
+  /* 연결 확인: 저장소 접근 가능 여부와 쓰기 권한 */
+  async check() {
+    const repo = await this.api('GET', '');
+    if (!repo) throw new Error('저장소를 찾을 수 없습니다: ' + this.cfg.owner + '/' + this.cfg.repo);
+    return { ok: true, push: !!(repo.permissions && repo.permissions.push), name: repo.full_name, private: !!repo.private };
+  },
+};
+function encPath(p) { return p.split('/').map(encodeURIComponent).join('/'); }
+function blobToBase64(blob) {
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+
+/* ---------- 저장 API (로컬 서버 ↔ GitHub 저장소 ↔ 브라우저 저장소 폴백) ---------- */
 const API = {
-  mode: 'server', // 'server' | 'local'
+  mode: 'server', // 'server' | 'github' | 'local'
+  blobs: {},      // github 모드: 방금 올린 이미지(배포 전) 를 바로 보여주기 위한 blob URL
   async init() {
     if (location.protocol === 'file:') { this.mode = 'local'; return this.mode; }
-    try { const r = await fetch('/api/ping', { cache: 'no-store' }); this.mode = r.ok ? 'server' : 'local'; }
-    catch (e) { this.mode = 'local'; }
+    try {
+      const r = await fetch('api/ping', { cache: 'no-store' });
+      if (r.ok && (await r.json()).ok) { this.mode = 'server'; return this.mode; }
+    } catch (e) { }
+    this.mode = GH.load() ? 'github' : 'local';
     return this.mode;
   },
+  resolveSrc(src) { return (src && this.blobs[src]) || src; },
   _local() { try { return JSON.parse(localStorage.getItem('gyoan:decks') || '{}'); } catch (e) { return {}; } },
   _saveLocal(all) { localStorage.setItem('gyoan:decks', JSON.stringify(all)); },
   async list() {
-    if (this.mode === 'server') { const r = await fetch('/api/decks', { cache: 'no-store' }); return r.json(); }
+    if (this.mode === 'server') { const r = await fetch('api/decks', { cache: 'no-store' }); return r.json(); }
+    if (this.mode === 'github') {
+      const files = await GH.dir('decks');
+      return files.filter(f => /\.json$/i.test(f.name)).map(f => {
+        const name = f.name.replace(/\.json$/i, '');
+        return { name, title: name, slides: '', theme: '', modified: '', size: f.size, partial: true };
+      });
+    }
     const all = this._local();
     return Object.keys(all).map(name => ({ name, title: all[name].title || name, slides: (all[name].slides || []).length, theme: all[name].theme || '', modified: all[name].modified || '' }));
   },
   async load(name) {
     if (this.mode === 'server') {
-      const r = await fetch('/api/decks/' + encodeURIComponent(name), { cache: 'no-store' });
+      const r = await fetch('api/decks/' + encodeURIComponent(name), { cache: 'no-store' });
       if (!r.ok) throw new Error('교안을 찾을 수 없습니다: ' + name);
       return r.json();
+    }
+    if (this.mode === 'github') {
+      let text = null;
+      // 토큰 없이 Pages 에서 볼 때는 배포된 파일을 직접 읽음 (요청 한도 없음)
+      if (!GH.token && GH.onPages) { try { const r = await fetch('decks/' + encodeURIComponent(name) + '.json', { cache: 'no-store' }); if (r.ok) text = await r.text(); } catch (e) { } }
+      if (text == null) text = await GH.raw('decks/' + name + '.json');
+      if (text == null) throw new Error('교안을 찾을 수 없습니다: ' + name);
+      return JSON.parse(text);
     }
     const d = this._local()[name]; if (!d) throw new Error('교안을 찾을 수 없습니다: ' + name); return d;
   },
   async save(name, deck) {
     deck.modified = new Date().toISOString();
     if (this.mode === 'server') {
-      const r = await fetch('/api/decks/' + encodeURIComponent(name), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(deck, null, 1) });
+      const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(deck, null, 1) });
       if (!r.ok) throw new Error('저장 실패 (' + r.status + ')');
       return r.json();
+    }
+    if (this.mode === 'github') {
+      await GH.commit('교안 저장: ' + (deck.title || name), [{ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }]);
+      return { ok: true, name };
     }
     const all = this._local(); all[name] = deck; this._saveLocal(all); return { ok: true };
   },
   async remove(name) {
-    if (this.mode === 'server') { const r = await fetch('/api/decks/' + encodeURIComponent(name), { method: 'DELETE' }); return r.json(); }
+    if (this.mode === 'server') { const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'DELETE' }); return r.json(); }
+    if (this.mode === 'github') { await GH.commit('교안 삭제: ' + name, [{ path: 'decks/' + name + '.json', delete: true }]); return { ok: true }; }
     const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
   },
-  /* 이미지 업로드: 서버 모드면 assets/ 폴더에 저장, 아니면 data URL */
+  /* 이미지 업로드: 서버 모드면 assets/ 폴더, GitHub 모드면 저장소의 assets/ 에 커밋, 아니면 data URL */
   async upload(blob, filename) {
     if (this.mode === 'server') {
-      const r = await fetch('/api/assets?name=' + encodeURIComponent(filename || 'image.png'), { method: 'POST', body: blob });
+      const r = await fetch('api/assets?name=' + encodeURIComponent(filename || 'image.png'), { method: 'POST', body: blob });
       if (!r.ok) throw new Error('업로드 실패'); const j = await r.json(); return j.src;
+    }
+    if (this.mode === 'github') {
+      let orig = (filename || 'image.png').replace(/^.*[\\/]/, '').replace(/[^\w.\-가-힣]/g, '_');
+      const dot = orig.lastIndexOf('.'); let base = dot > 0 ? orig.slice(0, dot) : orig, ext = dot > 0 ? orig.slice(dot) : '';
+      if (base.length > 40) base = base.slice(0, 40);
+      const existing = new Set((await GH.dir('assets')).map(f => f.name));
+      let fname = base + ext, i = 1; while (existing.has(fname)) fname = `${base}-${i++}${ext}`;
+      const src = 'assets/' + fname;
+      await GH.commit('이미지 추가: ' + fname, [{ path: src, base64: await blobToBase64(blob) }]);
+      this.blobs[src] = URL.createObjectURL(blob);
+      return src;
     }
     return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
   },
-  async assets() { if (this.mode !== 'server') return []; const r = await fetch('/api/assets', { cache: 'no-store' }); return r.json(); },
+  async assets() {
+    if (this.mode === 'server') { const r = await fetch('api/assets', { cache: 'no-store' }); return r.json(); }
+    if (this.mode === 'github') return (await GH.dir('assets')).map(f => ({ name: f.name, src: 'assets/' + f.name, size: f.size }));
+    return [];
+  },
 };
 
 /* 임시 저장(발표 미리보기용) */
