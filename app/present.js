@@ -35,24 +35,29 @@
     <div class="pgoto" id="pgoto"></div>
     <div class="poverview" id="poverview"><div class="grid" id="ogrid"></div></div>
     <div class="phelp" id="phelp"><div class="box">
-      <h3>발표 단축키 <span class="muted" style="font-weight:400;font-size:13px">(프레젠터 리모컨의 ▶/◀ = PageDown/PageUp)</span></h3>
+      <h3>발표 단축키 <span class="muted" style="font-weight:400;font-size:13px">PowerPoint 슬라이드 쇼와 같음 · 리모컨의 ▶/◀ = PageDown/PageUp</span></h3>
       <div class="cols">
         <div><span>다음</span><span><kbd>→</kbd> <kbd>↓</kbd> <kbd>PgDn</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> <kbd>N</kbd> 클릭</span></div>
         <div><span>이전</span><span><kbd>←</kbd> <kbd>↑</kbd> <kbd>PgUp</kbd> <kbd>Backspace</kbd> <kbd>P</kbd> 우클릭</span></div>
         <div><span>처음 / 끝</span><span><kbd>Home</kbd> / <kbd>End</kbd></span></div>
-        <div><span>특정 슬라이드로</span><span>숫자 입력 후 <kbd>Enter</kbd></span></div>
+        <div><span>특정 슬라이드로</span><span>번호 입력 후 <kbd>Enter</kbd></span></div>
+        <div><span>모든 슬라이드 보기</span><span><kbd>Ctrl+S</kbd> <kbd>G</kbd> <kbd>-</kbd> <kbd>O</kbd></span></div>
+        <div><span>검은 화면</span><span><kbd>B</kbd> <kbd>.</kbd></span></div>
+        <div><span>흰 화면</span><span><kbd>W</kbd> <kbd>,</kbd></span></div>
+        <div><span>확대 / 축소</span><span><kbd>+</kbd> / <kbd>-</kbd></span></div>
+        <div><span>펜</span><span><kbd>Ctrl+P</kbd> <kbd>D</kbd> (Shift 드래그 = 굵은 노랑)</span></div>
+        <div><span>레이저 포인터</span><span><kbd>Ctrl+L</kbd> <kbd>L</kbd></span></div>
+        <div><span>화살표(펜·레이저 해제)</span><span><kbd>Ctrl+A</kbd> <kbd>Esc</kbd></span></div>
+        <div><span>잉크 지우기</span><span><kbd>E</kbd></span></div>
+        <div><span>포인터 숨기기</span><span><kbd>Ctrl+H</kbd></span></div>
+        <div><span>발표자 보기 창</span><span><kbd>Alt+F5</kbd> <kbd>S</kbd></span></div>
         <div><span>전체화면</span><span><kbd>F</kbd> <kbd>F5</kbd> <kbd>F11</kbd></span></div>
-        <div><span>검은 / 흰 화면</span><span><kbd>B</kbd> <kbd>.</kbd> / <kbd>W</kbd></span></div>
-        <div><span>슬라이드 한눈에</span><span><kbd>O</kbd> <kbd>G</kbd> <kbd>-</kbd></span></div>
-        <div><span>발표자 보기 창</span><span><kbd>S</kbd></span></div>
-        <div><span>펜 그리기 / 지우기</span><span><kbd>D</kbd> / <kbd>E</kbd></span></div>
-        <div><span>레이저 포인터</span><span><kbd>L</kbd></span></div>
         <div><span>타이머 표시</span><span><kbd>T</kbd></span></div>
-        <div><span>이 도움말</span><span><kbd>?</kbd> <kbd>H</kbd> <kbd>F1</kbd></span></div>
-        <div><span>발표 종료</span><span><kbd>Esc</kbd> (전체화면 해제 → 한 번 더)</span></div>
+        <div><span>이 도움말</span><span><kbd>F1</kbd> <kbd>?</kbd> <kbd>H</kbd></span></div>
         <div><span>편집기로</span><span><kbd>Ctrl+E</kbd></span></div>
+        <div><span>발표 종료</span><span><kbd>Esc</kbd> (전체화면이면 한 번 더)</span></div>
       </div>
-      <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 눌러 닫기</div>
+      <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 눌러 닫기 · 전체 설명서: <a href="shortcuts.html" target="_blank" onclick="event.stopPropagation()">shortcuts.html</a></div>
     </div></div>
     <div class="pmenu peek" id="pmenu">
       <button class="btn sm" data-a="notes" title="발표자 보기 (S)">노트</button>
@@ -130,6 +135,11 @@
   };
 
   /* ---- 화면 상태 ---- */
+  function zoomStage(d) {
+    st.zoom = clamp((st.zoom || 1) + d * 0.5, 1, 3);
+    pstage.style.transform = st.zoom > 1 ? `scale(${st.zoom})` : ''; pstage.style.transformOrigin = 'center center';
+    hud(st.zoom > 1 ? `확대 ${st.zoom}× (− 로 축소 · 마우스로 보고 싶은 곳을 가리키세요)` : '원래 크기');
+  }
   function setBlank(kind) { st.blank = st.blank === kind ? '' : kind; pblank.className = 'pblank ' + st.blank; }
   function hud(msg) { phud.textContent = msg; phud.classList.add('show'); clearTimeout(hudTimer); hudTimer = setTimeout(() => phud.classList.remove('show'), 1600); }
   function toggleFullscreen() {
@@ -191,7 +201,7 @@
   function togglePen() { st.pen = !st.pen; pdraw.classList.toggle('on', st.pen); if (st.pen && st.laser) toggleLaser(); hud(st.pen ? '펜 모드 (D 로 해제 · E 로 지우기 · Shift 드래그 = 굵은 노랑)' : '펜 해제'); }
   function clearDrawing() { strokes[st.idx] = []; redraw(); hud('지웠습니다'); }
   function toggleLaser() { st.laser = !st.laser; plaser.classList.toggle('on', st.laser); if (st.laser && st.pen) togglePen(); hud(st.laser ? '레이저 포인터 (L 로 해제)' : '레이저 해제'); }
-  window.addEventListener('pointermove', (ev) => { if (st.laser) { plaser.style.left = ev.clientX + 'px'; plaser.style.top = ev.clientY + 'px'; } wake(); });
+  window.addEventListener('pointermove', (ev) => { if (st.zoom > 1) { const x = ev.clientX / innerWidth * 100, y = ev.clientY / innerHeight * 100; pstage.style.transformOrigin = `${x}% ${y}%`; } if (st.laser) { plaser.style.left = ev.clientX + 'px'; plaser.style.top = ev.clientY + 'px'; } wake(); });
 
   /* ---- 커서 / 메뉴 자동 숨김 ---- */
   function wake() {
@@ -205,10 +215,22 @@
   document.addEventListener('keydown', (ev) => {
     const k = ev.key; const ctrl = ev.ctrlKey || ev.metaKey;
     if (ctrl && k.toLowerCase() === 'e') { ev.preventDefault(); if (!window.EMBEDDED_DECK) location.href = `editor.html?deck=${encodeURIComponent(name)}&slide=${st.idx}`; return; }
-    if (ctrl || ev.altKey) return;
+    /* PowerPoint 슬라이드 쇼 조합키 */
+    if (ctrl && !ev.altKey) {
+      switch (k.toLowerCase()) {
+        case 'p': ev.preventDefault(); togglePen(); return;          // Ctrl+P 펜
+        case 'l': ev.preventDefault(); toggleLaser(); return;        // Ctrl+L 레이저
+        case 'a': ev.preventDefault(); if (st.pen) togglePen(); if (st.laser) toggleLaser(); hud('화살표(기본 포인터)'); return; // Ctrl+A 화살표
+        case 'h': ev.preventDefault(); document.body.classList.add('hide-cursor'); return;   // Ctrl+H 포인터 숨기기
+        case 's': ev.preventDefault(); overview.isOpen() ? overview.close() : overview.open(); return; // Ctrl+S 모든 슬라이드
+        case 'e': return;
+      }
+      return;
+    }
+    if (ev.altKey) { if (k === 'F5') { ev.preventDefault(); openNotes(); } return; }   // Alt+F5 발표자 보기
     if ($('phelp').classList.contains('show')) { ev.preventDefault(); $('phelp').classList.remove('show'); return; }
     if (overview.isOpen()) { if (k === 'Escape' || k === 'o' || k === 'O' || k === 'g' || k === 'G' || k === '-') { ev.preventDefault(); overview.close(); } return; }
-    if (st.blank && !['b', 'B', '.', 'w', 'W', 'Escape', 'F5', 'f', 'F', 'F11'].includes(k)) { st.blank = ''; pblank.className = 'pblank'; ev.preventDefault(); return; }
+    if (st.blank && !['b', 'B', '.', 'w', 'W', ',', 'Escape', 'F5', 'f', 'F', 'F11'].includes(k)) { st.blank = ''; pblank.className = 'pblank'; ev.preventDefault(); return; }
     // 숫자 → 슬라이드 이동
     if (/^[0-9]$/.test(k)) { st.goto += k; pgoto.innerHTML = `${st.goto}<small>Enter 로 이동</small>`; pgoto.classList.add('show'); clearTimeout(gotoTimer); gotoTimer = setTimeout(() => { st.goto = ''; pgoto.classList.remove('show'); }, 3000); ev.preventDefault(); return; }
     if (st.goto && k === 'Enter') { const n = parseInt(st.goto, 10); st.goto = ''; pgoto.classList.remove('show'); clearTimeout(gotoTimer); goto(n - 1, 0); ev.preventDefault(); return; }
@@ -219,8 +241,11 @@
       case 'End': ev.preventDefault(); goto(N - 1, maxStep(slideOf(N - 1))); break;
       case 'F5': case 'f': case 'F': ev.preventDefault(); toggleFullscreen(); break;
       case 'b': case 'B': case '.': ev.preventDefault(); setBlank('black'); break;
-      case 'w': case 'W': ev.preventDefault(); setBlank('white'); break;
-      case 'o': case 'O': case 'g': case 'G': case '-': ev.preventDefault(); overview.open(); break;
+      case 'w': case 'W': case ',': ev.preventDefault(); setBlank('white'); break;
+      case '+': case '=': ev.preventDefault(); zoomStage(1); break;
+      case '_': ev.preventDefault(); zoomStage(-1); break;
+      case '-': ev.preventDefault(); if (st.zoom > 1) zoomStage(-1); else overview.open(); break;   // 확대 중이면 축소, 아니면 모든 슬라이드
+      case 'o': case 'O': case 'g': case 'G': ev.preventDefault(); overview.open(); break;
       case 's': case 'S': ev.preventDefault(); openNotes(); break;
       case 'd': case 'D': ev.preventDefault(); togglePen(); break;
       case 'e': case 'E': ev.preventDefault(); clearDrawing(); break;
@@ -311,6 +336,7 @@
         case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': case 'p': ev.preventDefault(); send({ cmd: 'prev' }); break;
         case 'Home': send({ cmd: 'goto', idx: 0 }); break; case 'End': send({ cmd: 'goto', idx: N - 1 }); break;
         case 'Escape': window.close(); break;
+        case 'F1': case '?': ev.preventDefault(); window.open('shortcuts.html', '_blank'); break;
       }
     });
     window.addEventListener('resize', render);

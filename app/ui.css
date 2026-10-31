@@ -83,6 +83,13 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .hub-notice a { color: inherit; font-weight: 600; text-decoration: underline; }
 .hub-notice code { background: rgba(255,255,255,.1); padding: 1px 5px; border-radius: 4px; }
 .hub-notice.ok { background: #0f2a1c; border-color: #1f6b43; color: #a7f3c9; }
+.kb-help { min-width: 760px; max-width: 980px; }
+.kb-help h4 { margin: 14px 0 6px; font-size: 13px; color: var(--ui-accent); text-transform: uppercase; letter-spacing: .04em; }
+.kb-help h4:first-child { margin-top: 0; }
+.kb-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; font-size: 13px; }
+.kb-cols > div > div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--ui-border); }
+.kb-cols > div > div span:last-child { text-align: right; color: var(--ui-fg); white-space: nowrap; }
+.kb-cols > div > div span:first-child { color: var(--ui-muted); }
 .gh-howto { margin-top: 14px; padding: 12px 14px; background: var(--ui-bg); border: 1px solid var(--ui-border); border-radius: 10px; font-size: 13px; line-height: 1.6; }
 .gh-howto ol { margin: 6px 0 0; padding-left: 20px; }
 .gh-howto a { color: var(--ui-accent); }

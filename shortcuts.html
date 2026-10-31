@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>단축키 설명서 · 교안 작업장</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="app/ui.css">
+<style>
+  .doc { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+  .doc h1 { font-size: 28px; margin: 0 0 6px; }
+  .doc .lead { color: var(--ui-muted); margin: 0 0 28px; line-height: 1.6; }
+  .doc h2 { font-size: 19px; margin: 36px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--ui-border); }
+  .doc h3 { font-size: 14px; margin: 22px 0 8px; color: var(--ui-accent); text-transform: uppercase; letter-spacing: .04em; }
+  .doc table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .doc th, .doc td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--ui-border); vertical-align: top; }
+  .doc th { color: var(--ui-muted); font-weight: 500; font-size: 12px; }
+  .doc td:first-child { width: 34%; }
+  .doc td:nth-child(3) { color: var(--ui-muted); width: 24%; }
+  .doc kbd { display: inline-block; font: 12px/1 ui-monospace, Consolas, monospace; background: var(--ui-panel2); border: 1px solid var(--ui-border); border-bottom-width: 2px; border-radius: 5px; padding: 4px 6px; margin: 1px 2px 1px 0; color: var(--ui-fg); white-space: nowrap; }
+  .doc .note { background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 10px; padding: 12px 16px; font-size: 13px; line-height: 1.6; margin: 14px 0; }
+  .doc .note b { color: var(--ui-fg); }
+  .doc .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+  .doc .toc a { font-size: 13px; background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 999px; padding: 4px 12px; }
+  .doc .top { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; }
+  .doc .top .btn { font-size: 13px; }
+  .same { color: var(--ui-ok); }
+  @media print {
+    body { background: #fff; color: #111; }
+    .doc { padding: 0; max-width: none; }
+    .doc .top, .doc .toc { display: none; }
+    .doc kbd { background: #f3f4f6; border-color: #cbd5e1; color: #111; }
+    .doc th, .doc td { border-color: #ddd; }
+    .doc td:nth-child(3), .doc th, .doc .lead { color: #555; }
+    .doc .note { border-color: #ddd; background: #fafafa; }
+    .doc h2 { break-after: avoid; border-color: #ccc; }
+    .doc h3 { color: #1d4ed8; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="top">
+    <a class="btn ghost" href="index.html">← 교안 목록</a>
+    <button class="btn" onclick="window.print()">🖨 인쇄 / PDF</button>
+  </div>
+  <h1>단축키 설명서</h1>
+  <p class="lead">PowerPoint 와 같은 키 배치입니다. PowerPoint 에서 쓰던 손버릇 그대로 쓰시면 됩니다.
+  <span class="same">●</span> 표시는 PowerPoint 와 동일한 키, 나머지는 이 도구에서 추가로 쓸 수 있는 키입니다.
+  발표 중에는 <kbd>F1</kbd> 또는 <kbd>?</kbd>, 편집 중에는 <kbd>F1</kbd> 을 누르면 화면 안에서 바로 볼 수 있습니다.</p>
+  <div class="toc">
+    <a href="#present">발표 (슬라이드 쇼)</a><a href="#remote">프레젠터 리모컨</a><a href="#notes">발표자 보기</a>
+    <a href="#edit">편집기</a><a href="#text">글 편집</a><a href="#mouse">마우스 조작</a>
+  </div>
+
+  <h2 id="present">1. 발표 (슬라이드 쇼)</h2>
+  <table>
+    <tr><th>동작</th><th>키</th><th>PowerPoint</th></tr>
+    <tr><td>다음 단계 / 다음 슬라이드</td><td><kbd>→</kbd> <kbd>↓</kbd> <kbd>PageDown</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> <kbd>N</kbd> 마우스 왼쪽 클릭</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>이전 단계 / 이전 슬라이드</td><td><kbd>←</kbd> <kbd>↑</kbd> <kbd>PageUp</kbd> <kbd>Backspace</kbd> <kbd>P</kbd> 마우스 오른쪽 클릭</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>첫 슬라이드 / 마지막 슬라이드</td><td><kbd>Home</kbd> / <kbd>End</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>특정 슬라이드로 이동</td><td>번호 입력 후 <kbd>Enter</kbd> (예: <kbd>1</kbd><kbd>2</kbd><kbd>Enter</kbd>)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>모든 슬라이드 보기 (한눈에)</td><td><kbd>Ctrl+S</kbd> <kbd>G</kbd> <kbd>-</kbd> <kbd>O</kbd></td><td><span class="same">●</span> Ctrl+S, G, −</td></tr>
+    <tr><td>검은 화면 (잠시 멈춤)</td><td><kbd>B</kbd> <kbd>.</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>흰 화면</td><td><kbd>W</kbd> <kbd>,</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>확대 / 축소</td><td><kbd>+</kbd> / <kbd>-</kbd> · 확대 중 마우스로 보고 싶은 곳을 가리킵니다 (확대 상태가 아니면 <kbd>-</kbd> 는 모든 슬라이드 보기)</td><td><span class="same">●</span> + / −</td></tr>
+    <tr><td>펜 (그리기)</td><td><kbd>Ctrl+P</kbd> <kbd>D</kbd> · Shift+드래그 = 굵은 노란 펜</td><td><span class="same">●</span> Ctrl+P</td></tr>
+    <tr><td>레이저 포인터</td><td><kbd>Ctrl+L</kbd> <kbd>L</kbd></td><td><span class="same">●</span> Ctrl+L</td></tr>
+    <tr><td>화살표(펜 · 레이저 해제)</td><td><kbd>Ctrl+A</kbd> <kbd>Esc</kbd></td><td><span class="same">●</span> Ctrl+A</td></tr>
+    <tr><td>이 슬라이드의 잉크 지우기</td><td><kbd>E</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>마우스 포인터 숨기기</td><td><kbd>Ctrl+H</kbd> (움직이면 다시 나타남)</td><td><span class="same">●</span> Ctrl+H</td></tr>
+    <tr><td>발표자 보기 창 열기</td><td><kbd>Alt+F5</kbd> <kbd>S</kbd></td><td><span class="same">●</span> Alt+F5</td></tr>
+    <tr><td>전체화면 켜기 / 끄기</td><td><kbd>F</kbd> <kbd>F5</kbd> <kbd>F11</kbd></td><td>브라우저 특성상 필요</td></tr>
+    <tr><td>경과 시간 표시</td><td><kbd>T</kbd></td><td>추가 기능</td></tr>
+    <tr><td>단축키 도움말</td><td><kbd>F1</kbd> <kbd>?</kbd> <kbd>H</kbd></td><td><span class="same">●</span> F1</td></tr>
+    <tr><td>편집기로 돌아가기</td><td><kbd>Ctrl+E</kbd></td><td>추가 기능</td></tr>
+    <tr><td>발표 종료</td><td><kbd>Esc</kbd> (전체화면이면 한 번 더)</td><td><span class="same">●</span> 동일</td></tr>
+  </table>
+  <div class="note">마우스 휠을 굴리거나, 터치 화면에서 좌우로 밀어도 넘어갑니다. 발표 화면은 2.5초 동안 가만히 있으면 마우스 포인터와 하단 메뉴가 자동으로 숨습니다.</div>
+
+  <h2 id="remote">2. 프레젠터 리모컨</h2>
+  <p class="lead" style="margin-bottom:10px">로지텍 등 일반 프레젠터 리모컨은 키보드처럼 동작하며 아래 키를 보냅니다. 별도 설정 없이 그대로 됩니다.</p>
+  <table>
+    <tr><th>리모컨 버튼</th><th>보내는 키</th><th>동작</th></tr>
+    <tr><td>▶ 다음</td><td><kbd>PageDown</kbd></td><td>다음 단계 / 슬라이드</td></tr>
+    <tr><td>◀ 이전</td><td><kbd>PageUp</kbd></td><td>이전 단계 / 슬라이드</td></tr>
+    <tr><td>슬라이드 쇼 시작/종료</td><td><kbd>F5</kbd> / <kbd>Esc</kbd></td><td>전체화면 / 발표 종료</td></tr>
+    <tr><td>화면 끄기 (검은 화면)</td><td><kbd>B</kbd> 또는 <kbd>.</kbd></td><td>검은 화면 (아무 키로 복귀)</td></tr>
+  </table>
+  <div class="note"><b>듀얼 모니터 (프로젝터)</b>: 발표 화면에서 <kbd>S</kbd> 를 눌러 발표자 보기 창을 열고, 발표 화면은 프로젝터로 옮겨 <kbd>F</kbd> 로 전체화면을 켭니다.
+  두 창은 자동으로 동기화되며, 어느 창에서 리모컨을 눌러도 함께 넘어갑니다.</div>
+
+  <h2 id="notes">3. 발표자 보기 창</h2>
+  <table>
+    <tr><th>동작</th><th>키</th><th></th></tr>
+    <tr><td>다음 / 이전</td><td><kbd>→</kbd> <kbd>PageDown</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> / <kbd>←</kbd> <kbd>PageUp</kbd> <kbd>Backspace</kbd></td><td>발표 화면과 같음</td></tr>
+    <tr><td>처음 / 끝</td><td><kbd>Home</kbd> / <kbd>End</kbd></td><td></td></tr>
+    <tr><td>이 설명서</td><td><kbd>F1</kbd> <kbd>?</kbd></td><td></td></tr>
+    <tr><td>창 닫기</td><td><kbd>Esc</kbd></td><td></td></tr>
+  </table>
+
+  <h2 id="edit">4. 편집기</h2>
+  <h3>파일 · 발표</h3>
+  <table>
+    <tr><th>동작</th><th>키</th><th>PowerPoint</th></tr>
+    <tr><td>저장</td><td><kbd>Ctrl+S</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>발표 시작 (처음부터)</td><td><kbd>F5</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>발표 시작 (현재 슬라이드부터)</td><td><kbd>Shift+F5</kbd> (▶ 발표 버튼도 동일)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>인쇄 / PDF 보기</td><td><kbd>Ctrl+P</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>실행 취소 / 다시 실행</td><td><kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd> <kbd>Ctrl+Shift+Z</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>단축키 도움말</td><td><kbd>F1</kbd> <kbd>Ctrl+/</kbd></td><td><span class="same">●</span> F1</td></tr>
+  </table>
+  <h3>슬라이드</h3>
+  <table>
+    <tr><th>동작</th><th>키</th><th>PowerPoint</th></tr>
+    <tr><td>새 슬라이드 (현재 다음에)</td><td><kbd>Ctrl+M</kbd> <kbd>Ctrl+Enter</kbd></td><td><span class="same">●</span> Ctrl+M</td></tr>
+    <tr><td>슬라이드 복제</td><td><kbd>Ctrl+Shift+D</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>슬라이드 삭제</td><td><kbd>Ctrl+Delete</kbd> (확인 후)</td><td>썸네일 선택 후 Delete</td></tr>
+    <tr><td>이전 / 다음 슬라이드</td><td><kbd>PageUp</kbd> / <kbd>PageDown</kbd> (요소 선택이 없으면 <kbd>↑</kbd> <kbd>↓</kbd> 도 가능)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>첫 / 마지막 슬라이드</td><td><kbd>Ctrl+Home</kbd> / <kbd>Ctrl+End</kbd> (요소 선택이 없으면 <kbd>Home</kbd> <kbd>End</kbd>)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>슬라이드 순서 위로 / 아래로</td><td><kbd>Ctrl+Shift+↑</kbd> / <kbd>Ctrl+Shift+↓</kbd> (<kbd>Ctrl+Shift+PageUp</kbd> / <kbd>PageDown</kbd>)</td><td>썸네일 드래그</td></tr>
+  </table>
+  <h3>선택 · 이동 · 크기</h3>
+  <table>
+    <tr><th>동작</th><th>키</th><th>PowerPoint</th></tr>
+    <tr><td>다음 / 이전 요소 선택</td><td><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>모두 선택</td><td><kbd>Ctrl+A</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>여러 개 선택</td><td><kbd>Shift</kbd>+클릭 · 빈 곳에서 드래그(범위 선택)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>선택 해제 · 메뉴 닫기</td><td><kbd>Esc</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>이동 (10px)</td><td><kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>→</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>미세 이동 (1px)</td><td><kbd>Ctrl</kbd>+화살표</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>크게 이동 (50px)</td><td><kbd>Shift</kbd>+화살표</td><td>추가 기능</td></tr>
+    <tr><td>드래그하며 복제</td><td><kbd>Ctrl</kbd>+드래그</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>비율 유지하며 크기 조절</td><td><kbd>Shift</kbd>+모서리 드래그 (이미지는 기본이 비율 유지, Shift 면 자유)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>안내선에 맞춤 끄기</td><td><kbd>Alt</kbd>+드래그</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>회전 15° 단위</td><td>회전 손잡이 <kbd>Shift</kbd>+드래그</td><td><span class="same">●</span> 동일</td></tr>
+  </table>
+  <h3>요소</h3>
+  <table>
+    <tr><th>동작</th><th>키</th><th>PowerPoint</th></tr>
+    <tr><td>복제</td><td><kbd>Ctrl+D</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>복사 / 잘라내기 / 붙여넣기</td><td><kbd>Ctrl+C</kbd> / <kbd>Ctrl+X</kbd> / <kbd>Ctrl+V</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>서식 복사 / 서식 붙여넣기</td><td><kbd>Ctrl+Shift+C</kbd> / <kbd>Ctrl+Shift+V</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>삭제</td><td><kbd>Delete</kbd> <kbd>Backspace</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>앞으로 / 뒤로 (한 단계)</td><td><kbd>Ctrl+]</kbd> / <kbd>Ctrl+[</kbd> (텍스트 상자만 선택했을 땐 글자 크기)</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>맨 앞으로 / 맨 뒤로</td><td><kbd>Ctrl+Shift+]</kbd> / <kbd>Ctrl+Shift+[</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>글 편집 시작</td><td><kbd>Enter</kbd> <kbd>F2</kbd> 더블클릭</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>이미지 넣기</td><td><kbd>Ctrl+V</kbd> (클립보드 이미지) · 파일을 캔버스에 끌어다 놓기</td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>이미지 바꾸기</td><td>이미지 더블클릭</td><td></td></tr>
+  </table>
+
+  <h2 id="text">5. 글 편집 (텍스트 상자 안에서)</h2>
+  <table>
+    <tr><th>동작</th><th>키</th><th>PowerPoint</th></tr>
+    <tr><td>굵게 / 기울임 / 밑줄</td><td><kbd>Ctrl+B</kbd> / <kbd>Ctrl+I</kbd> / <kbd>Ctrl+U</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>왼쪽 / 가운데 / 오른쪽 / 양쪽 정렬</td><td><kbd>Ctrl+L</kbd> / <kbd>Ctrl+E</kbd> / <kbd>Ctrl+R</kbd> / <kbd>Ctrl+J</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>글자 크게 / 작게</td><td><kbd>Ctrl+]</kbd> / <kbd>Ctrl+[</kbd> · <kbd>Ctrl+Shift+&gt;</kbd> / <kbd>Ctrl+Shift+&lt;</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>들여쓰기 / 내어쓰기</td><td><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>글머리 기호</td><td><kbd>Ctrl+Shift+L</kbd></td><td>추가 기능</td></tr>
+    <tr><td>형광펜</td><td><kbd>Ctrl+Shift+H</kbd></td><td>추가 기능</td></tr>
+    <tr><td>링크</td><td><kbd>Ctrl+K</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>아래 첨자 / 위 첨자</td><td><kbd>Ctrl+=</kbd> / <kbd>Ctrl+Shift+=</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>서식 지우기</td><td><kbd>Ctrl+Space</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>서식 복사</td><td><kbd>Ctrl+Shift+C</kbd></td><td><span class="same">●</span> 동일</td></tr>
+    <tr><td>편집 끝내기</td><td><kbd>Esc</kbd> <kbd>F2</kbd> 또는 바깥 클릭</td><td><span class="same">●</span> 동일</td></tr>
+  </table>
+  <div class="note">텍스트 상자를 <b>선택만</b> 한 상태(편집 아님)에서도 <kbd>Ctrl+B</kbd> <kbd>Ctrl+I</kbd> <kbd>Ctrl+E</kbd> <kbd>Ctrl+L</kbd> <kbd>Ctrl+R</kbd> <kbd>Ctrl+]</kbd> <kbd>Ctrl+[</kbd> 은 상자 전체에 적용됩니다. 여러 상자를 선택하면 한꺼번에 바뀝니다.</div>
+
+  <h2 id="mouse">6. 마우스 조작</h2>
+  <table>
+    <tr><th>동작</th><th>방법</th><th></th></tr>
+    <tr><td>선택 / 이동</td><td>클릭 / 드래그 (안내선에 자동으로 맞춰짐)</td><td></td></tr>
+    <tr><td>크기 조절 · 회전</td><td>모서리·변 손잡이 드래그 · 위쪽 둥근 손잡이 드래그</td><td></td></tr>
+    <tr><td>글 편집</td><td>텍스트 더블클릭 (클릭한 위치에 커서)</td><td></td></tr>
+    <tr><td>요소 메뉴</td><td>요소 오른쪽 클릭 (순서, 복제, 삭제, 이미지 바꾸기 …)</td><td></td></tr>
+    <tr><td>슬라이드 메뉴 · 순서 바꾸기</td><td>왼쪽 썸네일 오른쪽 클릭 · 썸네일 드래그</td><td></td></tr>
+    <tr><td>이미지 넣기</td><td>파일을 캔버스로 끌어다 놓기 · <kbd>Ctrl+V</kbd></td><td></td></tr>
+  </table>
+</div>
+</body>
+</html>

@@ -379,6 +379,7 @@
     window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
   }
   function startDrag(ev) {
+    if (ev.ctrlKey || ev.metaKey) { duplicateSelected(); for (const e of selEls()) { e.x -= 30; e.y -= 30; } renderStage(); }
     const els = selEls().filter(e => !e.locked); if (!els.length) return;
     const sx = ev.clientX, sy = ev.clientY; const orig = els.map(e => ({ e, x: e.x, y: e.y })); let moved = false;
     track((m) => {
@@ -824,7 +825,7 @@
   const themeSel = $('theme'); THEMES.forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; themeSel.appendChild(o); });
   themeSel.onchange = () => setProp('deck.theme', themeSel.value, true);
   $('zoom').onchange = (ev) => { S.zoomMode = ev.target.value; layoutStage(); };
-  $('btnPresent').onclick = async () => { await save(); window.open(`present.html?deck=${encodeURIComponent(S.name)}&start=${S.cur}`, '_blank'); };
+  $('btnPresent').onclick = () => present(false);
   $('btnPreview').onclick = () => { if (S.editing) endEdit(); Draft.put(S.name, S.deck); window.open(`present.html?deck=${encodeURIComponent(S.name)}&draft=1&start=${S.cur}`, '_blank'); };
   $('btnExport').onclick = (ev) => {
     ev.stopPropagation();
@@ -872,41 +873,145 @@
     else if (S.clip) pasteClip();
   });
 
-  /* ---------- 키보드 ---------- */
+  /* ---------- 키보드 (PowerPoint 와 같은 배치) ---------- */
   function isTyping() { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable); }
-  document.addEventListener('keydown', (ev) => {
-    const ctrl = ev.ctrlKey || ev.metaKey;
-    if (S.editing) {
-      if (ev.key === 'Escape') { ev.preventDefault(); endEdit(); }
-      else if (ev.key === 'Tab') { ev.preventDefault(); exec(ev.shiftKey ? 'outdent' : 'indent'); }
-      else if (ctrl && ev.key.toLowerCase() === 's') { ev.preventDefault(); save(); }
-      return;
+  function present(fromStart) { save().then(() => window.open(`present.html?deck=${encodeURIComponent(S.name)}&start=${fromStart ? 0 : S.cur}`, '_blank')); }
+  /* 글자 크기 단계 조절: 편집 중이면 그 상자, 아니면 선택한 텍스트 상자 전부 */
+  function fontSizeStep(delta) {
+    const els = (S.editing ? [elById(S.editing)] : selEls()).filter(e => e && e.type === 'text'); if (!els.length) return;
+    for (const e of els) { e.style = e.style || {}; const cur = resolveTextStyle(e, theme()).fontSize; e.style.fontSize = clamp(Math.round(cur + delta), 10, 400); applyTextNodeStyle(e, nodeOf(e.id), theme()); }
+    if (S.editing) markDirty(); else commit();
+    renderProps();
+  }
+  function setAlign(a) {
+    if (S.editing) { exec(a === 'left' ? 'justifyLeft' : a === 'center' ? 'justifyCenter' : a === 'right' ? 'justifyRight' : 'justifyFull'); return; }
+    const els = selEls().filter(e => e.type === 'text'); if (!els.length) return;
+    for (const e of els) { e.style = e.style || {}; e.style.align = a === 'justify' ? 'left' : a; }
+    commit(); renderStage(); renderProps();
+  }
+  /* 서식 복사 / 붙여넣기 (Ctrl+Shift+C / V) */
+  let styleClip = null;
+  function copyStyle() { const e = S.editing ? elById(S.editing) : selEls()[0]; if (!e) return; styleClip = { type: e.type, style: clone(e.style || {}), role: e.role, fill: e.fill, stroke: e.stroke, strokeWidth: e.strokeWidth, radius: e.radius, shadow: e.shadow, border: e.border, borderColor: e.borderColor }; toast('서식 복사'); }
+  function pasteStyle() {
+    if (!styleClip) { toast('먼저 Ctrl+Shift+C 로 서식을 복사하세요'); return; }
+    const els = selEls(); if (!els.length) return;
+    for (const e of els) {
+      if (e.type === 'text' && styleClip.type === 'text') { e.style = clone(styleClip.style); if (styleClip.role) e.role = styleClip.role; }
+      else if (e.type === 'shape' && styleClip.type === 'shape') { for (const k of ['fill', 'stroke', 'strokeWidth', 'radius', 'shadow']) if (styleClip[k] !== undefined) e[k] = styleClip[k]; }
+      else if (e.type === 'image' && styleClip.type === 'image') { for (const k of ['radius', 'shadow', 'border', 'borderColor']) if (styleClip[k] !== undefined) e[k] = styleClip[k]; }
     }
-    if (ctrl && ev.key.toLowerCase() === 's') { ev.preventDefault(); save(); return; }
-    if (ev.key === 'F5') { ev.preventDefault(); $('btnPresent').click(); return; }
-    if (isTyping()) { if (ev.key === 'Escape') document.activeElement.blur(); return; }
-    if (ctrl && ev.key.toLowerCase() === 'z') { ev.preventDefault(); ev.shiftKey ? redo() : undo(); return; }
-    if (ctrl && ev.key.toLowerCase() === 'y') { ev.preventDefault(); redo(); return; }
-    if (ctrl && ev.key === 'Enter') { ev.preventDefault(); addSlide('content'); return; }
-    if (ctrl && ev.shiftKey && ev.key.toLowerCase() === 'd') { ev.preventDefault(); duplicateSlide(); return; }
-    if (ctrl && ev.key.toLowerCase() === 'd') { ev.preventDefault(); duplicateSelected(); return; }
-    if (ctrl && ev.key.toLowerCase() === 'c') { copySelected(); return; }
-    if (ctrl && ev.key.toLowerCase() === 'x') { copySelected(); deleteSelected(); return; }
-    if (ctrl && ev.key.toLowerCase() === 'v') { return; /* paste 이벤트에서 처리 */ }
-    if (ctrl && ev.key.toLowerCase() === 'a') { ev.preventDefault(); S.sel = curSlide().elements.filter(e => !e.locked).map(e => e.id); markSelection(); renderOverlay(); renderProps(); return; }
-    if (ctrl && (ev.key === ']' || ev.key === '}')) { ev.preventDefault(); zOrder(ev.shiftKey ? 'front' : 'up'); return; }
-    if (ctrl && (ev.key === '[' || ev.key === '{')) { ev.preventDefault(); zOrder(ev.shiftKey ? 'back' : 'down'); return; }
-    if (ev.key === 'Delete' || ev.key === 'Backspace') { if (S.sel.length) { ev.preventDefault(); deleteSelected(); } return; }
-    if (ev.key === 'Escape') { closeMenus(); S.sel = []; markSelection(); renderOverlay(); renderProps(); return; }
-    if (ev.key === 'Enter' && S.sel.length === 1) { const e = elById(S.sel[0]); if (e && e.type === 'text') { ev.preventDefault(); startEdit(e.id); } return; }
-    if (ev.key === 'PageDown') { ev.preventDefault(); gotoSlide(S.cur + 1); return; }
-    if (ev.key === 'PageUp') { ev.preventDefault(); gotoSlide(S.cur - 1); return; }
-    if (ev.key.startsWith('Arrow')) {
-      if (!S.sel.length) { if (ev.key === 'ArrowDown') gotoSlide(S.cur + 1); if (ev.key === 'ArrowUp') gotoSlide(S.cur - 1); return; }
-      ev.preventDefault(); const d = ev.shiftKey ? 10 : 1;
-      nudge(ev.key === 'ArrowLeft' ? -d : ev.key === 'ArrowRight' ? d : 0, ev.key === 'ArrowUp' ? -d : ev.key === 'ArrowDown' ? d : 0);
+    commit(); renderStage(); renderProps(); toast('서식 붙여넣기');
+  }
+  /* Tab / Shift+Tab: 슬라이드 안의 요소를 차례로 선택 */
+  function cycleSelection(dir) {
+    const arr = curSlide().elements; if (!arr.length) return;
+    let i = S.sel.length ? arr.findIndex(e => e.id === S.sel[S.sel.length - 1]) : (dir > 0 ? -1 : arr.length);
+    i = (i + dir + arr.length) % arr.length;
+    S.sel = [arr[i].id]; markSelection(); renderOverlay(); renderProps();
+  }
+  function selectAll() { S.sel = curSlide().elements.filter(e => !e.locked).map(e => e.id); markSelection(); renderOverlay(); renderProps(); }
+  function clearSelection() { closeMenus(); S.sel = []; markSelection(); renderOverlay(); renderProps(); }
+
+  document.addEventListener('keydown', (ev) => {
+    const ctrl = ev.ctrlKey || ev.metaKey, shift = ev.shiftKey, alt = ev.altKey;
+    const key = ev.key, low = key.length === 1 ? key.toLowerCase() : key;
+    const stop = () => ev.preventDefault();
+
+    /* --- 어디서나 --- */
+    if (ctrl && low === 's') { stop(); save(); return; }
+    if (key === 'F5') { stop(); present(!shift); return; }            // F5 처음부터 · Shift+F5 현재 슬라이드부터
+    if (key === 'F1' || (ctrl && key === '/')) { stop(); showShortcutHelp(); return; }
+    if (ctrl && low === 'p') { stop(); save().then(() => window.open(`present.html?deck=${encodeURIComponent(S.name)}&print=1`, '_blank')); return; }
+    if (ctrl && low === 'm') { stop(); addSlide('content'); return; } // Ctrl+M 새 슬라이드 (PPT)
+    if (ctrl && key === 'Enter') { stop(); addSlide('content'); return; }
+
+    /* --- 글 편집 중 --- */
+    if (S.editing) {
+      if (key === 'Escape') { stop(); endEdit(); return; }
+      if (key === 'F2') { stop(); endEdit(); return; }
+      if (key === 'Tab') { stop(); exec(shift ? 'outdent' : 'indent'); return; }
+      if (ctrl && (key === ']' || key === '}' || (shift && key === '>'))) { stop(); fontSizeStep(4); return; }
+      if (ctrl && (key === '[' || key === '{' || (shift && key === '<'))) { stop(); fontSizeStep(-4); return; }
+      if (ctrl && !shift && low === 'e') { stop(); setAlign('center'); return; }
+      if (ctrl && !shift && low === 'l') { stop(); setAlign('left'); return; }
+      if (ctrl && !shift && low === 'r') { stop(); setAlign('right'); return; }
+      if (ctrl && !shift && low === 'j') { stop(); setAlign('justify'); return; }
+      if (ctrl && low === 'k') { stop(); const u = prompt('링크 주소'); if (u) exec('createLink', u); return; }
+      if (ctrl && key === '=' && !shift) { stop(); exec('subscript'); return; }
+      if (ctrl && (key === '+' || (shift && key === '='))) { stop(); exec('superscript'); return; }
+      if (ctrl && shift && low === 'c') { stop(); copyStyle(); return; }
+      if (ctrl && key === ' ') { stop(); exec('removeFormat'); return; }      // Ctrl+Space 서식 지우기 (PPT)
+      if (ctrl && shift && low === 'l') { stop(); exec('insertUnorderedList'); return; }
+      if (ctrl && shift && low === 'h') { stop(); exec('hiliteColor', '#fde68a'); return; }
+      return; // 나머지(Ctrl+B/I/U, Ctrl+Z 등)는 브라우저 기본 동작
+    }
+    if (isTyping()) { if (key === 'Escape') document.activeElement.blur(); return; }
+
+    /* --- 편집 (슬라이드/요소) --- */
+    if (ctrl && low === 'z') { stop(); shift ? redo() : undo(); return; }
+    if (ctrl && low === 'y') { stop(); redo(); return; }
+    if (ctrl && shift && low === 'd') { stop(); duplicateSlide(); return; }
+    if (ctrl && low === 'd') { stop(); duplicateSelected(); return; }
+    if (ctrl && shift && low === 'c') { stop(); copyStyle(); return; }
+    if (ctrl && shift && low === 'v') { stop(); pasteStyle(); return; }
+    if (ctrl && low === 'c') { copySelected(); return; }
+    if (ctrl && low === 'x') { copySelected(); deleteSelected(); return; }
+    if (ctrl && low === 'v') { return; /* paste 이벤트에서 처리 */ }
+    if (ctrl && low === 'a') { stop(); selectAll(); return; }
+    if (ctrl && low === 'g') { stop(); toast('그룹은 지원하지 않습니다. Shift+클릭으로 여러 개를 함께 선택하세요'); return; }
+    if (ctrl && (key === ']' || key === '}')) { stop(); if (shift) zOrder('front'); else if (S.sel.length && selEls().every(e => e.type === 'text')) fontSizeStep(4); else zOrder('up'); return; }
+    if (ctrl && (key === '[' || key === '{')) { stop(); if (shift) zOrder('back'); else if (S.sel.length && selEls().every(e => e.type === 'text')) fontSizeStep(-4); else zOrder('down'); return; }
+    if (ctrl && shift && (key === '>' || key === '.')) { stop(); fontSizeStep(4); return; }
+    if (ctrl && shift && (key === '<' || key === ',')) { stop(); fontSizeStep(-4); return; }
+    if (ctrl && !shift && low === 'e') { stop(); setAlign('center'); return; }
+    if (ctrl && !shift && low === 'l') { stop(); setAlign('left'); return; }
+    if (ctrl && !shift && low === 'r') { stop(); setAlign('right'); return; }
+    if (ctrl && !shift && low === 'j') { stop(); setAlign('justify'); return; }
+    if (ctrl && low === 'b') { stop(); for (const e of selEls().filter(x => x.type === 'text')) { e.style = e.style || {}; e.style.bold = !resolveTextStyle(e, theme()).bold; } commit(); renderStage(); renderProps(); return; }
+    if (ctrl && low === 'i') { stop(); for (const e of selEls().filter(x => x.type === 'text')) { e.style = e.style || {}; e.style.italic = !resolveTextStyle(e, theme()).italic; } commit(); renderStage(); renderProps(); return; }
+    if (ctrl && shift && (key === 'PageUp' || key === 'ArrowUp')) { stop(); moveSlide(-1); return; }
+    if (ctrl && shift && (key === 'PageDown' || key === 'ArrowDown')) { stop(); moveSlide(1); return; }
+    if (ctrl && key === 'Home') { stop(); gotoSlide(0); return; }
+    if (ctrl && key === 'End') { stop(); gotoSlide(S.deck.slides.length - 1); return; }
+    if (ctrl && key === 'Delete') { stop(); if (confirm('이 슬라이드를 삭제할까요?')) deleteSlide(); return; }
+    if (key === 'Delete' || key === 'Backspace') { if (S.sel.length) { stop(); deleteSelected(); } return; }
+    if (key === 'Escape') { clearSelection(); return; }
+    if (key === 'Tab') { stop(); cycleSelection(shift ? -1 : 1); return; }
+    if ((key === 'Enter' || key === 'F2') && S.sel.length === 1) { const e = elById(S.sel[0]); if (e && e.type === 'text') { stop(); startEdit(e.id, null, key === 'F2'); } return; }
+    if (key === 'PageDown') { stop(); gotoSlide(S.cur + 1); return; }
+    if (key === 'PageUp') { stop(); gotoSlide(S.cur - 1); return; }
+    if (key === 'Home' && !S.sel.length) { stop(); gotoSlide(0); return; }
+    if (key === 'End' && !S.sel.length) { stop(); gotoSlide(S.deck.slides.length - 1); return; }
+    if (key.startsWith('Arrow')) {
+      if (!S.sel.length) { if (key === 'ArrowDown' || key === 'ArrowRight') gotoSlide(S.cur + 1); if (key === 'ArrowUp' || key === 'ArrowLeft') gotoSlide(S.cur - 1); return; }
+      stop(); const d = ctrl ? 1 : shift ? 50 : 10;   // 화살표 10px · Ctrl 1px(미세) · Shift 50px
+      nudge(key === 'ArrowLeft' ? -d : key === 'ArrowRight' ? d : 0, key === 'ArrowUp' ? -d : key === 'ArrowDown' ? d : 0);
     }
   });
+
+  /* ---------- 단축키 도움말 (F1) ---------- */
+  function showShortcutHelp() {
+    if (document.getElementById('kbHelp')) return;
+    const rows = (list) => list.map(r => `<div><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+    const k = (s) => s.split(' ').map(x => `<kbd>${x}</kbd>`).join(' ');
+    const bg = document.createElement('div'); bg.className = 'modal-bg'; bg.id = 'kbHelp';
+    bg.innerHTML = `<div class="modal kb-help"><h3>편집 단축키 <span class="muted" style="font-weight:400;font-size:13px">PowerPoint 와 같은 배치 · 전체 설명서는 <a href="shortcuts.html" target="_blank">shortcuts.html</a></span></h3>
+      <div class="kb-cols">
+        <div><h4>파일 · 발표</h4>${rows([['저장', k('Ctrl+S')], ['발표 (처음부터)', k('F5')], ['발표 (현재 슬라이드부터)', k('Shift+F5')], ['인쇄 / PDF 보기', k('Ctrl+P')], ['이 도움말', k('F1') + ' ' + k('Ctrl+/')]])}
+        <h4>슬라이드</h4>${rows([['새 슬라이드', k('Ctrl+M') + ' ' + k('Ctrl+Enter')], ['슬라이드 복제', k('Ctrl+Shift+D')], ['슬라이드 삭제', k('Ctrl+Delete')], ['이전 / 다음 슬라이드', k('PgUp') + ' / ' + k('PgDn')], ['처음 / 끝 슬라이드', k('Ctrl+Home') + ' / ' + k('Ctrl+End')], ['슬라이드 순서 위 / 아래', k('Ctrl+Shift+↑') + ' / ' + k('Ctrl+Shift+↓')]])}
+        <h4>선택 · 이동</h4>${rows([['다음 / 이전 요소 선택', k('Tab') + ' / ' + k('Shift+Tab')], ['모두 선택', k('Ctrl+A')], ['여러 개 선택', k('Shift') + '+클릭 · 드래그'], ['선택 해제', k('Esc')], ['이동 10px / 1px / 50px', k('←↑↓→') + ' / ' + k('Ctrl+') + ' / ' + k('Shift+')], ['비율 유지 크기 조절', k('Shift') + '+모서리 드래그 (이미지는 기본)'], ['스냅 끄고 드래그', k('Alt') + '+드래그']])}</div>
+        <div><h4>요소</h4>${rows([['복제', k('Ctrl+D')], ['복사 / 잘라내기 / 붙여넣기', k('Ctrl+C') + ' ' + k('Ctrl+X') + ' ' + k('Ctrl+V')], ['서식 복사 / 붙여넣기', k('Ctrl+Shift+C') + ' / ' + k('Ctrl+Shift+V')], ['삭제', k('Delete')], ['앞으로 / 뒤로', k('Ctrl+]') + ' / ' + k('Ctrl+[')], ['맨 앞 / 맨 뒤', k('Ctrl+Shift+]') + ' / ' + k('Ctrl+Shift+[')], ['실행 취소 / 다시 실행', k('Ctrl+Z') + ' / ' + k('Ctrl+Y')]])}
+        <h4>글 편집</h4>${rows([['편집 시작 / 끝', k('Enter') + ' ' + k('F2') + ' 더블클릭 / ' + k('Esc')], ['굵게 / 기울임 / 밑줄', k('Ctrl+B') + ' ' + k('Ctrl+I') + ' ' + k('Ctrl+U')], ['왼쪽 / 가운데 / 오른쪽 정렬', k('Ctrl+L') + ' ' + k('Ctrl+E') + ' ' + k('Ctrl+R')], ['글자 크게 / 작게', k('Ctrl+]') + ' / ' + k('Ctrl+[') + ' (' + k('Ctrl+Shift+>') + ' / ' + k('Ctrl+Shift+<') + ')'], ['들여쓰기 / 내어쓰기', k('Tab') + ' / ' + k('Shift+Tab')], ['글머리 기호', k('Ctrl+Shift+L')], ['형광펜', k('Ctrl+Shift+H')], ['링크', k('Ctrl+K')], ['서식 지우기', k('Ctrl+Space')], ['아래 첨자 / 위 첨자', k('Ctrl+=') + ' / ' + k('Ctrl+Shift+=')]])}</div>
+      </div>
+      <div class="actions"><span class="muted" style="font-size:12px;flex:1">발표 화면 단축키는 발표 중 <kbd>?</kbd> 또는 <kbd>F1</kbd></span><button class="btn primary" id="kbClose">닫기</button></div></div>`;
+    document.body.appendChild(bg);
+    const close = () => bg.remove();
+    bg.onclick = (ev) => { if (ev.target === bg) close(); };
+    bg.querySelector('#kbClose').onclick = close;
+    const onKey = (ev) => { if (ev.key === 'Escape' || ev.key === 'F1') { ev.preventDefault(); ev.stopPropagation(); close(); document.removeEventListener('keydown', onKey, true); } };
+    document.addEventListener('keydown', onKey, true);
+  }
+  $('btnHelp').onclick = showShortcutHelp;
   window.addEventListener('resize', layoutStage);
   new ResizeObserver(layoutStage).observe(stage);
 
