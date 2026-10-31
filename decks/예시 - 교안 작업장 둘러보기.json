@@ -1,0 +1,778 @@
+{
+ "title": "교안 작업장 둘러보기",
+ "theme": "academic",
+ "transition": "fade",
+ "created": "2026-10-31T00:00:00.000Z",
+ "slides": [
+  {
+   "id": "zt13566fa",
+   "bg": null,
+   "transition": "",
+   "notes": "표지입니다. 발표자 보기(S)에서는 이 노트가 보입니다.\n타이머는 첫 클릭에 자동으로 시작됩니다.",
+   "elements": [
+    {
+     "id": "cc7vy2d6a",
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 330,
+     "w": 1680,
+     "h": 220,
+     "html": "교안 작업장 둘러보기",
+     "style": {
+      "align": "center",
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "9j08rphna",
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 570,
+     "w": 1680,
+     "h": 120,
+     "html": "가볍게 만들고, 리모컨으로 발표하는 강의 자료 도구",
+     "style": {
+      "align": "center"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "j8s9udh85",
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 960,
+     "w": 1680,
+     "h": 60,
+     "html": "2026년 2학기 · 예시 교안",
+     "style": {
+      "align": "center"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "kornived8",
+   "bg": null,
+   "transition": "",
+   "notes": "항목이 하나씩 나타납니다. 리모컨 ▶ 를 누르면 다음 항목.",
+   "elements": [
+    {
+     "id": "sqdwrd4n0",
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 90,
+     "w": 1680,
+     "h": 130,
+     "html": "이 도구로 할 수 있는 것",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "16yy0r4w6",
+     "type": "text",
+     "role": "body",
+     "x": 120,
+     "y": 260,
+     "w": 1680,
+     "h": 700,
+     "html": "<ul><li><b>PPT처럼</b> 텍스트·이미지·도형을 자유롭게 배치</li><li>글머리 항목을 <mark>클릭할 때마다 하나씩</mark> 보여주기 (이 슬라이드가 그 예)</li><li>프레젠터 리모컨 (PageUp / PageDown / F5 / B) 그대로 동작</li><li>발표자 보기: 노트, 타이머, 다음 슬라이드 미리보기</li><li>펜(D), 레이저(L), 검은 화면(B), 슬라이드 한눈에(O)</li><li>교안 1개 = JSON 파일 1개 → Git 으로 버전 관리</li></ul>",
+     "style": {},
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "listSteps": true
+    }
+   ]
+  },
+  {
+   "id": "hu5we8qgg",
+   "bg": null,
+   "transition": "slide",
+   "notes": "섹션 구분 슬라이드",
+   "elements": [
+    {
+     "id": "c1n038mbl",
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 360,
+     "w": 900,
+     "h": 60,
+     "html": "PART 1",
+     "style": {
+      "fontSize": 30,
+      "color": "$accent",
+      "bold": true
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "3tmnzkbwl",
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 430,
+     "w": 1680,
+     "h": 240,
+     "html": "편집기 사용법",
+     "style": {
+      "fontSize": 96,
+      "valign": "top"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "3hygy4acq",
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 690,
+     "w": 220,
+     "h": 12,
+     "fill": "$accent",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 6,
+     "shadow": false,
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "4l9d4efsg",
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 730,
+     "w": 1680,
+     "h": 100,
+     "html": "더블클릭으로 글 편집 · 드래그로 이동 · 모서리로 크기 조절",
+     "style": {},
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "w887ew6n7",
+   "bg": null,
+   "transition": "",
+   "notes": "오른쪽 이미지는 assets 폴더의 SVG 파일입니다. 더블클릭하면 다른 이미지로 교체됩니다.",
+   "elements": [
+    {
+     "id": "b8ndjollc",
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 90,
+     "w": 1680,
+     "h": 130,
+     "html": "편집기 핵심 조작",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "pey5j8w9i",
+     "type": "text",
+     "role": "body",
+     "x": 120,
+     "y": 260,
+     "w": 820,
+     "h": 700,
+     "html": "<ul><li>요소 <b>더블클릭</b> → 글 편집 (툴바: 굵게, 형광펜, 목록, 글자 크기)</li><li>이미지는 <b>Ctrl+V 붙여넣기</b> 또는 파일을 끌어다 놓기</li><li>오른쪽 패널에서 색·여백·그림자·나타내기 단계 설정</li><li><kbd>Ctrl+S</kbd> 저장 · <kbd>Ctrl+Z</kbd> 되돌리기 · <kbd>Ctrl+D</kbd> 복제</li><li>슬라이드 썸네일을 드래그하면 순서가 바뀝니다</li></ul>",
+     "style": {
+      "fontSize": 32
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "nbgxxk98t",
+     "type": "image",
+     "x": 1000,
+     "y": 260,
+     "w": 800,
+     "h": 660,
+     "src": "assets/sample-diagram.svg",
+     "fit": "contain",
+     "radius": 24,
+     "shadow": true,
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "jlxbbf4ev",
+   "bg": null,
+   "transition": "",
+   "notes": "비교 레이아웃 예시",
+   "elements": [
+    {
+     "id": "8hzg8vjxg",
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 90,
+     "w": 1680,
+     "h": 130,
+     "html": "PPT 와 비교",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "p36knz1xh",
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 260,
+     "w": 810,
+     "h": 100,
+     "fill": "$accent",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "e1s266sic",
+     "type": "text",
+     "role": "text",
+     "x": 120,
+     "y": 260,
+     "w": 810,
+     "h": 100,
+     "html": "교안 작업장",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 40
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "sxfraolik",
+     "type": "shape",
+     "shape": "rect",
+     "x": 990,
+     "y": 260,
+     "w": 810,
+     "h": 100,
+     "fill": "$accent2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "w9ver7rl0",
+     "type": "text",
+     "role": "text",
+     "x": 990,
+     "y": 260,
+     "w": 810,
+     "h": 100,
+     "html": "PowerPoint",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 40
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "po3vx7e66",
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 380,
+     "w": 810,
+     "h": 560,
+     "fill": "$surface",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "m2oknrqsd",
+     "type": "text",
+     "role": "body",
+     "x": 150,
+     "y": 410,
+     "w": 750,
+     "h": 500,
+     "html": "<ul><li>설치 없음, 브라우저에서 실행</li><li>파일 1개 = 텍스트(JSON) → Git 으로 변경 이력</li><li>테마 한 번에 교체</li><li>단독 HTML 로 내보내 어디서나 발표</li></ul>",
+     "style": {
+      "fontSize": 32
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "vakxmoyr9",
+     "type": "shape",
+     "shape": "rect",
+     "x": 990,
+     "y": 380,
+     "w": 810,
+     "h": 560,
+     "fill": "$surface",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "3gcmeefuv",
+     "type": "text",
+     "role": "body",
+     "x": 1020,
+     "y": 410,
+     "w": 750,
+     "h": 500,
+     "html": "<ul><li>풍부한 애니메이션·전환</li><li>복잡한 표·차트 기능</li><li>대용량 바이너리 파일</li><li>협업은 클라우드 필요</li></ul>",
+     "style": {
+      "fontSize": 32
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "9mmzhk4mk",
+   "bg": null,
+   "transition": "zoom",
+   "notes": "핵심 숫자 레이아웃",
+   "elements": [
+    {
+     "id": "fl9f7bukx",
+     "type": "text",
+     "role": "number",
+     "x": 120,
+     "y": 260,
+     "w": 1680,
+     "h": 260,
+     "html": "1 : 1",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "qyal6wu7a",
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 560,
+     "w": 1680,
+     "h": 120,
+     "html": "교안 하나 = JSON 파일 하나",
+     "style": {
+      "align": "center"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "kx18uydem",
+     "type": "text",
+     "role": "body",
+     "x": 300,
+     "y": 700,
+     "w": 1320,
+     "h": 160,
+     "html": "decks/ 폴더에 쌓이고, 이미지는 assets/ 에 저장됩니다. 모두 Git 으로 관리하세요.",
+     "style": {
+      "align": "center"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "v6141uu9m",
+   "bg": null,
+   "transition": "",
+   "notes": "단계 1 → 2 → 3 순서로 나타납니다.",
+   "elements": [
+    {
+     "id": "mtaub7qux",
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 90,
+     "w": 1680,
+     "h": 130,
+     "html": "나타내기 단계 예시",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "gj5b0y3ci",
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 300,
+     "w": 500,
+     "h": 300,
+     "fill": "$accent",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 28,
+     "shadow": false,
+     "step": 1,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "trqyuwrdv",
+     "type": "text",
+     "role": "text",
+     "x": 120,
+     "y": 300,
+     "w": 500,
+     "h": 300,
+     "html": "1단계",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 56
+     },
+     "step": 1,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "s1gx4umdo",
+     "type": "shape",
+     "shape": "rect",
+     "x": 710,
+     "y": 300,
+     "w": 500,
+     "h": 300,
+     "fill": "$accent2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 28,
+     "shadow": false,
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "6mj52enu1",
+     "type": "text",
+     "role": "text",
+     "x": 710,
+     "y": 300,
+     "w": 500,
+     "h": 300,
+     "html": "2단계",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 56
+     },
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "lykozwkcj",
+     "type": "shape",
+     "shape": "rect",
+     "x": 1300,
+     "y": 300,
+     "w": 500,
+     "h": 300,
+     "fill": "$title",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 28,
+     "shadow": false,
+     "step": 3,
+     "anim": "zoom",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "t1awoy63w",
+     "type": "text",
+     "role": "text",
+     "x": 1300,
+     "y": 300,
+     "w": 500,
+     "h": 300,
+     "html": "3단계",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 56
+     },
+     "step": 3,
+     "anim": "zoom",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "19xr9o9bf",
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 680,
+     "w": 1680,
+     "h": 80,
+     "html": "오른쪽 패널의 '나타내기 > 단계' 숫자를 지정하면 리모컨 클릭마다 순서대로 나타납니다.",
+     "style": {
+      "align": "center",
+      "fontSize": 28
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "apzzqgh46",
+   "bg": null,
+   "transition": "",
+   "notes": "코드 레이아웃",
+   "elements": [
+    {
+     "id": "5rnm0aueq",
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 90,
+     "w": 1680,
+     "h": 130,
+     "html": "코드도 깔끔하게",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "862yurufw",
+     "type": "text",
+     "role": "code",
+     "x": 120,
+     "y": 260,
+     "w": 1680,
+     "h": 560,
+     "html": "def grade(score):\n    if score &gt;= 90:\n        return 'A'\n    elif score &gt;= 80:\n        return 'B'\n    return 'C'\n\nprint(grade(87))   # B",
+     "style": {},
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "fymuu2wte",
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 860,
+     "w": 1680,
+     "h": 60,
+     "html": "역할을 '코드'로 두면 고정폭 글꼴과 어두운 상자가 자동 적용됩니다.",
+     "style": {},
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "rksxfu58j",
+   "bg": null,
+   "transition": "",
+   "notes": "인용구 레이아웃",
+   "elements": [
+    {
+     "id": "l9rti7gcc",
+     "type": "text",
+     "role": "quote",
+     "x": 200,
+     "y": 300,
+     "w": 1520,
+     "h": 360,
+     "html": "“가르친다는 것은 두 번 배우는 것이다.”",
+     "style": {
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "tra9jiwa9",
+     "type": "text",
+     "role": "caption",
+     "x": 200,
+     "y": 700,
+     "w": 1520,
+     "h": 60,
+     "html": "— 조제프 주베르",
+     "style": {
+      "align": "center",
+      "fontSize": 30
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "qrjtzzgi8",
+   "bg": null,
+   "transition": "",
+   "notes": "마지막 슬라이드. ▶ 를 한 번 더 누르면 종료 화면이 나옵니다.",
+   "elements": [
+    {
+     "id": "cwju4bf52",
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 380,
+     "w": 1680,
+     "h": 200,
+     "html": "수고하셨습니다",
+     "style": {
+      "align": "center",
+      "valign": "middle"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    },
+    {
+     "id": "xunx9wj7l",
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 600,
+     "w": 1680,
+     "h": 100,
+     "html": "Esc 로 발표를 끝내고, 편집기에서 자유롭게 고쳐 쓰세요",
+     "style": {
+      "align": "center"
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>편집 · 교안 작업장</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="app/ui.css">
+<link rel="stylesheet" href="app/slide.css">
+</head>
+<body>
+<div class="ed">
+  <div class="ed-top" id="top">
+    <a class="btn ghost" href="index.html" title="교안 목록으로">← 목록</a>
+    <div class="title"><input id="deckTitle" title="교안 제목"><span class="dirty" title="저장되지 않은 변경"></span></div>
+    <div class="grow"></div>
+    <label class="lbl muted">테마</label>
+    <select id="theme"></select>
+    <span class="sep"></span>
+    <button class="btn icon" id="btnUndo" title="실행 취소 (Ctrl+Z)">↶</button>
+    <button class="btn icon" id="btnRedo" title="다시 실행 (Ctrl+Y)">↷</button>
+    <span class="sep"></span>
+    <button class="btn" id="btnSave" title="저장 (Ctrl+S)">💾 저장</button>
+    <button class="btn" id="btnExport" title="내보내기">내보내기 ▾</button>
+    <button class="btn" id="btnPreview" title="저장하지 않고 현재 슬라이드부터 미리보기">미리보기</button>
+    <button class="btn primary" id="btnPresent" title="저장하고 발표 시작 (F5)">▶ 발표</button>
+  </div>
+  <div class="ed-tools">
+    <div class="group">
+      <button class="btn" id="btnAddSlide" title="새 슬라이드 (Ctrl+Enter)">＋ 슬라이드 ▾</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group">
+      <button class="btn" id="btnAddText">T 텍스트 ▾</button>
+      <button class="btn" id="btnAddImage">🖼 이미지 ▾</button>
+      <button class="btn" id="btnAddShape">◆ 도형 ▾</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group" id="alignGroup">
+      <button class="btn icon sm" data-align="left" title="왼쪽 정렬">⇤</button>
+      <button class="btn icon sm" data-align="hcenter" title="가로 가운데">↔</button>
+      <button class="btn icon sm" data-align="right" title="오른쪽 정렬">⇥</button>
+      <button class="btn icon sm" data-align="top" title="위 정렬">⤒</button>
+      <button class="btn icon sm" data-align="vcenter" title="세로 가운데">↕</button>
+      <button class="btn icon sm" data-align="bottom" title="아래 정렬">⤓</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group" id="zGroup">
+      <button class="btn sm" data-z="front" title="맨 앞으로 (Ctrl+Shift+])">맨 앞</button>
+      <button class="btn sm" data-z="up" title="앞으로 (Ctrl+])">앞으로</button>
+      <button class="btn sm" data-z="down" title="뒤로 (Ctrl+[)">뒤로</button>
+      <button class="btn sm" data-z="back" title="맨 뒤로 (Ctrl+Shift+[)">맨 뒤</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group">
+      <button class="btn sm" id="btnDup" title="복제 (Ctrl+D)">복제</button>
+      <button class="btn sm danger" id="btnDel" title="삭제 (Delete)">삭제</button>
+    </div>
+    <div class="grow" style="flex:1"></div>
+    <div class="group muted" style="font-size:12px" id="hint">요소를 더블클릭하면 글을 편집합니다 · 이미지는 붙여넣기/드래그 가능</div>
+  </div>
+  <div class="ed-side">
+    <div class="side-head"><span>슬라이드 <span id="slideCount"></span></span><span class="muted">드래그로 순서 변경</span></div>
+    <div class="thumbs" id="thumbs"></div>
+    <button class="btn" id="btnAddSlide2">＋ 새 슬라이드</button>
+  </div>
+  <div class="ed-main" id="main">
+    <div class="stage" id="stage"><div class="overlay" id="overlay"></div></div>
+    <div class="stage-foot">
+      <span id="footSlide"></span>
+      <span class="grow"></span>
+      <span id="footSel" class="muted"></span>
+      <span class="sep"></span>
+      <label class="muted">확대</label>
+      <select id="zoom"><option value="fit">맞춤</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select>
+    </div>
+    <div class="dropzone-hint">이미지를 여기에 놓으세요</div>
+  </div>
+  <div class="ed-props" id="props"></div>
+</div>
+<input type="file" id="fileImage" accept="image/*" multiple style="display:none">
+<input type="file" id="fileBg" accept="image/*" style="display:none">
+<input type="file" id="fileReplace" accept="image/*" style="display:none">
+<script src="app/common.js"></script>
+<script src="app/editor.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+/* 슬라이드 자체의 스타일 — 편집기 / 발표기 / 내보낸 HTML 모두 공유 */
+.slide {
+  position: relative;
+  width: 1920px; height: 1080px;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+.slide * { box-sizing: border-box; }
+
+/* 테마 장식 */
+.decor { position: absolute; pointer-events: none; z-index: 0; }
+.decor-bar-left { left: 0; top: 0; width: 22px; height: 100%; background: var(--accent); }
+.decor-bar-top { left: 0; top: 0; width: 100%; height: 16px; background: var(--accent); }
+
+/* 요소 공통 */
+.el { position: absolute; z-index: 1; }
+.el-text { display: flex; flex-direction: column; overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
+.el-text-inner { width: 100%; outline: none; min-height: 1em; white-space: pre-wrap; }
+.el-text-inner.pre { white-space: pre-wrap; tab-size: 4; }
+.el-text-inner p { margin: 0; }
+.el-text-inner ul, .el-text-inner ol { margin: 0; padding-left: 1.2em; }
+.el-text-inner li { margin: 0.12em 0; padding-left: 0.15em; }
+.el-text-inner ul > li::marker { color: var(--accent); }
+.el-text-inner ul ul, .el-text-inner ol ol, .el-text-inner ul ol, .el-text-inner ol ul { font-size: 0.9em; margin-top: 0.1em; }
+.el-text-inner b, .el-text-inner strong { font-weight: 800; }
+.el-text-inner mark { background: color-mix(in srgb, var(--accent2) 45%, transparent); color: inherit; padding: 0 .1em; border-radius: .15em; }
+.el-text-inner a { color: var(--accent); }
+.el-text-inner code { font-family: 'Cascadia Code', 'D2Coding', Consolas, monospace; background: rgba(127,127,127,.18); padding: 0 .25em; border-radius: .25em; font-size: .92em; }
+.el-text-inner .placeholder { opacity: .4; pointer-events: none; }
+
+.el-image { overflow: hidden; }
+.el-image img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.el-image.img-empty { border: 4px dashed rgba(127,127,127,.5); background: rgba(127,127,127,.08); display: flex; align-items: center; justify-content: center; color: var(--muted); font-family: inherit; }
+.img-hint { text-align: center; font-size: 34px; line-height: 1.5; }
+.img-hint small { font-size: 22px; }
+
+.el-shape svg { width: 100%; height: 100%; }
+
+/* 발표 단계(step) */
+.step-hidden { visibility: hidden; }
+li.step-hidden { visibility: hidden; }
+.anim { animation-duration: .5s; animation-fill-mode: both; animation-timing-function: cubic-bezier(.2,.7,.2,1); }
+.anim-fade { animation-name: a-fade; }
+.anim-up { animation-name: a-up; }
+.anim-left { animation-name: a-left; }
+.anim-zoom { animation-name: a-zoom; }
+@keyframes a-fade { from { opacity: 0; } to { opacity: var(--op, 1); } }
+@keyframes a-up { from { opacity: 0; translate: 0 40px; } to { opacity: var(--op, 1); translate: 0 0; } }
+@keyframes a-left { from { opacity: 0; translate: -60px 0; } to { opacity: var(--op, 1); translate: 0 0; } }
+@keyframes a-zoom { from { opacity: 0; scale: .8; } to { opacity: var(--op, 1); scale: 1; } }
