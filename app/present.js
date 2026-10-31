@@ -22,6 +22,7 @@
 
   if (qs('print')) return renderPrint();
   if (role === 'notes') return notesView();
+  window.GYOAN_LIVE = true; // 동영상·웹 요소를 실제로 재생
 
   /* ======================= 발표 화면 ======================= */
   document.body.innerHTML = `
@@ -73,7 +74,12 @@
   const $ = (id) => document.getElementById(id);
   const pstage = $('pstage'), pbar = $('pbar'), pnum = $('pnum'), pblank = $('pblank'), pdraw = $('pdraw'), plaser = $('plaser'), phud = $('phud'), pgoto = $('pgoto');
 
-  const st = { idx: clamp(parseInt(qs('start') || '0', 10) || 0, 0, N - 1), step: 0, blank: '', pen: false, laser: false, goto: '', timerStart: null, showTimer: false, ended: false };
+  const visible = (i) => !deck.slides[i].hidden;
+  /* 숨긴 슬라이드는 건너뜀 (번호로 직접 이동하면 볼 수 있음) */
+  function nextVisible(i, d) { let j = i + d; while (j >= 0 && j < N && !visible(j)) j += d; return j; }
+  let startIdx = clamp(parseInt(qs('start') || '0', 10) || 0, 0, N - 1);
+  if (startIdx === 0 && !visible(0)) { const j = nextVisible(0, 1); if (j < N) startIdx = j; }
+  const st = { idx: startIdx, step: 0, blank: '', pen: false, laser: false, goto: '', timerStart: null, showTimer: false, ended: false };
   const strokes = {}; // idx -> [[{x,y},...], ...] (슬라이드 기준 0~1 좌표)
   let curLayer = null, curNodes = null, hudTimer = null, gotoTimer = null, idleTimer = null, hideMenuTimer = null;
 
@@ -87,19 +93,58 @@
     return layer;
   }
   function show(i, step, dir) {
-    const old = curLayer;
+    const old = curLayer, fromIdx = st.idx;
     const layer = makeLayer(i, step);
     const tr = old ? transitionOf(i) : 'none';
-    pstage.className = 'pstage' + (tr !== 'none' ? ' t-' + tr : '') + (dir < 0 ? ' back' : '');
-    if (old) { old.classList.add('out'); old.classList.remove('in'); }
-    layer.classList.add('in');
-    pstage.appendChild(layer); curLayer = layer;
-    fitSlide(layer, layer.firstChild);
+    if (tr === 'morph') {
+      pstage.className = 'pstage t-morph';
+      layer.classList.add('in'); pstage.appendChild(layer); curLayer = layer;
+      fitSlide(layer, layer.firstChild);
+      morph(old, layer, fromIdx, i);
+    } else {
+      pstage.className = 'pstage' + (tr !== 'none' ? ' t-' + tr : '') + (dir < 0 ? ' back' : '');
+      if (old) { old.classList.add('out'); old.classList.remove('in'); }
+      layer.classList.add('in');
+      pstage.appendChild(layer); curLayer = layer;
+      fitSlide(layer, layer.firstChild);
+      if (old) setTimeout(() => old.remove(), 700);
+    }
     curNodes = Array.from(layer.querySelectorAll('.slide > .el')).map(n => ({ n, e: slideOf(i).elements.find(e => e.id === n.dataset.id) }));
-    if (old) setTimeout(() => old.remove(), 600);
     st.idx = i; st.step = step;
     updateHud(); redraw(); broadcast();
     preloadAround(i);
+  }
+  /* 모핑: 앞뒤 슬라이드에서 같은 요소(복제로 이어진 요소)는 위치·크기·회전이 부드럽게 바뀜 */
+  function morph(old, layer, fromIdx, toIdx) {
+    const keyOf = (e) => e.mk || e.id;
+    const from = slideOf(fromIdx), to = slideOf(toIdx);
+    const oldByKey = new Map(); for (const e of from.elements) { const k = keyOf(e); if (!oldByKey.has(k)) oldByKey.set(k, e); }
+    const slideEl = layer.firstChild, used = new Set();
+    const ease = 'cubic-bezier(.45,.05,.25,1)';
+    for (const n of slideEl.querySelectorAll(':scope > .el')) {
+      const e = to.elements.find(x => x.id === n.dataset.id); if (!e) continue;
+      const o = oldByKey.get(keyOf(e));
+      const op1 = e.opacity == null ? 1 : e.opacity;
+      if (!o || used.has(o.id) || n.classList.contains('step-hidden')) { n.animate([{ opacity: 0 }, { opacity: op1 }], { duration: 450, delay: 350, fill: 'backwards', easing: 'ease-out' }); continue; }
+      used.add(o.id);
+      const dx = (o.x + o.w / 2) - (e.x + e.w / 2), dy = (o.y + o.h / 2) - (e.y + e.h / 2);
+      n.animate([
+        { transform: `translate(${dx}px, ${dy}px) scale(${o.w / e.w}, ${o.h / e.h}) rotate(${o.rotate || 0}deg)`, opacity: o.opacity == null ? 1 : o.opacity },
+        { transform: `translate(0px, 0px) scale(1, 1) rotate(${e.rotate || 0}deg)`, opacity: op1 },
+      ], { duration: 800, easing: ease });
+    }
+    if (!old) return;
+    // 다음 슬라이드에 없는 요소는 그 자리에서 서서히 사라짐
+    const first = slideEl.querySelector(':scope > .el');
+    old.querySelectorAll('.slide > .el').forEach(n => {
+      if (used.has(n.dataset.id) || n.classList.contains('step-hidden')) return;
+      const c = n.cloneNode(true); c.classList.remove(...ANIM_CLASSES); slideEl.insertBefore(c, first);
+      c.animate([{ opacity: getComputedStyle(n).opacity }, { opacity: 0 }], { duration: 350, fill: 'forwards', easing: 'ease-in' }).onfinish = () => c.remove();
+    });
+    // 배경이 다르면 새 슬라이드를 겹쳐 서서히 드러냄
+    const bgOf = (s) => JSON.stringify(slideBackground(s, deckTheme(deck)));
+    if (bgOf(from) !== bgOf(to)) { layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' }); setTimeout(() => old.remove(), 520); }
+    else old.remove();
   }
   /* 다음 두 슬라이드의 이미지를 미리 받아 두어 넘길 때 끊김이 없게 */
   const preloaded = new Set();
@@ -128,13 +173,15 @@
     if (st.ended) { return; }
     if (!st.timerStart) st.timerStart = Date.now();
     if (st.step < maxStep(slideOf(st.idx))) { st.step++; applyStep(); return; }
-    if (st.idx < N - 1) show(st.idx + 1, 0, 1);
+    const j = nextVisible(st.idx, 1);
+    if (j < N) show(j, 0, 1);
     else endShow();
   }
   function prev() {
     if (st.ended) { st.ended = false; $('pend').classList.remove('show'); return; }
     if (st.step > 0) { st.step--; applyStep(); return; }
-    if (st.idx > 0) show(st.idx - 1, maxStep(slideOf(st.idx - 1)), -1);
+    const j = nextVisible(st.idx, -1);
+    if (j >= 0) show(j, maxStep(slideOf(j)), -1);
   }
   function goto(i, step) { i = clamp(i, 0, N - 1); st.ended = false; $('pend').classList.remove('show'); show(i, step || 0, i >= st.idx ? 1 : -1); }
   function endShow() { st.ended = true; $('pend').classList.add('show'); broadcast(); }
@@ -171,7 +218,7 @@
     open() {
       const g = $('ogrid'); g.innerHTML = '';
       deck.slides.forEach((s, i) => {
-        const o = document.createElement('div'); o.className = 'o' + (i === st.idx ? ' cur' : '');
+        const o = document.createElement('div'); o.className = 'o' + (i === st.idx ? ' cur' : '') + (s.hidden ? ' hid' : '');
         const sl = renderSlide(s, deck, { mode: 'thumb' }); o.appendChild(sl);
         const n = document.createElement('div'); n.className = 'n'; n.textContent = i + 1; o.appendChild(n);
         o.onclick = () => { overview.close(); goto(i, 0); };
@@ -248,8 +295,8 @@
     switch (k) {
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': case 'N': ev.preventDefault(); next(); break;
       case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': case 'p': case 'P': ev.preventDefault(); prev(); break;
-      case 'Home': ev.preventDefault(); goto(0, 0); break;
-      case 'End': ev.preventDefault(); goto(N - 1, maxStep(slideOf(N - 1))); break;
+      case 'Home': ev.preventDefault(); { const j = visible(0) ? 0 : nextVisible(0, 1); goto(j < N ? j : 0, 0); } break;
+      case 'End': ev.preventDefault(); { const j = visible(N - 1) ? N - 1 : nextVisible(N - 1, -1); const t = j >= 0 ? j : N - 1; goto(t, maxStep(slideOf(t))); } break;
       case 'F5': case 'f': case 'F': ev.preventDefault(); toggleFullscreen(); break;
       case 'b': case 'B': case '.': ev.preventDefault(); setBlank('black'); break;
       case 'w': case 'W': case ',': ev.preventDefault(); setBlank('white'); break;
@@ -271,7 +318,22 @@
     }
   });
   // 클릭 = 다음, 우클릭 = 이전, 휠, 터치 스와이프
-  pstage.addEventListener('click', (ev) => { if (st.pen || anyOverlayOpen()) return; if (st.blank) { st.blank = ''; pblank.className = 'pblank'; return; } next(); });
+  pstage.addEventListener('click', (ev) => {
+    if (st.pen || anyOverlayOpen()) return;
+    if (st.blank) { st.blank = ''; pblank.className = 'pblank'; return; }
+    if (ev.target.closest('video, iframe')) return;                 // 동영상 조작은 넘기지 않음
+    const ln = ev.target.closest('.el[data-link]'); if (ln) { followLink(ln.dataset.link); return; }
+    next();
+  });
+  /* 요소에 건 링크: 슬라이드로 이동 / 웹 주소 열기 */
+  function followLink(l) {
+    if (l.startsWith('slide:')) { const i = deck.slides.findIndex(s => s.id === l.slice(6)); if (i >= 0) goto(i, 0); return; }
+    if (l === 'next') return next(); if (l === 'prev') return prev();
+    if (l === 'first') return goto(0, 0); if (l === 'last') return goto(N - 1, 0);
+    const u = l.replace(/^url:/, ''); if (/^https?:\/\//i.test(u)) window.open(u, '_blank', 'noopener');
+  }
+  /* 동영상(YouTube 등)을 누른 뒤에도 리모컨·키보드가 계속 발표기를 조작하도록 포커스를 되돌림 */
+  window.addEventListener('blur', () => setTimeout(() => { const a = document.activeElement; if (a && a.tagName === 'IFRAME') { a.blur(); window.focus(); } }, 0));
   pblank.addEventListener('click', () => { st.blank = ''; pblank.className = 'pblank'; });
   document.addEventListener('contextmenu', (ev) => { ev.preventDefault(); if (!st.pen && !anyOverlayOpen()) prev(); });
   let wheelLock = 0;
@@ -324,11 +386,10 @@
       const ms = maxStep(deck.slides[s.idx]);
       let nextLabel = '';
       if (s.step < ms) { const b = renderSlide(deck.slides[s.idx], deck, { mode: 'present', step: s.step + 1 }); nx.appendChild(b); fitSlide(nx, b); nextLabel = `다음 클릭: 단계 ${s.step + 1}/${ms}`; }
-      else if (s.idx < N - 1) { const b = renderSlide(deck.slides[s.idx + 1], deck, { mode: 'present', step: 0 }); nx.appendChild(b); fitSlide(nx, b); nextLabel = `다음 슬라이드 ${s.idx + 2}`; }
-      else nextLabel = '마지막 슬라이드';
+      else { let j = s.idx + 1; while (j < N && deck.slides[j].hidden) j++; if (j < N) { const b = renderSlide(deck.slides[j], deck, { mode: 'present', step: 0 }); nx.appendChild(b); fitSlide(nx, b); nextLabel = `다음 슬라이드 ${j + 1}`; } else nextLabel = '마지막 슬라이드'; }
       nx.previousElementSibling.textContent = nextLabel;
       $('notes').innerHTML = `<div class="lbl">노트</div>` + (esc(deck.slides[s.idx].notes || '').trim() || '<span class="muted">(노트 없음)</span>');
-      $('pos').textContent = `${s.idx + 1} / ${N}` + (ms ? ` · ${s.step}/${ms}` : '') + (s.ended ? ' · 종료' : '');
+      $('pos').textContent = `${s.idx + 1} / ${N}` + (ms ? ` · ${s.step}/${ms}` : '') + (deck.slides[s.idx].hidden ? ' · 숨긴 슬라이드' : '') + (s.ended ? ' · 종료' : '');
     }
     function tick() {
       const t = s.timerStart ? Math.floor((Date.now() - s.timerStart) / 1000) : 0;
@@ -360,6 +421,7 @@
     document.body.className = 'print-mode';
     document.body.innerHTML = `<div class="print-bar"><b>${esc(deck.title)}</b><span class="muted">슬라이드 ${N}장 · 인쇄 대화상자에서 "PDF로 저장"을 선택하세요 (여백 없음, 가로 방향)</span><span style="flex:1"></span><button class="btn primary" onclick="window.print()">🖨 인쇄 / PDF 저장</button><a class="btn" href="index.html">목록</a></div>`;
     for (const s of deck.slides) {
+      if (s.hidden) continue;
       const page = document.createElement('div'); page.className = 'print-page';
       page.appendChild(renderSlide(s, deck, { mode: 'present', step: Infinity }));
       document.body.appendChild(page);

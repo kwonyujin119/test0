@@ -8,38 +8,78 @@ const SLIDE_W = 1920, SLIDE_H = 1080;
 const FONT_SANS = "'Pretendard Variable', Pretendard, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
 const FONT_SERIF = "'Noto Serif KR', 'Nanum Myeongjo', '나눔명조', Batang, '바탕', serif";
 const FONT_MONO = "'Cascadia Code', 'D2Coding', Consolas, 'Courier New', monospace";
+/* gf: Google Fonts 이름 — 실제로 쓰일 때만 불러옴 (한글은 쓰인 글자 묶음만 내려받음) */
 const FONTS = [
-  { id: 'sans', name: '고딕 (기본)', css: FONT_SANS },
-  { id: 'serif', name: '명조', css: FONT_SERIF },
+  { id: 'sans', name: '프리텐다드 (기본 고딕)', css: FONT_SANS },
+  { id: 'serif', name: '노토 명조', css: FONT_SERIF, gf: 'Noto+Serif+KR:wght@400;700;900' },
+  { id: 'batang', name: '고운 바탕 (부드러운 명조)', css: "'Gowun Batang', " + FONT_SERIF, gf: 'Gowun+Batang:wght@400;700' },
+  { id: 'dodum', name: '고운 돋움 (부드러운 고딕)', css: "'Gowun Dodum', " + FONT_SANS, gf: 'Gowun+Dodum' },
+  { id: 'ibm', name: 'IBM Plex 고딕 (단정함)', css: "'IBM Plex Sans KR', " + FONT_SANS, gf: 'IBM+Plex+Sans+KR:wght@400;600;700' },
+  { id: 'blackhan', name: '검은고딕 (굵은 제목)', css: "'Black Han Sans', " + FONT_SANS, gf: 'Black+Han+Sans' },
+  { id: 'dohyeon', name: '도현 (제목)', css: "'Do Hyeon', " + FONT_SANS, gf: 'Do+Hyeon' },
+  { id: 'jua', name: '주아 (둥근 글씨)', css: "'Jua', " + FONT_SANS, gf: 'Jua' },
+  { id: 'pen', name: '나눔 손글씨 펜', css: "'Nanum Pen Script', cursive", gf: 'Nanum+Pen+Script' },
+  { id: 'gaegu', name: '개구 (손글씨)', css: "'Gaegu', cursive", gf: 'Gaegu:wght@400;700' },
   { id: 'mono', name: '고정폭 (코드)', css: FONT_MONO },
 ];
-function fontCss(id) { const f = FONTS.find(f => f.id === id); return f ? f.css : FONT_SANS; }
+const _fontsLoaded = new Set();
+function loadFont(id) {
+  const f = FONTS.find(x => x.id === id);
+  if (!f || !f.gf || _fontsLoaded.has(id) || typeof document === 'undefined') return;
+  _fontsLoaded.add(id);
+  const l = document.createElement('link'); l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=' + f.gf + '&display=swap';
+  document.head.appendChild(l);
+}
+function fontCss(id) { const f = FONTS.find(f => f.id === id); if (!f) return FONT_SANS; loadFont(id); return f.css; }
 
 /* ---------- 테마 ---------- */
 const THEMES = [
   { id: 'clean', name: '클린 화이트', bg: '#ffffff', fg: '#1f2937', title: '#111827', accent: '#2563eb', accent2: '#f59e0b', muted: '#6b7280', surface: '#f3f4f6', decor: 'bar-left' },
   { id: 'academic', name: '아카데믹 네이비', bg: '#ffffff', fg: '#1e293b', title: '#1e3a8a', accent: '#1e3a8a', accent2: '#c2410c', muted: '#64748b', surface: '#eef2ff', decor: 'bar-top' },
-  { id: 'navy', name: '다크 네이비', bg: '#0f172a', fg: '#e2e8f0', title: '#ffffff', accent: '#38bdf8', accent2: '#fbbf24', muted: '#94a3b8', surface: '#1e293b', decor: 'bar-left' },
-  { id: 'chalk', name: '칠판', bg: '#26403a', fg: '#f1f5f1', title: '#fde68a', accent: '#fde68a', accent2: '#93c5fd', muted: '#b7c4bd', surface: '#31504a', decor: 'none', bgGradient: 'radial-gradient(ellipse at center, #2d4b44 0%, #203630 100%)' },
+  { id: 'slate', name: '슬레이트 비즈니스', bg: '#f8fafc', fg: '#334155', title: '#0f172a', accent: '#0f766e', accent2: '#6366f1', muted: '#64748b', surface: '#e2e8f0', decor: 'bar-top', titleFont: 'ibm', bodyFont: 'ibm' },
+  { id: 'paper', name: '종이 노트', bg: '#fbfaf6', fg: '#33302a', title: '#1d1b17', accent: '#b45309', accent2: '#2563eb', muted: '#8a8377', surface: '#f1ede2', decor: 'frame', titleFont: 'serif' },
+  { id: 'coral', name: '코랄', bg: '#fff7f5', fg: '#3b2723', title: '#2a1714', accent: '#e8505b', accent2: '#0d9488', muted: '#94736c', surface: '#ffe4df', decor: 'band-bottom' },
   { id: 'warm', name: '웜 베이지', bg: '#faf5ea', fg: '#3f3a30', title: '#2b2620', accent: '#c2410c', accent2: '#0f766e', muted: '#857c6c', surface: '#f1e8d6', decor: 'bar-left' },
   { id: 'forest', name: '포레스트', bg: '#f0f7f2', fg: '#1f3326', title: '#14532d', accent: '#15803d', accent2: '#ca8a04', muted: '#5b7262', surface: '#dcebe0', decor: 'bar-top' },
-  { id: 'plum', name: '플럼 다크', bg: '#1c1023', fg: '#f3e8ff', title: '#ffffff', accent: '#e879f9', accent2: '#fbbf24', muted: '#c4b5d8', surface: '#2e1b3a', decor: 'none', bgGradient: 'linear-gradient(135deg, #1c1023 0%, #2a1440 100%)' },
+  { id: 'ocean', name: '오션 블루', bg: '#f0f9ff', fg: '#1e3a5f', title: '#0c2a4d', accent: '#0369a1', accent2: '#f97316', muted: '#5b7a99', surface: '#dbeafe', decor: 'corner', bgGradient: 'linear-gradient(160deg, #f0f9ff 0%, #dbeafe 100%)' },
   { id: 'mint', name: '민트 그라데이션', bg: '#ecfeff', fg: '#134e4a', title: '#0f3d3a', accent: '#0d9488', accent2: '#f97316', muted: '#4b7f7a', surface: '#ccfbf1', decor: 'none', bgGradient: 'linear-gradient(160deg, #ecfeff 0%, #d1fae5 100%)' },
+  { id: 'navy', name: '다크 네이비', bg: '#0f172a', fg: '#e2e8f0', title: '#ffffff', accent: '#38bdf8', accent2: '#fbbf24', muted: '#94a3b8', surface: '#1e293b', decor: 'bar-left' },
+  { id: 'mono', name: '모노 블랙', bg: '#0b0b0c', fg: '#e7e7e7', title: '#ffffff', accent: '#ffffff', accent2: '#f43f5e', muted: '#9a9a9a', surface: '#1c1c1f', decor: 'none' },
+  { id: 'bold', name: '볼드 옐로', bg: '#111827', fg: '#e5e7eb', title: '#facc15', accent: '#facc15', accent2: '#38bdf8', muted: '#9ca3af', surface: '#1f2937', decor: 'corner', titleFont: 'blackhan' },
+  { id: 'blueprint', name: '블루프린트', bg: '#0b3a6e', fg: '#e0f2fe', title: '#ffffff', accent: '#7dd3fc', accent2: '#fde047', muted: '#a5c8e6', surface: '#124a85', decor: 'grid' },
+  { id: 'chalk', name: '칠판', bg: '#26403a', fg: '#f1f5f1', title: '#fde68a', accent: '#fde68a', accent2: '#93c5fd', muted: '#b7c4bd', surface: '#31504a', decor: 'none', bgGradient: 'radial-gradient(ellipse at center, #2d4b44 0%, #203630 100%)' },
+  { id: 'plum', name: '플럼 다크', bg: '#1c1023', fg: '#f3e8ff', title: '#ffffff', accent: '#e879f9', accent2: '#fbbf24', muted: '#c4b5d8', surface: '#2e1b3a', decor: 'none', bgGradient: 'linear-gradient(135deg, #1c1023 0%, #2a1440 100%)' },
+  { id: 'sunset', name: '선셋', bg: '#1f1235', fg: '#fde7f3', title: '#ffffff', accent: '#fb7185', accent2: '#fbbf24', muted: '#d8b4c8', surface: '#2f1d4a', decor: 'none', bgGradient: 'linear-gradient(135deg, #1f1235 0%, #4a1942 60%, #7c2d4a 100%)' },
 ];
+const THEME_COLOR_KEYS = [['accent', '강조'], ['accent2', '강조 2'], ['title', '제목'], ['fg', '본문'], ['muted', '흐린 글자'], ['surface', '면(카드)'], ['bg', '배경']];
 function getTheme(id) { return THEMES.find(t => t.id === id) || THEMES[0]; }
+/* 교안의 테마 + 직접 지정한 색·글꼴·장식 (deck.colors / titleFont / bodyFont / decor) */
+function deckTheme(deck) {
+  const t = Object.assign({}, getTheme(deck && deck.theme));
+  const c = (deck && deck.colors) || {};
+  for (const [k] of THEME_COLOR_KEYS) if (c[k]) t[k] = c[k];
+  if (c.bg) t.bgGradient = '';
+  if (deck && deck.titleFont) t.titleFont = deck.titleFont;
+  if (deck && deck.bodyFont) t.bodyFont = deck.bodyFont;
+  if (deck && deck.decor) t.decor = deck.decor;
+  t.titleFont = t.titleFont || 'sans'; t.bodyFont = t.bodyFont || 'sans';
+  return t;
+}
 
 /* 역할(role)별 텍스트 기본 스타일 — 테마를 바꾸면 함께 바뀜 */
 function textDefaults(role, theme) {
+  const tf = theme.titleFont || 'sans', bf = theme.bodyFont || 'sans';
   switch (role) {
-    case 'title': return { fontSize: 84, color: theme.title, bold: true, lineHeight: 1.2, font: 'sans' };
-    case 'subtitle': return { fontSize: 38, color: theme.muted, lineHeight: 1.4, font: 'sans' };
-    case 'heading': return { fontSize: 58, color: theme.title, bold: true, lineHeight: 1.25, font: 'sans' };
-    case 'body': return { fontSize: 36, color: theme.fg, lineHeight: 1.55, font: 'sans' };
-    case 'caption': return { fontSize: 24, color: theme.muted, lineHeight: 1.4, font: 'sans' };
-    case 'quote': return { fontSize: 52, color: theme.title, lineHeight: 1.4, font: 'serif', italic: true, align: 'center' };
+    case 'title': return { fontSize: 84, color: theme.title, bold: true, lineHeight: 1.2, font: tf };
+    case 'subtitle': return { fontSize: 38, color: theme.muted, lineHeight: 1.4, font: bf };
+    case 'heading': return { fontSize: 58, color: theme.title, bold: true, lineHeight: 1.25, font: tf };
+    case 'body': return { fontSize: 36, color: theme.fg, lineHeight: 1.55, font: bf };
+    case 'caption': return { fontSize: 24, color: theme.muted, lineHeight: 1.4, font: bf };
+    case 'quote': return { fontSize: 52, color: theme.title, lineHeight: 1.4, font: tf === 'sans' ? 'serif' : tf, italic: tf === 'sans', align: 'center' };
     case 'code': return { fontSize: 28, color: '#e5e7eb', lineHeight: 1.5, font: 'mono', bg: '#1e1e2e', padding: 36, radius: 18 };
-    case 'number': return { fontSize: 160, color: theme.accent, bold: true, lineHeight: 1.1, align: 'center', font: 'sans' };
-    default: return { fontSize: 36, color: theme.fg, lineHeight: 1.5, font: 'sans' };
+    case 'number': return { fontSize: 160, color: theme.accent, bold: true, lineHeight: 1.1, align: 'center', font: tf };
+    default: return { fontSize: 36, color: theme.fg, lineHeight: 1.5, font: bf };
   }
 }
 const ROLE_NAMES = { title: '제목', subtitle: '부제목', heading: '소제목', body: '본문', caption: '캡션', quote: '인용', code: '코드', number: '큰 숫자', text: '일반' };
@@ -58,37 +98,68 @@ function newDeck(title) {
   return d;
 }
 function newSlide(layout, fill) {
-  return { id: uid(), bg: null, transition: '', notes: '', elements: layoutElements(layout || 'blank', fill || {}) };
+  const s = { id: uid(), bg: null, transition: '', notes: '', elements: layoutElements(layout || 'blank', fill || {}) };
+  if (layout === 'heroImage') { s.bg = { color: '#111111' }; s.decor = 'none'; s.noFooter = true; }
+  if (layout === 'agenda') s.decor = 'none';
+  return s;
 }
+const BASE = () => ({ id: uid(), step: 0, anim: 'fade', rotate: 0, opacity: 1 });
 function textEl(role, x, y, w, h, html, extra) {
-  return Object.assign({ id: uid(), type: 'text', role, x, y, w, h, html: html || '', style: {}, step: 0, anim: 'fade', rotate: 0, opacity: 1 }, extra || {});
+  return Object.assign(BASE(), { type: 'text', role, x, y, w, h, html: html || '', style: {} }, extra || {});
 }
 function imageEl(x, y, w, h, src, extra) {
-  return Object.assign({ id: uid(), type: 'image', x, y, w, h, src: src || '', fit: 'contain', radius: 0, shadow: false, step: 0, anim: 'fade', rotate: 0, opacity: 1 }, extra || {});
+  return Object.assign(BASE(), { type: 'image', x, y, w, h, src: src || '', fit: 'contain', radius: 0, shadow: false }, extra || {});
 }
 function shapeEl(shape, x, y, w, h, extra) {
-  return Object.assign({ id: uid(), type: 'shape', shape, x, y, w, h, fill: '$accent', stroke: '', strokeWidth: 0, radius: 24, shadow: false, step: 0, anim: 'fade', rotate: 0, opacity: 1 }, extra || {});
+  return Object.assign(BASE(), { type: 'shape', shape, x, y, w, h, fill: '$accent', stroke: '', strokeWidth: 0, radius: 24, shadow: false, html: '', style: {} }, extra || {});
 }
+function tableEl(x, y, w, h, rows, extra) {
+  return Object.assign(BASE(), { type: 'table', x, y, w, h, rows: rows || [['구분', '내용', '비고'], ['', '', ''], ['', '', '']], header: true, band: true, firstCol: false, lines: 'grid', headFill: '$accent', radius: 0, style: {} }, extra || {});
+}
+function chartEl(x, y, w, h, kind, data, extra) {
+  return Object.assign(BASE(), { type: 'chart', x, y, w, h, kind: kind || 'bar', data: data || '항목,값\n1분기,42\n2분기,58\n3분기,71\n4분기,64', values: true, legend: true, grid: true, unit: '', style: {} }, extra || {});
+}
+function mathEl(x, y, w, h, tex, extra) {
+  return Object.assign(BASE(), { type: 'math', x, y, w, h, tex: tex || 'Q = A \\cdot V', style: {} }, extra || {});
+}
+function embedEl(x, y, w, h, url, extra) {
+  return Object.assign(BASE(), { type: 'embed', x, y, w, h, url: url || '', radius: 16, autoplay: false }, extra || {});
+}
+const TYPE_NAMES = { text: '텍스트', image: '이미지', shape: '도형', table: '표', chart: '차트', math: '수식', embed: '동영상·웹' };
 
 const LAYOUTS = [
-  { id: 'title', name: '표지', icon: '▭' },
-  { id: 'section', name: '섹션 구분', icon: '▬' },
-  { id: 'content', name: '소제목 + 본문', icon: '≡' },
-  { id: 'twoCol', name: '2단 본문', icon: '‖' },
-  { id: 'imageRight', name: '본문 + 이미지(우)', icon: '▣' },
-  { id: 'imageLeft', name: '이미지(좌) + 본문', icon: '▣' },
-  { id: 'imageFull', name: '큰 이미지 + 캡션', icon: '▦' },
-  { id: 'compare', name: '비교 (A vs B)', icon: '⇔' },
-  { id: 'quote', name: '인용구', icon: '❝' },
-  { id: 'number', name: '핵심 숫자', icon: '#' },
-  { id: 'code', name: '코드', icon: '</>' },
-  { id: 'blank', name: '빈 슬라이드', icon: '□' },
+  { id: 'title', name: '표지' },
+  { id: 'section', name: '섹션 구분' },
+  { id: 'agenda', name: '목차' },
+  { id: 'content', name: '소제목 + 본문' },
+  { id: 'twoCol', name: '2단 본문' },
+  { id: 'threeCards', name: '3단 카드' },
+  { id: 'imageRight', name: '본문 + 이미지(우)' },
+  { id: 'imageLeft', name: '이미지(좌) + 본문' },
+  { id: 'imageFull', name: '큰 이미지 + 캡션' },
+  { id: 'heroImage', name: '전면 사진 + 제목' },
+  { id: 'twoImages', name: '이미지 2장' },
+  { id: 'imageGrid', name: '이미지 4장' },
+  { id: 'compare', name: '비교 (A vs B)' },
+  { id: 'process', name: '단계 (프로세스)' },
+  { id: 'timeline', name: '타임라인' },
+  { id: 'summary', name: '핵심 정리 3줄' },
+  { id: 'stats', name: '숫자 3개' },
+  { id: 'number', name: '핵심 숫자' },
+  { id: 'table', name: '표' },
+  { id: 'chart', name: '차트 + 설명' },
+  { id: 'quote', name: '인용구' },
+  { id: 'code', name: '코드' },
+  { id: 'closing', name: '마무리 (감사합니다)' },
+  { id: 'blank', name: '빈 슬라이드' },
 ];
 const LAYOUT_NAMES = Object.fromEntries(LAYOUTS.map(l => [l.id, l.name]));
 const M = 120; // 좌우 여백
 function layoutElements(layout, f) {
   const H = f.heading || '소제목을 입력하세요';
   const B = f.body || '<ul><li>첫 번째 내용</li><li>두 번째 내용</li><li>세 번째 내용</li></ul>';
+  const head = (y, h) => textEl('heading', M, y || 90, SLIDE_W - M * 2, h || 130, H, { style: { valign: 'middle' } });
+  const white = (extra) => Object.assign({ color: '#ffffff' }, extra || {});
   switch (layout) {
     case 'title': return [
       textEl('title', M, 330, SLIDE_W - M * 2, 220, f.title || '강의 제목', { style: { align: 'center', valign: 'middle' } }),
@@ -100,53 +171,123 @@ function layoutElements(layout, f) {
       shapeEl('rect', M, 690, 220, 12, { fill: '$accent', radius: 6 }),
       textEl('subtitle', M, 730, SLIDE_W - M * 2, 100, f.subtitle || '이 섹션에서 다룰 내용을 한 줄로'),
     ];
-    case 'content': return [
-      textEl('heading', M, 90, SLIDE_W - M * 2, 130, H, { style: { valign: 'middle' } }),
-      textEl('body', M, 260, SLIDE_W - M * 2, 700, B),
+    case 'agenda': return [
+      shapeEl('rect', 0, 0, 660, SLIDE_H, { fill: '$accent', radius: 0 }),
+      textEl('caption', M, 400, 460, 60, 'CONTENTS', { style: white({ fontSize: 30, bold: true, letterSpacing: 6 }) }),
+      textEl('title', M, 460, 460, 160, f.title || '목차', { style: white({ fontSize: 110 }) }),
+      textEl('body', 780, 200, 1020, 700, f.body || '<ol><li>강의 개요</li><li>핵심 개념</li><li>사례와 적용</li><li>정리와 질문</li></ol>', { style: { fontSize: 46, lineHeight: 2.1, valign: 'middle', bold: true } }),
     ];
+    case 'content': return [head(), textEl('body', M, 260, SLIDE_W - M * 2, 700, B)];
     case 'twoCol': return [
-      textEl('heading', M, 90, SLIDE_W - M * 2, 130, H, { style: { valign: 'middle' } }),
+      head(),
       textEl('body', M, 260, 800, 700, f.body || '<ul><li>왼쪽 내용</li><li>왼쪽 내용</li></ul>'),
       textEl('body', 1000, 260, 800, 700, f.body2 || '<ul><li>오른쪽 내용</li><li>오른쪽 내용</li></ul>'),
     ];
-    case 'imageRight': return [
-      textEl('heading', M, 90, SLIDE_W - M * 2, 130, H, { style: { valign: 'middle' } }),
-      textEl('body', M, 260, 820, 700, B),
-      imageEl(1000, 260, 800, 660, f.image || '', { radius: 24, shadow: true }),
-    ];
-    case 'imageLeft': return [
-      textEl('heading', M, 90, SLIDE_W - M * 2, 130, H, { style: { valign: 'middle' } }),
-      imageEl(M, 260, 800, 660, f.image || '', { radius: 24, shadow: true }),
-      textEl('body', 980, 260, 820, 700, B),
-    ];
+    case 'threeCards': {
+      const out = [head()]; const w = 520, gap = 60;
+      const icons = ['💡', '🔍', '🎯'], titles = ['첫 번째', '두 번째', '세 번째'];
+      for (let i = 0; i < 3; i++) {
+        const x = M + i * (w + gap);
+        out.push(shapeEl('rect', x, 270, w, 680, { fill: '$surface', radius: 32 }));
+        out.push(textEl('text', x, 320, w, 140, icons[i], { style: { fontSize: 100, align: 'center', valign: 'middle', lineHeight: 1 } }));
+        out.push(textEl('text', x + 40, 490, w - 80, 80, titles[i] + ' 핵심', { style: { fontSize: 42, bold: true, align: 'center', color: '$title', valign: 'middle' } }));
+        out.push(textEl('body', x + 50, 590, w - 100, 320, '짧은 설명을 두세 줄로 적어 주세요.', { style: { fontSize: 30, align: 'center', lineHeight: 1.6 } }));
+      }
+      return out;
+    }
+    case 'imageRight': return [head(), textEl('body', M, 260, 820, 700, B), imageEl(1000, 260, 800, 660, f.image || '', { radius: 24, shadow: true })];
+    case 'imageLeft': return [head(), imageEl(M, 260, 800, 660, f.image || '', { radius: 24, shadow: true }), textEl('body', 980, 260, 820, 700, B)];
     case 'imageFull': return [
-      textEl('heading', M, 70, SLIDE_W - M * 2, 110, H, { style: { valign: 'middle' } }),
+      head(70, 110),
       imageEl(M, 200, SLIDE_W - M * 2, 720, f.image || '', { radius: 20, shadow: true }),
       textEl('caption', M, 940, SLIDE_W - M * 2, 70, f.caption || '그림 1. 캡션을 입력하세요', { style: { align: 'center' } }),
     ];
+    case 'heroImage': return [
+      imageEl(0, 0, SLIDE_W, SLIDE_H, f.image || '', { fit: 'cover' }),
+      shapeEl('rect', 0, 380, SLIDE_W, 700, { fill: '#000000', fill2: '#000000', fill2Op: 0, gAngle: 270, radius: 0, opacity: 0.8 }),
+      textEl('title', M, 660, SLIDE_W - M * 2, 180, f.title || '사진 위의 큰 제목', { style: white({ fontSize: 96, valign: 'bottom', tshadow: true }) }),
+      textEl('subtitle', M, 850, SLIDE_W - M * 2, 90, f.subtitle || '한 줄 설명', { style: white({ tshadow: true }) }),
+    ];
+    case 'twoImages': return [
+      head(),
+      imageEl(M, 260, 810, 560, '', { radius: 20, fit: 'cover' }), imageEl(990, 260, 810, 560, '', { radius: 20, fit: 'cover' }),
+      textEl('caption', M, 850, 810, 70, '왼쪽 그림 설명', { style: { align: 'center', fontSize: 30 } }),
+      textEl('caption', 990, 850, 810, 70, '오른쪽 그림 설명', { style: { align: 'center', fontSize: 30 } }),
+    ];
+    case 'imageGrid': {
+      const out = [head(60, 110)]; const w = 820, h = 380;
+      for (let i = 0; i < 4; i++) out.push(imageEl(M + (i % 2) * (w + 40), 210 + Math.floor(i / 2) * (h + 30), w, h, '', { radius: 16, fit: 'cover' }));
+      return out;
+    }
     case 'compare': return [
-      textEl('heading', M, 90, SLIDE_W - M * 2, 130, H, { style: { valign: 'middle' } }),
-      shapeEl('rect', M, 260, 810, 100, { fill: '$accent', radius: 20 }),
-      textEl('text', M, 260, 810, 100, f.a || 'A', { style: { color: '#ffffff', bold: true, align: 'center', valign: 'middle', fontSize: 40 } }),
-      shapeEl('rect', 990, 260, 810, 100, { fill: '$accent2', radius: 20 }),
-      textEl('text', 990, 260, 810, 100, f.b || 'B', { style: { color: '#ffffff', bold: true, align: 'center', valign: 'middle', fontSize: 40 } }),
+      head(),
+      shapeEl('rect', M, 260, 810, 100, { fill: '$accent', radius: 20, html: f.a || 'A', style: { fontSize: 40 } }),
+      shapeEl('rect', 990, 260, 810, 100, { fill: '$accent2', radius: 20, html: f.b || 'B', style: { fontSize: 40 } }),
       shapeEl('rect', M, 380, 810, 560, { fill: '$surface', radius: 20 }),
       textEl('body', M + 30, 410, 750, 500, '<ul><li>장점</li><li>특징</li></ul>'),
       shapeEl('rect', 990, 380, 810, 560, { fill: '$surface', radius: 20 }),
       textEl('body', 1020, 410, 750, 500, '<ul><li>장점</li><li>특징</li></ul>'),
     ];
-    case 'quote': return [
-      textEl('quote', 200, 300, SLIDE_W - 400, 360, f.quote || '“인용문을 입력하세요.”', { style: { valign: 'middle' } }),
-      textEl('caption', 200, 700, SLIDE_W - 400, 60, f.by || '— 출처', { style: { align: 'center', fontSize: 30 } }),
-    ];
+    case 'process': {
+      const out = [head()]; const w = 430, stp = 417;
+      for (let i = 0; i < 4; i++) {
+        const x = M + i * stp;
+        out.push(shapeEl('chevron', x, 300, w, 170, { fill: i % 2 ? '$accent2' : '$accent', html: `${i + 1}단계`, style: { fontSize: 40 }, step: i + 1, anim: 'left' }));
+        out.push(textEl('body', x + 40, 510, w - 90, 400, '이 단계에서 하는 일', { style: { fontSize: 30, align: 'center' }, step: i + 1, anim: 'up' }));
+      }
+      return out;
+    }
+    case 'timeline': {
+      const out = [head(), shapeEl('line', M, 560, SLIDE_W - M * 2, 40, { fill: '$muted', strokeWidth: 6 })];
+      [0, 1, 2, 3].map(i => M + 140 + i * 466).forEach((cx, i) => {
+        out.push(shapeEl('ellipse', cx - 32, 548, 64, 64, { fill: '$accent', stroke: '$bg', strokeWidth: 8 }));
+        out.push(textEl('text', cx - 200, 420, 400, 90, String(2021 + i), { style: { fontSize: 48, bold: true, color: '$accent', align: 'center', valign: 'bottom' } }));
+        out.push(textEl('body', cx - 200, 640, 400, 260, '이 시기의 중요한 사건', { style: { fontSize: 30, align: 'center' } }));
+      });
+      return out;
+    }
+    case 'summary': {
+      const out = [head(80, 120)];
+      ['첫 번째 핵심 내용을 한 문장으로', '두 번째 핵심 내용을 한 문장으로', '세 번째 핵심 내용을 한 문장으로'].forEach((t, i) => {
+        const y = 250 + i * 240;
+        out.push(shapeEl('rect', M, y, SLIDE_W - M * 2, 200, { fill: '$surface', radius: 28 }));
+        out.push(shapeEl('ellipse', M + 40, y + 40, 120, 120, { fill: '$accent', html: String(i + 1), style: { fontSize: 56 } }));
+        out.push(textEl('body', M + 200, y + 20, SLIDE_W - M * 2 - 240, 160, t, { style: { fontSize: 40, valign: 'middle', bold: true, color: '$title' } }));
+      });
+      return out;
+    }
+    case 'stats': {
+      const out = [head()]; const w = 520, gap = 60;
+      [['87%', '만족도'], ['1,240', '참여 인원'], ['3.5×', '성과 향상']].forEach(([n, c], i) => {
+        const x = M + i * (w + gap);
+        out.push(textEl('number', x, 350, w, 220, n, { style: { fontSize: 130, valign: 'middle' } }));
+        out.push(shapeEl('rect', x + w / 2 - 50, 590, 100, 8, { fill: '$accent2', radius: 4 }));
+        out.push(textEl('text', x, 630, w, 90, c, { style: { fontSize: 40, bold: true, align: 'center', color: '$title' } }));
+        out.push(textEl('caption', x + 30, 730, w - 60, 120, '숫자에 대한 짧은 설명', { style: { align: 'center', fontSize: 28 } }));
+      });
+      return out;
+    }
     case 'number': return [
       textEl('number', M, 260, SLIDE_W - M * 2, 260, f.number || '73%', { style: { valign: 'middle' } }),
       textEl('heading', M, 560, SLIDE_W - M * 2, 120, f.heading || '핵심 수치의 의미', { style: { align: 'center' } }),
       textEl('body', 300, 700, SLIDE_W - 600, 160, f.body || '수치에 대한 설명을 입력하세요', { style: { align: 'center' } }),
     ];
-    case 'code': return [
-      textEl('heading', M, 90, SLIDE_W - M * 2, 130, H, { style: { valign: 'middle' } }),
-      textEl('code', M, 260, SLIDE_W - M * 2, 680, f.code || 'def hello(name):\n    print(f"안녕하세요, {name}")'),
+    case 'table': return [head(), tableEl(M, 260, SLIDE_W - M * 2, 620, [['구분', '항목 A', '항목 B'], ['기준 1', '', ''], ['기준 2', '', ''], ['기준 3', '', '']], { firstCol: true })];
+    case 'chart': return [
+      head(),
+      chartEl(M, 250, 1080, 720),
+      textEl('body', 1260, 280, 540, 640, '<ul><li>가장 높은 값은 3분기</li><li>전년 대비 증가</li><li>원인과 시사점</li></ul>', { style: { fontSize: 34 } }),
+    ];
+    case 'quote': return [
+      textEl('quote', 200, 300, SLIDE_W - 400, 360, f.quote || '“인용문을 입력하세요.”', { style: { valign: 'middle' } }),
+      textEl('caption', 200, 700, SLIDE_W - 400, 60, f.by || '— 출처', { style: { align: 'center', fontSize: 30 } }),
+    ];
+    case 'code': return [head(), textEl('code', M, 260, SLIDE_W - M * 2, 680, f.code || 'def hello(name):\n    print(f"안녕하세요, {name}")')];
+    case 'closing': return [
+      textEl('title', M, 340, SLIDE_W - M * 2, 200, f.title || '감사합니다', { style: { align: 'center', valign: 'middle', fontSize: 120 } }),
+      shapeEl('rect', SLIDE_W / 2 - 80, 570, 160, 10, { fill: '$accent', radius: 5 }),
+      textEl('subtitle', M, 610, SLIDE_W - M * 2, 80, 'Q & A · 질문을 환영합니다', { style: { align: 'center' } }),
+      textEl('caption', M, 720, SLIDE_W - M * 2, 60, '이름 · email@university.ac.kr', { style: { align: 'center', fontSize: 28 } }),
     ];
     default: return [];
   }
@@ -182,26 +323,31 @@ function slideBackground(slide, theme) {
 /* opts: { mode: 'edit'|'present'|'thumb', step: number } */
 function renderSlide(slide, deck, opts) {
   opts = opts || {};
-  const theme = getTheme(deck.theme);
+  const theme = deckTheme(deck);
   const mode = opts.mode || 'present';
   const step = opts.step == null ? Infinity : opts.step;
   const el = document.createElement('div');
   el.className = 'slide theme-' + theme.id + ' mode-' + mode;
   el.style.width = SLIDE_W + 'px'; el.style.height = SLIDE_H + 'px';
   Object.assign(el.style, slideBackground(slide, theme));
-  el.style.setProperty('--accent', theme.accent);
-  el.style.setProperty('--accent2', theme.accent2);
-  el.style.setProperty('--fg', theme.fg);
-  el.style.setProperty('--muted', theme.muted);
-  el.style.setProperty('--surface', theme.surface);
-  el.style.fontFamily = FONT_SANS;
+  for (const [k] of THEME_COLOR_KEYS) el.style.setProperty('--' + k, theme[k]);
+  el.style.fontFamily = fontCss(theme.bodyFont);
+  const bg = slide.bg || {};
+  if (bg.image && bg.dim) { const d = document.createElement('div'); d.className = 'bg-dim'; d.style.background = `rgba(0,0,0,${bg.dim})`; el.appendChild(d); }
   // 테마 장식 (배경 이미지가 있으면 생략)
-  const decor = (slide.bg && slide.bg.image) ? 'none' : (slide.decor || theme.decor);
+  const decor = bg.image ? 'none' : (slide.decor || theme.decor);
   if (decor && decor !== 'none') { const d = document.createElement('div'); d.className = 'decor decor-' + decor; el.appendChild(d); }
   for (const e of slide.elements) {
     const node = renderElement(e, theme, mode);
     if (mode === 'present') applyStepToNode(e, node, step);
     el.appendChild(node);
+  }
+  // 꼬리말 (슬라이드 번호 / 문구)
+  const ft = deck.footer; const idx = deck.slides ? deck.slides.indexOf(slide) : -1;
+  if (ft && (ft.num || ft.text) && idx >= 0 && !slide.noFooter && !(ft.skipFirst && idx === 0)) {
+    const f = document.createElement('div'); f.className = 'slide-footer';
+    f.innerHTML = `<span>${esc(ft.text || '')}</span><span class="ft-num">${ft.num ? (idx + 1) + (ft.total ? ' / ' + deck.slides.length : '') : ''}</span>`;
+    el.appendChild(f);
   }
   return el;
 }
@@ -214,37 +360,62 @@ function renderElement(e, theme, mode) {
   node.style.width = e.w + 'px'; node.style.height = e.h + 'px';
   if (e.rotate) node.style.transform = `rotate(${e.rotate}deg)`;
   if (e.opacity != null && e.opacity !== 1) { node.style.opacity = e.opacity; node.style.setProperty('--op', e.opacity); }
-  if (e.type === 'text') renderText(e, node, theme, mode);
-  else if (e.type === 'image') renderImage(e, node, theme, mode);
-  else if (e.type === 'shape') renderShape(e, node, theme, mode);
+  if (e.link) { node.dataset.link = e.link; node.classList.add('has-link'); }
+  if (e.hide) node.classList.add('el-hide');
+  const fn = RENDERERS[e.type];
+  if (fn) fn(e, node, theme, mode);
   return node;
 }
 
+/* 요소 종류별 글자 기본값 */
 function resolveTextStyle(e, theme) {
-  return Object.assign({}, textDefaults(e.role, theme), e.style || {});
+  let d;
+  const bf = theme.bodyFont || 'sans';
+  if (e.type === 'shape') d = { fontSize: 36, color: '#ffffff', bold: true, lineHeight: 1.3, align: 'center', valign: 'middle', font: bf };
+  else if (e.type === 'table') d = { fontSize: 30, color: theme.fg, lineHeight: 1.35, align: 'center', font: bf };
+  else if (e.type === 'chart') d = { fontSize: 26, color: theme.fg, font: bf };
+  else if (e.type === 'math') d = { fontSize: 64, color: theme.fg, align: 'center', valign: 'middle' };
+  else d = textDefaults(e.role, theme);
+  return Object.assign({}, d, e.style || {});
 }
+function setFontStyles(box, st, theme) {
+  box.style.fontSize = st.fontSize + 'px';
+  box.style.color = themeColor(st.color, theme);
+  box.style.fontFamily = fontCss(st.font);
+  box.style.fontWeight = st.bold ? '700' : '400';
+  box.style.fontStyle = st.italic ? 'italic' : 'normal';
+  box.style.textDecoration = st.underline ? 'underline' : 'none';
+  box.style.lineHeight = st.lineHeight || 1.5;
+  box.style.textAlign = st.align || 'left';
+  box.style.letterSpacing = st.letterSpacing ? st.letterSpacing + 'px' : '';
+  box.style.textShadow = st.tshadow ? '0 4px 18px rgba(0,0,0,.45)' : '';
+}
+const VALIGN = { middle: 'center', bottom: 'flex-end' };
 
 function applyTextNodeStyle(e, node, theme) {
   const st = resolveTextStyle(e, theme);
-  node.style.fontSize = st.fontSize + 'px';
-  node.style.color = themeColor(st.color, theme);
-  node.style.fontFamily = fontCss(st.font);
-  node.style.fontWeight = st.bold ? '700' : '400';
-  node.style.fontStyle = st.italic ? 'italic' : 'normal';
-  node.style.textDecoration = st.underline ? 'underline' : 'none';
-  node.style.lineHeight = st.lineHeight || 1.5;
-  node.style.textAlign = st.align || 'left';
-  node.style.letterSpacing = st.letterSpacing ? st.letterSpacing + 'px' : '';
-  node.style.justifyContent = st.valign === 'middle' ? 'center' : st.valign === 'bottom' ? 'flex-end' : 'flex-start';
+  setFontStyles(node, st, theme);
+  node.style.justifyContent = VALIGN[st.valign] || 'flex-start';
   node.style.background = st.bg ? themeColor(st.bg, theme) : '';
   node.style.padding = st.padding ? st.padding + 'px' : '';
   node.style.borderRadius = st.radius ? st.radius + 'px' : '';
-  node.style.border = st.border ? `${st.border}px solid ${themeColor(st.borderColor || '$accent', theme)}` : '';
   node.style.boxShadow = st.shadow ? '0 12px 40px rgba(0,0,0,.18)' : '';
-  node.style.borderLeft = st.accentBar ? `14px solid ${theme.accent}` : (st.border ? `${st.border}px solid ${themeColor(st.borderColor || '$accent', theme)}` : '');
+  node.style.border = st.border ? `${st.border}px solid ${themeColor(st.borderColor || '$accent', theme)}` : '';
+  if (st.accentBar) node.style.borderLeft = `14px solid ${theme.accent}`;
   if (st.accentBar && !st.padding) node.style.paddingLeft = '28px';
   const inner = node.querySelector('.el-text-inner');
-  if (inner) inner.classList.toggle('pre', st.font === 'mono' || e.role === 'code');
+  if (inner) { inner.classList.toggle('pre', st.font === 'mono' || e.role === 'code'); if (st.list) inner.dataset.list = st.list; else delete inner.dataset.list; }
+}
+/* 글자를 가진 모든 요소(텍스트·도형·표·수식)의 글자 서식 다시 적용 */
+function applyElementTextStyle(e, node, theme) {
+  if (!node) return;
+  if (e.type === 'text') return applyTextNodeStyle(e, node, theme);
+  const st = resolveTextStyle(e, theme);
+  const box = e.type === 'shape' ? node.querySelector('.shape-text') : node;
+  if (!box) return;
+  setFontStyles(box, st, theme);
+  if (e.type === 'shape' || e.type === 'math') box.style.justifyContent = VALIGN[st.valign] || (e.type === 'shape' ? 'center' : 'flex-start');
+  const inner = box.querySelector('.el-text-inner'); if (inner) { if (st.list) inner.dataset.list = st.list; else delete inner.dataset.list; }
 }
 
 function renderText(e, node, theme, mode) {
@@ -264,35 +435,43 @@ function topLevelItems(inner) {
 }
 function listStepBase(e) { return (e.step || 0) > 0 ? e.step : 1; }
 function elementMaxStep(e) {
+  let m = e.step || 0;
   if (e.type === 'text' && e.listSteps) {
     const d = document.createElement('div'); d.innerHTML = e.html || '';
     const n = topLevelItems(d).length;
-    return n ? listStepBase(e) + n - 1 : (e.step || 0);
+    if (n) m = Math.max(m, listStepBase(e) + n - 1);
   }
-  return e.step || 0;
+  return Math.max(m, e.outStep || 0, e.emStep || 0);
 }
+const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out'];
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
 function applyStepToNode(e, node, step) {
   const s = e.step || 0;
-  node.classList.remove('step-hidden', 'anim', 'anim-fade', 'anim-up', 'anim-left', 'anim-zoom');
+  node.classList.remove('step-hidden', ...ANIM_CLASSES);
+  node.style.animationDuration = e.dur ? e.dur + 's' : '';
+  node.style.animationDelay = e.delay ? e.delay + 's' : '';
   if (s > step) { node.classList.add('step-hidden'); return; }
-  if (s > 0 && s === step && e.anim && e.anim !== 'none') node.classList.add('anim', 'anim-' + e.anim);
+  if (e.outStep && step >= e.outStep) { if (step === e.outStep) node.classList.add('anim', 'anim-out'); else node.classList.add('step-hidden'); return; }
+  if (e.emStep && step === e.emStep) node.classList.add('anim', 'anim-' + (e.emAnim || 'pulse'));
+  else if (s > 0 && s === step && e.anim && e.anim !== 'none') node.classList.add('anim', 'anim-' + e.anim);
   if (e.type === 'text' && e.listSteps) {
     const inner = node.querySelector('.el-text-inner'); if (!inner) return;
     const base = listStepBase(e);
     topLevelItems(inner).forEach((li, i) => {
       const ls = base + i;
-      li.classList.remove('step-hidden', 'anim', 'anim-fade', 'anim-up', 'anim-left', 'anim-zoom');
+      li.classList.remove('step-hidden', ...ANIM_CLASSES);
       if (ls > step) li.classList.add('step-hidden');
       else if (ls === step && step > 0) li.classList.add('anim', 'anim-' + (e.anim && e.anim !== 'none' ? e.anim : 'fade'));
     });
   }
 }
 
+const IMG_MASKS = { circle: 'ellipse(50% 50% at 50% 50%)', hexagon: 'polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%)', diamond: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)', triangle: 'polygon(50% 0, 100% 100%, 0 100%)', arch: 'inset(0 round 50% 50% 0 0 / 35% 35% 0 0)', blob: 'polygon(32% 3%, 70% 0, 96% 24%, 100% 62%, 80% 93%, 44% 100%, 12% 86%, 0 52%, 8% 18%)' };
 function renderImage(e, node, theme, mode) {
   if (e.radius) node.style.borderRadius = e.radius + 'px';
   if (e.shadow) node.style.boxShadow = '0 16px 48px rgba(0,0,0,.25)';
   if (e.border) node.style.border = `${e.border}px solid ${themeColor(e.borderColor || '#ffffff', theme)}`;
+  if (e.mask && IMG_MASKS[e.mask]) { node.style.clipPath = IMG_MASKS[e.mask]; node.style.boxShadow = ''; }
   if (!e.src) {
     if (mode !== 'present') { node.classList.add('img-empty'); node.innerHTML = '<div class="img-hint">🖼 이미지<br><small>더블클릭 → 파일 선택 / 붙여넣기 / 드래그</small></div>'; }
     return;
@@ -301,44 +480,301 @@ function renderImage(e, node, theme, mode) {
   img.src = API.resolveSrc(e.src); img.draggable = false; img.alt = ''; img.decoding = 'async';
   if (API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(e.src)) img.onerror = () => { if (img.dataset.fb) return; img.dataset.fb = '1'; img.src = GH.rawUrl(e.src); };
   img.style.objectFit = e.fit || 'contain';
-  if (e.flip) img.style.transform = 'scaleX(-1)';
+  const cx = e.cropX == null ? 50 : e.cropX, cy = e.cropY == null ? 50 : e.cropY, z = e.zoom || 1;
+  img.style.objectPosition = `${cx}% ${cy}%`;
+  if (z !== 1 || e.flip) { img.style.transform = `scale(${e.flip ? -z : z}, ${z})`; img.style.transformOrigin = `${cx}% ${cy}%`; }
+  const fx = e.fx || {}; const f = [];
+  if (fx.b != null && fx.b !== 100) f.push(`brightness(${fx.b}%)`);
+  if (fx.c != null && fx.c !== 100) f.push(`contrast(${fx.c}%)`);
+  if (fx.s != null && fx.s !== 100) f.push(`saturate(${fx.s}%)`);
+  if (fx.sepia) f.push(`sepia(${fx.sepia}%)`);
+  if (fx.blur) f.push(`blur(${fx.blur}px)`);
+  if (f.length) img.style.filter = f.join(' ');
   node.appendChild(img);
 }
 
 function renderShape(e, node, theme, mode) {
   const w = e.w, h = e.h;
-  const fill = themeColor(e.fill || 'none', theme) || 'none';
-  const stroke = themeColor(e.stroke, theme);
   const sw = e.strokeWidth || 0;
-  const strokeAttr = sw > 0 && stroke ? `stroke="${stroke}" stroke-width="${sw}"` : 'stroke="none"';
+  let fill = themeColor(e.fill || 'none', theme) || 'none';
+  const stroke = themeColor(e.stroke, theme);
+  const dash = e.dash ? ` stroke-dasharray="${Math.max(2, sw || 6) * 2.5} ${Math.max(2, sw || 6) * 1.8}"` : '';
+  const strokeAttr = (sw > 0 && stroke ? `stroke="${stroke}" stroke-width="${sw}"` : 'stroke="none"') + dash;
+  let defs = '';
+  const isLine = e.shape === 'line' || e.shape === 'arrow' || e.shape === 'dline';
+  if (e.fill2 && fill !== 'none' && !isLine) {
+    const gid = 'g' + uid();
+    defs = `<defs><linearGradient id="${gid}" gradientTransform="rotate(${e.gAngle == null ? 90 : e.gAngle} .5 .5)"><stop offset="0" stop-color="${fill}"/><stop offset="1" stop-color="${themeColor(e.fill2, theme)}" stop-opacity="${e.fill2Op == null ? 1 : e.fill2Op}"/></linearGradient></defs>`;
+    fill = `url(#${gid})`;
+  }
+  const r = e.radius || 0, i = sw / 2, W = w - sw, Hh = h - sw;
+  const P = (pts) => pts.map(([a, b]) => (i + a * W).toFixed(1) + ',' + (i + b * Hh).toFixed(1)).join(' ');
+  const poly = (pts) => `<polygon points="${P(pts)}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`;
+  const abs = (pts) => `<polygon points="${pts.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`;
   let body = '';
-  const r = e.radius || 0;
   switch (e.shape) {
-    case 'rect': body = `<rect x="${sw / 2}" y="${sw / 2}" width="${w - sw}" height="${h - sw}" rx="${r}" fill="${fill}" ${strokeAttr}/>`; break;
-    case 'ellipse': body = `<ellipse cx="${w / 2}" cy="${h / 2}" rx="${w / 2 - sw / 2}" ry="${h / 2 - sw / 2}" fill="${fill}" ${strokeAttr}/>`; break;
-    case 'triangle': body = `<polygon points="${w / 2},${sw} ${w - sw},${h - sw} ${sw},${h - sw}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
-    case 'diamond': body = `<polygon points="${w / 2},${sw} ${w - sw},${h / 2} ${w / 2},${h - sw} ${sw},${h / 2}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
-    case 'line': { const t = Math.max(2, sw || 6); const c = stroke || fill; body = `<line x1="0" y1="${h / 2}" x2="${w}" y2="${h / 2}" stroke="${c}" stroke-width="${t}" stroke-linecap="round"/>`; break; }
-    case 'arrow': {
-      const t = Math.max(4, sw || 10); const c = stroke || fill; const head = Math.min(w * 0.35, h, t * 4);
-      body = `<line x1="0" y1="${h / 2}" x2="${w - head * 0.8}" y2="${h / 2}" stroke="${c}" stroke-width="${t}" stroke-linecap="round"/>` +
-        `<polygon points="${w - head},${h / 2 - head * 0.6} ${w},${h / 2} ${w - head},${h / 2 + head * 0.6}" fill="${c}"/>`; break;
-    }
+    case 'rect': body = `<rect x="${i}" y="${i}" width="${W}" height="${Hh}" rx="${Math.max(0, Math.min(r, W / 2, Hh / 2))}" fill="${fill}" ${strokeAttr}/>`; break;
+    case 'ellipse': body = `<ellipse cx="${w / 2}" cy="${h / 2}" rx="${W / 2}" ry="${Hh / 2}" fill="${fill}" ${strokeAttr}/>`; break;
+    case 'triangle': body = poly([[.5, 0], [1, 1], [0, 1]]); break;
+    case 'rtriangle': body = poly([[0, 0], [1, 1], [0, 1]]); break;
+    case 'diamond': body = poly([[.5, 0], [1, .5], [.5, 1], [0, .5]]); break;
+    case 'pentagon': body = poly([[.5, 0], [1, .38], [.81, 1], [.19, 1], [0, .38]]); break;
+    case 'hexagon': body = poly([[.25, 0], [.75, 0], [1, .5], [.75, 1], [.25, 1], [0, .5]]); break;
+    case 'octagon': body = poly([[.29, 0], [.71, 0], [1, .29], [1, .71], [.71, 1], [.29, 1], [0, .71], [0, .29]]); break;
+    case 'parallelogram': body = poly([[.2, 0], [1, 0], [.8, 1], [0, 1]]); break;
+    case 'trapezoid': body = poly([[.18, 0], [.82, 0], [1, 1], [0, 1]]); break;
+    case 'plus': { const t = .34, a = (1 - t) / 2, b = a + t; body = poly([[a, 0], [b, 0], [b, a], [1, a], [1, b], [b, b], [b, 1], [a, 1], [a, b], [0, b], [0, a], [a, a]]); break; }
     case 'star': {
       const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - sw, rr = R * 0.45; const pts = [];
-      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5; const rad = i % 2 ? rr : R; pts.push((cx + rad * Math.cos(a)).toFixed(1) + ',' + (cy + rad * Math.sin(a)).toFixed(1)); }
-      body = `<polygon points="${pts.join(' ')}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
+      for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5; const rad = k % 2 ? rr : R; pts.push([cx + rad * Math.cos(a), cy + rad * Math.sin(a)]); }
+      body = abs(pts); break;
     }
-    case 'chevron': { const d = Math.min(h / 2, w * 0.25); body = `<polygon points="0,0 ${w - d},0 ${w},${h / 2} ${w - d},${h} 0,${h} ${d},${h / 2}" fill="${fill}" ${strokeAttr}/>`; break; }
+    case 'chevron': { const d = Math.min(h / 2, w * 0.25); body = abs([[0, 0], [w - d, 0], [w, h / 2], [w - d, h], [0, h], [d, h / 2]]); break; }
+    case 'blockArrow': { const d = Math.min(w * .45, h * .9); body = abs([[0, h * .28], [w - d, h * .28], [w - d, 0], [w, h / 2], [w - d, h], [w - d, h * .72], [0, h * .72]]); break; }
+    case 'doubleArrow': { const d = Math.min(w * .3, h * .9); body = abs([[0, h / 2], [d, 0], [d, h * .28], [w - d, h * .28], [w - d, 0], [w, h / 2], [w - d, h], [w - d, h * .72], [d, h * .72], [d, h]]); break; }
+    case 'ring': {
+      const ell = (rx, ry) => `M ${w / 2 - rx},${h / 2} a ${rx},${ry} 0 1,0 ${2 * rx},0 a ${rx},${ry} 0 1,0 ${-2 * rx},0 Z`;
+      body = `<path fill-rule="evenodd" d="${ell(W / 2, Hh / 2)} ${ell(W / 2 * .62, Hh / 2 * .62)}" fill="${fill}" ${strokeAttr}/>`; break;
+    }
+    case 'callout': {
+      const bh = h * .78, rr = Math.max(0, Math.min(r || 24, W / 2, bh / 2));
+      body = `<path d="M ${i + rr},${i} H ${w - i - rr} Q ${w - i},${i} ${w - i},${i + rr} V ${bh - rr} Q ${w - i},${bh} ${w - i - rr},${bh} H ${w * .36} L ${w * .14},${h - i} L ${w * .2},${bh} H ${i + rr} Q ${i},${bh} ${i},${bh - rr} V ${i + rr} Q ${i},${i} ${i + rr},${i} Z" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
+    }
+    case 'heart': {
+      const X = (v) => (i + v * W).toFixed(1), Y = (v) => (i + v * Hh).toFixed(1);
+      body = `<path d="M ${X(.5)},${Y(.28)} C ${X(.5)},${Y(.1)} ${X(.3)},${Y(0)} ${X(.16)},${Y(.06)} C ${X(-.02)},${Y(.15)} ${X(-.02)},${Y(.45)} ${X(.12)},${Y(.6)} L ${X(.5)},${Y(1)} L ${X(.88)},${Y(.6)} C ${X(1.02)},${Y(.45)} ${X(1.02)},${Y(.15)} ${X(.84)},${Y(.06)} C ${X(.7)},${Y(0)} ${X(.5)},${Y(.1)} ${X(.5)},${Y(.28)} Z" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
+    }
+    case 'line': { const t = Math.max(2, sw || 6); const c = stroke || fill; body = `<line x1="${t / 2}" y1="${h / 2}" x2="${w - t / 2}" y2="${h / 2}" stroke="${c}" stroke-width="${t}" stroke-linecap="round"${dash}/>`; break; }
+    case 'arrow': case 'dline': {
+      const t = Math.max(4, sw || 10); const c = stroke || fill; const head = Math.min(w * 0.35, Math.max(h, t * 3), t * 4);
+      const two = e.shape === 'dline';
+      body = `<line x1="${two ? head * 0.8 : t / 2}" y1="${h / 2}" x2="${w - head * 0.8}" y2="${h / 2}" stroke="${c}" stroke-width="${t}" stroke-linecap="round"${dash}/>` +
+        `<polygon points="${w - head},${h / 2 - head * 0.6} ${w},${h / 2} ${w - head},${h / 2 + head * 0.6}" fill="${c}"/>` +
+        (two ? `<polygon points="${head},${h / 2 - head * 0.6} 0,${h / 2} ${head},${h / 2 + head * 0.6}" fill="${c}"/>` : ''); break;
+    }
     default: body = `<rect width="${w}" height="${h}" fill="${fill}"/>`;
   }
   if (e.shadow) node.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,.25))';
-  node.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">${body}</svg>`;
+  node.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">${defs}${body}</svg>`;
+  // 도형 안 글자 (편집 화면에서는 비어 있어도 상자를 만들어 둠)
+  if (!isLine && (e.html || mode === 'edit')) {
+    const box = document.createElement('div'); box.className = 'shape-text';
+    const inner = document.createElement('div'); inner.className = 'el-text-inner'; inner.innerHTML = e.html || '';
+    box.appendChild(inner); node.appendChild(box);
+    applyElementTextStyle(e, node, theme);
+  }
 }
 const SHAPES = [
-  { id: 'rect', name: '사각형' }, { id: 'ellipse', name: '원' }, { id: 'triangle', name: '삼각형' }, { id: 'diamond', name: '마름모' },
-  { id: 'star', name: '별' }, { id: 'chevron', name: '화살 블록' }, { id: 'line', name: '선' }, { id: 'arrow', name: '화살표' },
+  { id: 'rect', name: '사각형 (모서리 조절)' }, { id: 'ellipse', name: '원 / 타원' }, { id: 'triangle', name: '삼각형' }, { id: 'rtriangle', name: '직각삼각형' },
+  { id: 'diamond', name: '마름모' }, { id: 'pentagon', name: '오각형' }, { id: 'hexagon', name: '육각형' }, { id: 'octagon', name: '팔각형' },
+  { id: 'parallelogram', name: '평행사변형' }, { id: 'trapezoid', name: '사다리꼴' }, { id: 'star', name: '별' }, { id: 'heart', name: '하트' },
+  { id: 'plus', name: '십자 (더하기)' }, { id: 'ring', name: '도넛 (고리)' }, { id: 'callout', name: '말풍선' }, { id: 'chevron', name: '화살 블록 (단계)' },
+  { id: 'blockArrow', name: '굵은 화살표' }, { id: 'doubleArrow', name: '양쪽 굵은 화살표' }, { id: 'line', name: '선' }, { id: 'arrow', name: '화살표 선' }, { id: 'dline', name: '양쪽 화살표 선' },
 ];
+
+/* ---------- 표 ---------- */
+function renderTable(e, node, theme, mode) {
+  const rows = e.rows && e.rows.length ? e.rows : [['']];
+  const t = document.createElement('table');
+  t.className = 'tbl lines-' + (e.lines || 'grid') + (e.band ? ' band' : '') + (e.header ? ' has-head' : '') + (e.firstCol ? ' first-col' : '');
+  t.style.setProperty('--head', themeColor(e.headFill || '$accent', theme));
+  t.style.setProperty('--headfg', themeColor(e.headColor || '#ffffff', theme));
+  t.style.setProperty('--line', themeColor(e.lineColor || '$muted', theme));
+  const tb = document.createElement('tbody'); t.appendChild(tb);
+  rows.forEach((r, ri) => {
+    const tr = document.createElement('tr');
+    r.forEach((c, ci) => { const td = document.createElement(ri === 0 && e.header ? 'th' : 'td'); td.innerHTML = c || ''; td.dataset.r = ri; td.dataset.c = ci; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+  if (e.radius) { node.style.borderRadius = e.radius + 'px'; node.style.overflow = 'hidden'; }
+  node.appendChild(t);
+  applyElementTextStyle(e, node, theme);
+}
+
+/* ---------- 차트 ---------- */
+const CHART_KINDS = [['bar', '세로 막대'], ['hbar', '가로 막대'], ['stack', '누적 막대'], ['line', '꺾은선'], ['area', '영역'], ['pie', '원형'], ['donut', '도넛']];
+function parseChartData(text) {
+  const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const split = (l) => l.split(/\t|,/).map(s => s.trim());
+  const num = (s) => { const v = parseFloat(String(s == null ? '' : s).replace(/[^0-9.\-]/g, '')); return isNaN(v) ? 0 : v; };
+  if (!lines.length) return { labels: [], series: [] };
+  let head = split(lines[0]), body = lines.slice(1).map(split);
+  // 첫 줄이 숫자로만 되어 있으면 머리줄이 없는 것으로 봄
+  const isYear = (v) => /^(19|20)\d\d$/.test(v);
+  if (head.length > 1 && head.slice(1).every(v => v !== '' && /^-?[\d.,]+%?$/.test(v)) && !head.slice(1).every(isYear)) { body = lines.map(split); head = [''].concat(head.slice(1).map((_, i) => '값' + (i ? i + 1 : ''))); }
+  return { labels: body.map(r => r[0]), series: head.slice(1).map((name, i) => ({ name, values: body.map(r => num(r[i + 1])) })) };
+}
+function chartPalette(e, theme) {
+  const base = [theme.accent, theme.accent2, '#10b981', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316', '#64748b', '#ec4899', '#84cc16'];
+  if (e.colors && e.colors.length) return e.colors.map(c => themeColor(c, theme)).concat(base);
+  return base;
+}
+function niceScale(min, max) {
+  min = Math.min(0, min); max = Math.max(0, max); if (max === min) max = min + 1;
+  const rough = (max - min) / 5, p = Math.pow(10, Math.floor(Math.log10(rough))), f = rough / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  return { step, min: Math.floor(min / step + 1e-9) * step, max: Math.ceil(max / step - 1e-9) * step };
+}
+function renderChart(e, node, theme, mode) {
+  const st = resolveTextStyle(e, theme);
+  const W = e.w, H = e.h, fs = st.fontSize, fg = themeColor(st.color, theme), muted = theme.muted;
+  const { labels, series } = parseChartData(e.data);
+  const pal = chartPalette(e, theme);
+  const fmt = (v) => Number(v.toFixed(2)).toLocaleString('ko-KR') + (e.unit || '');
+  const T = (x, y, s, o) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" ${o || ''}>${esc(s)}</text>`;
+  let svg = '';
+  const kind = e.kind || 'bar';
+  if (!labels.length || !series.length) { svg = T(W / 2, H / 2, '데이터를 입력하세요', `text-anchor="middle" fill="${muted}"`); }
+  else if (kind === 'pie' || kind === 'donut') {
+    const vals = series[0].values.map(v => Math.max(0, v)); const total = vals.reduce((a, b) => a + b, 0) || 1;
+    const legendW = e.legend ? Math.min(W * 0.42, fs * 10) : 0;
+    const cx = (W - legendW) / 2, cy = H / 2, R = Math.max(10, Math.min(cx, cy) - fs * 0.6), r0 = kind === 'donut' ? R * 0.58 : 0;
+    const p = (rad, a) => `${(cx + rad * Math.cos(a)).toFixed(2)},${(cy + rad * Math.sin(a)).toFixed(2)}`;
+    let a0 = -Math.PI / 2;
+    vals.forEach((v, k) => {
+      const a1 = a0 + (v / total) * Math.PI * 2; const large = a1 - a0 > Math.PI ? 1 : 0;
+      let d;
+      if (v / total > 0.9999) d = `M ${p(R, 0)} A ${R},${R} 0 1,1 ${p(R, Math.PI)} A ${R},${R} 0 1,1 ${p(R, 0)}` + (r0 ? ` M ${p(r0, 0)} A ${r0},${r0} 0 1,0 ${p(r0, Math.PI)} A ${r0},${r0} 0 1,0 ${p(r0, 0)}` : '') + ' Z';
+      else d = r0 ? `M ${p(R, a0)} A ${R},${R} 0 ${large},1 ${p(R, a1)} L ${p(r0, a1)} A ${r0},${r0} 0 ${large},0 ${p(r0, a0)} Z` : `M ${cx},${cy} L ${p(R, a0)} A ${R},${R} 0 ${large},1 ${p(R, a1)} Z`;
+      svg += `<path class="cslice" style="animation-delay:${(k * 0.08).toFixed(2)}s;transform-origin:${cx}px ${cy}px" d="${d}" fill="${pal[k % pal.length]}" stroke="${theme.bg}" stroke-width="${Math.max(2, fs * 0.12)}" fill-rule="evenodd"/>`;
+      if (e.values && v / total > 0.04) {
+        const am = (a0 + a1) / 2, lr = r0 ? (R + r0) / 2 : R * 0.62;
+        svg += T(cx + lr * Math.cos(am), cy + lr * Math.sin(am) + fs * 0.35, Math.round(v / total * 100) + '%', `text-anchor="middle" fill="#fff" font-weight="700" class="cval"`);
+      }
+      a0 = a1;
+    });
+    if (kind === 'donut' && e.center) svg += T(cx, cy + fs * 0.55, e.center, `text-anchor="middle" fill="${fg}" font-weight="800" font-size="${fs * 1.6}"`);
+    if (e.legend) {
+      const lx = W - legendW + fs * 0.5, n = labels.length, lh = fs * 1.6, ly0 = cy - (n * lh) / 2 + lh / 2;
+      labels.forEach((l, k) => { const y = ly0 + k * lh; svg += `<rect x="${lx}" y="${(y - fs * 0.45).toFixed(1)}" width="${fs * 0.8}" height="${fs * 0.8}" rx="${fs * 0.15}" fill="${pal[k % pal.length]}"/>` + T(lx + fs * 1.2, y + fs * 0.32, l + (e.values ? '  ' + fmt(vals[k]) : ''), `fill="${fg}"`); });
+    }
+  } else {
+    const horiz = kind === 'hbar', stack = kind === 'stack';
+    const legendH = e.legend && series.length > 1 ? fs * 1.8 : 0;
+    let lo = 0, hi = 0;
+    if (stack) labels.forEach((_, j) => { let ps = 0, ng = 0; series.forEach(s => { const v = s.values[j]; if (v >= 0) ps += v; else ng += v; }); hi = Math.max(hi, ps); lo = Math.min(lo, ng); });
+    else series.forEach(s => s.values.forEach(v => { hi = Math.max(hi, v); lo = Math.min(lo, v); }));
+    const sc = niceScale(lo, hi);
+    const maxLabel = Math.max(...labels.map(l => String(l).length), 1);
+    const tickW = Math.max(...[sc.min, sc.max].map(v => fmt(v).length)) * fs * 0.62;
+    const padL = horiz ? Math.min(W * 0.32, maxLabel * fs * 0.95 + fs) : tickW + fs * 0.8;
+    const padB = fs * 2.1, padT = legendH + fs * (e.values ? 1.6 : 0.8), padR = horiz ? fs * (e.values ? 3.5 : 1) : fs * 0.6;
+    const pw = Math.max(10, W - padL - padR), ph = Math.max(10, H - padT - padB);
+    const vpos = (v) => horiz ? padL + (v - sc.min) / (sc.max - sc.min) * pw : padT + ph - (v - sc.min) / (sc.max - sc.min) * ph;
+    for (let v = sc.min; v <= sc.max + sc.step / 2; v += sc.step) {
+      const q = vpos(v);
+      if (e.grid !== false) svg += horiz ? `<line x1="${q}" y1="${padT}" x2="${q}" y2="${padT + ph}" stroke="${muted}" stroke-opacity=".28" stroke-width="2"/>` : `<line x1="${padL}" y1="${q}" x2="${padL + pw}" y2="${q}" stroke="${muted}" stroke-opacity=".28" stroke-width="2"/>`;
+      svg += horiz ? T(q, padT + ph + fs * 1.3, fmt(v), `text-anchor="middle" fill="${muted}" font-size="${fs * 0.85}"`) : T(padL - fs * 0.4, q + fs * 0.32, fmt(v), `text-anchor="end" fill="${muted}" font-size="${fs * 0.85}"`);
+    }
+    const zero = vpos(0);
+    svg += horiz ? `<line x1="${zero}" y1="${padT}" x2="${zero}" y2="${padT + ph}" stroke="${muted}" stroke-width="3"/>` : `<line x1="${padL}" y1="${zero}" x2="${padL + pw}" y2="${zero}" stroke="${muted}" stroke-width="3"/>`;
+    const n = labels.length, band = (horiz ? ph : pw) / n;
+    labels.forEach((l, j) => {
+      const c = (horiz ? padT : padL) + band * (j + 0.5);
+      svg += horiz ? T(padL - fs * 0.5, c + fs * 0.35, l, `text-anchor="end" fill="${fg}"`) : T(c, padT + ph + fs * 1.4, l, `text-anchor="middle" fill="${fg}"`);
+    });
+    if (kind === 'line' || kind === 'area') {
+      series.forEach((s, k) => {
+        const col = pal[k % pal.length];
+        const pts = s.values.map((v, j) => [padL + band * (j + 0.5), vpos(v)]);
+        const d = pts.map((q, j) => (j ? 'L' : 'M') + q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+        if (kind === 'area') svg += `<path class="carea" d="${d} L ${pts[pts.length - 1][0].toFixed(1)},${zero} L ${pts[0][0].toFixed(1)},${zero} Z" fill="${col}" fill-opacity=".22"/>`;
+        svg += `<path class="cline" pathLength="1" d="${d}" fill="none" stroke="${col}" stroke-width="${Math.max(3, fs * 0.2)}" stroke-linejoin="round" stroke-linecap="round"/>`;
+        pts.forEach((q, j) => {
+          svg += `<circle class="cdot" style="animation-delay:${(0.5 + j * 0.06).toFixed(2)}s" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${Math.max(4, fs * 0.28)}" fill="${theme.bg}" stroke="${col}" stroke-width="${Math.max(3, fs * 0.16)}"/>`;
+          if (e.values) svg += T(q[0], q[1] - fs * 0.7, fmt(s.values[j]), `text-anchor="middle" fill="${fg}" font-weight="700" font-size="${fs * 0.85}" class="cval"`);
+        });
+      });
+    } else {
+      const inner = band * 0.72, bw = stack ? inner : inner / series.length;
+      labels.forEach((_, j) => {
+        let pos = 0, neg = 0;
+        series.forEach((s, k) => {
+          const v = s.values[j], col = pal[k % pal.length];
+          let a, b;
+          if (stack) { if (v >= 0) { a = pos; b = pos + v; pos = b; } else { a = neg; b = neg + v; neg = b; } } else { a = 0; b = v; }
+          const off = (horiz ? padT : padL) + band * j + (band - inner) / 2 + (stack ? 0 : k * bw);
+          const p1 = vpos(a), p2 = vpos(b), lo2 = Math.min(p1, p2), len = Math.abs(p2 - p1);
+          const rad = Math.min(bw * 0.12, 10);
+          const delay = `animation-delay:${(j * 0.06 + k * 0.03).toFixed(2)}s`;
+          svg += horiz ? `<rect class="cbar-h" style="${delay}" x="${lo2.toFixed(1)}" y="${off.toFixed(1)}" width="${len.toFixed(1)}" height="${(bw * 0.92).toFixed(1)}" rx="${rad}" fill="${col}"/>`
+            : `<rect class="cbar" style="${delay}" x="${off.toFixed(1)}" y="${lo2.toFixed(1)}" width="${(bw * 0.92).toFixed(1)}" height="${len.toFixed(1)}" rx="${rad}" fill="${col}"/>`;
+          if (e.values && (!stack || len > fs * 1.2)) {
+            const vs = fs * 0.85;
+            if (stack) svg += horiz ? T(lo2 + len / 2, off + bw * 0.46 + fs * 0.32, fmt(v), `text-anchor="middle" fill="#fff" font-weight="700" font-size="${vs}" class="cval"`) : T(off + bw * 0.46, lo2 + len / 2 + fs * 0.3, fmt(v), `text-anchor="middle" fill="#fff" font-weight="700" font-size="${vs}" class="cval"`);
+            else svg += horiz ? T(v >= 0 ? lo2 + len + fs * 0.35 : lo2 - fs * 0.35, off + bw * 0.46 + fs * 0.32, fmt(v), `text-anchor="${v >= 0 ? 'start' : 'end'}" fill="${fg}" font-weight="700" font-size="${vs}" class="cval"`) : T(off + bw * 0.46, v >= 0 ? lo2 - fs * 0.4 : lo2 + len + fs * 1.05, fmt(v), `text-anchor="middle" fill="${fg}" font-weight="700" font-size="${vs}" class="cval"`);
+          }
+        });
+      });
+    }
+    if (legendH) {
+      let x = padL; const y = fs * 0.9;
+      series.forEach((s, k) => { svg += `<rect x="${x}" y="${y - fs * 0.55}" width="${fs * 0.8}" height="${fs * 0.8}" rx="${fs * 0.15}" fill="${pal[k % pal.length]}"/>` + T(x + fs * 1.1, y + fs * 0.2, s.name, `fill="${fg}"`); x += fs * 2 + String(s.name).length * fs * 0.95; });
+    }
+  }
+  node.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="${esc(fontCss(st.font))}" font-size="${fs}" style="display:block;overflow:visible">${svg}</svg>`;
+}
+
+/* ---------- 수식 (KaTeX, 쓰일 때만 불러옴) ---------- */
+const KATEX_V = '0.16.11';
+let _katexP = null;
+function loadKatex() {
+  if (window.katex) return Promise.resolve();
+  if (_katexP) return _katexP;
+  _katexP = new Promise((res, rej) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = `https://cdn.jsdelivr.net/npm/katex@${KATEX_V}/dist/katex.min.css`; document.head.appendChild(l);
+    const s = document.createElement('script'); s.src = `https://cdn.jsdelivr.net/npm/katex@${KATEX_V}/dist/katex.min.js`;
+    s.onload = () => res(); s.onerror = () => { _katexP = null; rej(new Error('수식 도구를 불러오지 못했습니다 (인터넷 연결 확인)')); };
+    document.head.appendChild(s);
+  });
+  return _katexP;
+}
+function renderMath(e, node, theme, mode) {
+  const box = document.createElement('div'); box.className = 'math-box';
+  node.appendChild(box);
+  applyElementTextStyle(e, node, theme);
+  const draw = () => { try { box.innerHTML = window.katex.renderToString(e.tex || '', { displayMode: true, throwOnError: false, output: 'html' }); box.classList.remove('math-pending'); } catch (err) { box.textContent = e.tex || ''; } };
+  if (window.katex) draw();
+  else { box.textContent = e.tex || ''; box.classList.add('math-pending'); loadKatex().then(draw, () => { }); }
+}
+
+/* ---------- 동영상 · 웹 페이지 ---------- */
+function parseEmbed(url) {
+  url = String(url || '').trim();
+  let m = url.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  if (m) { const t = url.match(/[?&](?:t|start)=(\d+)/); return { kind: 'youtube', id: m[1], start: t ? +t[1] : 0 }; }
+  m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/); if (m) return { kind: 'vimeo', id: m[1] };
+  if (/\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test(url)) return { kind: 'video', src: url };
+  if (/^https?:\/\//i.test(url)) return { kind: 'web', src: url };
+  return { kind: 'none' };
+}
+function renderEmbed(e, node, theme, mode) {
+  const p = parseEmbed(e.url);
+  if (e.radius) node.style.borderRadius = e.radius + 'px';
+  if (e.shadow) node.style.boxShadow = '0 16px 48px rgba(0,0,0,.25)';
+  const live = mode === 'present' && window.GYOAN_LIVE;
+  if (live && p.kind !== 'none') {
+    if (p.kind === 'video') {
+      const v = document.createElement('video'); v.src = API.resolveSrc(p.src); v.controls = true; v.playsInline = true; v.preload = 'metadata';
+      if (e.autoplay) v.autoplay = true; if (e.loop) v.loop = true; if (e.muted) v.muted = true;
+      node.appendChild(v); return;
+    }
+    const f = document.createElement('iframe');
+    if (p.kind === 'youtube') f.src = `https://www.youtube-nocookie.com/embed/${p.id}?rel=0&modestbranding=1&playsinline=1${p.start ? '&start=' + p.start : ''}${e.autoplay ? '&autoplay=1' : ''}${e.muted ? '&mute=1' : ''}${e.loop ? '&loop=1&playlist=' + p.id : ''}`;
+    else if (p.kind === 'vimeo') f.src = `https://player.vimeo.com/video/${p.id}${e.autoplay ? '?autoplay=1' : ''}`;
+    else f.src = p.src;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
+    node.appendChild(f); return;
+  }
+  // 편집 / 미리보기 / 인쇄: 가벼운 대체 화면
+  const ph = document.createElement('div'); ph.className = 'embed-ph';
+  if (p.kind === 'youtube') ph.style.backgroundImage = `url("https://i.ytimg.com/vi/${p.id}/hqdefault.jpg")`;
+  const label = { youtube: 'YouTube', vimeo: 'Vimeo', video: '동영상 파일', web: '웹 페이지', none: '동영상·웹 주소를 넣으세요' }[p.kind];
+  ph.innerHTML = `<div class="embed-play">${p.kind === 'web' ? '🌐' : '▶'}</div><div class="embed-label">${esc(label)}${p.kind === 'web' ? '<br><small>' + esc(p.src.slice(0, 70)) + '</small>' : ''}${mode === 'edit' ? '<br><small>발표 화면에서 재생됩니다</small>' : ''}</div>`;
+  node.appendChild(ph);
+}
+
+const RENDERERS = { text: renderText, image: renderImage, shape: renderShape, table: renderTable, chart: renderChart, math: renderMath, embed: renderEmbed };
 
 /* 컨테이너 크기에 맞게 슬라이드(1920x1080)를 축소/확대 */
 function fitSlide(container, slideEl, pad) {
