@@ -1,6 +1,6 @@
 {
  "title": "소방용수의 이해",
- "theme": "clean",
+ "theme": "forest",
  "created": "2026-10-31T09:57:51.169Z",
  "slides": [
   {
@@ -64,35 +64,9 @@
    ]
   },
   {
-   "id": "57h9p0oxk",
-   "bg": null,
-   "transition": "",
-   "notes": "",
-   "elements": [
-    {
-     "id": "3256srrc3",
-     "type": "text",
-     "role": "body",
-     "x": 120,
-     "y": 260,
-     "w": 1680,
-     "h": 600,
-     "html": "<ul><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li></ul>",
-     "style": {
-      "fontSize": 56,
-      "color": "#111111"
-     },
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1
-    }
-   ]
-  },
-  {
    "id": "k41ehv3d0",
-   "bg": null,
-   "transition": "",
+   "bg": {},
+   "transition": "none",
    "notes": "",
    "elements": [
     {
@@ -111,9 +85,29 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1
+    },
+    {
+     "id": "vkpc09860",
+     "type": "shape",
+     "shape": "rect",
+     "x": 992,
+     "y": 185,
+     "w": 400,
+     "h": 75,
+     "fill": "#22c55e",
+     "stroke": "",
+     "strokeWidth": 2,
+     "radius": 24,
+     "shadow": true,
+     "step": 0,
+     "anim": "zoom",
+     "rotate": 0,
+     "opacity": 1
     }
-   ]
+   ],
+   "decor": "none"
   }
  ],
- "modified": "2026-10-31T11:27:43.797Z"
+ "modified": "2026-10-31T12:33:08.582Z",
+ "transition": "fade"
 }
