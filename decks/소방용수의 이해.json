@@ -46,7 +46,57 @@
      "opacity": 1
     }
    ]
+  },
+  {
+   "id": "57h9p0oxk",
+   "bg": null,
+   "transition": "",
+   "notes": "",
+   "elements": [
+    {
+     "id": "3256srrc3",
+     "type": "text",
+     "role": "body",
+     "x": 120,
+     "y": 260,
+     "w": 1680,
+     "h": 600,
+     "html": "<ul><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li></ul>",
+     "style": {
+      "fontSize": 56
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "id": "k41ehv3d0",
+   "bg": null,
+   "transition": "",
+   "notes": "",
+   "elements": [
+    {
+     "id": "hp3kaz3d0",
+     "type": "text",
+     "role": "body",
+     "x": 120,
+     "y": 260,
+     "w": 1680,
+     "h": 600,
+     "html": "<ul><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li></ul>",
+     "style": {
+      "fontSize": 56
+     },
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1
+    }
+   ]
   }
  ],
- "modified": "2026-10-31T09:57:51.169Z"
+ "modified": "2026-10-31T10:02:08.200Z"
 }
