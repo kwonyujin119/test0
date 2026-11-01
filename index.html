@@ -27,6 +27,7 @@
   .ws-app .t div { color: #b9c3d3; font-size: 13px; }
   .ws-app button { background: #1f9a6e; color: #fff; border: 0; border-radius: 10px; padding: 11px 18px; font: 700 14px var(--ui-font); cursor: pointer; }
   .ws-app button:hover { background: #24b07e; }
+  .ws-app button { font-size: 15px; padding: 13px 22px; box-shadow: 0 6px 18px rgba(31,154,110,.35); }
   html.in-app .ws-app { display: none; }
 </style>
 <link rel="manifest" href="manifest.webmanifest">
@@ -71,15 +72,13 @@
 <script>
 function renderAppBox() {
   const box = document.getElementById('appBox'); if (!window.PWA || PWA.standalone) return;
-  const edge = /Edg\//.test(navigator.userAgent);
-  if (PWA.prompt) {
-    box.innerHTML = `<div class="t"><b>업무 공간을 앱으로 설치하세요</b><div>바탕화면·시작 메뉴·작업 표시줄에 아이콘이 생기고, 주소창 없는 전용 창으로 열립니다. hwpx 파일을 더블클릭해서 바로 열 수도 있습니다.</div></div><button type="button" id="btnInstall">⬇ 앱으로 설치</button>`;
-    document.getElementById('btnInstall').onclick = () => PWA.install();
-  } else if (PWA.installed) {
-    box.innerHTML = `<div class="t"><b>설치했습니다</b><div>이제 바탕화면이나 시작 메뉴의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
-  } else {
-    box.innerHTML = `<div class="t"><b>앱으로 열어서 쓰세요</b><div>이미 설치했다면 바탕화면·시작 메뉴의 <b>업무 공간</b> 아이콘으로 여세요 (주소창 오른쪽의 <b>앱에서 열기</b> 아이콘도 됩니다).<br>아직이라면 ${edge ? '엣지' : '크롬·엣지'} 주소창 오른쪽의 <b>설치 아이콘(⊕)</b> 또는 메뉴 → <b>앱 → 업무 공간 설치</b> 를 누르세요.</div></div>`;
+  if (PWA.installed) {
+    box.innerHTML = `<div class="t"><b>✅ 앱을 설치했습니다</b><div>이제 바탕화면·시작 메뉴·작업 표시줄의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
+    return;
   }
+  const label = PWA.prompt ? '⬇ 앱으로 설치 (클릭 한 번)' : '⬇ 앱으로 설치';
+  box.innerHTML = `<div class="t"><b>업무 공간을 앱으로 설치하세요</b><div>단추를 누르면 바로 설치되고, 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생깁니다. 주소창 없는 전용 창으로 열리고, hwpx 파일도 바로 열 수 있습니다.</div></div><button type="button" id="btnInstall">${label}</button>`;
+  document.getElementById('btnInstall').onclick = () => PWA.start();
 }
 window.addEventListener('pwa-change', renderAppBox);
 (async () => {
