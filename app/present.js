@@ -13,7 +13,7 @@
     try {
       if (qs('draft')) deck = Draft.get(name);
       if (!deck) deck = await API.load(name);
-    } catch (e) { document.body.innerHTML = `<div style="color:#fff;padding:40px;font-family:sans-serif">교안을 불러올 수 없습니다: ${esc(e.message)}<br><br><a href="index.html" style="color:#8cf">← 목록으로</a></div>`; return; }
+    } catch (e) { document.body.innerHTML = `<div style="color:#fff;padding:40px;font-family:sans-serif">교안을 불러올 수 없습니다: ${esc(e.message)}<br><br><a href="gyoan.html" style="color:#8cf">← 목록으로</a></div>`; return; }
   }
   if (!deck.slides || !deck.slides.length) deck.slides = [newSlide('blank')];
   document.title = deck.title + (role === 'notes' ? ' · 발표자 보기' : ' · 발표');
@@ -212,7 +212,7 @@
     if (document.fullscreenElement) document.exitFullscreen();
     if (window.EMBEDDED_DECK) { $('pend').classList.add('show'); return; }
     if (window.opener && !window.opener.closed) window.close();
-    location.href = 'index.html';
+    location.href = 'gyoan.html';
   }
   const overview = {
     open() {
@@ -419,7 +419,7 @@
   /* ======================= 인쇄(PDF) 모드 ======================= */
   function renderPrint() {
     document.body.className = 'print-mode';
-    document.body.innerHTML = `<div class="print-bar"><b>${esc(deck.title)}</b><span class="muted">슬라이드 ${N}장 · 인쇄 대화상자에서 "PDF로 저장"을 선택하세요 (여백 없음, 가로 방향)</span><span style="flex:1"></span><button class="btn primary" onclick="window.print()">🖨 인쇄 / PDF 저장</button><a class="btn" href="index.html">목록</a></div>`;
+    document.body.innerHTML = `<div class="print-bar"><b>${esc(deck.title)}</b><span class="muted">슬라이드 ${N}장 · 인쇄 대화상자에서 "PDF로 저장"을 선택하세요 (여백 없음, 가로 방향)</span><span style="flex:1"></span><button class="btn primary" onclick="window.print()">🖨 인쇄 / PDF 저장</button><a class="btn" href="gyoan.html">목록</a></div>`;
     for (const s of deck.slides) {
       if (s.hidden) continue;
       const page = document.createElement('div'); page.className = 'print-page';

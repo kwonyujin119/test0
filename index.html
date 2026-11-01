@@ -3,52 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>교안 작업장</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
+<title>업무 공간</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>업</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="app/ui.css">
-<link rel="stylesheet" href="app/slide.css">
+<style>
+  .ws { max-width: 980px; margin: 0 auto; padding: 56px 24px 80px; }
+  .ws h1 { margin: 0; font-size: 32px; letter-spacing: -.6px; }
+  .ws .sub { color: var(--ui-muted); margin-top: 6px; }
+  .ws-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 30px; }
+  .ws-card { display: flex; flex-direction: column; gap: 12px; padding: 26px; border-radius: 16px; background: var(--ui-panel); border: 1px solid var(--ui-border); color: var(--ui-fg); transition: border-color .15s, transform .15s, background .15s; }
+  .ws-card:hover { border-color: var(--ui-accent); transform: translateY(-2px); background: #1b1f28; }
+  .ws-ico { width: 54px; height: 54px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; font-weight: 800; color: #fff; }
+  .ws-card h2 { margin: 0; font-size: 21px; }
+  .ws-card p { margin: 0; color: var(--ui-muted); line-height: 1.6; }
+  .ws-card ul { margin: 0; padding-left: 18px; color: #c3c8d4; font-size: 13.5px; line-height: 1.75; }
+  .ws-card .go { margin-top: auto; color: var(--ui-accent); font-weight: 600; }
+  .ws-foot { margin-top: 34px; color: var(--ui-muted); font-size: 13px; line-height: 1.7; }
+  .ws-foot b { color: #c3c8d4; }
+</style>
 </head>
 <body>
-<div class="hub">
-  <div class="hub-head">
-    <div>
-      <h1>교안 작업장</h1>
-      <div class="sub" id="sub">교안을 모아두고, 편집하고, 바로 발표합니다.</div>
-    </div>
-    <div class="hub-tools">
-      <input type="search" id="q" placeholder="교안 검색…">
-      <button class="btn" id="btnGh" title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none">GitHub 연결</button>
-      <button class="btn" id="btnImport" title="JSON 파일 가져오기">가져오기</button>
-      <button class="btn primary" id="btnNew">＋ 새 교안</button>
-    </div>
-  </div>
-  <div class="hub-notice" id="notice" style="display:none"></div>
-  <div class="deck-grid" id="grid"></div>
-  <div class="hub-empty" id="empty" style="display:none">아직 교안이 없습니다. <b>＋ 새 교안</b>을 눌러 시작하세요.</div>
+<div class="ws">
+  <h1>업무 공간</h1>
+  <div class="sub">사무실에서도, 집에서도 같은 화면에서 이어서 작업합니다.</div>
 
-  <div class="hub-help">
-    <div>
-      <h4>발표 조작 (프레젠터 리모컨 동일)</h4>
-      <p><kbd>→</kbd> <kbd>PgDn</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> 다음 / <kbd>←</kbd> <kbd>PgUp</kbd> <kbd>Backspace</kbd> 이전</p>
-      <p><kbd>F5</kbd> <kbd>F</kbd> 전체화면 · <kbd>B</kbd> 검은 화면 · <kbd>Esc</kbd> 종료 · <kbd>F1</kbd> 도움말</p>
-      <p><a href="shortcuts.html">단축키 설명서 보기 →</a></p>
-    </div>
-    <div>
-      <h4>파일 구조</h4>
-      <p><b>decks/</b> 교안 1개 = JSON 파일 1개</p>
-      <p><b>assets/</b> 이미지 파일 · 모두 Git 으로 관리됩니다.</p>
-      <p>GitHub Pages 주소로 열면 어디서나 발표할 수 있고, 토큰을 연결하면 편집·저장도 됩니다.</p>
-    </div>
-    <div>
-      <h4>팁</h4>
-      <p>편집기에서 이미지를 붙여넣기(Ctrl+V)하거나 끌어다 놓으면 바로 들어갑니다.</p>
-      <p>발표 중 <kbd>S</kbd> 를 누르면 발표자 노트 창이 열립니다 (듀얼 모니터).</p>
-    </div>
+  <div class="ws-grid">
+    <a class="ws-card" href="hangul.html">
+      <div class="ws-ico" style="background:#1f7a5a">한</div>
+      <h2>한글 작업장</h2>
+      <p>한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다.</p>
+      <ul>
+        <li>hwpx 올리기 → 편집 → hwpx 내려받기</li>
+        <li>한글과 같은 단축키 (Alt+L 글자 모양, Alt+T 문단 모양, Ctrl+N,T 표 …)</li>
+        <li>암호로 잠근 문서함 — 집과 사무실에서 같은 문서를 엽니다</li>
+      </ul>
+      <span class="go">한글 작업장 열기 →</span>
+    </a>
+    <a class="ws-card" href="gyoan.html">
+      <div class="ws-ico" style="background:#4f8cff">교</div>
+      <h2>교안 작업장</h2>
+      <p>강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
+      <ul>
+        <li>슬라이드 편집 · 테마 · 표 · 차트 · 수식 · 동영상</li>
+        <li>PowerPoint 와 같은 단축키, 프레젠터 리모컨 지원</li>
+        <li id="deckCount">저장된 교안을 모두 그대로 이어서 씁니다</li>
+      </ul>
+      <span class="go">교안 작업장 열기 →</span>
+    </a>
   </div>
+
+  <div class="ws-foot" id="foot"></div>
 </div>
-<input type="file" id="fileImport" accept="application/json,.json" style="display:none">
 <script src="app/common.js"></script>
-<script src="app/hub.js"></script>
+<script>
+(async () => {
+  const foot = document.getElementById('foot');
+  const cfg = GH.load();
+  if (cfg && GH.token) foot.innerHTML = `GitHub 저장소 <b>${esc(cfg.owner)}/${esc(cfg.repo)}</b> 에 연결되어 있습니다. 두 작업장이 같은 연결을 씁니다.`;
+  else if (cfg) foot.innerHTML = `저장하려면 교안 작업장 첫 화면의 <b>GitHub 연결</b> 에서 토큰을 한 번 등록하세요. 한글 작업장은 연결 없이도 내 PC 의 hwpx 파일을 열고 저장할 수 있습니다.`;
+  try {
+    const mode = await API.init();
+    const list = await API.list();
+    if (Array.isArray(list) && list.length) document.getElementById('deckCount').textContent = `교안 ${list.length}개가 저장되어 있습니다`;
+  } catch (e) { }
+})();
+</script>
 </body>
 </html>

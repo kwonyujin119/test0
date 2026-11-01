@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교안 작업장</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="app/ui.css">
+<link rel="stylesheet" href="app/slide.css">
+<style>.crumb{font-size:13px;color:var(--ui-muted);margin-bottom:2px}.crumb a{color:var(--ui-muted)}.crumb a:hover{color:var(--ui-fg)}</style>
+</head>
+<body>
+<div class="hub">
+  <div class="hub-head">
+    <div>
+      <div class="crumb"><a href="index.html">업무 공간</a> ›</div>
+      <h1>교안 작업장</h1>
+      <div class="sub" id="sub">교안을 모아두고, 편집하고, 바로 발표합니다.</div>
+    </div>
+    <div class="hub-tools">
+      <input type="search" id="q" placeholder="교안 검색…">
+      <button class="btn" id="btnGh" title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none">GitHub 연결</button>
+      <button class="btn" id="btnImport" title="JSON 파일 가져오기">가져오기</button>
+      <button class="btn primary" id="btnNew">＋ 새 교안</button>
+    </div>
+  </div>
+  <div class="hub-notice" id="notice" style="display:none"></div>
+  <div class="deck-grid" id="grid"></div>
+  <div class="hub-empty" id="empty" style="display:none">아직 교안이 없습니다. <b>＋ 새 교안</b>을 눌러 시작하세요.</div>
+
+  <div class="hub-help">
+    <div>
+      <h4>발표 조작 (프레젠터 리모컨 동일)</h4>
+      <p><kbd>→</kbd> <kbd>PgDn</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> 다음 / <kbd>←</kbd> <kbd>PgUp</kbd> <kbd>Backspace</kbd> 이전</p>
+      <p><kbd>F5</kbd> <kbd>F</kbd> 전체화면 · <kbd>B</kbd> 검은 화면 · <kbd>Esc</kbd> 종료 · <kbd>F1</kbd> 도움말</p>
+      <p><a href="shortcuts.html">단축키 설명서 보기 →</a></p>
+    </div>
+    <div>
+      <h4>파일 구조</h4>
+      <p><b>decks/</b> 교안 1개 = JSON 파일 1개</p>
+      <p><b>assets/</b> 이미지 파일 · 모두 Git 으로 관리됩니다.</p>
+      <p>GitHub Pages 주소로 열면 어디서나 발표할 수 있고, 토큰을 연결하면 편집·저장도 됩니다.</p>
+    </div>
+    <div>
+      <h4>팁</h4>
+      <p>편집기에서 이미지를 붙여넣기(Ctrl+V)하거나 끌어다 놓으면 바로 들어갑니다.</p>
+      <p>발표 중 <kbd>S</kbd> 를 누르면 발표자 노트 창이 열립니다 (듀얼 모니터).</p>
+    </div>
+  </div>
+</div>
+<input type="file" id="fileImport" accept="application/json,.json" style="display:none">
+<script src="app/common.js"></script>
+<script src="app/hub.js"></script>
+</body>
+</html>

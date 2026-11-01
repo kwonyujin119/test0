@@ -8,10 +8,10 @@
 
   /* ---------- 초기화 ---------- */
   S.name = qs('deck');
-  if (!S.name) { location.href = 'index.html'; return; }
+  if (!S.name) { location.href = 'gyoan.html'; return; }
   await API.init();
   try { S.deck = await API.load(S.name); }
-  catch (e) { alert(e.message); location.href = 'index.html'; return; }
+  catch (e) { alert(e.message); location.href = 'gyoan.html'; return; }
   migrate(S.deck);
   S.cur = clamp(parseInt(qs('slide') || '0', 10) || 0, 0, S.deck.slides.length - 1);
   document.title = S.deck.title + ' · 편집';
@@ -63,7 +63,7 @@
       await API.save(S.name, S.deck); S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name);
       toast('저장했습니다');
     } catch (e) {
-      if (e.noToken && confirm(e.message + '\n\n허브로 이동할까요? (임시본은 이 브라우저에 남아 있습니다)')) { Draft.put(S.name, S.deck); S.dirty = false; location.href = 'index.html'; return; }
+      if (e.noToken && confirm(e.message + '\n\n허브로 이동할까요? (임시본은 이 브라우저에 남아 있습니다)')) { Draft.put(S.name, S.deck); S.dirty = false; location.href = 'gyoan.html'; return; }
       alert('저장 실패: ' + e.message);
     }
   }
