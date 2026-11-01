@@ -22,5 +22,7 @@
   "file_handlers": [
     { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } }
   ],
-  "launch_handler": { "client_mode": ["navigate-existing", "auto"] }
+  "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+  "related_applications": [{ "platform": "webapp", "url": "https://kwonyujin119.github.io/test0/manifest.webmanifest" }],
+  "prefer_related_applications": false
 }

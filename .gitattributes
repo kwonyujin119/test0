@@ -5,3 +5,5 @@
 *.jpg binary
 *.webp binary
 *.gif binary
+install/*.cmd -text
+*.ico binary
