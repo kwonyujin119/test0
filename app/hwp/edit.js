@@ -116,10 +116,60 @@ function changed(soft) {
   clearTimeout(_layoutT); _layoutT = setTimeout(layout, 120);
 }
 function secPage(si) { return W.doc.page(si); }
+/* ---------- 변경 추적: 어느 문단이 바뀌었는지 실시간으로 기록 (저장·쪽 계산이 바뀐 곳만 다시 하도록) ---------- */
+const Track = {
+  dirty: new WeakSet(), tops: new Set(), num: true, full: true, mo: null,
+  IGN: new Set(['data-num', 'data-pgs', 'style', 'class', 'contenteditable']), // 화면 표시용 속성은 무시
+  start() {
+    if (this.mo) this.mo.disconnect();
+    this.dirty = new WeakSet(); this.tops = new Set(); this.num = true; this.full = true;
+    this.mo = new MutationObserver(rs => this.take(rs));
+    this.mo.observe(docEl(), { subtree: true, childList: true, characterData: true, attributes: true });
+  },
+  take(rs) {
+    for (const r of rs) {
+      if (r.type === 'attributes') { if (this.IGN.has(r.attributeName)) continue; if (r.attributeName === 'data-pp' || r.attributeName === 'data-pb') this.num = true; }
+      if (r.type === 'childList') { this.num = true; for (const n of r.addedNodes) if (n.nodeType === 1) this.down(n); }
+      this.up(r.target);
+    }
+  },
+  isTop(e) { return e.classList.contains('hp') && e.parentElement && e.parentElement.classList.contains('hsec'); },
+  up(n) { const root = docEl(); let e = n.nodeType === 1 ? n : n.parentElement; while (e && e !== root) { if (e.classList.contains('hp') || e.tagName === 'TABLE') { this.dirty.add(e); if (this.isTop(e)) this.tops.add(e); } e = e.parentElement; } },
+  down(el) { if (el.classList.contains('hp') || el.tagName === 'TABLE') { this.dirty.add(el); if (this.isTop(el)) this.tops.add(el); } for (const x of el.querySelectorAll('.hp,table')) this.dirty.add(x); },
+  flush() { if (this.mo) this.take(this.mo.takeRecords()); },
+  clean(el) { return !this.dirty.has(el); },
+};
+
+/* 쪽 나누기: 문단 높이를 기억해 두고, 바뀐 문단만 다시 잼.
+   화면 밖 문단은 content-visibility 로 그리기를 건너뛰되, 기억한 높이를 자리로 잡아 쪽 위치가 정확히 유지됨 */
+const Hs = new WeakMap(), Lay = new WeakMap(), _padCache = new Map(); // Lay: 문단별 {brk, mv, pgs, page}
+function blockPad(b) { // 문단 위·아래 안쪽 여백+테두리 (문단 모양별로 한 번만 계산)
+  const k = b.dataset.pp || '0'; if (_padCache.has(k)) return _padCache.get(k);
+  const cs = getComputedStyle(b); const v = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'].reduce((a, p) => a + (parseFloat(cs[p]) || 0), 0);
+  _padCache.set(k, v); return v;
+}
+function measureBlocks(all, full) {
+  const d = docEl();
+  const need = full ? all : all.filter(b => !Hs.has(b) || Track.tops.has(b));
+  if (!need.length) return;
+  if (full) d.classList.remove('cv'); else for (const b of need) b.style.contentVisibility = 'visible';
+  const hs = need.map(b => b.offsetHeight);
+  need.forEach((b, i) => {
+    if (!full) b.style.contentVisibility = '';
+    Hs.set(b, hs[i]);
+    const L = Lay.get(b) || {}; L.brk = b.dataset.pb === '1' || ppBreak(b.dataset.pp); Lay.set(b, L);
+    const v = `auto ${Math.max(0, hs[i] - blockPad(b)).toFixed(1)}px`;
+    if (b.style.containIntrinsicSize !== v) b.style.containIntrinsicSize = v;
+  });
+  if (full) d.classList.add('cv');
+}
 function layout() {
   const d = docEl(); if (!d || !W.doc) return;
+  Track.flush();
   const secs = Array.from(d.querySelectorAll(':scope > .hsec'));
-  numbering();
+  if (Track.num) { numbering(); Track.num = false; }
+  const full = Track.full; Track.full = false;
+  if (full) _padCache.clear();
   const pages = []; let pageTop = 0, maxW = 0;
   secs.forEach((sec, k) => {
     const si = +sec.dataset.s, pg = secPage(si);
@@ -128,29 +178,35 @@ function layout() {
     const st = sec.style; const set = (p, v) => { if (st[p] !== v) st[p] = v; };
     set('width', PW + 'px'); set('paddingLeft', ((pg.left + pg.gutter) / HU) + 'px'); set('paddingRight', (pg.right / HU) + 'px'); set('paddingTop', mt + 'px');
     if (k > 0) { pageTop += GAP; set('marginTop', GAP + 'px'); } else set('marginTop', '0px');
-    const blocks = blocksIn(sec);
-    const hs = blocks.map(b => b.offsetHeight);
+    const blocks = Array.from(sec.children);
+    measureBlocks(blocks, full);
     let top = pageTop, cTop = top + mt, cBot = top + PH - mb, y = cTop;
     const first = pages.length;
     pages.push({ top, w: PW, h: PH, si, pg });
     const next = () => { top += PH + GAP; cTop = top + mt; cBot = top + PH - mb; pages.push({ top, w: PW, h: PH, si, pg }); };
-    blocks.forEach((b, i) => {
-      const h = hs[i];
-      let push = 0;
-      const force = i > 0 && (b.dataset.pb === '1' || ppBreak(b.dataset.pp));
-      if (force || (y + h > cBot + 0.5 && y > cTop + 0.5)) { next(); push = cTop - y; y = cTop; b.dataset.pgs = '1'; }
-      else if (y < cTop - 0.5) { push = cTop - y; y = cTop; b.dataset.pgs = '1'; }
-      else if (b.dataset.pgs) delete b.dataset.pgs;
+    for (let i = 0; i < blocks.length; i++) {
+      const b = blocks[i], h = Hs.get(b) || 0, L = Lay.get(b) || {};
+      let push = 0, pgs = false;
+      const force = i > 0 && L.brk;
+      if (force || (y + h > cBot + 0.5 && y > cTop + 0.5)) { next(); push = cTop - y; y = cTop; pgs = true; }
+      else if (y < cTop - 0.5) { push = cTop - y; y = cTop; pgs = true; }
+      const had = L.pgs === undefined ? !!b.dataset.pgs : L.pgs; // 되돌리기로 새로 생긴 문단은 실제 속성을 봄
+      if (pgs !== had) { if (pgs) b.dataset.pgs = '1'; else delete b.dataset.pgs; }
+      L.pgs = pgs;
       const mv = push ? push.toFixed(2) + 'px' : '';
-      if (b.style.marginTop !== mv) b.style.marginTop = mv;
+      if (L.mv !== mv && !(L.mv === undefined && b.style.marginTop === mv)) b.style.marginTop = mv;
+      L.mv = mv;
+      L.page = pages.length - 1;
+      Lay.set(b, L);
       y += h;
       while (y > cBot + 0.5) next();
-    });
+    }
     const pb = Math.max(0, top + PH - y);
     set('paddingBottom', pb.toFixed(2) + 'px');
     pageTop = top + PH;
     for (let p = first; p < pages.length; p++) pages[p].secPage = p - first + 1;
   });
+  Track.tops.clear();
   W.pages = pages;
   drawPages(maxW, pageTop);
   if (window.onLayout) window.onLayout();
@@ -170,32 +226,39 @@ function hfInfo() {
   }
   return r;
 }
+let _pagesKey = '';
 function drawPages(maxW, total) {
   const box = $id('pages'), sheet = $id('sheet');
   const hf = hfInfo();
-  const frag = document.createDocumentFragment();
-  W.pages.forEach((p, i) => {
-    const el = document.createElement('div'); el.className = 'page';
-    el.style.cssText = `top:${p.top}px;width:${p.w}px;height:${p.h}px`;
-    const pg = p.pg, n = i + 1;
-    const ta = a => ({ CENTER: 'center', RIGHT: 'right' }[a] || 'left');
-    if (hf.header && hf.header.text) { const h = document.createElement('div'); h.className = 'pg-hd'; h.style.cssText = `top:${pg.header / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${ta(hf.header.align)}`; h.textContent = hf.header.text; el.appendChild(h); }
-    if (hf.footer && hf.footer.text) { const f = document.createElement('div'); f.className = 'pg-ft'; f.style.cssText = `bottom:${pg.footer / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${ta(hf.footer.align)}`; f.textContent = hf.footer.text; el.appendChild(f); }
-    if (hf.pageNum && hf.pageNum.pos !== 'NONE') {
-      const pn = document.createElement('div'); pn.className = 'pg-num';
-      const pos = hf.pageNum.pos; const top = /^TOP/.test(pos);
-      const al = /LEFT/.test(pos) ? 'left' : /RIGHT/.test(pos) ? 'right' : 'center';
-      const s = (NUM_FMT[hf.pageNum.fmt] || NUM_FMT.DIGIT)(n);
-      pn.textContent = hf.pageNum.side ? `${hf.pageNum.side} ${s} ${hf.pageNum.side}` : s;
-      pn.style.cssText = `${top ? 'top' : 'bottom'}:${(top ? pg.header : pg.footer) / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${al}`;
-      el.appendChild(pn);
-    }
-    const lab = document.createElement('div'); lab.className = 'pg-lab'; lab.textContent = n; el.appendChild(lab);
-    frag.appendChild(el);
-  });
-  box.replaceChildren(frag);
-  sheet.style.width = maxW + 'px'; sheet.style.height = total + 'px';
-  applyZoom();
+  const key = JSON.stringify([hf.header && [hf.header.text, hf.header.align], hf.footer && [hf.footer.text, hf.footer.align], hf.pageNum && [hf.pageNum.pos, hf.pageNum.fmt, hf.pageNum.side], W.pages.map(p => p.w + 'x' + p.h + ':' + p.pg.header + ',' + p.pg.footer + ',' + p.pg.left + ',' + p.pg.right).join('|')]);
+  if (key === _pagesKey && box.children.length === W.pages.length) { // 쪽 수·머리말이 그대로면 위치만 맞춤
+    W.pages.forEach((p, i) => { const el = box.children[i]; const t = p.top + 'px'; if (el.style.top !== t) el.style.top = t; });
+  } else {
+    _pagesKey = key;
+    const frag = document.createDocumentFragment();
+    W.pages.forEach((p, i) => {
+      const el = document.createElement('div'); el.className = 'page';
+      el.style.cssText = `top:${p.top}px;width:${p.w}px;height:${p.h}px`;
+      const pg = p.pg, n = i + 1;
+      const ta = a => ({ CENTER: 'center', RIGHT: 'right' }[a] || 'left');
+      if (hf.header && hf.header.text) { const h = document.createElement('div'); h.className = 'pg-hd'; h.style.cssText = `top:${pg.header / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${ta(hf.header.align)}`; h.textContent = hf.header.text; el.appendChild(h); }
+      if (hf.footer && hf.footer.text) { const f = document.createElement('div'); f.className = 'pg-ft'; f.style.cssText = `bottom:${pg.footer / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${ta(hf.footer.align)}`; f.textContent = hf.footer.text; el.appendChild(f); }
+      if (hf.pageNum && hf.pageNum.pos !== 'NONE') {
+        const pn = document.createElement('div'); pn.className = 'pg-num';
+        const pos = hf.pageNum.pos; const top = /^TOP/.test(pos);
+        const al = /LEFT/.test(pos) ? 'left' : /RIGHT/.test(pos) ? 'right' : 'center';
+        const s = (NUM_FMT[hf.pageNum.fmt] || NUM_FMT.DIGIT)(n);
+        pn.textContent = hf.pageNum.side ? `${hf.pageNum.side} ${s} ${hf.pageNum.side}` : s;
+        pn.style.cssText = `${top ? 'top' : 'bottom'}:${(top ? pg.header : pg.footer) / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${al}`;
+        el.appendChild(pn);
+      }
+      const lab = document.createElement('div'); lab.className = 'pg-lab'; lab.textContent = n; el.appendChild(lab);
+      frag.appendChild(el);
+    });
+    box.replaceChildren(frag);
+  }
+  const w = maxW + 'px', h = total + 'px';
+  if (sheet.style.width !== w || sheet.style.height !== h) { sheet.style.width = w; sheet.style.height = h; applyZoom(); }
 }
 function applyZoom() {
   const sheet = $id('sheet'), wrap = $id('sheetWrap'); if (!sheet) return;
@@ -206,6 +269,7 @@ function applyZoom() {
 function pageOfY(y) { let lo = 0, hi = W.pages.length - 1, ans = 0; while (lo <= hi) { const m = (lo + hi) >> 1; if (W.pages[m].top <= y) { ans = m; lo = m + 1; } else hi = m - 1; } return ans; }
 function caretPage() {
   const r = rng(); if (!r || !inDoc(r.startContainer)) return 0;
+  const tb = topOf(r.startContainer); const L = tb && Lay.get(tb); if (L && L.page != null) return L.page;
   let rect = r.getClientRects()[0] || (blockOf(r.startContainer) || docEl()).getBoundingClientRect();
   const s = $id('sheet').getBoundingClientRect();
   return pageOfY((rect.top - s.top) / W.zoom);
@@ -215,7 +279,10 @@ function caretPage() {
 function numbering() {
   const H = W.doc.header; const cnt = new Map();
   const outlineId = (() => { const sp = W.doc.secPr(0); return sp ? sp.getAttribute('outlineShapeIDRef') || '1' : '1'; })();
-  for (const b of docEl().querySelectorAll('.hp')) {
+  // 번호가 붙는 문단 모양만 골라서 훑음 (+ 예전에 번호가 있던 문단은 지우려고 포함)
+  const ids = Array.from(H.paraPr.keys()).filter(id => H.headingInfo(id));
+  const sel = ids.map(id => `.hp[data-pp="${id}"]`).concat('.hp[data-num]').join(',');
+  for (const b of docEl().querySelectorAll(sel)) {
     const h = H.headingInfo(b.dataset.pp);
     let txt = '';
     if (h) {
@@ -646,7 +713,7 @@ function cellBorder(cells, type, sides) {
   if (!cells.length) return;
   tableOp(cells[0], () => { for (const td of cells) { const bf = W.doc.header.deriveBf(td.dataset.bf || '1', { sides: sides || ['left', 'right', 'top', 'bottom'], type: type, width: type === 'NONE' ? '0.1 mm' : '0.12 mm' }); td.dataset.bf = bf; td.className = 'bf-' + bf + (td.classList.contains('csel') ? ' csel' : ''); } });
 }
-function cellAlign(cells, va) { if (!cells.length) return; tableOp(cells[0], () => { for (const td of cells) td.style.verticalAlign = va; }); }
+function cellAlign(cells, va) { if (!cells.length) return; tableOp(cells[0], () => { for (const td of cells) { td.style.verticalAlign = va; td.dataset.va = va; } }); }
 function insertTable(rows, cols) {
   const r = rng(); const b = r && blockOf(r.startContainer); if (!b) { toast('표를 넣을 곳을 먼저 클릭하세요'); return; }
   const host = hostOf(b);

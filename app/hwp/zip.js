@@ -46,15 +46,21 @@ const Zip = (() => {
   }
 
   /* entries = [{ name, data: Uint8Array|string, store?: bool }] → Blob */
+  const packed = new WeakMap(); // 바뀌지 않은 파일(같은 바이트 배열)은 압축·CRC 를 다시 하지 않음
   async function write(entries) {
     const enc = new TextEncoder(), now = dosTime(new Date());
     const locals = [], centrals = []; let offset = 0;
     for (const e of entries) {
       const data = typeof e.data === 'string' ? enc.encode(e.data) : e.data;
       const nameB = enc.encode(e.name), utf = /[^\x00-\x7f]/.test(e.name);
-      const crc = crc32(data);
-      let method = e.store ? 0 : 8, body = data;
-      if (method === 8) { body = await deflate(data); if (body.length >= data.length) { method = 0; body = data; } }
+      let crc, method, body;
+      const hit = typeof e.data !== 'string' && packed.get(data);
+      if (hit && hit.store === !!e.store) ({ crc, method, body } = hit);
+      else {
+        crc = crc32(data); method = e.store ? 0 : 8; body = data;
+        if (method === 8) { body = await deflate(data); if (body.length >= data.length) { method = 0; body = data; } }
+        if (typeof e.data !== 'string') packed.set(data, { crc, method, body, store: !!e.store });
+      }
       const lh = new Uint8Array(30 + nameB.length), lv = new DataView(lh.buffer);
       lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, utf ? 0x800 : 0, true); lv.setUint16(8, method, true);
       lv.setUint16(10, now.time, true); lv.setUint16(12, now.date, true); lv.setUint32(14, crc, true);

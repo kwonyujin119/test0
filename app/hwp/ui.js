@@ -41,7 +41,9 @@
     d.header.onAdd = (kind, id) => addRule(kind, id);
     rebuildCss();
     doc.replaceChildren(d.render());
-    d.sealSigs(doc);
+    d.isClean = el => Track.clean(el); // 손대지 않은 문단은 원본 그대로 (바뀐 곳은 실시간 추적)
+    Track.start();
+    warm(d);
     UNDO.stack.length = 0; UNDO.redo.length = 0; UNDO.cur = null; UNDO.bytes = 0;
     setName(meta.name || d.title || '새 문서');
     W.dirty = !!meta.dirty; updateState();
@@ -52,8 +54,15 @@
     $id('canvas').scrollTop = 0;
     if (meta.dirty) scheduleDraft();
   }
+  function warm(d) { // 한가할 때 조금씩 저장 준비 (화면 반응을 막지 않음)
+    const idle = window.requestIdleCallback || (f => setTimeout(() => f({ timeRemaining: () => 8 }), 50));
+    const step = dl => { if (W.doc !== d) return; if (!d.warmCache(() => dl.timeRemaining() < 2)) idle(step, { timeout: 2000 }); };
+    idle(step, { timeout: 2000 });
+  }
   async function openBytes(buf, meta) {
-    try { const d = await HwpxDoc.open(buf); loadDoc(d, meta); toast(`"${meta.name}" 을(를) 열었습니다`); return true; }
+    try {
+      if (buf.byteLength > 300000) { toast('문서를 여는 중…', 60000); await new Promise(r => setTimeout(r, 30)); } // 큰 문서: 멈춘 것처럼 보이지 않게
+      const d = await HwpxDoc.open(buf); loadDoc(d, meta); toast(`"${meta.name}" 을(를) 열었습니다`); return true; }
     catch (e) { console.error(e); alert('문서를 열 수 없습니다.\n\n' + e.message); return false; }
   }
   async function openFile(file, handle) {
@@ -75,7 +84,7 @@
 
   /* ---------- 저장 ---------- */
   let saving = false;
-  async function build() { tidyAll(); return W.doc.save(doc); }
+  async function build() { tidyAll(); Track.flush(); return W.doc.save(doc); }
   function tidyAll() { for (const b of doc.querySelectorAll('.hp')) { const brs = b.querySelectorAll(':scope > br:not([data-lb])'); if (brs.length > 1) brs.forEach((x, i) => { if (i < brs.length - 1 && !x.nextSibling) x.remove(); }); } }
   const fileName = () => (W.name || '문서').replace(/[\\/:*?"<>|]/g, '_') + '.hwpx';
   async function save(as) {
@@ -117,7 +126,11 @@
   window.onDocChanged = () => { if (!W.dirty) { W.dirty = true; } updateState(); scheduleDraft(); };
   let draftT = null, buildMs = 0;
   // 큰 문서는 저장 준비에 시간이 걸리므로 임시 저장 간격을 늘림 (입력이 끊기지 않게)
-  function scheduleDraft() { clearTimeout(draftT); draftT = setTimeout(saveDraft, Math.max(4000, buildMs * 15)); }
+  function scheduleDraft() {
+    clearTimeout(draftT);
+    // 입력을 멈춘 뒤 한가할 때만 임시 저장 (큰 문서는 간격을 더 둠) — 타자 중에 멈칫하지 않게
+    draftT = setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 0)))(() => saveDraft(), { timeout: 4000 }), Math.max(3000, buildMs * 10));
+  }
   async function saveDraft() {
     if (!W.doc || !W.dirty || saving) return;
     try { const t = performance.now(); const blob = await build(); buildMs = performance.now() - t; await HwpStore.drafts.put(W.draftId, W.name, blob, { boxId: W.boxId }); } catch (e) { console.warn('임시 저장 실패', e); }
@@ -255,11 +268,12 @@
   $id('fontItems').addEventListener('click', e => { const b = e.target.closest('[data-face]'); if (!b) return; closeFontPanel(); $id('inFont').value = b.dataset.face; backSel(); applyCp({ face: b.dataset.face }); });
   document.addEventListener('mousedown', e => { if (!$id('fontPanel').hidden && !e.target.closest('#fontPanel,#btnFont')) closeFontPanel(); });
   // 웹 글꼴을 다 받으면 글자 폭이 바뀌므로 쪽 나누기 다시 계산
-  if (document.fonts) document.fonts.addEventListener('loadingdone', () => { if (W.doc) changed(true); });
+  if (document.fonts) document.fonts.addEventListener('loadingdone', () => { if (W.doc) { Track.full = true; changed(true); } });
   const LS_OPTS = [100, 115, 130, 150, 160, 180, 200, 250, 300];
   $id('selLs').innerHTML = LS_OPTS.map(v => `<option value="${v}">${v}%</option>`).join('');
   let raf = 0;
-  window.onSelChange = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(refreshRibbon); };
+  let ribT = 0;
+  window.onSelChange = () => { clearTimeout(ribT); ribT = setTimeout(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(refreshRibbon); }, 60); };
   function refreshRibbon() {
     if (!W.doc) return;
     const r = rng(); const inside = W.cells || (r && inDoc(r.startContainer));
@@ -286,7 +300,7 @@
     $id('stPage').textContent = `${p}/${n} 쪽`;
     const secs = W.doc.sections.length; $id('stSec').textContent = secs > 1 ? `구역 ${(W.pages[p - 1] || {}).si + 1 || 1}/${secs}` : '';
   }
-  window.onLayout = () => { status(); clearTimeout(status._c); status._c = setTimeout(() => { $id('stChars').textContent = (doc.innerText || '').replace(/\s/g, '').length.toLocaleString() + '자'; }, 600); if (W.selPic) placePicHandle(); };
+  window.onLayout = () => { status(); clearTimeout(status._c); status._c = setTimeout(() => { $id('stChars').textContent = (doc.textContent || '').replace(/\s/g, '').length.toLocaleString() + '자'; }, 1500); if (W.selPic) placePicHandle(); };
   document.addEventListener('selectionchange', () => { if (!W.doc) return; window.onSelChange(); });
 
   /* ---------- 리본 입력 ---------- */
@@ -786,7 +800,8 @@
       onOk: q => {
         const u = s => Math.round(num(q, s, 0) * MM);
         W.doc.setPage(sec, { w: u('#g_w'), h: u('#g_h'), land: q('input[name=g_o]:checked').value === 'l', top: u('#g_t'), bottom: u('#g_b'), left: u('#g_l'), right: u('#g_r'), header: u('#g_hd'), footer: u('#g_ft'), gutter: u('#g_g') });
-        markSecDirty(sec); W.dirty = true; updateState(); scheduleDraft(); layout();
+        const sp = doc.querySelector(`.hsec[data-s="${sec}"] .isl[data-ctrl="secPr"]`); if (sp) sp.dataset.touch = Date.now(); // 구역 설정이 바뀐 문단은 새로 저장
+        markSecDirty(sec); W.dirty = true; updateState(); scheduleDraft(); Track.full = true; layout();
       } });
   }
   function markSecDirty(si) { /* 구역 설정은 원본 XML 을 직접 고치므로 문단 비교와 무관 — 저장 때 그대로 반영됨 */ }

@@ -494,9 +494,12 @@ class HwpxDoc {
     const secs = Array.from(root.querySelectorAll(':scope > .hsec'));
     this.sections.forEach((s, si) => {
       const box = secs.find(b => +b.dataset.s === si);
+      const blocks = box ? Array.from(box.children).filter(x => x.classList.contains('hp')) : [];
+      // 빠른 길: 구역 설정이 첫 문단에 그대로 있으면, 손대지 않은 문단은 미리 만들어 둔 XML 글을 그대로 이어 붙임
+      const fast = this.isClean && blocks.length && blocks[0].querySelector(':scope > .isl[data-ctrl="secPr"]');
+      if (fast) { out.set(s.path, this.sectionString(s, blocks)); return; }
       const nd = document.implementation.createDocument(null, null, null);
       const sec = nd.importNode(s.doc.documentElement, false); nd.appendChild(sec);
-      const blocks = box ? Array.from(box.children).filter(x => x.classList.contains('hp')) : [];
       for (const b of blocks) sec.appendChild(this.paraXml(b, nd));
       if (!sec.firstElementChild) sec.appendChild(this.paraXml(this.newParaHtml('0', '0', '0'), nd));
       this.ensureSecPr(s, sec, nd);
@@ -514,7 +517,11 @@ class HwpxDoc {
     const now = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
     for (const m of xdesc(this.hpf, 'meta')) if (m.getAttribute('name') === 'ModifiedDate') m.textContent = now;
     out.set(this.hpfPath, xstring(this.hpf));
-    if (this.files.has('Preview/PrvText.txt')) out.set('Preview/PrvText.txt', (root.innerText || '').replace(/\n{3,}/g, '\n\n').slice(0, 1000).replace(/\n/g, '\r\n'));
+    if (this.files.has('Preview/PrvText.txt')) { // 미리보기 글 (앞부분 문단만, 화면 다시 계산 없이)
+      const lines = []; let n = 0;
+      for (const b of root.querySelectorAll('.hsec > .hp')) { const t = b.textContent.replace(/\u200B/g, ''); lines.push(t); n += t.length + 2; if (n > 1000) break; }
+      out.set('Preview/PrvText.txt', lines.join('\r\n').slice(0, 1000));
+    }
     const entries = [];
     const names = Array.from(this.files.keys());
     if (names.includes('mimetype')) { names.splice(names.indexOf('mimetype'), 1); names.unshift('mimetype'); }
@@ -528,6 +535,43 @@ class HwpxDoc {
     // 저장한 내용을 새 원본으로 삼음 (다음 저장 때 비교 기준)
     for (const [name, text] of out) { const f = this.files.get(name); const data = new TextEncoder().encode(text); if (f) f.data = data; else this.files.set(name, { data, method: 8 }); }
     return blob;
+  }
+  /* 문단 XML 을 글로 — 위쪽(구역 루트)에 이미 선언된 이름공간 선언은 지움 (원본과 같은 모양) */
+  nsDecls(s) {
+    if (!s._ns) { const m = new Map(); for (const a of Array.from(s.doc.documentElement.attributes)) if (a.name.startsWith('xmlns:')) m.set(a.name.slice(6), a.value); s._ns = m; }
+    return s._ns;
+  }
+  elString(s, el) {
+    let str = new XMLSerializer().serializeToString(el);
+    const ns = this.nsDecls(s);
+    if (str.includes(' xmlns')) str = str.replace(/ xmlns:([\w.-]+)="([^"]*)"/g, (all, p, u) => ns.get(p) === u ? '' : all);
+    return str;
+  }
+  cachedPara(s, k) { this.paraStr = this.paraStr || []; let v = this.paraStr[k]; if (v == null) v = this.paraStr[k] = this.elString(s, this.paras[k]); return v; }
+  /* 열자마자 한가한 시간에 원본 문단 글을 미리 만들어 둠 → 첫 저장도 빠름 */
+  warmCache(deadlineFn) {
+    this.paraStr = this.paraStr || [];
+    const owner = new Map(); this.sections.forEach(s => owner.set(s.doc, s));
+    for (let k = this._warm || 0; k < this.paras.length; k++) {
+      const p = this.paras[k];
+      if (p.parentNode && p.parentNode.localName === 'sec' && this.paraStr[k] == null) this.paraStr[k] = this.elString(owner.get(p.ownerDocument) || this.sections[0], p);
+      if (deadlineFn && deadlineFn()) { this._warm = k + 1; return false; }
+    }
+    this._warm = this.paras.length; return true;
+  }
+  sectionString(s, blocks) {
+    if (!s._open) { const root = s.doc.documentElement.cloneNode(false); s._open = new XMLSerializer().serializeToString(root).replace(/\s*\/>$/, '>'); s._close = `</${root.tagName}>`; }
+    const nd = document.implementation.createDocument(null, null, null);
+    const holder = nd.importNode(s.doc.documentElement, false); nd.appendChild(holder);
+    const parts = [s._open];
+    for (const b of blocks) {
+      const k = b.dataset.k;
+      if (k != null && !this._used.has(k) && this.isClean(b) && this.paras[k] && this.paras[k].ownerDocument === s.doc) { this._used.add(k); parts.push(this.cachedPara(s, k)); continue; }
+      const el = this.paraXml(b, nd); holder.appendChild(el);
+      parts.push(this.elString(s, el)); holder.removeChild(el);
+    }
+    parts.push(s._close);
+    return XML_HEAD + parts.join('');
   }
   ensureSecPr(s, sec, nd) {
     const found = xdesc(sec, 'secPr')[0];
@@ -552,7 +596,7 @@ class HwpxDoc {
   }
   paraXml(div, nd) {
     const k = div.dataset.k;
-    if (k != null && !this._used.has(k) && this.paraSig[k] === this.sig(div)) { this._used.add(k); return nd.importNode(this.paras[k], true); }
+    if (k != null && !this._used.has(k) && (this.isClean ? this.isClean(div) : this.paraSig[k] === this.sig(div))) { this._used.add(k); return nd.importNode(this.paras[k], true); }
     const src = k != null && !this._used.has(k) ? this.paras[k] : null;
     if (k != null) this._used.add(k);
     const p = nd.createElementNS(HNS.hp, 'hp:p');
@@ -596,7 +640,7 @@ class HwpxDoc {
   }
   tableXml(t, nd) {
     const ti = t.dataset.t;
-    if (!this._usedT.has(ti) && this.tblSig[ti] === this.tsig(t)) { this._usedT.add(ti); return nd.importNode(this.tables[ti], true); }
+    if (!this._usedT.has(ti) && (this.isClean ? this.isClean(t) : this.tblSig[ti] === this.tsig(t))) { this._usedT.add(ti); return nd.importNode(this.tables[ti], true); }
     this._usedT.add(ti);
     const src = this.tables[ti];
     const tbl = nd.importNode(src, false);

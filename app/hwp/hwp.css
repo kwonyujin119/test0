@@ -75,6 +75,7 @@ a { color: var(--c-acc); text-decoration: none; }
 #doc ::selection { background: rgba(48, 120, 230, .3); }
 .hsec { position: relative; }
 .hp { margin: 0; position: relative; min-height: 1px; }
+#doc.cv .hsec > .hp { content-visibility: auto; } /* 화면 밖 문단은 그리기를 건너뜀 (높이는 기억한 값으로 자리 유지) */
 .hp[data-num]::before { content: attr(data-num) "\00a0"; }
 .isl { display: inline; }
 .isl.hid { display: none; }
@@ -178,7 +179,7 @@ kbd { display: inline-block; padding: 1px 6px; border: 1px solid #cfd5df; border
   td.csel { background-image: none !important; }
   .hsec { padding-top: 0 !important; padding-bottom: 0 !important; margin-top: 0 !important; }
   .hsec + .hsec { break-before: page; }
-  .hp { margin-top: 0 !important; }
+  .hp { margin-top: 0 !important; content-visibility: visible !important; }
   .hp[data-pgs] { break-before: page; }
   .isl.draw, .isl.eq { border-color: transparent; background: none; }
 }

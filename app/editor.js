@@ -50,7 +50,8 @@
   function updateUndoButtons() { $('btnUndo').disabled = S.hi <= 0; $('btnRedo').disabled = S.hi >= S.history.length - 1; }
   function markDirty() {
     S.dirty = true; $('top').classList.add('is-dirty');
-    clearTimeout(saveTimer); saveTimer = setTimeout(() => Draft.put(S.name, S.deck), 300);
+    // 임시본은 손을 멈춘 뒤 한가할 때 저장 (끌기·입력 중에 멈칫하지 않게)
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => (window.requestIdleCallback || (f => f()))(() => Draft.put(S.name, S.deck), { timeout: 3000 }), 800);
   }
   /* 변경 확정: 히스토리 + 더티 + 썸네일 */
   function commit(opts) {
@@ -151,20 +152,30 @@
   }
 
   /* 썸네일 */
+  let thumbFill = 0;
   function renderThumbs() {
     thumbsEl.innerHTML = '';
     S.deck.slides.forEach((s, i) => thumbsEl.appendChild(makeThumb(s, i)));
     $('slideCount').textContent = `${S.cur + 1} / ${S.deck.slides.length}`;
+    // 보이지 않는 썸네일도 한가할 때 하나씩 마저 그림
+    clearTimeout(thumbFill);
+    const idle = window.requestIdleCallback || (f => setTimeout(() => f({ timeRemaining: () => 10 }), 30));
+    const fill = dl => { for (const t of thumbsEl.children) { if (t._draw) { t._draw(); if (dl.timeRemaining() < 4) { thumbFill = setTimeout(() => idle(fill, { timeout: 1000 }), 50); return; } } } };
+    thumbFill = setTimeout(() => idle(fill, { timeout: 1000 }), 300);
   }
+  /* 썸네일은 목록에서 보일 때만 그림 (슬라이드가 많아도 열기·테마 바꾸기가 빠름) */
+  const thumbIO = 'IntersectionObserver' in window ? new IntersectionObserver(ents => {
+    for (const en of ents) if (en.isIntersecting) { const t = en.target; thumbIO.unobserve(t); if (t._draw) t._draw(); }
+  }, { root: thumbsEl, rootMargin: '600px 0px' }) : null;
   function makeThumb(s, i) {
     const t = document.createElement('div'); t.className = 'thumb' + (i === S.cur ? ' active' : '') + (s.hidden ? ' hid' : ''); t.dataset.i = i; t.draggable = true;
-    const sl = renderSlide(s, S.deck, { mode: 'thumb' });
-    t.appendChild(sl);
+    t.style.aspectRatio = SLIDE_W + ' / ' + SLIDE_H;
+    t._draw = () => { t._draw = null; const sl = renderSlide(s, S.deck, { mode: 'thumb' }); t.insertBefore(sl, t.firstChild); requestAnimationFrame(() => fitSlide(t, sl)); };
+    if (thumbIO && i !== S.cur) thumbIO.observe(t); else t._draw();
     const n = document.createElement('div'); n.className = 'n'; n.textContent = i + 1; t.appendChild(n);
     const ms = maxStep(s); if (ms > 0) { const b = document.createElement('div'); b.className = 'steps'; b.textContent = `▸${ms}`; t.appendChild(b); }
     if (s.hidden) { const b = document.createElement('div'); b.className = 'hidb'; b.textContent = '숨김'; t.appendChild(b); }
     const trn = s.transition === 'morph' || (!s.transition && S.deck.transition === 'morph'); if (trn && i > 0) { const b = document.createElement('div'); b.className = 'trb'; b.textContent = '✨'; b.title = '모핑 전환'; t.appendChild(b); }
-    requestAnimationFrame(() => fitSlide(t, sl));
     t.onclick = () => gotoSlide(i);
     t.oncontextmenu = (ev) => { ev.preventDefault(); gotoSlide(i); showMenu(ev.clientX, ev.clientY, slideMenuItems()); };
     t.ondragstart = (ev) => { ev.dataTransfer.setData('text/slide', String(i)); ev.dataTransfer.effectAllowed = 'move'; };
@@ -186,6 +197,7 @@
     if (S.editing) endEdit();
     S.cur = clamp(i, 0, S.deck.slides.length - 1); S.sel = [];
     thumbsEl.querySelectorAll('.thumb').forEach((t, j) => t.classList.toggle('active', j === S.cur));
+    { const ct = thumbsEl.children[S.cur]; if (ct && ct._draw) ct._draw(); }
     renderStage(); renderProps(); updateTop();
     const t = thumbsEl.children[S.cur]; if (t) t.scrollIntoView({ block: 'nearest' });
   }
@@ -399,7 +411,10 @@
     }
   }
   function track(onMove, onUp) {
-    const mv = (e) => onMove(e); const up = (e) => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); onUp(e); };
+    // 마우스 움직임은 화면 한 번 그릴 때 한 번만 처리 (끌기·크기 조절이 부드럽게)
+    let last = null, raf = 0;
+    const mv = (e) => { last = e; if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (last) onMove(last); }); };
+    const up = (e) => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); if (raf) { cancelAnimationFrame(raf); raf = 0; if (last) onMove(last); } onUp(e); };
     window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
   }
   function startDrag(ev) {
