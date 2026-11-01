@@ -517,11 +517,13 @@ class HwpxDoc {
     const now = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
     for (const m of xdesc(this.hpf, 'meta')) if (m.getAttribute('name') === 'ModifiedDate') m.textContent = now;
     out.set(this.hpfPath, xstring(this.hpf));
-    if (this.files.has('Preview/PrvText.txt')) { // 미리보기 글 (앞부분 문단만, 화면 다시 계산 없이)
-      const lines = []; let n = 0;
-      for (const b of root.querySelectorAll('.hsec > .hp')) { const t = b.textContent.replace(/\u200B/g, ''); lines.push(t); n += t.length + 2; if (n > 1000) break; }
-      out.set('Preview/PrvText.txt', lines.join('\r\n').slice(0, 1000));
+    // 지난번(처음 연 때 또는 마지막 저장)과 글자 하나 다르지 않은 파일은 원래 바이트를 그대로 씀 → 다시 압축하지 않고, 본문을 안 고쳤으면 미리보기 글도 그대로
+    let bodySame = true;
+    for (const [name, text] of Array.from(out)) {
+      if (this.prevText(name) === text) out.delete(name);
+      else if (name !== this.headerPath && name !== this.hpfPath) bodySame = false;
     }
+    if (!bodySame && this.files.has('Preview/PrvText.txt')) out.set('Preview/PrvText.txt', this.prvText(root)); // 미리보기 글 (앞부분만, 화면 다시 계산 없이)
     const entries = [];
     const names = Array.from(this.files.keys());
     if (names.includes('mimetype')) { names.splice(names.indexOf('mimetype'), 1); names.unshift('mimetype'); }
@@ -533,8 +535,50 @@ class HwpxDoc {
     }
     const blob = await Zip.write(entries);
     // 저장한 내용을 새 원본으로 삼음 (다음 저장 때 비교 기준)
-    for (const [name, text] of out) { const f = this.files.get(name); const data = new TextEncoder().encode(text); if (f) f.data = data; else this.files.set(name, { data, method: 8 }); }
+    this._txt = this._txt || new Map();
+    for (const [name, text] of out) { const f = this.files.get(name); const data = new TextEncoder().encode(text); if (f) f.data = data; else this.files.set(name, { data, method: 8 }); this._txt.set(name, { data, text }); }
     return blob;
+  }
+  /* 묶음 안 파일의 글 (같은 바이트 배열이면 다시 풀지 않음) */
+  prevText(name) {
+    const f = this.files.get(name); if (!f) return null;
+    this._txt = this._txt || new Map();
+    const c = this._txt.get(name); if (c && c.data === f.data) return c.text;
+    const text = new TextDecoder('utf-8').decode(f.data); this._txt.set(name, { data: f.data, text }); return text;
+  }
+  /* 미리보기 글 (Preview/PrvText.txt) — 한글과 같은 모양: 문단마다 한 줄, 표는 줄마다 한 줄에 칸을 <글> 로 */
+  prvText(root, max) {
+    max = max || 1000;
+    const isHp = x => x.classList && x.classList.contains('hp');
+    const lines = b => {
+      const res = []; let cur = '';
+      const walk = node => {
+        for (let x = node.firstChild; x; x = x.nextSibling) {
+          if (x.nodeType === 3) { cur += x.nodeValue.replace(/[\u200B\uFEFF]/g, ''); continue; }
+          if (x.nodeType !== 1) continue;
+          if (x.tagName === 'BR') { if (x.dataset.lb) cur += '\r\n'; continue; }
+          if (x.tagName === 'IMG' || x.tagName === 'STYLE' || x.tagName === 'SCRIPT') continue;
+          if (x.classList.contains('isl')) {
+            const cl = x.classList;
+            if (cl.contains('tab')) cur += '\t';
+            else if (!cl.contains('obj') && !cl.contains('hid') && !cl.contains('note') && !x.dataset.ctrl) cur += x.textContent;
+            continue;
+          }
+          if (x.tagName === 'TABLE') {
+            if (cur) { res.push(cur); cur = ''; }
+            for (const row of x.rows) res.push(Array.from(row.cells).map(td => '<' + Array.from(td.children).filter(isHp).map(p => lines(p).join('\r\n')).join('\r\n') + '>').join(''));
+            continue;
+          }
+          walk(x);
+        }
+      };
+      walk(b);
+      if (cur || !res.length) res.push(cur);
+      return res;
+    };
+    const out = []; let n = 0;
+    for (const b of root.querySelectorAll('.hsec > .hp')) { for (const l of lines(b)) { out.push(l); n += l.length + 2; } if (n > max) break; }
+    return out.join('\r\n').slice(0, max);
   }
   /* 문단 XML 을 글로 — 위쪽(구역 루트)에 이미 선언된 이름공간 선언은 지움 (원본과 같은 모양) */
   nsDecls(s) {

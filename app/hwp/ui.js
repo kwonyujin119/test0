@@ -19,6 +19,7 @@
     const ok = async () => { if (opts.onOk) { const r = await opts.onOk(q, close); if (r === false) return; } close(); };
     const onKey = e => {
       if (!bg.isConnected) return;
+      const all = document.querySelectorAll('.dlg-bg'); if (all[all.length - 1] !== bg) return; // 겹친 창: 맨 위 창만
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
       else if (e.key === 'Enter' && !e.isComposing && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'BUTTON' && !opts.noEnter) { e.preventDefault(); e.stopPropagation(); ok(); }
       else e.stopPropagation();
@@ -98,7 +99,7 @@
     const r0 = rev;
     try {
       const blob = await build();
-      if (!as && W.boxId) { await HwpStore.box.save(W.boxId, W.name, blob, deviceName()); done('문서함에 저장했습니다'); }
+      if (!as && W.boxId) { await gh401(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName())); done('문서함에 저장했습니다'); }
       else if (!as && W.handle) { await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
       else if (as === 'box') { await boxSaveCurrent(blob, r0); }
       else {
@@ -147,14 +148,16 @@
   async function boxSaveCurrent(blob, r0) {
     if (!(await boxEnsure())) { setState(''); updateState(); return; }
     if (!blob) { r0 = rev; blob = await build(); }
-    W.boxId = await HwpStore.box.save(W.boxId, W.name, blob, deviceName());
+    W.boxId = await gh401(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName()));
     W.handle = null; savedAt(r0);
     toast('문서함에 저장했습니다 — 다른 PC 에서도 이 문서를 열 수 있습니다', 3000);
   }
-  function connectDialog() {
+  function connectDialog(opts) {
+    opts = opts || {};
     return new Promise(res => {
+      let done = false;
       const c = GH.cfg || GH.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main' };
-      dialog('GitHub 연결', `<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 교안 작업장과 같은 토큰을 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
+      dialog('GitHub 연결', `${opts.expired ? '<div class="warn" style="margin-bottom:10px">GitHub 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 교안 작업장과 같은 토큰을 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
         <div class="grid1" style="margin-top:12px"><label>저장소</label><div style="display:flex;gap:6px"><input id="g_o" value="${escH(c.owner)}"><span>/</span><input id="g_r" value="${escH(c.repo)}"></div>
         <label>토큰</label><input id="g_t" type="password" placeholder="github_pat_…" autocomplete="off"></div>
         <p class="muted" style="font-size:12px;line-height:1.6">토큰 만들기: github.com/settings/personal-access-tokens/new → Repository access: <b>${escH(c.repo)}</b> → Permissions: <b>Contents: Read and write</b></p>`, {
@@ -167,14 +170,23 @@
           try { const r = await GH.check(); if (!r.push) { GH.cfg = prev; alert('이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요)'); return false; } }
           catch (e) { GH.cfg = prev; alert(e.message); return false; }
           GH.save(cfg);
-          res(true);
-        }, onClose: () => res(!!(GH.cfg && GH.token)) });
+          done = true; res(true);
+        }, onClose: () => res(done || (!opts.expired && !!(GH.cfg && GH.token))) });
     });
+  }
+  /* 문서함 작업: 토큰이 만료되면(401) 연결 창을 바로 다시 띄우고, 연결되면 같은 일을 한 번 더 시도 */
+  async function gh401(fn) {
+    try { return await fn(); }
+    catch (e) {
+      if (e.status !== 401) throw e;
+      if (!(await connectDialog({ expired: true }))) throw e;
+      return fn();
+    }
   }
   async function boxEnsure() {
     if (!HwpStore.box.ready()) { if (!(await connectDialog())) return false; }
     if (HwpStore.box.unlocked || await HwpStore.box.restoreKey()) return true;
-    let exists = false; try { exists = await HwpStore.box.exists(); } catch (e) { alert(e.message); return false; }
+    let exists = false; try { exists = await gh401(() => HwpStore.box.exists()); } catch (e) { alert(e.message); return false; }
     return new Promise(res => {
       dialog(exists ? '문서함 열기' : '문서함 만들기', `${exists ? '<p style="margin-top:0">문서함 암호를 입력하세요.</p>' : `<div class="warn">처음 한 번 문서함 암호를 정합니다. 문서는 이 암호로 <b>브라우저 안에서 암호화</b>된 뒤 올라가므로, 저장소가 공개여도 내용과 파일 이름은 보이지 않습니다.<br><b>암호를 잊으면 누구도(저도) 문서를 되살릴 수 없습니다.</b> 꼭 기억해 두세요.</div>`}
         <div class="grid1" style="margin-top:12px"><label>암호</label><input id="b_p" type="password" autocomplete="off">${exists ? '' : '<label>암호 확인</label><input id="b_p2" type="password" autocomplete="off">'}</div>
@@ -184,7 +196,7 @@
           const p = q('#b_p').value;
           if (p.length < 6) { alert('암호는 6자 이상으로 해 주세요'); return false; }
           if (!exists && p !== q('#b_p2').value) { alert('두 암호가 다릅니다'); return false; }
-          try { await HwpStore.box.unlock(p, q('#b_rm').checked); } catch (e) { alert(e.message); return false; }
+          try { await gh401(() => HwpStore.box.unlock(p, q('#b_rm').checked)); } catch (e) { alert(e.message); return false; }
           res(true);
         }, onClose: () => res(HwpStore.box.unlocked) });
     });
@@ -201,20 +213,20 @@
     if (q('#bx_cur')) q('#bx_cur').onclick = async () => { d.close(); await boxSaveCurrent(); };
     q('#bx_up').onclick = async () => {
       const p = await HwpStore.pickOpen().catch(() => null); if (!p) return;
-      try { q('#bx').textContent = '올리는 중…'; await HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, deviceName()); toast('문서함에 올렸습니다'); render(); } catch (e) { alert(e.message); render(); }
+      try { q('#bx').textContent = '올리는 중…'; await gh401(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, deviceName())); toast('문서함에 올렸습니다'); render(); } catch (e) { alert(e.message); render(); }
     };
     async function render() {
       let items;
-      try { items = await HwpStore.box.list(); } catch (e) { q('#bx').textContent = e.message; return; }
+      try { items = await gh401(() => HwpStore.box.list()); } catch (e) { q('#bx').textContent = e.message; return; }
       if (!items.length) { q('#bx').innerHTML = '<p>문서함이 비어 있습니다. <b>현재 문서 저장</b> 또는 <b>PC 파일 올리기</b> 로 시작하세요.</p>'; return; }
       q('#bx').innerHTML = `<table class="boxlist">${items.map(it => `<tr data-id="${escH(it.id)}"><td class="nm2">${escH(it.name)}${it.id === W.boxId ? ' <span class="muted">(지금 여는 중)</span>' : ''}</td><td class="muted">${new Date(it.modified).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}${it.device ? ' · ' + escH(it.device) : ''}</td><td class="muted">${Math.max(1, Math.round(it.size / 1024))} KB</td><td style="white-space:nowrap;text-align:right"><button class="tb" data-b="open">열기</button><button class="tb" data-b="dl" title="hwpx 로 내려받기">내려받기</button><button class="tb" data-b="ren">이름</button><button class="tb danger" data-b="del">삭제</button></td></tr>`).join('')}</table>`;
       q('#bx').onclick = async e => {
         const b = e.target.closest('[data-b]'); if (!b) return; const tr = b.closest('tr'); const id = tr.dataset.id; const it = items.find(x => x.id === id);
         try {
-          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; b.textContent = '여는 중…'; const u = await HwpStore.box.load(id); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
-          if (b.dataset.b === 'dl') { const u = await HwpStore.box.load(id); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); }
-          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { await HwpStore.box.rename(id, n.trim()); if (id === W.boxId) setName(n.trim()); render(); } }
-          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { await HwpStore.box.remove(id); if (id === W.boxId) { W.boxId = null; updateState(); } render(); } }
+          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; b.textContent = '여는 중…'; const u = await gh401(() => HwpStore.box.load(id)); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
+          if (b.dataset.b === 'dl') { const u = await gh401(() => HwpStore.box.load(id)); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); }
+          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { await gh401(() => HwpStore.box.rename(id, n.trim())); if (id === W.boxId) setName(n.trim()); render(); } }
+          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { await gh401(() => HwpStore.box.remove(id)); if (id === W.boxId) { W.boxId = null; updateState(); } render(); } }
         } catch (er) { alert(er.message); }
       };
     }
@@ -322,10 +334,10 @@
   $id('selStyle').addEventListener('change', e => { backSel(); applyStyle(e.target.value); });
   const fontApply = () => { const v = $id('inFont').value.trim(); if (!v) return; backSel(); applyCp({ face: v }); };
   $id('inFont').addEventListener('change', fontApply);
-  $id('inFont').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); fontApply(); } if (e.key === 'Escape') backSel(); });
+  $id('inFont').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); fontApply(); } if (e.key === 'Escape') backSel(); });
   const sizeApply = () => { const v = parseFloat($id('inSize').value); if (!(v > 0)) return; backSel(); applyCp({ height: Math.round(v * 100) }); };
   $id('inSize').addEventListener('change', sizeApply);
-  $id('inSize').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); sizeApply(); } if (e.key === 'Escape') backSel(); });
+  $id('inSize').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sizeApply(); } if (e.key === 'Escape') backSel(); });
   $id('selLs').addEventListener('change', e => { backSel(); applyPp({ lsType: 'PERCENT', ls: +e.target.value }); });
   $id('selVa').addEventListener('change', e => { backSel(); cellAlign(curCells(), e.target.value); });
   $id('inColor').addEventListener('input', e => { e.target.parentElement.querySelector('span').style.setProperty('--sw', e.target.value); });
@@ -334,7 +346,7 @@
   $id('inShade').addEventListener('input', e => { e.target.parentElement.querySelector('span').style.setProperty('--sw', e.target.value); });
   $id('inCellFill').addEventListener('change', e => { backSel(); cellFill(curCells(), e.target.value.toUpperCase()); });
   $id('selZoom').addEventListener('change', e => setZoom(e.target.value));
-  $id('docName').addEventListener('click', () => { const n = prompt('문서 이름', W.name); if (n && n.trim()) { setName(n.trim()); if (W.doc) { W.dirty = true; updateState(); } } });
+  $id('docName').addEventListener('click', () => { const n = prompt('문서 이름', W.name); if (n && n.trim() && n.trim() !== W.name) { setName(n.trim()); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '수정됨' 유지)
 
   function curCells() {
     if (W.cells && W.cells.size) return Array.from(W.cells);
@@ -603,10 +615,20 @@
     'shift+tab': () => hangIndent(),
   };
   for (let i = 1; i <= 9; i++) MAP['ctrl+' + i] = () => STY(i - 1);
-  document.addEventListener('keydown', e => {
+  /* 한글 조합 중에 누른 Ctrl/Alt 단축키: 브라우저 기본 동작(페이지 저장·인쇄 등)은 막고, 조합이 끝난 뒤 실행 */
+  let imeKey = null;
+  document.addEventListener('compositionend', () => { const p = imeKey; imeKey = null; if (p && Date.now() - p.t < 1500) setTimeout(() => onKey(p.e), 0); }, true);
+  document.addEventListener('keydown', onKey);
+  function onKey(e) {
     if (document.querySelector('.dlg-bg')) return; // 대화상자가 처리
     const k = keyName(e);
-    if (e.isComposing || e.keyCode === 229) return; // 한글 조합 중에는 손대지 않음 (조합이 끝난 뒤 다시 들어옴)
+    if (e.isComposing || e.keyCode === 229) { // 한글 조합 중에는 글자 입력에 손대지 않음
+      if (W.doc && (MAP[k] || k === 'ctrl+enter') && /^(ctrl|alt)\+/.test(k)) {
+        e.preventDefault();
+        imeKey = { t: Date.now(), e: { key: e.key, code: e.code, keyCode: 0, isComposing: false, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey, shiftKey: e.shiftKey, target: e.target, preventDefault() { } } };
+      }
+      return;
+    }
     if (k === 'esc') { if (!$id('findBar').hidden) { closeFind(); e.preventDefault(); return; } if (W.cells) { const a = W.cellAnchor; clearCells(); if (a) caretToEnd(a.querySelector('.hp')); e.preventDefault(); return; } if (W.selPic) { hidePic(); return; } setChord(null); return; }
     if (!W.doc) { if (MAP[k] && /^(ctrl\+o|alt\+o|alt\+n|f1)$/.test(k)) { e.preventDefault(); MAP[k](); } return; }
     const inEditor = inDoc(e.target) || e.target === document.body || e.target === $id('canvas');
@@ -622,6 +644,14 @@
     if (W.cells && W.cells.size) { if (cellKeys(e, k)) { e.preventDefault(); return; } }
     if (W.selPic && (k === 'delete' || k === 'backspace')) { e.preventDefault(); deletePic(); return; }
     const r = rng(); const td = r && cellOf(r.startContainer);
+    // 본문과 표 칸에 걸친 선택: 브라우저는 편집 영역이 달라 아무것도 하지 않으므로 직접 지움
+    if (r && !r.collapsed && inDoc(r.startContainer)) {
+      const b1 = blockOf(r.startContainer), b2 = blockOf(r.endContainer);
+      if (b1 && b2 && hostOf(b1) !== hostOf(b2)) {
+        if (/^(ctrl\+)?(backspace|delete)$/.test(k)) { e.preventDefault(); deleteSelection(); return; }
+        if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key && e.key.length === 1) deleteSelection(); // 지운 뒤 글자는 그대로 들어감
+      }
+    }
     if (k === 'f5') { e.preventDefault(); if (td) { W.cellAnchor = td; W.cellFocus = td; W.cellExtend = false; setCells([td]); sel().removeAllRanges(); } return; }
     if (td && (k === 'tab' || k === 'shift+tab')) { e.preventDefault(); cellMove(td, k === 'shift+tab'); return; }
     if (td && k === 'ctrl+enter') { e.preventDefault(); insertRow(td, true); return; }
@@ -632,7 +662,7 @@
     if (k === 'ctrl+a' && W.cells) clearCells();
     const f = MAP[k];
     if (f) { e.preventDefault(); keepSel(); f(); }
-  });
+  }
   function cellKeys(e, k) {
     const cells = Array.from(W.cells);
     const dirs = { left: [0, -1], right: [0, 1], up: [-1, 0], down: [1, 0] };

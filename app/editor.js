@@ -1112,7 +1112,18 @@
   function selectAll() { S.sel = curSlide().elements.filter(e => !e.locked).map(e => e.id); markSelection(); renderOverlay(); renderProps(); }
   function clearSelection() { closeMenus(); S.sel = []; markSelection(); renderOverlay(); renderProps(); }
 
-  document.addEventListener('keydown', (ev) => {
+  /* 한글 조합 중에 누른 Ctrl 단축키(저장·찾기·인쇄 등): 브라우저 기본 동작(페이지 저장·인쇄 창)은 막고, 조합이 끝난 뒤 실행 */
+  let imeKey = null;
+  document.addEventListener('compositionend', () => { const p = imeKey; imeKey = null; if (p && Date.now() - p.t < 1500) setTimeout(() => onKey(p.ev), 0); }, true);
+  document.addEventListener('keydown', onKey);
+  function onKey(ev) {
+    if (ev.isComposing || ev.keyCode === 229) {
+      if ((ev.ctrlKey || ev.metaKey) && /^(KeyS|KeyF|KeyH|KeyP|KeyM|Enter)$/.test(ev.code)) {
+        ev.preventDefault();
+        imeKey = { t: Date.now(), ev: { key: ev.code === 'Enter' ? 'Enter' : ev.code.slice(3).toLowerCase(), code: ev.code, keyCode: 0, isComposing: false, ctrlKey: ev.ctrlKey, metaKey: ev.metaKey, shiftKey: ev.shiftKey, altKey: ev.altKey, target: ev.target, preventDefault() { } } };
+        return;
+      }
+    }
     const ctrl = ev.ctrlKey || ev.metaKey, shift = ev.shiftKey, alt = ev.altKey;
     const key = ev.key, low = key.length === 1 ? key.toLowerCase() : key;
     const stop = () => ev.preventDefault();
@@ -1189,7 +1200,7 @@
       stop(); const d = ctrl ? 1 : shift ? 50 : 10;   // 화살표 10px · Ctrl 1px(미세) · Shift 50px
       nudge(key === 'ArrowLeft' ? -d : key === 'ArrowRight' ? d : 0, key === 'ArrowUp' ? -d : key === 'ArrowDown' ? d : 0);
     }
-  });
+  }
 
   /* ---------- 단축키 도움말 (F1) ---------- */
   function showShortcutHelp() {
@@ -1531,8 +1542,8 @@
     };
     const close = () => { findEl.remove(); findEl = null; };
     q.addEventListener('input', () => { findPos = -1; upd(); });
-    q.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Enter') { ev.preventDefault(); go(ev.shiftKey ? -1 : 1); } if (ev.key === 'Escape') close(); if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'h') { ev.preventDefault(); findEl.classList.add('rep'); r.focus(); } });
-    r.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') close(); if (ev.key === 'Enter') { ev.preventDefault(); one(); } });
+    q.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Enter' && !ev.isComposing) { ev.preventDefault(); go(ev.shiftKey ? -1 : 1); } if (ev.key === 'Escape') close(); if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'h') { ev.preventDefault(); findEl.classList.add('rep'); r.focus(); } });
+    r.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') close(); if (ev.key === 'Enter' && !ev.isComposing) { ev.preventDefault(); one(); } });
     findEl.querySelector('#fprev').onclick = () => go(-1); findEl.querySelector('#fnext').onclick = () => go(1);
     findEl.querySelector('#ftog').onclick = () => { findEl.classList.toggle('rep'); if (findEl.classList.contains('rep')) r.focus(); };
     findEl.querySelector('#fclose').onclick = close; findEl.querySelector('#fone').onclick = one; findEl.querySelector('#fall').onclick = all;

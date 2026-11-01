@@ -493,14 +493,39 @@ function deleteSelection(noRecord) {
   const run = () => { run0(); putBack(); };
   const run0 = () => {
     if (b1 === b2) { r.deleteContents(); mergeSpans(b1); ensureBr(b1); const rr = rng(); if (!rr || !b1.contains(rr.startContainer)) caretToEnd(b1); return; }
-    if (hostOf(b1) !== hostOf(b2)) { sel().collapseToStart(); return; }
+    if (hostOf(b1) !== hostOf(b2)) { deleteAcross(r, b1); return; }
     const k = caretOffset(b1, r.startContainer, r.startOffset);
     r.deleteContents();
     if (b2.isConnected && b1.isConnected) mergeInto(b1, b2);
     if (b1.isConnected) { mergeSpans(b1); ensureBr(b1); setCaretOffset(b1, k); }
   };
-  if (noRecord) { const e = record('op', b1, hostOf(b1) === hostOf(b2) ? b2 : b1); run(); settle(e); UNDO.cur = null; changed(); }
-  else edit(b1, hostOf(b1) === hostOf(b2) ? b2 : b1, run);
+  if (noRecord) { const e = record('op', b1, b2); run(); settle(e); UNDO.cur = null; changed(); }
+  else edit(b1, b2, run);
+}
+/* 본문과 표 칸에 걸친 선택 지우기 (한글처럼): 선택한 글자만 지우고 표·칸 구조와 조판 부호는 그대로 둠 */
+function deleteAcross(r, b1) {
+  const covers = n => { const a = document.createRange(); a.selectNode(n); return r.compareBoundaryPoints(Range.START_TO_START, a) <= 0 && r.compareBoundaryPoints(Range.END_TO_END, a) >= 0; };
+  const k = caretOffset(b1, r.startContainer, r.startOffset);
+  let root = r.commonAncestorContainer; if (root.nodeType !== 1) root = root.parentElement;
+  // 바꾸기 전에 지울 곳을 모두 정해 둠 (지우는 동안 선택 범위가 움직이므로)
+  const cuts = []; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let t;
+  while ((t = w.nextNode())) {
+    if (!r.intersectsNode(t) || t.parentElement.closest('.isl')) continue;
+    const a = t === r.startContainer ? r.startOffset : 0, z = t === r.endContainer ? r.endOffset : t.length;
+    if (z > a) cuts.push([t, a, z]);
+  }
+  const els = Array.from(root.querySelectorAll('br[data-lb], .isl:not(.hid)')).filter(x => !x.parentElement.closest('.isl') && !x.querySelector('table') && covers(x));
+  const touched = new Set([b1]);
+  for (const [n] of cuts) { const b = blockOf(n); if (b) touched.add(b); }
+  for (const x of els) { const b = blockOf(x); if (b) touched.add(b); }
+  // 통째로 덮인 문단은 지움 — 표나 조판 부호를 품은 문단, 칸(또는 구역)의 마지막 문단은 남김
+  const gone = new Set(Array.from(root.querySelectorAll('.hp')).filter(b => b !== b1 && covers(b) && !b.querySelector('table, .isl.hid')));
+  for (const b of Array.from(gone)) { const host = hostOf(b); if (!blocksIn(host).some(x => !gone.has(x))) { const keep = blocksIn(host)[0]; gone.delete(keep); touched.add(keep); } }
+  for (const [n, a, z] of cuts) n.deleteData(a, z - a);
+  for (const x of els) x.remove();
+  for (const b of gone) { b.remove(); touched.delete(b); }
+  for (const b of touched) if (b.isConnected) { mergeSpans(b); ensureBr(b); }
+  if (b1.isConnected) setCaretOffset(b1, k);
 }
 function insertText(text) {
   let r = rng(); if (!r) return;

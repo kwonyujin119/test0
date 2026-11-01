@@ -67,7 +67,7 @@ const HwpStore = (() => {
   async function ghBin(path) {
     const r = await fetch(`${GH.base()}/contents/${encPath(path)}?ref=${encodeURIComponent(GH.cfg.branch)}`, { headers: GH.headers('application/vnd.github.raw+json'), cache: 'no-store' });
     if (r.status === 404) return null;
-    if (!r.ok) throw new Error('문서함을 읽지 못했습니다 (' + r.status + ')');
+    if (!r.ok) { const e = new Error(r.status === 401 ? 'GitHub 토큰이 올바르지 않거나 만료되었습니다' : '문서함을 읽지 못했습니다 (' + r.status + ')'); e.status = r.status; throw e; }
     return new Uint8Array(await r.arrayBuffer());
   }
   async function derive(pass, salt) {
