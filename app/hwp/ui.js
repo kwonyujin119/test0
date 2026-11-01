@@ -16,7 +16,16 @@
     document.body.appendChild(bg);
     const q = s => bg.querySelector(s);
     const close = (restore) => { bg.remove(); document.removeEventListener('keydown', onKey, true); if (restore !== false) backSel(); if (opts.onClose) opts.onClose(); };
-    const ok = async () => { if (opts.onOk) { const r = await opts.onOk(q, close); if (r === false) return; } close(); };
+    let busy = false;
+    const ok = async () => {
+      if (busy) return; // 처리 중에 다시 누른 것은 무시 (두 번 실행 방지)
+      if (opts.onOk) {
+        busy = true; const btn = q('[data-x="ok"]'); if (btn) btn.disabled = true;
+        let r; try { r = await opts.onOk(q, close); } finally { busy = false; if (btn) btn.disabled = false; }
+        if (r === false) return;
+      }
+      close();
+    };
     const onKey = e => {
       if (!bg.isConnected) return;
       const all = document.querySelectorAll('.dlg-bg'); if (all[all.length - 1] !== bg) return; // 겹친 창: 맨 위 창만
@@ -99,7 +108,7 @@
     const r0 = rev;
     try {
       const blob = await build();
-      if (!as && W.boxId) { await gh401(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName())); done('문서함에 저장했습니다'); }
+      if (!as && W.boxId) { await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName())); done('문서함에 저장했습니다'); }
       else if (!as && W.handle) { await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
       else if (as === 'box') { await boxSaveCurrent(blob, r0); }
       else {
@@ -160,7 +169,7 @@
   async function boxSaveCurrent(blob, r0) {
     if (!(await boxEnsure())) { setState(''); updateState(); return; }
     if (!blob) { r0 = rev; blob = await build(); }
-    W.boxId = await gh401(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName()));
+    W.boxId = await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName()));
     W.handle = null; savedAt(r0);
     toast('문서함에 저장했습니다 — 다른 PC 에서도 이 문서를 열 수 있습니다', 3000);
   }
@@ -200,6 +209,16 @@
       return fn();
     }
   }
+  /* 문서함 작업: 토큰 만료면 다시 연결, 기억해 둔 암호 키가 맞지 않으면 암호를 다시 물어 한 번 더 */
+  async function boxRun(fn) {
+    try { return await gh401(fn); }
+    catch (e) {
+      if (!e.badPass) throw e;
+      toast('문서함 암호를 다시 입력해 주세요', 2500);
+      if (!(await boxEnsure())) throw new Error('문서함 암호를 입력하지 않아 멈췄습니다');
+      return gh401(fn);
+    }
+  }
   async function boxEnsure() {
     if (!HwpStore.box.ready()) { if (!(await connectDialog())) return false; }
     if (HwpStore.box.unlocked || await HwpStore.box.restoreKey()) return true;
@@ -230,20 +249,20 @@
     if (q('#bx_cur')) q('#bx_cur').onclick = async () => { d.close(); await boxSaveCurrent(); };
     q('#bx_up').onclick = async () => {
       const p = await HwpStore.pickOpen().catch(() => null); if (!p) return;
-      try { q('#bx').textContent = '올리는 중…'; await gh401(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, deviceName())); toast('문서함에 올렸습니다'); render(); } catch (e) { alert(e.message); render(); }
+      try { q('#bx').textContent = '올리는 중…'; await boxRun(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, deviceName())); toast('문서함에 올렸습니다'); render(); } catch (e) { alert(e.message); render(); }
     };
     async function render() {
       let items;
-      try { items = await gh401(() => HwpStore.box.list()); } catch (e) { q('#bx').textContent = e.message; return; }
+      try { items = await boxRun(() => HwpStore.box.list()); } catch (e) { q('#bx').textContent = e.message; return; }
       if (!items.length) { q('#bx').innerHTML = '<p>문서함이 비어 있습니다. <b>현재 문서 저장</b> 또는 <b>PC 파일 올리기</b> 로 시작하세요.</p>'; return; }
       q('#bx').innerHTML = `<table class="boxlist">${items.map(it => `<tr data-id="${escH(it.id)}"><td class="nm2">${escH(it.name)}${it.id === W.boxId ? ' <span class="muted">(지금 여는 중)</span>' : ''}</td><td class="muted">${new Date(it.modified).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}${it.device ? ' · ' + escH(it.device) : ''}</td><td class="muted">${Math.max(1, Math.round(it.size / 1024))} KB</td><td style="white-space:nowrap;text-align:right"><button class="tb" data-b="open">열기</button><button class="tb" data-b="dl" title="hwpx 로 내려받기">내려받기</button><button class="tb" data-b="ren">이름</button><button class="tb danger" data-b="del">삭제</button></td></tr>`).join('')}</table>`;
       q('#bx').onclick = async e => {
         const b = e.target.closest('[data-b]'); if (!b) return; const tr = b.closest('tr'); const id = tr.dataset.id; const it = items.find(x => x.id === id);
         try {
-          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; b.textContent = '여는 중…'; const u = await gh401(() => HwpStore.box.load(id)); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
-          if (b.dataset.b === 'dl') { const u = await gh401(() => HwpStore.box.load(id)); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); }
-          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { await gh401(() => HwpStore.box.rename(id, n.trim())); if (id === W.boxId) setName(n.trim()); render(); } }
-          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { await gh401(() => HwpStore.box.remove(id)); if (id === W.boxId) { W.boxId = null; updateState(); } render(); } }
+          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; b.textContent = '여는 중…'; const u = await boxRun(() => HwpStore.box.load(id)); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
+          if (b.dataset.b === 'dl') { const u = await boxRun(() => HwpStore.box.load(id)); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); }
+          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { await boxRun(() => HwpStore.box.rename(id, n.trim())); if (id === W.boxId) setName(n.trim()); render(); } }
+          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { await boxRun(() => HwpStore.box.remove(id)); if (id === W.boxId) { W.boxId = null; updateState(); } render(); } }
         } catch (er) { alert(er.message); }
       };
     }

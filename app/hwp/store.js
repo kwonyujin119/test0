@@ -64,11 +64,21 @@ const HwpStore = (() => {
   const KEY_ID = () => 'box:' + (GH.cfg ? GH.cfg.owner + '/' + GH.cfg.repo : '');
 
   function ready() { if (!GH.cfg) GH.load(); return !!(GH.cfg && GH.token); }
+  /* 저장소 파일 읽기. contents API 의 raw 응답은 일부 이진 파일에서 0바이트가 오고 1MB 가 넘으면 내용이 비므로,
+     파일 정보(sha)를 받은 뒤 내용이 온전하지 않으면 git blob 으로 받음 */
   async function ghBin(path) {
-    const r = await fetch(`${GH.base()}/contents/${encPath(path)}?ref=${encodeURIComponent(GH.cfg.branch)}`, { headers: GH.headers('application/vnd.github.raw+json'), cache: 'no-store' });
+    const fail = r => { const e = new Error(r.status === 401 ? 'GitHub 토큰이 올바르지 않거나 만료되었습니다' : '문서함을 읽지 못했습니다 (' + r.status + ')'); e.status = r.status; return e; };
+    const r = await fetch(`${GH.base()}/contents/${encPath(path)}?ref=${encodeURIComponent(GH.cfg.branch)}`, { headers: GH.headers(), cache: 'no-store' });
     if (r.status === 404) return null;
-    if (!r.ok) { const e = new Error(r.status === 401 ? 'GitHub 토큰이 올바르지 않거나 만료되었습니다' : '문서함을 읽지 못했습니다 (' + r.status + ')'); e.status = r.status; throw e; }
-    return new Uint8Array(await r.arrayBuffer());
+    if (!r.ok) throw fail(r);
+    const j = await r.json();
+    if (j.encoding === 'base64' && j.content) { const u = unb64(j.content.replace(/\s+/g, '')); if (u.length === j.size) return u; }
+    if (!j.size) return new Uint8Array(0);
+    const b = await fetch(`${GH.base()}/git/blobs/${j.sha}`, { headers: GH.headers('application/vnd.github.raw+json'), cache: 'no-store' });
+    if (!b.ok) throw fail(b);
+    const u = new Uint8Array(await b.arrayBuffer());
+    if (u.length !== j.size) throw new Error('문서함 파일을 끝까지 받지 못했습니다. 잠시 후 다시 시도해 주세요');
+    return u;
   }
   async function derive(pass, salt) {
     const base = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
@@ -84,16 +94,23 @@ const HwpStore = (() => {
     for (let i = 0; i < MAGIC.length; i++) if (u8[i] !== MAGIC[i]) throw new Error('문서함 파일 형식이 아닙니다');
     const iv = u8.subarray(MAGIC.length, MAGIC.length + 12), ct = u8.subarray(MAGIC.length + 12);
     try { return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(path) }, k || key, ct)); }
-    catch (e) { const er = new Error('암호가 맞지 않습니다'); er.badPass = true; throw er; }
+    catch (e) { if (!k) lock(); const er = new Error('암호가 맞지 않습니다'); er.badPass = true; throw er; }
   }
   /* box.json: { v, salt, check } — check 는 암호 확인용으로 암호화한 고정 문구 */
   async function boxInfo() { const u = await ghBin(DIR + '/box.json'); return u ? JSON.parse(dec.decode(u)) : null; }
-  async function unlock(pass, remember) {
+  let unlocking = null;
+  function unlock(pass, remember) { // 단추를 두 번 눌러도 한 번만 (문서함이 두 번 만들어져 암호 키가 어긋나지 않게)
+    if (!unlocking) unlocking = unlock1(pass, remember).finally(() => { unlocking = null; });
+    return unlocking;
+  }
+  async function unlock1(pass, remember) {
     if (!ready()) throw new Error('GitHub 연결이 필요합니다');
     let info = await boxInfo();
     if (!info) {
       const salt = crypto.getRandomValues(new Uint8Array(16));
-      key = await derive(pass, salt);
+      const k0 = await derive(pass, salt);
+      if (await boxInfo()) return unlock1(pass, remember); // 그 사이 다른 기기·창에서 만들어졌으면 그것을 씀
+      key = k0;
       info = { v: 1, salt: b64(salt), check: b64(await seal(enc.encode('hwp-ws-ok'), DIR + '/box.json')), note: '한글 작업장 문서함 — 내용은 암호화되어 있습니다' };
       const idx = b64(await seal(enc.encode('[]'), DIR + '/index.bin'));
       await GH.commit('한글 작업장 문서함 만들기', [{ path: DIR + '/box.json', content: JSON.stringify(info, null, 1) }, { path: DIR + '/index.bin', base64: idx }]);
