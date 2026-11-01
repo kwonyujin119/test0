@@ -127,8 +127,10 @@
   function updateState() {
     const s = $id('saveState'); s.classList.toggle('dirty', W.dirty);
     const where = W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '저장 안 됨';
-    s.textContent = W.dirty ? '● 수정됨' : (W.boxId || W.handle ? '저장됨' : '');
-    $id('stSaved').textContent = W.doc ? '저장 위치: ' + where : '';
+    s.textContent = W.dirty ? '● 수정됨' : (W.boxId || W.handle ? '✓ 저장됨' : '');
+    s.classList.toggle('ok', !W.dirty && !!(W.boxId || W.handle));
+    s.title = W.dirty ? '저장하지 않은 내용이 있습니다 (이 기기에는 자동으로 임시 저장됨) — 💾 저장 또는 Ctrl+S' : (W.boxId || W.handle ? where + '에 저장되어 있습니다' : '');
+    $id('stSaved').textContent = W.doc ? '저장 위치: ' + (W.boxId ? '🔒 문서함' : W.handle ? '💻 내 PC 파일' : '아직 저장 안 함') : '';
   }
   window.onDocChanged = () => { rev++; if (!W.dirty) { W.dirty = true; } updateState(); scheduleDraft(); };
   let draftT = null, buildMs = 0;
@@ -138,11 +140,21 @@
     // 입력을 멈춘 뒤 한가할 때만 임시 저장 (큰 문서는 간격을 더 둠) — 타자 중에 멈칫하지 않게
     draftT = setTimeout(() => (window.requestIdleCallback || (f => setTimeout(f, 0)))(() => saveDraft(), { timeout: 4000 }), Math.max(3000, buildMs * 10));
   }
+  let drafted = '', draftP = null; // drafted: 마지막으로 임시 저장한 문서·수정 차례
   async function saveDraft() {
     if (!W.doc || !W.dirty || saving) return;
-    try { const t = performance.now(); const blob = await build(); buildMs = performance.now() - t; await HwpStore.drafts.put(W.draftId, W.name, blob, { boxId: W.boxId }); } catch (e) { console.warn('임시 저장 실패', e); }
+    const key = W.draftId + ':' + rev;
+    try { const t = performance.now(); const blob = await build(); buildMs = performance.now() - t; await HwpStore.drafts.put(W.draftId, W.name, blob, { boxId: W.boxId }); drafted = key; } catch (e) { console.warn('임시 저장 실패', e); }
   }
-  window.addEventListener('beforeunload', e => { if (W.doc && W.dirty) { saveDraft(); e.preventDefault(); e.returnValue = ''; } });
+  /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰은 닫기 전에 beforeunload 가 오지 않기도 함): 기다리지 않고 바로 임시 저장 시작 */
+  function draftNow() {
+    if (!W.doc || !W.dirty || drafted === W.draftId + ':' + rev) return;
+    clearTimeout(draftT);
+    if (!draftP) draftP = saveDraft().finally(() => { draftP = null; });
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
+  window.addEventListener('pagehide', draftNow);
+  window.addEventListener('beforeunload', e => { if (W.doc && W.dirty) { draftNow(); e.preventDefault(); e.returnValue = ''; } });
 
   /* ---------- 문서함 ---------- */
   async function boxSaveCurrent(blob, r0) {
@@ -157,11 +169,16 @@
     return new Promise(res => {
       let done = false;
       const c = GH.cfg || GH.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main' };
-      dialog('GitHub 연결', `${opts.expired ? '<div class="warn" style="margin-bottom:10px">GitHub 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 교안 작업장과 같은 토큰을 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
-        <div class="grid1" style="margin-top:12px"><label>저장소</label><div style="display:flex;gap:6px"><input id="g_o" value="${escH(c.owner)}"><span>/</span><input id="g_r" value="${escH(c.repo)}"></div>
-        <label>토큰</label><input id="g_t" type="password" placeholder="github_pat_…" autocomplete="off"></div>
-        <p class="muted" style="font-size:12px;line-height:1.6">토큰 만들기: github.com/settings/personal-access-tokens/new → Repository access: <b>${escH(c.repo)}</b> → Permissions: <b>Contents: Read and write</b></p>`, {
-        okText: '연결',
+      dialog('문서함 연결 (GitHub)', `${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 토큰은 <b>이 기기에만</b> 기억되고 교안 작업장과 함께 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
+        <div class="grid1" style="margin-top:12px"><label>저장소</label><div style="display:flex;gap:6px;align-items:center"><input id="g_o" value="${escH(c.owner)}" aria-label="사용자"><span>/</span><input id="g_r" value="${escH(c.repo)}" aria-label="저장소"></div>
+        <label for="g_t">토큰</label><input id="g_t" type="password" placeholder="github_pat_… 붙여넣기" autocomplete="off"></div>
+        <details class="howto"${opts.expired || !GH.token ? ' open' : ''}><summary>토큰 만드는 법</summary><ol>
+          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> 를 엽니다.</li>
+          <li><b>Repository access</b> → <i>Only select repositories</i> → <b>${escH(c.repo)}</b></li>
+          <li><b>Permissions</b> → <b>Contents</b> → <i>Read and write</i></li>
+          <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
+        </ol>${opts.expired ? '<p>기간이 끝난 토큰은 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 목록</a>에서 그 토큰을 열고 <i>Regenerate token</i> 을 누르면 같은 권한으로 새 문자열을 받습니다.</p>' : ''}</details>`, {
+        okText: '연결', noFocus: true, init: q => setTimeout(() => q('#g_t').focus(), 0),
         onOk: async (q) => {
           const cfg = { owner: q('#g_o').value.trim(), repo: q('#g_r').value.trim(), branch: c.branch || 'main', token: q('#g_t').value.trim() };
           if (!cfg.owner || !cfg.repo || !cfg.token) { alert('저장소와 토큰을 입력하세요'); return false; }
@@ -239,10 +256,10 @@
     const list = await HwpStore.drafts.list();
     const box = $id('draftList');
     if (!list.length) { box.innerHTML = ''; return; }
-    box.innerHTML = `<h4>임시 저장된 문서 (이 브라우저)</h4>${list.slice(0, 8).map(x => `<div class="dl-item" data-id="${escH(x.id)}"><span class="nm2">📝 ${escH(x.name)}</span><span class="muted">${new Date(x.time).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span><button class="tb" data-d="open">이어서 편집</button><button class="tb danger" data-d="del">지우기</button></div>`).join('')}`;
+    box.innerHTML = `<h4>저장하지 않고 닫은 문서 <span class="muted">— 이 기기에 임시로 남아 있습니다</span></h4>${list.slice(0, 8).map(x => `<div class="dl-item" data-id="${escH(x.id)}"><span class="nm2">📝 ${escH(x.name)}${x.boxId ? ' <span class="muted">(문서함)</span>' : ''}</span><span class="muted">${new Date(x.time).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span><button class="tb primary" data-d="open">이어서 편집</button><button class="tb danger" data-d="del" title="이 임시본을 지웁니다">지우기</button></div>`).join('')}`;
     box.onclick = async e => {
       const b = e.target.closest('[data-d]'); if (!b) return; const id = b.closest('.dl-item').dataset.id;
-      if (b.dataset.d === 'del') { await HwpStore.drafts.del(id); showStart(); return; }
+      if (b.dataset.d === 'del') { const nm = (list.find(x => x.id === id) || {}).name || ''; if (!confirm(`"${nm}" 임시본을 지울까요?\n지우면 되살릴 수 없습니다.`)) return; await HwpStore.drafts.del(id); showStart(); return; }
       const x = await HwpStore.drafts.get(id); if (!x) return;
       await openBytes(await x.blob.arrayBuffer(), { name: x.name, draftId: id, boxId: x.boxId || null, dirty: true });
     };
@@ -604,7 +621,7 @@
     'alt+shift+k': () => stepCp(c => ({ ratio: c.ratio + 1 })), 'alt+shift+j': () => stepCp(c => ({ ratio: c.ratio - 1 })),
     'alt+shift+z': () => stepPp(p => ({ lsType: 'PERCENT', ls: (p.lsType === 'PERCENT' ? p.ls : 160) + 10 })), 'alt+shift+a': () => stepPp(p => ({ lsType: 'PERCENT', ls: Math.max(50, (p.lsType === 'PERCENT' ? p.ls : 160) - 10) })),
     'ctrl+shift+l': () => applyPp({ align: 'LEFT' }), 'ctrl+shift+c': () => applyPp({ align: 'CENTER' }), 'ctrl+shift+r': () => applyPp({ align: 'RIGHT' }),
-    'ctrl+shift+m': () => applyPp({ align: 'JUSTIFY' }), 'ctrl+shift+t': () => applyPp({ align: 'DISTRIBUTE' }),
+    'ctrl+shift+m': () => applyPp({ align: 'JUSTIFY' }), 'ctrl+shift+t': () => applyPp({ align: 'DISTRIBUTE' }), 'ctrl+alt+t': () => applyPp({ align: 'DISTRIBUTE' }),
     'alt+l': () => act('charDlg'), 'alt+t': () => act('paraDlg'), 'f6': () => act('styleDlg'), 'f7': () => act('pageDlg'),
     'ctrl+f': () => act('find'), 'ctrl+h': () => act('replace'), 'ctrl+f2': () => act('replace'), 'ctrl+l': () => findAgain(false),
     'ctrl+f10': () => act('symbol'), 'f1': () => act('help'),
@@ -946,13 +963,13 @@
     const sec = (t, rows) => `<h4>${t}</h4><table class="kb">${rows.map(r => row(r[0], r[1])).join('')}</table>`;
     dialog('한글 작업장 단축키', `<div class="kbcols"><div>
       ${sec('파일', [['Alt+N', '새 문서'], ['Alt+O / Ctrl+O', '불러오기'], ['Alt+S / Ctrl+S', '저장하기 (열어 둔 파일 또는 문서함)'], ['Alt+V', '다른 이름으로 저장'], ['Alt+P / Ctrl+P', '인쇄 · PDF 저장']])}
-      ${sec('편집', [['Ctrl+Z', '되돌리기'], ['Ctrl+Shift+Z', '다시 실행'], ['Ctrl+X / Ctrl+C / Ctrl+V', '오려 두기 · 복사 · 붙이기'], ['Ctrl+Y', '한 줄 지우기'], ['Alt+Y', '커서부터 줄 끝까지 지우기'], ['Ctrl+Enter', '쪽 나누기'], ['Shift+Enter', '줄 나누기 (문단 안에서)'], ['Tab', '탭'], ['Shift+Tab', '커서 위치까지 내어쓰기'], ['Ctrl+F / Ctrl+H', '찾기 · 찾아 바꾸기'], ['Ctrl+L', '다시 찾기'], ['Ctrl+F10', '문자표'], ['Alt+C', '모양 복사 (한 번 누르면 복사, 블록 잡고 다시 누르면 붙이기)']])}
-      ${sec('입력', [['Ctrl+N , T', '표 만들기'], ['Ctrl+N , I', '그림 넣기'], ['Ctrl+N , P', '쪽 번호 매기기'], ['Ctrl+N , H', '머리말/꼬리말'], ['F7', '편집 용지']])}
-      <p class="muted" style="font-size:12px">크롬·엣지가 Ctrl+N 을 새 창 열기로 먼저 가로채면 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd> 다음 글자를 누르세요.</p>
+      ${sec('편집', [['Ctrl+Z', '되돌리기'], ['Ctrl+Shift+Z', '다시 실행'], ['Ctrl+X / Ctrl+C / Ctrl+V', '오려 두기 · 복사 · 붙이기'], ['Ctrl+Y', '한 줄 지우기'], ['Alt+Y', '커서부터 줄 끝까지 지우기'], ['Ctrl+Enter', '쪽 나누기'], ['Shift+Enter', '줄 나누기 (문단 안에서)'], ['Tab', '탭'], ['Shift+Tab', '커서 위치까지 내어쓰기'], ['Ctrl+F', '찾기'], ['Ctrl+H / Ctrl+F2', '찾아 바꾸기'], ['Ctrl+L', '다시 찾기'], ['Ctrl+F10', '문자표'], ['Alt+C', '모양 복사 (한 번 누르면 복사, 블록 잡고 다시 누르면 붙이기)']])}
+      ${sec('입력', [['Ctrl+N , T', '표 만들기'], ['Ctrl+N , I', '그림 넣기'], ['Ctrl+N , P', '쪽 번호 매기기'], ['Ctrl+N , H', '머리말/꼬리말'], ['Ctrl+Alt+N , 글자', '위와 같음 (브라우저 탭에서 Ctrl+N 대신)'], ['F7', '편집 용지']])}
+      ${window.PWA && PWA.standalone ? '<div class="kbnote ok">앱 창에서 열었으므로 <kbd>Ctrl</kbd>+<kbd>N</kbd> 다음 글자, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> 도 한글과 똑같이 됩니다.</div>' : `<div class="kbnote"><b>브라우저 탭에서 안 되는 키</b> — 크롬·엣지는 <kbd>Ctrl</kbd>+<kbd>N</kbd>(새 창)과 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>(닫은 탭 다시 열기)를 먼저 가져갑니다.<br>· 대신 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd> 다음 글자, 배분 정렬은 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> 를 누르세요.<br>· <b>앱으로 설치해 열면</b> 한글과 같은 키가 그대로 됩니다.</div>`}
     </div><div>
-      ${sec('글자 · 문단', [['Alt+L', '글자 모양'], ['Alt+T', '문단 모양'], ['F6', '스타일'], ['Ctrl+1 ~ 9', '바탕글 · 본문 · 개요 1~7'], ['Ctrl+B / Ctrl+I / Ctrl+U', '진하게 · 기울임 · 밑줄'], ['Alt+Shift+E / Alt+Shift+R', '글자 크게 · 작게 (1pt)'], ['Alt+Shift+W / Alt+Shift+N', '자간 넓게 · 좁게'], ['Alt+Shift+K / Alt+Shift+J', '장평 넓게 · 좁게'], ['Alt+Shift+Z / Alt+Shift+A', '줄 간격 넓게 · 좁게'], ['Ctrl+Shift+L / C / R', '왼쪽 · 가운데 · 오른쪽 정렬'], ['Ctrl+Shift+M', '양쪽 정렬'], ['Ctrl+Shift+T', '배분 정렬 (브라우저가 막으면 리본 단추)']])}
-      ${sec('표', [['Tab / Shift+Tab', '다음 · 앞 셀 (마지막 셀에서 Tab: 줄 추가)'], ['Ctrl+Enter', '아래에 줄 추가'], ['Alt+Insert', '줄/칸 추가하기'], ['Alt+Delete', '줄/칸 지우기'], ['F5', '셀 블록 (한 번 더: 방향키로 넓히기, 세 번: 표 전체)'], ['Shift+방향키', '셀 블록 넓히기'], ['M / S', '셀 합치기 · 나누기 (셀 블록에서)'], ['W / H', '셀 너비 · 높이 같게'], ['L', '셀 테두리/배경'], ['Ctrl+방향키', '셀 크기 조절'], ['Esc', '셀 블록 풀기']])}
-      ${sec('보기', [['Ctrl+마우스 휠', '확대 · 축소'], ['F1', '이 도움말']])}
+      ${sec('글자 · 문단', [['Alt+L', '글자 모양'], ['Alt+T', '문단 모양'], ['F6', '스타일'], ['Ctrl+1 ~ 9', '바탕글 · 본문 · 개요 1~7'], ['Ctrl+B / Ctrl+I / Ctrl+U', '진하게 · 기울임 · 밑줄'], ['Alt+Shift+B / I / U', '진하게 · 기울임 · 밑줄 (한글 방식)'], ['Alt+Shift+E / Alt+Shift+R', '글자 크게 · 작게 (1pt)'], ['Ctrl+] / Ctrl+[', '글자 크게 · 작게 (1pt)'], ['Alt+Shift+W / Alt+Shift+N', '자간 넓게 · 좁게'], ['Alt+Shift+K / Alt+Shift+J', '장평 넓게 · 좁게'], ['Alt+Shift+Z / Alt+Shift+A', '줄 간격 넓게 · 좁게'], ['Ctrl+Shift+L / C / R', '왼쪽 · 가운데 · 오른쪽 정렬'], ['Ctrl+Shift+M', '양쪽 정렬'], ['Ctrl+Shift+T / Ctrl+Alt+T', '배분 정렬']])}
+      ${sec('표', [['Tab / Shift+Tab', '다음 · 앞 셀 (마지막 셀에서 Tab: 줄 추가)'], ['Ctrl+Enter', '아래에 줄 추가'], ['Alt+Insert', '줄/칸 추가하기'], ['Alt+Delete', '줄/칸 지우기'], ['F5', '셀 블록 (한 번 더: 방향키로 넓히기, 세 번: 표 전체)'], ['Shift+방향키', '셀 블록 넓히기'], ['M / S', '셀 합치기 · 나누기 (셀 블록에서)'], ['W / H', '셀 너비 · 높이 같게'], ['L / C', '셀 테두리/배경'], ['Ctrl+방향키', '셀 크기 조절 (셀 블록에서)'], ['Delete', '셀 내용 지우기 (셀 블록에서)'], ['Enter / Esc', '셀 블록 풀기']])}
+      ${sec('보기', [['Ctrl+마우스 휠', '확대 · 축소'], ['Esc', '찾기 창 닫기'], ['F1', '이 도움말']])}
     </div></div>`, { foot: '<button class="tb primary" data-x="cancel">닫기</button>', width: 860, noEnter: true });
   }
 

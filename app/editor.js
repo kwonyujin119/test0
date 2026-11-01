@@ -68,7 +68,7 @@
     } catch (e) {
       if (e.noToken || e.status === 401) { // 연결이 없거나 만료: 경고 대신 이 자리에서 바로 연결
         Draft.put(S.name, S.deck);
-        const ok = await GH.connect({ reason: e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 바로 저장합니다.' : '이 기기(브라우저·앱)에는 아직 GitHub 연결이 없습니다. 지금 연결하면 바로 저장합니다.' });
+        const ok = await GH.connect({ expired: e.status === 401, reason: e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 바로 저장합니다.' : '이 기기(브라우저·앱)에는 아직 GitHub 연결이 없습니다. 지금 연결하면 바로 저장합니다.' });
         ghChip();
         if (ok === true) return save();
         toast('이 기기에 임시 저장해 두었습니다 — 연결한 뒤 저장하면 저장소에 올라갑니다', 3500); return;
@@ -88,7 +88,25 @@
     $('upStatus').after(c);
   }
   ghChip();
-  window.addEventListener('beforeunload', (ev) => { if (S.dirty || API.pending.size) { ev.preventDefault(); ev.returnValue = ''; } });
+  window.addEventListener('beforeunload', (ev) => { draftNow(); if (S.dirty || API.pending.size) { ev.preventDefault(); ev.returnValue = ''; } });
+  /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰): 0.8초 기다리지 않고 바로 임시본 저장 — 쓰는 중인 글도 함께 (글 편집은 그대로 둠) */
+  function draftNow() {
+    if (!S.deck || (!S.dirty && !S.editing)) return;
+    let deck = S.deck;
+    const id = S.editing, e = id && elById(id), node = id && nodeOf(id);
+    if (e && node) {
+      const i = curSlide().elements.indexOf(e);
+      deck = JSON.parse(JSON.stringify(S.deck));
+      const c = deck.slides[S.cur].elements[i];
+      if (e.type === 'table') c.rows = Array.from(node.querySelectorAll('tr')).map(tr => Array.from(tr.children).map(x => cleanHtml(x.innerHTML)));
+      else { const h = editHosts(node, e)[0]; if (h) c.html = cleanHtml(h.innerHTML); }
+      if (!S.dirty && JSON.stringify(c) === JSON.stringify(e)) return; // 바뀐 것 없음
+    }
+    clearTimeout(saveTimer);
+    Draft.put(S.name, deck);
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
+  window.addEventListener('pagehide', draftNow);
   API.onPending = (n) => { const c = $('upStatus'); c.textContent = n ? `이미지 올리는 중 ${n}` : ''; c.classList.toggle('show', n > 0); };
 
   /* ---------- 렌더 ---------- */

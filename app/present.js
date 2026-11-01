@@ -58,7 +58,8 @@
         <div><span>편집기로</span><span><kbd>Ctrl+E</kbd></span></div>
         <div><span>발표 종료</span><span><kbd>Esc</kbd> (전체화면이면 한 번 더)</span></div>
       </div>
-      <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 눌러 닫기 · 전체 설명서: <a href="shortcuts.html" target="_blank" onclick="event.stopPropagation()">shortcuts.html</a></div>
+      <div style="margin-top:12px;font-size:13px;line-height:1.6"><b>휴대폰 · 태블릿</b> — 화면을 누르면 다음 슬라이드, 옆으로 밀면 앞·뒤로 넘어갑니다. 누를 때마다 오른쪽 위에 메뉴(목록 · 전체화면 · ✕ 종료)가 잠깐 나타납니다.</div>
+      <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 누르거나 화면을 눌러 닫기 · 전체 설명서: <a href="shortcuts.html" target="_blank" onclick="event.stopPropagation()">shortcuts.html</a></div>
     </div></div>
     <div class="pmenu peek" id="pmenu">
       <button class="btn sm" data-a="notes" title="발표자 보기 (S)">노트</button>
@@ -267,6 +268,7 @@
     clearTimeout(idleTimer); idleTimer = setTimeout(() => { if (!st.pen) document.body.classList.add('hide-cursor'); $('pmenu').classList.remove('peek'); }, 2500);
   }
   wake();
+  window.addEventListener('pointerdown', wake); // 휴대폰: 마우스 움직임이 없으므로 화면을 누를 때도 메뉴를 다시 보여 줌
 
   /* ---- 입력 ---- */
   function anyOverlayOpen() { return overview.isOpen() || $('phelp').classList.contains('show'); }

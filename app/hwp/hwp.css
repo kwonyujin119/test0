@@ -30,8 +30,10 @@ a { color: var(--c-acc); text-decoration: none; }
 .app { color: var(--c-acc); }
 .nm { border: 1px solid transparent; background: none; padding: 3px 6px; border-radius: 6px; font-weight: 600; cursor: pointer; max-width: 36vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nm:hover { border-color: var(--c-line); background: #fff; }
+.nm::after { content: ' ✎'; color: var(--c-muted); font-weight: 400; font-size: 11px; } /* 눌러서 이름을 바꿀 수 있다는 표시 */
 .state { font-size: 12px; color: var(--c-muted); }
 .state.dirty { color: #b45309; }
+.state.ok { color: var(--c-acc); }
 .tb, .ib { display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent; background: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; line-height: 1.2; }
 .ib { min-width: 28px; justify-content: center; padding: 4px 6px; font-size: 14px; }
 .ib.sm { min-width: 22px; font-size: 12px; padding: 3px 5px; }
@@ -103,6 +105,7 @@ table.htb td.csel { background-image: linear-gradient(rgba(37, 99, 235, .22), rg
 #status { flex: none; display: flex; align-items: center; gap: 14px; padding: 2px 10px; height: 28px; background: var(--c-bar); border-top: 1px solid var(--c-line); font-size: 12px; color: var(--c-muted); user-select: none; }
 #status select { border: 1px solid var(--c-line); border-radius: 5px; background: #fff; height: 22px; font-size: 12px; }
 #status .chord { color: #b45309; font-weight: 600; }
+#stSaved { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* 찾기 */
 #findBar { position: fixed; top: 108px; right: 24px; z-index: 20; background: #fff; border: 1px solid var(--c-line); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.15); padding: 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -115,6 +118,9 @@ table.htb td.csel { background-image: linear-gradient(rgba(37, 99, 235, .22), rg
 #start { position: fixed; inset: 0; z-index: 30; background: rgba(223, 227, 233, .96); display: grid; place-items: center; padding: 20px; overflow: auto; }
 #start .card { background: #fff; border: 1px solid var(--c-line); border-radius: 16px; padding: 30px; width: min(760px, 100%); box-shadow: 0 20px 60px rgba(0,0,0,.12); }
 #start h1 { margin: 0 0 6px; font-size: 24px; color: var(--c-acc); }
+#start .back { display: inline-flex; align-items: center; min-height: 32px; margin: -8px 0 6px -4px; padding: 0 4px; color: var(--c-muted); font-size: 13px; border-radius: 6px; }
+#start .back:hover { color: var(--c-fg); background: #f4f6f8; }
+#draftList h4 .muted { font-weight: 400; font-size: 12px; }
 #start .big { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 22px 0 12px; }
 #start .big button { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; text-align: left; padding: 18px; border-radius: 12px; border: 1px solid var(--c-line); background: #fafbfc; cursor: pointer; }
 #start .big button:hover { border-color: var(--c-acc); background: #f2faf6; }
@@ -147,6 +153,13 @@ table.htb td.csel { background-image: linear-gradient(rgba(37, 99, 235, .22), rg
 .dlg .chks { display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .dlg .chks label { display: inline-flex; gap: 4px; align-items: center; }
 .dlg .warn { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.6; }
+.dlg details.howto { margin-top: 12px; border: 1px solid #e5e8ee; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.65; color: #3b4252; }
+.dlg details.howto summary { cursor: pointer; font-weight: 600; color: var(--c-acc); }
+.dlg details.howto ol { margin: 6px 0 0; padding-left: 20px; }
+.dlg details.howto p { margin: 6px 0 0; }
+.dlg details.howto a { text-decoration: underline; word-break: break-all; }
+.kbnote.ok { background: #f0f7f4; border-color: #cfe3d8; color: #24543f; }
+.kbnote { margin-top: 10px; background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12; border-radius: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.7; }
 .dlg .info { background: #f0f7f4; border: 1px solid #cfe3d8; color: #24543f; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.6; }
 .preview { border: 1px solid #e5e8ee; border-radius: 8px; padding: 12px; min-height: 54px; margin-top: 10px; background: #fcfcfd; overflow: hidden; white-space: nowrap; }
 .tgrid { display: inline-grid; gap: 2px; margin-top: 8px; }
@@ -191,12 +204,18 @@ body.reflow #doc { min-width: 100%; }
   .bar1 > *, .bar2 > *, .bar3 > * { flex-shrink: 0; }
   .bar1 .grow, .bar3 .grow, .bar3 .hint { display: none; }
   .crumb-sep, .bar1 .app { display: none; }
-  .crumb::before { content: '← '; }
+  .crumb::before { content: '←\00a0'; }
   .nm { max-width: 46vw; }
-  .tb, .ib { padding: 6px 8px; min-height: 34px; }
-  #ribbon select, #ribbon input, .bar3 select { height: 32px; }
-  #status { gap: 10px; padding: 2px 8px; }
-  #status #stSec, #status #stMode, #status #stSaved, #status #stChord, #status [data-act="zoomOut"], #status [data-act="zoomIn"] { display: none; }
+  .tb, .ib { padding: 6px 8px; min-height: 40px; } /* 손가락으로 누르기 쉬운 크기 */
+  .ib { min-width: 36px; }
+  .crumb { display: inline-flex; align-items: center; min-height: 40px; padding: 0 4px; }
+  .nm { min-height: 40px; }
+  #ribbon select, #ribbon input, .bar3 select, .fontbox #btnFont { height: 36px; }
+  .clr { height: 36px; }
+  #status { gap: 10px; padding: 2px 8px; height: auto; min-height: 30px; }
+  #status #stSec, #status #stMode, #status #stChord, #status [data-act="zoomOut"], #status [data-act="zoomIn"] { display: none; }
+  .dlg .foot .tb { min-height: 40px; }
+  #start .back { min-height: 40px; }
   .dlg-bg { padding: 8px; align-items: end; }
   .dlg { min-width: 0; width: 100% !important; max-height: 88dvh; border-radius: 14px; }
   .dlg .grid2 { grid-template-columns: auto 1fr; }

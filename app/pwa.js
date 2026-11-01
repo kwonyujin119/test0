@@ -74,7 +74,9 @@
   function steps() {
     const bar = icon => `<div class="bar"><span class="url">${URL0()}</span>${icon}</div>`;
     switch (browser) {
-      case 'chrome': return `<h4>크롬에서 설치하기</h4>${bar('<span class="ico" title="설치 아이콘">⇩</span><span class="dots">⋮</span>')}<ol><li>주소창 <b>오른쪽 끝</b>의 <b>설치 아이콘</b>(모니터에 ↓ 모양)을 누르고 <kbd>설치</kbd></li><li>아이콘이 안 보이면: 오른쪽 위 <kbd>⋮</kbd> → <kbd>전송, 저장, 공유</kbd> → <kbd>페이지를 앱으로 설치…</kbd> (또는 <kbd>업무 공간 설치…</kbd>) → <kbd>설치</kbd></li></ol>`;
+      case 'chrome':
+        if (os === 'android') return `<h4>휴대폰 크롬에서 설치하기</h4>${bar('<span class="dots">⋮</span>')}<ol><li>오른쪽 위 <kbd>⋮</kbd> → <kbd>홈 화면에 추가</kbd> (또는 <kbd>앱 설치</kbd>) → <kbd>설치</kbd></li><li>홈 화면에 생긴 <b>업무 공간</b> 아이콘으로 엽니다.</li></ol>`;
+        return `<h4>크롬에서 설치하기</h4>${bar('<span class="ico" title="설치 아이콘">⇩</span><span class="dots">⋮</span>')}<ol><li>주소창 <b>오른쪽 끝</b>의 <b>설치 아이콘</b>(모니터에 ↓ 모양)을 누르고 <kbd>설치</kbd></li><li>아이콘이 안 보이면: 오른쪽 위 <kbd>⋮</kbd> → <kbd>전송, 저장, 공유</kbd> → <kbd>페이지를 앱으로 설치…</kbd> (또는 <kbd>업무 공간 설치…</kbd>) → <kbd>설치</kbd></li></ol>`;
       case 'edge': return `<h4>엣지에서 설치하기</h4>${bar('<span class="ico" title="앱 설치 아이콘">⊞</span><span class="dots">⋯</span>')}<ol><li>오른쪽 위 <kbd>⋯</kbd> → <kbd>앱</kbd> → <kbd>이 사이트를 앱으로 설치</kbd> → <kbd>설치</kbd></li><li>또는 주소창 오른쪽의 <b>앱 설치 아이콘</b>을 누르고 <kbd>설치</kbd></li></ol>`;
       case 'whale': return `<h4>웨일에서 설치하기</h4>${bar('<span class="ico" title="설치 아이콘">⇩</span><span class="dots">≡</span>')}<ol><li>주소창 오른쪽의 <b>설치 아이콘</b>을 누르고 <kbd>설치</kbd></li><li>안 보이면 크롬이나 엣지로 이 주소를 열어 설치하는 것이 가장 확실합니다.</li></ol>`;
       case 'samsung': return `<h4>삼성 인터넷에서 설치하기</h4><ol><li>아래 메뉴 <kbd>≡</kbd> → <kbd>현재 페이지 추가</kbd> → <kbd>홈 화면</kbd></li></ol>`;
@@ -89,11 +91,12 @@
     if (!guide) return;
     const mode = guide.dataset.mode; let h = '';
     if (mode === 'done') {
-      h = `<h3>✅ 설치했습니다</h3><p>업무 공간 앱 창이 열렸을 거예요. 앞으로는 <b>바탕화면</b>·<b>시작 메뉴</b>의 <b>업무 공간</b> 아이콘으로 여세요.</p><p><small>작업 표시줄에 고정: 앱 창의 작업 표시줄 아이콘을 오른쪽 클릭 → <b>작업 표시줄에 고정</b></small></p><div class="row"><button class="go" data-c>확인</button></div>`;
+      h = /ios|android/.test(os) ? `<h3>✅ 설치했습니다</h3><p>앞으로는 <b>홈 화면</b>의 <b>업무 공간</b> 아이콘으로 여세요. 주소창 없이 앱처럼 열립니다.</p><div class="row"><button class="go" data-c>확인</button></div>`
+        : `<h3>✅ 설치했습니다</h3><p>업무 공간 앱 창이 열렸을 거예요. 앞으로는 <b>바탕화면</b>·<b>시작 메뉴</b>의 <b>업무 공간</b> 아이콘으로 여세요.</p><p><small>작업 표시줄에 고정: 앱 창의 작업 표시줄 아이콘을 오른쪽 클릭 → <b>작업 표시줄에 고정</b></small></p><div class="row"><button class="go" data-c>확인</button></div>`;
     } else {
       h = `<h3>업무 공간 앱 설치</h3>`;
       if (PWA.prompt) h += `<p>지금 바로 설치할 수 있습니다. 아래 단추를 누르고 뜨는 창에서 <b>설치</b>를 누르세요.</p><button class="go big" data-go>⬇ 지금 설치</button>`;
-      else if (PWA.installed) h += `<div class="card"><b>이미 설치되어 있습니다.</b><br><small>바탕화면·시작 메뉴의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 창에서는 주소창 오른쪽의 <b>앱에서 열기</b> 아이콘을 눌러도 앱으로 열립니다.</small></div>`;
+      else if (PWA.installed) h += `<div class="card"><b>이미 설치되어 있습니다.</b><br><small>${/ios|android/.test(os) ? '홈 화면' : '바탕화면·시작 메뉴'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 창에서는 주소창 오른쪽의 <b>앱에서 열기</b> 아이콘을 눌러도 앱으로 열립니다.</small></div>`;
       else h += `<p>아래 방법 중 편한 것을 쓰세요. 한 번만 하면 됩니다.</p>`;
       h += `<div class="card">${steps()}</div>`;
       if (os === 'windows') h += `<div class="card"><h4>안 되면 — Windows 설치 파일 (항상 됩니다)</h4><p><small>내려받은 <b>업무 공간 설치.cmd</b> 를 열면 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생기고, 주소창 없는 앱 창으로 열립니다 (크롬 또는 엣지 사용).<br>열 때 <b>"Windows의 PC 보호"</b> 창이 뜨면 <b>추가 정보 → 실행</b>, 브라우저가 파일을 막으면 <b>유지</b>를 누르세요.</small></p><a class="btn go big" href="install/setup.cmd" download="업무 공간 설치.cmd">⬇ Windows 설치 파일 내려받기</a></div>`;

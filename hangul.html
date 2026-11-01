@@ -20,26 +20,26 @@
   <div class="bar1">
     <a class="crumb" href="index.html" title="업무 공간으로">업무 공간</a><span class="crumb-sep">›</span><b class="app">한글 작업장</b>
     <span class="vsep"></span>
-    <button class="nm" id="docName" title="문서 이름 바꾸기">문서</button>
+    <button class="nm" id="docName" title="눌러서 문서 이름 바꾸기">문서</button>
     <span id="saveState" class="state"></span>
     <span class="grow"></span>
     <button class="tb" data-act="new" title="새 문서 (Alt+N)">📄 새 문서</button>
     <button class="tb" data-act="open" title="불러오기 (Alt+O, Ctrl+O)">📂 열기</button>
     <button class="tb" data-act="save" title="저장하기 (Alt+S, Ctrl+S)">💾 저장</button>
     <button class="tb" data-act="saveAs" title="다른 이름으로 저장 (Alt+V)">다른 이름으로</button>
-    <button class="tb" data-act="box" title="암호로 잠근 문서함 — 집·사무실 어디서나">🔒 문서함</button>
+    <button class="tb" data-act="box" title="문서함 — 암호로 잠가 GitHub 에 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 엽니다">🔒 문서함</button>
     <button class="tb" data-act="print" title="인쇄 · PDF 저장 (Alt+P)">🖨 인쇄</button>
-    <button class="tb" data-act="help" title="단축키 (F1)">❔ 단축키</button>
+    <button class="tb" data-act="help" title="단축키 모음 (F1)">❔ 단축키</button>
   </div>
   <div class="bar2" id="ribbon">
     <select id="selStyle" title="스타일 (F6) · Ctrl+1 바탕글, Ctrl+2 본문, Ctrl+3~9 개요 1~7"></select>
     <span class="fontbox"><input id="inFont" list="fontList" title="글꼴 — 이름을 쓰거나 ▾ 에서 고르세요" spellcheck="false"><button class="ib sm" id="btnFont" type="button" title="글꼴 목록 (미리보기)">▾</button></span>
     <datalist id="fontList"></datalist>
-    <input id="inSize" type="number" min="1" max="4096" step="0.5" title="글자 크기 pt (Alt+Shift+E 크게 / Alt+Shift+R 작게)">
+    <input id="inSize" type="number" min="1" max="4096" step="0.5" title="글자 크기 pt (크게: Alt+Shift+E 또는 Ctrl+] · 작게: Alt+Shift+R 또는 Ctrl+[)">
     <span class="vsep"></span>
-    <button class="ib" data-act="bold" title="진하게 (Ctrl+B)"><b>가</b></button>
-    <button class="ib" data-act="italic" title="기울임 (Ctrl+I)"><i>가</i></button>
-    <button class="ib" data-act="underline" title="밑줄 (Ctrl+U)"><u>가</u></button>
+    <button class="ib" data-act="bold" title="진하게 (Ctrl+B · Alt+Shift+B)"><b>가</b></button>
+    <button class="ib" data-act="italic" title="기울임 (Ctrl+I · Alt+Shift+I)"><i>가</i></button>
+    <button class="ib" data-act="underline" title="밑줄 (Ctrl+U · Alt+Shift+U)"><u>가</u></button>
     <button class="ib" data-act="strike" title="취소선"><s>가</s></button>
     <button class="ib" data-act="sup" title="위 첨자">x²</button>
     <button class="ib" data-act="sub" title="아래 첨자">x₂</button>
@@ -51,7 +51,7 @@
     <button class="ib" data-act="alL" title="왼쪽 정렬 (Ctrl+Shift+L)">⯇</button>
     <button class="ib" data-act="alC" title="가운데 정렬 (Ctrl+Shift+C)">≡</button>
     <button class="ib" data-act="alR" title="오른쪽 정렬 (Ctrl+Shift+R)">⯈</button>
-    <button class="ib" data-act="alD" title="배분 정렬">⇔</button>
+    <button class="ib" data-act="alD" title="배분 정렬 (Ctrl+Shift+T · 브라우저 탭에서는 Ctrl+Alt+T)">⇔</button>
     <select id="selLs" title="줄 간격 (Alt+Shift+Z 넓게 / Alt+Shift+A 좁게)"></select>
     <button class="ib" data-act="indentL" title="왼쪽 여백 줄이기">⇤</button>
     <button class="ib" data-act="indentR" title="왼쪽 여백 늘리기">⇥</button>
@@ -60,14 +60,14 @@
     <span class="vsep"></span>
     <button class="tb" data-act="charDlg" title="글자 모양 (Alt+L)">가 글자</button>
     <button class="tb" data-act="paraDlg" title="문단 모양 (Alt+T)">¶ 문단</button>
-    <button class="tb" data-act="table" title="표 만들기 (Ctrl+N,T)">▦ 표</button>
-    <button class="tb" data-act="image" title="그림 넣기 (Ctrl+N,I)">🖼 그림</button>
+    <button class="tb" data-act="table" title="표 만들기 (Ctrl+N 다음 T · 브라우저 탭에서는 Ctrl+Alt+N 다음 T)">▦ 표</button>
+    <button class="tb" data-act="image" title="그림 넣기 (Ctrl+N 다음 I · 브라우저 탭에서는 Ctrl+Alt+N 다음 I)">🖼 그림</button>
     <button class="tb" data-act="pageBreak" title="쪽 나누기 (Ctrl+Enter)">⤓ 쪽</button>
     <button class="tb" data-act="symbol" title="문자표 (Ctrl+F10)">※ 문자표</button>
-    <button class="tb" data-act="find" title="찾기 (Ctrl+F) · 찾아 바꾸기 (Ctrl+H)">🔍 찾기</button>
+    <button class="tb" data-act="find" title="찾기 (Ctrl+F) · 찾아 바꾸기 (Ctrl+H 또는 Ctrl+F2)">🔍 찾기</button>
     <button class="tb" data-act="pageDlg" title="편집 용지 (F7)">📐 용지</button>
-    <button class="tb" data-act="pageNum" title="쪽 번호 매기기 (Ctrl+N,P)"># 쪽 번호</button>
-    <button class="tb" data-act="headFoot" title="머리말/꼬리말 (Ctrl+N,H)">머리말</button>
+    <button class="tb" data-act="pageNum" title="쪽 번호 매기기 (Ctrl+N 다음 P · 브라우저 탭에서는 Ctrl+Alt+N 다음 P)"># 쪽 번호</button>
+    <button class="tb" data-act="headFoot" title="머리말/꼬리말 (Ctrl+N 다음 H · 브라우저 탭에서는 Ctrl+Alt+N 다음 H)">머리말</button>
   </div>
   <div class="bar3" id="tableBar" hidden>
     <b class="lbl">표</b>
@@ -107,7 +107,7 @@
 <footer id="status">
   <span id="stPage">1/1 쪽</span><span id="stSec"></span><span id="stChars"></span><span id="stMode">삽입</span><span id="stChord" class="chord"></span>
   <span class="grow"></span>
-  <span id="stSaved"></span>
+  <span id="stSaved" title="편집 중인 내용은 이 기기에 자동으로 임시 저장됩니다. 원본에 남기려면 💾 저장 (Ctrl+S)"></span>
   <button class="ib sm" id="btnView" title="쪽 보기 ↔ 화면 맞춤 보기 (휴대폰에 편한 보기)">📄 쪽 보기</button>
   <button class="ib sm" data-act="zoomOut" title="축소 (Ctrl+마우스 휠)">－</button>
   <select id="selZoom" title="확대/축소"><option value="0.5">50%</option><option value="0.75">75%</option><option value="0.9">90%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option><option value="fit">쪽 맞춤</option><option value="width">폭 맞춤</option></select>
@@ -116,6 +116,7 @@
 
 <div id="start" hidden>
   <div class="card">
+    <a class="back" href="index.html">← 업무 공간</a>
     <h1>한글 작업장</h1>
     <p class="muted">한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다. 사무실의 한글에서 그대로 열립니다.</p>
     <div class="big">
@@ -124,7 +125,7 @@
       <button data-act="box"><b>🔒 문서함</b><span>집·사무실 어디서나 같은 문서</span></button>
     </div>
     <div id="draftList"></div>
-    <p class="note">· <b>.hwp</b>(옛 형식) 파일은 한글에서 <b>파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 올려 주세요.<br>· 편집 중인 내용은 이 브라우저에 자동으로 임시 저장되어, 창을 닫아도 다시 열 수 있습니다.</p>
+    <p class="note">· 처음이면 <b>새 문서</b>로 시작하거나, 사무실에서 저장한 <b>.hwpx</b> 파일을 여세요. 다른 기기에서도 이어서 하려면 <b>문서함</b>에 저장합니다.<br>· <b>.hwp</b>(옛 형식) 파일은 한글에서 <b>파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 올려 주세요.<br>· 편집 중인 내용은 이 브라우저에 자동으로 임시 저장되어, 창을 닫아도 다시 열 수 있습니다.</p>
   </div>
 </div>
 <div id="dropMask" hidden><div>hwpx 문서는 열고, 그림은 커서 위치에 넣습니다</div></div>

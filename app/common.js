@@ -988,12 +988,14 @@ const GH = {
       bg.innerHTML = `<div class="modal" style="width:560px;max-width:94vw">
       <h3>GitHub 저장소에 바로 저장</h3>
       ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:#fde68a">${esc(opts.reason)}</p>` : ''}
-      <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
-      그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 교안 작업장과 한글 작업장이 함께 씁니다.</p>
+      ${opts.expired ? '' : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
+      그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 교안 작업장과 한글 작업장이 함께 씁니다.</p>`}
       <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1;min-width:0"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1;min-width:0"></div>
-      <div class="row"><label style="width:70px">브랜치</label><input type="text" id="ghBranch" value="${esc(c.branch || 'main')}" style="width:140px"></div>
-      <div class="row"><label style="width:70px">토큰</label><input type="password" id="ghToken" placeholder="github_pat_… 또는 ghp_… 붙여넣기" value="" style="flex:1;min-width:0" autocomplete="off"></div>
-      <details class="gh-howto"${c.token ? '' : ' open'}>
+      <div class="row"><label style="width:70px" for="ghToken">토큰</label><input type="password" id="ghToken" placeholder="github_pat_… 또는 ghp_… 붙여넣기" value="" style="flex:1;min-width:0" autocomplete="off"></div>
+      <details class="gh-adv"><summary>고급 설정 (보통은 그대로 두세요)</summary>
+        <div class="row"><label style="width:70px" for="ghBranch">브랜치</label><input type="text" id="ghBranch" value="${esc(c.branch || 'main')}" style="width:140px"></div>
+      </details>
+      <details class="gh-howto"${c.token && !opts.expired ? '' : ' open'}>
         <summary><b>토큰 만드는 법</b> (한 번만, 만든 토큰은 메모해 두면 다른 기기에서도 그대로 씁니다)</summary>
         <ol>
           <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> 를 엽니다.</li>
@@ -1002,6 +1004,7 @@ const GH = {
           <li><b>Permissions</b> → Repository permissions → <b>Contents</b> → <i>Read and write</i>.</li>
           <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
         </ol>
+        ${opts.expired ? '<p style="margin:8px 0 0">기간이 끝난 토큰은 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 목록</a>에서 그 토큰을 열고 <i>Regenerate token</i> 을 누르면 같은 권한으로 새 문자열을 받습니다.</p>' : ''}
       </details>
       <div class="actions">
         ${c.token ? '<button class="btn ghost danger" id="ghClear">연결 해제</button>' : ''}

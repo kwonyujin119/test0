@@ -29,6 +29,14 @@
   .ws-app button:hover { background: #24b07e; }
   .ws-app button { font-size: 15px; padding: 13px 22px; box-shadow: 0 6px 18px rgba(31,154,110,.35); }
   html.in-app .ws-app { display: none; }
+  @media (max-width: 640px) {
+    .ws { padding: 28px 16px 60px; }
+    .ws h1 { font-size: 28px; }
+    .ws-card { padding: 20px; }
+    .ws-app { padding: 14px 16px; }
+    .ws-app button { width: 100%; }
+    .ws-app > div:last-child { flex: 1 1 100%; }
+  }
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f1115">
@@ -47,9 +55,9 @@
       <h2>한글 작업장</h2>
       <p>한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다.</p>
       <ul>
-        <li>hwpx 올리기 → 편집 → hwpx 내려받기</li>
-        <li>한글과 같은 단축키 (Alt+L 글자 모양, Alt+T 문단 모양, Ctrl+N,T 표 …)</li>
-        <li>암호로 잠근 문서함 — 집과 사무실에서 같은 문서를 엽니다</li>
+        <li>hwpx 파일 열기 → 편집 → 다시 hwpx 로 저장</li>
+        <li>한글과 같은 단축키 (Alt+L 글자 모양, Alt+T 문단 모양 … F1 로 전체 보기)</li>
+        <li>암호로 잠근 문서함 — 집·사무실·휴대폰에서 같은 문서를 엽니다</li>
       </ul>
       <span class="go">한글 작업장 열기 →</span>
     </a>
@@ -73,7 +81,7 @@
 function renderAppBox() {
   const box = document.getElementById('appBox'); if (!window.PWA || PWA.standalone) return;
   if (PWA.installed) {
-    box.innerHTML = `<div class="t"><b>✅ 앱을 설치했습니다</b><div>이제 바탕화면·시작 메뉴·작업 표시줄의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
+    box.innerHTML = `<div class="t"><b>✅ 앱을 설치했습니다</b><div>이제 ${/ios|android/.test(PWA.os) ? '홈 화면' : '바탕화면·시작 메뉴·작업 표시줄'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
     return;
   }
   const label = PWA.prompt ? '⬇ 앱으로 설치 (클릭 한 번)' : '⬇ 앱으로 설치';

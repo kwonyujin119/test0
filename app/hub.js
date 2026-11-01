@@ -32,6 +32,19 @@
     }
   }
   async function ghDialog() { if (await GH.connect()) location.reload(); }
+  /* 저장소에 쓰는 일: 연결이 없거나 토큰이 만료됐으면 경고 대신 그 자리에서 연결 창을 띄우고, 연결되면 이어서 함 */
+  async function ghTry(fn) {
+    try { return await fn(); }
+    catch (e) {
+      if (API.mode !== 'github' || !(e.noToken || e.status === 401)) throw e;
+      const ok = await GH.connect({ expired: e.status === 401, reason: e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 하던 일을 이어서 합니다.' : '이 기기(브라우저·앱)에는 아직 GitHub 연결이 없습니다. 지금 연결하면 하던 일을 이어서 합니다.' });
+      if (ok !== true) { e.quiet = true; throw e; } // 연결 창에서 [나중에]: 실패 경고는 띄우지 않음
+      ghNotice();
+      return fn();
+    }
+  }
+  function fail(what, e) { if (e.quiet) toast('GitHub 에 연결하면 저장소에 저장할 수 있습니다', 2600); else alert(what + e.message); }
+  const emptyHtml = empty.innerHTML;
   document.getElementById('btnGh').onclick = ghDialog;
 
   async function refresh() {
@@ -44,6 +57,7 @@
     const list = decks.filter(d => !kw || (d.title + ' ' + d.name).toLowerCase().includes(kw));
     grid.innerHTML = '';
     empty.style.display = list.length ? 'none' : 'block';
+    empty.innerHTML = !list.length && decks.length ? `"${esc(kw)}" 이(가) 들어간 교안이 없습니다. 검색 칸을 비우면 전체가 보입니다.` : emptyHtml;
     for (const d of list) grid.appendChild(card(d));
     document.getElementById('sub').textContent = decks.length ? `교안 ${decks.length}개` : '교안을 모아두고, 편집하고, 바로 발표합니다.';
   }
@@ -86,19 +100,19 @@
       if (a === 'del') {
         const how = API.mode === 'server' ? '(decks/.trash 폴더로 이동합니다)' : API.mode === 'github' ? '(저장소에서 지웁니다. Git 기록에는 남습니다)' : '';
         if (!confirm(`"${d.title}" 교안을 삭제할까요?\n${how}`)) return;
-        try { await API.remove(d.name); toast('삭제했습니다'); } catch (e) { alert('삭제 실패: ' + e.message); }
+        try { await ghTry(() => API.remove(d.name)); toast('삭제했습니다'); } catch (e) { fail('삭제 실패: ', e); }
         refresh();
       }
       if (a === 'dup') {
         const deck = await API.load(d.name); const name = uniqueName(d.name + ' 사본');
         deck.title = deck.title + ' 사본';
-        try { await API.save(name, deck); toast('복제했습니다'); } catch (e) { alert('복제 실패: ' + e.message); }
+        try { await ghTry(() => API.save(name, deck)); toast('복제했습니다'); } catch (e) { fail('복제 실패: ', e); }
         refresh();
       }
       if (a === 'rename') {
-        const nn = prompt('새 파일 이름 (decks/ 폴더의 파일명)', d.name); if (!nn || nn === d.name) return;
+        const nn = prompt('새 파일 이름 (목록 아래에 작게 보이는 이름입니다 · 교안 제목은 편집기 맨 위에서 바꿉니다)', d.name); if (!nn || nn === d.name) return;
         const safe = sanitize(nn); if (decks.some(x => x.name === safe)) { alert('같은 이름의 교안이 있습니다'); return; }
-        try { const deck = await API.load(d.name); await API.save(safe, deck); await API.remove(d.name); } catch (e) { alert('이름 바꾸기 실패: ' + e.message); }
+        try { const deck = await API.load(d.name); await ghTry(() => API.save(safe, deck)); await ghTry(() => API.remove(d.name)); } catch (e) { fail('이름 바꾸기 실패: ', e); }
         refresh();
       }
     };
@@ -114,7 +128,7 @@
     const title = prompt('새 교안 제목', '새 교안'); if (!title) return;
     const name = uniqueName(title);
     const deck = newDeck(title);
-    try { await API.save(name, deck); } catch (e) { alert('만들기 실패: ' + e.message); return; }
+    try { await ghTry(() => API.save(name, deck)); } catch (e) { fail('만들기 실패: ', e); return; }
     location.href = 'editor.html?deck=' + encodeURIComponent(name);
   };
   document.getElementById('btnImport').onclick = () => document.getElementById('fileImport').click();
@@ -124,8 +138,8 @@
       const deck = JSON.parse(await f.text());
       if (!deck.slides) throw new Error('교안 형식이 아닙니다');
       const name = uniqueName(f.name.replace(/\.json$/i, ''));
-      await API.save(name, deck); toast('가져왔습니다'); refresh();
-    } catch (e) { alert('가져오기 실패: ' + e.message); }
+      await ghTry(() => API.save(name, deck)); toast('가져왔습니다'); refresh();
+    } catch (e) { fail('가져오기 실패: ', e); }
     ev.target.value = '';
   };
   q.oninput = render;
