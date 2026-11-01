@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "bar-top",
  "created": "2026-11-01T05:07:15.630355Z",
- "modified": "2026-11-01T05:07:15.630355Z",
+ "modified": "2026-11-01T05:26:44.692Z",
  "footer": {
   "text": "방어 전략과 급수 · 지휘역량강화센터",
   "num": true,
@@ -274,7 +274,7 @@
      "html": "<ol><li><b>대한민국 신유형 화재</b> — 무엇이 늘었고 무엇이 아닌가</li><li><b>인천 대응 2단계 사례</b> — 7년간 11건</li><li><b>방어 전략의 수요</b> — 소방청의 정책 전환</li><li><b>급수의 위치</b> — 핵심인가 전제조건인가</li><li><b>특수차의 종류</b> — 4211과 4213</li><li><b>차종별 분당 방수능력</b> — 압력-유량 쌍</li></ol>",
      "style": {
       "fontSize": 40,
-      "lineHeight": 2.0,
+      "lineHeight": 2,
       "valign": "middle"
      }
     }
@@ -6966,7 +6966,7 @@
   {
    "id": "gvshrf348",
    "bg": {
-    "gradient": "linear-gradient(150deg, #475569 0%, #0f1419 100%)"
+    "image": ""
    },
    "transition": "",
    "notes": "질문 받는 시간. 답을 모르는 질문은 모른다고 하고 확인해서 알려준다.",
