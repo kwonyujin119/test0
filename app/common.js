@@ -708,7 +708,8 @@ function renderChart(e, node, theme, mode) {
     for (let v = sc.min; v <= sc.max + sc.step / 2; v += sc.step) {
       const q = vpos(v);
       if (e.grid !== false) svg += horiz ? `<line x1="${q}" y1="${padT}" x2="${q}" y2="${padT + ph}" stroke="${muted}" stroke-opacity=".28" stroke-width="2"/>` : `<line x1="${padL}" y1="${q}" x2="${padL + pw}" y2="${q}" stroke="${muted}" stroke-opacity=".28" stroke-width="2"/>`;
-      svg += horiz ? T(q, padT + ph + fs * 1.3, fmt(v), `text-anchor="middle" fill="${muted}" font-size="${fs * 0.85}"`) : T(padL - fs * 0.4, q + fs * 0.32, fmt(v), `text-anchor="end" fill="${muted}" font-size="${fs * 0.85}"`);
+      /* axis:false — 값이 막대에 직접 붙어 있을 때 눈금 숫자는 중복이라 끌 수 있게 한다 */
+      if (e.axis !== false) svg += horiz ? T(q, padT + ph + fs * 1.3, fmt(v), `text-anchor="middle" fill="${muted}" font-size="${fs * 0.85}"`) : T(padL - fs * 0.4, q + fs * 0.32, fmt(v), `text-anchor="end" fill="${muted}" font-size="${fs * 0.85}"`);
     }
     const zero = vpos(0);
     svg += horiz ? `<line x1="${zero}" y1="${padT}" x2="${zero}" y2="${padT + ph}" stroke="${muted}" stroke-width="3"/>` : `<line x1="${padL}" y1="${zero}" x2="${padL + pw}" y2="${zero}" stroke="${muted}" stroke-width="3"/>`;
@@ -734,7 +735,9 @@ function renderChart(e, node, theme, mode) {
       labels.forEach((_, j) => {
         let pos = 0, neg = 0;
         series.forEach((s, k) => {
-          const v = s.values[j], col = pal[k % pal.length];
+          const v = s.values[j];
+          /* pointColors: 막대 하나만 강조하고 나머지는 회색으로 둘 때 쓴다 (없으면 기존대로) */
+          const col = (e.pointColors && e.pointColors[j]) ? themeColor(e.pointColors[j], theme) : pal[k % pal.length];
           let a, b;
           if (stack) { if (v >= 0) { a = pos; b = pos + v; pos = b; } else { a = neg; b = neg + v; neg = b; } } else { a = 0; b = v; }
           const off = (horiz ? padT : padL) + band * j + (band - inner) / 2 + (stack ? 0 : k * bw);
