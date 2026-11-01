@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="app/hwp/hwp.css">
 <style id="docCss"></style>
 <style id="printCss"></style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="app/icons/icon-192.png">
 </head>
 <body>
 <header id="top">
@@ -30,7 +33,7 @@
   </div>
   <div class="bar2" id="ribbon">
     <select id="selStyle" title="스타일 (F6) · Ctrl+1 바탕글, Ctrl+2 본문, Ctrl+3~9 개요 1~7"></select>
-    <input id="inFont" list="fontList" title="글꼴" spellcheck="false">
+    <span class="fontbox"><input id="inFont" list="fontList" title="글꼴 — 이름을 쓰거나 ▾ 에서 고르세요" spellcheck="false"><button class="ib sm" id="btnFont" type="button" title="글꼴 목록 (미리보기)">▾</button></span>
     <datalist id="fontList"></datalist>
     <input id="inSize" type="number" min="1" max="4096" step="0.5" title="글자 크기 pt (Alt+Shift+E 크게 / Alt+Shift+R 작게)">
     <span class="vsep"></span>
@@ -94,6 +97,7 @@
   <div id="sheetWrap"><div id="sheet"><div id="pages"></div><div id="doc" contenteditable="true" spellcheck="false" autocapitalize="off"></div><div id="picHandle" hidden></div></div></div>
 </main>
 
+<div id="fontPanel" hidden><input id="fontQ" placeholder="글꼴 찾기…" spellcheck="false"><div id="fontItems"></div></div>
 <div id="findBar" hidden>
   <div class="row"><input id="fq" placeholder="찾을 내용" spellcheck="false"><button class="tb" id="fPrev" title="이전 (Shift+Enter)">▲</button><button class="tb" id="fNext" title="다음 (Enter)">▼</button><label class="chk"><input type="checkbox" id="fCase">대소문자</label><span id="fMsg" class="muted"></span><button class="tb" id="fClose" title="닫기 (Esc)">✕</button></div>
   <div class="row" id="fRepRow"><input id="fr" placeholder="바꿀 내용" spellcheck="false"><button class="tb" id="fRep">바꾸기</button><button class="tb" id="fRepAll">모두 바꾸기</button></div>
@@ -129,5 +133,6 @@
 <script src="app/hwp/store.js"></script>
 <script src="app/hwp/edit.js"></script>
 <script src="app/hwp/ui.js"></script>
+<script src="app/pwa.js"></script>
 </body>
 </html>

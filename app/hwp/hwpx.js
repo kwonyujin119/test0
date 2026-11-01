@@ -37,9 +37,13 @@ function mmW(s) { const m = /([\d.]+)\s*mm/.exec(s || ''); return m ? parseFloat
 
 function fontStack(faces) {
   faces = faces.filter(Boolean);
+  // 무료 웹 글꼴 목록(FONTS)에 있는 이름이면 그 글꼴을 불러와 앞에 둠 — PC 에 없어도 같은 모양으로 보임
+  const web = [];
+  if (typeof findFontByFace === 'function') for (const f of faces) { const w = findFontByFace(f); if (w && w.fam) { if (w.gf) loadFont(w.id); web.push(cssStr(w.fam)); } }
+  if (web.length) faces = faces.filter(f => !findFontByFace(f));
   const serif = faces.some(f => /바탕|명조|궁서|batang|myeong|serif|times|신명|그래픽/i.test(f));
   const base = serif ? ['Batang', "'바탕'", "'Noto Serif KR'", "'Nanum Myeongjo'", 'serif'] : ["'Malgun Gothic'", "'Noto Sans KR'", "'Pretendard Variable'", 'sans-serif'];
-  return Array.from(new Set(faces.map(cssStr))).concat(base).join(',');
+  return Array.from(new Set(web.concat(faces.map(cssStr)))).concat(base).join(',');
 }
 
 const NUM_FMT = {

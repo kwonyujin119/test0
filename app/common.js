@@ -8,20 +8,54 @@ const SLIDE_W = 1920, SLIDE_H = 1080;
 const FONT_SANS = "'Pretendard Variable', Pretendard, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
 const FONT_SERIF = "'Noto Serif KR', 'Nanum Myeongjo', '나눔명조', Batang, '바탕', serif";
 const FONT_MONO = "'Cascadia Code', 'D2Coding', Consolas, 'Courier New', monospace";
-/* gf: Google Fonts 이름 — 실제로 쓰일 때만 불러옴 (한글은 쓰인 글자 묶음만 내려받음) */
+/* 글꼴 목록 — 교안 작업장·한글 작업장 공용.
+   fam: CSS 글꼴 이름, gf: Google Fonts 이름 (실제로 쓰일 때만 불러옴, 한글은 쓰인 글자 묶음만 내려받음),
+   face: 한글(hwpx) 문서에 저장할 글꼴 이름 (그 PC 에 같은 이름의 글꼴이 있으면 한글이 그대로 씀), cat: 분류 */
+const FONT_CATS = [['sans', '고딕'], ['serif', '명조'], ['display', '제목·강조'], ['hand', '손글씨'], ['mono', '고정폭']];
+const _F = (id, name, fam, gf, cat, face, fb) => ({ id, name, fam, gf, cat, face: face || fam, css: (fam ? `'${fam}', ` : '') + (fb || (cat === 'serif' ? FONT_SERIF : cat === 'mono' ? FONT_MONO : cat === 'hand' ? FONT_SANS.replace(/sans-serif$/, 'cursive') : FONT_SANS)) });
 const FONTS = [
-  { id: 'sans', name: '프리텐다드 (기본 고딕)', css: FONT_SANS },
-  { id: 'serif', name: '노토 명조', css: FONT_SERIF, gf: 'Noto+Serif+KR:wght@400;700;900' },
-  { id: 'batang', name: '고운 바탕 (부드러운 명조)', css: "'Gowun Batang', " + FONT_SERIF, gf: 'Gowun+Batang:wght@400;700' },
-  { id: 'dodum', name: '고운 돋움 (부드러운 고딕)', css: "'Gowun Dodum', " + FONT_SANS, gf: 'Gowun+Dodum' },
-  { id: 'ibm', name: 'IBM Plex 고딕 (단정함)', css: "'IBM Plex Sans KR', " + FONT_SANS, gf: 'IBM+Plex+Sans+KR:wght@400;600;700' },
-  { id: 'blackhan', name: '검은고딕 (굵은 제목)', css: "'Black Han Sans', " + FONT_SANS, gf: 'Black+Han+Sans' },
-  { id: 'dohyeon', name: '도현 (제목)', css: "'Do Hyeon', " + FONT_SANS, gf: 'Do+Hyeon' },
-  { id: 'jua', name: '주아 (둥근 글씨)', css: "'Jua', " + FONT_SANS, gf: 'Jua' },
-  { id: 'pen', name: '나눔 손글씨 펜', css: "'Nanum Pen Script', cursive", gf: 'Nanum+Pen+Script' },
-  { id: 'gaegu', name: '개구 (손글씨)', css: "'Gaegu', cursive", gf: 'Gaegu:wght@400;700' },
-  { id: 'mono', name: '고정폭 (코드)', css: FONT_MONO },
+  { id: 'sans', name: '프리텐다드 (기본 고딕)', fam: 'Pretendard Variable', cat: 'sans', face: 'Pretendard', css: FONT_SANS },
+  _F('noto-sans', '노토 산스 (본고딕)', 'Noto Sans KR', 'Noto+Sans+KR:wght@300;400;500;700;900', 'sans'),
+  _F('nanum-gothic', '나눔고딕', 'Nanum Gothic', 'Nanum+Gothic:wght@400;700;800', 'sans', '나눔고딕'),
+  _F('dodum', '고운 돋움 (부드러운 고딕)', 'Gowun Dodum', 'Gowun+Dodum', 'sans', '고운돋움'),
+  _F('ibm', 'IBM Plex 고딕 (단정함)', 'IBM Plex Sans KR', 'IBM+Plex+Sans+KR:wght@300;400;600;700', 'sans'),
+  _F('gothic-a1', '고딕 A1', 'Gothic A1', 'Gothic+A1:wght@300;400;600;800', 'sans'),
+  _F('sunflower', '해바라기 고딕', 'Sunflower', 'Sunflower:wght@300;500;700', 'sans'),
+  _F('orbit', '오르빗 (둥근 고딕)', 'Orbit', 'Orbit', 'sans'),
+  _F('dongle', '동글 (귀여운 고딕)', 'Dongle', 'Dongle:wght@300;400;700', 'sans'),
+  _F('serif', '노토 명조 (본명조)', 'Noto Serif KR', 'Noto+Serif+KR:wght@400;700;900', 'serif'),
+  _F('nanum-myeongjo', '나눔명조', 'Nanum Myeongjo', 'Nanum+Myeongjo:wght@400;700;800', 'serif', '나눔명조'),
+  _F('batang', '고운 바탕 (부드러운 명조)', 'Gowun Batang', 'Gowun+Batang:wght@400;700', 'serif', '고운바탕'),
+  _F('hahmlet', '함렛 (현대적 명조)', 'Hahmlet', 'Hahmlet:wght@300;400;600;800', 'serif'),
+  _F('song-myung', '송명 (옛 명조)', 'Song Myung', 'Song+Myung', 'serif'),
+  _F('diphylleia', '산수국 (가는 명조)', 'Diphylleia', 'Diphylleia', 'serif'),
+  _F('blackhan', '검은고딕 (굵은 제목)', 'Black Han Sans', 'Black+Han+Sans', 'display', '검은고딕'),
+  _F('dohyeon', '도현 (제목)', 'Do Hyeon', 'Do+Hyeon', 'display'),
+  _F('jua', '주아 (둥근 글씨)', 'Jua', 'Jua', 'display'),
+  _F('gugi', '구기 (붓 제목)', 'Gugi', 'Gugi', 'display'),
+  _F('yeon-sung', '연성 (부드러운 제목)', 'Yeon Sung', 'Yeon+Sung', 'display'),
+  _F('stylish', '스타일리시', 'Stylish', 'Stylish', 'display'),
+  _F('black-white', '흑백사진 (레트로)', 'Black And White Picture', 'Black+And+White+Picture', 'display'),
+  _F('kirang', '기랑해랑 (그림 글씨)', 'Kirang Haerang', 'Kirang+Haerang', 'display'),
+  _F('bagel', '베이글 (아주 굵게)', 'Bagel Fat One', 'Bagel+Fat+One', 'display'),
+  _F('gasoek', '가석 (굵은 강조)', 'Gasoek One', 'Gasoek+One', 'display'),
+  _F('pen', '나눔손글씨 펜', 'Nanum Pen Script', 'Nanum+Pen+Script', 'hand', '나눔손글씨 펜'),
+  _F('brush', '나눔손글씨 붓', 'Nanum Brush Script', 'Nanum+Brush+Script', 'hand', '나눔손글씨 붓'),
+  _F('gaegu', '개구 (손글씨)', 'Gaegu', 'Gaegu:wght@300;400;700', 'hand'),
+  _F('hi-melody', '하이멜로디', 'Hi Melody', 'Hi+Melody', 'hand'),
+  _F('poor-story', '서툰 이야기', 'Poor Story', 'Poor+Story', 'hand'),
+  _F('gamja', '감자꽃', 'Gamja Flower', 'Gamja+Flower', 'hand'),
+  _F('cute', '귀여운 글씨', 'Cute Font', 'Cute+Font', 'hand'),
+  _F('single-day', '싱글데이', 'Single Day', 'Single+Day', 'hand'),
+  _F('east-sea', '동해 독도 (붓글씨)', 'East Sea Dokdo', 'East+Sea+Dokdo', 'hand'),
+  _F('dokdo', '독도 (거친 손글씨)', 'Dokdo', 'Dokdo', 'hand'),
+  { id: 'mono', name: '고정폭 (코드)', fam: 'Consolas', cat: 'mono', face: 'Consolas', css: FONT_MONO },
+  _F('nanum-coding', '나눔고딕코딩', 'Nanum Gothic Coding', 'Nanum+Gothic+Coding:wght@400;700', 'mono', '나눔고딕코딩'),
 ];
+/* 한글 작업장에서 고를 수 있는 PC 글꼴 (설치된 PC 에서만 그 모양으로 보임 — 사무실 한글 문서에 흔한 글꼴) */
+const PC_FONTS = ['함초롬바탕', '함초롬돋움', '맑은 고딕', '바탕', '바탕체', '돋움', '돋움체', '굴림', '굴림체', '궁서', '궁서체', '휴먼명조', '신명조', '견고딕', '중고딕', 'HY헤드라인M', 'HY견고딕', 'HY견명조', 'HY중고딕', 'HY신명조', '한컴 윤고딕 230', '한컴 윤고딕 240', 'Arial', 'Times New Roman', 'Calibri'];
+/* 글꼴 이름(한글 문서의 face 나 CSS 이름)으로 목록 항목 찾기 */
+function findFontByFace(face) { if (!face) return null; const k = String(face).replace(/\s+/g, '').toLowerCase(); return FONTS.find(f => [f.face, f.fam, f.name].some(n => n && n.replace(/\s+/g, '').toLowerCase() === k)) || null; }
 const _fontsLoaded = new Set();
 function loadFont(id) {
   const f = FONTS.find(x => x.id === id);
@@ -29,6 +63,16 @@ function loadFont(id) {
   _fontsLoaded.add(id);
   const l = document.createElement('link'); l.rel = 'stylesheet';
   l.href = 'https://fonts.googleapis.com/css2?family=' + f.gf + '&display=swap';
+  document.head.appendChild(l);
+}
+/* 글꼴 목록 미리보기용: 그 글꼴 이름 글자만 아주 작게 받아 옴 */
+const _fontPreview = new Set();
+function loadFontPreview(f) {
+  if (!f || !f.gf || _fontsLoaded.has(f.id) || _fontPreview.has(f.id) || typeof document === 'undefined') return;
+  _fontPreview.add(f.id);
+  const fam = f.gf.split(':')[0];
+  const l = document.createElement('link'); l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=' + fam + '&text=' + encodeURIComponent(Array.from(new Set(f.name + '가나다 AaBb123')).join('')) + '&display=swap';
   document.head.appendChild(l);
 }
 function fontCss(id) { const f = FONTS.find(f => f.id === id); if (!f) return FONT_SANS; loadFont(id); return f.css; }

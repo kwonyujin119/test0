@@ -219,8 +219,43 @@
     const s = $id('selStyle'); const list = H().styles.filter(x => x.type !== 'CHAR');
     s.innerHTML = list.map(x => `<option value="${escH(x.id)}">${escH(x.name || x.eng)}</option>`).join('');
   }
-  const COMMON_FONTS = ['함초롬바탕', '함초롬돋움', '맑은 고딕', '바탕', '돋움', '굴림', '궁서', '나눔고딕', '나눔명조', 'HY헤드라인M', '휴먼명조', '한컴 윤고딕 230', '신명조', '견고딕', 'Arial', 'Times New Roman'];
-  function fillFonts() { const all = Array.from(new Set(H().allFaces().concat(COMMON_FONTS))).filter(Boolean); $id('fontList').innerHTML = all.map(f => `<option value="${escH(f)}">`).join(''); }
+  function fillFonts() { const all = Array.from(new Set(H().allFaces().concat(FONTS.map(f => f.face), PC_FONTS))).filter(Boolean); $id('fontList').innerHTML = all.map(f => `<option value="${escH(f)}">`).join(''); }
+  /* 글꼴 목록 (▾): 무료 웹 글꼴은 그 모양 그대로 미리 보여 주고, 고르면 어느 PC 에서나 같은 모양으로 보임 */
+  function openFontPanel() {
+    if (!W.doc) return;
+    keepSel();
+    const p = $id('fontPanel'); const r = $id('inFont').getBoundingClientRect();
+    p.style.left = Math.min(r.left, innerWidth - 330) + 'px'; p.style.top = (r.bottom + 4) + 'px'; p.hidden = false;
+    $id('fontQ').value = ''; drawFonts(''); setTimeout(() => $id('fontQ').focus(), 0);
+  }
+  function drawFonts(q) {
+    const cur = $id('inFont').value; const k = q.trim().toLowerCase();
+    const hit = n => !k || n.toLowerCase().includes(k);
+    const item = (face, label, css, note) => `<button type="button" data-face="${escH(face)}" class="${face === cur ? 'on' : ''}" style="font-family:${escH(css)}">${escH(label)}<span>${escH(note || '')}</span></button>`;
+    let h = '';
+    const docFaces = H().allFaces().filter(f => hit(f));
+    if (docFaces.length) h += `<h5>이 문서에 쓰인 글꼴</h5>` + docFaces.map(f => item(f, f, fontStack([f]), findFontByFace(f) ? '웹 글꼴' : 'PC 글꼴')).join('');
+    for (const [cat, cname] of FONT_CATS) {
+      const list = FONTS.filter(f => f.cat === cat && (hit(f.name) || hit(f.face)));
+      if (!list.length) continue;
+      list.forEach(f => loadFontPreview(f));
+      h += `<h5>${cname} <small>· 어느 PC 에서나 같은 모양</small></h5>` + list.map(f => item(f.face, f.name, f.css, f.face !== f.name ? f.face : '')).join('');
+    }
+    const pcs = PC_FONTS.filter(hit);
+    if (pcs.length) h += `<h5>PC 글꼴 <small>· 설치된 PC 에서만 그 모양</small></h5>` + pcs.map(f => item(f, f, fontStack([f]), '')).join('');
+    if (k && !FONTS.some(f => hit(f.name) || hit(f.face)) && !pcs.length && !docFaces.length) h += `<h5>그 밖의 글꼴</h5>` + item(q.trim(), q.trim() + ' (이 이름 그대로)', fontStack([q.trim()]), 'PC 글꼴');
+    $id('fontItems').innerHTML = h;
+  }
+  const closeFontPanel = () => { $id('fontPanel').hidden = true; };
+  $id('btnFont').addEventListener('mousedown', e => { e.preventDefault(); keepSel(); });
+  $id('btnFont').addEventListener('click', () => { if ($id('fontPanel').hidden) openFontPanel(); else closeFontPanel(); });
+  $id('fontQ').addEventListener('input', e => drawFonts(e.target.value));
+  $id('fontQ').addEventListener('keydown', e => { if (e.key === 'Escape') { closeFontPanel(); backSel(); } if (e.key === 'Enter' && !e.isComposing) { const b = $id('fontItems').querySelector('button'); if (b) b.click(); } });
+  $id('fontItems').addEventListener('mousedown', e => e.preventDefault());
+  $id('fontItems').addEventListener('click', e => { const b = e.target.closest('[data-face]'); if (!b) return; closeFontPanel(); $id('inFont').value = b.dataset.face; backSel(); applyCp({ face: b.dataset.face }); });
+  document.addEventListener('mousedown', e => { if (!$id('fontPanel').hidden && !e.target.closest('#fontPanel,#btnFont')) closeFontPanel(); });
+  // 웹 글꼴을 다 받으면 글자 폭이 바뀌므로 쪽 나누기 다시 계산
+  if (document.fonts) document.fonts.addEventListener('loadingdone', () => { if (W.doc) changed(true); });
   const LS_OPTS = [100, 115, 130, 150, 160, 180, 200, 250, 300];
   $id('selLs').innerHTML = LS_OPTS.map(v => `<option value="${v}">${v}%</option>`).join('');
   let raf = 0;
@@ -856,7 +891,15 @@
     GH.load();
     $id('selZoom').value = '1';
     const q = new URLSearchParams(location.search);
+    // 앱으로 설치한 뒤 탐색기에서 hwpx 를 더블클릭하면 여기로 파일이 넘어옴 (같은 파일에 바로 저장됨)
+    let launched = false;
+    if ('launchQueue' in window) window.launchQueue.setConsumer(async p => {
+      if (!p.files || !p.files.length) return;
+      launched = true; const h = p.files[0];
+      try { await openFile(await h.getFile(), h); } catch (e) { alert('파일을 열 수 없습니다: ' + e.message); }
+    });
     if (q.get('new') === '1') { loadDoc(HwpxDoc.blank(), { name: '새 문서' }); return; }
-    showStart();
+    await new Promise(r => setTimeout(r, 0));
+    if (!launched && !W.doc) showStart();
   })();
 })();

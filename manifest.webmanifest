@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "업무 공간",
+  "short_name": "업무 공간",
+  "description": "한글(hwpx) 문서 편집과 강의 교안 작업을 하는 개인 업무 앱",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "icons": [
+    { "src": "app/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "app/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "app/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "한글 작업장", "short_name": "한글", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "교안 작업장", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] }
+  ],
+  "file_handlers": [
+    { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } }
+  ],
+  "launch_handler": { "client_mode": ["navigate-existing", "auto"] }
+}

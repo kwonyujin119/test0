@@ -21,12 +21,24 @@
   .ws-card .go { margin-top: auto; color: var(--ui-accent); font-weight: 600; }
   .ws-foot { margin-top: 34px; color: var(--ui-muted); font-size: 13px; line-height: 1.7; }
   .ws-foot b { color: #c3c8d4; }
+  .ws-app { margin-top: 22px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 16px 20px; border-radius: 14px; background: linear-gradient(90deg, #17352b, #18233a); border: 1px solid #2a4a3f; }
+  .ws-app .t { flex: 1; min-width: 240px; line-height: 1.6; }
+  .ws-app .t b { font-size: 15px; }
+  .ws-app .t div { color: #b9c3d3; font-size: 13px; }
+  .ws-app button { background: #1f9a6e; color: #fff; border: 0; border-radius: 10px; padding: 11px 18px; font: 700 14px var(--ui-font); cursor: pointer; }
+  .ws-app button:hover { background: #24b07e; }
+  html.in-app .ws-app { display: none; }
 </style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f1115">
+<link rel="apple-touch-icon" href="app/icons/icon-192.png">
 </head>
 <body>
 <div class="ws">
   <h1>업무 공간</h1>
   <div class="sub">사무실에서도, 집에서도 같은 화면에서 이어서 작업합니다.</div>
+
+  <div class="ws-app" id="appBox"></div>
 
   <div class="ws-grid">
     <a class="ws-card" href="hangul.html">
@@ -57,7 +69,21 @@
 </div>
 <script src="app/common.js"></script>
 <script>
+function renderAppBox() {
+  const box = document.getElementById('appBox'); if (!window.PWA || PWA.standalone) return;
+  const edge = /Edg\//.test(navigator.userAgent);
+  if (PWA.prompt) {
+    box.innerHTML = `<div class="t"><b>업무 공간을 앱으로 설치하세요</b><div>바탕화면·시작 메뉴·작업 표시줄에 아이콘이 생기고, 주소창 없는 전용 창으로 열립니다. hwpx 파일을 더블클릭해서 바로 열 수도 있습니다.</div></div><button type="button" id="btnInstall">⬇ 앱으로 설치</button>`;
+    document.getElementById('btnInstall').onclick = () => PWA.install();
+  } else if (PWA.installed) {
+    box.innerHTML = `<div class="t"><b>설치했습니다</b><div>이제 바탕화면이나 시작 메뉴의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
+  } else {
+    box.innerHTML = `<div class="t"><b>앱으로 열어서 쓰세요</b><div>이미 설치했다면 바탕화면·시작 메뉴의 <b>업무 공간</b> 아이콘으로 여세요 (주소창 오른쪽의 <b>앱에서 열기</b> 아이콘도 됩니다).<br>아직이라면 ${edge ? '엣지' : '크롬·엣지'} 주소창 오른쪽의 <b>설치 아이콘(⊕)</b> 또는 메뉴 → <b>앱 → 업무 공간 설치</b> 를 누르세요.</div></div>`;
+  }
+}
+window.addEventListener('pwa-change', renderAppBox);
 (async () => {
+  renderAppBox();
   const foot = document.getElementById('foot');
   const cfg = GH.load();
   if (cfg && GH.token) foot.innerHTML = `GitHub 저장소 <b>${esc(cfg.owner)}/${esc(cfg.repo)}</b> 에 연결되어 있습니다. 두 작업장이 같은 연결을 씁니다.`;
@@ -69,5 +95,6 @@
   } catch (e) { }
 })();
 </script>
+<script src="app/pwa.js"></script>
 </body>
 </html>

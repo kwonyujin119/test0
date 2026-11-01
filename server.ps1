@@ -24,7 +24,7 @@ $Mime = @{
     '.svg' = 'image/svg+xml'; '.webp' = 'image/webp'; '.ico' = 'image/x-icon'; '.bmp' = 'image/bmp'
     '.mp4' = 'video/mp4'; '.webm' = 'video/webm'; '.mp3' = 'audio/mpeg'; '.wav' = 'audio/wav'
     '.woff' = 'font/woff'; '.woff2' = 'font/woff2'; '.ttf' = 'font/ttf'; '.otf' = 'font/otf'
-    '.pdf' = 'application/pdf'
+    '.pdf' = 'application/pdf'; '.webmanifest' = 'application/manifest+json'
 }
 
 function Send-Bytes($ctx, [int]$status, [string]$type, [byte[]]$bytes) {

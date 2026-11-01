@@ -43,6 +43,17 @@ a { color: var(--c-acc); text-decoration: none; }
 #ribbon select, #ribbon input, .bar3 select { border: 1px solid var(--c-line); border-radius: 6px; background: #fff; padding: 3px 6px; height: 27px; }
 #selStyle { width: 108px; }
 #inFont { width: 132px; }
+.fontbox { display: inline-flex; align-items: center; }
+.fontbox #inFont { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.fontbox #btnFont { height: 27px; border: 1px solid var(--c-line); border-left: 0; border-radius: 0 6px 6px 0; background: #fff; }
+#fontPanel { position: fixed; z-index: 60; width: 320px; max-height: min(70vh, 560px); display: flex; flex-direction: column; background: #fff; border: 1px solid var(--c-line); border-radius: 10px; box-shadow: 0 14px 40px rgba(0,0,0,.18); }
+#fontQ { margin: 8px; border: 1px solid var(--c-line); border-radius: 6px; padding: 6px 8px; }
+#fontItems { overflow: auto; padding: 0 6px 8px; }
+#fontItems h5 { margin: 10px 6px 4px; font-size: 11.5px; color: var(--c-acc); font-weight: 700; }
+#fontItems h5 small { color: var(--c-muted); font-weight: 400; }
+#fontItems button { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; width: 100%; text-align: left; border: 0; background: none; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1.3; }
+#fontItems button:hover, #fontItems button.on { background: var(--c-sel); }
+#fontItems button span { font: 11px var(--ui); color: var(--c-muted); white-space: nowrap; }
 #inSize { width: 58px; }
 #selLs { width: 70px; }
 .clr { position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 27px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; padding: 0 4px; font-weight: 700; }
