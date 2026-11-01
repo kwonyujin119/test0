@@ -102,8 +102,9 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 /* ===== 편집기 ===== */
 .ed { display: grid; grid-template-rows: 48px 44px 1fr; grid-template-columns: 220px 1fr 330px; height: 100vh; overflow: hidden; }
 .ed-top { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--ui-panel); border-bottom: 1px solid var(--ui-border); }
-.ed-top .title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; min-width: 0; }
-.ed-top .title input { font-weight: 600; font-size: 15px; width: 300px; background: transparent; border-color: transparent; padding: 4px 6px; }
+.ed-top .title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
+.ed-top .title input { font-weight: 600; font-size: 15px; width: 300px; background: transparent; border-color: transparent; padding: 4px 6px; flex: 0 1 auto; min-width: 40px; }
+.ed-top .title > :not(input), .ed-top .lbl { flex-shrink: 0; white-space: nowrap; } /* 좁은 PC 화면: 제목 칸만 줄고 옆 단추(테마 등)와 겹치지 않게 */
 .ed-top .title input:hover, .ed-top .title input:focus { border-color: var(--ui-border); background: var(--ui-bg); }
 .ed-top .dirty { width: 8px; height: 8px; border-radius: 50%; background: var(--ui-accent2, #f59e0b); display: none; }
 .ed-top.is-dirty .dirty { display: inline-block; }

@@ -87,17 +87,20 @@
 
   /* ---------- 저장 ---------- */
   let saving = false;
+  let rev = 0; // 고친 횟수 — 저장하는 동안(문서함은 몇 초 걸림) 더 고친 내용이 있으면 '저장됨'으로 바꾸지 않음
+  function savedAt(r0) { W.dirty = rev !== r0; updateState(); if (W.dirty) scheduleDraft(); else HwpStore.drafts.del(W.draftId); }
   async function build() { tidyAll(); Track.flush(); return W.doc.save(doc); }
   function tidyAll() { for (const b of doc.querySelectorAll('.hp')) { const brs = b.querySelectorAll(':scope > br:not([data-lb])'); if (brs.length > 1) brs.forEach((x, i) => { if (i < brs.length - 1 && !x.nextSibling) x.remove(); }); } }
   const fileName = () => (W.name || '문서').replace(/[\\/:*?"<>|]/g, '_') + '.hwpx';
   async function save(as) {
     if (!W.doc || saving) return;
     saving = true; setState('저장 중…');
+    const r0 = rev;
     try {
       const blob = await build();
       if (!as && W.boxId) { await HwpStore.box.save(W.boxId, W.name, blob, deviceName()); done('문서함에 저장했습니다'); }
       else if (!as && W.handle) { await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
-      else if (as === 'box') { await boxSaveCurrent(blob); }
+      else if (as === 'box') { await boxSaveCurrent(blob, r0); }
       else {
         const h = await HwpStore.pickSave(fileName(), blob);
         if (h === false) { setState(''); updateState(); return; }
@@ -106,7 +109,7 @@
       }
     } catch (e) { console.error(e); setState(''); updateState(); alert('저장하지 못했습니다.\n\n' + e.message); }
     finally { saving = false; }
-    function done(msg) { W.dirty = false; updateState(); toast(msg, 2600); HwpStore.drafts.del(W.draftId); }
+    function done(msg) { savedAt(r0); toast(msg, 2600); }
   }
   function saveAsMenu() {
     dialog('다른 이름으로 저장', `<div class="grid1"><label>파일 이름</label><input id="sa_nm" value="${escH(W.name)}"></div>
@@ -126,7 +129,7 @@
     s.textContent = W.dirty ? '● 수정됨' : (W.boxId || W.handle ? '저장됨' : '');
     $id('stSaved').textContent = W.doc ? '저장 위치: ' + where : '';
   }
-  window.onDocChanged = () => { if (!W.dirty) { W.dirty = true; } updateState(); scheduleDraft(); };
+  window.onDocChanged = () => { rev++; if (!W.dirty) { W.dirty = true; } updateState(); scheduleDraft(); };
   let draftT = null, buildMs = 0;
   // 큰 문서는 저장 준비에 시간이 걸리므로 임시 저장 간격을 늘림 (입력이 끊기지 않게)
   function scheduleDraft() {
@@ -141,10 +144,11 @@
   window.addEventListener('beforeunload', e => { if (W.doc && W.dirty) { saveDraft(); e.preventDefault(); e.returnValue = ''; } });
 
   /* ---------- 문서함 ---------- */
-  async function boxSaveCurrent(blob) {
+  async function boxSaveCurrent(blob, r0) {
     if (!(await boxEnsure())) { setState(''); updateState(); return; }
-    W.boxId = await HwpStore.box.save(W.boxId, W.name, blob || await build(), deviceName());
-    W.handle = null; W.dirty = false; updateState(); HwpStore.drafts.del(W.draftId);
+    if (!blob) { r0 = rev; blob = await build(); }
+    W.boxId = await HwpStore.box.save(W.boxId, W.name, blob, deviceName());
+    W.handle = null; savedAt(r0);
     toast('문서함에 저장했습니다 — 다른 PC 에서도 이 문서를 열 수 있습니다', 3000);
   }
   function connectDialog() {
@@ -158,9 +162,11 @@
         onOk: async (q) => {
           const cfg = { owner: q('#g_o').value.trim(), repo: q('#g_r').value.trim(), branch: c.branch || 'main', token: q('#g_t').value.trim() };
           if (!cfg.owner || !cfg.repo || !cfg.token) { alert('저장소와 토큰을 입력하세요'); return false; }
+          // 확인을 통과한 토큰만 이 기기에 기억 (틀린 토큰이 남아 '연결됨'으로 여겨지지 않게)
+          const prev = GH.cfg; GH.cfg = cfg;
+          try { const r = await GH.check(); if (!r.push) { GH.cfg = prev; alert('이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요)'); return false; } }
+          catch (e) { GH.cfg = prev; alert(e.message); return false; }
           GH.save(cfg);
-          try { const r = await GH.check(); if (!r.push) { alert('이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요)'); return false; } }
-          catch (e) { alert(e.message); return false; }
           res(true);
         }, onClose: () => res(!!(GH.cfg && GH.token)) });
     });
@@ -413,7 +419,9 @@
     document.body.classList.toggle('reflow', W.reflow);
     $id('btnView').textContent = W.reflow ? '📱 화면 맞춤' : '📄 쪽 보기';
     if (!quiet) { try { localStorage.setItem('hwp:view', v); } catch (e) { } }
-    if (W.doc) { Track.full = true; layout(); if (!W.reflow) { const cw = $id('canvas').clientWidth, pw = W.doc.page(0).w / HU; if (cw < pw + 60) setZoom('width'); } }
+    // 화면 맞춤 보기는 확대/축소 없이 1배로 그림 → 쪽 보기의 배율은 기억해 두었다가 돌아올 때 되살림 (끌기·내어쓰기 계산이 배율로 나뉘지 않게)
+    if (W.reflow) { if (W.zoom !== 1) { W.pageZoom = W.zoom; W.zoom = 1; applyZoom(); } }
+    if (W.doc) { Track.full = true; layout(); if (!W.reflow) { const cw = $id('canvas').clientWidth, pw = W.doc.page(0).w / HU; if (cw < pw + 60) setZoom('width'); else if (W.pageZoom) setZoom(W.pageZoom); W.pageZoom = null; } }
   }
   $id('btnView').addEventListener('click', () => { setView(W.reflow ? 'page' : 'reflow'); toast(W.reflow ? '화면 맞춤 보기 — 글이 화면 폭에 맞춰 흐릅니다 (파일은 그대로)' : '쪽 보기 — 인쇄될 모양 그대로', 2200); });
 
@@ -426,7 +434,7 @@
     const z = $id('selZoom'); const o = Array.from(z.options).find(x => Math.abs(+x.value - W.zoom) < 0.001); if (o) z.value = o.value; else { let c = z.querySelector('option[data-cur]'); if (!c) { c = document.createElement('option'); c.dataset.cur = '1'; z.insertBefore(c, z.firstChild); } c.value = W.zoom; c.textContent = Math.round(W.zoom * 100) + '%'; z.value = c.value; }
     if (W.selPic) placePicHandle();
   }
-  $id('canvas').addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); setZoom(W.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); }, { passive: false });
+  $id('canvas').addEventListener('wheel', e => { if (!e.ctrlKey || W.reflow) return; e.preventDefault(); setZoom(W.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); }, { passive: false });
 
   /* ---------- 편집 이벤트 ---------- */
   doc.addEventListener('beforeinput', e => {

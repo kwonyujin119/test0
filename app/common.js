@@ -1048,6 +1048,7 @@ const API = {
   mode: 'server', // 'server' | 'github' | 'local'
   blobs: {},      // 방금 올린 이미지를 서버/배포를 기다리지 않고 바로 보여주기 위한 blob URL
   pending: new Map(), // src → 진행 중인 업로드
+  queuing: new Set(), // GitHub 커밋 큐에 아직 들어가지 않은 이미지 (base64 변환 중)
   failed: new Map(),  // src → blob (실패한 업로드, 저장 때 재시도)
   onPending: null,    // 진행 중 개수가 바뀔 때 알림 (편집기 상태 표시)
   _notify() { if (this.onPending) this.onPending(this.pending.size); },
@@ -1064,7 +1065,11 @@ const API = {
     if (this.mode === 'server') {
       p = fetch('api/assets?name=' + encodeURIComponent(src.slice(7)), { method: 'POST', body: blob }).then(r => { if (!r.ok) throw new Error('업로드 실패 (' + r.status + ')'); });
     } else {
-      p = blobToBase64(blob).then(b64 => GH.enqueue({ path: src, base64: b64 }));
+      // 큐에 들어가기까지(base64 변환)를 따로 기억 → 교안 저장이 이 이미지를 기다렸다가 같은 커밋에 담음
+      let enq = null;
+      const queued = blobToBase64(blob).then(b64 => { enq = GH.enqueue({ path: src, base64: b64 }); });
+      this.queuing.add(queued); const off = () => this.queuing.delete(queued); queued.then(off, off);
+      p = queued.then(() => enq);
     }
     p = p.then(() => { this.pending.delete(src); this._notify(); },
       (e) => { this.pending.delete(src); this.failed.set(src, blob); this._notify(); if (!e.noToken && e.status !== 401) toast('이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', 4000); });
@@ -1129,6 +1134,7 @@ const API = {
       if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
       await this._liftImages(deck);
       this._retryFailed();
+      await Promise.all(Array.from(this.queuing)).catch(() => { }); // 방금 옮긴 이미지가 큐에 다 들어갈 때까지 (교안이 이미지보다 먼저 올라가지 않게)
       // 큐에 모인 이미지와 교안을 한 커밋으로
       await GH.enqueue({ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }, { now: true, message: '교안 저장: ' + (deck.title || name) });
       return { ok: true, name };

@@ -2,7 +2,7 @@
 'use strict';
 (async function () {
   const $ = (id) => document.getElementById(id);
-  const S = { name: '', deck: null, cur: 0, sel: [], editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, clip: null, slideClip: null };
+  const S = { name: '', deck: null, cur: 0, sel: [], editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, rev: 0, clip: null, slideClip: null };
   const stage = $('stage'), overlay = $('overlay'), main = $('main'), props = $('props'), thumbsEl = $('thumbs');
   let slideNode = null, textToolbar = null, saveTimer = null;
 
@@ -49,7 +49,7 @@
   function redo() { if (S.editing) return; if (S.hi < S.history.length - 1) { S.hi++; restore(S.history[S.hi]); } }
   function updateUndoButtons() { $('btnUndo').disabled = S.hi <= 0; $('btnRedo').disabled = S.hi >= S.history.length - 1; }
   function markDirty() {
-    S.dirty = true; $('top').classList.add('is-dirty');
+    S.dirty = true; S.rev++; $('top').classList.add('is-dirty');
     // 임시본은 손을 멈춘 뒤 한가할 때 저장 (끌기·입력 중에 멈칫하지 않게)
     clearTimeout(saveTimer); saveTimer = setTimeout(() => (window.requestIdleCallback || (f => f()))(() => Draft.put(S.name, S.deck), { timeout: 3000 }), 800);
   }
@@ -61,7 +61,9 @@
   async function save() {
     if (S.editing) endEdit();
     try {
-      await API.save(S.name, S.deck); S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name);
+      const r0 = S.rev; // 저장하는 동안(GitHub 은 몇 초) 더 고친 내용은 '수정됨'으로 남김
+      await API.save(S.name, S.deck);
+      if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name); }
       toast('저장했습니다');
     } catch (e) {
       if (e.noToken || e.status === 401) { // 연결이 없거나 만료: 경고 대신 이 자리에서 바로 연결
