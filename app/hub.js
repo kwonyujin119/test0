@@ -31,52 +31,7 @@
       notice.querySelector('#ghOn').onclick = (ev) => { ev.preventDefault(); ghDialog(); };
     }
   }
-  function ghDialog() {
-    const c = GH.cfg || { owner: '', repo: '', branch: 'main', token: '' };
-    const bg = document.createElement('div'); bg.className = 'modal-bg';
-    bg.innerHTML = `<div class="modal" style="min-width:520px;max-width:600px">
-      <h3>GitHub 저장소에 바로 저장</h3>
-      <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.5">이 사이트에서 편집한 교안과 이미지를 저장소에 직접 커밋합니다.
-      토큰은 <b>이 브라우저에만</b> 저장되며 어디에도 전송되지 않습니다 (GitHub 에만 보냅니다).</p>
-      <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1"></div>
-      <div class="row"><label style="width:70px">브랜치</label><input type="text" id="ghBranch" value="${esc(c.branch || 'main')}" style="width:140px"></div>
-      <div class="row"><label style="width:70px">토큰</label><input type="password" id="ghToken" placeholder="github_pat_… 또는 ghp_…" value="${esc(c.token || '')}" style="flex:1" autocomplete="off"></div>
-      <div class="gh-howto">
-        <b>토큰 만드는 법</b> (한 번만)
-        <ol>
-          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> 를 엽니다.</li>
-          <li>Token name 에 <code>gyoan</code>, Expiration 은 넉넉히(예: 1년).</li>
-          <li><b>Repository access</b> → <i>Only select repositories</i> → <code>${esc(c.repo || 'test0')}</code> 선택.</li>
-          <li><b>Permissions</b> → Repository permissions → <b>Contents</b> → <i>Read and write</i>.</li>
-          <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
-        </ol>
-      </div>
-      <div class="actions">
-        ${c.token ? '<button class="btn ghost danger" id="ghClear">연결 해제</button>' : ''}
-        <span class="spacer" style="flex:1"></span>
-        <button class="btn" id="ghCancel">취소</button>
-        <button class="btn primary" id="ghOk">연결 확인</button>
-      </div></div>`;
-    document.body.appendChild(bg);
-    const $ = (id) => bg.querySelector('#' + id);
-    const close = () => bg.remove();
-    bg.onclick = (ev) => { if (ev.target === bg) close(); };
-    $('ghCancel').onclick = close;
-    if ($('ghClear')) $('ghClear').onclick = () => { GH.clear(); close(); location.reload(); };
-    $('ghOk').onclick = async () => {
-      const cfg = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim() };
-      if (!cfg.owner || !cfg.repo) { alert('저장소 이름을 입력하세요'); return; }
-      if (!cfg.token) { alert('토큰을 입력하세요'); return; }
-      $('ghOk').disabled = true; $('ghOk').textContent = '확인 중…';
-      const prev = GH.cfg; GH.cfg = cfg;
-      try {
-        const r = await GH.check();
-        if (!r.push) throw new Error('이 토큰으로는 저장소에 쓸 수 없습니다. 토큰 권한에서 Contents → Read and write 를 확인하세요.');
-        GH.save(cfg); toast('GitHub 에 연결했습니다'); close(); location.reload();
-      } catch (e) { GH.cfg = prev; alert('연결 실패: ' + e.message); $('ghOk').disabled = false; $('ghOk').textContent = '연결 확인'; }
-    };
-    setTimeout(() => $('ghToken').focus(), 50);
-  }
+  async function ghDialog() { if (await GH.connect()) location.reload(); }
   document.getElementById('btnGh').onclick = ghDialog;
 
   async function refresh() {

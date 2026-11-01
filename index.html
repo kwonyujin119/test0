@@ -86,7 +86,10 @@ window.addEventListener('pwa-change', renderAppBox);
   const foot = document.getElementById('foot');
   const cfg = GH.load();
   if (cfg && GH.token) foot.innerHTML = `GitHub 저장소 <b>${esc(cfg.owner)}/${esc(cfg.repo)}</b> 에 연결되어 있습니다. 두 작업장이 같은 연결을 씁니다.`;
-  else if (cfg) foot.innerHTML = `저장하려면 교안 작업장 첫 화면의 <b>GitHub 연결</b> 에서 토큰을 한 번 등록하세요. 한글 작업장은 연결 없이도 내 PC 의 hwpx 파일을 열고 저장할 수 있습니다.`;
+  else if (cfg) {
+    foot.innerHTML = `이 기기에는 아직 GitHub 연결이 없습니다 (보기 · 발표 · 내 PC 파일 작업은 그대로 됩니다). 저장소에 저장하려면 <a href="#" id="ghOn">GitHub 연결</a> 을 눌러 토큰을 한 번 넣으세요.`;
+    document.getElementById('ghOn').onclick = async (ev) => { ev.preventDefault(); if (await GH.connect()) location.reload(); };
+  }
   try {
     const mode = await API.init();
     const list = await API.list();

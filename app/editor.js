@@ -64,10 +64,28 @@
       await API.save(S.name, S.deck); S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name);
       toast('저장했습니다');
     } catch (e) {
-      if (e.noToken && confirm(e.message + '\n\n허브로 이동할까요? (임시본은 이 브라우저에 남아 있습니다)')) { Draft.put(S.name, S.deck); S.dirty = false; location.href = 'gyoan.html'; return; }
+      if (e.noToken || e.status === 401) { // 연결이 없거나 만료: 경고 대신 이 자리에서 바로 연결
+        Draft.put(S.name, S.deck);
+        const ok = await GH.connect({ reason: e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 바로 저장합니다.' : '이 기기(브라우저·앱)에는 아직 GitHub 연결이 없습니다. 지금 연결하면 바로 저장합니다.' });
+        ghChip();
+        if (ok === true) return save();
+        toast('이 기기에 임시 저장해 두었습니다 — 연결한 뒤 저장하면 저장소에 올라갑니다', 3500); return;
+      }
       alert('저장 실패: ' + e.message);
     }
   }
+  /* 연결 안 된 기기: 경고 창 대신 위쪽에 작은 표시 하나 (누르면 연결) */
+  function ghChip() {
+    let c = $('ghChip');
+    if (API.mode !== 'github' || GH.token) { if (c) c.remove(); return; }
+    if (c) return;
+    c = document.createElement('button'); c.id = 'ghChip'; c.className = 'btn sm'; c.textContent = '🔗 GitHub 연결';
+    c.title = '이 기기에는 아직 연결이 없어 임시 저장만 됩니다. 눌러서 토큰을 한 번 넣으면 저장소에 저장됩니다.';
+    c.style.cssText = 'margin-left:8px;border-color:#6b5416;color:#fde68a;background:#2b2410';
+    c.onclick = async () => { if ((await GH.connect()) === true) { ghChip(); if (S.dirty) save(); } else ghChip(); };
+    $('upStatus').after(c);
+  }
+  ghChip();
   window.addEventListener('beforeunload', (ev) => { if (S.dirty || API.pending.size) { ev.preventDefault(); ev.returnValue = ''; } });
   API.onPending = (n) => { const c = $('upStatus'); c.textContent = n ? `이미지 올리는 중 ${n}` : ''; c.classList.toggle('show', n > 0); };
 

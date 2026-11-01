@@ -79,6 +79,7 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .deck-actions { display: flex; gap: 6px; margin-top: 4px; }
 .deck-actions .spacer { flex: 1; }
 .hub-empty { text-align: center; color: var(--ui-muted); padding: 70px 0; border: 1px dashed var(--ui-border); border-radius: 14px; }
+.gh-howto summary { cursor: pointer; }
 .hub-notice { background: #2b2410; border: 1px solid #6b5416; color: #fde68a; padding: 10px 14px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; line-height: 1.5; }
 .hub-notice a { color: inherit; font-weight: 600; text-decoration: underline; }
 .hub-notice code { background: rgba(255,255,255,.1); padding: 1px 5px; border-radius: 4px; }

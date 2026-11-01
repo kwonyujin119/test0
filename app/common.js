@@ -979,6 +979,58 @@ const GH = {
     });
     return this._chain;
   },
+  /* 연결 창 (교안 허브·편집기·업무 공간 공통). 결과: true=연결됨, 'cleared'=해제, false=취소 */
+  connect(opts) {
+    opts = opts || {};
+    return new Promise(done => {
+      const c = this.cfg || this.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main', token: '' };
+      const bg = document.createElement('div'); bg.className = 'modal-bg';
+      bg.innerHTML = `<div class="modal" style="width:560px;max-width:94vw">
+      <h3>GitHub 저장소에 바로 저장</h3>
+      ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:#fde68a">${esc(opts.reason)}</p>` : ''}
+      <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
+      그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 교안 작업장과 한글 작업장이 함께 씁니다.</p>
+      <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1;min-width:0"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1;min-width:0"></div>
+      <div class="row"><label style="width:70px">브랜치</label><input type="text" id="ghBranch" value="${esc(c.branch || 'main')}" style="width:140px"></div>
+      <div class="row"><label style="width:70px">토큰</label><input type="password" id="ghToken" placeholder="github_pat_… 또는 ghp_… 붙여넣기" value="" style="flex:1;min-width:0" autocomplete="off"></div>
+      <details class="gh-howto"${c.token ? '' : ' open'}>
+        <summary><b>토큰 만드는 법</b> (한 번만, 만든 토큰은 메모해 두면 다른 기기에서도 그대로 씁니다)</summary>
+        <ol>
+          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> 를 엽니다.</li>
+          <li>Token name 에 <code>gyoan</code>, Expiration 은 넉넉히(예: 1년).</li>
+          <li><b>Repository access</b> → <i>Only select repositories</i> → <code>${esc(c.repo || 'test0')}</code> 선택.</li>
+          <li><b>Permissions</b> → Repository permissions → <b>Contents</b> → <i>Read and write</i>.</li>
+          <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
+        </ol>
+      </details>
+      <div class="actions">
+        ${c.token ? '<button class="btn ghost danger" id="ghClear">연결 해제</button>' : ''}
+        <span class="spacer" style="flex:1"></span>
+        <button class="btn" id="ghCancel">${opts.cancelText || '나중에'}</button>
+        <button class="btn primary" id="ghOk">연결</button>
+      </div></div>`;
+      document.body.appendChild(bg);
+      const $ = (id) => bg.querySelector('#' + id);
+      const close = (v) => { bg.remove(); done(v); };
+      bg.onclick = (ev) => { if (ev.target === bg) close(false); };
+      bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') close(false); else if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') $('ghOk').click(); });
+      $('ghCancel').onclick = () => close(false);
+      if ($('ghClear')) $('ghClear').onclick = () => { if (confirm('이 기기에 저장된 GitHub 토큰을 지울까요?')) { this.clear(); close('cleared'); } };
+      $('ghOk').onclick = async () => {
+        const cfg = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim().replace(/\s+/g, '') };
+        if (!cfg.owner || !cfg.repo) { alert('저장소 이름을 입력하세요'); return; }
+        if (!cfg.token) { $('ghToken').focus(); toast('토큰을 붙여넣어 주세요'); return; }
+        $('ghOk').disabled = true; $('ghOk').textContent = '확인 중…';
+        const prev = this.cfg; this.cfg = cfg;
+        try {
+          const r = await this.check();
+          if (!r.push) throw new Error('이 토큰으로는 저장소에 쓸 수 없습니다. 토큰 권한에서 Contents → Read and write 를 확인하세요.');
+          this.save(cfg); toast('GitHub 에 연결했습니다 — 이 기기에서는 다시 넣지 않아도 됩니다', 2600); close(true);
+        } catch (e) { this.cfg = prev; alert('연결 실패: ' + e.message); $('ghOk').disabled = false; $('ghOk').textContent = '연결'; }
+      };
+      setTimeout(() => $('ghToken').focus(), 50);
+    });
+  },
   /* 연결 확인: 저장소 접근 가능 여부와 쓰기 권한 */
   async check() {
     const repo = await this.api('GET', '');
@@ -1001,7 +1053,7 @@ const API = {
   _notify() { if (this.onPending) this.onPending(this.pending.size); },
   /* 이미지를 넣을 때: src 를 즉시 돌려주고 업로드는 뒤에서 진행 */
   async stage(blob, filename) {
-    if (this.mode === 'local') return blobToDataURL(blob);
+    if (this.mode === 'local' || (this.mode === 'github' && !GH.token)) return blobToDataURL(blob); // 연결 전: 교안 안에 넣어 두고, 연결 후 저장할 때 올림
     const src = 'assets/' + uniqueAssetName(filename);
     this.blobs[src] = URL.createObjectURL(blob);
     this._start(src, blob);
@@ -1015,7 +1067,7 @@ const API = {
       p = blobToBase64(blob).then(b64 => GH.enqueue({ path: src, base64: b64 }));
     }
     p = p.then(() => { this.pending.delete(src); this._notify(); },
-      (e) => { this.pending.delete(src); this.failed.set(src, blob); this._notify(); toast('이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', 4000); });
+      (e) => { this.pending.delete(src); this.failed.set(src, blob); this._notify(); if (!e.noToken && e.status !== 401) toast('이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', 4000); });
     this.pending.set(src, p); this._notify();
   },
   _retryFailed() { for (const [src, blob] of Array.from(this.failed)) { this.failed.delete(src); this._start(src, blob); } },
@@ -1074,6 +1126,8 @@ const API = {
       return r.json();
     }
     if (this.mode === 'github') {
+      if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
+      await this._liftImages(deck);
       this._retryFailed();
       // 큐에 모인 이미지와 교안을 한 커밋으로
       await GH.enqueue({ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }, { now: true, message: '교안 저장: ' + (deck.title || name) });
@@ -1085,6 +1139,19 @@ const API = {
     if (this.mode === 'server') { const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'DELETE' }); return r.json(); }
     if (this.mode === 'github') { await GH.commit('교안 삭제: ' + name, [{ path: 'decks/' + name + '.json', delete: true }]); return { ok: true }; }
     const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
+  },
+  /* 연결 전에 교안 안에 넣어 둔 이미지(data:)를 저장소 이미지 파일로 옮김 */
+  async _liftImages(deck) {
+    const jobs = [];
+    for (const s of deck.slides || []) {
+      if (s.bg && /^data:image\//.test(s.bg.image || '')) jobs.push([s.bg, 'image']);
+      for (const e of s.elements || []) if (/^data:image\//.test(e.src || '')) jobs.push([e, 'src']);
+    }
+    for (const [o, k] of jobs) {
+      const blob = await (await fetch(o[k])).blob();
+      const ext = ({ 'image/jpeg': '.jpg', 'image/svg+xml': '.svg', 'image/gif': '.gif', 'image/webp': '.webp' })[blob.type] || '.png';
+      o[k] = await this.stage(blob, 'image' + ext);
+    }
   },
   /* (호환용) 올리고 끝날 때까지 기다림 */
   async upload(blob, filename) { const src = await this.stage(blob, filename); await this.flush(); return src; },
