@@ -119,7 +119,7 @@ function secPage(si) { return W.doc.page(si); }
 /* ---------- 변경 추적: 어느 문단이 바뀌었는지 실시간으로 기록 (저장·쪽 계산이 바뀐 곳만 다시 하도록) ---------- */
 const Track = {
   dirty: new WeakSet(), tops: new Set(), num: true, full: true, mo: null,
-  IGN: new Set(['data-num', 'data-pgs', 'style', 'class', 'contenteditable']), // 화면 표시용 속성은 무시
+  IGN: new Set(['data-num', 'data-pgs', 'data-px', 'data-pxw', 'data-fit', 'style', 'class', 'contenteditable']), // 화면 표시용 속성은 무시
   start() {
     if (this.mo) this.mo.disconnect();
     this.dirty = new WeakSet(); this.tops = new Set(); this.num = true; this.full = true;
@@ -168,6 +168,7 @@ function layout() {
   Track.flush();
   const secs = Array.from(d.querySelectorAll(':scope > .hsec'));
   if (Track.num) { numbering(); Track.num = false; }
+  fitTables(!!W.reflow);
   const full = Track.full; Track.full = false;
   if (full) _padCache.clear();
   const pages = []; let pageTop = 0, maxW = 0;
@@ -566,7 +567,26 @@ function refreshCols(t) {
   if (!cg) { cg = document.createElement('colgroup'); t.insertBefore(cg, t.firstChild); }
   cg.replaceChildren(...g.colW.map(w => { const c = document.createElement('col'); c.style.width = ((w || 3000) / HU).toFixed(1) + 'px'; return c; }));
   t.style.width = (g.colW.reduce((a, b) => a + (b || 3000), 0) / HU).toFixed(1) + 'px';
+  delete t.dataset.fit;
 }
+/* 화면 맞춤 보기: 표 칸 너비를 비율(%)로 바꿔 화면 폭에 맞춤 (원래 너비는 기억해 두었다가 쪽 보기에서 되돌림) */
+function fitTable(t, on) {
+  const cols = Array.from(t.querySelectorAll(':scope > colgroup > col'));
+  if (on) {
+    if (t.dataset.fit === '1') return;
+    cols.forEach(c => { if (!c.dataset.px) c.dataset.px = c.style.width; });
+    const px = cols.map(c => parseFloat(c.dataset.px) || 0), total = px.reduce((a, b) => a + b, 0) || 1;
+    cols.forEach((c, i) => { c.style.width = (px[i] / total * 100).toFixed(3) + '%'; });
+    t.dataset.pxw = t.style.width; t.style.width = '100%'; t.style.maxWidth = total.toFixed(1) + 'px';
+    t.dataset.fit = '1';
+  } else {
+    if (t.dataset.fit !== '1') return;
+    cols.forEach(c => { if (c.dataset.px) c.style.width = c.dataset.px; });
+    if (t.dataset.pxw) t.style.width = t.dataset.pxw; t.style.maxWidth = '';
+    delete t.dataset.fit;
+  }
+}
+function fitTables(on) { for (const t of docEl().querySelectorAll('table.htb')) fitTable(t, on); }
 function tableOp(td, fn) { const t = td.closest('table.htb'); const top = topOf(t); return edit(top, top, () => { const r = fn(t, tableGrid(t)); if (t.isConnected) refreshCols(t); return r; }); }
 function rowHeight(g, r) { let h = 0; for (const [td, p] of g.pos) if (p.r === r && p.rs === 1) h = Math.max(h, +td.dataset.h || 0); return h || 1800; }
 function insertRow(td, below) {

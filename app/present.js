@@ -356,7 +356,7 @@
   window.addEventListener('resize', () => { if (curLayer) fitSlide(curLayer, curLayer.firstChild); redraw(); });
 
   show(st.idx, 0, 1);
-  if (!document.fullscreenElement) hud('F 또는 F5: 전체화면  ·  ?: 단축키 도움말');
+  if (!document.fullscreenElement) hud(matchMedia('(pointer: coarse)').matches ? '좌우로 밀어서 넘기기' : 'F 또는 F5: 전체화면  ·  ?: 단축키 도움말');
 
   /* ======================= 발표자 보기 ======================= */
   function notesView() {

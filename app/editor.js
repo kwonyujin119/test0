@@ -1196,6 +1196,9 @@
   }
   $('btnHelp').onclick = showShortcutHelp;
   window.addEventListener('resize', layoutStage);
+  // 휴대폰: 속성 창은 아래에서 올라오는 판으로 (⚙ 속성 단추로 열고 닫음)
+  const toggleProps = (on) => { const ed = document.querySelector('.ed'); ed.classList.toggle('props-open', on); $('btnProps').classList.toggle('active', ed.classList.contains('props-open')); };
+  if ($('btnProps')) { $('btnProps').onclick = () => toggleProps(); $('propsClose').onclick = () => toggleProps(false); }
   new ResizeObserver(layoutStage).observe(stage);
 
   /* ======================= 추가 기능 ======================= */

@@ -7,6 +7,7 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
+body { height: 100dvh; }
 body { display: flex; flex-direction: column; background: var(--c-bg); color: var(--c-fg); font-family: var(--ui); font-size: 13px; overflow: hidden; }
 button, input, select { font-family: var(--ui); font-size: 13px; color: var(--c-fg); }
 a { color: var(--c-acc); text-decoration: none; }
@@ -124,6 +125,8 @@ table.htb td.csel { background-image: linear-gradient(rgba(37, 99, 235, .22), rg
 .dl-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; }
 .dl-item:hover { background: #f4f6f8; }
 .dl-item .nm2 { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#start i { font-style: normal; }
+.only-mob { display: none; }
 #dropMask { position: fixed; inset: 0; z-index: 40; background: rgba(31,122,90,.12); border: 3px dashed var(--c-acc); display: grid; place-items: center; pointer-events: none; }
 #dropMask div { background: #fff; padding: 14px 20px; border-radius: 10px; font-weight: 600; color: var(--c-acc); }
 
@@ -168,6 +171,51 @@ kbd { display: inline-block; padding: 1px 6px; border: 1px solid #cfd5df; border
 #toast.show { opacity: 1; transform: translateX(-50%); }
 
 @media (max-width: 900px) { .tb { padding: 4px 6px; } .bar3 .hint { display: none; } .kbcols { grid-template-columns: 1fr; } }
+
+/* ===== 화면 맞춤 보기 (휴대폰 기본): 쪽 대신 화면 폭에 맞춰 글이 흐름 ===== */
+body.reflow #canvas { background: #fff; }
+body.reflow #sheetWrap { width: auto !important; height: auto !important; margin: 0; }
+body.reflow #sheet { position: relative; width: auto !important; height: auto !important; transform: none !important; }
+body.reflow #pages, body.reflow #picHandle { display: none !important; }
+body.reflow .hsec { width: auto !important; padding: 14px 14px 80px !important; margin: 0 !important; }
+body.reflow .hsec + .hsec { border-top: 2px dashed #d5d9e0; }
+body.reflow .hsec > .hp { margin-top: 0 !important; }
+body.reflow .hsec > .hp[data-pgs] { border-top: 1px dashed #e2e5ea; }
+body.reflow #stPage, body.reflow #selZoom, body.reflow [data-act="zoomOut"], body.reflow [data-act="zoomIn"] { display: none !important; }
+body.reflow #doc { min-width: 100%; }
+
+/* ===== 휴대폰·좁은 화면 ===== */
+@media (max-width: 760px) {
+  .bar1, .bar2, .bar3 { flex-wrap: nowrap; overflow-x: auto; padding: 5px 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .bar1::-webkit-scrollbar, .bar2::-webkit-scrollbar, .bar3::-webkit-scrollbar { display: none; }
+  .bar1 > *, .bar2 > *, .bar3 > * { flex-shrink: 0; }
+  .bar1 .grow, .bar3 .grow, .bar3 .hint { display: none; }
+  .crumb-sep, .bar1 .app { display: none; }
+  .crumb::before { content: '← '; }
+  .nm { max-width: 46vw; }
+  .tb, .ib { padding: 6px 8px; min-height: 34px; }
+  #ribbon select, #ribbon input, .bar3 select { height: 32px; }
+  #status { gap: 10px; padding: 2px 8px; }
+  #status #stSec, #status #stMode, #status #stSaved, #status #stChord, #status [data-act="zoomOut"], #status [data-act="zoomIn"] { display: none; }
+  .dlg-bg { padding: 8px; align-items: end; }
+  .dlg { min-width: 0; width: 100% !important; max-height: 88dvh; border-radius: 14px; }
+  .dlg .grid2 { grid-template-columns: auto 1fr; }
+  .dlg .grid1 { grid-template-columns: 88px 1fr; }
+  .sym { grid-template-columns: repeat(8, 1fr); }
+  .sym button { width: auto; height: 38px; }
+  #findBar { left: 8px; right: 8px; top: auto; bottom: 36px; }
+  #findBar .row { flex-wrap: wrap; }
+  #findBar input:not([type]) { width: auto; flex: 1; min-width: 140px; }
+  #fontPanel { left: 8px !important; right: 8px; width: auto; }
+  #start { padding: 10px; align-items: start; }
+  #start .card { padding: 20px 16px; }
+  .pg-lab { display: none; }
+  .only-pc { display: none; } .only-mob { display: inline; }
+  .dl-item { flex-wrap: wrap; row-gap: 2px; border-bottom: 1px solid #f0f1f4; border-radius: 0; }
+  .dl-item .nm2 { flex-basis: 100%; }
+  .dl-item .muted { flex: 1; font-size: 12px; }
+  body.has-doc #pwaPill { display: none !important; }
+}
 
 @media print {
   body { display: block; height: auto; overflow: visible; background: #fff; }

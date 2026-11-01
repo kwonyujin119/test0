@@ -49,7 +49,10 @@
     W.dirty = !!meta.dirty; updateState();
     fillStyles(); fillFonts();
     $id('start').hidden = true;
+    document.body.classList.add('has-doc');
+    setView(viewPref(), true);
     layout();
+    if (!W.reflow) { const cw = $id('canvas').clientWidth, pw = d.page(0).w / HU; if (cw < pw + 60) setZoom('width'); else setZoom(1); }
     const first = doc.querySelector('.hsec > .hp'); if (first) { doc.focus({ preventScroll: true }); caretToStart(first); }
     $id('canvas').scrollTop = 0;
     if (meta.dirty) scheduleDraft();
@@ -364,12 +367,13 @@
       case 'pageNum': return pageNumDialog();
       case 'headFoot': return headFootDialog();
       case 'styleDlg': return styleDialog();
-      case 'rowAbove': case 'rowBelow': case 'colLeft': case 'colRight': case 'rowDel': case 'colDel': case 'merge': case 'split': case 'eqW': case 'eqH': case 'cellFillNone': case 'cellDlg': case 'tableDel': return tableAct(a);
+      case 'rowAbove': case 'rowBelow': case 'colLeft': case 'colRight': case 'rowDel': case 'colDel': case 'merge': case 'split': case 'eqW': case 'eqH': case 'cellFillNone': case 'cellDlg': case 'tableDel': case 'cellPick': return tableAct(a);
       case 'zoomIn': return setZoom(Math.min(4, +(W.zoom + 0.1).toFixed(2)));
       case 'zoomOut': return setZoom(Math.max(0.3, +(W.zoom - 0.1).toFixed(2)));
     }
   }
   function tableAct(a) {
+    if (a === 'cellPick') { W.cellPick = !W.cellPick; W.cellPickAnchor = null; $id('btnCellPick').classList.toggle('on', W.cellPick); toast(W.cellPick ? '셀을 차례로 누르면 블록으로 잡힙니다 (다시 누르면 끔)' : '셀 선택을 껐습니다', 1800); return; }
     const cells = curCells(); if (!cells.length) { toast('표 안을 먼저 클릭하세요'); return; }
     const td = cells[0];
     switch (a) {
@@ -401,6 +405,17 @@
     box.appendChild(el); box.setAttribute('itemCnt', '1'); h.bullet.set('1', el); h._hcache = null;
     return '1';
   }
+
+  /* ---------- 보기: 쪽 보기 / 화면 맞춤 보기 ---------- */
+  function viewPref() { let v = null; try { v = localStorage.getItem('hwp:view'); } catch (e) { } return v || (innerWidth < 760 ? 'reflow' : 'page'); }
+  function setView(v, quiet) {
+    W.reflow = v === 'reflow';
+    document.body.classList.toggle('reflow', W.reflow);
+    $id('btnView').textContent = W.reflow ? '📱 화면 맞춤' : '📄 쪽 보기';
+    if (!quiet) { try { localStorage.setItem('hwp:view', v); } catch (e) { } }
+    if (W.doc) { Track.full = true; layout(); if (!W.reflow) { const cw = $id('canvas').clientWidth, pw = W.doc.page(0).w / HU; if (cw < pw + 60) setZoom('width'); } }
+  }
+  $id('btnView').addEventListener('click', () => { setView(W.reflow ? 'page' : 'reflow'); toast(W.reflow ? '화면 맞춤 보기 — 글이 화면 폭에 맞춰 흐릅니다 (파일은 그대로)' : '쪽 보기 — 인쇄될 모양 그대로', 2200); });
 
   /* ---------- 확대/축소 ---------- */
   function setZoom(v) {
@@ -463,6 +478,10 @@
   });
   doc.addEventListener('mousedown', e => {
     if (e.button !== 0) return;
+    if (W.cellPick) { // 휴대폰용 셀 선택: 첫 셀이 기준, 다음 셀까지 직사각형으로
+      const td = e.target.closest('td');
+      if (td) { e.preventDefault(); const a = W.cellPickAnchor && W.cellPickAnchor.isConnected && W.cellPickAnchor.closest('table') === td.closest('table') ? W.cellPickAnchor : null; if (!a) { W.cellPickAnchor = td; W.cellAnchor = td; W.cellFocus = td; setCells([td]); } else { W.cellAnchor = a; W.cellFocus = td; setCells(cellBlockRect(a, td)); } sel().removeAllRanges(); return; }
+    }
     const pic = e.target.closest('.isl.pic');
     if (pic) { e.preventDefault(); selectPic(pic); return; }
     hidePic();

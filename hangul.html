@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>한글 작업장</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231f7a5a'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>한</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -78,6 +78,7 @@
     <button class="tb" data-act="rowDel" title="줄 지우기 (Alt+Delete)">줄 지우기</button>
     <button class="tb" data-act="colDel" title="칸 지우기 (Alt+Delete)">칸 지우기</button>
     <span class="vsep"></span>
+    <button class="tb" data-act="cellPick" id="btnCellPick" title="눌러서 켠 뒤 셀을 차례로 누르면 블록으로 잡힘 (휴대폰용)">☐ 셀 선택</button>
     <button class="tb" data-act="merge" title="셀 합치기 (셀 블록에서 M)">셀 합치기</button>
     <button class="tb" data-act="split" title="셀 나누기 (셀 블록에서 S)">셀 나누기</button>
     <button class="tb" data-act="eqW" title="셀 너비를 같게 (셀 블록에서 W)">너비 같게</button>
@@ -107,6 +108,7 @@
   <span id="stPage">1/1 쪽</span><span id="stSec"></span><span id="stChars"></span><span id="stMode">삽입</span><span id="stChord" class="chord"></span>
   <span class="grow"></span>
   <span id="stSaved"></span>
+  <button class="ib sm" id="btnView" title="쪽 보기 ↔ 화면 맞춤 보기 (휴대폰에 편한 보기)">📄 쪽 보기</button>
   <button class="ib sm" data-act="zoomOut" title="축소 (Ctrl+마우스 휠)">－</button>
   <select id="selZoom" title="확대/축소"><option value="0.5">50%</option><option value="0.75">75%</option><option value="0.9">90%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option><option value="fit">쪽 맞춤</option><option value="width">폭 맞춤</option></select>
   <button class="ib sm" data-act="zoomIn" title="확대">＋</button>
@@ -118,7 +120,7 @@
     <p class="muted">한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다. 사무실의 한글에서 그대로 열립니다.</p>
     <div class="big">
       <button data-act="new"><b>📄 새 문서</b><span>빈 A4 문서</span></button>
-      <button data-act="open"><b>📂 내 PC 에서 열기</b><span>.hwpx 파일 (끌어다 놓아도 됩니다)</span></button>
+      <button data-act="open"><b>📂 <i class="only-pc">내 PC 에서 열기</i><i class="only-mob">파일 열기</i></b><span>.hwpx 파일<i class="only-pc"> (끌어다 놓아도 됩니다)</i></span></button>
       <button data-act="box"><b>🔒 문서함</b><span>집·사무실 어디서나 같은 문서</span></button>
     </div>
     <div id="draftList"></div>
