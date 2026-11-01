@@ -3,8 +3,8 @@
  "theme": "ocean",
  "transition": "fade",
  "decor": "bar-top",
- "created": "2026-11-01T21:40:23.727739Z",
- "modified": "2026-11-01T21:40:23.727739Z",
+ "created": "2026-11-01T21:47:47.941522Z",
+ "modified": "2026-11-01T21:47:47.941522Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터",
   "num": true,
@@ -13,7 +13,7 @@
  },
  "slides": [
   {
-   "id": "hmcn21008",
+   "id": "a12ea8008",
    "bg": {
     "gradient": "linear-gradient(145deg, #06243f 0%, #0c4a6e 48%, #0e7490 100%)"
    },
@@ -21,7 +21,7 @@
    "notes": "강의 전체는 하나의 질문에 답한다 — 대형화재에서 물을 끊기지 않게 대는 방법.",
    "elements": [
     {
-     "id": "aug70w001",
+     "id": "vow4ih001",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -43,7 +43,7 @@
      "gAngle": 145
     },
     {
-     "id": "3k7puc002",
+     "id": "kjyem7002",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -65,7 +65,7 @@
      "gAngle": 270
     },
     {
-     "id": "485q7y003",
+     "id": "p7mhpf003",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -85,7 +85,7 @@
      }
     },
     {
-     "id": "n7b6rn004",
+     "id": "27jrc7004",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -107,7 +107,7 @@
      }
     },
     {
-     "id": "v7e7fp005",
+     "id": "1bi5m9005",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -126,7 +126,7 @@
      }
     },
     {
-     "id": "ryujnq006",
+     "id": "p65aq4006",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -149,7 +149,7 @@
      "fill2Op": 0.2
     },
     {
-     "id": "5wztk2007",
+     "id": "hiys3e007",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -172,13 +172,13 @@
    "noFooter": true
   },
   {
-   "id": "ejzj7t016",
+   "id": "80m24a016",
    "bg": null,
    "transition": "",
    "notes": "12개 항목을 3부로 묶었다. Ⅰ은 왜, Ⅱ는 수요, Ⅲ은 공급.",
    "elements": [
     {
-     "id": "bin1ln009",
+     "id": "5gx2in009",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -200,7 +200,7 @@
      "gAngle": 160
     },
     {
-     "id": "x2zapc010",
+     "id": "myegko010",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -220,7 +220,7 @@
      }
     },
     {
-     "id": "tsb4lp011",
+     "id": "26tp8m011",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -239,7 +239,7 @@
      }
     },
     {
-     "id": "eboxab012",
+     "id": "1rir4i012",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -262,7 +262,7 @@
      "fill2Op": 0.25
     },
     {
-     "id": "5n8g1d013",
+     "id": "r6m5c5013",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -281,7 +281,7 @@
      }
     },
     {
-     "id": "2ka99o014",
+     "id": "0gd2ge014",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -300,7 +300,7 @@
      }
     },
     {
-     "id": "elnjyk015",
+     "id": "htq5tl015",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -323,13 +323,13 @@
    "noFooter": true
   },
   {
-   "id": "aa4a19029",
+   "id": "6y7gkq029",
    "bg": null,
    "transition": "",
    "notes": "결론을 먼저 보여주고 본론에서 근거를 쌓는다. 교육생이 어디로 가는지 알고 듣게 만든다.",
    "elements": [
     {
-     "id": "hkr7zq017",
+     "id": "5401go017",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -347,7 +347,7 @@
      }
     },
     {
-     "id": "wyuwqw018",
+     "id": "wneiut018",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -369,7 +369,7 @@
      "gAngle": 110
     },
     {
-     "id": "stano9019",
+     "id": "dtiekz019",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -391,7 +391,7 @@
      }
     },
     {
-     "id": "u62ett020",
+     "id": "w032ng020",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -413,7 +413,7 @@
      "gAngle": 135
     },
     {
-     "id": "qeym63021",
+     "id": "028y36021",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -435,7 +435,7 @@
      }
     },
     {
-     "id": "6zc2bd022",
+     "id": "5e3vg0022",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -457,7 +457,7 @@
      "gAngle": 135
     },
     {
-     "id": "d7fv75023",
+     "id": "3dpr54023",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -479,7 +479,7 @@
      }
     },
     {
-     "id": "5ke113024",
+     "id": "fuyy12024",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -501,7 +501,7 @@
      "gAngle": 135
     },
     {
-     "id": "k9ljgo025",
+     "id": "akxft1025",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -523,7 +523,7 @@
      }
     },
     {
-     "id": "zsa9od026",
+     "id": "lzlj9g026",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -545,7 +545,7 @@
      "gAngle": 100
     },
     {
-     "id": "pm0q1y027",
+     "id": "hbb75z027",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -567,7 +567,7 @@
      }
     },
     {
-     "id": "h9213c028",
+     "id": "vzsxn3028",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -587,7 +587,7 @@
    ]
   },
   {
-   "id": "9zlj27041",
+   "id": "ef0yih041",
    "bg": {
     "gradient": "linear-gradient(150deg, #0c2a4d 0%, #0369a1 100%)"
    },
@@ -595,7 +595,7 @@
    "notes": "기존 소화 전술로 제압되지 않는 화재 — 무엇이 달라졌는가",
    "elements": [
     {
-     "id": "dhpnqz036",
+     "id": "9dspr9036",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -617,7 +617,7 @@
      "gAngle": 150
     },
     {
-     "id": "8qy64c030",
+     "id": "rvj3x2030",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -640,7 +640,7 @@
      }
     },
     {
-     "id": "7jxjhd031",
+     "id": "8qf9w9031",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -660,7 +660,7 @@
      "style": {}
     },
     {
-     "id": "q0ibrz032",
+     "id": "hgat7i032",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -680,7 +680,7 @@
      "style": {}
     },
     {
-     "id": "9xm1jr033",
+     "id": "cyi4su033",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -700,7 +700,7 @@
      "style": {}
     },
     {
-     "id": "lhpscs034",
+     "id": "0iy241034",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -720,7 +720,7 @@
      "style": {}
     },
     {
-     "id": "vmu94e035",
+     "id": "76du71035",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -740,7 +740,7 @@
      "style": {}
     },
     {
-     "id": "az1skt037",
+     "id": "9vyftg037",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -760,7 +760,7 @@
      }
     },
     {
-     "id": "5sqc2m038",
+     "id": "51ahhn038",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -783,7 +783,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "i5brz6039",
+     "id": "c7g9i3039",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -803,7 +803,7 @@
      }
     },
     {
-     "id": "yktnb7040",
+     "id": "2fhl0q040",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -825,13 +825,13 @@
    "noFooter": true
   },
   {
-   "id": "w914hx058",
+   "id": "uj14nn058",
    "bg": null,
    "transition": "",
    "notes": "신유형을 유형 나열이 아니라 \"왜 길어지는가\"로 정의한다. 그래야 급수로 이어진다.",
    "elements": [
     {
-     "id": "dh7xm6042",
+     "id": "vhlhos042",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -849,7 +849,7 @@
      }
     },
     {
-     "id": "jb4lec043",
+     "id": "99gzha043",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -871,7 +871,7 @@
      "gAngle": 140
     },
     {
-     "id": "0w5nhb044",
+     "id": "g48o2l044",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -893,7 +893,7 @@
      }
     },
     {
-     "id": "ak5and045",
+     "id": "9s7hap045",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -914,7 +914,7 @@
      }
     },
     {
-     "id": "63t2yr046",
+     "id": "2ezav4046",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -934,7 +934,7 @@
      }
     },
     {
-     "id": "5115x1047",
+     "id": "at6msz047",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -956,7 +956,7 @@
      "gAngle": 140
     },
     {
-     "id": "pzmgrv048",
+     "id": "18puw4048",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -978,7 +978,7 @@
      }
     },
     {
-     "id": "zeg3ed049",
+     "id": "r3ssdu049",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -999,7 +999,7 @@
      }
     },
     {
-     "id": "dewn3b050",
+     "id": "6xp2dk050",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1019,7 +1019,7 @@
      }
     },
     {
-     "id": "xfjx1b051",
+     "id": "n5w4yp051",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1041,7 +1041,7 @@
      "gAngle": 140
     },
     {
-     "id": "ocv8lg052",
+     "id": "mi8qzw052",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1063,7 +1063,7 @@
      }
     },
     {
-     "id": "5a5b06053",
+     "id": "xosxfd053",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1084,7 +1084,7 @@
      }
     },
     {
-     "id": "zo6w2e054",
+     "id": "g19fd2054",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1104,7 +1104,7 @@
      }
     },
     {
-     "id": "qb52fn055",
+     "id": "tyu2z2055",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -1126,7 +1126,7 @@
      "gAngle": 100
     },
     {
-     "id": "290wfb056",
+     "id": "emvlsx056",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1148,7 +1148,7 @@
      }
     },
     {
-     "id": "6ji8sk057",
+     "id": "ddkrm3057",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1159,7 +1159,7 @@
      "y": 738,
      "w": 1680,
      "h": 200,
-     "html": "<ul><li>소방청은 2026년 쿠팡32 화재 조사 뒤 <b>\"무창층·복잡구조 대형 물류창고 대응절차(초기 진압 가능성 신속 판단 + 방어선 설정)\"</b> 마련을 권고했습니다</li><li>장시간 방어로 넘어가는 순간, 승부는 <b>물을 끊기지 않게 대는 능력</b>으로 결정됩니다</li></ul>",
+     "html": "<ul><li>소방청은 2026년 인천 쿠팡 물류센터 화재 조사 뒤 <b>\"무창층·복잡구조 대형 물류창고 대응절차(초기 진압 가능성 신속 판단 + 방어선 설정)\"</b> 마련을 권고했습니다</li><li>장시간 방어로 넘어가는 순간, 승부는 <b>물을 끊기지 않게 대는 능력</b>으로 결정됩니다</li></ul>",
      "style": {
       "fontSize": 30,
       "lineHeight": 1.6
@@ -1168,13 +1168,13 @@
    ]
   },
   {
-   "id": "a15vit067",
+   "id": "dhjne4067",
    "bg": null,
    "transition": "",
    "notes": "이 실험이 \"왜 장시간 방어인가\"의 물리적 근거다.",
    "elements": [
     {
-     "id": "t5wb6x059",
+     "id": "8ubrvo059",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1192,7 +1192,7 @@
      }
     },
     {
-     "id": "p42ipt060",
+     "id": "tz548x060",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1217,7 +1217,7 @@
      ]
     },
     {
-     "id": "p50vvj061",
+     "id": "7hinuu061",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1239,7 +1239,7 @@
      "gAngle": 135
     },
     {
-     "id": "iyjvzn062",
+     "id": "ybijdp062",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1261,7 +1261,7 @@
      }
     },
     {
-     "id": "xw00wi063",
+     "id": "qeoxsi063",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1279,7 +1279,7 @@
      }
     },
     {
-     "id": "xxrvcc064",
+     "id": "et9vd8064",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -1301,7 +1301,7 @@
      "gAngle": 100
     },
     {
-     "id": "yvgx5c065",
+     "id": "c3uab6065",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1323,7 +1323,7 @@
      }
     },
     {
-     "id": "wi934k066",
+     "id": "r7mztd066",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1343,7 +1343,150 @@
    ]
   },
   {
-   "id": "oy0ny1079",
+   "id": "3xi8h0075",
+   "bg": null,
+   "transition": "",
+   "notes": "영상 — 주수 직후 잦아들었다가 <b>다시 불이 붙는 구간</b>을 보십시오. 앞 장의 5,064L가 무엇을 뜻하는지가 여기 있습니다.",
+   "elements": [
+    {
+     "id": "os1db2068",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "물을 부어도 꺼지지 않습니다",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "7b5uu0069",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 120,
+     "y": 236,
+     "w": 1180,
+     "h": 664,
+     "url": "https://www.youtube.com/watch?v=2Xt5rpQik90",
+     "radius": 18,
+     "autoplay": false,
+     "shadow": true
+    },
+    {
+     "id": "x3nk1j070",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1348,
+     "y": 236,
+     "w": 452,
+     "h": 252,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#7c2d12",
+     "gAngle": 135
+    },
+    {
+     "id": "5i6709071",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "text",
+     "role": "text",
+     "x": 1348,
+     "y": 282,
+     "w": 452,
+     "h": 40,
+     "html": "무엇을 볼 것인가",
+     "style": {
+      "fontSize": 24,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "color": "#ffffff",
+      "letterSpacing": 2
+     }
+    },
+    {
+     "id": "lt14g8072",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1374,
+     "y": 332,
+     "w": 400,
+     "h": 160,
+     "html": "주수 직후 잦아들었다가 <b>다시 불이 붙는 구간</b>을 보십시오. 앞 장의 5,064L가 무엇을 뜻하는지가 여기 있습니다.",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 24,
+      "lineHeight": 1.5,
+      "align": "center"
+     }
+    },
+    {
+     "id": "k0iqys073",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 1348,
+     "y": 812,
+     "w": 452,
+     "h": 118,
+     "html": "JTBC 뉴스룸 「'리튬 화재' 어떻게 꺼야 할까 고심하는 소방 — \"물 뿌려봤더니\"」 · 유튜브 임베드 재생",
+     "style": {
+      "fontSize": 24,
+      "color": "$muted",
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "56vjvc074",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1348,
+     "y": 512,
+     "w": 452,
+     "h": 282,
+     "html": "소방이 직접 리튬이온 배터리에 주수해 본 실험입니다.<br><br><b>질문 하나 던지고 트십시오</b> — \"그럼 우리는 물을 왜 댑니까?\"<br><br>답은 <b>소화가 아니라 냉각과 연소확대 저지</b>입니다. 이 강의 전체가 그 전제 위에 서 있습니다.",
+     "style": {
+      "fontSize": 24,
+      "lineHeight": 1.6
+     }
+    }
+   ]
+  },
+  {
+   "id": "oqrjwg087",
    "bg": {
     "gradient": "linear-gradient(150deg, #0c2a4d 0%, #0369a1 100%)"
    },
@@ -1351,7 +1494,7 @@
    "notes": "전체는 줄었다 — 그런데 무엇이 늘었는가",
    "elements": [
     {
-     "id": "01rzhy074",
+     "id": "v9jwji082",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1373,7 +1516,7 @@
      "gAngle": 150
     },
     {
-     "id": "095qac068",
+     "id": "3al6sh076",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1396,7 +1539,7 @@
      }
     },
     {
-     "id": "51xcn1069",
+     "id": "7gh7po077",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1416,7 +1559,7 @@
      "style": {}
     },
     {
-     "id": "ekdy8j070",
+     "id": "x9ag7i078",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1436,7 +1579,7 @@
      "style": {}
     },
     {
-     "id": "jyr3lo071",
+     "id": "qls77h079",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1456,7 +1599,7 @@
      "style": {}
     },
     {
-     "id": "do3tca072",
+     "id": "wq6mxb080",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1476,7 +1619,7 @@
      "style": {}
     },
     {
-     "id": "31d9d0073",
+     "id": "cybaht081",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1496,7 +1639,7 @@
      "style": {}
     },
     {
-     "id": "twbc30075",
+     "id": "0vjaco083",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1516,7 +1659,7 @@
      }
     },
     {
-     "id": "s2fis0076",
+     "id": "otq24g084",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1539,7 +1682,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "k8o4ke077",
+     "id": "byamzl085",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1559,7 +1702,7 @@
      }
     },
     {
-     "id": "aostpq078",
+     "id": "gzysks086",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1581,13 +1724,13 @@
    "noFooter": true
   },
   {
-   "id": "qsylwv086",
+   "id": "wyvzwc094",
    "bg": null,
    "transition": "",
    "notes": "전제를 바로잡고 시작한다. 신유형의 문제는 빈도가 아니다.",
    "elements": [
     {
-     "id": "72wzvy080",
+     "id": "h6v3m8088",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1605,7 +1748,7 @@
      }
     },
     {
-     "id": "ovnluo081",
+     "id": "sc3mvc089",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1622,17 +1765,10 @@
      "grid": false,
      "unit": "건",
      "style": {},
-     "axis": false,
-     "pointColors": [
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#0369a1"
-     ]
+     "axis": false
     },
     {
-     "id": "z1weec082",
+     "id": "zyfa9z090",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1654,7 +1790,7 @@
      "gAngle": 135
     },
     {
-     "id": "uzq3ym083",
+     "id": "320wrj091",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1676,7 +1812,7 @@
      }
     },
     {
-     "id": "4c5dfh084",
+     "id": "uvw6p7092",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1694,7 +1830,7 @@
      }
     },
     {
-     "id": "fnidqx085",
+     "id": "cwspj1093",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1714,13 +1850,13 @@
    ]
   },
   {
-   "id": "stg5jd091",
+   "id": "nmhu50099",
    "bg": null,
    "transition": "",
    "notes": "\"신유형 화재 급증\"은 데이터가 지지하지 않는다. 과장하면 첫 장에서 무너진다.",
    "elements": [
     {
-     "id": "sx4e1v087",
+     "id": "wfifwd095",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1738,7 +1874,7 @@
      }
     },
     {
-     "id": "zfb390088",
+     "id": "lquu2p096",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1797,7 +1933,7 @@
      }
     },
     {
-     "id": "er0kks089",
+     "id": "zyjlgz097",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -1819,7 +1955,7 @@
      "gAngle": 100
     },
     {
-     "id": "uksa9j090",
+     "id": "fxart9098",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1843,7 +1979,7 @@
    ]
   },
   {
-   "id": "zymgqf103",
+   "id": "2ehpnw111",
    "bg": {
     "gradient": "linear-gradient(150deg, #0e7490 0%, #134e4a 100%)"
    },
@@ -1851,7 +1987,7 @@
    "notes": "2020 ~ 2026년, 7년간 11건을 뜯어본다",
    "elements": [
     {
-     "id": "ff2tis098",
+     "id": "00lh7s106",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1873,7 +2009,7 @@
      "gAngle": 150
     },
     {
-     "id": "4kj3sg092",
+     "id": "r1ot7o100",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1896,7 +2032,7 @@
      }
     },
     {
-     "id": "5p8a16093",
+     "id": "u0d3wk101",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1916,7 +2052,7 @@
      "style": {}
     },
     {
-     "id": "x9vmbc094",
+     "id": "w4x957102",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1936,7 +2072,7 @@
      "style": {}
     },
     {
-     "id": "xbk6nw095",
+     "id": "n1239k103",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1956,7 +2092,7 @@
      "style": {}
     },
     {
-     "id": "zzwx6s096",
+     "id": "sw1ad8104",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1976,7 +2112,7 @@
      "style": {}
     },
     {
-     "id": "djdia8097",
+     "id": "6eylbh105",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1996,7 +2132,7 @@
      "style": {}
     },
     {
-     "id": "0alhdy099",
+     "id": "v2v6tv107",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2016,7 +2152,7 @@
      }
     },
     {
-     "id": "ij4pze100",
+     "id": "q0pvqp108",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2039,7 +2175,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "zi7hcm101",
+     "id": "h9432s109",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2059,7 +2195,7 @@
      }
     },
     {
-     "id": "whjgjf102",
+     "id": "n0wkp8110",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2081,13 +2217,13 @@
    "noFooter": true
   },
   {
-   "id": "1sas14109",
+   "id": "4gbffl117",
    "bg": null,
    "transition": "",
    "notes": "발령 기준의 법령 근거. 외부 공개자료로는 찾기 어려운 조문이다.",
    "elements": [
     {
-     "id": "eeubzk104",
+     "id": "n4lzfu112",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2105,7 +2241,7 @@
      }
     },
     {
-     "id": "w3r3kf105",
+     "id": "46rdlp113",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2153,7 +2289,7 @@
      }
     },
     {
-     "id": "s6eupi106",
+     "id": "ewxvp8114",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -2175,7 +2311,7 @@
      "gAngle": 100
     },
     {
-     "id": "t0mugw107",
+     "id": "h4rupz115",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2197,7 +2333,7 @@
      }
     },
     {
-     "id": "7hu9g8108",
+     "id": "rgmylc116",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2217,13 +2353,13 @@
    ]
   },
   {
-   "id": "ofbnio116",
+   "id": "dnq9ps124",
    "bg": null,
    "transition": "",
    "notes": "추세 근거가 아니라 사례 자료로 쓴다. 공장·창고 집중이 핵심.",
    "elements": [
     {
-     "id": "uc4977110",
+     "id": "hdn4gi118",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2241,7 +2377,7 @@
      }
     },
     {
-     "id": "7kinwk111",
+     "id": "c83ppg119",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2258,10 +2394,19 @@
      "grid": false,
      "unit": "건",
      "style": {},
-     "axis": false
+     "axis": false,
+     "pointColors": [
+      "#c2410c",
+      "#a8b8c6",
+      "#a8b8c6",
+      "#a8b8c6",
+      "#a8b8c6",
+      "#a8b8c6",
+      "#a8b8c6"
+     ]
     },
     {
-     "id": "4kxil3112",
+     "id": "grrmnq120",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2283,7 +2428,7 @@
      "gAngle": 135
     },
     {
-     "id": "fj2y13113",
+     "id": "av6qm8121",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2305,7 +2450,7 @@
      }
     },
     {
-     "id": "qv4tzl114",
+     "id": "6lt106122",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2323,7 +2468,7 @@
      }
     },
     {
-     "id": "xy1y5c115",
+     "id": "2m5mmp123",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2343,13 +2488,13 @@
    ]
   },
   {
-   "id": "pnuq4w122",
+   "id": "3g6su8130",
    "bg": null,
    "transition": "",
    "notes": "109시간은 통계적 이상치가 아니라 다른 범주의 사건이다.",
    "elements": [
     {
-     "id": "778bt6117",
+     "id": "x7udiw125",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2367,7 +2512,7 @@
      }
     },
     {
-     "id": "urn1jy118",
+     "id": "b8o5ch126",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2378,28 +2523,16 @@
      "w": 1680,
      "h": 586,
      "kind": "hbar",
-     "data": "화재,시간\n쿠팡32물류센터 (2026.07),109.5\n원창동 공장단지 (2026.06),19.9\n마니산 산불 (2023.03),17\n왕길동 공장 (2024.10),11\n경서동 물류센터 (2026.09),7.5\n현대제철 ESS (2022.09),7.4\n만석동 가구공장 (2021.02),6\n현대시장 (2023.03),2.75\n대곡동 공장 (2021.05),2.3\n논현동 호텔 (2023.12),1.5",
+     "data": "화재,시간\n인천 쿠팡물류센터 (2026.07),109.5\n원창동 공장단지 (2026.06),19.9\n마니산 산불 (2023.03),17\n왕길동 공장 (2024.10),11\n경서동 물류센터 (2026.09),7.5\n현대제철 ESS (2022.09),7.4\n만석동 가구공장 (2021.02),6\n현대시장 (2023.03),2.75\n대곡동 공장 (2021.05),2.3\n논현동 호텔 (2023.12),1.5",
      "values": true,
      "legend": false,
      "grid": false,
      "unit": "h",
      "style": {},
-     "axis": false,
-     "pointColors": [
-      "#c2410c",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6"
-     ]
+     "axis": false
     },
     {
-     "id": "7lixhe119",
+     "id": "8nv5bv127",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -2421,7 +2554,7 @@
      "gAngle": 100
     },
     {
-     "id": "0jt5ls120",
+     "id": "kyzzmn128",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2443,7 +2576,7 @@
      }
     },
     {
-     "id": "3qzfti121",
+     "id": "8za0u2129",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2463,13 +2596,13 @@
    ]
   },
   {
-   "id": "ade811132",
+   "id": "puam3k140",
    "bg": null,
    "transition": "",
    "notes": "평가문항으로 좋은 지점. 규모와 대응단계는 비례하지 않는다.",
    "elements": [
     {
-     "id": "gpu4m6123",
+     "id": "7tentp131",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2487,7 +2620,7 @@
      }
     },
     {
-     "id": "9uahbn124",
+     "id": "rfa0eb132",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2509,7 +2642,7 @@
      "gAngle": 135
     },
     {
-     "id": "9g1evk125",
+     "id": "a476rh133",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2531,7 +2664,7 @@
      }
     },
     {
-     "id": "tb59uh126",
+     "id": "bpb4ev134",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2551,7 +2684,7 @@
      "style": {}
     },
     {
-     "id": "6xvc05127",
+     "id": "tcvfjz135",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2573,7 +2706,7 @@
      "gAngle": 135
     },
     {
-     "id": "e02ja9128",
+     "id": "f633he136",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2584,7 +2717,7 @@
      "y": 252,
      "w": 672,
      "h": 268,
-     "html": "2026.7.18 쿠팡32<br>2단계 발령 시점 <b>219명 · 79대</b><br>→ 대응 <b>2단계</b>",
+     "html": "2026.7.18 인천 쿠팡물류센터<br>2단계 발령 시점 <b>219명 · 79대</b><br>→ 대응 <b>2단계</b>",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -2595,7 +2728,7 @@
      }
     },
     {
-     "id": "r8db5b129",
+     "id": "srdzip137",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -2617,7 +2750,7 @@
      "gAngle": 100
     },
     {
-     "id": "lxztda130",
+     "id": "6q9e15138",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2639,7 +2772,7 @@
      }
     },
     {
-     "id": "21qh6i131",
+     "id": "go2lc2139",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2659,7 +2792,150 @@
    ]
   },
   {
-   "id": "ok7b2h144",
+   "id": "bd3k5r148",
+   "bg": null,
+   "transition": "",
+   "notes": "영상 — \"비가 내려도 <b>내부에 안 닿는다</b>\"는 현장 설명을 들으십시오. 109시간의 이유가 그 한 문장에 있습니다.",
+   "elements": [
+    {
+     "id": "jz1g0s141",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "물이 닿지 않으면 양이 많아도 소용없습니다",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "sc10av142",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 120,
+     "y": 236,
+     "w": 1180,
+     "h": 664,
+     "url": "https://www.youtube.com/watch?v=qjZK3yn1lz0",
+     "radius": 18,
+     "autoplay": false,
+     "shadow": true
+    },
+    {
+     "id": "9mwkhp143",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1348,
+     "y": 236,
+     "w": 452,
+     "h": 252,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#7c2d12",
+     "gAngle": 135
+    },
+    {
+     "id": "834d4k144",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "text",
+     "role": "text",
+     "x": 1348,
+     "y": 282,
+     "w": 452,
+     "h": 40,
+     "html": "무엇을 볼 것인가",
+     "style": {
+      "fontSize": 24,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "color": "#ffffff",
+      "letterSpacing": 2
+     }
+    },
+    {
+     "id": "3qcbkp145",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1374,
+     "y": 332,
+     "w": 400,
+     "h": 160,
+     "html": "\"비가 내려도 <b>내부에 안 닿는다</b>\"는 현장 설명을 들으십시오. 109시간의 이유가 그 한 문장에 있습니다.",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 24,
+      "lineHeight": 1.5,
+      "align": "center"
+     }
+    },
+    {
+     "id": "gtwmpb146",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 1348,
+     "y": 812,
+     "w": 452,
+     "h": 118,
+     "html": "연합뉴스TV 「불길 안 잡히는 인천 쿠팡물류센터 화재 — \"비 내려도 내부에 안닿아\"」 · 유튜브 임베드 재생",
+     "style": {
+      "fontSize": 24,
+      "color": "$muted",
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "nnbxuc147",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1348,
+     "y": 512,
+     "w": 452,
+     "h": 282,
+     "html": "<b>61시간</b> 만에 초진, <b>109시간여</b> 만에 완전진화. 국가소방동원령이 발령된 화재입니다.<br><br>무창층·랙 고층화 구조에서는 <b>물의 양보다 도달 경로</b>가 먼저 문제가 됩니다. 그래서 방어선을 어디에 긋느냐가 급수 계획보다 앞섭니다.",
+     "style": {
+      "fontSize": 24,
+      "lineHeight": 1.6
+     }
+    }
+   ]
+  },
+  {
+   "id": "8qgwld160",
    "bg": {
     "gradient": "linear-gradient(150deg, #c2410c 0%, #7c2d12 100%)"
    },
@@ -2667,7 +2943,7 @@
    "notes": "무엇을 지키고, 무엇으로 지키는가",
    "elements": [
     {
-     "id": "ndey4g139",
+     "id": "c8j21r155",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2689,7 +2965,7 @@
      "gAngle": 150
     },
     {
-     "id": "z7iov5133",
+     "id": "6wkwzx149",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2712,7 +2988,7 @@
      }
     },
     {
-     "id": "jzj4wm134",
+     "id": "nbqvcz150",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2732,7 +3008,7 @@
      "style": {}
     },
     {
-     "id": "py2ppn135",
+     "id": "u55sxb151",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2752,7 +3028,7 @@
      "style": {}
     },
     {
-     "id": "l0evy2136",
+     "id": "le8n7r152",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2772,7 +3048,7 @@
      "style": {}
     },
     {
-     "id": "ofafxz137",
+     "id": "10j13z153",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2792,7 +3068,7 @@
      "style": {}
     },
     {
-     "id": "7yzyb9138",
+     "id": "jts32t154",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2812,7 +3088,7 @@
      "style": {}
     },
     {
-     "id": "1o4vg0140",
+     "id": "aa5nw9156",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2832,7 +3108,7 @@
      }
     },
     {
-     "id": "xniu57141",
+     "id": "i480ds157",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2855,7 +3131,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "5i98gq142",
+     "id": "7hm5qm158",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2875,7 +3151,7 @@
      }
     },
     {
-     "id": "2sfcst143",
+     "id": "2mmwoh159",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2897,13 +3173,13 @@
    "noFooter": true
   },
   {
-   "id": "r8n24f158",
+   "id": "ecr317174",
    "bg": null,
    "transition": "",
    "notes": "두 축을 세운다. ②는 12번에서 다시 회수한다.",
    "elements": [
     {
-     "id": "7i2vp9145",
+     "id": "rvhgov161",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2921,7 +3197,7 @@
      }
     },
     {
-     "id": "7h7xv9146",
+     "id": "yqgabd162",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2943,7 +3219,7 @@
      "gAngle": 140
     },
     {
-     "id": "07pkwl147",
+     "id": "sscxf7163",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2965,7 +3241,7 @@
      }
     },
     {
-     "id": "xo5eus148",
+     "id": "oip1yw164",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2986,7 +3262,7 @@
      }
     },
     {
-     "id": "ukofb4149",
+     "id": "5i01ag165",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3005,7 +3281,7 @@
      }
     },
     {
-     "id": "ij94n7150",
+     "id": "iy7ill166",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3027,7 +3303,7 @@
      "gAngle": 140
     },
     {
-     "id": "qjcknc151",
+     "id": "1cokg0167",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3049,7 +3325,7 @@
      }
     },
     {
-     "id": "80w068152",
+     "id": "dwo6t7168",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3070,7 +3346,7 @@
      }
     },
     {
-     "id": "p2uk9l153",
+     "id": "1wngup169",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3089,7 +3365,7 @@
      }
     },
     {
-     "id": "vxquca154",
+     "id": "hudtpl170",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -3111,7 +3387,7 @@
      "gAngle": 100
     },
     {
-     "id": "2nhz4k155",
+     "id": "nmj0pe171",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3133,7 +3409,7 @@
      }
     },
     {
-     "id": "3gf57y156",
+     "id": "74j3f2172",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3151,7 +3427,7 @@
      }
     },
     {
-     "id": "6ngizk157",
+     "id": "wx3yez173",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3171,13 +3447,13 @@
    ]
   },
   {
-   "id": "42n1ep167",
+   "id": "rfyr39183",
    "bg": null,
    "transition": "",
    "notes": "강의 범위 선언. 대원 안전을 버리지 않고 예고해 둔다.",
    "elements": [
     {
-     "id": "hg4rz5159",
+     "id": "umue09175",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3195,7 +3471,7 @@
      }
     },
     {
-     "id": "qryzbu160",
+     "id": "0qhy81176",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3217,7 +3493,7 @@
      "gAngle": 110
     },
     {
-     "id": "dkwenz161",
+     "id": "nweufk177",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3239,7 +3515,7 @@
      }
     },
     {
-     "id": "mskzhx162",
+     "id": "3eb2b9178",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3259,7 +3535,7 @@
      "style": {}
     },
     {
-     "id": "9fmhot163",
+     "id": "j0yqs2179",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3281,7 +3557,7 @@
      "gAngle": 110
     },
     {
-     "id": "eiaxl6164",
+     "id": "1jaks6180",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3303,7 +3579,7 @@
      }
     },
     {
-     "id": "e87jw4165",
+     "id": "b0zya9181",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3321,7 +3597,7 @@
      }
     },
     {
-     "id": "qk3a9u166",
+     "id": "9v4bnr182",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3341,7 +3617,7 @@
    ]
   },
   {
-   "id": "861hsk179",
+   "id": "un3tvm195",
    "bg": {
     "gradient": "linear-gradient(150deg, #0369a1 0%, #0c2a4d 100%)"
    },
@@ -3349,7 +3625,7 @@
    "notes": "얼마나 뿌릴 수 있는지가 정해져야 얼마나 대야 하는지가 나온다",
    "elements": [
     {
-     "id": "0o668x174",
+     "id": "ooui69190",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3371,7 +3647,7 @@
      "gAngle": 150
     },
     {
-     "id": "p2f3p9168",
+     "id": "mm5vk2184",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3394,7 +3670,7 @@
      }
     },
     {
-     "id": "q4qldo169",
+     "id": "2u63g5185",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3414,7 +3690,7 @@
      "style": {}
     },
     {
-     "id": "6kn478170",
+     "id": "w3owm3186",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3434,7 +3710,7 @@
      "style": {}
     },
     {
-     "id": "2n9tdm171",
+     "id": "nl7g3i187",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3454,7 +3730,7 @@
      "style": {}
     },
     {
-     "id": "xl3tri172",
+     "id": "utwe07188",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3474,7 +3750,7 @@
      "style": {}
     },
     {
-     "id": "l8jz39173",
+     "id": "w8gtxq189",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3494,7 +3770,7 @@
      "style": {}
     },
     {
-     "id": "plhflv175",
+     "id": "kst5nx191",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3514,7 +3790,7 @@
      }
     },
     {
-     "id": "dyhhb9176",
+     "id": "fiagk5192",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3537,7 +3813,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "isvziu177",
+     "id": "mpbiso193",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3557,7 +3833,7 @@
      }
     },
     {
-     "id": "wyz8eh178",
+     "id": "a6mch4194",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3579,13 +3855,13 @@
    "noFooter": true
   },
   {
-   "id": "4zwk8x186",
+   "id": "imvx8n202",
    "bg": null,
    "transition": "",
    "notes": "방수량의 법정 근거. A-1급이 우리 현장의 기준선이다.",
    "elements": [
     {
-     "id": "f3i0h1180",
+     "id": "iuys2e196",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3603,7 +3879,7 @@
      }
     },
     {
-     "id": "1f9pcm181",
+     "id": "nyqvcz197",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3689,7 +3965,7 @@
      }
     },
     {
-     "id": "e1vkzh182",
+     "id": "gv526h198",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3711,7 +3987,7 @@
      "gAngle": 135
     },
     {
-     "id": "ond779183",
+     "id": "ks1bd6199",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3733,7 +4009,7 @@
      }
     },
     {
-     "id": "t9hzpj184",
+     "id": "oy48h3200",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3751,7 +4027,7 @@
      }
     },
     {
-     "id": "odzwi0185",
+     "id": "r40up8201",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3771,13 +4047,13 @@
    ]
   },
   {
-   "id": "lt4fwe194",
+   "id": "xf08fg210",
    "bg": null,
    "transition": "",
    "notes": "암기형으로 가르치면 이 내용이 안 나온다. 지휘관이 알아야 할 건 트레이드오프.",
    "elements": [
     {
-     "id": "ce4e3q187",
+     "id": "4z70y8203",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3795,7 +4071,7 @@
      }
     },
     {
-     "id": "uvzpnx188",
+     "id": "uh5lvc204",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3815,7 +4091,7 @@
      "axis": false
     },
     {
-     "id": "oi6tng189",
+     "id": "r4v6dh205",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3837,7 +4113,7 @@
      "gAngle": 135
     },
     {
-     "id": "wznem4190",
+     "id": "m7xfjj206",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3859,7 +4135,7 @@
      }
     },
     {
-     "id": "gpexfm191",
+     "id": "3pig6u207",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3877,7 +4153,7 @@
      }
     },
     {
-     "id": "8kcrup192",
+     "id": "diaq55208",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3899,7 +4175,7 @@
      "gAngle": 100
     },
     {
-     "id": "ax6zpc193",
+     "id": "bihw9u209",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3923,13 +4199,13 @@
    ]
   },
   {
-   "id": "qtc598204",
+   "id": "adq01y220",
    "bg": null,
    "transition": "",
    "notes": "우리 본부가 직접 잰 숫자다. 외부 교재가 아니라는 점을 강조한다.",
    "elements": [
     {
-     "id": "u22olz195",
+     "id": "qtpoae211",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3947,7 +4223,7 @@
      }
     },
     {
-     "id": "7bt7b4196",
+     "id": "uxpu41212",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3969,7 +4245,7 @@
      "gAngle": 135
     },
     {
-     "id": "2cx6kr197",
+     "id": "d6kr64213",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3991,7 +4267,7 @@
      }
     },
     {
-     "id": "sbzsxa198",
+     "id": "5ygxof214",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4013,7 +4289,7 @@
      "gAngle": 135
     },
     {
-     "id": "3txs9u199",
+     "id": "zmfeug215",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4035,7 +4311,7 @@
      }
     },
     {
-     "id": "nyxwu2200",
+     "id": "040zlf216",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4053,7 +4329,7 @@
      }
     },
     {
-     "id": "x5io0j201",
+     "id": "9suw27217",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -4075,7 +4351,7 @@
      "gAngle": 100
     },
     {
-     "id": "ekjqxk202",
+     "id": "t08gfc218",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4097,7 +4373,7 @@
      }
     },
     {
-     "id": "e8ekzt203",
+     "id": "0worlg219",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4117,13 +4393,13 @@
    ]
   },
   {
-   "id": "pjp0l0215",
+   "id": "18ejvo231",
    "bg": null,
    "transition": "",
    "notes": "이 슬라이드가 Ⅱ부와 Ⅲ부를 잇는다. 4.3분이라는 숫자를 교육생이 기억하게 한다.",
    "elements": [
     {
-     "id": "6ie2ng205",
+     "id": "u5r1ci221",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4141,7 +4417,7 @@
      }
     },
     {
-     "id": "dgfyk2206",
+     "id": "2w5bkb222",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4158,18 +4434,10 @@
      "grid": false,
      "unit": "분",
      "style": {},
-     "axis": false,
-     "pointColors": [
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#c2410c",
-      "#a8b8c6"
-     ]
+     "axis": false
     },
     {
-     "id": "oufukf207",
+     "id": "2n3e8y223",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4191,7 +4459,7 @@
      "gAngle": 135
     },
     {
-     "id": "vkik0i208",
+     "id": "51dt2r224",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4213,7 +4481,7 @@
      }
     },
     {
-     "id": "phqddq209",
+     "id": "es6r1v225",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4236,7 +4504,7 @@
      }
     },
     {
-     "id": "eszywp210",
+     "id": "ipxatz226",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4256,7 +4524,7 @@
      }
     },
     {
-     "id": "ba4335211",
+     "id": "at0teb227",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4274,7 +4542,7 @@
      }
     },
     {
-     "id": "acex9b212",
+     "id": "vznl1v228",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4296,7 +4564,7 @@
      "gAngle": 100
     },
     {
-     "id": "a936gt213",
+     "id": "6x637m229",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4318,7 +4586,7 @@
      }
     },
     {
-     "id": "1g1ps5214",
+     "id": "uzcea6230",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4338,7 +4606,7 @@
    ]
   },
   {
-   "id": "0m9jy5227",
+   "id": "upsbxu243",
    "bg": {
     "gradient": "linear-gradient(150deg, #b45309 0%, #78350f 100%)"
    },
@@ -4346,7 +4614,7 @@
    "notes": "다만 — 어디까지가 입증되고 어디부터가 아닌가",
    "elements": [
     {
-     "id": "8nt4vw222",
+     "id": "fzg8lr238",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4368,7 +4636,7 @@
      "gAngle": 150
     },
     {
-     "id": "10c4wa216",
+     "id": "498n9j232",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4391,7 +4659,7 @@
      }
     },
     {
-     "id": "4p2dre217",
+     "id": "m27w92233",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4411,7 +4679,7 @@
      "style": {}
     },
     {
-     "id": "j2nm98218",
+     "id": "xoaylt234",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4431,7 +4699,7 @@
      "style": {}
     },
     {
-     "id": "t30iiz219",
+     "id": "kpfmje235",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4451,7 +4719,7 @@
      "style": {}
     },
     {
-     "id": "e17zp4220",
+     "id": "q46zbp236",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4471,7 +4739,7 @@
      "style": {}
     },
     {
-     "id": "mejblq221",
+     "id": "ogerda237",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4491,7 +4759,7 @@
      "style": {}
     },
     {
-     "id": "mc7hpq223",
+     "id": "hkr2wb239",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4511,7 +4779,7 @@
      }
     },
     {
-     "id": "mcbxju224",
+     "id": "ksxcso240",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4534,7 +4802,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "9tubpw225",
+     "id": "wdyym1241",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4554,7 +4822,7 @@
      }
     },
     {
-     "id": "2bu0in226",
+     "id": "xm6gwn242",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4576,13 +4844,13 @@
    "noFooter": true
   },
   {
-   "id": "a78jlw236",
+   "id": "mr310r252",
    "bg": null,
    "transition": "",
    "notes": "명목 기준임을 먼저 밝힌다. 다음 장에서 반증을 바로 제시한다.",
    "elements": [
     {
-     "id": "9hynfe228",
+     "id": "ppomux244",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4600,7 +4868,7 @@
      }
     },
     {
-     "id": "7aazpt229",
+     "id": "xkipbf245",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4619,7 +4887,7 @@
      "style": {}
     },
     {
-     "id": "nly4fs230",
+     "id": "onkg69246",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4641,7 +4909,7 @@
      "gAngle": 135
     },
     {
-     "id": "jm1w7u231",
+     "id": "xj4qfz247",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4663,7 +4931,7 @@
      }
     },
     {
-     "id": "gdvasj232",
+     "id": "ro4r0u248",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4685,7 +4953,7 @@
      "gAngle": 135
     },
     {
-     "id": "54xk6b233",
+     "id": "mblf0s249",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4707,7 +4975,7 @@
      }
     },
     {
-     "id": "cap73c234",
+     "id": "ibf5co250",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4725,7 +4993,7 @@
      }
     },
     {
-     "id": "h8ionj235",
+     "id": "a5r01v251",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4745,13 +5013,13 @@
    ]
   },
   {
-   "id": "4oeujy253",
+   "id": "2s1xm2269",
    "bg": null,
    "transition": "",
    "notes": "과장하지 않는다. 반증을 먼저 내놓으면 교육생이 나머지를 믿는다.",
    "elements": [
     {
-     "id": "y7p60s237",
+     "id": "2zjxpp253",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4769,7 +5037,7 @@
      }
     },
     {
-     "id": "vwnwl8238",
+     "id": "bs1rit254",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4791,7 +5059,7 @@
      "gAngle": 135
     },
     {
-     "id": "x098jn239",
+     "id": "zc82yr255",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4812,7 +5080,7 @@
      }
     },
     {
-     "id": "yy276g240",
+     "id": "roc2m9256",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4833,7 +5101,7 @@
      }
     },
     {
-     "id": "bptk14241",
+     "id": "2v6tp7257",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4853,7 +5121,7 @@
      }
     },
     {
-     "id": "5tsrjg242",
+     "id": "rvzdlw258",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4875,7 +5143,7 @@
      "gAngle": 135
     },
     {
-     "id": "x0t89h243",
+     "id": "zte1xd259",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4896,7 +5164,7 @@
      }
     },
     {
-     "id": "zufpq2244",
+     "id": "3oekw1260",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4917,7 +5185,7 @@
      }
     },
     {
-     "id": "h82wvu245",
+     "id": "b24u0l261",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4937,7 +5205,7 @@
      }
     },
     {
-     "id": "v8zfh2246",
+     "id": "r6ni1b262",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4959,7 +5227,7 @@
      "gAngle": 135
     },
     {
-     "id": "ls9xdp247",
+     "id": "gl8t4q263",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4980,7 +5248,7 @@
      }
     },
     {
-     "id": "llfk4q248",
+     "id": "upocxa264",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5001,7 +5269,7 @@
      }
     },
     {
-     "id": "srx64n249",
+     "id": "abp9in265",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5021,7 +5289,7 @@
      }
     },
     {
-     "id": "kxegf9250",
+     "id": "1fvl40266",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -5043,7 +5311,7 @@
      "gAngle": 100
     },
     {
-     "id": "s02ykh251",
+     "id": "mq8ohk267",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5065,7 +5333,7 @@
      }
     },
     {
-     "id": "6q4hnk252",
+     "id": "hknuz9268",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5085,13 +5353,13 @@
    ]
   },
   {
-   "id": "fj5xxk262",
+   "id": "em5t6a278",
    "bg": null,
    "transition": "",
    "notes": "이 자료가 8번 항목의 가장 튼튼한 근거다.",
    "elements": [
     {
-     "id": "qrrj4y254",
+     "id": "vnvifn270",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5109,7 +5377,7 @@
      }
     },
     {
-     "id": "lkxgsq255",
+     "id": "saolci271",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5126,16 +5394,10 @@
      "grid": false,
      "unit": "만원",
      "style": {},
-     "axis": false,
-     "pointColors": [
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#c2410c"
-     ]
+     "axis": false
     },
     {
-     "id": "asajqk256",
+     "id": "k4j2qr272",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5157,7 +5419,7 @@
      "gAngle": 135
     },
     {
-     "id": "zf0m2v257",
+     "id": "a14mn7273",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5179,7 +5441,7 @@
      }
     },
     {
-     "id": "rxz72t258",
+     "id": "c8pxyq274",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5197,7 +5459,7 @@
      }
     },
     {
-     "id": "9acuej259",
+     "id": "96wxd9275",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5219,7 +5481,7 @@
      "gAngle": 100
     },
     {
-     "id": "5jnepy260",
+     "id": "utqkoz276",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5241,7 +5503,7 @@
      }
     },
     {
-     "id": "b9cgjh261",
+     "id": "zjpvv6277",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5261,7 +5523,7 @@
    ]
   },
   {
-   "id": "vbm2r5274",
+   "id": "kinjka290",
    "bg": {
     "gradient": "linear-gradient(150deg, #0369a1 0%, #0e7490 100%)"
    },
@@ -5269,7 +5531,7 @@
    "notes": "한 건의 화재가 커지면 장비가 따라 커진다",
    "elements": [
     {
-     "id": "v9xx9x269",
+     "id": "j4vsyz285",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5291,7 +5553,7 @@
      "gAngle": 150
     },
     {
-     "id": "ksz3w4263",
+     "id": "retemm279",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5314,7 +5576,7 @@
      }
     },
     {
-     "id": "610y4l264",
+     "id": "mtxuzq280",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5334,7 +5596,7 @@
      "style": {}
     },
     {
-     "id": "ydgiy0265",
+     "id": "ag12at281",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5354,7 +5616,7 @@
      "style": {}
     },
     {
-     "id": "joy9i8266",
+     "id": "wxmxfo282",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5374,7 +5636,7 @@
      "style": {}
     },
     {
-     "id": "mhxjv1267",
+     "id": "dl4av8283",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5394,7 +5656,7 @@
      "style": {}
     },
     {
-     "id": "1yhws3268",
+     "id": "ylx2rf284",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5414,7 +5676,7 @@
      "style": {}
     },
     {
-     "id": "5w4w91270",
+     "id": "f2k8r7286",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5434,7 +5696,7 @@
      }
     },
     {
-     "id": "vf7s0u271",
+     "id": "6xq1lv287",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5457,7 +5719,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "ni3ugu272",
+     "id": "iy8vjw288",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5477,7 +5739,7 @@
      }
     },
     {
-     "id": "mijm8c273",
+     "id": "b1crpd289",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5499,13 +5761,13 @@
    "noFooter": true
   },
   {
-   "id": "d1x7ta287",
+   "id": "mxbrh0303",
    "bg": null,
    "transition": "",
    "notes": "장비 보강의 서사를 하나의 사건에서 시작한다. 교육생이 기억하기 쉽다.",
    "elements": [
     {
-     "id": "9zeww5275",
+     "id": "wfwcz4291",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5523,7 +5785,7 @@
      }
     },
     {
-     "id": "dw5d1e276",
+     "id": "p4muum292",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5544,7 +5806,7 @@
      "dash": true
     },
     {
-     "id": "y2drvq277",
+     "id": "qlfj1a293",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5564,7 +5826,7 @@
      "style": {}
     },
     {
-     "id": "hy7c2s278",
+     "id": "aywfgr294",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5586,7 +5848,7 @@
      }
     },
     {
-     "id": "n3g79k279",
+     "id": "wbur21295",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5607,7 +5869,7 @@
      }
     },
     {
-     "id": "qxyoss280",
+     "id": "wexouv296",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5627,7 +5889,7 @@
      }
     },
     {
-     "id": "ifcdir281",
+     "id": "zkslcv297",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5649,7 +5911,7 @@
      "gAngle": 135
     },
     {
-     "id": "f0q4xc282",
+     "id": "f4yb13298",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5671,7 +5933,7 @@
      }
     },
     {
-     "id": "h902al283",
+     "id": "4zzva6299",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5682,14 +5944,14 @@
      "y": 448,
      "w": 800,
      "h": 212,
-     "html": "<ul><li>이 화재를 계기로 <b>대용량포방사시스템</b> 도입이 결정됐습니다</li><li>1호기 울산 2022.1 배치 — <b>75,000 L/min</b>, 방수거리 130m, 구성 17종</li><li>2호기 서산 2026.4 배치 — <b>45,000 L/min</b>, 110m</li></ul>",
+     "html": "<ul><li>이 화재를 계기로 <b>대용량포방사시스템</b> 도입이 결정됐습니다</li><li>울산 2022년 배치 — <b>2세트 합계 75,000 L/min</b> (45,000 + 30,000), 방수거리 130m</li><li>서산 2026.4 배치 — <b>45,000 L/min</b>, 110m · 여수 2027년 예정</li><li>1세트는 방사포·주펌프·중계펌프·수중펌프·포원액차 등 <b>약 7대</b> 구성입니다</li></ul>",
      "style": {
       "fontSize": 30,
       "lineHeight": 1.6
      }
     },
     {
-     "id": "0m172v284",
+     "id": "xqdox9300",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -5711,7 +5973,7 @@
      "gAngle": 100
     },
     {
-     "id": "vldsag285",
+     "id": "qcg4vs301",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5722,7 +5984,7 @@
      "y": 676,
      "w": 1412,
      "h": 120,
-     "html": "1호기 75,000 L/min = <b>대형펌프차 26대 동시 방수</b> 수준",
+     "html": "울산 2세트 75,000 L/min = <b>대형펌프차 26대 동시 방수</b> 수준",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -5733,7 +5995,7 @@
      }
     },
     {
-     "id": "vmbs0a286",
+     "id": "ogzc8o302",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5753,13 +6015,13 @@
    ]
   },
   {
-   "id": "0ndmtb297",
+   "id": "t5lemm313",
    "bg": null,
    "transition": "",
    "notes": "규격 하향의 의미를 설명한다. 다음 장의 \"방수총 ≠ 펌프\"로 이어진다.",
    "elements": [
     {
-     "id": "8eeqxy288",
+     "id": "ytlpxg304",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5777,7 +6039,7 @@
      }
     },
     {
-     "id": "5407yy289",
+     "id": "0z4m6z305",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5797,7 +6059,7 @@
      "axis": false
     },
     {
-     "id": "n802ho290",
+     "id": "jclygl306",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5815,7 +6077,7 @@
      }
     },
     {
-     "id": "34k4os291",
+     "id": "m16997307",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5837,7 +6099,7 @@
      "gAngle": 135
     },
     {
-     "id": "h6rsgh292",
+     "id": "lr68ax308",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5859,7 +6121,7 @@
      }
     },
     {
-     "id": "s4z1x2293",
+     "id": "4wwr1s309",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5877,7 +6139,7 @@
      }
     },
     {
-     "id": "z8puzb294",
+     "id": "64qumk310",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -5899,7 +6161,7 @@
      "gAngle": 100
     },
     {
-     "id": "dvqos2295",
+     "id": "exc0ic311",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5921,7 +6183,7 @@
      }
     },
     {
-     "id": "1koaif296",
+     "id": "vg3039312",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5941,7 +6203,150 @@
    ]
   },
   {
-   "id": "m10vna309",
+   "id": "vzpcm4321",
+   "bg": null,
+   "transition": "",
+   "notes": "영상 — 포가 올라간 뒤 <b>불길이 꺾이는 시점</b>을 보십시오. 투입에서 제압까지 약 15분이었습니다.",
+   "elements": [
+    {
+     "id": "qkngxv314",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "그래서 — 2025년 울산에서는 달랐습니다",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "vrzkeu315",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 120,
+     "y": 236,
+     "w": 1180,
+     "h": 664,
+     "url": "https://www.youtube.com/watch?v=gj-vG_3kTZ4",
+     "radius": 18,
+     "autoplay": false,
+     "shadow": true
+    },
+    {
+     "id": "vt61fi316",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1348,
+     "y": 236,
+     "w": 452,
+     "h": 252,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#7c2d12",
+     "gAngle": 135
+    },
+    {
+     "id": "ao8hfw317",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "text",
+     "role": "text",
+     "x": 1348,
+     "y": 282,
+     "w": 452,
+     "h": 40,
+     "html": "무엇을 볼 것인가",
+     "style": {
+      "fontSize": 24,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "color": "#ffffff",
+      "letterSpacing": 2
+     }
+    },
+    {
+     "id": "86sugx318",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1374,
+     "y": 332,
+     "w": 400,
+     "h": 160,
+     "html": "포가 올라간 뒤 <b>불길이 꺾이는 시점</b>을 보십시오. 투입에서 제압까지 약 15분이었습니다.",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 24,
+      "lineHeight": 1.5,
+      "align": "center"
+     }
+    },
+    {
+     "id": "309z62319",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 1348,
+     "y": 812,
+     "w": 452,
+     "h": 118,
+     "html": "채널A 뉴스TOP10 「유류 저장탱크서 화재 — 대용량 방사포가 불길 잡았다」 · 유튜브 임베드 재생",
+     "style": {
+      "fontSize": 24,
+      "color": "$muted",
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "s0cot2320",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1348,
+     "y": 512,
+     "w": 452,
+     "h": 282,
+     "html": "<b>2025.2.10 울산 온산공단 UTK 유류탱크</b><br><br>11:15 폭발 · 11:34 대응 1단계 · 4분 뒤 2단계<br><b>13:15 대용량포 투입 → 약 15분 뒤 큰 불길 제압</b><br>13:33 초진 · 14:19 완진<br><br>2018년 고양에서 17시간이 걸린 유종의 화재입니다.",
+     "style": {
+      "fontSize": 24,
+      "lineHeight": 1.6
+     }
+    }
+   ]
+  },
+  {
+   "id": "7l0iws333",
    "bg": {
     "gradient": "linear-gradient(150deg, #0c2a4d 0%, #0369a1 100%)"
    },
@@ -5949,7 +6354,7 @@
    "notes": "카탈로그 숫자를 그대로 믿으면 안 되는 이유",
    "elements": [
     {
-     "id": "g6kfuv304",
+     "id": "nzillb328",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5971,7 +6376,7 @@
      "gAngle": 150
     },
     {
-     "id": "rw2kss298",
+     "id": "mzhoia322",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5994,7 +6399,7 @@
      }
     },
     {
-     "id": "2vxo6t299",
+     "id": "4i7rmp323",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6014,7 +6419,7 @@
      "style": {}
     },
     {
-     "id": "kz8ct8300",
+     "id": "ailzab324",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6034,7 +6439,7 @@
      "style": {}
     },
     {
-     "id": "kkitiu301",
+     "id": "w96770325",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6054,7 +6459,7 @@
      "style": {}
     },
     {
-     "id": "eu80lo302",
+     "id": "5slrxy326",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6074,7 +6479,7 @@
      "style": {}
     },
     {
-     "id": "00bxqj303",
+     "id": "hv1ha5327",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6094,7 +6499,7 @@
      "style": {}
     },
     {
-     "id": "hgugtq305",
+     "id": "p4zf6m329",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6114,7 +6519,7 @@
      }
     },
     {
-     "id": "6a8b8l306",
+     "id": "nccvl8330",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6137,7 +6542,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "154021307",
+     "id": "r6rfku331",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6157,7 +6562,7 @@
      }
     },
     {
-     "id": "adhnut308",
+     "id": "iwkt5v332",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6179,13 +6584,13 @@
    "noFooter": true
   },
   {
-   "id": "tatzsq324",
+   "id": "n1g5as348",
    "bg": null,
    "transition": "",
    "notes": "교안 10번의 핵심. 이것 하나만 제대로 가르쳐도 값어치를 한다.",
    "elements": [
     {
-     "id": "8sumz3310",
+     "id": "1aql5n334",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6203,7 +6608,7 @@
      }
     },
     {
-     "id": "znj1vt311",
+     "id": "4yybhv335",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6225,7 +6630,7 @@
      "gAngle": 135
     },
     {
-     "id": "yme2gp312",
+     "id": "5ply2c336",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6247,7 +6652,7 @@
      }
     },
     {
-     "id": "yqtzjr313",
+     "id": "5msw73337",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6270,7 +6675,7 @@
      }
     },
     {
-     "id": "e95ql0314",
+     "id": "jtyjr2338",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6290,7 +6695,7 @@
      }
     },
     {
-     "id": "15ld2b315",
+     "id": "ornw5t339",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6310,7 +6715,7 @@
      "style": {}
     },
     {
-     "id": "0vxjw9316",
+     "id": "yelk2o340",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6332,7 +6737,7 @@
      "gAngle": 135
     },
     {
-     "id": "xozfo5317",
+     "id": "vut1ye341",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6354,7 +6759,7 @@
      }
     },
     {
-     "id": "kxz5bf318",
+     "id": "y21pj6342",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6377,7 +6782,7 @@
      }
     },
     {
-     "id": "58ar5h319",
+     "id": "3b74px343",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6397,7 +6802,7 @@
      }
     },
     {
-     "id": "t3j913320",
+     "id": "ckopuy344",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -6419,7 +6824,7 @@
      "gAngle": 100
     },
     {
-     "id": "l041zt321",
+     "id": "23gva7345",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6441,7 +6846,7 @@
      }
     },
     {
-     "id": "nv9p11322",
+     "id": "s877iz346",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6459,7 +6864,7 @@
      }
     },
     {
-     "id": "qxpya0323",
+     "id": "fa2xzt347",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6479,13 +6884,13 @@
    ]
   },
   {
-   "id": "e01yw6333",
+   "id": "blokxp357",
    "bg": null,
    "transition": "",
    "notes": "등급별 표를 만들면 안 된다. 사례값으로 제시하고 구조를 가르친다.",
    "elements": [
     {
-     "id": "yk5l7l325",
+     "id": "aepmh5349",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6503,7 +6908,7 @@
      }
     },
     {
-     "id": "3gpjej326",
+     "id": "2cq2wc350",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6552,7 +6957,7 @@
      }
     },
     {
-     "id": "x07pcm327",
+     "id": "i917pd351",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6574,7 +6979,7 @@
      "gAngle": 135
     },
     {
-     "id": "a19d4o328",
+     "id": "2nycds352",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6596,7 +7001,7 @@
      }
     },
     {
-     "id": "90ruk1329",
+     "id": "mil51s353",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -6618,7 +7023,7 @@
      "gAngle": 100
     },
     {
-     "id": "pd5w1a330",
+     "id": "6tbkqq354",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6640,7 +7045,7 @@
      }
     },
     {
-     "id": "qen4fs331",
+     "id": "plvypd355",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6658,7 +7063,7 @@
      }
     },
     {
-     "id": "iekuvp332",
+     "id": "t4ue1f356",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6678,13 +7083,13 @@
    ]
   },
   {
-   "id": "4wxdrg340",
+   "id": "5akac0364",
    "bg": null,
    "transition": "",
    "notes": "2,800이라는 숫자가 우리 현장의 사실상 기준선임을 보여준다.",
    "elements": [
     {
-     "id": "8et2eh334",
+     "id": "zbnox4358",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6702,7 +7107,7 @@
      }
     },
     {
-     "id": "33s2yk335",
+     "id": "d8ikbz359",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6719,19 +7124,10 @@
      "grid": false,
      "unit": " L/min",
      "style": {},
-     "axis": false,
-     "pointColors": [
-      "#a8b8c6",
-      "#a8b8c6",
-      "#c2410c",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6"
-     ]
+     "axis": false
     },
     {
-     "id": "dxm08n336",
+     "id": "lvydua360",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6753,7 +7149,7 @@
      "gAngle": 135
     },
     {
-     "id": "o9bpys337",
+     "id": "pmqnmz361",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6775,7 +7171,7 @@
      }
     },
     {
-     "id": "1utymt338",
+     "id": "pd9uan362",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6793,7 +7189,7 @@
      }
     },
     {
-     "id": "vc1npe339",
+     "id": "yhc3aq363",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6813,13 +7209,13 @@
    ]
   },
   {
-   "id": "gb6ehz352",
+   "id": "gnczxz376",
    "bg": null,
    "transition": "",
    "notes": "다음 파트(급수)로 넘어가는 다리. 상수도의 한계를 예고한다.",
    "elements": [
     {
-     "id": "3k9x96341",
+     "id": "ox3rt4365",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6837,7 +7233,7 @@
      }
     },
     {
-     "id": "zkel28342",
+     "id": "brw3vf366",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6848,16 +7244,22 @@
      "w": 1080,
      "h": 520,
      "kind": "hbar",
-     "data": "장비,L/min\n인천소방703 (150톤급 소방정),40000\n대용량포방사 2호기 (서산),45000\n대용량포방사 1호기 (울산),75000\n소방정 501·502호 (540톤급),160000",
+     "data": "장비,L/min\n인천소방703 (150톤급 소방정),40000\n대용량포방사 서산 (1세트),45000\n대용량포방사 울산 (2세트 합계),75000\n소방정 501호 부산 (540톤급),160000",
      "values": true,
      "legend": false,
      "grid": false,
      "unit": " L/min",
      "style": {},
-     "axis": false
+     "axis": false,
+     "pointColors": [
+      "#c2410c",
+      "#a8b8c6",
+      "#a8b8c6",
+      "#a8b8c6"
+     ]
     },
     {
-     "id": "fcd5ku343",
+     "id": "t3jj6x367",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6879,7 +7281,7 @@
      "gAngle": 135
     },
     {
-     "id": "sq4hka344",
+     "id": "3t1l7a368",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6901,7 +7303,7 @@
      }
     },
     {
-     "id": "a4gjp3345",
+     "id": "3ngimu369",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6923,7 +7325,7 @@
      "gAngle": 135
     },
     {
-     "id": "xznfdi346",
+     "id": "8x50mx370",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6934,7 +7336,7 @@
      "y": 388,
      "w": 454,
      "h": 130,
-     "html": "대용량포방사 1호기<br>= 펌프차 <b>27대분</b>",
+     "html": "대용량포방사 울산<br>= 펌프차 <b>27대분</b>",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -6945,7 +7347,7 @@
      }
     },
     {
-     "id": "47vg25347",
+     "id": "tap57x371",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6967,7 +7369,7 @@
      "gAngle": 135
     },
     {
-     "id": "u8rr9b348",
+     "id": "e5d3t7372",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6989,7 +7391,7 @@
      }
     },
     {
-     "id": "tenzyh349",
+     "id": "s9gbq2373",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7007,7 +7409,7 @@
      }
     },
     {
-     "id": "qy4rvd350",
+     "id": "ayq1q9374",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7029,7 +7431,7 @@
      "gAngle": 100
     },
     {
-     "id": "e4de4f351",
+     "id": "4kuhut375",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7053,13 +7455,13 @@
    ]
   },
   {
-   "id": "qw0aft363",
+   "id": "pjb6xj387",
    "bg": null,
    "transition": "",
    "notes": "타 시도 교재를 그대로 쓰면 빠지는 항목. 인천 고유성이 여기 있다.",
    "elements": [
     {
-     "id": "3ac94p353",
+     "id": "14bd2j377",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7077,7 +7479,7 @@
      }
     },
     {
-     "id": "mx0il2354",
+     "id": "ezqxvo378",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7098,7 +7500,7 @@
      "dash": true
     },
     {
-     "id": "4thynp355",
+     "id": "wqqaag379",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7118,7 +7520,7 @@
      "style": {}
     },
     {
-     "id": "gvxdon356",
+     "id": "ax0kjo380",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7140,7 +7542,7 @@
      }
     },
     {
-     "id": "0ofh09357",
+     "id": "8xxw2r381",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7161,7 +7563,7 @@
      }
     },
     {
-     "id": "u11wt5358",
+     "id": "z5i0p7382",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7172,7 +7574,7 @@
      "y": 456,
      "w": 720,
      "h": 124,
-     "html": "2025년 7월 취항한 150톤급 소방정\n인천소방본부 보도자료 또는 취항식 사진",
+     "html": "2025년 6월 9일 취항한 소방정\n인천소방본부 보도자료 또는 취항식 사진",
      "style": {
       "fontSize": 24,
       "align": "center",
@@ -7181,7 +7583,7 @@
      }
     },
     {
-     "id": "lvatkk359",
+     "id": "keqpro383",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7198,7 +7600,7 @@
        "분당 방수량"
       ],
       [
-       "인천소방703 (2025 취항)",
+       "인천소방703 (2025.6 취항)",
        "150톤급",
        "40,000 L/min"
       ],
@@ -7208,7 +7610,7 @@
        "34,000 L/min"
       ],
       [
-       "소방 501·502호 (부산·울산항)",
+       "소방 501호 (부산항, 2026.4)",
        "540톤급",
        "160,000 L/min"
       ]
@@ -7225,7 +7627,7 @@
      }
     },
     {
-     "id": "kwp246360",
+     "id": "17htc2384",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7247,7 +7649,7 @@
      "gAngle": 120
     },
     {
-     "id": "zbzuof361",
+     "id": "eer00o385",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7269,7 +7671,7 @@
      }
     },
     {
-     "id": "hgms8b362",
+     "id": "s65fbi386",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7289,7 +7691,7 @@
    ]
   },
   {
-   "id": "69akwf375",
+   "id": "mx0gpp399",
    "bg": {
     "gradient": "linear-gradient(150deg, #0e7490 0%, #0c2a4d 100%)"
    },
@@ -7297,7 +7699,7 @@
    "notes": "소화전에서 나오는 물은 얼마인가 — 인천 실측",
    "elements": [
     {
-     "id": "psbmaa370",
+     "id": "85jhjs394",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7319,7 +7721,7 @@
      "gAngle": 150
     },
     {
-     "id": "aq00xl364",
+     "id": "gpmjh9388",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7342,7 +7744,7 @@
      }
     },
     {
-     "id": "lh6gcg365",
+     "id": "9iw9yx389",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7362,7 +7764,7 @@
      "style": {}
     },
     {
-     "id": "31snmi366",
+     "id": "6qdr7x390",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7382,7 +7784,7 @@
      "style": {}
     },
     {
-     "id": "6yommr367",
+     "id": "cf4dc8391",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7402,7 +7804,7 @@
      "style": {}
     },
     {
-     "id": "xgu6xr368",
+     "id": "hf59im392",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7422,7 +7824,7 @@
      "style": {}
     },
     {
-     "id": "sob6x6369",
+     "id": "8gs3i7393",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7442,7 +7844,7 @@
      "style": {}
     },
     {
-     "id": "p4c02d371",
+     "id": "k6i2xe395",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7462,7 +7864,7 @@
      }
     },
     {
-     "id": "h6nzzs372",
+     "id": "qmcgke396",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7485,7 +7887,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "llnuta373",
+     "id": "th19xs397",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7505,7 +7907,7 @@
      }
     },
     {
-     "id": "3p9i81374",
+     "id": "k19epw398",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7527,13 +7929,13 @@
    "noFooter": true
   },
   {
-   "id": "95yv2b383",
+   "id": "ztx7mi407",
    "bg": null,
    "transition": "",
    "notes": "구도심·고지대가 왜 어려운지가 이 표 하나로 설명된다.",
    "elements": [
     {
-     "id": "0bmu7f376",
+     "id": "rgfacz400",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7551,7 +7953,7 @@
      }
     },
     {
-     "id": "iw59ez377",
+     "id": "y58i9i401",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7568,16 +7970,10 @@
      "grid": false,
      "unit": " L/min",
      "style": {},
-     "axis": false,
-     "pointColors": [
-      "#c2410c",
-      "#a8b8c6",
-      "#a8b8c6",
-      "#a8b8c6"
-     ]
+     "axis": false
     },
     {
-     "id": "6u3w8b378",
+     "id": "tkjhuc402",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7620,7 +8016,7 @@
      }
     },
     {
-     "id": "m5wwpg379",
+     "id": "9q3ms8403",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7642,7 +8038,7 @@
      "gAngle": 135
     },
     {
-     "id": "oiwcfo380",
+     "id": "hy2equ404",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7664,7 +8060,7 @@
      }
     },
     {
-     "id": "zggftf381",
+     "id": "2xy68c405",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7682,7 +8078,7 @@
      }
     },
     {
-     "id": "npfjib382",
+     "id": "pgedcw406",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7702,13 +8098,13 @@
    ]
   },
   {
-   "id": "jsspvy393",
+   "id": "3v03ka417",
    "bg": null,
    "transition": "",
    "notes": "앞서 본 압력-유량 트레이드오프가 급수 쪽에서도 똑같이 나타난다.",
    "elements": [
     {
-     "id": "2gp2b6384",
+     "id": "6crx5c408",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7726,7 +8122,7 @@
      }
     },
     {
-     "id": "wir123385",
+     "id": "6ih1ur409",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7748,7 +8144,7 @@
      "gAngle": 135
     },
     {
-     "id": "cfz9tw386",
+     "id": "48hs37410",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7770,7 +8166,7 @@
      }
     },
     {
-     "id": "z1p5p1387",
+     "id": "qpjb5i411",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7792,7 +8188,7 @@
      "gAngle": 135
     },
     {
-     "id": "kly7ja388",
+     "id": "enp43k412",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7814,7 +8210,7 @@
      }
     },
     {
-     "id": "gdu3ue389",
+     "id": "sawnib413",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7858,7 +8254,7 @@
      }
     },
     {
-     "id": "t883vs390",
+     "id": "rr05np414",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -7880,7 +8276,7 @@
      "gAngle": 100
     },
     {
-     "id": "g1pg5z391",
+     "id": "g2kk64415",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7902,7 +8298,7 @@
      }
     },
     {
-     "id": "1s1o9p392",
+     "id": "vk89p6416",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7922,13 +8318,13 @@
    ]
   },
   {
-   "id": "equaj9410",
+   "id": "ezvgvm434",
    "bg": null,
    "transition": "",
    "notes": "네 가지 방법과 각각의 조건·부작용. 제27조는 대부분의 지휘관이 모른다.",
    "elements": [
     {
-     "id": "ovc3jp394",
+     "id": "uosiju418",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7946,7 +8342,7 @@
      }
     },
     {
-     "id": "ew6d3h395",
+     "id": "4f0wbv419",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7968,7 +8364,7 @@
      "gAngle": 140
     },
     {
-     "id": "3eh1c8396",
+     "id": "gwbhpf420",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7990,7 +8386,7 @@
      }
     },
     {
-     "id": "eu2qxp397",
+     "id": "d05z88421",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8010,7 +8406,7 @@
      }
     },
     {
-     "id": "td17s4398",
+     "id": "0s4hu3422",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8032,7 +8428,7 @@
      "gAngle": 140
     },
     {
-     "id": "vqxq5q399",
+     "id": "fe3tlx423",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8054,7 +8450,7 @@
      }
     },
     {
-     "id": "eivik7400",
+     "id": "w0ppu9424",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8074,7 +8470,7 @@
      }
     },
     {
-     "id": "lgo6f6401",
+     "id": "jvvdv3425",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8096,7 +8492,7 @@
      "gAngle": 140
     },
     {
-     "id": "yeihw6402",
+     "id": "cej1nu426",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8118,7 +8514,7 @@
      }
     },
     {
-     "id": "p7pkvy403",
+     "id": "6ztqbr427",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8138,7 +8534,7 @@
      }
     },
     {
-     "id": "31vh0h404",
+     "id": "yoesok428",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8160,7 +8556,7 @@
      "gAngle": 140
     },
     {
-     "id": "xzt4nr405",
+     "id": "cl4o6r429",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8182,7 +8578,7 @@
      }
     },
     {
-     "id": "a1i1b5406",
+     "id": "sfhmh5430",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8202,7 +8598,7 @@
      }
     },
     {
-     "id": "4a0kgq407",
+     "id": "jfndwa431",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -8224,7 +8620,7 @@
      "gAngle": 100
     },
     {
-     "id": "lulx44408",
+     "id": "d2qqde432",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8246,7 +8642,7 @@
      }
     },
     {
-     "id": "96djm7409",
+     "id": "7tbys1433",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8266,7 +8662,7 @@
    ]
   },
   {
-   "id": "ep3az5422",
+   "id": "vwumof446",
    "bg": {
     "gradient": "linear-gradient(150deg, #c2410c 0%, #7c2d12 100%)"
    },
@@ -8274,7 +8670,7 @@
    "notes": "몇 대가 필요한가 — 외울 것은 숫자가 아니라 식이다",
    "elements": [
     {
-     "id": "83kx6v417",
+     "id": "k2lztf441",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8296,7 +8692,7 @@
      "gAngle": 150
     },
     {
-     "id": "epq8nu411",
+     "id": "wss92k435",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8319,7 +8715,7 @@
      }
     },
     {
-     "id": "33a05h412",
+     "id": "cluagh436",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8339,7 +8735,7 @@
      "style": {}
     },
     {
-     "id": "reyr3t413",
+     "id": "6wmyfh437",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8359,7 +8755,7 @@
      "style": {}
     },
     {
-     "id": "dm22oc414",
+     "id": "1o0n3q438",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8379,7 +8775,7 @@
      "style": {}
     },
     {
-     "id": "5vxi41415",
+     "id": "9xn149439",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8399,7 +8795,7 @@
      "style": {}
     },
     {
-     "id": "j4gmvv416",
+     "id": "dh5gau440",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8419,7 +8815,7 @@
      "style": {}
     },
     {
-     "id": "1ilz1g418",
+     "id": "5gbu0t442",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8439,7 +8835,7 @@
      }
     },
     {
-     "id": "n6am64419",
+     "id": "gjojvd443",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8462,7 +8858,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "hpbh0h420",
+     "id": "esd9pb444",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8482,7 +8878,7 @@
      }
     },
     {
-     "id": "2xrg6w421",
+     "id": "qro5e1445",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8504,13 +8900,13 @@
    "noFooter": true
   },
   {
-   "id": "h9y7ed437",
+   "id": "fj2ip3461",
    "bg": null,
    "transition": "",
    "notes": "우리 본부 문서의 절차를 그대로 가르친다. 단계별로 넘기면서 설명한다.",
    "elements": [
     {
-     "id": "mrw4fq423",
+     "id": "4ho2hg447",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8528,7 +8924,7 @@
      }
     },
     {
-     "id": "k7m82x424",
+     "id": "duv54c448",
      "step": 1,
      "anim": "left",
      "rotate": 0,
@@ -8550,7 +8946,7 @@
      "gAngle": 100
     },
     {
-     "id": "hp05rv425",
+     "id": "0f69cj449",
      "step": 1,
      "anim": "left",
      "rotate": 0,
@@ -8572,7 +8968,7 @@
      }
     },
     {
-     "id": "yf8271426",
+     "id": "td10s8450",
      "step": 2,
      "anim": "left",
      "rotate": 0,
@@ -8594,7 +8990,7 @@
      "gAngle": 100
     },
     {
-     "id": "kpfpv2427",
+     "id": "ljwdyz451",
      "step": 2,
      "anim": "left",
      "rotate": 0,
@@ -8616,7 +9012,7 @@
      }
     },
     {
-     "id": "ilkcgd428",
+     "id": "87f591452",
      "step": 3,
      "anim": "left",
      "rotate": 0,
@@ -8638,7 +9034,7 @@
      "gAngle": 100
     },
     {
-     "id": "im5rbs429",
+     "id": "pd8iie453",
      "step": 3,
      "anim": "left",
      "rotate": 0,
@@ -8660,7 +9056,7 @@
      }
     },
     {
-     "id": "dpdnk7430",
+     "id": "k7gswt454",
      "step": 4,
      "anim": "left",
      "rotate": 0,
@@ -8682,7 +9078,7 @@
      "gAngle": 100
     },
     {
-     "id": "t0ta8v431",
+     "id": "ams2sf455",
      "step": 4,
      "anim": "left",
      "rotate": 0,
@@ -8704,7 +9100,7 @@
      }
     },
     {
-     "id": "110sr2432",
+     "id": "icuz5u456",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8753,7 +9149,7 @@
      }
     },
     {
-     "id": "ufurww433",
+     "id": "koc5rz457",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8775,7 +9171,7 @@
      "gAngle": 100
     },
     {
-     "id": "57nvfm434",
+     "id": "zm1gc4458",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8797,7 +9193,7 @@
      }
     },
     {
-     "id": "etla6w435",
+     "id": "95z9gp459",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8815,7 +9211,7 @@
      }
     },
     {
-     "id": "placud436",
+     "id": "dk83th460",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8835,13 +9231,13 @@
    ]
   },
   {
-   "id": "09v45c451",
+   "id": "9n81qj475",
    "bg": null,
    "transition": "",
    "notes": "조직적 답은 이미 있다. 남은 것은 판단 기준.",
    "elements": [
     {
-     "id": "xde346438",
+     "id": "99dfr4462",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8859,7 +9255,7 @@
      }
     },
     {
-     "id": "fei52i439",
+     "id": "y3gn9u463",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8880,7 +9276,7 @@
      "dash": true
     },
     {
-     "id": "rpa27i440",
+     "id": "uo0zeg464",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8900,7 +9296,7 @@
      "style": {}
     },
     {
-     "id": "nlmjah441",
+     "id": "neommt465",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8922,7 +9318,7 @@
      }
     },
     {
-     "id": "07uvfj442",
+     "id": "6ajkwg466",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8943,7 +9339,7 @@
      }
     },
     {
-     "id": "8r9zxi443",
+     "id": "fxr0gr467",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8963,7 +9359,7 @@
      }
     },
     {
-     "id": "wxp8g8444",
+     "id": "yjkpf7468",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8985,7 +9381,7 @@
      "gAngle": 130
     },
     {
-     "id": "raju4o445",
+     "id": "c7n2av469",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9007,7 +9403,7 @@
      }
     },
     {
-     "id": "l0mbg3446",
+     "id": "gajk1p470",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9025,7 +9421,7 @@
      }
     },
     {
-     "id": "i72ccy447",
+     "id": "8pxjb5471",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -9047,7 +9443,7 @@
      "gAngle": 100
     },
     {
-     "id": "aylj6p448",
+     "id": "w4uojs472",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9069,7 +9465,7 @@
      }
     },
     {
-     "id": "tt7pq3449",
+     "id": "purv1b473",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9087,7 +9483,7 @@
      }
     },
     {
-     "id": "918wv5450",
+     "id": "94sbgl474",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9107,13 +9503,13 @@
    ]
   },
   {
-   "id": "1oe3d1465",
+   "id": "7tz3yr489",
    "bg": null,
    "transition": "",
    "notes": "이 식 하나가 교안 12번의 결론. 비율 암기를 계산으로 바꾼다.",
    "elements": [
     {
-     "id": "xwhn08452",
+     "id": "d5pmjt476",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9131,7 +9527,7 @@
      }
     },
     {
-     "id": "98qe9a453",
+     "id": "jpbm7q477",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9153,7 +9549,7 @@
      "gAngle": 110
     },
     {
-     "id": "l8jqev454",
+     "id": "kaa6z8478",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9175,7 +9571,7 @@
      }
     },
     {
-     "id": "0yicst455",
+     "id": "j1ho3n479",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9197,7 +9593,7 @@
      "gAngle": 135
     },
     {
-     "id": "60y1k9456",
+     "id": "rt7fwi480",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9219,7 +9615,7 @@
      }
     },
     {
-     "id": "7pyw8x457",
+     "id": "1ulq6v481",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9241,7 +9637,7 @@
      "gAngle": 135
     },
     {
-     "id": "9gu5uf458",
+     "id": "z3tvwf482",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9263,7 +9659,7 @@
      }
     },
     {
-     "id": "qcqc6t459",
+     "id": "lvq4eb483",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9285,7 +9681,7 @@
      "gAngle": 135
     },
     {
-     "id": "5mnxou460",
+     "id": "9e0cdz484",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9307,7 +9703,7 @@
      }
     },
     {
-     "id": "y392wi461",
+     "id": "d4q34p485",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -9329,7 +9725,7 @@
      "gAngle": 100
     },
     {
-     "id": "v6ozxt462",
+     "id": "ef07u4486",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9351,7 +9747,7 @@
      }
     },
     {
-     "id": "2lnp1a463",
+     "id": "ibu1f8487",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9369,7 +9765,7 @@
      }
     },
     {
-     "id": "t2v1nl464",
+     "id": "00bfke488",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9389,13 +9785,13 @@
    ]
   },
   {
-   "id": "6u746v472",
+   "id": "7v8k0y496",
    "bg": null,
    "transition": "",
    "notes": "조건을 바꿔가며 함께 계산해 보는 실습 슬라이드로 쓰면 좋다.",
    "elements": [
     {
-     "id": "nm0a7u466",
+     "id": "7bj1mu490",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9413,7 +9809,7 @@
      }
     },
     {
-     "id": "2gj8z6467",
+     "id": "dc74np491",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9477,7 +9873,7 @@
      }
     },
     {
-     "id": "wu2uhs468",
+     "id": "fq11zk492",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -9499,7 +9895,7 @@
      "gAngle": 100
     },
     {
-     "id": "axwzz4469",
+     "id": "cqe610493",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9521,7 +9917,7 @@
      }
     },
     {
-     "id": "0b0jp5470",
+     "id": "wmrgtg494",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9539,7 +9935,7 @@
      }
     },
     {
-     "id": "2wymlb471",
+     "id": "wkpogd495",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9559,13 +9955,13 @@
    ]
   },
   {
-   "id": "5b91qq489",
+   "id": "of7ld2513",
    "bg": null,
    "transition": "",
    "notes": "세 줄짜리 진단 로직. 지휘관이 현장에서 바로 쓸 수 있다. 코팅카드 후보.",
    "elements": [
     {
-     "id": "ppi1ty473",
+     "id": "4yhk2h497",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9583,7 +9979,7 @@
      }
     },
     {
-     "id": "cf72ru474",
+     "id": "7rp418498",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9605,7 +10001,7 @@
      "gAngle": 135
     },
     {
-     "id": "am3r12475",
+     "id": "ez84xr499",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9627,7 +10023,7 @@
      }
     },
     {
-     "id": "s5m9vx476",
+     "id": "sw15fi500",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9647,7 +10043,7 @@
      "style": {}
     },
     {
-     "id": "hfuogd477",
+     "id": "bxo30d501",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9669,7 +10065,7 @@
      "gAngle": 135
     },
     {
-     "id": "9c47db478",
+     "id": "tcpvtr502",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9691,7 +10087,7 @@
      }
     },
     {
-     "id": "ckyymw479",
+     "id": "v36ebc503",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9713,7 +10109,7 @@
      "gAngle": 135
     },
     {
-     "id": "8z0l1k480",
+     "id": "oflile504",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9735,7 +10131,7 @@
      }
     },
     {
-     "id": "reqf6u481",
+     "id": "cu68iu505",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9755,7 +10151,7 @@
      "style": {}
     },
     {
-     "id": "hyjyap482",
+     "id": "khf3qv506",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9777,7 +10173,7 @@
      "gAngle": 135
     },
     {
-     "id": "mfznrq483",
+     "id": "wygcsi507",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9799,7 +10195,7 @@
      }
     },
     {
-     "id": "8qap2z484",
+     "id": "rybf8p508",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9821,7 +10217,7 @@
      "gAngle": 135
     },
     {
-     "id": "1t1oku485",
+     "id": "wvyjis509",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9843,7 +10239,7 @@
      }
     },
     {
-     "id": "6e1fv1486",
+     "id": "3y4fjm510",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9863,7 +10259,7 @@
      "style": {}
     },
     {
-     "id": "6qd56o487",
+     "id": "s4fs2g511",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9885,7 +10281,7 @@
      "gAngle": 135
     },
     {
-     "id": "nocnq4488",
+     "id": "h2hic5512",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9909,13 +10305,13 @@
    ]
   },
   {
-   "id": "bmwjs2502",
+   "id": "o4gb2a526",
    "bg": null,
    "transition": "",
    "notes": "OX — 답: 아닙니다 / 소화전이 병목이면 <b>차를 더 보내도 유량은 안 늘어납니다</b>",
    "elements": [
     {
-     "id": "fbu6ii490",
+     "id": "tes0ry514",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9935,7 +10331,7 @@
      }
     },
     {
-     "id": "wiwy90491",
+     "id": "kp8h41515",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9954,7 +10350,7 @@
      }
     },
     {
-     "id": "5d99sr492",
+     "id": "gelcf9516",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9976,7 +10372,7 @@
      "gAngle": 135
     },
     {
-     "id": "ob2umu493",
+     "id": "7317as517",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9999,7 +10395,7 @@
      }
     },
     {
-     "id": "suk4sl494",
+     "id": "x4isoj518",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10021,7 +10417,7 @@
      "gAngle": 135
     },
     {
-     "id": "49pib5495",
+     "id": "4u7ymz519",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10044,7 +10440,7 @@
      }
     },
     {
-     "id": "d79baq496",
+     "id": "af1lou520",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10063,7 +10459,7 @@
      }
     },
     {
-     "id": "rapi9l497",
+     "id": "s2v8n1521",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -10085,7 +10481,7 @@
      "gAngle": 135
     },
     {
-     "id": "09gehk498",
+     "id": "b9k65n522",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -10108,7 +10504,7 @@
      }
     },
     {
-     "id": "xsz93g499",
+     "id": "k3z7vz523",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -10130,7 +10526,7 @@
      "gAngle": 100
     },
     {
-     "id": "dbaltk500",
+     "id": "zadq7u524",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -10152,7 +10548,7 @@
      }
     },
     {
-     "id": "uziexh501",
+     "id": "18zpn8525",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10172,13 +10568,13 @@
    ]
   },
   {
-   "id": "1jjx2x512",
+   "id": "uwcxoe536",
    "bg": null,
    "transition": "",
    "notes": "SOP 조문과 인천 문서가 같은 말을 하고 있다는 것을 보여준다.",
    "elements": [
     {
-     "id": "w51h4a503",
+     "id": "aa1ozp527",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10196,7 +10592,7 @@
      }
     },
     {
-     "id": "6shgro504",
+     "id": "oyaz02528",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -10218,7 +10614,7 @@
      "gAngle": 110
     },
     {
-     "id": "j8xk0i505",
+     "id": "1rlsf6529",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10240,7 +10636,7 @@
      }
     },
     {
-     "id": "0k6m6r506",
+     "id": "rilmwc530",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -10262,7 +10658,7 @@
      "gAngle": 135
     },
     {
-     "id": "od79pn507",
+     "id": "n1z27f531",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10284,7 +10680,7 @@
      }
     },
     {
-     "id": "znteub508",
+     "id": "pgvl6b532",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -10306,7 +10702,7 @@
      "gAngle": 135
     },
     {
-     "id": "e9b5zf509",
+     "id": "o26ib3533",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10328,7 +10724,7 @@
      }
     },
     {
-     "id": "fsgxkb510",
+     "id": "zpuqyr534",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10346,7 +10742,7 @@
      }
     },
     {
-     "id": "levsrm511",
+     "id": "xu27bz535",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10366,13 +10762,13 @@
    ]
   },
   {
-   "id": "la0xh9519",
+   "id": "x4ngg2543",
    "bg": null,
    "transition": "",
    "notes": "④번에서 세운 두 번째 축을 여기서 회수한다. 강의가 닫힌다.",
    "elements": [
     {
-     "id": "7z3zm2513",
+     "id": "2b4df5537",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10390,7 +10786,7 @@
      }
     },
     {
-     "id": "5l4dwm514",
+     "id": "6ggiaj538",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10412,7 +10808,7 @@
      "gAngle": 110
     },
     {
-     "id": "pe04n4515",
+     "id": "fh66bs539",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10434,7 +10830,7 @@
      }
     },
     {
-     "id": "v28cxu516",
+     "id": "yk5an8540",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10478,7 +10874,7 @@
      }
     },
     {
-     "id": "9rigov517",
+     "id": "migtio541",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -10500,7 +10896,7 @@
      "gAngle": 100
     },
     {
-     "id": "natyuk518",
+     "id": "1m4g7d542",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10524,13 +10920,13 @@
    ]
   },
   {
-   "id": "wre49q528",
+   "id": "6263jd552",
    "bg": null,
    "transition": "",
    "notes": "여기서 한 번 끊는다. 교육생 환류를 받고, 다음 파트가 본론임을 예고한다.",
    "elements": [
     {
-     "id": "r44k37520",
+     "id": "swtjjl544",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10548,7 +10944,7 @@
      }
     },
     {
-     "id": "n0dwkb521",
+     "id": "hkdiyf545",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10570,7 +10966,7 @@
      "gAngle": 110
     },
     {
-     "id": "qz6y08522",
+     "id": "vjqxv5546",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10592,7 +10988,7 @@
      }
     },
     {
-     "id": "k6mvok523",
+     "id": "5kxlos547",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10613,7 +11009,7 @@
      "dash": true
     },
     {
-     "id": "72xb6p524",
+     "id": "7sqqbo548",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10634,7 +11030,7 @@
      }
     },
     {
-     "id": "e8jx7c525",
+     "id": "j6nojs549",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10654,7 +11050,7 @@
      }
     },
     {
-     "id": "9q6trq526",
+     "id": "an9xhi550",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10676,7 +11072,7 @@
      "gAngle": 100
     },
     {
-     "id": "ez2t1g527",
+     "id": "q64wyr551",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10700,7 +11096,7 @@
    ]
   },
   {
-   "id": "v37m9o540",
+   "id": "690t06564",
    "bg": {
     "gradient": "linear-gradient(150deg, #0369a1 0%, #06243f 100%)"
    },
@@ -10708,7 +11104,7 @@
    "notes": "소화전 뒤에 무엇이 있는지 모르면 급수 계획을 세울 수 없다",
    "elements": [
     {
-     "id": "xufhv7535",
+     "id": "6p2gfz559",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10730,7 +11126,7 @@
      "gAngle": 150
     },
     {
-     "id": "nh4yd0529",
+     "id": "5weuyc553",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10753,7 +11149,7 @@
      }
     },
     {
-     "id": "asmnab530",
+     "id": "1emp15554",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10773,7 +11169,7 @@
      "style": {}
     },
     {
-     "id": "lj9n47531",
+     "id": "3qp2pj555",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10793,7 +11189,7 @@
      "style": {}
     },
     {
-     "id": "ta33rb532",
+     "id": "vwlfd1556",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10813,7 +11209,7 @@
      "style": {}
     },
     {
-     "id": "83kect533",
+     "id": "yntthe557",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10833,7 +11229,7 @@
      "style": {}
     },
     {
-     "id": "1rx4b1534",
+     "id": "g15gwy558",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10853,7 +11249,7 @@
      "style": {}
     },
     {
-     "id": "6orpi4536",
+     "id": "41bszl560",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10873,7 +11269,7 @@
      }
     },
     {
-     "id": "cckqob537",
+     "id": "usu2ba561",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10896,7 +11292,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "th5qsz538",
+     "id": "1m0stp562",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10916,7 +11312,7 @@
      }
     },
     {
-     "id": "fw2xqf539",
+     "id": "5u54e6563",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10938,13 +11334,13 @@
    "noFooter": true
   },
   {
-   "id": "t796cn553",
+   "id": "aizme1577",
    "bg": null,
    "transition": "",
    "notes": "OX — 답: 반만 맞습니다 / 관경보다 <b>어디에 붙어 있느냐</b>가 더 결정적입니다",
    "elements": [
     {
-     "id": "inhsxd541",
+     "id": "9uxy5u565",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10964,7 +11360,7 @@
      }
     },
     {
-     "id": "96owvh542",
+     "id": "pox7p4566",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10983,7 +11379,7 @@
      }
     },
     {
-     "id": "an6vqk543",
+     "id": "uu66ju567",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11005,7 +11401,7 @@
      "gAngle": 135
     },
     {
-     "id": "eyjwpg544",
+     "id": "ujyyq6568",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11028,7 +11424,7 @@
      }
     },
     {
-     "id": "26erib545",
+     "id": "nm7591569",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11050,7 +11446,7 @@
      "gAngle": 135
     },
     {
-     "id": "im1z3e546",
+     "id": "rtu4sj570",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11073,7 +11469,7 @@
      }
     },
     {
-     "id": "jho0h4547",
+     "id": "9gpuig571",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11092,7 +11488,7 @@
      }
     },
     {
-     "id": "qln8rw548",
+     "id": "jotll1572",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -11114,7 +11510,7 @@
      "gAngle": 135
     },
     {
-     "id": "u436ig549",
+     "id": "u25i6i573",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -11137,7 +11533,7 @@
      }
     },
     {
-     "id": "ezsb59550",
+     "id": "zokgon574",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -11159,7 +11555,7 @@
      "gAngle": 100
     },
     {
-     "id": "6topu4551",
+     "id": "bs0dlr575",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -11181,7 +11577,7 @@
      }
     },
     {
-     "id": "9fdfza552",
+     "id": "m8v88z576",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11201,13 +11597,13 @@
    ]
   },
   {
-   "id": "scprsm581",
+   "id": "6sznh5605",
    "bg": null,
    "transition": "",
    "notes": "소화전 뒤의 구조를 모르면 급수 계획이 성립하지 않는다. 주입점이 핵심 개념.",
    "elements": [
     {
-     "id": "njs18e554",
+     "id": "ci354d578",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11225,7 +11621,7 @@
      }
     },
     {
-     "id": "oq645m555",
+     "id": "tmaeez579",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11247,7 +11643,7 @@
      "gAngle": 135
     },
     {
-     "id": "l5do3v556",
+     "id": "462n2g580",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11269,7 +11665,7 @@
      }
     },
     {
-     "id": "3u76ca557",
+     "id": "6os6pk581",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11289,7 +11685,7 @@
      "style": {}
     },
     {
-     "id": "6i46ml558",
+     "id": "n5gwk0582",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11311,7 +11707,7 @@
      "gAngle": 135
     },
     {
-     "id": "q8rgel559",
+     "id": "iv65pt583",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11333,7 +11729,7 @@
      }
     },
     {
-     "id": "q1skn5560",
+     "id": "srov8q584",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11352,7 +11748,7 @@
      }
     },
     {
-     "id": "mcbpnf561",
+     "id": "87pa75585",
      "step": 1,
      "anim": "right",
      "rotate": 0,
@@ -11372,7 +11768,7 @@
      "style": {}
     },
     {
-     "id": "qdf8z0562",
+     "id": "8l7jnv586",
      "step": 1,
      "anim": "right",
      "rotate": 0,
@@ -11394,7 +11790,7 @@
      "gAngle": 135
     },
     {
-     "id": "p6hzyz563",
+     "id": "had82l587",
      "step": 1,
      "anim": "right",
      "rotate": 0,
@@ -11416,7 +11812,7 @@
      }
     },
     {
-     "id": "rvnwtb564",
+     "id": "e5p7wk588",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11435,7 +11831,7 @@
      }
     },
     {
-     "id": "6fy7dd565",
+     "id": "f0npew589",
      "step": 2,
      "anim": "right",
      "rotate": 0,
@@ -11455,7 +11851,7 @@
      "style": {}
     },
     {
-     "id": "ey89y7566",
+     "id": "sqj6hb590",
      "step": 2,
      "anim": "right",
      "rotate": 0,
@@ -11477,7 +11873,7 @@
      "gAngle": 135
     },
     {
-     "id": "z5nk3j567",
+     "id": "owj3y6591",
      "step": 2,
      "anim": "right",
      "rotate": 0,
@@ -11499,7 +11895,7 @@
      }
     },
     {
-     "id": "p1vegu568",
+     "id": "xfs9vh592",
      "step": 3,
      "anim": "right",
      "rotate": 0,
@@ -11519,7 +11915,7 @@
      "style": {}
     },
     {
-     "id": "ipp3v7569",
+     "id": "748u2b593",
      "step": 3,
      "anim": "pop",
      "rotate": 0,
@@ -11541,7 +11937,7 @@
      "gAngle": 135
     },
     {
-     "id": "j7rfzq570",
+     "id": "0en99q594",
      "step": 3,
      "anim": "pop",
      "rotate": 0,
@@ -11563,7 +11959,7 @@
      }
     },
     {
-     "id": "229uac571",
+     "id": "afgc33595",
      "step": 4,
      "anim": "right",
      "rotate": 0,
@@ -11583,7 +11979,7 @@
      "style": {}
     },
     {
-     "id": "mebct3572",
+     "id": "qaa5m1596",
      "step": 4,
      "anim": "right",
      "rotate": 0,
@@ -11605,7 +12001,7 @@
      "gAngle": 135
     },
     {
-     "id": "imtq2j573",
+     "id": "6fs54h597",
      "step": 4,
      "anim": "right",
      "rotate": 0,
@@ -11627,7 +12023,7 @@
      }
     },
     {
-     "id": "fpeez9574",
+     "id": "xlydqp598",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11646,7 +12042,7 @@
      }
     },
     {
-     "id": "122cw4575",
+     "id": "l4b830599",
      "step": 5,
      "anim": "up",
      "rotate": 0,
@@ -11668,7 +12064,7 @@
      "gAngle": 120
     },
     {
-     "id": "lx2w0d576",
+     "id": "lcf9is600",
      "step": 5,
      "anim": "up",
      "rotate": 0,
@@ -11690,7 +12086,7 @@
      }
     },
     {
-     "id": "6hlqnl577",
+     "id": "mg4kad601",
      "step": 5,
      "anim": "up",
      "rotate": 0,
@@ -11712,7 +12108,7 @@
      "gAngle": 120
     },
     {
-     "id": "9fmkbs578",
+     "id": "xctwts602",
      "step": 5,
      "anim": "up",
      "rotate": 0,
@@ -11734,7 +12130,7 @@
      }
     },
     {
-     "id": "rtrpws579",
+     "id": "hjy00l603",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -11752,7 +12148,7 @@
      }
     },
     {
-     "id": "d3kaeo580",
+     "id": "8547dx604",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11772,13 +12168,13 @@
    ]
   },
   {
-   "id": "akmvka590",
+   "id": "p2ifk5614",
    "bg": null,
    "transition": "",
    "notes": "실제 화면을 보여주면 추상적 개념이 현장 지식이 된다.",
    "elements": [
     {
-     "id": "1c9jq6582",
+     "id": "pjmoa8606",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11796,7 +12192,7 @@
      }
     },
     {
-     "id": "q1xdpf583",
+     "id": "dfltts607",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11817,7 +12213,7 @@
      "dash": true
     },
     {
-     "id": "wxz81f584",
+     "id": "a9iylp608",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11837,7 +12233,7 @@
      "style": {}
     },
     {
-     "id": "e5mc8j585",
+     "id": "fe7zu5609",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11859,7 +12255,7 @@
      }
     },
     {
-     "id": "0t3djm586",
+     "id": "nhuzpg610",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11880,7 +12276,7 @@
      }
     },
     {
-     "id": "c9atri587",
+     "id": "gamp7i611",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11900,7 +12296,7 @@
      }
     },
     {
-     "id": "x9blct588",
+     "id": "leznn2612",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11922,7 +12318,7 @@
      "gAngle": 110
     },
     {
-     "id": "spqt1a589",
+     "id": "iwh8zc613",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11946,13 +12342,13 @@
    ]
   },
   {
-   "id": "r9f3wd603",
+   "id": "6130qd627",
    "bg": null,
    "transition": "",
    "notes": "OX — 답: 아닙니다 / 같은 주입점을 쓰면 <b>합쳐서 통수능력을 넘을 수 없습니다</b>",
    "elements": [
     {
-     "id": "tauqj5591",
+     "id": "1tstj3615",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11972,7 +12368,7 @@
      }
     },
     {
-     "id": "4ldcph592",
+     "id": "vd5yau616",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11991,7 +12387,7 @@
      }
     },
     {
-     "id": "0plvyk593",
+     "id": "eq7dkl617",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12013,7 +12409,7 @@
      "gAngle": 135
     },
     {
-     "id": "h9xxpl594",
+     "id": "35rf91618",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12036,7 +12432,7 @@
      }
     },
     {
-     "id": "2hzykl595",
+     "id": "d8y7rs619",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12058,7 +12454,7 @@
      "gAngle": 135
     },
     {
-     "id": "vvee46596",
+     "id": "ipsagk620",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12081,7 +12477,7 @@
      }
     },
     {
-     "id": "k4m64s597",
+     "id": "cr4kpj621",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12100,7 +12496,7 @@
      }
     },
     {
-     "id": "oyy4fr598",
+     "id": "lami7p622",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -12122,7 +12518,7 @@
      "gAngle": 135
     },
     {
-     "id": "kkmel1599",
+     "id": "4zzloj623",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -12145,7 +12541,7 @@
      }
     },
     {
-     "id": "4pvkz5600",
+     "id": "0ql4vz624",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -12167,7 +12563,7 @@
      "gAngle": 100
     },
     {
-     "id": "7x6zxi601",
+     "id": "euzlad625",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -12189,7 +12585,7 @@
      }
     },
     {
-     "id": "wsiazh602",
+     "id": "myoi83626",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12209,13 +12605,13 @@
    ]
   },
   {
-   "id": "rr8jtb624",
+   "id": "c1d76x648",
    "bg": null,
    "transition": "",
    "notes": "교안 16번. 루프 구조와 간섭을 그림으로 보여준다. 순환급수 ④단계와 연결.",
    "elements": [
     {
-     "id": "smw81r604",
+     "id": "h7z96q628",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12233,7 +12629,7 @@
      }
     },
     {
-     "id": "m7jsr6605",
+     "id": "gl7bw0629",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12255,7 +12651,7 @@
      "gAngle": 90
     },
     {
-     "id": "x3djny606",
+     "id": "nymicg630",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12277,7 +12673,7 @@
      "gAngle": 0
     },
     {
-     "id": "lnya6q607",
+     "id": "b2omgl631",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12299,7 +12695,7 @@
      "gAngle": 90
     },
     {
-     "id": "uk6cxt608",
+     "id": "9twfpo632",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12321,7 +12717,7 @@
      "gAngle": 0
     },
     {
-     "id": "wbkhmo609",
+     "id": "xgoexw633",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12343,7 +12739,7 @@
      "gAngle": 135
     },
     {
-     "id": "981bvt610",
+     "id": "chcnxr634",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12365,7 +12761,7 @@
      }
     },
     {
-     "id": "ypnepf611",
+     "id": "lx8x17635",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -12385,7 +12781,7 @@
      "style": {}
     },
     {
-     "id": "w91g2v612",
+     "id": "k63v03636",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -12407,7 +12803,7 @@
      }
     },
     {
-     "id": "90e0fl613",
+     "id": "wsrrf0637",
      "step": 2,
      "anim": "pop",
      "rotate": 0,
@@ -12427,7 +12823,7 @@
      "style": {}
     },
     {
-     "id": "0628dt614",
+     "id": "8l042m638",
      "step": 2,
      "anim": "pop",
      "rotate": 0,
@@ -12449,7 +12845,7 @@
      }
     },
     {
-     "id": "3de42o615",
+     "id": "4qibxs639",
      "step": 1,
      "anim": "right",
      "rotate": 0,
@@ -12469,7 +12865,7 @@
      "style": {}
     },
     {
-     "id": "4mu8gm616",
+     "id": "j631d5640",
      "step": 2,
      "anim": "right",
      "rotate": 0,
@@ -12489,7 +12885,7 @@
      "style": {}
     },
     {
-     "id": "u4kow1617",
+     "id": "t0yjzk641",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12508,7 +12904,7 @@
      }
     },
     {
-     "id": "s086dh618",
+     "id": "ke2gc8642",
      "step": 2,
      "anim": "up",
      "rotate": 0,
@@ -12530,7 +12926,7 @@
      "gAngle": 120
     },
     {
-     "id": "cm9qtq619",
+     "id": "dnuraw643",
      "step": 2,
      "anim": "up",
      "rotate": 0,
@@ -12552,7 +12948,7 @@
      }
     },
     {
-     "id": "mwyciw620",
+     "id": "5x8t3l644",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12570,7 +12966,7 @@
      }
     },
     {
-     "id": "gdjlj2621",
+     "id": "2mlafm645",
      "step": 4,
      "anim": "up",
      "rotate": 0,
@@ -12592,7 +12988,7 @@
      "gAngle": 100
     },
     {
-     "id": "820xof622",
+     "id": "ftf8sk646",
      "step": 4,
      "anim": "up",
      "rotate": 0,
@@ -12614,7 +13010,7 @@
      }
     },
     {
-     "id": "45upy9623",
+     "id": "5xh37a647",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12634,13 +13030,13 @@
    ]
   },
   {
-   "id": "c6z8ag640",
+   "id": "ezmbjn664",
    "bg": null,
    "transition": "",
    "notes": "교안 17번. 소화전별 차이를 세 변수로 정리. ③ 주변 사용량이 실무에서 가장 간과된다.",
    "elements": [
     {
-     "id": "jsnfy3625",
+     "id": "fpe37j649",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12658,7 +13054,7 @@
      }
     },
     {
-     "id": "lsp9rx626",
+     "id": "nlv7l9650",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12679,7 +13075,7 @@
      "dash": true
     },
     {
-     "id": "b358ib627",
+     "id": "mbpgrf651",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12699,7 +13095,7 @@
      "style": {}
     },
     {
-     "id": "1yie82628",
+     "id": "f2c1lb652",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12721,7 +13117,7 @@
      }
     },
     {
-     "id": "wbl93x629",
+     "id": "1mwk18653",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12742,7 +13138,7 @@
      }
     },
     {
-     "id": "jixbnj630",
+     "id": "0fur25654",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12762,7 +13158,7 @@
      }
     },
     {
-     "id": "ssamzh631",
+     "id": "5mmhwt655",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12780,7 +13176,7 @@
      }
     },
     {
-     "id": "0d93tp632",
+     "id": "amkmym656",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12802,7 +13198,7 @@
      "gAngle": 120
     },
     {
-     "id": "265n3a633",
+     "id": "fkho5b657",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12824,7 +13220,7 @@
      }
     },
     {
-     "id": "4sbg3z634",
+     "id": "t4kp8d658",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12846,7 +13242,7 @@
      "gAngle": 120
     },
     {
-     "id": "gwsmec635",
+     "id": "r1hf4e659",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12868,7 +13264,7 @@
      }
     },
     {
-     "id": "rc4ygs636",
+     "id": "riw823660",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12890,7 +13286,7 @@
      "gAngle": 120
     },
     {
-     "id": "3u9wjk637",
+     "id": "x60e0h661",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12912,7 +13308,7 @@
      }
     },
     {
-     "id": "h9mkj9638",
+     "id": "0qf2oh662",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12930,7 +13326,7 @@
      }
     },
     {
-     "id": "ccbjlj639",
+     "id": "sbrwsu663",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12950,13 +13346,13 @@
    ]
   },
   {
-   "id": "r8cift663",
+   "id": "z41lci687",
    "bg": null,
    "transition": "",
    "notes": "교안 18번. 선단/종단 개념. 체크카드와 연결된다.",
    "elements": [
     {
-     "id": "xg8whj641",
+     "id": "rtsq5e665",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12974,7 +13370,7 @@
      }
     },
     {
-     "id": "1gvv0f642",
+     "id": "2q5m94666",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12996,7 +13392,7 @@
      "gAngle": 135
     },
     {
-     "id": "u4r7gw643",
+     "id": "1id9v1667",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13018,7 +13414,7 @@
      }
     },
     {
-     "id": "d5c3sd644",
+     "id": "0cio9f668",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13040,7 +13436,7 @@
      "gAngle": 0
     },
     {
-     "id": "jipsmt645",
+     "id": "10setj669",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13060,7 +13456,7 @@
      "style": {}
     },
     {
-     "id": "926iai646",
+     "id": "0issl2670",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13082,7 +13478,7 @@
      }
     },
     {
-     "id": "hee3g2647",
+     "id": "ze0drw671",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -13102,7 +13498,7 @@
      "style": {}
     },
     {
-     "id": "o9isgr648",
+     "id": "ya9k1r672",
      "step": 1,
      "anim": "pop",
      "rotate": 0,
@@ -13124,7 +13520,7 @@
      }
     },
     {
-     "id": "0cm88c649",
+     "id": "4xehnt673",
      "step": 2,
      "anim": "pop",
      "rotate": 0,
@@ -13144,7 +13540,7 @@
      "style": {}
     },
     {
-     "id": "j3nd6o650",
+     "id": "06g4vf674",
      "step": 2,
      "anim": "pop",
      "rotate": 0,
@@ -13166,7 +13562,7 @@
      }
     },
     {
-     "id": "7j16mt651",
+     "id": "d5ntwl675",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13186,7 +13582,7 @@
      }
     },
     {
-     "id": "eackur652",
+     "id": "mndxgc676",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13206,7 +13602,7 @@
      }
     },
     {
-     "id": "ndo2ut653",
+     "id": "uuc2fp677",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13226,7 +13622,7 @@
      }
     },
     {
-     "id": "olhp82654",
+     "id": "a33ufk678",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13248,7 +13644,7 @@
      "gAngle": 135
     },
     {
-     "id": "63ffjf655",
+     "id": "oqz2gb679",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13270,7 +13666,7 @@
      }
     },
     {
-     "id": "eageww656",
+     "id": "aih0v1680",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -13292,7 +13688,7 @@
      "gAngle": 135
     },
     {
-     "id": "24af6u657",
+     "id": "c1bgat681",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -13314,7 +13710,7 @@
      }
     },
     {
-     "id": "h4yu3w658",
+     "id": "q7ypmm682",
      "step": 2,
      "anim": "up",
      "rotate": 0,
@@ -13336,7 +13732,7 @@
      "gAngle": 135
     },
     {
-     "id": "gr5plp659",
+     "id": "jibwrt683",
      "step": 2,
      "anim": "up",
      "rotate": 0,
@@ -13358,7 +13754,7 @@
      }
     },
     {
-     "id": "fyt68r660",
+     "id": "thwr29684",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13376,7 +13772,7 @@
      }
     },
     {
-     "id": "yepbyb661",
+     "id": "r7eh3p685",
      "step": 4,
      "anim": "up",
      "rotate": 0,
@@ -13398,7 +13794,7 @@
      "gAngle": 100
     },
     {
-     "id": "1qycxu662",
+     "id": "3v1ihb686",
      "step": 4,
      "anim": "up",
      "rotate": 0,
@@ -13422,13 +13818,13 @@
    ]
   },
   {
-   "id": "pxdg5q672",
+   "id": "70pfi6696",
    "bg": null,
    "transition": "",
    "notes": "실제 화재의 블록 유출량 데이터. 이 교안에서 가장 설득력 있는 한 장이 될 수 있다.",
    "elements": [
     {
-     "id": "hwj2i8664",
+     "id": "7kq3nc688",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13446,7 +13842,7 @@
      }
     },
     {
-     "id": "ow0233665",
+     "id": "ylc7v1689",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13467,7 +13863,7 @@
      "dash": true
     },
     {
-     "id": "phxred666",
+     "id": "vy7o04690",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13487,7 +13883,7 @@
      "style": {}
     },
     {
-     "id": "hswbta667",
+     "id": "ur9ib7691",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13509,7 +13905,7 @@
      }
     },
     {
-     "id": "z6yrhs668",
+     "id": "3obvcb692",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13530,7 +13926,7 @@
      }
     },
     {
-     "id": "z513i4669",
+     "id": "wuyccm693",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13550,7 +13946,7 @@
      }
     },
     {
-     "id": "7z4ceq670",
+     "id": "f95xyy694",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13572,7 +13968,7 @@
      "gAngle": 100
     },
     {
-     "id": "q6wma2671",
+     "id": "pz858u695",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13596,13 +13992,13 @@
    ]
   },
   {
-   "id": "5yeyjo682",
+   "id": "cuf7q7706",
    "bg": null,
    "transition": "",
    "notes": "2026년 원창동 화재를 블록·배수지 단위로 복기한다.",
    "elements": [
     {
-     "id": "vhatx1673",
+     "id": "czcysw697",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13620,7 +14016,7 @@
      }
     },
     {
-     "id": "wr0kd2674",
+     "id": "3gb3tg698",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13639,7 +14035,7 @@
      }
     },
     {
-     "id": "7mihhl675",
+     "id": "d0vezc699",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13660,7 +14056,7 @@
      "dash": true
     },
     {
-     "id": "w4hapn676",
+     "id": "97np7a700",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13680,7 +14076,7 @@
      "style": {}
     },
     {
-     "id": "butvnu677",
+     "id": "wnsv44701",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13702,7 +14098,7 @@
      }
     },
     {
-     "id": "k72ncv678",
+     "id": "333zem702",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13723,7 +14119,7 @@
      }
     },
     {
-     "id": "9jfcob679",
+     "id": "r9d9at703",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13743,7 +14139,7 @@
      }
     },
     {
-     "id": "quwjfv680",
+     "id": "vut456704",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13765,7 +14161,7 @@
      "gAngle": 100
     },
     {
-     "id": "ec9div681",
+     "id": "10ijii705",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13789,7 +14185,150 @@
    ]
   },
   {
-   "id": "w0y105694",
+   "id": "l0mc58714",
+   "bg": null,
+   "transition": "",
+   "notes": "영상 — 소화전이 <b>왜</b> 물을 내지 못했는지 들으십시오. 차도, 관창도, 지휘도 아니었습니다.",
+   "elements": [
+    {
+     "id": "uy9hvq707",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "인천에서 이미 있었던 일입니다",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "paj5qj708",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 120,
+     "y": 236,
+     "w": 1180,
+     "h": 664,
+     "url": "https://www.youtube.com/watch?v=48nwE5NnsSI",
+     "radius": 18,
+     "autoplay": false,
+     "shadow": true
+    },
+    {
+     "id": "whvtme709",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1348,
+     "y": 236,
+     "w": 452,
+     "h": 252,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#7c2d12",
+     "gAngle": 135
+    },
+    {
+     "id": "n7t90b710",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "text",
+     "role": "text",
+     "x": 1348,
+     "y": 282,
+     "w": 452,
+     "h": 40,
+     "html": "무엇을 볼 것인가",
+     "style": {
+      "fontSize": 24,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "color": "#ffffff",
+      "letterSpacing": 2
+     }
+    },
+    {
+     "id": "xyculz711",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1374,
+     "y": 332,
+     "w": 400,
+     "h": 160,
+     "html": "소화전이 <b>왜</b> 물을 내지 못했는지 들으십시오. 차도, 관창도, 지휘도 아니었습니다.",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 24,
+      "lineHeight": 1.5,
+      "align": "center"
+     }
+    },
+    {
+     "id": "jaei1h712",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 1348,
+     "y": 812,
+     "w": 452,
+     "h": 118,
+     "html": "ch B tv 인천 「[단독] \"제수변 잠가 소화전 미작동\" — 현대시장 초기 진화 작업 지연」 · 유튜브 임베드 재생",
+     "style": {
+      "fontSize": 24,
+      "color": "$muted",
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "d2itzv713",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1348,
+     "y": 512,
+     "w": 452,
+     "h": 282,
+     "html": "<b>2023.3 인천 송림동 현대시장</b><br>점포 50여 곳 소실.<br><br>블록 경계의 <b>제수변이 잠겨 있어</b> 소화전이 작동하지 않았고, 초기 진화가 지연됐습니다.<br><br>소블록·주입점·제수변이 <b>책상 위 개념이 아니라는 증거</b>입니다.",
+     "style": {
+      "fontSize": 24,
+      "lineHeight": 1.6
+     }
+    }
+   ]
+  },
+  {
+   "id": "9a8kzt726",
    "bg": {
     "gradient": "linear-gradient(150deg, #c2410c 0%, #7c2d12 100%)"
    },
@@ -13797,7 +14336,7 @@
    "notes": "현장에서 · 사전에 · 앞으로",
    "elements": [
     {
-     "id": "drqv80689",
+     "id": "d1jx6l721",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13819,7 +14358,7 @@
      "gAngle": 150
     },
     {
-     "id": "0e65bh683",
+     "id": "ed7iwx715",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13842,7 +14381,7 @@
      }
     },
     {
-     "id": "aeosvb684",
+     "id": "26wgwx716",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13862,7 +14401,7 @@
      "style": {}
     },
     {
-     "id": "i71th8685",
+     "id": "ul9i3x717",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13882,7 +14421,7 @@
      "style": {}
     },
     {
-     "id": "ug05mt686",
+     "id": "l3imqw718",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13902,7 +14441,7 @@
      "style": {}
     },
     {
-     "id": "1hml29687",
+     "id": "gjgzkh719",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13922,7 +14461,7 @@
      "style": {}
     },
     {
-     "id": "1v7h0q688",
+     "id": "pdigvr720",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13942,7 +14481,7 @@
      "style": {}
     },
     {
-     "id": "qt73tg690",
+     "id": "qvuykm722",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13962,7 +14501,7 @@
      }
     },
     {
-     "id": "ntytov691",
+     "id": "pu78y2723",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13985,7 +14524,7 @@
      "fill2Op": 0.22
     },
     {
-     "id": "mch83z692",
+     "id": "8lbz31724",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14005,7 +14544,7 @@
      }
     },
     {
-     "id": "hiq1sr693",
+     "id": "uav75t725",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14027,13 +14566,13 @@
    "noFooter": true
   },
   {
-   "id": "f88uou707",
+   "id": "elbx1a739",
    "bg": null,
    "transition": "",
    "notes": "현장에서 당장 쓸 수 있는 세 가지. ㉰이 결론.",
    "elements": [
     {
-     "id": "demzrl695",
+     "id": "4ce0zx727",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14051,7 +14590,7 @@
      }
     },
     {
-     "id": "cg01ec696",
+     "id": "jsb2z4728",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14073,7 +14612,7 @@
      "gAngle": 115
     },
     {
-     "id": "wnl71d697",
+     "id": "me9tjb729",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14094,7 +14633,7 @@
      }
     },
     {
-     "id": "6rvq8x698",
+     "id": "r70unn730",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14114,7 +14653,7 @@
      }
     },
     {
-     "id": "ekgrq2699",
+     "id": "dyiuuz731",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14136,7 +14675,7 @@
      "gAngle": 115
     },
     {
-     "id": "pdhks8700",
+     "id": "fja9x7732",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14157,7 +14696,7 @@
      }
     },
     {
-     "id": "9tzu6p701",
+     "id": "pr6qjc733",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14177,7 +14716,7 @@
      }
     },
     {
-     "id": "huldfb702",
+     "id": "8j8kvi734",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14199,7 +14738,7 @@
      "gAngle": 115
     },
     {
-     "id": "gyo81j703",
+     "id": "v158xv735",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14220,7 +14759,7 @@
      }
     },
     {
-     "id": "8zmhbk704",
+     "id": "lpk8xv736",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14240,7 +14779,7 @@
      }
     },
     {
-     "id": "3zgry7705",
+     "id": "297oje737",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14262,7 +14801,7 @@
      "gAngle": 100
     },
     {
-     "id": "4wlsx4706",
+     "id": "45yzxf738",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14286,13 +14825,13 @@
    ]
   },
   {
-   "id": "rqda42719",
+   "id": "b9onis751",
    "bg": null,
    "transition": "",
    "notes": "사전 대비가 없으면 현장에서 계산이 안 된다. 이미 제도로 예고돼 있다.",
    "elements": [
     {
-     "id": "7i7k9b708",
+     "id": "0wu7iy740",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14310,7 +14849,7 @@
      }
     },
     {
-     "id": "auazp0709",
+     "id": "sb9isi741",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -14332,7 +14871,7 @@
      "gAngle": 115
     },
     {
-     "id": "bls3kb710",
+     "id": "3dcfpn742",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14354,7 +14893,7 @@
      }
     },
     {
-     "id": "4ji99v711",
+     "id": "62fhoc743",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -14376,7 +14915,7 @@
      "gAngle": 135
     },
     {
-     "id": "ve5zsi712",
+     "id": "vom4qj744",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14398,7 +14937,7 @@
      }
     },
     {
-     "id": "0pax5r713",
+     "id": "6i75nn745",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -14418,7 +14957,7 @@
      "style": {}
     },
     {
-     "id": "kxfe4i714",
+     "id": "p5hnpy746",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -14440,7 +14979,7 @@
      "gAngle": 135
     },
     {
-     "id": "vn2ij4715",
+     "id": "0g7l8q747",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14462,7 +15001,7 @@
      }
     },
     {
-     "id": "bfzn74716",
+     "id": "fd59g5748",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14481,7 +15020,7 @@
      }
     },
     {
-     "id": "khbssw717",
+     "id": "oay3v8749",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14499,7 +15038,7 @@
      }
     },
     {
-     "id": "ymtlfb718",
+     "id": "g5virc750",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14519,13 +15058,13 @@
    ]
   },
   {
-   "id": "io0j1e747",
+   "id": "1yhlkn779",
    "bg": null,
    "transition": "",
    "notes": "제도 개선 제안. 이 교안이 단순 교육을 넘어 정책 제안으로 이어지는 지점.",
    "elements": [
     {
-     "id": "o67xu3720",
+     "id": "o9deqh752",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14543,7 +15082,7 @@
      }
     },
     {
-     "id": "42xz4f721",
+     "id": "98a8ae753",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14565,7 +15104,7 @@
      "gAngle": 115
     },
     {
-     "id": "37ioc1722",
+     "id": "xdltah754",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14587,7 +15126,7 @@
      }
     },
     {
-     "id": "ce6e0j723",
+     "id": "r7344v755",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14607,7 +15146,7 @@
      "style": {}
     },
     {
-     "id": "6x05yc724",
+     "id": "fy82nd756",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14628,7 +15167,7 @@
      }
     },
     {
-     "id": "olw31h725",
+     "id": "k684na757",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14650,7 +15189,7 @@
      "gAngle": 0
     },
     {
-     "id": "ucovcz726",
+     "id": "zypc6y758",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14670,7 +15209,7 @@
      }
     },
     {
-     "id": "gss2zo727",
+     "id": "la03aq759",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14690,7 +15229,7 @@
      "style": {}
     },
     {
-     "id": "79ua7u728",
+     "id": "169nhh760",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14712,7 +15251,7 @@
      }
     },
     {
-     "id": "16drt8729",
+     "id": "wxc838761",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14732,7 +15271,7 @@
      "style": {}
     },
     {
-     "id": "nb2dji730",
+     "id": "xwrcw7762",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14752,7 +15291,7 @@
      "style": {}
     },
     {
-     "id": "k6qz0d731",
+     "id": "5s1mjx763",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14774,7 +15313,7 @@
      }
     },
     {
-     "id": "1iz6nt732",
+     "id": "geqroo764",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14794,7 +15333,7 @@
      "style": {}
     },
     {
-     "id": "wtjl1c733",
+     "id": "uhkrff765",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14816,7 +15355,7 @@
      }
     },
     {
-     "id": "c2uvtt734",
+     "id": "setm7l766",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14836,7 +15375,7 @@
      }
     },
     {
-     "id": "7ai6us735",
+     "id": "mgggfd767",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14857,7 +15396,7 @@
      }
     },
     {
-     "id": "xjrbxq736",
+     "id": "hglom7768",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14879,7 +15418,7 @@
      "gAngle": 120
     },
     {
-     "id": "heyjmt737",
+     "id": "1s8vmf769",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14901,7 +15440,7 @@
      }
     },
     {
-     "id": "ixdg0m738",
+     "id": "xjzf3x770",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14923,7 +15462,7 @@
      "gAngle": 120
     },
     {
-     "id": "009541739",
+     "id": "bjim1n771",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14945,7 +15484,7 @@
      }
     },
     {
-     "id": "zygqfn740",
+     "id": "vutbs0772",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14965,7 +15504,7 @@
      }
     },
     {
-     "id": "h18o3o741",
+     "id": "kw4bg9773",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14984,7 +15523,7 @@
      }
     },
     {
-     "id": "jxa2al742",
+     "id": "1k1bi4774",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15006,7 +15545,7 @@
      "gAngle": 120
     },
     {
-     "id": "bks8np743",
+     "id": "9btfle775",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15028,7 +15567,7 @@
      }
     },
     {
-     "id": "6iw6eb744",
+     "id": "2hvfoe776",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15046,7 +15585,7 @@
      }
     },
     {
-     "id": "iht0et745",
+     "id": "guil9q777",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -15068,7 +15607,7 @@
      "gAngle": 100
     },
     {
-     "id": "55acz0746",
+     "id": "wiefyt778",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15092,13 +15631,13 @@
    ]
   },
   {
-   "id": "d4x4jp764",
+   "id": "f34h5z796",
    "bg": null,
    "transition": "",
    "notes": "배포용. 방화복 주머니에 들어가는 크기로 만든다.",
    "elements": [
     {
-     "id": "5dxo5u748",
+     "id": "zotkp4780",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15116,7 +15655,7 @@
      }
     },
     {
-     "id": "8ui36g749",
+     "id": "1ti5pn781",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15138,7 +15677,7 @@
      "gAngle": 140
     },
     {
-     "id": "u85zao750",
+     "id": "lfouh7782",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15160,7 +15699,7 @@
      }
     },
     {
-     "id": "ato3sj751",
+     "id": "jfy6tw783",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15180,7 +15719,7 @@
      }
     },
     {
-     "id": "muf51p752",
+     "id": "gbg8f7784",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15202,7 +15741,7 @@
      "gAngle": 140
     },
     {
-     "id": "dmhyyo753",
+     "id": "3yuere785",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15224,7 +15763,7 @@
      }
     },
     {
-     "id": "d5rb8y754",
+     "id": "924kg4786",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15244,7 +15783,7 @@
      }
     },
     {
-     "id": "1sfee2755",
+     "id": "hxuvmb787",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15266,7 +15805,7 @@
      "gAngle": 140
     },
     {
-     "id": "ujth3t756",
+     "id": "du6imk788",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15288,7 +15827,7 @@
      }
     },
     {
-     "id": "gkpzlh757",
+     "id": "rvswm3789",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15308,7 +15847,7 @@
      }
     },
     {
-     "id": "upxntx758",
+     "id": "u0fo7l790",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15330,7 +15869,7 @@
      "gAngle": 140
     },
     {
-     "id": "fsj6j5759",
+     "id": "zng5tm791",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15352,7 +15891,7 @@
      }
     },
     {
-     "id": "m9wgpz760",
+     "id": "enbnzl792",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15372,7 +15911,7 @@
      }
     },
     {
-     "id": "df4y89761",
+     "id": "3oxq3q793",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -15394,7 +15933,7 @@
      "gAngle": 100
     },
     {
-     "id": "86blr8762",
+     "id": "h7hjij794",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15416,7 +15955,7 @@
      }
     },
     {
-     "id": "us48vu763",
+     "id": "imlarw795",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15436,13 +15975,13 @@
    ]
   },
   {
-   "id": "b44sqf770",
+   "id": "9vctjf802",
    "bg": null,
    "transition": "",
    "notes": "교안의 한계를 먼저 밝히는 것이 교육자의 신뢰다.",
    "elements": [
     {
-     "id": "6po3qr765",
+     "id": "te2iy6797",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15460,7 +15999,7 @@
      }
     },
     {
-     "id": "nbyooq766",
+     "id": "0n9i2d798",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15514,7 +16053,7 @@
      }
     },
     {
-     "id": "rfi7mf767",
+     "id": "0qciep799",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -15536,7 +16075,7 @@
      "gAngle": 110
     },
     {
-     "id": "ndfzki768",
+     "id": "kltq6a800",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15558,7 +16097,7 @@
      }
     },
     {
-     "id": "4vfq3m769",
+     "id": "e40mvk801",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15578,7 +16117,7 @@
    ]
   },
   {
-   "id": "cgu7fx775",
+   "id": "npd08z807",
    "bg": {
     "gradient": "linear-gradient(150deg, #06243f 0%, #0e7490 100%)"
    },
@@ -15586,7 +16125,7 @@
    "notes": "질문. 모르는 것은 모른다고 하고 확인해서 알려준다.",
    "elements": [
     {
-     "id": "i1n6xw771",
+     "id": "8vy3n2803",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15608,7 +16147,7 @@
      "gAngle": 150
     },
     {
-     "id": "10a0bm772",
+     "id": "0gqcvd804",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15629,7 +16168,7 @@
      }
     },
     {
-     "id": "e1qz9t773",
+     "id": "2xtaxg805",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15652,7 +16191,7 @@
      "fill2Op": 0.2
     },
     {
-     "id": "unomg2774",
+     "id": "ean82e806",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
