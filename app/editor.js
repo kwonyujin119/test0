@@ -2,7 +2,8 @@
 'use strict';
 (async function () {
   const $ = (id) => document.getElementById(id);
-  const S = { name: '', deck: null, cur: 0, sel: [], editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, rev: 0, clip: null, slideClip: null };
+  const S = { name: '', deck: null, cur: 0, sel: [], ssel: [], focus: 'stage', editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, rev: 0, clip: null, slideClip: null };
+  // ssel: 슬라이드 목록에서 함께 잡은 슬라이드 id 들 (현재 슬라이드 포함) · focus: 마지막으로 누른 곳 ('thumbs' 면 Del 이 슬라이드를 지움)
   const stage = $('stage'), overlay = $('overlay'), main = $('main'), props = $('props'), thumbsEl = $('thumbs');
   let slideNode = null, textToolbar = null, saveTimer = null;
 
@@ -13,7 +14,7 @@
   try { S.deck = await API.load(S.name); }
   catch (e) { alert(e.message); location.href = 'gyoan.html'; return; }
   migrate(S.deck);
-  S.cur = clamp(parseInt(qs('slide') || '0', 10) || 0, 0, S.deck.slides.length - 1);
+  S.cur = clamp(parseInt(qs('slide') || '0', 10) || 0, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
   document.title = S.deck.title + ' · 편집';
 
   function migrate(d) {
@@ -41,7 +42,7 @@
     updateUndoButtons();
   }
   function restore(h) {
-    S.deck = JSON.parse(h.deck); S.cur = clamp(h.cur, 0, S.deck.slides.length - 1);
+    S.deck = JSON.parse(h.deck); S.cur = clamp(h.cur, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
     S.sel = S.sel.filter(id => elById(id)); S.editing = null; hideTextToolbar();
     renderAll(); markDirty();
   }
@@ -206,7 +207,7 @@
     for (const en of ents) if (en.isIntersecting) { const t = en.target; thumbIO.unobserve(t); if (t._draw) t._draw(); }
   }, { root: thumbsEl, rootMargin: '600px 0px' }) : null;
   function makeThumb(s, i) {
-    const t = document.createElement('div'); t.className = 'thumb' + (i === S.cur ? ' active' : '') + (s.hidden ? ' hid' : ''); t.dataset.i = i; t.draggable = true;
+    const t = document.createElement('div'); t.className = 'thumb' + (i === S.cur ? ' active' : '') + (S.ssel.includes(s.id) && i !== S.cur ? ' multi' : '') + (s.hidden ? ' hid' : ''); t.dataset.i = i; t.draggable = true;
     t.style.aspectRatio = SLIDE_W + ' / ' + SLIDE_H;
     t._draw = () => { t._draw = null; const sl = renderSlide(s, S.deck, { mode: 'thumb' }); t.insertBefore(sl, t.firstChild); requestAnimationFrame(() => fitSlide(t, sl)); };
     if (thumbIO && i !== S.cur) thumbIO.observe(t); else t._draw();
@@ -214,15 +215,32 @@
     const ms = maxStep(s); if (ms > 0) { const b = document.createElement('div'); b.className = 'steps'; b.textContent = `▸${ms}`; t.appendChild(b); }
     if (s.hidden) { const b = document.createElement('div'); b.className = 'hidb'; b.textContent = '숨김'; t.appendChild(b); }
     const trn = s.transition === 'morph' || (!s.transition && S.deck.transition === 'morph'); if (trn && i > 0) { const b = document.createElement('div'); b.className = 'trb'; b.textContent = '✨'; b.title = '모핑 전환'; t.appendChild(b); }
-    t.onclick = () => gotoSlide(i);
-    t.oncontextmenu = (ev) => { ev.preventDefault(); gotoSlide(i); showMenu(ev.clientX, ev.clientY, slideMenuItems()); };
-    t.ondragstart = (ev) => { ev.dataTransfer.setData('text/slide', String(i)); ev.dataTransfer.effectAllowed = 'move'; };
+    t.onclick = (ev) => {
+      S.focus = 'thumbs';
+      if (ev.shiftKey) { // Shift: 현재 슬라이드부터 여기까지 범위
+        const a = Math.min(S.cur, i), b = Math.max(S.cur, i);
+        const ids = S.deck.slides.slice(a, b + 1).map(x => x.id);
+        S.ssel = Array.from(new Set(S.ssel.concat(ids))); gotoSlide(i, true); return;
+      }
+      if (ev.ctrlKey || ev.metaKey) { // Ctrl: 하나씩 더하거나 빼기
+        const id = S.deck.slides[i].id;
+        if (S.ssel.includes(id)) { if (S.ssel.length > 1) { S.ssel = S.ssel.filter(x => x !== id); if (i === S.cur) { gotoSlide(S.deck.slides.findIndex(x => x.id === S.ssel[0]), true); return; } markSlideSel(); } return; }
+        S.ssel = S.ssel.concat(id); gotoSlide(i, true); return;
+      }
+      gotoSlide(i);
+    };
+    t.oncontextmenu = (ev) => { ev.preventDefault(); S.focus = 'thumbs'; if (!S.ssel.includes(S.deck.slides[i].id)) gotoSlide(i); else gotoSlide(i, true); showMenu(ev.clientX, ev.clientY, slideMenuItems()); };
+    t.ondragstart = (ev) => { if (!S.ssel.includes(S.deck.slides[i].id)) gotoSlide(i); ev.dataTransfer.setData('text/slide', String(i)); ev.dataTransfer.effectAllowed = 'move'; };
     t.ondragover = (ev) => { if (ev.dataTransfer.types.includes('text/slide')) { ev.preventDefault(); t.classList.add('dragover'); } };
     t.ondragleave = () => t.classList.remove('dragover');
     t.ondrop = (ev) => {
       ev.preventDefault(); t.classList.remove('dragover');
       const from = parseInt(ev.dataTransfer.getData('text/slide'), 10); if (isNaN(from) || from === i) return;
-      const [mv] = S.deck.slides.splice(from, 1); S.deck.slides.splice(i, 0, mv); S.cur = i;
+      // 함께 잡은 슬라이드는 묶어서 옮김 (순서는 그대로)
+      const moving = S.deck.slides.filter(x => S.ssel.includes(x.id)); if (!moving.length) moving.push(S.deck.slides[from]);
+      const target = S.deck.slides[i]; if (moving.includes(target)) return;
+      const rest = S.deck.slides.filter(x => !moving.includes(x)); let at = rest.indexOf(target); if (i > from) at += 1;
+      rest.splice(at, 0, ...moving); S.deck.slides = rest; S.cur = S.deck.slides.indexOf(moving[0]);
       commit({ all: true }); renderStage(); renderProps(); updateTop();
     };
     return t;
@@ -231,10 +249,13 @@
     const old = thumbsEl.children[i]; if (!old) { renderThumbs(); return; }
     old.replaceWith(makeThumb(S.deck.slides[i], i));
   }
-  function gotoSlide(i) {
+  function markSlideSel() { thumbsEl.querySelectorAll('.thumb').forEach((t, j) => { t.classList.toggle('active', j === S.cur); t.classList.toggle('multi', j !== S.cur && S.ssel.includes(S.deck.slides[j].id)); }); }
+  function selSlides() { const l = S.deck.slides.filter(s => S.ssel.includes(s.id)); return l.length ? l : [curSlide()]; }
+  function gotoSlide(i, keepSel) {
     if (S.editing) endEdit();
     S.cur = clamp(i, 0, S.deck.slides.length - 1); S.sel = [];
-    thumbsEl.querySelectorAll('.thumb').forEach((t, j) => t.classList.toggle('active', j === S.cur));
+    if (!keepSel) S.ssel = [curSlide().id]; else if (!S.ssel.includes(curSlide().id)) S.ssel = S.ssel.concat(curSlide().id);
+    markSlideSel();
     { const ct = thumbsEl.children[S.cur]; if (ct && ct._draw) ct._draw(); }
     renderStage(); renderProps(); updateTop();
     const t = thumbsEl.children[S.cur]; if (t) t.scrollIntoView({ block: 'nearest' });
@@ -250,14 +271,19 @@
     thumbsEl.children[S.cur]?.scrollIntoView({ block: 'nearest' });
   }
   function duplicateSlide() {
-    const s = clone(curSlide()); s.id = uid(); s.elements.forEach(e => { e.mk = e.mk || e.id; e.id = uid(); }); // mk: 모핑 때 같은 요소로 인식
-    S.deck.slides.splice(S.cur + 1, 0, s); S.cur++; S.sel = [];
+    const src = selSlides(); const last = Math.max(...src.map(s => S.deck.slides.indexOf(s)));
+    const copies = src.map(o => { const s = clone(o); s.id = uid(); s.elements.forEach(e => { e.mk = e.mk || e.id; e.id = uid(); }); return s; }); // mk: 모핑 때 같은 요소로 인식
+    S.deck.slides.splice(last + 1, 0, ...copies); S.cur = last + 1; S.sel = []; S.ssel = copies.map(s => s.id);
     commit({ all: true }); renderStage(); renderProps(); updateTop();
   }
+  /* 잡은 슬라이드(여러 장이면 모두) 삭제 · 되돌리기는 Ctrl+Z */
   function deleteSlide() {
-    if (S.deck.slides.length <= 1) { toast('마지막 슬라이드는 삭제할 수 없습니다'); return; }
-    S.deck.slides.splice(S.cur, 1); S.cur = clamp(S.cur, 0, S.deck.slides.length - 1); S.sel = [];
+    const del = selSlides();
+    if (del.length >= S.deck.slides.length) { toast('슬라이드를 모두 지울 수는 없습니다 (한 장은 남겨야 합니다)'); return; }
+    const first = Math.min(...del.map(s => S.deck.slides.indexOf(s)));
+    S.deck.slides = S.deck.slides.filter(s => !del.includes(s)); S.cur = clamp(first, 0, S.deck.slides.length - 1); S.sel = []; S.ssel = [curSlide().id];
     commit({ all: true }); renderStage(); renderProps(); updateTop();
+    if (del.length > 1) toast(`슬라이드 ${del.length}장 삭제 · Ctrl+Z 로 되돌리기`, 2600);
   }
   function moveSlide(d) {
     const j = S.cur + d; if (j < 0 || j >= S.deck.slides.length) return;
@@ -282,7 +308,7 @@
       { label: '위로 이동', fn: () => moveSlide(-1) },
       { label: '아래로 이동', fn: () => moveSlide(1) },
       { sep: true },
-      { label: '슬라이드 삭제', danger: true, fn: deleteSlide },
+      { label: selSlides().length > 1 ? `슬라이드 ${selSlides().length}장 삭제` : '슬라이드 삭제', kbd: 'Delete', danger: true, fn: deleteSlide },
     ];
   }
 
@@ -315,9 +341,10 @@
     try {
       const prep = await prepareImage(file);          // 크기·용량 최적화 (브라우저 안에서)
       const src = await API.stage(prep.blob, prep.name); // 바로 넣고, 업로드는 뒤에서
-      // 비어 있는 이미지 틀이 선택돼 있으면(레이아웃의 자리) 그 틀에 채움
+      // 상자(이미지 틀·도형·글 상자)가 하나 잡혀 있으면 그 자리에 채움 (붙여넣기 Ctrl+V · 끌어다 놓기)
       const tgt = at && at.into ? elById(at.into) : (!at && S.sel.length === 1 ? elById(S.sel[0]) : null);
-      if (tgt && tgt.type === 'image' && !tgt.src) { tgt.src = src; commit(); rerenderEl(tgt.id); renderOverlay(); renderProps(); return; }
+      if (tgt && tgt.type === 'image') { tgt.src = src; commit(); rerenderEl(tgt.id); renderOverlay(); renderProps(); toast(tgt.src ? '이미지를 상자에 넣었습니다' : ''); return; }
+      if (tgt && (tgt.type === 'shape' || tgt.type === 'text') && !S.editing) { replaceBox(tgt, imageEl(tgt.x, tgt.y, tgt.w, tgt.h, src, { radius: tgt.radius || 0, shadow: !!tgt.shadow, fit: 'cover' })); toast('상자에 이미지를 넣었습니다 · 되돌리기 Ctrl+Z'); return; }
       const dim = { w: prep.w, h: prep.h };
       const maxW = 1200, maxH = 760; let w = dim.w, h = dim.h;
       const r = Math.min(1, maxW / w, maxH / h); w = Math.round(w * r); h = Math.round(h * r);
@@ -337,6 +364,22 @@
       if (!wasEmpty) e.h = Math.round(e.w * dim.h / dim.w);
       commit(); rerenderEl(id); renderOverlay(); renderProps();
     } catch (err) { alert('이미지 교체 실패: ' + err.message); }
+  }
+  /* 잡은 상자를 같은 자리·같은 순서의 다른 요소로 바꿈 (이미지·동영상 넣기) */
+  function replaceBox(old, nu) {
+    const els = curSlide().elements, i = els.indexOf(old); if (i < 0) return;
+    nu.id = old.id; nu.step = old.step; nu.anim = old.anim; if (old.group) nu.group = old.group; if (old.link) nu.link = old.link; if (old.mk) nu.mk = old.mk;
+    els[i] = nu; S.sel = [nu.id]; commit(); renderStage(); renderProps();
+  }
+  /* 유튜브 주소·공유 코드(<iframe …>)·mp4 주소를 잡은 상자에 넣거나 새로 만듦 */
+  function putEmbed(text) {
+    let url = String(text || '').trim();
+    const m = url.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i); if (m) url = m[1]; // 공유 → 퍼가기 코드
+    const p = parseEmbed(url); if (p.kind === 'none' || (p.kind === 'web' && !m)) return false;
+    const tgt = S.sel.length === 1 && !S.editing ? elById(S.sel[0]) : null;
+    if (tgt && tgt.type === 'embed') { tgt.url = url; commit(); rerenderEl(tgt.id); renderProps(); toast('동영상 주소를 바꿨습니다'); return true; }
+    if (tgt && (tgt.type === 'shape' || tgt.type === 'image' || tgt.type === 'text')) { replaceBox(tgt, embedEl(tgt.x, tgt.y, tgt.w, tgt.h, url, { radius: tgt.radius || 0, shadow: !!tgt.shadow })); toast('상자에 동영상을 넣었습니다 · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z', 3000); return true; }
+    const [x, y] = centerBox(1280, 720); addElement(embedEl(x, y, 1280, 720, url)); toast('동영상을 넣었습니다 · ▶ 를 누르면 바로 재생'); return true;
   }
   function deleteSelected() {
     if (!S.sel.length) return;
@@ -398,7 +441,7 @@
     if (e.type === 'image') { S.sel = [e.id]; $('fileReplace').dataset.id = e.id; $('fileReplace').click(); }
     else if (e.type === 'math') openMathDialog(e);
     else if (e.type === 'embed') openEmbedDialog(e);
-    else if (e.type === 'chart') { S.sel = [e.id]; markSelection(); renderOverlay(); renderProps(); const ta = props.querySelector('textarea[data-k="data"]'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); } }
+    else if (e.type === 'chart') { S.sel = [e.id]; markSelection(); renderOverlay(); renderProps(); const ta = props.querySelector('input[data-cg="1,1"]') || props.querySelector('textarea[data-k="data"]'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); } }
     else startEdit(e.id, ev);
   });
   stage.addEventListener('pointerover', (ev) => { const n = ev.target.closest('.el'); slideNode?.querySelectorAll('.el.hover').forEach(x => x.classList.remove('hover')); if (n) n.classList.add('hover'); });
@@ -415,7 +458,8 @@
     if (e && editable(e)) items.push({ label: '글 편집', kbd: '더블클릭', fn: () => startEdit(e.id) });
     if (e && e.type === 'image') items.push({ label: '이미지 교체…', fn: () => { $('fileReplace').dataset.id = e.id; $('fileReplace').click(); } });
     if (e && e.type === 'math') items.push({ label: '수식 편집…', fn: () => openMathDialog(e) });
-    if (e && e.type === 'embed') items.push({ label: '주소 바꾸기…', fn: () => openEmbedDialog(e) });
+    if (e && e.type === 'embed') items.push({ label: '주소 바꾸기…', fn: () => openEmbedDialog(e) }, { label: '▶ 여기서 재생', fn: () => playEmbedHere(e.id) });
+    if (e && (e.type === 'shape' || e.type === 'image' || e.type === 'text') && S.sel.length === 1) items.push({ label: '이 상자에 동영상 넣기…', fn: () => { const u = prompt('YouTube 주소 또는 퍼가기 코드를 붙여넣으세요'); if (u && !putEmbed(u)) alert('주소를 알아볼 수 없습니다'); } });
     items.push({ label: '복제', kbd: 'Ctrl+D', fn: duplicateSelected }, { label: '복사', kbd: 'Ctrl+C', fn: copySelected },
       { label: '서식 복사', kbd: 'Ctrl+Shift+C', fn: copyStyle }, { label: '서식 붙여넣기', kbd: 'Ctrl+Shift+V', fn: pasteStyle }, { sep: true },
       S.sel.length > 1 ? { label: '묶기', kbd: 'Ctrl+G', fn: groupSel } : null, e && e.group ? { label: '묶음 풀기', kbd: 'Ctrl+Shift+G', fn: ungroupSel } : null,
@@ -425,11 +469,25 @@
     return items.filter(Boolean);
   }
 
+  /* 편집 중 동영상 재생: 자리 표시 대신 실제 플레이어를 넣고, ✕ 를 누르면 되돌림 */
+  function playEmbedHere(id) {
+    const e = elById(id), node = nodeOf(id); if (!e || !node) return;
+    const p = parseEmbed(e.url); if (p.kind === 'none') return;
+    node.innerHTML = ''; node.classList.add('playing');
+    node.appendChild(embedPlayer(e, p, true));
+    const x = document.createElement('button'); x.className = 'embed-stop'; x.type = 'button'; x.textContent = '✕ 닫기'; x.title = '재생 멈추고 편집으로';
+    x.onpointerdown = (ev) => { ev.stopPropagation(); };
+    x.onclick = (ev) => { ev.stopPropagation(); rerenderEl(id); };
+    node.appendChild(x);
+    S.sel = [id]; markSelection(); renderOverlay(); renderProps();
+  }
   function onPointerDown(ev) {
     if (ev.button !== 0) return;
-    closeMenus();
+    closeMenus(); S.focus = 'stage';
     const t = ev.target;
     if (t.closest('.text-toolbar')) return;
+    if (t.closest('.embed-play[data-play]')) { const n = t.closest('.el'); if (n) { ev.preventDefault(); playEmbedHere(n.dataset.id); return; } }
+    if (t.closest('.el.playing') && !t.closest('.handle')) return; // 재생 중인 플레이어 조작
     const handle = t.closest('.handle');
     if (handle) { ev.preventDefault(); startResize(ev, handle.dataset.h); return; }
     const node = t.closest('.el');
@@ -724,9 +782,18 @@
       ${e.group ? hint('⛓ 묶음에 들어 있습니다 · Ctrl+Shift+G 로 풀기 · Alt+클릭으로 하나만 선택') : ''}
     </section>`;
   }
+  /* 최근 쓴 글꼴 (이 기기에 저장 · 최근 것이 맨 위) */
+  const RECENT_FONT_KEY = 'gyoan:recentFonts';
+  const recentFonts = () => { let l = []; try { l = JSON.parse(localStorage.getItem(RECENT_FONT_KEY)) || []; } catch (e) { } return l.filter(id => FONTS.some(f => f.id === id)); };
+  function touchFont(id) { if (!id || !FONTS.some(f => f.id === id)) return; const l = [id].concat(recentFonts().filter(x => x !== id)).slice(0, 8); try { localStorage.setItem(RECENT_FONT_KEY, JSON.stringify(l)); } catch (e) { } }
+  function fontOptions(v, first) {
+    const opt = (id, name) => `<option value="${esc(id)}" ${String(id) === String(v || '') ? 'selected' : ''}>${esc(name)}</option>`;
+    const rec = recentFonts(); const nm = id => (FONTS.find(f => f.id === id) || {}).name || id;
+    return (first ? opt(first[0], first[1]) : '') + (rec.length ? `<optgroup label="최근 사용">${rec.map(id => opt(id, nm(id))).join('')}</optgroup>` : '') + `<optgroup label="모든 글꼴">${FONTS.map(f => opt(f.id, f.name)).join('')}</optgroup>`;
+  }
   function fontRows(e, st, o) {
     o = o || {};
-    return `${row('글꼴', selIn('style.font', st.font, FONTS.map(f => [f.id, f.name])))}
+    return `${row('글꼴', `<select data-k="style.font">${fontOptions(st.font)}</select>`)}
       ${row('크기', num('style.fontSize', st.fontSize, 2, 8, 400) + choice('style.fontSize', st.fontSize, (o.sizes || [24, 32, 40, 56, 72]).map(v => [v, String(v)])))}
       ${row('색', colorIn('style.color', st.color) + '<div style="flex:3">' + swatches('style.color') + '</div>')}
       ${row('스타일', tog('style.bold', st.bold, '<b>B</b>', '굵게 (Ctrl+B)') + tog('style.italic', st.italic, '<i>I</i>', '기울임 (Ctrl+I)') + tog('style.underline', st.underline, '<u>U</u>', '밑줄') + tog('style.tshadow', st.tshadow, '그림자', '글자 그림자 (사진 위 글자에 좋음)'))}
@@ -821,10 +888,13 @@
       </section>
       <section><h4>표 글자</h4>${fontRows(e, st, { valign: false, sizes: [20, 24, 28, 32, 40] })}</section>`;
     } else if (e.type === 'chart') {
+      const g = chartGrid(e.data);
       body = `<section><h4>차트</h4>
-        ${row('종류', selIn('kind', e.kind || 'bar', CHART_KINDS))}
-        ${hint('데이터: 첫 줄은 제목줄 (항목,계열1,계열2…) · 쉼표나 탭으로 구분 · 엑셀 표를 복사해 붙여넣어도 됩니다')}
-        <textarea data-k="data" class="mono" style="min-height:150px" spellcheck="false">${esc(e.data || '')}</textarea>
+        <div class="chart-kinds">${CHART_KINDS.map(([k, n]) => `<button class="ck ${(e.kind || 'bar') === k ? 'active' : ''}" data-k="kind" data-val="${k}" title="${n}">${chartPicto(k)}<span>${n}</span></button>`).join('')}</div>
+        ${hint('아래 표에 바로 적으면 슬라이드의 차트가 따라 바뀝니다 · 첫 줄은 제목, 첫 칸은 항목 이름 · 엑셀 표를 복사해 칸에 붙여넣어도 됩니다')}
+        <div class="cgrid-wrap"><table class="cgrid">${g.map((r, i) => `<tr>${r.map((c, j) => `<td><input type="text" data-cg="${i},${j}" value="${esc(c)}" ${i === 0 ? 'class="hd"' : ''} placeholder="${i === 0 ? (j === 0 ? '항목' : '계열 ' + j) : (j === 0 ? '이름' : '값')}"></td>`).join('')}</tr>`).join('')}</table></div>
+        <div class="cgrid-tools"><button class="btn sm" data-act="cgRow">＋ 줄</button><button class="btn sm" data-act="cgCol">＋ 계열</button><button class="btn sm" data-act="cgRowDel" title="마지막 줄 지우기">－ 줄</button><button class="btn sm" data-act="cgColDel" title="마지막 계열 지우기">－ 계열</button></div>
+        <details class="cgrid-raw"><summary class="muted" style="font-size:11.5px;cursor:pointer">텍스트로 편집 (쉼표·탭 구분)</summary><textarea data-k="data" class="mono" style="min-height:110px;margin-top:6px" spellcheck="false">${esc(e.data || '')}</textarea></details>
         ${row('표시', tog('values', e.values, '값') + tog('legend', e.legend, '범례') + tog('grid', e.grid !== false, '격자'))}
         ${row('단위', `<input type="text" data-k="unit" value="${esc(e.unit || '')}" placeholder="예: %, 명, 억원">`)}
         ${e.kind === 'donut' ? row('가운데', `<input type="text" data-k="center" value="${esc(e.center || '')}" placeholder="가운데 큰 글자 (예: 72%)">`) : ''}
@@ -848,9 +918,11 @@
         ${row('주소', `<input type="text" data-k="url" value="${esc(e.url || '')}" placeholder="YouTube 링크 / mp4 주소 / 웹 페이지">`)}
         ${hint(`${kl} · 발표 화면에서 재생됩니다${p.kind === 'web' ? ' · 일부 사이트는 다른 페이지 안에 표시되지 않도록 막아 두었습니다' : ''}${p.kind === 'youtube' ? ' · 주소에 ?t=90 처럼 쓰면 그 시점부터 재생' : ''}`)}
         ${p.kind === 'web' ? '' : row('재생', tog('autoplay', e.autoplay, '자동 재생') + tog('muted', e.muted, '소리 끔') + tog('loop', e.loop, '반복'))}
+        ${p.kind === 'web' ? '' : row('재생 범위', `<input type="text" data-k="start" value="${esc(e.start ? fmtClock(e.start) : '')}" placeholder="시작 1:30" style="width:84px" title="이 시점부터 (분:초 또는 초)"> <span class="muted">~</span> <input type="text" data-k="end" value="${esc(e.end ? fmtClock(e.end) : '')}" placeholder="끝 2:45" style="width:84px" title="이 시점에서 멈춤 (비우면 끝까지)">`)}
+        ${p.kind === 'web' ? '' : hint('영상을 따로 자르지 않아도 됩니다 · 분:초 로 적으면 그 구간만 재생 · ▶ 를 눌러 편집 화면에서 바로 확인')}
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 200))}
         ${row('효과', tog('shadow', e.shadow, '그림자'))}
-        ${row('', `<button class="btn sm" data-act="openEmbed">새 창에서 확인</button>`)}
+        ${row('', `<button class="btn sm" data-act="playHere">▶ 여기서 재생</button><button class="btn sm" data-act="openEmbed">새 창에서 확인</button>`)}
       </section>`;
     }
     return body + posSection(e) + animSection(e) + linkSection(e) + `<section><div class="grid2"><button class="btn sm" data-act="dup">복제</button><button class="btn sm danger" data-act="del">삭제</button></div></section>`;
@@ -873,9 +945,38 @@
   }
   function commonVal(els, k) { const v = els[0][k]; return els.every(e => e[k] === v) ? v : ''; }
 
+  /* 차트 데이터 ↔ 표 칸 */
+  function chartGrid(text) {
+    const rows = String(text || '').split(/\r?\n/).filter(l => l.trim()).map(l => l.split(/\t|,/).map(c => c.trim()));
+    const nc = Math.max(2, ...rows.map(r => r.length)); while (rows.length < 2) rows.push([]);
+    return rows.map(r => r.concat(Array(nc - r.length).fill('')));
+  }
+  function gridText(grid) { return grid.map(r => r.map(c => String(c).replace(/[,\t\r\n]/g, ' ')).join(',')).join('\n'); }
+  function readGrid() { const g = []; props.querySelectorAll('input[data-cg]').forEach(i => { const [r, c] = i.dataset.cg.split(',').map(Number); (g[r] = g[r] || [])[c] = i.value; }); return g.map(r => Array.from(r, x => x == null ? '' : x)); }
+  function setChartGrid(g, doCommit) { const t = gridText(g); const ta = props.querySelector('textarea[data-k="data"]'); if (ta) ta.value = t; setProp('data', t, doCommit); }
+  const CHART_PICTO = {
+    bar: '<rect x="3" y="12" width="5" height="12"/><rect x="11" y="5" width="5" height="19"/><rect x="19" y="9" width="5" height="15"/>',
+    hbar: '<rect x="2" y="3" width="20" height="5"/><rect x="2" y="11" width="13" height="5"/><rect x="2" y="19" width="17" height="5"/>',
+    stack: '<rect x="3" y="14" width="5" height="10"/><rect x="3" y="8" width="5" height="6" opacity=".55"/><rect x="11" y="10" width="5" height="14"/><rect x="11" y="3" width="5" height="7" opacity=".55"/><rect x="19" y="16" width="5" height="8"/><rect x="19" y="11" width="5" height="5" opacity=".55"/>',
+    line: '<polyline points="3,20 9,11 15,15 23,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>',
+    area: '<path d="M3 22 L3 18 L9 10 L15 14 L23 5 L23 22 Z" opacity=".75"/>',
+    pie: '<path d="M13 13 L13 2 A11 11 0 1 1 3.6 18.5 Z"/><path d="M13 13 L3.6 18.5 A11 11 0 0 1 13 2 Z" opacity=".45"/>',
+    donut: '<path d="M13 2 A11 11 0 1 1 3.6 18.5 L7.6 16.2 A6.4 6.4 0 1 0 13 6.6 Z"/><path d="M3.6 18.5 A11 11 0 0 1 13 2 L13 6.6 A6.4 6.4 0 0 0 7.6 16.2 Z" opacity=".45"/>',
+  };
+  const chartPicto = (k) => `<svg viewBox="0 0 26 26" width="30" height="30" fill="currentColor" aria-hidden="true">${CHART_PICTO[k] || CHART_PICTO.bar}</svg>`;
+  props.addEventListener('paste', (ev) => { // 엑셀 표를 칸에 붙여넣으면 표 전체를 바꿈
+    const t = ev.target; if (!t.dataset || t.dataset.cg == null) return;
+    const text = ev.clipboardData.getData('text/plain') || ''; if (!/\t|\n/.test(text.trim())) return;
+    ev.preventDefault(); ev.stopPropagation(); setChartGrid(chartGrid(text), true);
+  });
   /* 속성 변경 */
-  props.addEventListener('input', (ev) => { const t = ev.target; if (t.dataset.k && (t.type === 'number' || t.type === 'color' || t.type === 'range' || t.tagName === 'TEXTAREA')) setProp(t.dataset.k, readVal(t), false); });
-  props.addEventListener('change', (ev) => { const t = ev.target; if (t.dataset.k) setProp(t.dataset.k, readVal(t), true); });
+  props.addEventListener('input', (ev) => { const t = ev.target; if (t.dataset.cg != null) { setChartGrid(readGrid(), false); return; } if (t.dataset.k && (t.type === 'number' || t.type === 'color' || t.type === 'range' || t.tagName === 'TEXTAREA')) setProp(t.dataset.k, readVal(t), false); });
+  props.addEventListener('change', (ev) => { const t = ev.target; if (t.dataset.cg != null) { setChartGrid(readGrid(), true); return; } if (t.dataset.k) setProp(t.dataset.k, readVal(t), true); });
+  props.addEventListener('keydown', (ev) => { // 표 칸에서 Enter = 아래 칸, 마지막 줄이면 새 줄
+    const t = ev.target; if (!t.dataset || t.dataset.cg == null || ev.key !== 'Enter' || ev.isComposing) return;
+    ev.preventDefault(); const [r, c] = t.dataset.cg.split(',').map(Number); const nx = props.querySelector(`input[data-cg="${r + 1},${c}"]`);
+    if (nx) nx.focus(); else { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); const i = props.querySelector(`input[data-cg="${r + 1},${c}"]`); if (i) i.focus(); }
+  });
   props.addEventListener('click', (ev) => {
     const t = ev.target.closest('[data-k],[data-act],[data-align]'); if (!t) return;
     if (t.dataset.align) { alignSel(t.dataset.align); return; }
@@ -907,9 +1008,11 @@
     for (const e of els) {
       let val = v;
       if (k === 'opacity') val = clamp(v / 100, 0, 1);
+      if (k === 'start' || k === 'end') { val = parseClock(v); if (!val) { delete e[k]; rerenderEl(e.id); continue; } }
       if (k === 'style.bg' && v === '') { delete e.style.bg; } else if (k === 'link' && !v) { delete e.link; } else setPath(e, k, val);
       if (k.startsWith('style.') && (val === '' || val === false) && k !== 'style.align' && k !== 'style.valign') delete e.style[k.slice(6)];
       if (k === 'role') { /* 역할 변경시 크기/색 오버라이드 제거 */ delete e.style.fontSize; delete e.style.color; delete e.style.bold; delete e.style.font; }
+      if (k === 'style.font' && doCommit) touchFont(val);
       if (k === 'shape' && (v === 'line' || v === 'arrow') && e.h > 80) e.h = 40;
       if (S.editing === e.id && k.startsWith('style.') && e.type !== 'chart') applyElementTextStyle(e, nodeOf(e.id), theme());
       else rerenderEl(e.id);
@@ -926,7 +1029,7 @@
     switch (a) {
       case 'bgImage': $('fileBg').click(); break;
       case 'dupSlide': duplicateSlide(); break;
-      case 'delSlide': if (confirm('이 슬라이드를 삭제할까요?')) deleteSlide(); break;
+      case 'delSlide': deleteSlide(); break;
       case 'moveUp': moveSlide(-1); break;
       case 'moveDown': moveSlide(1); break;
       case 'layout': showLayoutMenu(null, applyLayout); break;
@@ -945,6 +1048,11 @@
       case 'cropReset': if (e) { delete e.cropX; delete e.cropY; delete e.zoom; commit(); rerenderEl(e.id); renderProps(); } break;
       case 'rowAdd': case 'rowDel': case 'colAdd': case 'colDel': tableOp(a); break;
       case 'mathDialog': if (e) openMathDialog(e); break;
+      case 'playHere': if (e) playEmbedHere(e.id); break;
+      case 'cgRow': { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); break; }
+      case 'cgCol': { const g = readGrid(); g.forEach((r, i) => r.push(i === 0 ? '계열 ' + r.length : '')); setChartGrid(g, true); renderProps(); break; }
+      case 'cgRowDel': { const g = readGrid(); if (g.length > 2) g.pop(); setChartGrid(g, true); renderProps(); break; }
+      case 'cgColDel': { const g = readGrid(); if (g[0].length > 2) g.forEach(r => r.pop()); setChartGrid(g, true); renderProps(); break; }
       case 'openEmbed': if (e) { const q = parseEmbed(e.url); window.open(q.kind === 'youtube' ? `https://www.youtube.com/watch?v=${q.id}` : e.url, '_blank', 'noopener'); } break;
       case 'design': showDesign(); break;
       case 'outline': showOutline(); break;
@@ -1087,6 +1195,7 @@
     ev.preventDefault();
     if (text.startsWith(CLIP_TAG)) { try { pasteData(JSON.parse(text.slice(CLIP_TAG.length))); } catch (e) { toast('붙여넣기 실패'); } return; }
     if (tableLike) { addTableFromText(text); return; }           // 엑셀·한글 표 → 표
+    if (putEmbed(text)) return;                                   // 유튜브 주소·퍼가기 코드 → 잡은 상자에 영상
     if (text.trim()) { addElement(textEl('text', 400, 400, 1120, 200, esc(text).replace(/\r?\n/g, '<br>'))); return; }
     if (S.clip) pasteData(S.clip);
   });
@@ -1204,8 +1313,13 @@
     if (ctrl && shift && (key === 'PageDown' || key === 'ArrowDown')) { stop(); moveSlide(1); return; }
     if (ctrl && key === 'Home') { stop(); gotoSlide(0); return; }
     if (ctrl && key === 'End') { stop(); gotoSlide(S.deck.slides.length - 1); return; }
-    if (ctrl && key === 'Delete') { stop(); if (confirm('이 슬라이드를 삭제할까요?')) deleteSlide(); return; }
-    if (key === 'Delete' || key === 'Backspace') { if (S.sel.length) { stop(); deleteSelected(); } return; }
+    if (ctrl && key === 'Delete') { stop(); deleteSlide(); return; }
+    if (key === 'Delete' || key === 'Backspace') {
+      if (S.sel.length) { stop(); deleteSelected(); return; }
+      if (S.focus === 'thumbs' || S.ssel.length > 1) { stop(); deleteSlide(); } // 슬라이드 목록에서 잡은 슬라이드 삭제
+      return;
+    }
+    if (ctrl && low === 'a' && S.focus === 'thumbs') { stop(); S.ssel = S.deck.slides.map(s => s.id); markSlideSel(); toast(`슬라이드 ${S.ssel.length}장 모두 선택`); return; }
     if (key === 'Escape') { clearSelection(); return; }
     if (key === 'Tab') { stop(); cycleSelection(shift ? -1 : 1); return; }
     if ((key === 'Enter' || key === 'F2') && S.sel.length === 1) { const e = elById(S.sel[0]); if (editable(e)) { stop(); startEdit(e.id, null, key === 'F2'); } else if (e && e.type === 'math') { stop(); openMathDialog(e); } return; }
@@ -1300,13 +1414,14 @@
       return c;
     });
   }
-  function clipData(kind) { return kind === 'els' ? { kind, items: clone(selEls()) } : { kind: 'slides', items: [clone(curSlide())] }; }
+  function clipData(kind) { return kind === 'els' ? { kind, items: clone(selEls()) } : { kind: 'slides', items: selSlides().map(clone) }; }
   function pasteData(data) {
     if (!data || !data.items || !data.items.length) return;
     if (S.editing) endEdit();
     if (data.kind === 'slides') {
       const ss = data.items.map(s => { const c = clone(s); c.id = uid(); c.elements.forEach(e => { e.mk = e.mk || e.id; e.id = uid(); }); return c; });
-      S.deck.slides.splice(S.cur + 1, 0, ...ss); S.cur += 1; S.sel = [];
+      const at = Math.max(...selSlides().map(s => S.deck.slides.indexOf(s))) + 1;
+      S.deck.slides.splice(at, 0, ...ss); S.cur = at; S.sel = []; S.ssel = ss.map(s => s.id);
       commit({ all: true }); renderStage(); renderProps(); updateTop(); toast(`슬라이드 ${ss.length}장 붙여넣기`); return;
     }
     const here = new Set(curSlide().elements.map(e => e.mk || e.id));
@@ -1319,7 +1434,7 @@
     if (isTyping() || S.editing) return;
     const data = clipData(S.sel.length ? 'els' : 'slides'); S.clip = data;
     ev.clipboardData.setData('text/plain', CLIP_TAG + JSON.stringify(data)); ev.preventDefault();
-    toast(data.kind === 'els' ? `${data.items.length}개 복사 · 다른 슬라이드·교안에도 붙여넣을 수 있습니다` : '슬라이드 복사 · 다른 교안에도 붙여넣을 수 있습니다');
+    toast(data.kind === 'els' ? `${data.items.length}개 복사 · 다른 슬라이드·교안에도 붙여넣을 수 있습니다` : `슬라이드 ${data.items.length}장 복사 · 다른 교안에도 붙여넣을 수 있습니다`);
   });
   document.addEventListener('cut', (ev) => {
     if (isTyping() || S.editing || !S.sel.length) return;
@@ -1397,19 +1512,95 @@
   };
   const SYMBOLS = Array.from('①②③④⑤⑥⑦⑧⑨⑩●○■□▲△▶◆★☆✓✗→←↑↓⇒⇔※∑√∞≈≠≤≥±×÷°℃㎡㎥㎏㎞㎜ΔΩπμσθλ²³½·…“”「」');
   const graphemes = (s) => (window.Intl && Intl.Segmenter) ? Array.from(new Intl.Segmenter('ko', { granularity: 'grapheme' }).segment(s), x => x.segment) : Array.from(s);
+  /* 내 심벌: 파일·글자를 끌어다 놓거나 잡은 개체를 더해 두고 다시 씀 (이 기기의 브라우저에 저장) */
+  const MYSYM_KEY = 'gyoan:mySymbols', ICON_ORDER_KEY = 'gyoan:iconOrder', ICON_FOLD_KEY = 'gyoan:iconFold', MY = '내 심벌';
+  const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  const mySyms = () => lsGet(MYSYM_KEY, []);
+  function saveSyms(list) { if (!lsSet(MYSYM_KEY, list)) { alert('내 심벌 저장 공간이 가득 찼습니다. 안 쓰는 심벌을 지워 주세요.'); return false; } return true; }
+  /* 그림은 작게(최대 160px) 줄여서 보관 */
+  function shrinkImage(blob) {
+    return new Promise((res, rej) => {
+      const im = new Image(); const u = URL.createObjectURL(blob);
+      im.onload = () => { const r = Math.min(1, 160 / im.naturalWidth, 160 / im.naturalHeight); const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.naturalWidth * r)); c.height = Math.max(1, Math.round(im.naturalHeight * r)); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); res(c.toDataURL('image/png')); };
+      im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('그림을 읽을 수 없습니다')); }; im.src = u;
+    });
+  }
+  async function addMySym(item) { const l = mySyms(); l.unshift(Object.assign({ id: uid() }, item)); return saveSyms(l); }
+  async function addMySymFromDrop(dt) {
+    let n = 0;
+    for (const f of Array.from(dt.files || [])) { if (!f.type.startsWith('image/')) continue; if (f.type === 'image/svg+xml' && f.size < 60000) { await addMySym({ t: 'img', d: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(await f.text()))) }); } else await addMySym({ t: 'img', d: await shrinkImage(f) }); n++; }
+    if (!n) { const t = (dt.getData('text/plain') || '').trim(); if (t) { for (const c of graphemes(t).filter(c => c.trim()).slice(0, 20)) { await addMySym({ t: 'txt', c }); n++; } } }
+    return n;
+  }
+  /* 잡은 개체 → 내 심벌 (글자·기호 상자, 이미지) */
+  async function addMySymFromSelection() {
+    const e = S.sel.length === 1 ? elById(S.sel[0]) : null; if (!e) { toast('먼저 슬라이드에서 개체를 하나 잡으세요'); return false; }
+    if (e.type === 'image' && e.src) { const src = API.resolveSrc(e.src); try { const b = await (await fetch(src)).blob(); await addMySym({ t: 'img', d: await shrinkImage(b), src: /^assets\//.test(e.src) ? e.src : '' }); return true; } catch (err) { toast('이미지를 가져오지 못했습니다'); return false; } }
+    if (e.type === 'text' || e.type === 'shape') { const t = stripHtml(e.html || '').trim(); if (!t) { toast('글이 없는 상자입니다'); return false; } await addMySym({ t: 'txt', c: t.length > 12 ? t.slice(0, 12) : t, fs: e.type === 'text' ? (e.style && e.style.fontSize) : null }); return true; }
+    toast('글자·기호 상자나 이미지만 심벌로 둘 수 있습니다'); return false;
+  }
+  function iconSections() {
+    const names = [MY].concat(Object.keys(ICONS)); const order = lsGet(ICON_ORDER_KEY, []);
+    return order.filter(n => names.includes(n)).concat(names.filter(n => !order.includes(n)));
+  }
   function showIconPicker() {
     if (S.editing) endEdit();
     const bg = document.createElement('div'); bg.className = 'modal-bg';
-    bg.innerHTML = `<div class="modal icon-modal"><h3>아이콘 · 기호 <span class="muted" style="font-weight:400;font-size:13px">누르면 슬라이드 가운데에 들어갑니다 · 크기는 글자 크기(Ctrl+] / Ctrl+[)로</span></h3>
-      ${Object.entries(ICONS).map(([k, v]) => `<h4>${k}</h4><div class="icon-grid">${graphemes(v).filter(c => c.trim()).map(c => `<button class="ic" data-ic="${esc(c)}">${esc(c)}</button>`).join('')}</div>`).join('')}
-      <div class="actions"><span class="muted" style="flex:1;font-size:12px">글을 쓰는 중에는 글 상자 위 도구의 Ω 버튼으로 기호를 넣을 수 있습니다</span><button class="btn" data-close>닫기</button></div></div>`;
-    bg.onclick = (ev) => {
-      if (ev.target === bg || ev.target.dataset.close != null) { bg.remove(); return; }
-      const b = ev.target.closest('[data-ic]'); if (!b) return; bg.remove();
-      const [x, y] = centerBox(220, 220);
-      addElement(textEl('text', x, y, 220, 220, esc(b.dataset.ic), { style: { fontSize: 150, align: 'center', valign: 'middle', lineHeight: 1 } }));
+    const fold = new Set(lsGet(ICON_FOLD_KEY, []));
+    const draw = () => {
+      const secHtml = (name) => {
+        const open = !fold.has(name);
+        let grid;
+        if (name === MY) {
+          const l = mySyms();
+          grid = `<div class="icon-grid my-grid" data-drop="1">${l.map(it => `<button class="ic my" data-my="${esc(it.id)}" title="누르면 넣기 · 우클릭하면 지우기">${it.t === 'img' ? `<img src="${esc(it.d)}" alt="">` : esc(it.c)}</button>`).join('')}
+            <div class="my-drop" title="여기에 그림 파일이나 글자를 끌어다 놓으세요">＋<small>끌어다 놓기</small></div></div>
+            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">📁 파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label>${l.length ? `<span class="muted" style="font-size:11.5px">${l.length}개 · 이 기기에 저장됨</span>` : `<span class="muted" style="font-size:11.5px">그림(PNG·SVG)이나 글자를 끌어다 놓으면 모아 둡니다</span>`}</div>`;
+        } else grid = `<div class="icon-grid">${graphemes(ICONS[name]).filter(c => c.trim()).map(c => `<button class="ic" data-ic="${esc(c)}">${esc(c)}</button>`).join('')}</div>`;
+        return `<section class="icon-sec${open ? '' : ' fold'}" data-sec="${esc(name)}"><h4 draggable="true" title="누르면 접기·펴기 · 끌어서 순서 바꾸기"><span class="grip">⋮⋮</span><span class="nm">${esc(name)}</span><span class="cnt">${name === MY ? mySyms().length : graphemes(ICONS[name]).filter(c => c.trim()).length}</span><span class="arrow">${open ? '▾' : '▸'}</span></h4>${open ? grid : ''}</section>`;
+      };
+      bg.innerHTML = `<div class="modal icon-modal"><h3>아이콘 · 기호 <span class="muted" style="font-weight:400;font-size:13px">누르면 슬라이드 가운데에 들어갑니다 · 크기는 글자 크기(Ctrl+] / Ctrl+[)로</span></h3>
+        <div class="icon-secs">${iconSections().map(secHtml).join('')}</div>
+        <div class="actions"><span class="muted" style="flex:1;font-size:12px">제목을 누르면 접고 펴기 · ⋮⋮ 를 끌면 순서 바꾸기 · 글을 쓰는 중에는 글 상자 위 도구의 Ω 버튼</span><button class="btn" data-close>닫기</button></div></div>`;
     };
-    document.body.appendChild(bg);
+    const insertTxt = (c, fs) => { const [x, y] = centerBox(220, 220); bg.remove(); addElement(textEl('text', x, y, 220, 220, esc(c), { style: { fontSize: fs || (graphemes(c).length > 2 ? 60 : 150), align: 'center', valign: 'middle', lineHeight: 1 } })); };
+    const insertImg = async (it) => {
+      bg.remove();
+      try {
+        let src = it.src; if (!src) { const b = await (await fetch(it.d)).blob(); src = await API.stage(b, 'symbol.png'); }
+        const [x, y] = centerBox(300, 300); addElement(imageEl(x, y, 300, 300, src));
+      } catch (err) { alert('심벌을 넣지 못했습니다: ' + err.message); }
+    };
+    let dragSec = null;
+    bg.addEventListener('click', async (ev) => {
+      if (ev.target === bg || ev.target.dataset.close != null) { bg.remove(); return; }
+      const h = ev.target.closest('.icon-sec > h4'); if (h) { const n = h.parentNode.dataset.sec; if (fold.has(n)) fold.delete(n); else fold.add(n); lsSet(ICON_FOLD_KEY, Array.from(fold)); draw(); return; }
+      if (ev.target.closest('[data-mysel]')) { if (await addMySymFromSelection()) { toast('내 심벌에 넣었습니다'); draw(); } return; }
+      if (ev.target.closest('.my-drop')) { bg.querySelector('[data-myfile]').click(); return; }
+      const my = ev.target.closest('[data-my]'); if (my) { const it = mySyms().find(x => x.id === my.dataset.my); if (!it) return; if (it.t === 'img') insertImg(it); else insertTxt(it.c, it.fs); return; }
+      const b = ev.target.closest('[data-ic]'); if (b) insertTxt(b.dataset.ic);
+    });
+    bg.addEventListener('contextmenu', (ev) => { const my = ev.target.closest('[data-my]'); if (!my) return; ev.preventDefault(); if (confirm('이 심벌을 내 심벌에서 지울까요?')) { saveSyms(mySyms().filter(x => x.id !== my.dataset.my)); draw(); } });
+    bg.addEventListener('keydown', async (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') { bg.remove(); return; } if (ev.key === 'Enter' && ev.target.dataset.mytxt != null && !ev.isComposing) { const t = ev.target.value.trim(); if (!t) return; await addMySym({ t: 'txt', c: t.length > 12 ? t.slice(0, 12) : t }); draw(); bg.querySelector('[data-mytxt]').focus(); } });
+    bg.addEventListener('change', async (ev) => { if (ev.target.dataset.myfile != null) { const dt = { files: ev.target.files, getData: () => '' }; const n = await addMySymFromDrop(dt); if (n) { toast(`심벌 ${n}개를 넣었습니다`); draw(); } } });
+    // 끌어다 놓기: 그림 파일·글자 → 내 심벌 / 묶음 제목 → 순서 바꾸기
+    bg.addEventListener('dragstart', (ev) => { const h = ev.target.closest && ev.target.closest('.icon-sec > h4'); if (!h) return; dragSec = h.parentNode; ev.dataTransfer.setData('text/icon-sec', dragSec.dataset.sec); ev.dataTransfer.effectAllowed = 'move'; });
+    bg.addEventListener('dragover', (ev) => {
+      const sec = ev.target.closest && ev.target.closest('.icon-sec');
+      if (dragSec && sec) { ev.preventDefault(); if (sec !== dragSec) { const r = sec.getBoundingClientRect(); sec.parentNode.insertBefore(dragSec, ev.clientY < r.top + r.height / 2 ? sec : sec.nextSibling); } return; }
+      if (!dragSec && (ev.dataTransfer.types.includes('Files') || ev.dataTransfer.types.includes('text/plain'))) { ev.preventDefault(); bg.querySelector('.icon-modal').classList.add('dragover'); }
+    });
+    bg.addEventListener('dragleave', (ev) => { if (ev.target === bg.querySelector('.icon-modal')) bg.querySelector('.icon-modal').classList.remove('dragover'); });
+    bg.addEventListener('dragend', () => { if (dragSec) { lsSet(ICON_ORDER_KEY, Array.from(bg.querySelectorAll('.icon-sec')).map(x => x.dataset.sec)); dragSec = null; } });
+    bg.addEventListener('drop', async (ev) => {
+      bg.querySelector('.icon-modal').classList.remove('dragover');
+      if (dragSec) { ev.preventDefault(); return; }
+      if (!ev.dataTransfer.files.length && !ev.dataTransfer.getData('text/plain')) return;
+      ev.preventDefault();
+      try { const n = await addMySymFromDrop(ev.dataTransfer); if (n) { toast(`내 심벌에 ${n}개를 넣었습니다`); if (fold.has(MY)) { fold.delete(MY); lsSet(ICON_FOLD_KEY, Array.from(fold)); } draw(); } else toast('그림 파일이나 글자만 넣을 수 있습니다'); } catch (err) { alert(err.message); }
+    });
+    draw(); document.body.appendChild(bg);
   }
 
   /* ---- 수식 ---- */
@@ -1469,8 +1660,7 @@
   function showDesign() {
     if (S.editing) endEdit();
     const bg = document.createElement('div'); bg.className = 'modal-bg';
-    const fontOpts = [['', '테마 기본']].concat(FONTS.map(f => [f.id, f.name]));
-    const sel = (k, v, opts) => `<select data-dk="${k}">${opts.map(o => `<option value="${o[0]}" ${o[0] === v ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select>`;
+    const sel = (k, v) => `<select data-dk="${k}">${fontOptions(v || '', ['', '테마 기본'])}</select>`;
     const draw = () => {
       const d = S.deck, t = theme(), ft = d.footer || {};
       bg.innerHTML = `<div class="modal design-modal"><h3>🎨 디자인 <span class="muted" style="font-weight:400;font-size:13px">교안 전체에 바로 적용됩니다 · Ctrl+Z 로 되돌리기</span></h3>
@@ -1479,8 +1669,8 @@
           <div><h4>색 직접 지정</h4>${THEME_COLOR_KEYS.map(([k, n]) => `<label class="drow"><span>${n}</span><input type="color" data-color="${k}" value="${toHex(t[k])}">${d.colors && d.colors[k] ? '<em>바꿈</em>' : ''}</label>`).join('')}
             <button class="btn sm" data-reset="1">테마 색으로 되돌리기</button></div>
           <div><h4>글꼴</h4>
-            <label class="drow"><span>제목</span>${sel('titleFont', d.titleFont || '', fontOpts)}</label>
-            <label class="drow"><span>본문</span>${sel('bodyFont', d.bodyFont || '', fontOpts)}</label>
+            <label class="drow"><span>제목</span>${sel('titleFont', d.titleFont || '')}</label>
+            <label class="drow"><span>본문</span>${sel('bodyFont', d.bodyFont || '')}</label>
             <div class="font-pv" style="font-family:${esc(fontCss(t.titleFont))}">제목 글꼴 미리보기 Aa</div><div class="font-pv sm" style="font-family:${esc(fontCss(t.bodyFont))}">본문 글꼴 미리보기 — 소방용수시설의 종류 123</div>
             <h4>장식</h4><label class="drow"><span>모든 슬라이드</span>${sel('decor', d.decor || '', DECORS)}</label>
             <h4>꼬리말</h4>
@@ -1506,7 +1696,7 @@
     bg.addEventListener('change', (ev) => {
       const t = ev.target;
       if (t.dataset.color) { apply(true); return; }
-      if (t.dataset.dk) { if (t.value) S.deck[t.dataset.dk] = t.value; else delete S.deck[t.dataset.dk]; apply(true); return; }
+      if (t.dataset.dk) { if (t.value) S.deck[t.dataset.dk] = t.value; else delete S.deck[t.dataset.dk]; touchFont(t.value); apply(true); return; }
       if (t.dataset.ft) { const ft = S.deck.footer = Object.assign({ skipFirst: true }, S.deck.footer); ft[t.dataset.ft] = t.type === 'checkbox' ? t.checked : t.value; apply(false); }
     });
     bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') bg.remove(); ev.stopPropagation(); });
@@ -1740,7 +1930,7 @@
 
   /* ---- 새 도구 버튼 ---- */
   $('btnAddTable').onclick = (ev) => { ev.stopPropagation(); tablePicker(ev.currentTarget); };
-  $('btnAddChart').onclick = (ev) => { ev.stopPropagation(); btnMenu(ev.currentTarget, CHART_KINDS.map(([k, n]) => ({ label: n, fn: () => addChart(k) }))); };
+  $('btnAddChart').onclick = (ev) => { ev.stopPropagation(); btnMenu(ev.currentTarget, CHART_KINDS.map(([k, n]) => ({ label: `<span class="mi-picto">${chartPicto(k)}</span>${n}`, fn: () => addChart(k) }))); };
   $('btnAddIcon').onclick = showIconPicker;
   $('btnAddMore').onclick = (ev) => {
     ev.stopPropagation();

@@ -795,29 +795,43 @@ function parseEmbed(url) {
   if (/^https?:\/\//i.test(url)) return { kind: 'web', src: url };
   return { kind: 'none' };
 }
+/* "1:30" · "90" · "1:02:03" → 초 */
+function parseClock(s) {
+  s = String(s == null ? '' : s).trim(); if (!s) return 0;
+  const parts = s.split(':').map(x => parseFloat(x) || 0); if (parts.length === 1) return Math.max(0, parts[0]);
+  return Math.max(0, parts.reduce((a, b) => a * 60 + b, 0));
+}
+function fmtClock(sec) { sec = Math.max(0, Math.round(sec || 0)); const m = Math.floor(sec / 60), s = sec % 60; return m + ':' + String(s).padStart(2, '0'); }
+/* 재생 범위: 요소의 start/end(초) · 주소의 ?t= 도 시작으로 인정 */
+function embedRange(e, p) { return { start: e.start || p.start || 0, end: e.end || 0 }; }
+/* 실제 재생 화면 (발표 · 편집 중 ▶ 를 눌렀을 때) */
+function embedPlayer(e, p, autoplay) {
+  const r = embedRange(e, p);
+  if (p.kind === 'video') {
+    const v = document.createElement('video'); v.src = API.resolveSrc(p.src) + (r.start || r.end ? `#t=${r.start}${r.end ? ',' + r.end : ''}` : ''); v.controls = true; v.playsInline = true; v.preload = 'metadata';
+    if (autoplay) v.autoplay = true; if (e.loop) v.loop = true; if (e.muted) v.muted = true;
+    if (r.end) v.addEventListener('timeupdate', () => { if (v.currentTime >= r.end) { if (e.loop) v.currentTime = r.start; else v.pause(); } });
+    return v;
+  }
+  const f = document.createElement('iframe');
+  if (p.kind === 'youtube') f.src = `https://www.youtube-nocookie.com/embed/${p.id}?rel=0&modestbranding=1&playsinline=1${r.start ? '&start=' + r.start : ''}${r.end ? '&end=' + r.end : ''}${autoplay ? '&autoplay=1' : ''}${e.muted ? '&mute=1' : ''}${e.loop ? '&loop=1&playlist=' + p.id : ''}`;
+  else if (p.kind === 'vimeo') f.src = `https://player.vimeo.com/video/${p.id}${autoplay ? '?autoplay=1' : ''}${r.start ? '#t=' + r.start + 's' : ''}`;
+  else f.src = p.src;
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
+  return f;
+}
 function renderEmbed(e, node, theme, mode) {
   const p = parseEmbed(e.url);
   if (e.radius) node.style.borderRadius = e.radius + 'px';
   if (e.shadow) node.style.boxShadow = '0 16px 48px rgba(0,0,0,.25)';
   const live = mode === 'present' && window.GYOAN_LIVE;
-  if (live && p.kind !== 'none') {
-    if (p.kind === 'video') {
-      const v = document.createElement('video'); v.src = API.resolveSrc(p.src); v.controls = true; v.playsInline = true; v.preload = 'metadata';
-      if (e.autoplay) v.autoplay = true; if (e.loop) v.loop = true; if (e.muted) v.muted = true;
-      node.appendChild(v); return;
-    }
-    const f = document.createElement('iframe');
-    if (p.kind === 'youtube') f.src = `https://www.youtube-nocookie.com/embed/${p.id}?rel=0&modestbranding=1&playsinline=1${p.start ? '&start=' + p.start : ''}${e.autoplay ? '&autoplay=1' : ''}${e.muted ? '&mute=1' : ''}${e.loop ? '&loop=1&playlist=' + p.id : ''}`;
-    else if (p.kind === 'vimeo') f.src = `https://player.vimeo.com/video/${p.id}${e.autoplay ? '?autoplay=1' : ''}`;
-    else f.src = p.src;
-    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
-    node.appendChild(f); return;
-  }
-  // 편집 / 미리보기 / 인쇄: 가벼운 대체 화면
+  if (live && p.kind !== 'none') { node.appendChild(embedPlayer(e, p, !!e.autoplay)); return; }
+  // 편집 / 미리보기 / 인쇄: 가벼운 대체 화면 (편집 중에는 ▶ 를 누르면 그 자리에서 재생)
   const ph = document.createElement('div'); ph.className = 'embed-ph';
   if (p.kind === 'youtube') ph.style.backgroundImage = `url("https://i.ytimg.com/vi/${p.id}/hqdefault.jpg")`;
   const label = { youtube: 'YouTube', vimeo: 'Vimeo', video: '동영상 파일', web: '웹 페이지', none: '동영상·웹 주소를 넣으세요' }[p.kind];
-  ph.innerHTML = `<div class="embed-play">${p.kind === 'web' ? '🌐' : '▶'}</div><div class="embed-label">${esc(label)}${p.kind === 'web' ? '<br><small>' + esc(p.src.slice(0, 70)) + '</small>' : ''}${mode === 'edit' ? '<br><small>발표 화면에서 재생됩니다</small>' : ''}</div>`;
+  const r = embedRange(e, p); const range = (r.start || r.end) ? ` · ${fmtClock(r.start)} ~ ${r.end ? fmtClock(r.end) : '끝'}` : '';
+  ph.innerHTML = `<div class="embed-play" ${mode === 'edit' && p.kind !== 'none' ? 'data-play="1" title="여기서 바로 재생"' : ''}>${p.kind === 'web' ? '🌐' : '▶'}</div><div class="embed-label">${esc(label)}${esc(range)}${p.kind === 'web' ? '<br><small>' + esc(p.src.slice(0, 70)) + '</small>' : ''}${mode === 'edit' && p.kind !== 'none' ? '<br><small>▶ 누르면 여기서 바로 재생</small>' : ''}</div>`;
   node.appendChild(ph);
 }
 
