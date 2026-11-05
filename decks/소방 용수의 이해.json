@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-05T14:09:04.538909Z",
+ "modified": "2026-11-05T21:54:18.655Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -628,22 +628,6 @@
      "style": {}
     },
     {
-     "id": "czrvy4006",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 1705,
-     "y": 858,
-     "w": 95,
-     "h": 102,
-     "src": "assets/ifa-emblem.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
      "id": "fxw3dd007",
      "step": 0,
      "anim": "fade",
@@ -1041,7 +1025,7 @@
      "y": 80,
      "w": 1680,
      "h": 124,
-     "html": "① 가장 방어 가능한 자료 — 특수건물",
+     "html": "①  특수건물",
      "style": {
       "valign": "middle",
       "letterSpacing": -1
@@ -1195,7 +1179,7 @@
   },
   {
    "id": "y3tgk0018",
-   "bg": null,
+   "bg": {},
    "transition": "",
    "notes": "교육생이 \"아파트 포함된 숫자 아니냐\"고 물으면 이 장이 답이다. 범위를 좁히면 주장이 강해진다.",
    "elements": [
@@ -1320,7 +1304,8 @@
       "color": "$muted"
      }
     }
-   ]
+   ],
+   "hidden": true
   },
   {
    "id": "ot5cp1029",
@@ -2468,22 +2453,6 @@
      "style": {}
     },
     {
-     "id": "k5f8vx060",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 1705,
-     "y": 858,
-     "w": 95,
-     "h": 102,
-     "src": "assets/ifa-emblem.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
      "id": "lvgzgp061",
      "step": 0,
      "anim": "fade",
@@ -3522,306 +3491,6 @@
    ]
   },
   {
-   "id": "lrbogn357",
-   "bg": null,
-   "transition": "",
-   "notes": "교안 10번의 핵심. 이것 하나만 제대로 가르쳐도 값어치를 한다.",
-   "elements": [
-    {
-     "id": "hcgzgs343",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑤ ★ 가장 중요한 주의 — 방수총 ≠ 펌프",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "3z4tx0344",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 120,
-     "y": 250,
-     "w": 800,
-     "h": 306,
-     "fill": "#475569",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 28,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#1e293b",
-     "gAngle": 135
-    },
-    {
-     "id": "rgwvgs345",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.72,
-     "type": "text",
-     "role": "text",
-     "x": 120,
-     "y": 282,
-     "w": 800,
-     "h": 42,
-     "html": "카탈로그 · 방수총 표시용량",
-     "style": {
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#c3cedb",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "67lr59346",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 120,
-     "y": 332,
-     "w": 800,
-     "h": 136,
-     "html": "4,730<span style=\"font-size:44px\"> LPM</span>",
-     "style": {
-      "fontSize": 116,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#ffffff",
-      "lineHeight": 1.1,
-      "letterSpacing": -2
-     }
-    },
-    {
-     "id": "ilbmc0347",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.72,
-     "type": "text",
-     "role": "text",
-     "x": 120,
-     "y": 476,
-     "w": 800,
-     "h": 40,
-     "html": "광림 고성능화학차",
-     "style": {
-      "fontSize": 24,
-      "align": "center",
-      "valign": "middle",
-      "color": "#c3cedb"
-     }
-    },
-    {
-     "id": "emv9vm348",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "blockArrow",
-     "x": 944,
-     "y": 366,
-     "w": 80,
-     "h": 74,
-     "fill": "#c2410c",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "6mhsdm349",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1000,
-     "y": 250,
-     "w": 800,
-     "h": 306,
-     "fill": "#c2410c",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 28,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#7c2d12",
-     "gAngle": 135
-    },
-    {
-     "id": "f87iqq350",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.72,
-     "type": "text",
-     "role": "text",
-     "x": 1000,
-     "y": 282,
-     "w": 800,
-     "h": 42,
-     "html": "실제 상한 · 펌프 A-1급",
-     "style": {
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#fbd5bd",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "pjikfo351",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 1000,
-     "y": 332,
-     "w": 800,
-     "h": 136,
-     "html": "2,800<span style=\"font-size:44px\"> L/min</span>",
-     "style": {
-      "fontSize": 116,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#ffffff",
-      "lineHeight": 1.1,
-      "letterSpacing": -2
-     }
-    },
-    {
-     "id": "odu73z352",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.72,
-     "type": "text",
-     "role": "text",
-     "x": 1000,
-     "y": 476,
-     "w": 800,
-     "h": 40,
-     "html": "0.85 MPa 기준",
-     "style": {
-      "fontSize": 24,
-      "align": "center",
-      "valign": "middle",
-      "color": "#fbd5bd"
-     }
-    },
-    {
-     "id": "qlksv1353",
-     "step": 1,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 120,
-     "y": 588,
-     "w": 1680,
-     "h": 118,
-     "fill": "#0c2a4d",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 20,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#0369a1",
-     "gAngle": 100
-    },
-    {
-     "id": "anmqby354",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 254,
-     "y": 588,
-     "w": 1412,
-     "h": 118,
-     "html": "소방청이 \"고성능화학차 <b>실제 인정품 최대 2,800 LPM</b>\"이라고 밝힌 배경이 이것입니다",
-     "style": {
-      "color": "#ffffff",
-      "bold": true,
-      "lineHeight": 1.3,
-      "align": "center",
-      "valign": "middle",
-      "fontSize": 38
-     }
-    },
-    {
-     "id": "5m1yu7355",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 120,
-     "y": 734,
-     "w": 1680,
-     "h": 202,
-     "html": "<ul><li>방수총은 그만큼 뿌릴 수 있게 생겼지만, 뒤에서 밀어주는 <b>펌프가 따라가지 못합니다</b></li><li>카탈로그 숫자로 급수 계획을 세우면 <b>약 1.7배 과대 산정</b>입니다</li><li>법정 분류기준 6,000 / 2019년 개정 펌프규격 4,800 / 실제 인정품 2,800 — <b>같은 차종에 숫자가 셋</b>입니다</li></ul>",
-     "style": {
-      "fontSize": 30,
-      "lineHeight": 1.65
-     }
-    },
-    {
-     "id": "1k62g9356",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 966,
-     "w": 1680,
-     "h": 54,
-     "html": "광림 고성능화학소방차 제원(물 10,000L·폼 1,000L·분말 300kg) / 소방청 2018년 규격 개정 설명",
-     "style": {
-      "fontSize": 24,
-      "color": "$muted"
-     }
-    }
-   ]
-  },
-  {
    "id": "1krg5d237",
    "bg": null,
    "transition": "",
@@ -4146,22 +3815,6 @@
      "shadow": false,
      "html": "",
      "style": {}
-    },
-    {
-     "id": "2t66gt118",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 1705,
-     "y": 858,
-     "w": 95,
-     "h": 102,
-     "src": "assets/ifa-emblem.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
     },
     {
      "id": "08dvzz119",
@@ -9557,149 +9210,6 @@
      "style": {
       "fontSize": 24,
       "color": "$muted"
-     }
-    }
-   ]
-  },
-  {
-   "id": "qisr3x726",
-   "bg": null,
-   "transition": "",
-   "notes": "영상 — 소화전이 <b>왜</b> 물을 내지 못했는지 들으십시오. 차도, 관창도, 지휘도 아니었습니다.",
-   "elements": [
-    {
-     "id": "gtmej3719",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑪ 인천에서 이미 있었던 일 — 제수변",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "895kpz720",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "embed",
-     "x": 120,
-     "y": 236,
-     "w": 1180,
-     "h": 664,
-     "url": "https://www.youtube.com/watch?v=48nwE5NnsSI",
-     "radius": 18,
-     "autoplay": false,
-     "shadow": true
-    },
-    {
-     "id": "ljjohf721",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1348,
-     "y": 236,
-     "w": 452,
-     "h": 252,
-     "fill": "#c2410c",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 22,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#7c2d12",
-     "gAngle": 135
-    },
-    {
-     "id": "18dlc1722",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.78,
-     "type": "text",
-     "role": "text",
-     "x": 1348,
-     "y": 282,
-     "w": 452,
-     "h": 40,
-     "html": "무엇을 볼 것인가",
-     "style": {
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#ffffff",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "u9up4e723",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 1374,
-     "y": 332,
-     "w": 400,
-     "h": 160,
-     "html": "소화전이 <b>왜</b> 물을 내지 못했는지 들으십시오. 차도, 관창도, 지휘도 아니었습니다.",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 24,
-      "lineHeight": 1.5,
-      "align": "center"
-     }
-    },
-    {
-     "id": "wynbm8724",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 1348,
-     "y": 812,
-     "w": 452,
-     "h": 118,
-     "html": "ch B tv 인천 「[단독] \"제수변 잠가 소화전 미작동\" — 현대시장 초기 진화 작업 지연」 · 유튜브 임베드 재생",
-     "style": {
-      "fontSize": 24,
-      "color": "$muted",
-      "lineHeight": 1.45
-     }
-    },
-    {
-     "id": "6b3vtn725",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 1348,
-     "y": 498,
-     "w": 452,
-     "h": 316,
-     "html": "<b>2023.3 인천 송림동 현대시장</b><br>점포 50여 곳 소실.<br><br>블록 경계의 <b>제수변이 잠겨 있어</b> 소화전이 작동하지 않았고, 초기 진화가 지연됐습니다.<br><br>소블록·주입점·제수변이 <b>책상 위 개념이 아니라는 증거</b>입니다.",
-     "style": {
-      "fontSize": 24,
-      "lineHeight": 1.6
      }
     }
    ]
