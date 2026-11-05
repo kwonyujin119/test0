@@ -15,14 +15,24 @@
       if (!deck) deck = await API.load(name);
     } catch (e) { document.body.innerHTML = `<div style="color:#fff;padding:40px;font-family:sans-serif">교안을 불러올 수 없습니다: ${esc(e.message)}<br><br><a href="gyoan.html" style="color:#8cf">← 목록으로</a></div>`; return; }
   }
-  if (!deck.slides || !deck.slides.length) deck.slides = [newSlide('blank')];
-  document.title = deck.title + (role === 'notes' ? ' · 발표자 보기' : ' · 발표');
+  normalizeDeck(deck);
+  if (!deck.slides.length) deck.slides = [newSlide('blank')];
+  document.title = (deck.title || name || '교안') + (role === 'notes' ? ' · 발표자 보기' : ' · 발표');
   const N = deck.slides.length;
   const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('gyoan:' + name) : null;
 
   if (qs('print')) return renderPrint();
   if (role === 'notes') return notesView();
   window.GYOAN_LIVE = true; // 동영상·웹 요소를 실제로 재생
+  /* 발표 중에는 화면이 꺼지지 않게 */
+  const keepAwake = () => { try { if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => { }); } catch (e) { } };
+  keepAwake(); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') keepAwake(); });
+  /* 쓰인 글꼴·수식 도구를 미리 받아 둠 (그 슬라이드에 가서야 글꼴이 바뀌어 보이지 않게) */
+  try {
+    const th = deckTheme(deck);
+    for (const sl of deck.slides) for (const e of sl.elements) if (e.type === 'text' || e.type === 'shape' || e.type === 'table') fontCss(resolveTextStyle(e, th).font);
+    if (deck.slides.some(sl => sl.elements.some(e => e.type === 'math'))) Promise.resolve(loadKatex()).catch(() => { });
+  } catch (e) { }
 
   /* ======================= 발표 화면 ======================= */
   document.body.innerHTML = `
@@ -87,15 +97,15 @@
   const slideOf = (i) => deck.slides[i];
   const transitionOf = (i) => { const t = slideOf(i).transition; return t === undefined || t === '' ? (deck.transition || 'fade') : t; };
 
-  function makeLayer(i, step) {
+  function makeLayer(i, step, back) {
     const layer = document.createElement('div'); layer.className = 'layer';
-    const s = renderSlide(slideOf(i), deck, { mode: 'present', step });
+    const s = renderSlide(slideOf(i), deck, { mode: 'present', step, back });
     layer.appendChild(s);
     return layer;
   }
   function show(i, step, dir) {
     const old = curLayer, fromIdx = st.idx;
-    const layer = makeLayer(i, step);
+    const layer = makeLayer(i, step, dir < 0);
     const tr = old ? transitionOf(i) : 'none';
     if (tr === 'morph') {
       pstage.className = 'pstage t-morph';
@@ -112,8 +122,10 @@
     }
     curNodes = Array.from(layer.querySelectorAll('.slide > .el')).map(n => ({ n, e: slideOf(i).elements.find(e => e.id === n.dataset.id) }));
     st.idx = i; st.step = step;
+    syncMedia();
     updateHud(); redraw(); broadcast();
     preloadAround(i);
+    if (!window.EMBEDDED_DECK) { try { const u = new URL(location.href); u.searchParams.set('start', i); history.replaceState(null, '', u); } catch (e) { } } // 새로 고침해도 보던 슬라이드에서 이어짐
   }
   /* 모핑: 앞뒤 슬라이드에서 같은 요소(복제로 이어진 요소)는 위치·크기·회전이 부드럽게 바뀜 */
   function morph(old, layer, fromIdx, toIdx) {
@@ -157,11 +169,26 @@
       for (const src of srcs) { if (preloaded.has(src)) continue; preloaded.add(src); const im = new Image(); im.decoding = 'async'; im.src = API.resolveSrc(src); }
     }
   }
-  function applyStep() {
+  function applyStep(back) {
     if (!curNodes) return;
-    for (const { n, e } of curNodes) if (e) applyStepToNode(e, n, st.step);
+    for (const { n, e } of curNodes) if (e) applyStepToNode(e, n, st.step, back);
+    syncMedia();
     updateHud(); broadcast();
   }
+  /* 동영상: 아직 나타나지 않았거나 사라진 것은 소리가 나지 않게 멈추고, 나타날 때 시작 */
+  function syncMedia() {
+    if (!curNodes) return;
+    for (const { n, e } of curNodes) {
+      if (!e || e.type !== 'embed') continue;
+      const hid = n.classList.contains('step-hidden') || n.classList.contains('anim-out'), v = n.querySelector('video'), f = n.querySelector('iframe');
+      if (v) { if (hid) v.pause(); else if (e.autoplay && v.paused && !v.ended) v.play().catch(() => { }); }
+      if (f) { if (hid && !f.dataset.src) { f.dataset.src = f.src; f.src = 'about:blank'; } else if (!hid && f.dataset.src) { f.src = f.dataset.src; delete f.dataset.src; } }
+    }
+  }
+  /* 끝난 애니메이션의 흔적 지우기 (원 모양으로 자른 그림·그림자가 다음 클릭 때까지 풀려 보이던 문제) */
+  pstage.addEventListener('animationend', (ev) => { const n = ev.target; if (n.classList && n.classList.contains('anim') && !n.classList.contains('anim-out')) n.classList.remove(...ANIM_CLASSES); });
+  const firstVisible = () => { const j = visible(0) ? 0 : nextVisible(0, 1); return j < N ? j : 0; };
+  const lastVisible = () => { const j = visible(N - 1) ? N - 1 : nextVisible(N - 1, -1); return j >= 0 ? j : N - 1; };
   function updateHud() {
     pbar.style.width = ((st.idx + 1) / N * 100) + '%';
     const ms = maxStep(slideOf(st.idx));
@@ -179,8 +206,8 @@
     else endShow();
   }
   function prev() {
-    if (st.ended) { st.ended = false; $('pend').classList.remove('show'); return; }
-    if (st.step > 0) { st.step--; applyStep(); return; }
+    if (st.ended) { st.ended = false; $('pend').classList.remove('show'); broadcast(); return; }
+    if (st.step > 0) { st.step--; applyStep(true); return; }
     const j = nextVisible(st.idx, -1);
     if (j >= 0) show(j, maxStep(slideOf(j)), -1);
   }
@@ -202,15 +229,19 @@
   function setBlank(kind) { st.blank = st.blank === kind ? '' : kind; pblank.className = 'pblank ' + st.blank; }
   function hud(msg) { phud.textContent = msg; phud.classList.add('show'); clearTimeout(hudTimer); hudTimer = setTimeout(() => phud.classList.remove('show'), 1600); }
   function toggleFullscreen() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen().catch(() => hud('전체화면을 사용할 수 없습니다 (F11 을 눌러보세요)'));
+    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    const el = document.documentElement, rf = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!rf) { hud('이 기기는 전체화면을 지원하지 않습니다 (홈 화면에 추가하면 전체화면으로 열립니다)'); return; }
+    try { const p = rf.call(el); if (p && p.catch) p.catch(() => hud('전체화면을 사용할 수 없습니다 (F11 을 눌러보세요)')); } catch (e) { hud('전체화면을 사용할 수 없습니다 (F11 을 눌러보세요)'); }
   }
   function openNotes() {
     const u = new URL(location.href); u.searchParams.set('role', 'notes'); u.searchParams.delete('start');
-    window.open(u.toString(), 'gyoan-notes-' + name, 'width=1200,height=760');
+    const w = window.open(u.toString(), 'gyoan-notes-' + name, 'width=1200,height=760');
+    if (!w) hud('팝업이 차단되었습니다 — 주소창의 팝업 허용을 눌러 주세요'); else hud('발표자 보기를 열었습니다 · 이 화면은 F 로 전체화면');
   }
   function exitShow() {
     if (document.fullscreenElement) document.exitFullscreen();
+    if (channel) channel.postMessage({ type: 'bye' }); // 발표자 보기 창도 함께 닫힘
     if (window.EMBEDDED_DECK) { // 내보낸 단독 파일: 돌아갈 목록이 없음
       if ($('pend').classList.contains('show')) { window.close(); hud('발표를 마쳤습니다 — 이 창(탭)을 닫으세요'); }
       else endShow();
@@ -229,8 +260,16 @@
         o.onclick = () => { overview.close(); goto(i, 0); };
         g.appendChild(o); requestAnimationFrame(() => fitSlide(o, sl));
       });
+      this.sel = st.idx;
       $('poverview').classList.add('show'); $('poverview').querySelector('.cur')?.scrollIntoView({ block: 'center' });
     },
+    move(d) { // 방향키: 좌우 = 한 장, 상하 = 한 줄
+      const os = Array.from($('ogrid').children); if (!os.length) return;
+      let per = 1; while (per < os.length && os[per].offsetTop === os[0].offsetTop) per++;
+      const j = clamp(this.sel + (d === 'up' ? -per : d === 'down' ? per : d === 'left' ? -1 : 1), 0, os.length - 1);
+      os.forEach((o, i) => o.classList.toggle('cur', i === j)); this.sel = j; os[j].scrollIntoView({ block: 'nearest' });
+    },
+    refit() { for (const o of $('ogrid').children) if (o.firstChild) fitSlide(o, o.firstChild); },
     close() { $('poverview').classList.remove('show'); },
     isOpen() { return $('poverview').classList.contains('show'); },
     toggle() { this.isOpen() ? this.close() : this.open(); },
@@ -262,25 +301,30 @@
   pdraw.addEventListener('pointermove', (ev) => {
     if (!drawing) return; const r = slideRect(); drawing.pts.push({ x: (ev.clientX - r.x) / r.w, y: (ev.clientY - r.y) / r.h }); redraw();
   });
-  pdraw.addEventListener('pointerup', () => { drawing = null; });
-  function togglePen() { st.pen = !st.pen; pdraw.classList.toggle('on', st.pen); if (st.pen && st.laser) toggleLaser(); hud(st.pen ? '펜 모드 (D 로 해제 · E 로 지우기 · Shift 드래그 = 굵은 노랑)' : '펜 해제'); }
+  for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pdraw.addEventListener(t, () => { drawing = null; });
+  function togglePen() { st.pen = !st.pen; pdraw.classList.toggle('on', st.pen); if (st.pen && st.laser) toggleLaser(); if (st.pen && st.zoom > 1) { st.zoom = 1; pstage.style.transform = ''; } hud(st.pen ? '펜 모드 (D 로 해제 · E 로 지우기 · Shift 드래그 = 굵은 노랑)' : '펜 해제'); }
   function clearDrawing() { strokes[st.idx] = []; redraw(); hud('지웠습니다'); }
   function toggleLaser() { st.laser = !st.laser; plaser.classList.toggle('on', st.laser); if (st.laser && st.pen) togglePen(); hud(st.laser ? '레이저 포인터 (L 로 해제)' : '레이저 해제'); }
   window.addEventListener('pointermove', (ev) => { if (st.zoom > 1) { const x = ev.clientX / innerWidth * 100, y = ev.clientY / innerHeight * 100; pstage.style.transformOrigin = `${x}% ${y}%`; } if (st.laser) { plaser.style.left = ev.clientX + 'px'; plaser.style.top = ev.clientY + 'px'; } wake(); });
 
   /* ---- 커서 / 메뉴 자동 숨김 ---- */
+  let menuShownAt = 0, lastPointer = 'mouse';
   function wake() {
+    if (document.body.classList.contains('hide-cursor') || !$('pmenu').classList.contains('peek')) menuShownAt = performance.now();
     document.body.classList.remove('hide-cursor'); $('pmenu').classList.add('peek');
     clearTimeout(idleTimer); idleTimer = setTimeout(() => { if (!st.pen) document.body.classList.add('hide-cursor'); $('pmenu').classList.remove('peek'); }, 2500);
   }
   wake();
-  window.addEventListener('pointerdown', wake); // 휴대폰: 마우스 움직임이 없으므로 화면을 누를 때도 메뉴를 다시 보여 줌
+  window.addEventListener('pointerdown', (ev) => { lastPointer = ev.pointerType || 'mouse'; wake(); }); // 휴대폰: 마우스 움직임이 없으므로 화면을 누를 때도 메뉴를 다시 보여 줌
 
   /* ---- 입력 ---- */
   function anyOverlayOpen() { return overview.isOpen() || $('phelp').classList.contains('show'); }
   document.addEventListener('keydown', (ev) => {
     const k = ev.key; const ctrl = ev.ctrlKey || ev.metaKey;
-    if (ctrl && k.toLowerCase() === 'e') { ev.preventDefault(); if (!window.EMBEDDED_DECK) location.href = `editor.html?deck=${encodeURIComponent(name)}&slide=${st.idx}`; return; }
+    if (ctrl && k.toLowerCase() === 'e') { ev.preventDefault(); if (window.EMBEDDED_DECK) return;
+      // 편집기에서 연 발표 창이면: 편집기를 하나 더 열지 않고 이 창을 닫아 원래 편집기로 돌아감
+      try { if (window.opener && !window.opener.closed && /editor\.html$/.test(window.opener.location.pathname)) { window.close(); return; } } catch (e) { }
+      location.href = `editor.html?deck=${encodeURIComponent(name)}&slide=${st.idx}`; return; }
     /* PowerPoint 슬라이드 쇼 조합키 */
     if (ctrl && !ev.altKey) {
       switch (k.toLowerCase()) {
@@ -295,16 +339,29 @@
     }
     if (ev.altKey) { if (k === 'F5') { ev.preventDefault(); openNotes(); } return; }   // Alt+F5 발표자 보기
     if ($('phelp').classList.contains('show')) { ev.preventDefault(); $('phelp').classList.remove('show'); return; }
-    if (overview.isOpen()) { if (k === 'Escape' || k === 'o' || k === 'O' || k === 'g' || k === 'G' || k === '-') { ev.preventDefault(); overview.close(); } return; }
-    if (st.blank && !['b', 'B', '.', 'w', 'W', ',', 'Escape', 'F5', 'f', 'F', 'F11'].includes(k)) { st.blank = ''; pblank.className = 'pblank'; ev.preventDefault(); return; }
+    if (overview.isOpen()) {
+      const mv = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' }[k];
+      if (mv) { ev.preventDefault(); overview.move(mv); }
+      else if (k === 'Enter' || k === ' ') { ev.preventDefault(); const j = overview.sel; overview.close(); goto(j, 0); }
+      else if (k === 'Home' || k === 'End') { ev.preventDefault(); overview.sel = k === 'Home' ? 0 : N - 1; overview.move(k === 'Home' ? 'left' : 'right'); }
+      else if (k === 'Escape' || k === 'o' || k === 'O' || k === 'g' || k === 'G' || k === '-') { ev.preventDefault(); overview.close(); }
+      return;
+    }
+    if (st.blank && !['b', 'B', '.', 'w', 'W', ',', 'F5', 'f', 'F', 'F11'].includes(k)) { st.blank = ''; pblank.className = 'pblank'; ev.preventDefault(); return; }
+    // 번호를 치는 중: Esc = 취소, Backspace = 한 자 지움
+    if (st.goto && (k === 'Escape' || k === 'Backspace')) {
+      st.goto = k === 'Escape' ? '' : st.goto.slice(0, -1); ev.preventDefault();
+      if (st.goto) pgoto.innerHTML = `${st.goto}<small>Enter 로 이동</small>`; else { pgoto.classList.remove('show'); clearTimeout(gotoTimer); }
+      return;
+    }
     // 숫자 → 슬라이드 이동
     if (/^[0-9]$/.test(k)) { st.goto += k; pgoto.innerHTML = `${st.goto}<small>Enter 로 이동</small>`; pgoto.classList.add('show'); clearTimeout(gotoTimer); gotoTimer = setTimeout(() => { st.goto = ''; pgoto.classList.remove('show'); }, 3000); ev.preventDefault(); return; }
     if (st.goto && k === 'Enter') { const n = parseInt(st.goto, 10); st.goto = ''; pgoto.classList.remove('show'); clearTimeout(gotoTimer); goto(n - 1, 0); ev.preventDefault(); return; }
     switch (k) {
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': case 'N': ev.preventDefault(); next(); break;
       case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': case 'p': case 'P': ev.preventDefault(); prev(); break;
-      case 'Home': ev.preventDefault(); { const j = visible(0) ? 0 : nextVisible(0, 1); goto(j < N ? j : 0, 0); } break;
-      case 'End': ev.preventDefault(); { const j = visible(N - 1) ? N - 1 : nextVisible(N - 1, -1); const t = j >= 0 ? j : N - 1; goto(t, maxStep(slideOf(t))); } break;
+      case 'Home': ev.preventDefault(); goto(firstVisible(), 0); break;
+      case 'End': ev.preventDefault(); { const t = lastVisible(); goto(t, maxStep(slideOf(t))); } break;
       case 'F5': case 'f': case 'F': ev.preventDefault(); toggleFullscreen(); break;
       case 'b': case 'B': case '.': ev.preventDefault(); setBlank('black'); break;
       case 'w': case 'W': case ',': ev.preventDefault(); setBlank('white'); break;
@@ -316,7 +373,7 @@
       case 'd': case 'D': ev.preventDefault(); togglePen(); break;
       case 'e': case 'E': ev.preventDefault(); clearDrawing(); break;
       case 'l': case 'L': ev.preventDefault(); toggleLaser(); break;
-      case 't': case 'T': ev.preventDefault(); st.showTimer = !st.showTimer; if (st.showTimer && !st.timerStart) st.timerStart = Date.now(); updateHud(); break;
+      case 't': case 'T': ev.preventDefault(); st.showTimer = !st.showTimer; if (st.showTimer && !st.timerStart) st.timerStart = Date.now(); pnum.classList.toggle('keep', st.showTimer); updateHud(); hud(st.showTimer ? '타이머 표시 (오른쪽 아래)' : '타이머 숨김'); break;
       case '?': case 'h': case 'H': case 'F1': ev.preventDefault(); $('phelp').classList.add('show'); break;
       case 'Escape':
         if (st.pen) { togglePen(); break; } if (st.laser) { toggleLaser(); break; }
@@ -330,6 +387,8 @@
     if (st.pen || anyOverlayOpen()) return;
     if (st.blank) { st.blank = ''; pblank.className = 'pblank'; return; }
     if (ev.target.closest('video, iframe')) return;                 // 동영상 조작은 넘기지 않음
+    const an = ev.target.closest('a[href]');
+    if (an) { ev.preventDefault(); const h = (an.getAttribute('href') || '').trim(); if (h && !/^(javascript|data|vbscript):/i.test(h)) window.open(/^[a-z][\w+.-]*:/i.test(h) ? h : 'https://' + h, '_blank', 'noopener'); return; }
     const ln = ev.target.closest('.el[data-link]'); if (ln) { followLink(ln.dataset.link); return; }
     next();
   });
@@ -337,31 +396,34 @@
   function followLink(l) {
     if (l.startsWith('slide:')) { const i = deck.slides.findIndex(s => s.id === l.slice(6)); if (i >= 0) goto(i, 0); return; }
     if (l === 'next') return next(); if (l === 'prev') return prev();
-    if (l === 'first') return goto(0, 0); if (l === 'last') return goto(N - 1, 0);
+    if (l === 'first') return goto(firstVisible(), 0); if (l === 'last') return goto(lastVisible(), 0);
     const u = l.replace(/^url:/, ''); if (/^https?:\/\//i.test(u)) window.open(u, '_blank', 'noopener');
   }
   /* 동영상(YouTube 등)을 누른 뒤에도 리모컨·키보드가 계속 발표기를 조작하도록 포커스를 되돌림 */
-  window.addEventListener('blur', () => setTimeout(() => { const a = document.activeElement; if (a && a.tagName === 'IFRAME') { a.blur(); window.focus(); } }, 0));
+  window.addEventListener('blur', () => setTimeout(() => { const a = document.activeElement; if (a && a.tagName === 'IFRAME' && /youtube|vimeo/i.test(a.src || '')) { a.blur(); window.focus(); } }, 0));
   pblank.addEventListener('click', () => { st.blank = ''; pblank.className = 'pblank'; });
-  document.addEventListener('contextmenu', (ev) => { ev.preventDefault(); if (!st.pen && !anyOverlayOpen()) prev(); });
+  document.addEventListener('contextmenu', (ev) => { ev.preventDefault(); if (!st.pen && !anyOverlayOpen() && lastPointer === 'mouse') prev(); }); // 터치의 길게 누르기는 뒤로 가지 않음
   let wheelLock = 0;
-  document.addEventListener('wheel', (ev) => { if (anyOverlayOpen()) return; const t = Date.now(); if (t - wheelLock < 500) return; wheelLock = t; if (ev.deltaY > 0) next(); else if (ev.deltaY < 0) prev(); }, { passive: true });
-  let touchX = null, touchY = null;
-  document.addEventListener('touchstart', (ev) => { if (st.pen) return; touchX = ev.touches[0].clientX; touchY = ev.touches[0].clientY; }, { passive: true });
+  document.addEventListener('wheel', (ev) => { if (anyOverlayOpen() || ev.ctrlKey || st.blank) return; const t = Date.now(); if (t - wheelLock < 500) return; wheelLock = t; if (ev.deltaY > 0) next(); else if (ev.deltaY < 0) prev(); }, { passive: true });
+  let touchX = null, touchY = null, multiTouch = false;
+  document.addEventListener('touchstart', (ev) => { if (st.pen) return; multiTouch = ev.touches.length > 1; touchX = ev.touches[0].clientX; touchY = ev.touches[0].clientY; }, { passive: true });
   document.addEventListener('touchend', (ev) => {
+    if (multiTouch || anyOverlayOpen() || st.blank || (ev.target.closest && ev.target.closest('video'))) { touchX = null; return; } // 두 손가락·목록 화면·동영상 조작은 넘기지 않음
     if (touchX == null || st.pen) return; const dx = ev.changedTouches[0].clientX - touchX, dy = ev.changedTouches[0].clientY - touchY; touchX = null;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { ev.preventDefault(); dx < 0 ? next() : prev(); }
   });
   $('pmenu').addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-a]'); ev.stopPropagation(); if (!b) return; const a = b.dataset.a;
+    if (lastPointer !== 'mouse' && performance.now() - menuShownAt < 400) return; // 터치: 방금 나타난 메뉴는 한 번 더 눌러야 동작
+    b.blur();
     if (a === 'notes') openNotes(); if (a === 'overview') overview.toggle(); if (a === 'full') toggleFullscreen(); if (a === 'help') $('phelp').classList.add('show'); if (a === 'exit') exitShow();
   });
   $('pend').addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a; ev.stopPropagation();
-    if (a === 'back') { st.ended = false; $('pend').classList.remove('show'); broadcast(); } if (a === 'first') goto(0, 0); if (a === 'exit') exitShow();
+    if (a === 'back') { st.ended = false; $('pend').classList.remove('show'); broadcast(); } if (a === 'first') goto(firstVisible(), 0); if (a === 'exit') exitShow();
   });
   $('phelp').addEventListener('click', () => $('phelp').classList.remove('show'));
-  window.addEventListener('resize', () => { if (curLayer) fitSlide(curLayer, curLayer.firstChild); redraw(); });
+  window.addEventListener('resize', () => { if (curLayer) fitSlide(curLayer, curLayer.firstChild); redraw(); if (overview.isOpen()) overview.refit(); });
 
   show(st.idx, 0, 1);
   if (!document.fullscreenElement) hud(matchMedia('(pointer: coarse)').matches ? '좌우로 밀어서 넘기기' : 'F 또는 F5: 전체화면  ·  ?: 단축키 도움말');
@@ -389,6 +451,7 @@
     const $ = (id) => document.getElementById(id);
     let s = { idx: 0, step: 0, timerStart: null, ended: false };
     function render() {
+      if (!deck.slides[s.idx]) return; // 발표 창과 교안 사본이 다른 경우
       const cur = $('cur'), nx = $('next'); cur.innerHTML = ''; nx.innerHTML = '';
       const a = renderSlide(deck.slides[s.idx], deck, { mode: 'present', step: s.idx === s.idx ? s.step : Infinity }); cur.appendChild(a); fitSlide(cur, a);
       const ms = maxStep(deck.slides[s.idx]);
@@ -406,7 +469,7 @@
     }
     setInterval(tick, 1000); tick();
     const send = (m) => channel && channel.postMessage(Object.assign({ type: 'nav' }, m));
-    if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, ended: m.ended }; render(); tick(); } };
+    if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'bye') { window.close(); return; } if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, ended: m.ended }; render(); tick(); } };
     $('bNext').onclick = () => send({ cmd: 'next' }); $('bPrev').onclick = () => send({ cmd: 'prev' });
     $('tReset').onclick = () => send({ cmd: 'timer', value: Date.now() });
     $('bBig').onclick = () => $('bBig').classList.toggle('active', $('notes').classList.toggle('big'));

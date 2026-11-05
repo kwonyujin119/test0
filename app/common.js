@@ -200,6 +200,7 @@ const LAYOUTS = [
 const LAYOUT_NAMES = Object.fromEntries(LAYOUTS.map(l => [l.id, l.name]));
 const M = 120; // 좌우 여백
 function layoutElements(layout, f) {
+  f = f || {};
   const H = f.heading || '소제목을 입력하세요';
   const B = f.body || '<ul><li>첫 번째 내용</li><li>두 번째 내용</li><li>세 번째 내용</li></ul>';
   const head = (y, h) => textEl('heading', M, y || 90, SLIDE_W - M * 2, h || 130, H, { style: { valign: 'middle' } });
@@ -377,13 +378,14 @@ function renderSlide(slide, deck, opts) {
   for (const [k] of THEME_COLOR_KEYS) el.style.setProperty('--' + k, theme[k]);
   el.style.fontFamily = fontCss(theme.bodyFont);
   const bg = slide.bg || {};
+  if (bg.image && API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(bg.image) && !API.blobs[bg.image]) { const t = new Image(); t.onerror = () => { el.style.backgroundImage = `url("${GH.rawUrl(bg.image)}")`; }; t.src = bg.image; }
   if (bg.image && bg.dim) { const d = document.createElement('div'); d.className = 'bg-dim'; d.style.background = `rgba(0,0,0,${bg.dim})`; el.appendChild(d); }
   // 테마 장식 (배경 이미지가 있으면 생략)
   const decor = bg.image ? 'none' : (slide.decor || theme.decor);
   if (decor && decor !== 'none') { const d = document.createElement('div'); d.className = 'decor decor-' + decor; el.appendChild(d); }
   for (const e of slide.elements) {
     const node = renderElement(e, theme, mode);
-    if (mode === 'present') applyStepToNode(e, node, step);
+    if (mode === 'present') applyStepToNode(e, node, step, opts.back);
     el.appendChild(node);
   }
   // 꼬리말 (슬라이드 번호 / 문구)
@@ -412,6 +414,15 @@ function renderElement(e, theme, mode) {
 }
 
 /* 요소 종류별 글자 기본값 */
+/* 저장된 글(HTML)에서 실행될 수 있는 것 제거 — 가져온 교안 · 웹에서 끌어온 글 대비. 대부분의 글은 검사만 하고 그대로 통과 */
+const UNSAFE_HTML = /<\s*(script|iframe|object|embed|style|link|meta|base|form)\b|\son\w+\s*=|javascript:|vbscript:|data:text\/html/i;
+function safeHtml(html) {
+  html = html || ''; if (!UNSAFE_HTML.test(html)) return html;
+  const t = document.createElement('template'); t.innerHTML = html;
+  t.content.querySelectorAll('script,iframe,object,embed,style,link,meta,base,form').forEach(x => x.remove());
+  t.content.querySelectorAll('*').forEach(x => { for (const a of Array.from(x.attributes)) { if (/^on/i.test(a.name) || (/^(href|src|xlink:href|action|formaction)$/i.test(a.name) && /^\s*(javascript|vbscript|data:text\/html)/i.test(a.value))) x.removeAttribute(a.name); } });
+  return t.innerHTML;
+}
 function resolveTextStyle(e, theme) {
   let d;
   const bf = theme.bodyFont || 'sans';
@@ -468,7 +479,7 @@ function applyElementTextStyle(e, node, theme) {
 function renderText(e, node, theme, mode) {
   const inner = document.createElement('div');
   inner.className = 'el-text-inner';
-  inner.innerHTML = e.html || '';
+  inner.innerHTML = safeHtml(e.html);
   if (mode === 'edit' && !stripHtml(e.html) && !/<img|<ul|<ol/.test(e.html || '')) {
     inner.innerHTML = '<span class="placeholder">텍스트를 입력하세요</span>';
   }
@@ -490,16 +501,26 @@ function elementMaxStep(e) {
   }
   return Math.max(m, e.outStep || 0, e.emStep || 0);
 }
+/* 빠진 값 채우기 (손으로 쓴 교안 파일 · 가져온 파일): id, elements, notes, step */
+function normalizeDeck(d) {
+  if (!Array.isArray(d.slides)) d.slides = [];
+  for (const s of d.slides) {
+    if (!s.id) s.id = uid(); if (!Array.isArray(s.elements)) s.elements = []; if (s.notes == null) s.notes = '';
+    for (const e of s.elements) { if (!e.id) e.id = uid(); if (e.type === 'text' && !e.style) e.style = {}; if (e.step == null) e.step = 0; }
+  }
+  return d;
+}
 const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out'];
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
-function applyStepToNode(e, node, step) {
+function applyStepToNode(e, node, step, back) {
   const s = e.step || 0;
   node.classList.remove('step-hidden', ...ANIM_CLASSES);
   node.style.animationDuration = e.dur ? e.dur + 's' : '';
   node.style.animationDelay = e.delay ? e.delay + 's' : '';
   if (s > step) { node.classList.add('step-hidden'); return; }
-  if (e.outStep && step >= e.outStep) { if (step === e.outStep) node.classList.add('anim', 'anim-out'); else node.classList.add('step-hidden'); return; }
-  if (e.emStep && step === e.emStep) node.classList.add('anim', 'anim-' + (e.emAnim || 'pulse'));
+  if (e.outStep && step >= e.outStep) { if (step === e.outStep && !back) node.classList.add('anim', 'anim-out'); else node.classList.add('step-hidden'); return; }
+  if (back) { /* 뒤로: 움직임 없이 */ }
+  else if (e.emStep && step === e.emStep) node.classList.add('anim', 'anim-' + (e.emAnim || 'pulse'));
   else if (s > 0 && s === step && e.anim && e.anim !== 'none') node.classList.add('anim', 'anim-' + e.anim);
   if (e.type === 'text' && e.listSteps) {
     const inner = node.querySelector('.el-text-inner'); if (!inner) return;
@@ -508,7 +529,7 @@ function applyStepToNode(e, node, step) {
       const ls = base + i;
       li.classList.remove('step-hidden', ...ANIM_CLASSES);
       if (ls > step) li.classList.add('step-hidden');
-      else if (ls === step && step > 0) li.classList.add('anim', 'anim-' + (e.anim && e.anim !== 'none' ? e.anim : 'fade'));
+      else if (ls === step && step > 0 && !back) li.classList.add('anim', 'anim-' + (e.anim && e.anim !== 'none' ? e.anim : 'fade'));
     });
   }
 }
@@ -608,7 +629,7 @@ function renderShape(e, node, theme, mode) {
   if (!isLine && (e.html || mode === 'edit')) {
     const box = document.createElement('div'); box.className = 'shape-text';
     if (e.style && e.style.padding != null && e.style.padding !== '') box.style.padding = e.style.padding + 'px';
-    const inner = document.createElement('div'); inner.className = 'el-text-inner'; inner.innerHTML = e.html || '';
+    const inner = document.createElement('div'); inner.className = 'el-text-inner'; inner.innerHTML = safeHtml(e.html);
     box.appendChild(inner); node.appendChild(box);
     applyElementTextStyle(e, node, theme);
   }
@@ -659,7 +680,7 @@ function renderTable(e, node, theme, mode) {
     const tr = document.createElement('tr'); tr.style.height = (rh[ri] * 100).toFixed(3) + '%';
     for (let ci = 0; ci < nc; ci++) {
       const key = ri + ',' + ci; if (covered.has(key)) continue;
-      const td = document.createElement(ri === 0 && e.header ? 'th' : 'td'); td.innerHTML = r[ci] || ''; td.dataset.r = ri; td.dataset.c = ci;
+      const td = document.createElement(ri === 0 && e.header ? 'th' : 'td'); td.innerHTML = safeHtml(r[ci]); td.dataset.r = ri; td.dataset.c = ci;
       const s = cells[key];
       if (s) {
         if (s.cs > 1) td.colSpan = Math.min(s.cs, nc - ci); if (s.rs > 1) td.rowSpan = Math.min(s.rs, nr - ri);
@@ -708,7 +729,8 @@ function renderChart(e, node, theme, mode) {
   const T = (x, y, s, o) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" ${o || ''}>${esc(s)}</text>`;
   let svg = '';
   const kind = e.kind || 'bar';
-  if (!labels.length || !series.length) { svg = T(W / 2, H / 2, '데이터를 입력하세요', `text-anchor="middle" fill="${muted}"`); }
+  const pieEmpty = (kind === 'pie' || kind === 'donut') && series.length && !series[0].values.some(v => v > 0);
+  if (!labels.length || !series.length || pieEmpty) { svg = T(W / 2, H / 2, pieEmpty ? '0보다 큰 값을 입력하세요' : '데이터를 입력하세요', `text-anchor="middle" fill="${muted}"`); }
   else if (kind === 'pie' || kind === 'donut') {
     const vals = series[0].values.map(v => Math.max(0, v)); const total = vals.reduce((a, b) => a + b, 0) || 1;
     const legendW = e.legend ? Math.min(W * 0.42, fs * 10) : 0;
@@ -829,7 +851,11 @@ function renderMath(e, node, theme, mode) {
 function parseEmbed(url) {
   url = String(url || '').trim();
   let m = url.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);
-  if (m) { const t = url.match(/[?&](?:t|start)=(\d+)/); return { kind: 'youtube', id: m[1], start: t ? +t[1] : 0 }; }
+  if (m) {
+    const t = url.match(/[?&#](?:t|start)=([\dhms]+)/i); let st = 0;
+    if (t) { const v = t[1].toLowerCase(), p = v.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/); st = /^\d+$/.test(v) ? +v : p ? (+p[1] || 0) * 3600 + (+p[2] || 0) * 60 + (+p[3] || 0) : 0; }
+    return { kind: 'youtube', id: m[1], start: st };
+  }
   m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/); if (m) return { kind: 'vimeo', id: m[1] };
   if (/\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test(url)) return { kind: 'video', src: url };
   if (/^https?:\/\//i.test(url)) return { kind: 'web', src: url };
@@ -1195,9 +1221,13 @@ const API = {
       await Promise.all(Array.from(this.queuing)).catch(() => { }); // 방금 옮긴 이미지가 큐에 다 들어갈 때까지 (교안이 이미지보다 먼저 올라가지 않게)
       // 큐에 모인 이미지와 교안을 한 커밋으로
       await GH.enqueue({ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }, { now: true, message: '교안 저장: ' + (deck.title || name) });
+      if (this.failed.size || this.pending.size) await this.flush(); // 따로 올라가던 이미지가 실패했으면 다시 올리고, 그래도 안 되면 저장 실패로 알림
       return { ok: true, name };
     }
-    const all = this._local(); all[name] = deck; this._saveLocal(all); return { ok: true };
+    const all = this._local(); all[name] = deck;
+    try { this._saveLocal(all); }
+    catch (e) { Draft.clear(name); try { this._saveLocal(all); } catch (e2) { throw new Error('이 브라우저의 저장 공간이 가득 찼습니다. 이미지를 줄이거나 “내보내기”로 파일로 받아 두세요'); } }
+    return { ok: true };
   },
   async remove(name) {
     if (this.mode === 'server') {
@@ -1256,7 +1286,7 @@ const API = {
 /* 임시 저장(발표 미리보기용) */
 const Draft = {
   key(name) { return 'gyoan:draft:' + name; },
-  put(name, deck) { try { localStorage.setItem(this.key(name), JSON.stringify(deck)); } catch (e) { } },
+  put(name, deck) { try { localStorage.setItem(this.key(name), JSON.stringify(deck)); return true; } catch (e) { try { localStorage.removeItem(this.key(name)); } catch (e2) { } return false; } },
   get(name) { try { return JSON.parse(localStorage.getItem(this.key(name))); } catch (e) { return null; } },
   clear(name) { localStorage.removeItem(this.key(name)); },
 };

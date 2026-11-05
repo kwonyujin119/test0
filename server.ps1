@@ -49,7 +49,7 @@ function Read-Body($ctx) {
 }
 function Get-SafeName([string]$name) {
     # 교안 이름: 경로 구분자/제어문자 제거, 확장자 제거
-    $n = [Uri]::UnescapeDataString($name)
+    $n = $name   # 주소는 Handle-Request 에서 이미 한 번 풀었음 (두 번 풀면 '50%50' 같은 제목이 다른 이름이 됨)
     $n = $n -replace '\.json$', ''
     $n = $n -replace '[\\/:*?"<>|\x00-\x1f]', '_'
     $n = $n.Trim().Trim('.')
@@ -77,7 +77,7 @@ function Get-DeckList {
 
 function Handle-Request($ctx) {
     $req = $ctx.Request
-    $path = [Uri]::UnescapeDataString($req.Url.AbsolutePath)
+    $path = [Uri]::UnescapeDataString(($req.RawUrl -split '\?')[0])   # 보낸 주소 그대로를 한 번만 풂 (Url.AbsolutePath 는 %25 를 미리 풀어 '50%50' 같은 이름이 깨짐)
     $method = $req.HttpMethod
 
     # ---------- API ----------
@@ -141,7 +141,7 @@ function Handle-Request($ctx) {
     $rel = $path.TrimStart('/') -replace '/', '\'
     if ($rel -eq '') { $rel = 'index.html' }
     $full = [System.IO.Path]::GetFullPath((Join-Path $Root $rel))
-    if (-not $full.StartsWith($Root, [StringComparison]::OrdinalIgnoreCase)) { Send-Text $ctx 403 'text/plain' 'forbidden'; return }
+    if (-not ($full + '\').StartsWith($Root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { Send-Text $ctx 403 'text/plain' 'forbidden'; return }
     if (Test-Path $full -PathType Container) { $full = Join-Path $full 'index.html' }
     if (-not (Test-Path $full -PathType Leaf)) { Send-Text $ctx 404 'text/plain; charset=utf-8' "404: $path"; return }
     $ext = [System.IO.Path]::GetExtension($full).ToLower()

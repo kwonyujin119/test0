@@ -14,7 +14,7 @@ function refresh() { // 화면 파일 사본을 새로 받아 둠 (실패한 파
 }
 self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(refresh()); });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('ws-app-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener('message', e => { if (e.data === 'refresh') e.waitUntil(refresh()); });
 self.addEventListener('fetch', e => {

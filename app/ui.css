@@ -305,7 +305,7 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .ed-props textarea.mono { min-height: 90px; }
 
 /* ===== 발표기 ===== */
-body.present { background: #000; overflow: hidden; cursor: default; }
+body.present { background: #000; overflow: hidden; cursor: default; overscroll-behavior: none; touch-action: manipulation; }
 body.present.hide-cursor { cursor: none; }
 .pstage { position: fixed; inset: 0; overflow: hidden; background: #000; }
 .pstage .layer { position: absolute; inset: 0; }
@@ -339,11 +339,11 @@ body.present.hide-cursor { cursor: none; }
 @keyframes t-blur-out { from { opacity: 1; filter: blur(0); } to { opacity: 0; filter: blur(30px); } }
 .pbar { position: fixed; left: 0; bottom: 0; height: 4px; background: rgba(255,255,255,.55); z-index: 20; transition: width .3s; }
 .pnum { position: fixed; right: 18px; bottom: 14px; color: rgba(255,255,255,.55); font-size: 14px; z-index: 20; font-variant-numeric: tabular-nums; transition: opacity .3s; }
-body.hide-cursor .pnum { opacity: 0; }
+body.hide-cursor .pnum:not(.keep) { opacity: 0; }
 .pblank { position: fixed; inset: 0; z-index: 30; display: none; }
 .pblank.black { background: #000; display: block; } .pblank.white { background: #fff; display: block; }
 .pdraw { position: fixed; inset: 0; z-index: 25; pointer-events: none; }
-.pdraw.on { pointer-events: auto; cursor: crosshair; }
+.pdraw.on { pointer-events: auto; cursor: crosshair; touch-action: none; }
 .plaser { position: fixed; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, #ff3b3b 0%, rgba(255,59,59,.6) 50%, transparent 72%); box-shadow: 0 0 18px 6px rgba(255,40,40,.55); pointer-events: none; z-index: 40; transform: translate(-50%, -50%); display: none; }
 .plaser.on { display: block; }
 .phud { position: fixed; left: 50%; top: 20px; transform: translateX(-50%); background: rgba(20,22,28,.9); color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 14px; z-index: 50; display: none; border: 1px solid rgba(255,255,255,.15); backdrop-filter: blur(8px); }
@@ -401,7 +401,11 @@ body.print-mode .print-page { width: 1280px; height: 720px; overflow: hidden; ma
 body.print-mode .print-page .slide { transform: scale(0.6667); transform-origin: 0 0; }
 body.print-mode .print-page .step-hidden { visibility: visible; }
 .print-bar { position: sticky; top: 0; background: var(--ui-panel); padding: 10px 20px; display: flex; gap: 10px; align-items: center; z-index: 10; border-bottom: 1px solid var(--ui-border); }
-@media print { .print-bar { display: none; } }
+@media print {
+  .print-bar { display: none; }
+  body.print-mode .print-page { margin: 0; }
+  .print-page, .print-page * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } /* "배경 그래픽"을 켜지 않아도 배경·색 칸이 인쇄됨 */
+}
 
 /* ===== 좁은 PC 화면 (821~1100px): 위쪽 줄이 모자라면 제목 칸을 뭉개지 않고 가로로 밀어 봄 ===== */
 @media (min-width: 821px) and (max-width: 1100px) {

@@ -50,8 +50,12 @@
   const emptyHtml = empty.innerHTML;
   document.getElementById('btnGh').onclick = ghDialog;
 
+  let listOk = false;
+  /* 새로 만들기·가져오기·복제 전에: 최신 목록을 확인 (목록을 못 읽은 채 같은 이름으로 덮어쓰지 않게) */
+  async function freshList() { await refresh(); if (!listOk) alert('교안 목록을 확인할 수 없어 진행하지 않았습니다. 인터넷 연결을 확인한 뒤 다시 해 주세요.'); return listOk; }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); // 뒤로 가기로 돌아오면 목록을 새로
   async function refresh() {
-    try { decks = await API.list(); } catch (e) { decks = []; toast('목록을 불러오지 못했습니다'); }
+    try { decks = await API.list(); listOk = true; } catch (e) { listOk = false; toast('목록을 불러오지 못했습니다' + (e && e.message ? ' — ' + e.message : '') + (decks.length ? ' (이전 목록을 보여 줍니다)' : ''), 4000); } // 실패해도 보이던 목록은 그대로
     decks = decks.filter(d => !(removed.has(d.name) && Date.now() - removed.get(d.name) < 120000));
     render();
   }
@@ -153,10 +157,12 @@
   /* 위쪽 단추: 일하는 동안 "…중"으로 바꾸고 잠금 */
   function hold(id, label) { const b = document.getElementById(id); const old = b.textContent; b.disabled = true; b.textContent = label; return () => { b.disabled = false; b.textContent = old; }; }
   document.getElementById('btnNew').onclick = async () => {
-    const title = prompt('새 교안 제목', '새 교안'); if (!title) return;
-    const name = uniqueName(title); removed.delete(name);
-    const deck = newDeck(title);
+    const title = (prompt('새 교안 제목', '새 교안') || '').trim(); if (!title) return;
     const done = hold('btnNew', '만드는 중…');
+    if (!(await freshList())) { done(); return; }
+    const name = uniqueName(title); if (!name) { done(); alert('제목에 쓸 수 있는 글자가 없습니다'); return; }
+    removed.delete(name);
+    const deck = newDeck(title);
     try { await ghTry(() => API.save(name, deck)); } catch (e) { done(); fail('만들기 실패: ', e); return; }
     location.href = 'editor.html?deck=' + encodeURIComponent(name);
   };
@@ -166,8 +172,10 @@
     const done = hold('btnImport', '가져오는 중…');
     try {
       const deck = JSON.parse(await f.text());
-      if (!deck.slides) throw new Error('교안 형식이 아닙니다');
-      const name = uniqueName(f.name.replace(/\.json$/i, '')); removed.delete(name);
+      if (!deck || !Array.isArray(deck.slides)) throw new Error('교안 형식이 아닙니다');
+      normalizeDeck(deck);
+      if (!(await freshList())) { done(); ev.target.value = ''; return; }
+      const name = uniqueName(f.name.replace(/\.json$/i, '') || '가져온 교안'); removed.delete(name);
       await ghTry(() => API.save(name, deck)); toast('가져왔습니다'); refresh();
     } catch (e) { fail('가져오기 실패: ', e); }
     done(); ev.target.value = '';
