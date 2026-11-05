@@ -1870,7 +1870,78 @@
   const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
   const mySyms = () => lsGet(MYSYM_KEY, []);
-  function saveSyms(list) { if (!lsSet(MYSYM_KEY, list)) { alert('내 심벌 저장 공간이 가득 찼습니다. 안 쓰는 심벌을 지워 주세요.'); return false; } return true; }
+  function saveSyms(list) { if (!lsSet(MYSYM_KEY, list)) { alert('내 심벌 저장 공간이 가득 찼습니다. 안 쓰는 심벌을 지워 주세요.'); return false; } symLater(); return true; }
+  /* ---- 내 심벌 함께 쓰기: 저장소의 my-symbols.json 한 파일로 모든 기기(PC·휴대폰)가 같은 목록을 씀 ----
+     · 읽기: 누구나 (연결 전에는 배포된 사이트의 파일을 읽음)   · 쓰기: GitHub 에 연결된 기기
+     · 합치기: 이 기기에서 새로 더한 것은 올리고, 다른 기기에서 더한 것은 받고, 어느 쪽에서든 지운 것은 양쪽에서 지움 */
+  const SYM_FILE = 'my-symbols.json', SYM_SEEN_KEY = 'gyoan:mySymbolsSeen', SYM_DEL_KEY = 'gyoan:mySymbolsDel';
+  const symSt = { state: 'idle', busy: null, again: false, timer: null, onChange: null };
+  const symOn = () => API.mode === 'github';
+  const symCanWrite = () => symOn() && !!GH.token;
+  /* 저장소의 목록. 파일이 아직 없으면 null. 읽을 수 없거나 내용이 깨졌으면 오류 (그럴 때는 아무것도 지우지 않음) */
+  async function symRead() {
+    let text = null;
+    if (!GH.token && GH.onPages) { const r = await fetch(SYM_FILE + '?t=' + Date.now(), { cache: 'no-store' }); if (r.status === 404) return null; if (!r.ok) throw new Error('읽지 못함 (' + r.status + ')'); text = await r.text(); }
+    else text = await GH.raw(SYM_FILE);
+    if (text == null) return null;
+    const j = JSON.parse(text); if (!j || !Array.isArray(j.items)) throw new Error('형식이 다릅니다');
+    return j.items.filter(x => x && x.id && (x.t === 'img' ? typeof x.d === 'string' : typeof x.c === 'string'));
+  }
+  function symMerge(remote) {
+    const local = mySyms(), seen = new Set(lsGet(SYM_SEEN_KEY, [])), del = new Set(lsGet(SYM_DEL_KEY, []));
+    const rIds = new Set((remote || []).map(x => x.id));
+    // 이 기기에만 있는 것: 저장소에서 본 적 없는 것 = 새로 더한 것(올림) / 본 적 있는데 사라진 것 = 다른 기기에서 지운 것(뺌)
+    const fresh = local.filter(x => !rIds.has(x.id) && (!remote || !seen.has(x.id)));
+    const kept = (remote || []).filter(x => !del.has(x.id));
+    const out = fresh.concat(kept);
+    const needPush = fresh.length > 0 || (remote || []).some(x => del.has(x.id));
+    const changed = out.map(x => x.id).join() !== local.map(x => x.id).join();
+    if (changed) lsSet(MYSYM_KEY, out);
+    lsSet(SYM_SEEN_KEY, kept.map(x => x.id));
+    return { out, needPush, changed };
+  }
+  function symNotify(changed) { if (symSt.onChange) { try { symSt.onChange(!!changed); } catch (e) { } } }
+  function symSync() {
+    if (!symOn()) return Promise.resolve(false);
+    if (symSt.busy) { symSt.again = true; return symSt.busy; }
+    symSt.state = 'sync'; symNotify(false);
+    const run = (async () => {
+      let changed = false;
+      try {
+        const m = symMerge(await symRead()); changed = m.changed;
+        if (!m.needPush) symSt.state = symCanWrite() ? 'ok' : 'readonly';
+        else if (!symCanWrite()) symSt.state = 'needToken';
+        else {
+          await GH.enqueue({ path: SYM_FILE, content: JSON.stringify({ v: 1, updated: new Date().toISOString(), items: m.out }, null, 1) }, { now: true, message: `내 심벌 저장 (${m.out.length}개)` });
+          lsSet(SYM_DEL_KEY, []); lsSet(SYM_SEEN_KEY, m.out.map(x => x.id)); symSt.state = 'ok'; // 방금 올린 것은 저장소에 있는 것으로 기억
+        }
+      } catch (e) { symSt.state = e && (e.noToken || e.status === 401) ? 'needToken' : 'fail'; }
+      return changed;
+    })();
+    symSt.busy = run;
+    return run.then((changed) => { symSt.busy = null; symNotify(changed); if (symSt.again) { symSt.again = false; symLater(); } return changed; });
+  }
+  function symLater() { if (!symOn()) return; clearTimeout(symSt.timer); symSt.timer = setTimeout(symSync, 1200); }
+  function symForget(id) { if (!symOn()) return; const d = lsGet(SYM_DEL_KEY, []); if (!d.includes(id)) { d.push(id); lsSet(SYM_DEL_KEY, d.slice(-300)); } } // 지운 것은 저장소에서도 지우도록 적어 둠
+  function symLabel(n) {
+    const none = '그림(PNG·SVG)이나 글자를 끌어다 놓으면 모아 둡니다';
+    if (!symOn()) return n ? `${n}개 · 이 기기에 저장됨` : none;
+    const head = (n ? `${n}개` : none) + ' · ';
+    switch (symSt.state) {
+      case 'sync': return head + '다른 기기와 맞추는 중…';
+      case 'ok': return head + '모든 기기에서 함께 씀 ✓';
+      case 'readonly': return head + '저장소에서 불러옴 · 여기서 더한 것도 나누려면 <a href="#" data-myconnect>GitHub 연결</a>';
+      case 'needToken': return head + '아직 이 기기에만 있음 — <a href="#" data-myconnect>GitHub 연결</a>을 하면 모든 기기에서 씀';
+      case 'fail': return head + '다른 기기와 맞추지 못했습니다 (인터넷 확인) · <a href="#" data-mysync>다시 시도</a>';
+      default: return head + (symCanWrite() ? '모든 기기에서 함께 씀' : '이 기기에 저장됨');
+    }
+  }
+  /* 심벌로 쓸 원본 그림을 저장소에 함께 올려 둠 → 어느 기기에서 넣어도 선명하게 (연결된 기기 · 내 PC 서버) */
+  async function symOriginal(f) {
+    if (!(API.mode === 'server' || symCanWrite())) return '';
+    try { const prep = await prepareImage(f); const src = await API.stage(prep.blob, prep.name); return /^assets\//.test(src) ? src : ''; } catch (e) { return ''; }
+  }
+  const imgLoads = (src) => new Promise((res) => { const im = new Image(); const t = setTimeout(() => res(false), 5000); im.onload = () => { clearTimeout(t); res(true); }; im.onerror = () => { clearTimeout(t); res(false); }; im.src = src; });
   /* 그림은 작게(최대 160px) 줄여서 보관 */
   function shrinkImage(blob) {
     return new Promise((res, rej) => {
@@ -1882,7 +1953,7 @@
   async function addMySym(item) { const l = mySyms(); l.unshift(Object.assign({ id: uid() }, item)); return saveSyms(l); }
   async function addMySymFromDrop(dt) {
     let n = 0;
-    for (const f of Array.from(dt.files || [])) { if (!f.type.startsWith('image/')) continue; if (f.type === 'image/svg+xml' && f.size < 60000) { await addMySym({ t: 'img', d: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(await f.text()))) }); } else await addMySym({ t: 'img', d: await shrinkImage(f) }); n++; }
+    for (const f of Array.from(dt.files || [])) { if (!f.type.startsWith('image/')) continue; if (f.type === 'image/svg+xml' && f.size < 60000) { await addMySym({ t: 'img', d: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(await f.text()))) }); } else { const src = await symOriginal(f); await addMySym(Object.assign({ t: 'img', d: await shrinkImage(f) }, src ? { src } : {})); } n++; }
     if (!n) { const t = (dt.getData('text/plain') || '').trim(); if (t) { for (const c of graphemes(t).filter(c => c.trim()).slice(0, 20)) { await addMySym({ t: 'txt', c }); n++; } } }
     return n;
   }
@@ -1909,7 +1980,7 @@
           const l = mySyms();
           grid = `<div class="icon-grid my-grid" data-drop="1">${l.map(it => `<button class="ic my" data-my="${esc(it.id)}" title="누르면 넣기 · 우클릭하면 지우기">${it.t === 'img' ? `<img src="${esc(it.d)}" alt="">` : esc(it.c)}</button>`).join('')}
             <div class="my-drop" title="여기에 그림 파일이나 글자를 끌어다 놓으세요">＋<small>끌어다 놓기</small></div></div>
-            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">📁 파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label>${l.length ? `<span class="muted" style="font-size:11.5px">${l.length}개 · 이 기기에 저장됨</span>` : `<span class="muted" style="font-size:11.5px">그림(PNG·SVG)이나 글자를 끌어다 놓으면 모아 둡니다</span>`}</div>`;
+            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">📁 파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label><span class="muted" data-symstate style="font-size:11.5px">${symLabel(l.length)}</span></div>`;
         } else grid = `<div class="icon-grid">${graphemes(ICONS[name]).filter(c => c.trim()).map(c => `<button class="ic" data-ic="${esc(c)}">${esc(c)}</button>`).join('')}</div>`;
         return `<section class="icon-sec${open ? '' : ' fold'}" data-sec="${esc(name)}"><h4 draggable="true" title="누르면 접기·펴기 · 끌어서 순서 바꾸기"><span class="grip">⋮⋮</span><span class="nm">${esc(name)}</span><span class="cnt">${name === MY ? mySyms().length : graphemes(ICONS[name]).filter(c => c.trim()).length}</span><span class="arrow">${open ? '▾' : '▸'}</span></h4>${open ? grid : ''}</section>`;
       };
@@ -1921,20 +1992,24 @@
     const insertImg = async (it) => {
       bg.remove();
       try {
-        let src = it.src; if (!src) { const b = await (await fetch(it.d)).blob(); src = await API.stage(b, 'symbol.png'); }
+        let src = it.src;
+        if (src && !API.blobs[src] && !(await imgLoads(src)) && !(symOn() && await imgLoads(GH.rawUrl(src)))) src = ''; // 원본이 아직 이 기기에서 안 보이면 작은 그림으로
+        if (!src) { const b = await (await fetch(it.d)).blob(); src = await API.stage(b, 'symbol.png'); }
         const [x, y] = centerBox(300, 300); addElement(imageEl(x, y, 300, 300, src));
       } catch (err) { alert('심벌을 넣지 못했습니다: ' + err.message); }
     };
     let dragSec = null;
     bg.addEventListener('click', async (ev) => {
       if (ev.target === bg || ev.target.dataset.close != null) { bg.remove(); return; }
+      if (ev.target.closest('[data-myconnect]')) { ev.preventDefault(); const ok = await GH.connect({ reason: '연결하면 내 심벌이 저장소에 올라가 PC·휴대폰 어디서나 같은 목록을 씁니다.' }); ghChip(); if (ok === true) symSync(); return; }
+      if (ev.target.closest('[data-mysync]')) { ev.preventDefault(); symSync(); return; }
       const h = ev.target.closest('.icon-sec > h4'); if (h) { const n = h.parentNode.dataset.sec; if (fold.has(n)) fold.delete(n); else fold.add(n); lsSet(ICON_FOLD_KEY, Array.from(fold)); draw(); return; }
       if (ev.target.closest('[data-mysel]')) { if (await addMySymFromSelection()) { toast('내 심벌에 넣었습니다'); draw(); } return; }
       if (ev.target.closest('.my-drop')) { bg.querySelector('[data-myfile]').click(); return; }
       const my = ev.target.closest('[data-my]'); if (my) { const it = mySyms().find(x => x.id === my.dataset.my); if (!it) return; if (it.t === 'img') insertImg(it); else insertTxt(it.c, it.fs); return; }
       const b = ev.target.closest('[data-ic]'); if (b) insertTxt(b.dataset.ic);
     });
-    bg.addEventListener('contextmenu', (ev) => { const my = ev.target.closest('[data-my]'); if (!my) return; ev.preventDefault(); if (confirm('이 심벌을 내 심벌에서 지울까요?')) { saveSyms(mySyms().filter(x => x.id !== my.dataset.my)); draw(); } });
+    bg.addEventListener('contextmenu', (ev) => { const my = ev.target.closest('[data-my]'); if (!my) return; ev.preventDefault(); if (confirm(symOn() ? '이 심벌을 내 심벌에서 지울까요?\n(함께 쓰는 다른 기기에서도 지워집니다)' : '이 심벌을 내 심벌에서 지울까요?')) { symForget(my.dataset.my); saveSyms(mySyms().filter(x => x.id !== my.dataset.my)); draw(); } });
     bg.addEventListener('keydown', async (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') { bg.remove(); return; } if (ev.key === 'Enter' && ev.target.dataset.mytxt != null && !ev.isComposing) { const t = ev.target.value.trim(); if (!t) return; await addMySym({ t: 'txt', c: t.length > 12 ? t.slice(0, 12) : t }); draw(); bg.querySelector('[data-mytxt]').focus(); } });
     bg.addEventListener('change', async (ev) => { if (ev.target.dataset.myfile != null) { const dt = { files: ev.target.files, getData: () => '' }; const n = await addMySymFromDrop(dt); if (n) { toast(`심벌 ${n}개를 넣었습니다`); draw(); } } });
     // 끌어다 놓기: 그림 파일·글자 → 내 심벌 / 묶음 제목 → 순서 바꾸기
@@ -1953,7 +2028,9 @@
       ev.preventDefault();
       try { const n = await addMySymFromDrop(ev.dataTransfer); if (n) { toast(`내 심벌에 ${n}개를 넣었습니다`); if (fold.has(MY)) { fold.delete(MY); lsSet(ICON_FOLD_KEY, Array.from(fold)); } draw(); } else toast('그림 파일이나 글자만 넣을 수 있습니다'); } catch (err) { alert(err.message); }
     });
-    draw(); document.body.appendChild(bg);
+    // 창을 열 때 다른 기기와 맞춤: 목록이 달라졌으면 다시 그리고, 아니면 상태 글만 고침
+    symSt.onChange = (changed) => { if (!bg.isConnected) { symSt.onChange = null; return; } if (changed && !bg.querySelector('[data-mytxt]:focus')) draw(); else { const el = bg.querySelector('[data-symstate]'); if (el) el.innerHTML = symLabel(mySyms().length); } };
+    draw(); document.body.appendChild(bg); symSync();
   }
 
   /* ---- 배경 지우기 (아이콘 · 이미지) ---- */
