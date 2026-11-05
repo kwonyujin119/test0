@@ -24,11 +24,15 @@ const HwpStore = (() => {
     const w = await handle.createWritable(); await w.write(blob); await w.close();
   }
   async function pickSave(name, blob) {
-    if ('showSaveFilePicker' in window) {
-      try { const h = await window.showSaveFilePicker(Object.assign({ suggestedName: name }, PICK)); await writeHandle(h, blob); return h; }
-      catch (e) { if (e.name === 'AbortError') return false; throw e; }
-    }
-    download(name, blob); return null;
+    const h = await pickSaveHandle(name);
+    if (h) await writeHandle(h, blob); else if (h === null) download(name, blob);
+    return h;
+  }
+  /* 저장 위치만 먼저 고름 (문서를 만들기 전, 클릭 직후에 열어야 브라우저가 창을 막지 않음). 취소=false, 저장 창이 없는 브라우저=null */
+  async function pickSaveHandle(name) {
+    if (!('showSaveFilePicker' in window)) return null;
+    try { return await window.showSaveFilePicker(Object.assign({ suggestedName: name }, PICK)); }
+    catch (e) { if (e.name === 'AbortError') return false; throw e; }
   }
   function download(name, blob) {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
@@ -155,7 +159,7 @@ const HwpStore = (() => {
   }
 
   return {
-    canFS, pickOpen, pickSave, writeHandle, download, drafts,
+    canFS, pickOpen, pickSave, pickSaveHandle, writeHandle, download, drafts,
     box: { ready, unlock, restoreKey, lock, exists, list, load, save, remove, rename, get unlocked() { return !!key; } },
   };
 })();

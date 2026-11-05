@@ -107,15 +107,16 @@
     saving = true; setState('저장 중…');
     const r0 = rev;
     try {
-      const blob = await build();
-      if (!as && W.boxId) { await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName())); done('문서함에 저장했습니다'); }
-      else if (!as && W.handle) { await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
-      else if (as === 'box') { await boxSaveCurrent(blob, r0); }
+      if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName())); done('문서함에 저장했습니다'); }
+      else if (!as && W.handle) { const blob = await build(); await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
+      else if (as === 'box') { await boxSaveCurrent(await build(), r0); }
       else {
-        const h = await HwpStore.pickSave(fileName(), blob);
+        // 저장 창을 먼저 열고(클릭 직후여야 브라우저가 막지 않음) 문서는 그다음 만듦 — 큰 문서도 창이 안 뜨는 일이 없게
+        const h = await HwpStore.pickSaveHandle(fileName());
         if (h === false) { setState(''); updateState(); return; }
-        if (h) { W.handle = h; W.boxId = null; if (h.name) setName(h.name.replace(/\.hwpx$/i, '')); done('내 PC 에 저장했습니다'); }
-        else done('내려받기 폴더에 저장했습니다 (' + fileName() + ')');
+        const blob = await build();
+        if (h) { await HwpStore.writeHandle(h, blob); W.handle = h; W.boxId = null; if (h.name) setName(h.name.replace(/\.hwpx$/i, '')); done('내 PC 에 저장했습니다'); }
+        else { HwpStore.download(fileName(), blob); done('내려받기 폴더에 저장했습니다 (' + fileName() + ')'); }
       }
     } catch (e) { console.error(e); setState(''); updateState(); alert('저장하지 못했습니다.\n\n' + e.message); }
     finally { saving = false; }
@@ -246,7 +247,7 @@
     });
     const q = d.q;
     q('#bx_lock').onclick = () => { HwpStore.box.lock(); d.close(); toast('문서함을 잠갔습니다'); };
-    if (q('#bx_cur')) q('#bx_cur').onclick = async () => { d.close(); await boxSaveCurrent(); };
+    if (q('#bx_cur')) q('#bx_cur').onclick = () => { d.close(); save('box'); };
     q('#bx_up').onclick = async () => {
       const p = await HwpStore.pickOpen().catch(() => null); if (!p) return;
       try { q('#bx').textContent = '올리는 중…'; await boxRun(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, deviceName())); toast('문서함에 올렸습니다'); render(); } catch (e) { alert(e.message); render(); }
@@ -257,13 +258,16 @@
       if (!items.length) { q('#bx').innerHTML = '<p>문서함이 비어 있습니다. <b>현재 문서 저장</b> 또는 <b>PC 파일 올리기</b> 로 시작하세요.</p>'; return; }
       q('#bx').innerHTML = `<table class="boxlist">${items.map(it => `<tr data-id="${escH(it.id)}"><td class="nm2">${escH(it.name)}${it.id === W.boxId ? ' <span class="muted">(지금 여는 중)</span>' : ''}</td><td class="muted">${new Date(it.modified).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}${it.device ? ' · ' + escH(it.device) : ''}</td><td class="muted">${Math.max(1, Math.round(it.size / 1024))} KB</td><td style="white-space:nowrap;text-align:right"><button class="tb" data-b="open">열기</button><button class="tb" data-b="dl" title="hwpx 로 내려받기">내려받기</button><button class="tb" data-b="ren">이름</button><button class="tb danger" data-b="del">삭제</button></td></tr>`).join('')}</table>`;
       q('#bx').onclick = async e => {
-        const b = e.target.closest('[data-b]'); if (!b) return; const tr = b.closest('tr'); const id = tr.dataset.id; const it = items.find(x => x.id === id);
+        const b = e.target.closest('[data-b]'); if (!b || b.disabled) return; const tr = b.closest('tr'); const id = tr.dataset.id; const it = items.find(x => x.id === id);
+        const btns = tr.querySelectorAll('button'), old = b.textContent;
+        const busy = (t) => { btns.forEach(x => x.disabled = true); b.textContent = t; }; // 일하는 동안 (GitHub 은 몇 초)
         try {
-          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; b.textContent = '여는 중…'; const u = await boxRun(() => HwpStore.box.load(id)); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
-          if (b.dataset.b === 'dl') { const u = await boxRun(() => HwpStore.box.load(id)); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); }
-          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { await boxRun(() => HwpStore.box.rename(id, n.trim())); if (id === W.boxId) setName(n.trim()); render(); } }
-          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { await boxRun(() => HwpStore.box.remove(id)); if (id === W.boxId) { W.boxId = null; updateState(); } render(); } }
+          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; busy('여는 중…'); const u = await boxRun(() => HwpStore.box.load(id)); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
+          if (b.dataset.b === 'dl') { busy('받는 중…'); const u = await boxRun(() => HwpStore.box.load(id)); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); toast('내려받기 폴더에 저장했습니다', 2200); }
+          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { busy('바꾸는 중…'); await boxRun(() => HwpStore.box.rename(id, n.trim())); if (id === W.boxId) setName(n.trim()); render(); } }
+          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { busy('지우는 중…'); await boxRun(() => HwpStore.box.remove(id)); if (id === W.boxId) { W.boxId = null; updateState(); } toast('문서함에서 지웠습니다', 2200); render(); } }
         } catch (er) { alert(er.message); }
+        finally { btns.forEach(x => x.disabled = false); b.textContent = old; }
       };
     }
     render();
@@ -279,8 +283,9 @@
     box.onclick = async e => {
       const b = e.target.closest('[data-d]'); if (!b) return; const id = b.closest('.dl-item').dataset.id;
       if (b.dataset.d === 'del') { const nm = (list.find(x => x.id === id) || {}).name || ''; if (!confirm(`"${nm}" 임시본을 지울까요?\n지우면 되살릴 수 없습니다.`)) return; await HwpStore.drafts.del(id); showStart(); return; }
-      const x = await HwpStore.drafts.get(id); if (!x) return;
-      await openBytes(await x.blob.arrayBuffer(), { name: x.name, draftId: id, boxId: x.boxId || null, dirty: true });
+      if (b.disabled) return; b.disabled = true; b.textContent = '여는 중…';
+      try { const x = await HwpStore.drafts.get(id); if (!x) return; await openBytes(await x.blob.arrayBuffer(), { name: x.name, draftId: id, boxId: x.boxId || null, dirty: true }); }
+      finally { b.disabled = false; b.textContent = '이어서 편집'; }
     };
   }
 
@@ -297,6 +302,7 @@
     const p = $id('fontPanel'); const r = $id('inFont').getBoundingClientRect();
     p.style.left = Math.min(r.left, innerWidth - 330) + 'px'; p.style.top = (r.bottom + 4) + 'px'; p.hidden = false;
     $id('fontQ').value = ''; drawFonts(''); setTimeout(() => $id('fontQ').focus(), 0);
+    $id('btnFont').classList.add('on');
   }
   function drawFonts(q) {
     const cur = $id('inFont').value; const k = q.trim().toLowerCase();
@@ -316,7 +322,7 @@
     if (k && !FONTS.some(f => hit(f.name) || hit(f.face)) && !pcs.length && !docFaces.length) h += `<h5>그 밖의 글꼴</h5>` + item(q.trim(), q.trim() + ' (이 이름 그대로)', fontStack([q.trim()]), 'PC 글꼴');
     $id('fontItems').innerHTML = h;
   }
-  const closeFontPanel = () => { $id('fontPanel').hidden = true; };
+  const closeFontPanel = () => { $id('fontPanel').hidden = true; $id('btnFont').classList.remove('on'); };
   $id('btnFont').addEventListener('mousedown', e => { e.preventDefault(); keepSel(); });
   $id('btnFont').addEventListener('click', () => { if ($id('fontPanel').hidden) openFontPanel(); else closeFontPanel(); });
   $id('fontQ').addEventListener('input', e => drawFonts(e.target.value));

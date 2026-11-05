@@ -59,11 +59,22 @@
     pushHistory(); markDirty();
     if (opts && opts.all) renderThumbs(); else updateThumb(S.cur);
   }
-  async function save() {
+  /* 저장: 저장 중에 또 누르면(Ctrl+S 연타) 커밋을 두 번 만들지 않고, 끝난 뒤 바뀐 게 있으면 한 번 더 */
+  let saving = null, saveAgain = false;
+  function save() {
     if (S.editing) endEdit();
+    if (saving) { saveAgain = true; return saving; }
+    saving = save1().finally(() => { saving = null; });
+    return saving;
+  }
+  async function save1() {
+    if (S.deletedElsewhere && !confirm('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다.\n저장할까요?')) return;
+    const sb = $('btnSave'), sbHtml = sb.innerHTML; sb.disabled = true; sb.innerHTML = API.mode === 'github' ? '저장 중… (몇 초)' : '저장 중…';
+    let retry = false;
     try {
       const r0 = S.rev; // 저장하는 동안(GitHub 은 몇 초) 더 고친 내용은 '수정됨'으로 남김
       await API.save(S.name, S.deck);
+      S.deletedElsewhere = false;
       if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name); }
       toast('저장했습니다');
     } catch (e) {
@@ -71,12 +82,20 @@
         Draft.put(S.name, S.deck);
         const ok = await GH.connect({ expired: e.status === 401, reason: e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 바로 저장합니다.' : '이 기기(브라우저·앱)에는 아직 GitHub 연결이 없습니다. 지금 연결하면 바로 저장합니다.' });
         ghChip();
-        if (ok === true) return save();
-        toast('이 기기에 임시 저장해 두었습니다 — 연결한 뒤 저장하면 저장소에 올라갑니다', 3500); return;
-      }
-      alert('저장 실패: ' + e.message);
-    }
+        if (ok === true) retry = true;
+        else toast('이 기기에 임시 저장해 두었습니다 — 연결한 뒤 저장하면 저장소에 올라갑니다', 3500);
+      } else alert('저장 실패: ' + e.message);
+    } finally { sb.disabled = false; sb.innerHTML = sbHtml; }
+    const again = saveAgain && S.dirty; saveAgain = false;
+    if (retry || again) { saving = null; return save(); }
   }
+  /* 허브(목록)에서 이 교안을 지우거나 이름을 바꾸면 알려 줌 — 지운 교안을 모르고 다시 저장하지 않게 */
+  const hubBus = ('BroadcastChannel' in window) ? new BroadcastChannel('gyoan:hub') : null;
+  if (hubBus) hubBus.onmessage = (ev) => {
+    const m = ev.data || {}; if (m.name !== S.name) return;
+    if (m.type === 'deleted') { S.deletedElsewhere = true; toast('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다', 6000); }
+    if (m.type === 'renamed' && m.to) { S.name = m.to; history.replaceState(null, '', 'editor.html?deck=' + encodeURIComponent(m.to)); toast('교안 파일 이름이 "' + m.to + '" 으로 바뀌었습니다', 4000); }
+  };
   /* 연결 안 된 기기: 경고 창 대신 위쪽에 작은 표시 하나 (누르면 연결) */
   function ghChip() {
     let c = $('ghChip');
@@ -155,6 +174,8 @@
     $('footSel').textContent = S.sel.length ? `${S.sel.length}개 선택` : '';
     const has = S.sel.length > 0;
     document.querySelectorAll('#alignGroup .btn, #btnOrder, #btnGroup, #btnDup, #btnDel').forEach(b => b.disabled = !has);
+    { const gb = $('btnGroup'), els = selEls(); if (!gb.dataset.l) gb.dataset.l = gb.innerHTML; // 묶인 것을 잡았으면 '풀기'
+      const un = els.length > 1 && els.every(e => e.group && e.group === els[0].group); gb.innerHTML = un ? gb.dataset.l.replace('묶기', '풀기') : gb.dataset.l; gb.classList.toggle('active', un); }
     renderLayers();
   }
   function rerenderEl(id) {
@@ -1099,9 +1120,11 @@
     m.style.left = Math.min(a.left, innerWidth - m.offsetWidth - 8) + 'px'; m.style.top = (a.bottom + 6) + 'px';
   }
   function btnMenu(btn, items) {
+    if (openMenu && openMenu._btn === btn) { closeMenus(); return; } // 같은 단추를 다시 누르면 닫힘
     const r = btn.getBoundingClientRect(); showMenu(r.left, r.bottom + 6, items);
+    if (openMenu) openMenu._btn = btn;
   }
-  document.addEventListener('pointerdown', (ev) => { if (openMenu && !openMenu.contains(ev.target) && !ev.target.closest('.btn')) closeMenus(); });
+  document.addEventListener('pointerdown', (ev) => { if (openMenu && !openMenu.contains(ev.target) && ev.target.closest('.btn') !== openMenu._btn) closeMenus(); });
 
   /* ---------- 툴바 이벤트 ---------- */
   $('btnAddSlide').onclick = (ev) => { ev.stopPropagation(); showLayoutMenu(); };
@@ -1124,18 +1147,24 @@
     catch (e) { alert('배경 이미지 실패: ' + e.message); }
   };
   async function showAssetLibrary() {
-    const list = await API.assets();
     const bg = document.createElement('div'); bg.className = 'modal-bg';
-    bg.innerHTML = `<div class="modal" style="min-width:560px"><h3>이미지 라이브러리 <span class="muted" style="font-weight:400;font-size:13px">assets/ 폴더 · ${list.length}개</span></h3>
-      <div class="asset-grid">${list.map(a => `<div class="a" data-src="${esc(a.src)}" style="background-image:url('${esc(a.src)}')" title="${esc(a.name)}"><span>${esc(a.name)}</span></div>`).join('') || '<div class="muted">아직 업로드된 이미지가 없습니다.</div>'}</div>
+    const frame = (sub, body) => `<div class="modal" style="min-width:min(560px,94vw)"><h3>이미지 라이브러리 <span class="muted" style="font-weight:400;font-size:13px">assets/ 폴더${sub}</span></h3>
+      <div class="asset-grid">${body}</div>
       <div class="actions"><button class="btn" data-close>닫기</button></div></div>`;
+    bg.innerHTML = frame('', '<div class="muted">불러오는 중…</div>');
     bg.onclick = async (ev) => {
       if (ev.target.dataset.close != null || ev.target === bg) { bg.remove(); return; }
       const a = ev.target.closest('.a'); if (!a) return; bg.remove();
-      const d = await imageSize(a.dataset.src); const r = Math.min(1, 1200 / d.w, 760 / d.h);
-      addElement(imageEl(Math.round((SLIDE_W - d.w * r) / 2), Math.round((SLIDE_H - d.h * r) / 2), Math.round(d.w * r), Math.round(d.h * r), a.dataset.src));
+      try {
+        const d = await imageSize(a.dataset.src); const r = Math.min(1, 1200 / d.w, 760 / d.h);
+        addElement(imageEl(Math.round((SLIDE_W - d.w * r) / 2), Math.round((SLIDE_H - d.h * r) / 2), Math.round(d.w * r), Math.round(d.h * r), a.dataset.src));
+      } catch (e) { toast('이미지를 열 수 없습니다: ' + a.dataset.src, 3000); }
     };
     document.body.appendChild(bg);
+    try {
+      const list = await API.assets();
+      bg.innerHTML = frame(` · ${list.length}개`, list.map(a => `<div class="a" data-src="${esc(a.src)}" style="background-image:url('${esc(a.src)}')" title="${esc(a.name)}"><span>${esc(a.name)}</span></div>`).join('') || '<div class="muted">아직 업로드된 이미지가 없습니다.</div>');
+    } catch (e) { bg.innerHTML = frame('', `<div class="muted">목록을 불러오지 못했습니다: ${esc(e.message)}</div>`); }
   }
   document.querySelectorAll('#alignGroup .btn').forEach(b => b.onclick = () => alignSel(b.dataset.align));
   $('btnDup').onclick = duplicateSelected; $('btnDel').onclick = deleteSelected;
@@ -1152,7 +1181,7 @@
     btnMenu(ev.currentTarget, [
       { label: 'JSON 파일 다운로드', fn: () => download(S.name + '.json', JSON.stringify(S.deck, null, 1), 'application/json') },
       { label: '단독 HTML (어디서나 발표)', fn: exportHtml },
-      { label: 'PDF / 인쇄용 보기', fn: async () => { await save(); window.open(`present.html?deck=${encodeURIComponent(S.name)}&print=1`, '_blank'); } },
+      { label: 'PDF / 인쇄용 보기', fn: () => openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&print=1`) },
     ]);
   };
   function download(name, text, type) {
@@ -1202,7 +1231,15 @@
 
   /* ---------- 키보드 (PowerPoint 와 같은 배치) ---------- */
   function isTyping() { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable); }
-  function present(fromStart) { save().then(() => window.open(`present.html?deck=${encodeURIComponent(S.name)}&start=${fromStart ? 0 : S.cur}`, '_blank')); }
+  function present(fromStart) { openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&start=${fromStart ? 0 : S.cur}`); }
+  /* 발표·인쇄 창: 저장(GitHub 은 몇 초)이 끝난 뒤에 window.open 을 부르면 팝업 차단에 걸릴 수 있어,
+     클릭 직후에 빈 창을 먼저 열고 저장이 끝나면 주소를 넣음. 저장이 안 됐으면 이 기기의 임시본으로 보여 줌 */
+  async function openAfterSave(url) {
+    const w = window.open('', '_blank');
+    try { await save(); } catch (e) { }
+    if (S.dirty) { Draft.put(S.name, S.deck); url += '&draft=1'; }
+    if (w && !w.closed) w.location.href = url; else window.open(url, '_blank');
+  }
   /* 글자 크기 단계 조절: 편집 중이면 그 상자, 아니면 선택한 텍스트 상자 전부 */
   function fontSizeStep(delta) {
     const els = (S.editing ? [elById(S.editing)] : selEls()).filter(e => e && TEXTY.includes(e.type)); if (!els.length) return;
@@ -1255,6 +1292,13 @@
     const key = ev.key, low = key.length === 1 ? key.toLowerCase() : key;
     const stop = () => ev.preventDefault();
 
+    /* 창(디자인·아이콘·수식·연결…)이 떠 있는 동안: 단축키가 뒤의 슬라이드를 건드리지 않게. Esc 는 그 창을 닫음 */
+    const modal = document.querySelector('.modal-bg');
+    if (modal) {
+      if (key === 'Escape') { const b = modal.querySelector('[data-close], #kbClose, #ghCancel'); if (b) b.click(); else modal.remove(); }
+      return;
+    }
+
     /* --- 어디서나 --- */
     if (ctrl && low === 's') { stop(); save(); return; }
     if (ctrl && !shift && low === 'f') { stop(); showFind(false); return; }
@@ -1262,7 +1306,7 @@
     if (alt && key === 'F10') { stop(); toggleLayers(); return; }                      // Alt+F10 선택 창 (PPT)
     if (key === 'F5') { stop(); present(!shift); return; }            // F5 처음부터 · Shift+F5 현재 슬라이드부터
     if (key === 'F1' || (ctrl && key === '/')) { stop(); showShortcutHelp(); return; }
-    if (ctrl && low === 'p') { stop(); save().then(() => window.open(`present.html?deck=${encodeURIComponent(S.name)}&print=1`, '_blank')); return; }
+    if (ctrl && low === 'p') { stop(); openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&print=1`); return; }
     if (ctrl && low === 'm') { stop(); addSlide('content'); return; } // Ctrl+M 새 슬라이드 (PPT)
     if (ctrl && key === 'Enter') { stop(); addSlide('content'); return; }
 
@@ -1351,10 +1395,10 @@
       </div>
       <div class="actions"><span class="muted" style="font-size:12px;flex:1">발표 화면 단축키는 발표 중 <kbd>?</kbd> 또는 <kbd>F1</kbd></span><button class="btn primary" id="kbClose">닫기</button></div></div>`;
     document.body.appendChild(bg);
-    const close = () => bg.remove();
+    const close = () => { bg.remove(); document.removeEventListener('keydown', onKey, true); }; // 닫기 단추·바깥 클릭으로 닫아도 키 가로채기를 거둠
     bg.onclick = (ev) => { if (ev.target === bg) close(); };
     bg.querySelector('#kbClose').onclick = close;
-    const onKey = (ev) => { if (ev.key === 'Escape' || ev.key === 'F1') { ev.preventDefault(); ev.stopPropagation(); close(); document.removeEventListener('keydown', onKey, true); } };
+    const onKey = (ev) => { if (ev.key === 'Escape' || ev.key === 'F1') { ev.preventDefault(); ev.stopPropagation(); close(); } };
     document.addEventListener('keydown', onKey, true);
   }
   $('btnHelp').onclick = showShortcutHelp;
@@ -1748,7 +1792,8 @@
       let n = 0; S.deck.slides.forEach(sl => sl.elements.forEach(e => { n += replaceInElement(e, q.value.trim(), r.value, false); }));
       if (n) { commit({ all: true }); renderStage(); renderProps(); } toast(n ? `${n}곳을 바꿨습니다` : '바꿀 내용이 없습니다'); findPos = -1; upd();
     };
-    const close = () => { findEl.remove(); findEl = null; };
+    const close = () => { findEl.remove(); findEl = null; $('btnFind').classList.remove('active'); };
+    $('btnFind').classList.add('active');
     q.addEventListener('input', () => { findPos = -1; upd(); });
     q.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Enter' && !ev.isComposing) { ev.preventDefault(); go(ev.shiftKey ? -1 : 1); } if (ev.key === 'Escape') close(); if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'h') { ev.preventDefault(); findEl.classList.add('rep'); r.focus(); } });
     r.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') close(); if (ev.key === 'Enter' && !ev.isComposing) { ev.preventDefault(); one(); } });

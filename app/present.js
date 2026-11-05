@@ -211,7 +211,11 @@
   }
   function exitShow() {
     if (document.fullscreenElement) document.exitFullscreen();
-    if (window.EMBEDDED_DECK) { $('pend').classList.add('show'); return; }
+    if (window.EMBEDDED_DECK) { // 내보낸 단독 파일: 돌아갈 목록이 없음
+      if ($('pend').classList.contains('show')) { window.close(); hud('발표를 마쳤습니다 — 이 창(탭)을 닫으세요'); }
+      else endShow();
+      return;
+    }
     if (window.opener && !window.opener.closed) window.close();
     location.href = 'gyoan.html';
   }
@@ -229,7 +233,9 @@
     },
     close() { $('poverview').classList.remove('show'); },
     isOpen() { return $('poverview').classList.contains('show'); },
+    toggle() { this.isOpen() ? this.close() : this.open(); },
   };
+  $('poverview').addEventListener('click', (ev) => { if (!ev.target.closest('.o')) overview.close(); }); // 빈 곳을 누르면 닫힘 (휴대폰)
 
   /* ---- 펜 / 레이저 ---- */
   const ctx = pdraw.getContext('2d');
@@ -347,11 +353,11 @@
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { ev.preventDefault(); dx < 0 ? next() : prev(); }
   });
   $('pmenu').addEventListener('click', (ev) => {
-    const a = ev.target.dataset.a; ev.stopPropagation();
-    if (a === 'notes') openNotes(); if (a === 'overview') overview.open(); if (a === 'full') toggleFullscreen(); if (a === 'help') $('phelp').classList.add('show'); if (a === 'exit') exitShow();
+    const b = ev.target.closest('[data-a]'); ev.stopPropagation(); if (!b) return; const a = b.dataset.a;
+    if (a === 'notes') openNotes(); if (a === 'overview') overview.toggle(); if (a === 'full') toggleFullscreen(); if (a === 'help') $('phelp').classList.add('show'); if (a === 'exit') exitShow();
   });
   $('pend').addEventListener('click', (ev) => {
-    const a = ev.target.dataset.a; if (!a) return; ev.stopPropagation();
+    const b = ev.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a; ev.stopPropagation();
     if (a === 'back') { st.ended = false; $('pend').classList.remove('show'); broadcast(); } if (a === 'first') goto(0, 0); if (a === 'exit') exitShow();
   });
   $('phelp').addEventListener('click', () => $('phelp').classList.remove('show'));
@@ -403,7 +409,7 @@
     if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, ended: m.ended }; render(); tick(); } };
     $('bNext').onclick = () => send({ cmd: 'next' }); $('bPrev').onclick = () => send({ cmd: 'prev' });
     $('tReset').onclick = () => send({ cmd: 'timer', value: Date.now() });
-    $('bBig').onclick = () => $('notes').classList.toggle('big');
+    $('bBig').onclick = () => $('bBig').classList.toggle('active', $('notes').classList.toggle('big'));
     document.addEventListener('keydown', (ev) => {
       switch (ev.key) {
         case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': ev.preventDefault(); send({ cmd: 'next' }); break;

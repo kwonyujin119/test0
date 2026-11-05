@@ -107,7 +107,7 @@
     guide.innerHTML = `<div class="box">${h}</div>`;
     const q = s => guide.querySelector(s);
     if (q('[data-c]')) q('[data-c]').onclick = () => closeGuide();
-    if (q('[data-go]')) q('[data-go]').onclick = async () => { const done = await install(); if (done) { guide.dataset.mode = 'done'; refreshGuide(); } };
+    if (q('[data-go]')) q('[data-go]').onclick = async () => { const done = await install(); if (!guide) return; guide.dataset.mode = done ? 'done' : 'help'; refreshGuide(); }; // 취소했으면 설치 단추 대신 방법 안내
     if (q('[data-copy]')) q('[data-copy]').onclick = e => { (navigator.clipboard ? navigator.clipboard.writeText(URL0()) : Promise.reject()).then(() => { e.target.textContent = '복사했습니다'; }).catch(() => { prompt('이 주소를 복사하세요', URL0()); }); };
   }
 

@@ -7,6 +7,9 @@
   const notice = document.getElementById('notice');
   const q = document.getElementById('q');
   let decks = [];
+  const removed = new Map();   // 방금 지운(이름 바꾼) 교안: 목록이 잠깐 옛것을 돌려줘도 다시 보이지 않게
+  const deckCache = new Map(); // 썸네일용 교안 내용 (목록을 다시 그릴 때 또 받지 않게)
+  const bus = ('BroadcastChannel' in window) ? new BroadcastChannel('gyoan:hub') : null; // 열려 있는 편집기 창에 알림
 
   if (API.mode === 'local') {
     notice.style.display = 'block';
@@ -49,6 +52,7 @@
 
   async function refresh() {
     try { decks = await API.list(); } catch (e) { decks = []; toast('목록을 불러오지 못했습니다'); }
+    decks = decks.filter(d => !(removed.has(d.name) && Date.now() - removed.get(d.name) < 120000));
     render();
   }
 
@@ -73,7 +77,8 @@
     body.innerHTML = `<div class="deck-title">${esc(d.title)}</div>
       <div class="deck-meta"><span>슬라이드 ${d.slides}장</span><span>${esc(d.modified || '')}</span><span class="muted">${esc(d.name)}.json</span></div>`;
     // 첫 슬라이드 썸네일
-    API.load(d.name).then(deck => {
+    const ck = d.name + '|' + (d.size || '') + '|' + (d.modified || '');
+    (deckCache.has(ck) ? Promise.resolve(deckCache.get(ck)) : API.load(d.name).then(deck => { deckCache.set(ck, deck); return deck; })).then(deck => {
       if (d.partial) {
         d.title = deck.title || d.name; d.slides = (deck.slides || []).length;
         d.modified = deck.modified ? deck.modified.slice(0, 16).replace('T', ' ') : '';
@@ -94,25 +99,46 @@
       <button class="btn sm ghost" data-a="rename" title="이름 바꾸기">이름</button>
       <button class="btn sm ghost danger" data-a="del" title="삭제">삭제</button>`;
     act.onclick = async (ev) => {
-      const a = ev.target.dataset.a; if (!a) return;
+      const btn = ev.target.closest('button[data-a]'); if (!btn || c.classList.contains('busy')) return;
+      const a = btn.dataset.a;
+      /* 일하는 동안: 카드를 흐리게, 단추는 "…중"으로 (GitHub 은 몇 초 걸림 · 두 번 누름 방지) */
+      const busy = (label) => {
+        c.classList.add('busy'); act.querySelectorAll('button').forEach(b => b.disabled = true);
+        const old = btn.textContent; btn.textContent = label;
+        return () => { c.classList.remove('busy'); act.querySelectorAll('button').forEach(b => b.disabled = false); btn.textContent = old; };
+      };
       if (a === 'present') open('present.html?deck=' + encodeURIComponent(d.name), true);
       if (a === 'edit') open('editor.html?deck=' + encodeURIComponent(d.name));
       if (a === 'del') {
         const how = API.mode === 'server' ? '(decks/.trash 폴더로 이동합니다)' : API.mode === 'github' ? '(저장소에서 지웁니다. Git 기록에는 남습니다)' : '';
         if (!confirm(`"${d.title}" 교안을 삭제할까요?\n${how}`)) return;
-        try { await ghTry(() => API.remove(d.name)); toast('삭제했습니다'); } catch (e) { fail('삭제 실패: ', e); }
+        const done = busy('삭제 중…');
+        if (API.mode === 'github') toast('저장소에서 지우는 중… (몇 초 걸립니다)', 4000);
+        try { await ghTry(() => API.remove(d.name)); }
+        catch (e) { done(); fail('삭제 실패: ', e); return; }
+        removed.set(d.name, Date.now()); decks = decks.filter(x => x.name !== d.name); render(); // 목록을 다시 받기 전에 바로 지움
+        toast(API.mode === 'server' ? '삭제했습니다 (decks/.trash 폴더에 보관)' : '삭제했습니다', 3000);
+        if (bus) bus.postMessage({ type: 'deleted', name: d.name });
         refresh();
       }
       if (a === 'dup') {
-        const deck = await API.load(d.name); const name = uniqueName(d.name + ' 사본');
-        deck.title = deck.title + ' 사본';
-        try { await ghTry(() => API.save(name, deck)); toast('복제했습니다'); } catch (e) { fail('복제 실패: ', e); }
+        const done = busy('복제 중…');
+        try {
+          const deck = await API.load(d.name); const name = uniqueName(d.name + ' 사본');
+          deck.title = deck.title + ' 사본'; removed.delete(name);
+          await ghTry(() => API.save(name, deck)); toast('복제했습니다');
+        } catch (e) { done(); fail('복제 실패: ', e); return; }
         refresh();
       }
       if (a === 'rename') {
         const nn = prompt('새 파일 이름 (목록 아래에 작게 보이는 이름입니다 · 교안 제목은 편집기 맨 위에서 바꿉니다)', d.name); if (!nn || nn === d.name) return;
-        const safe = sanitize(nn); if (decks.some(x => x.name === safe)) { alert('같은 이름의 교안이 있습니다'); return; }
-        try { const deck = await API.load(d.name); await ghTry(() => API.save(safe, deck)); await ghTry(() => API.remove(d.name)); } catch (e) { fail('이름 바꾸기 실패: ', e); }
+        const safe = sanitize(nn); if (!safe) return;
+        if (decks.some(x => x.name === safe)) { alert('같은 이름의 교안이 있습니다'); return; }
+        const done = busy('바꾸는 중…');
+        try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe)); toast('이름을 바꿨습니다'); }
+        catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
+        removed.set(d.name, Date.now());
+        if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: safe });
         refresh();
       }
     };
@@ -124,23 +150,27 @@
   function sanitize(n) { return n.replace(/[\\/:*?"<>|]/g, '_').trim(); }
   function uniqueName(base) { let n = sanitize(base), i = 2; while (decks.some(d => d.name === n)) n = sanitize(base) + ' ' + (i++); return n; }
 
+  /* 위쪽 단추: 일하는 동안 "…중"으로 바꾸고 잠금 */
+  function hold(id, label) { const b = document.getElementById(id); const old = b.textContent; b.disabled = true; b.textContent = label; return () => { b.disabled = false; b.textContent = old; }; }
   document.getElementById('btnNew').onclick = async () => {
     const title = prompt('새 교안 제목', '새 교안'); if (!title) return;
-    const name = uniqueName(title);
+    const name = uniqueName(title); removed.delete(name);
     const deck = newDeck(title);
-    try { await ghTry(() => API.save(name, deck)); } catch (e) { fail('만들기 실패: ', e); return; }
+    const done = hold('btnNew', '만드는 중…');
+    try { await ghTry(() => API.save(name, deck)); } catch (e) { done(); fail('만들기 실패: ', e); return; }
     location.href = 'editor.html?deck=' + encodeURIComponent(name);
   };
   document.getElementById('btnImport').onclick = () => document.getElementById('fileImport').click();
   document.getElementById('fileImport').onchange = async (ev) => {
     const f = ev.target.files[0]; if (!f) return;
+    const done = hold('btnImport', '가져오는 중…');
     try {
       const deck = JSON.parse(await f.text());
       if (!deck.slides) throw new Error('교안 형식이 아닙니다');
-      const name = uniqueName(f.name.replace(/\.json$/i, ''));
+      const name = uniqueName(f.name.replace(/\.json$/i, '')); removed.delete(name);
       await ghTry(() => API.save(name, deck)); toast('가져왔습니다'); refresh();
     } catch (e) { fail('가져오기 실패: ', e); }
-    ev.target.value = '';
+    done(); ev.target.value = '';
   };
   q.oninput = render;
   refresh();

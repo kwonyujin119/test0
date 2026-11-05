@@ -985,7 +985,7 @@ const GH = {
     const items = this._queue.splice(0); if (!items.length) return;
     this._chain = this._chain.then(async () => {
       const main = items.find(x => x.message);
-      const imgs = items.filter(x => !x.message).map(x => x.change.path.replace(/^assets\//, ''));
+      const imgs = items.filter(x => !x.message && !x.change.delete).map(x => x.change.path.replace(/^assets\//, ''));
       let msg = main ? main.message : '이미지 추가: ' + imgs.join(', ');
       if (main && imgs.length) msg += ` (+이미지 ${imgs.length})`;
       try { await this.commit(msg, items.map(x => x.change)); items.forEach(x => x.res(true)); }
@@ -1029,9 +1029,10 @@ const GH = {
       document.body.appendChild(bg);
       const $ = (id) => bg.querySelector('#' + id);
       const close = (v) => { bg.remove(); done(v); };
-      bg.onclick = (ev) => { if (ev.target === bg) close(false); };
-      bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') close(false); else if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') $('ghOk').click(); });
-      $('ghCancel').onclick = () => close(false);
+      const checking = () => $('ghOk').disabled; // 확인 중에는 닫지 않음 (닫힌 뒤에 결과가 오지 않게)
+      bg.onclick = (ev) => { if (ev.target === bg && !checking()) close(false); };
+      bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { if (!checking()) close(false); } else if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') $('ghOk').click(); });
+      $('ghCancel').onclick = () => { if (!checking()) close(false); };
       if ($('ghClear')) $('ghClear').onclick = () => { if (confirm('이 기기에 저장된 GitHub 토큰을 지울까요?')) { this.clear(); close('cleared'); } };
       $('ghOk').onclick = async () => {
         const cfg = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim().replace(/\s+/g, '') };
@@ -1159,9 +1160,36 @@ const API = {
     const all = this._local(); all[name] = deck; this._saveLocal(all); return { ok: true };
   },
   async remove(name) {
-    if (this.mode === 'server') { const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'DELETE' }); return r.json(); }
-    if (this.mode === 'github') { await GH.commit('교안 삭제: ' + name, [{ path: 'decks/' + name + '.json', delete: true }]); return { ok: true }; }
+    if (this.mode === 'server') {
+      const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'DELETE' });
+      if (r.status === 404) return { ok: true, gone: true }; // 이미 없음
+      if (!r.ok) throw new Error('삭제 실패 (' + r.status + ')');
+      return r.json();
+    }
+    if (this.mode === 'github') {
+      if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
+      const path = 'decks/' + name + '.json';
+      const info = await GH.api('GET', `/contents/${encPath(path)}?ref=${encodeURIComponent(GH.cfg.branch)}`);
+      if (!info) return { ok: true, gone: true }; // 이미 지워짐 (다른 창·기기에서) — 커밋하지 않음
+      // 이미지 커밋과 같은 줄에서 차례로 (동시에 커밋해서 충돌하지 않게)
+      await GH.enqueue({ path, delete: true }, { now: true, message: '교안 삭제: ' + name });
+      return { ok: true };
+    }
     const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
+  },
+  /* 파일 이름 바꾸기: GitHub 은 새 파일 + 옛 파일 삭제를 커밋 하나로 */
+  async rename(from, to) {
+    const deck = await this.load(from);
+    if (this.mode === 'github') {
+      if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
+      deck.modified = new Date().toISOString();
+      await Promise.all([
+        GH.enqueue({ path: 'decks/' + to + '.json', content: JSON.stringify(deck, null, 1) }, { message: `교안 이름 바꾸기: ${from} → ${to}` }),
+        GH.enqueue({ path: 'decks/' + from + '.json', delete: true }, { now: true }),
+      ]);
+      return { ok: true };
+    }
+    await this.save(to, deck); await this.remove(from); return { ok: true };
   },
   /* 연결 전에 교안 안에 넣어 둔 이미지(data:)를 저장소 이미지 파일로 옮김 */
   async _liftImages(deck) {
