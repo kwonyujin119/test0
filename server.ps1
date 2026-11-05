@@ -23,6 +23,7 @@ $Mime = @{
     '.png' = 'image/png'; '.jpg' = 'image/jpeg'; '.jpeg' = 'image/jpeg'; '.gif' = 'image/gif'
     '.svg' = 'image/svg+xml'; '.webp' = 'image/webp'; '.ico' = 'image/x-icon'; '.bmp' = 'image/bmp'
     '.mp4' = 'video/mp4'; '.webm' = 'video/webm'; '.mp3' = 'audio/mpeg'; '.wav' = 'audio/wav'
+    '.m4v' = 'video/mp4'; '.mov' = 'video/quicktime'; '.ogv' = 'video/ogg'; '.ogg' = 'audio/ogg'; '.m4a' = 'audio/mp4'
     '.woff' = 'font/woff'; '.woff2' = 'font/woff2'; '.ttf' = 'font/ttf'; '.otf' = 'font/otf'
     '.pdf' = 'application/pdf'; '.webmanifest' = 'application/manifest+json'
 }
@@ -35,6 +36,56 @@ function Send-Bytes($ctx, [int]$status, [string]$type, [byte[]]$bytes) {
     $res.ContentLength64 = $bytes.Length
     $res.OutputStream.Write($bytes, 0, $bytes.Length)
     $res.OutputStream.Close()
+}
+# 큰 파일(동영상 등): 통째로 읽지 않고 흘려보냄. 원하는 구간만 보내기(Range)를 지원 → 재생 위치 이동·구간 재생이 됨.
+# 보내는 일은 뒤에서 하고 바로 다음 요청을 받음 → 동영상을 틀어 놓아도 저장·다른 화면이 멈추지 않음.
+$script:Sending = New-Object System.Collections.ArrayList
+function Close-Sending($s) {
+    try { $s.fs.Close() } catch { }
+    try { $s.res.Close() } catch { try { $s.res.Abort() } catch { } }
+}
+function Sweep-Sending {
+    for ($i = $script:Sending.Count - 1; $i -ge 0; $i--) {
+        $s = $script:Sending[$i]
+        if ($s.task.IsCompleted) { Close-Sending $s; $script:Sending.RemoveAt($i) }
+    }
+    while ($script:Sending.Count -gt 24) { $s = $script:Sending[0]; try { $s.res.Abort() } catch { }; try { $s.fs.Close() } catch { }; $script:Sending.RemoveAt(0) }   # 멈춰 선 연결이 쌓이지 않게
+}
+function Send-File($ctx, [string]$full, [string]$type, [long]$len, [string]$range, [bool]$headOnly) {
+    $res = $ctx.Response
+    [long]$start = 0; [long]$end = $len - 1; $partial = $false
+    if ($range -match '^\s*bytes=(\d*)-(\d*)\s*$') {
+        $a = $Matches[1]; $b = $Matches[2]
+        if ($a -ne '') { $start = [long]$a; if ($b -ne '') { $end = [Math]::Min([long]$b, $len - 1) } }
+        elseif ($b -ne '') { $start = [Math]::Max([long]0, $len - [long]$b) }
+        if ($a -eq '' -and $b -eq '') { $start = 0 }
+        elseif ($start -gt $end -or $start -ge $len) {
+            $res.StatusCode = 416; $res.Headers['Content-Range'] = "bytes */$len"; $res.Close(); return
+        }
+        else { $partial = $true }
+    }
+    [long]$count = $end - $start + 1
+    if ($count -gt 1MB -and $end -lt ($len - 1)) { $end = $len - 1; $count = $end - $start + 1 }   # 큰 구간은 끝까지 흘려보냄
+    $res.StatusCode = $(if ($partial) { 206 } else { 200 })
+    $res.ContentType = $type
+    $res.Headers['Accept-Ranges'] = 'bytes'
+    $res.Headers['Cache-Control'] = 'no-store'
+    if ($partial) { $res.Headers['Content-Range'] = "bytes $start-$end/$len" }
+    $res.ContentLength64 = $count
+    if ($headOnly -or $count -le 0) { $res.Close(); return }
+    $share = [System.IO.FileShare]::ReadWrite -bor [System.IO.FileShare]::Delete
+    $fs = New-Object System.IO.FileStream($full, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, $share, 81920, $true)
+    [void]$fs.Seek($start, [System.IO.SeekOrigin]::Begin)
+    if ($count -le 1MB) {
+        try {
+            $buf = New-Object byte[] $count; $n = 0
+            while ($n -lt $count) { $r = $fs.Read($buf, $n, $count - $n); if ($r -le 0) { break }; $n += $r }
+            $res.OutputStream.Write($buf, 0, $n)
+        } finally { $fs.Close(); try { $res.OutputStream.Close() } catch { } }
+        return
+    }
+    $task = $fs.CopyToAsync($res.OutputStream, 81920)
+    [void]$script:Sending.Add(@{ task = $task; fs = $fs; res = $res })
 }
 function Send-Text($ctx, [int]$status, [string]$type, [string]$text) {
     Send-Bytes $ctx $status $type ([System.Text.Encoding]::UTF8.GetBytes($text))
@@ -146,7 +197,10 @@ function Handle-Request($ctx) {
     if (-not (Test-Path $full -PathType Leaf)) { Send-Text $ctx 404 'text/plain; charset=utf-8' "404: $path"; return }
     $ext = [System.IO.Path]::GetExtension($full).ToLower()
     $type = $Mime[$ext]; if (-not $type) { $type = 'application/octet-stream' }
-    Send-Bytes $ctx 200 $type ([System.IO.File]::ReadAllBytes($full))
+    $len = (New-Object System.IO.FileInfo($full)).Length
+    $range = $req.Headers['Range']
+    if ($len -lt 1MB -and -not $range) { Send-Bytes $ctx 200 $type ([System.IO.File]::ReadAllBytes($full)); return }
+    Send-File $ctx $full $type $len $range ($method -eq 'HEAD')
 }
 
 Add-Type -AssemblyName System.Web
@@ -167,15 +221,17 @@ if (-not $NoBrowser) { Start-Process "http://localhost:$Port/" }
 try {
     while ($listener.IsListening) {
         $task = $listener.GetContextAsync()
-        while (-not $task.Wait(250)) { }   # Ctrl+C 를 받을 수 있도록 짧게 대기
+        while (-not $task.Wait(250)) { Sweep-Sending }   # Ctrl+C 를 받을 수 있도록 짧게 대기 · 다 보낸 큰 파일 정리
         $ctx = $task.Result
         try { Handle-Request $ctx }
         catch {
             Write-Host ("[오류] " + $ctx.Request.HttpMethod + ' ' + $ctx.Request.Url.AbsolutePath + ' : ' + $_.Exception.Message) -ForegroundColor Yellow
             try { Send-Text $ctx 500 'text/plain; charset=utf-8' ("server error: " + $_.Exception.Message) } catch { }
         }
+        Sweep-Sending
     }
 } finally {
+    foreach ($s in @($script:Sending)) { Close-Sending $s }
     $listener.Stop()
     $listener.Close()
 }

@@ -1206,6 +1206,8 @@ const API = {
     }
     const d = this._local()[name]; if (!d) throw new Error('교안을 찾을 수 없습니다: ' + name); return d;
   },
+  /* 지금 저장되어 있는 교안의 저장 시각 (없거나 읽지 못하면 null) — 저장 전에 다른 곳에서 고쳤는지 확인하는 데 씀 */
+  async peek(name) { try { const d = await this.load(name); return (d && d.modified) || null; } catch (e) { return null; } },
   async save(name, deck) {
     deck.modified = new Date().toISOString();
     if (this.mode === 'server') {

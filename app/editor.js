@@ -13,6 +13,7 @@
   await API.init();
   try { S.deck = await API.load(S.name); }
   catch (e) { alert(e.message); location.href = 'gyoan.html'; return; }
+  S.base = S.deck.modified || ''; // 내가 불러온(또는 마지막으로 저장한) 판의 저장 시각
   migrate(S.deck);
   S.cur = clamp(parseInt(qs('slide') || '0', 10) || 0, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
   document.title = S.deck.title + ' · 편집';
@@ -74,13 +75,24 @@
     saving = save1().finally(() => { saving = null; });
     return saving;
   }
+  const when = (iso) => { try { return new Date(iso).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return String(iso); } };
+  /* 저장 직전: 내가 불러온 뒤에 다른 곳에서 저장했는지 확인 */
+  async function okToOverwrite() {
+    if (!S.base) return true;
+    const cur = await API.peek(S.name);
+    if (!cur || cur <= S.base) return true;
+    return confirm(`이 교안이 다른 곳(다른 기기 · 다른 탭)에서 ${when(cur)}에 저장되었습니다.\n지금 저장하면 그쪽에서 고친 내용을 덮어씁니다.\n\n확인: 내 것으로 덮어쓰기\n취소: 저장하지 않음 (이 화면을 새로 고침하면 그쪽 내용을 불러옵니다)`);
+  }
   async function save1() {
     if (S.deletedElsewhere && !confirm('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다.\n저장할까요?')) return;
     const sb = $('btnSave'), sbHtml = sb.innerHTML; sb.disabled = true; sb.innerHTML = API.mode === 'github' ? '저장 중… (몇 초)' : '저장 중…';
     let retry = false;
     try {
       const r0 = S.rev; // 저장하는 동안(GitHub 은 몇 초) 더 고친 내용은 '수정됨'으로 남김
+      if (!(await okToOverwrite())) { saveAgain = false; toast('저장하지 않았습니다'); return; }
       await API.save(S.name, S.deck);
+      S.base = S.deck.modified || S.base;
+      if (hubBus) hubBus.postMessage({ type: 'saved', name: S.name, tab: TAB });
       S.deletedElsewhere = false;
       if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name); }
       toast('저장했습니다');
@@ -98,8 +110,13 @@
   }
   /* 허브(목록)에서 이 교안을 지우거나 이름을 바꾸면 알려 줌 — 지운 교안을 모르고 다시 저장하지 않게 */
   const hubBus = ('BroadcastChannel' in window) ? new BroadcastChannel('gyoan:hub') : null;
+  const TAB = uid(); let twinWarned = false;
+  const warnTwin = () => { if (twinWarned) return; twinWarned = true; toast('이 교안이 다른 탭(창)에서도 열려 있습니다 — 한쪽에서만 고쳐 주세요. 나중에 저장하는 쪽은 덮어쓸지 물어봅니다', 7000); };
   if (hubBus) hubBus.onmessage = (ev) => {
     const m = ev.data || {}; if (m.name !== S.name) return;
+    if (m.type === 'editing' && m.tab !== TAB) { hubBus.postMessage({ type: 'editing-too', name: S.name, tab: TAB }); warnTwin(); }
+    if (m.type === 'editing-too' && m.tab !== TAB) warnTwin();
+    if (m.type === 'saved' && m.tab !== TAB) toast('다른 탭에서 이 교안을 저장했습니다 — 여기서 저장하면 덮어쓸지 물어봅니다', 6000);
     if (m.type === 'deleted') { S.deletedElsewhere = true; toast('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다', 6000); }
     if (m.type === 'renamed' && m.to) { S.name = m.to; history.replaceState(null, '', 'editor.html?deck=' + encodeURIComponent(m.to)); toast('교안 파일 이름이 "' + m.to + '" 으로 바뀌었습니다', 4000); }
   };
@@ -1556,6 +1573,12 @@
   document.addEventListener('keydown', onKey);
   function onKey(ev) {
     if (ev.isComposing || ev.keyCode === 229) {
+      if (ev.code === 'Tab' && S.editing && !ev.ctrlKey && !ev.metaKey && !ev.altKey) { // 한글을 조합하던 중의 Tab: 글자를 확정한 뒤 실행 (표의 다음 칸 · 목록 들여쓰기)
+        ev.preventDefault();
+        const p = imeKey = { t: Date.now(), ev: { key: 'Tab', code: 'Tab', keyCode: 9, isComposing: false, ctrlKey: false, metaKey: false, shiftKey: ev.shiftKey, altKey: false, target: ev.target, preventDefault() { } } };
+        setTimeout(() => { if (imeKey === p) { imeKey = null; onKey(p.ev); } }, 150); // 조합이 끝났다는 신호가 오지 않아도 실행
+        return;
+      }
       if ((ev.ctrlKey || ev.metaKey) && /^(KeyS|KeyF|KeyH|KeyP|KeyM|Enter)$/.test(ev.code)) {
         ev.preventDefault();
         imeKey = { t: Date.now(), ev: { key: ev.code === 'Enter' ? 'Enter' : ev.code.slice(3).toLowerCase(), code: ev.code, keyCode: 0, isComposing: false, ctrlKey: ev.ctrlKey, metaKey: ev.metaKey, shiftKey: ev.shiftKey, altKey: ev.altKey, target: ev.target, preventDefault() { } } };
@@ -2434,8 +2457,11 @@
   window.__gyoan = { S, renderStage, gotoSlide }; // 개발용: 콘솔에서 상태 확인
   pushHistory();
   renderAll();
-  if (Draft.get(S.name) && JSON.stringify(Draft.get(S.name)) !== JSON.stringify(S.deck)) {
-    if (confirm('저장하지 않은 임시 작업본이 있습니다. 불러올까요?')) { S.deck = Draft.get(S.name); migrate(S.deck); S.cur = clamp(S.cur, 0, S.deck.slides.length - 1); S.sel = []; S.ssel = [curSlide().id]; pushHistory(); renderAll(); markDirty(); }
+  if (hubBus) hubBus.postMessage({ type: 'editing', name: S.name, tab: TAB }); // 같은 교안을 연 다른 탭이 있으면 서로 알림
+  const dr0 = Draft.get(S.name);
+  if (dr0 && JSON.stringify(dr0) !== JSON.stringify(S.deck)) {
+    const newer = !!S.deck.modified && (!dr0.modified || S.deck.modified > dr0.modified); // 임시본을 만든 뒤에 다른 곳에서 저장됨
+    if (confirm('저장하지 않은 임시 작업본이 있습니다. 불러올까요?' + (newer ? `\n\n주의: 저장된 교안이 이 임시본보다 나중(${when(S.deck.modified)})에 저장되었습니다 — 다른 기기에서 고친 것 같습니다.\n임시본을 불러와 저장하면 그 내용을 덮어쓰게 됩니다. 잘 모르겠으면 “취소”를 누르세요.` : ''))) { S.deck = dr0; S.base = dr0.modified || ''; migrate(S.deck); S.cur = clamp(S.cur, 0, S.deck.slides.length - 1); S.sel = []; S.ssel = [curSlide().id]; pushHistory(); renderAll(); markDirty(); }
     else Draft.clear(S.name);
   }
 })();
