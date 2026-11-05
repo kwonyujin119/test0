@@ -479,6 +479,7 @@
     const e = elById(S.sel[0]); const items = [];
     if (e && editable(e)) items.push({ label: '글 편집', kbd: '더블클릭', fn: () => startEdit(e.id) });
     if (e && e.type === 'image') items.push({ label: '이미지 교체…', fn: () => { $('fileReplace').dataset.id = e.id; $('fileReplace').click(); } });
+    if (e && S.sel.length === 1 && ((e.type === 'image' && e.src) || isIconText(e))) items.push({ label: e.type === 'image' ? '배경 지우기…' : '아이콘 배경 지우기…', fn: () => showBgRemove(e) });
     if (e && e.type === 'math') items.push({ label: '수식 편집…', fn: () => openMathDialog(e) });
     if (e && e.type === 'embed') items.push({ label: '주소 바꾸기…', fn: () => openEmbedDialog(e) }, { label: '▶ 여기서 재생', fn: () => playEmbedHere(e.id) });
     if (e && (e.type === 'shape' || e.type === 'image' || e.type === 'text') && S.sel.length === 1) items.push({ label: '이 상자에 동영상 넣기…', fn: () => { const u = prompt('YouTube 주소 또는 퍼가기 코드를 붙여넣으세요'); if (u && !putEmbed(u)) alert('주소를 알아볼 수 없습니다'); } });
@@ -966,6 +967,7 @@
         ${row('줄 간격', num('style.lineHeight', st.lineHeight || 1.5, 0.1, 0.8, 3) + small('자간') + num('style.letterSpacing', st.letterSpacing || 0, 0.5, -5, 20) + small('문단') + num('style.paraGap', st.paraGap || 0, 2, 0, 200, '문단(줄바꿈) 사이 간격'))}
         ${row('글머리', selIn('style.list', st.list || '', LISTS))}
         ${row('맞춤', `<button class="btn sm" data-act="autofit" title="글이 상자 안에 꽉 차도록 글자 크기를 맞춥니다">글자 크기 자동 맞춤</button>`)}
+        ${isIconText(e) ? row('아이콘', `<button class="btn sm" data-act="bgRemove" title="아이콘의 바탕 칸(색 네모·동그라미 등)을 눌러서 지웁니다 · 아이콘은 그림으로 바뀝니다">🪄 아이콘 배경 지우기…</button>`) : ''}
       </section>
       <section><h4>상자 꾸밈</h4>
         ${row('배경', colorIn('style.bg', st.bg || theme().surface) + '<div style="flex:3">' + swatches('style.bg', true) + '</div>')}
@@ -977,6 +979,7 @@
       const fx = e.fx || {};
       body = `<section><h4>이미지</h4>
         ${row('파일', `<button class="btn sm" data-act="replaceImage">교체…</button><button class="btn sm" data-act="fitRatio" title="원본 비율로 높이 조정">원본 비율</button>`)}
+        ${e.src ? row('배경', `<button class="btn sm" data-act="bgRemove" title="바탕색(흰 배경 등)을 투명하게 만듭니다 · 지울 곳을 눌러 고를 수 있습니다">🪄 배경 지우기…</button>`) : ''}
         ${row('맞춤', choice('fit', e.fit || 'contain', [['contain', '맞추기'], ['cover', '채우기'], ['fill', '늘이기']]))}
         ${row('모양', selIn('mask', e.mask || '', MASKS))}
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 400))}
@@ -1177,6 +1180,7 @@
       case 'layout': showLayoutMenu(null, applyLayout); break;
       case 'dup': duplicateSelected(); break;
       case 'del': deleteSelected(); break;
+      case 'bgRemove': if (e) showBgRemove(e); break;
       case 'replaceImage': if (e) { $('fileReplace').dataset.id = e.id; $('fileReplace').click(); } break;
       case 'fitRatio': if (e && e.src) imageSize(e.src).then(d => { e.h = Math.round(e.w * d.h / d.w); commit(); rerenderEl(e.id); renderOverlay(); renderProps(); }); break;
       case 'distH': distribute('h'); break;
@@ -1783,6 +1787,149 @@
       try { const n = await addMySymFromDrop(ev.dataTransfer); if (n) { toast(`내 심벌에 ${n}개를 넣었습니다`); if (fold.has(MY)) { fold.delete(MY); lsSet(ICON_FOLD_KEY, Array.from(fold)); } draw(); } else toast('그림 파일이나 글자만 넣을 수 있습니다'); } catch (err) { alert(err.message); }
     });
     draw(); document.body.appendChild(bg);
+  }
+
+  /* ---- 배경 지우기 (아이콘 · 이미지) ---- */
+  /* 글자 수가 적은 글 상자(이모지·기호)는 아이콘으로 봄 */
+  function isIconText(e) { if (!e || e.type !== 'text') return false; const t = stripHtml(e.html || ''); return !!t && !/\n/.test(t) && graphemes(t).length <= 3; }
+  /* 이미지 → 캔버스. 가져올 수 있는 곳(이 사이트의 파일, 방금 넣은 그림, 교안 안에 든 그림)만 */
+  async function imageToCanvas(src) {
+    const urls = [API.resolveSrc(src)];
+    if (API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(src)) urls.push(GH.rawUrl(src));
+    let blob = null;
+    for (const u of urls) { try { const r = await fetch(u); if (r.ok) { blob = await r.blob(); break; } } catch (err) { } }
+    if (!blob) throw new Error('이 그림은 불러올 수 없어 배경을 지울 수 없습니다. 다른 사이트의 그림은 파일로 받아서 넣어 주세요.');
+    return new Promise((res, rej) => {
+      const im = new Image(), u = URL.createObjectURL(blob);
+      im.onload = () => {
+        const w0 = im.naturalWidth || 512, h0 = im.naturalHeight || 512, big = Math.max(w0, h0);
+        const r = big > 1400 ? 1400 / big : (blob.type === 'image/svg+xml' && big < 512 ? 512 / big : 1);
+        const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w0 * r)); c.height = Math.max(1, Math.round(h0 * r));
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); res(c);
+      };
+      im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('그림을 읽을 수 없습니다')); }; im.src = u;
+    });
+  }
+  /* 아이콘(이모지·기호 글 상자) → 상자와 같은 비율의 투명한 그림 */
+  function iconToCanvas(e) {
+    const st = resolveTextStyle(e, theme()), txt = stripHtml(e.html || ''), fs = st.fontSize || 150;
+    let k = clamp(480 / fs, 1, 4); k = Math.min(k, 1400 / Math.max(e.w, e.h));
+    const c = document.createElement('canvas'); c.width = Math.max(8, Math.round(e.w * k)); c.height = Math.max(8, Math.round(e.h * k));
+    const g = c.getContext('2d'); const font = (px) => `${st.italic ? 'italic ' : ''}${st.bold ? 700 : 400} ${px}px ${fontCss(st.font)}`;
+    let px = fs * k; g.font = font(px); let m = g.measureText(txt);
+    const hh = (mm) => (mm.actualBoundingBoxAscent + mm.actualBoundingBoxDescent) || px;
+    const sc = Math.min(1, 0.96 * c.width / Math.max(1, m.width), 0.96 * c.height / hh(m));
+    if (sc < 1) { px *= sc; g.font = font(px); m = g.measureText(txt); }
+    g.fillStyle = themeColor(st.color, theme()); g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.fillText(txt, c.width / 2, c.height / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2);
+    return c;
+  }
+  /* 지우기 계산: picks = 지울 곳들 {auto|x,y, r,g,b}. 같은 색으로 이어진 곳(또는 그림 전체의 같은 색)을 투명하게, 경계는 부드럽게 */
+  function eraseBackground(orig, W, H, picks, tol, all, soft) {
+    const src = orig.data, n = W * H, out = new Uint8ClampedArray(src);
+    const gone = new Uint8Array(n), fa = new Float32Array(n).fill(1), kc = new Uint8Array(n); // kc: 경계 픽셀이 어느 pick 색에 물들었는지
+    const T2 = tol * tol, S = soft ? Math.max(14, tol * 0.6) : 0, TS2 = (tol + S) * (tol + S);
+    const stack = new Int32Array(n), seen = new Uint8Array(n), ring = new Int32Array(n);
+    picks.forEach((p, pi) => {
+      const kr = p.r, kg = p.g, kb = p.b, tag = pi + 1;
+      const d2 = (i) => { const o = i * 4; if (src[o + 3] < 16) return 1e9; const a = src[o] - kr, b = src[o + 1] - kg, c = src[o + 2] - kb; return a * a + b * b + c * c; };
+      if (all) { for (let i = 0; i < n; i++) if (!gone[i] && d2(i) <= T2) gone[i] = tag; }
+      else {
+        seen.fill(0); let sp = 0;
+        const push = (i) => { if (seen[i]) return; seen[i] = 1; if (!gone[i] && d2(i) <= T2) { gone[i] = tag; stack[sp++] = i; } };
+        if (p.auto) { for (let x = 0; x < W; x++) { push(x); push(n - W + x); } for (let y = 0; y < H; y++) { push(y * W); push(y * W + W - 1); } }
+        else push(p.y * W + p.x);
+        while (sp) { const i = stack[--sp], x = i % W; if (x > 0) push(i - 1); if (x < W - 1) push(i + 1); if (i >= W) push(i - W); if (i < n - W) push(i + W); }
+      }
+      if (!S) return;
+      // 지운 곳에 맞닿은 두 겹: 배경색이 섞인 만큼 반투명하게
+      let rn = 0; seen.fill(0);
+      const edge = (i, from) => { if (gone[i] || seen[i]) return; seen[i] = 1; const d = d2(i); if (d >= TS2) return; const f = (Math.sqrt(d) - tol) / S; if (f < fa[i]) { fa[i] = Math.max(0, f); kc[i] = tag; } if (from === 1) ring[rn++] = i; };
+      const around = (i, from) => { const x = i % W; if (x > 0) edge(i - 1, from); if (x < W - 1) edge(i + 1, from); if (i >= W) edge(i - W, from); if (i < n - W) edge(i + W, from); };
+      for (let i = 0; i < n; i++) if (gone[i] === tag) around(i, 1);
+      const r1 = rn; for (let j = 0; j < r1; j++) around(ring[j], 2);
+    });
+    let cnt = 0;
+    for (let i = 0; i < n; i++) {
+      const o = i * 4;
+      if (gone[i]) { out[o + 3] = 0; if (src[o + 3] >= 16) cnt++; continue; }
+      const f = fa[i]; if (f >= 1) continue;
+      if (f <= 0.04) { out[o + 3] = 0; cnt++; continue; }
+      const p = picks[kc[i] - 1]; // 섞여 있던 배경색을 덜어 냄 (흰 테두리가 남지 않게)
+      out[o] = (src[o] - (1 - f) * p.r) / f; out[o + 1] = (src[o + 1] - (1 - f) * p.g) / f; out[o + 2] = (src[o + 2] - (1 - f) * p.b) / f; out[o + 3] = src[o + 3] * f;
+    }
+    return { data: out, gone, removed: cnt };
+  }
+  /* 가장자리에서 가장 많은 색 → 처음에 자동으로 지울 배경색. 가장자리가 이미 투명하거나 색이 제각각이면 없음 */
+  function borderColor(orig, W, H) {
+    const src = orig.data, cnt = new Map(); let total = 0, clear = 0;
+    const add = (i) => { const o = i * 4; total++; if (src[o + 3] < 16) { clear++; return; } const k = (src[o] >> 4) << 8 | (src[o + 1] >> 4) << 4 | (src[o + 2] >> 4); const v = cnt.get(k) || [0, 0, 0, 0]; v[0]++; v[1] += src[o]; v[2] += src[o + 1]; v[3] += src[o + 2]; cnt.set(k, v); };
+    for (let x = 0; x < W; x++) { add(x); add((H - 1) * W + x); } for (let y = 1; y < H - 1; y++) { add(y * W); add(y * W + W - 1); }
+    if (clear > total * 0.5) return { clear: true };
+    let best = null; for (const v of cnt.values()) if (!best || v[0] > best[0]) best = v;
+    if (!best || best[0] < total * 0.3) return null;
+    return { r: Math.round(best[1] / best[0]), g: Math.round(best[2] / best[0]), b: Math.round(best[3] / best[0]) };
+  }
+  async function showBgRemove(e) {
+    if (!e) return; if (S.editing) endEdit();
+    const isTxt = e.type === 'text';
+    if (!isTxt && !(e.type === 'image' && e.src)) { toast('이미지나 아이콘을 잡고 눌러 주세요'); return; }
+    const bg = document.createElement('div'); bg.className = 'modal-bg';
+    bg.innerHTML = `<div class="modal bgrm"><h3>${isTxt ? '아이콘 ' : ''}배경 지우기 <span class="muted" style="font-weight:400;font-size:13px">지울 곳을 그림에서 누르세요 · 누를 때마다 더 지워집니다</span></h3>
+      <div class="bgrm-view"><canvas></canvas><div class="bgrm-msg">불러오는 중…</div></div>
+      <div class="row"><label style="white-space:nowrap">지우는 정도</label><input type="range" min="4" max="160" value="48" data-tol style="flex:1"><span class="muted" data-tolv style="width:30px;text-align:right">48</span></div>
+      <div class="row" style="flex-wrap:wrap"><label class="bgrm-ck" title="켜면 눌러서 고른 색을 그림 어디에 있든 모두 지웁니다 (글자 안쪽의 막힌 틈까지)"><input type="checkbox" data-all> 떨어져 있는 같은 색도 지우기</label><label class="bgrm-ck" title="경계를 반투명하게 다듬어 흰 테두리가 남지 않게 합니다"><input type="checkbox" data-soft checked> 가장자리 부드럽게</label>
+        <span style="flex:1"></span><span class="bgrm-bgs" title="확인용 바탕"><button class="on" data-pv="" title="투명(체크 무늬)"></button><button data-pv="#ffffff" title="흰 바탕" style="background:#fff"></button><button data-pv="#111827" title="어두운 바탕" style="background:#111827"></button></span></div>
+      <div class="row"><span class="muted" data-info style="flex:1;font-size:12.5px"></span><button class="btn sm" data-back disabled>↶ 한 번 되돌리기</button><button class="btn sm" data-reset disabled>처음으로</button></div>
+      <div class="actions"><button class="btn" data-close>취소</button><button class="btn primary" data-ok disabled>적용</button></div></div>`;
+    document.body.appendChild(bg);
+    const q = (sel) => bg.querySelector(sel), cv = q('canvas'), msg = q('.bgrm-msg'), info = q('[data-info]'), ok = q('[data-ok]');
+    bg.addEventListener('click', (ev) => { if (ev.target === bg || ev.target.closest('[data-close]')) bg.remove(); });
+    let work;
+    try { work = isTxt ? iconToCanvas(e) : await imageToCanvas(e.src); }
+    catch (err) { msg.textContent = err.message; return; }
+    if (!bg.isConnected) return;
+    const W = work.width, H = work.height; let orig;
+    try { orig = work.getContext('2d').getImageData(0, 0, W, H); } catch (err) { msg.textContent = '이 그림은 보안 제한 때문에 배경을 지울 수 없습니다.'; return; }
+    cv.width = W; cv.height = H; msg.remove();
+    const g = cv.getContext('2d'); let picks = [], res = null, raf = 0;
+    const auto = borderColor(orig, W, H); const first = auto && !auto.clear ? [{ auto: true, r: auto.r, g: auto.g, b: auto.b }] : [];
+    picks = first.slice();
+    const draw = () => {
+      raf = 0;
+      const tol = +q('[data-tol]').value; q('[data-tolv]').textContent = tol;
+      res = eraseBackground(orig, W, H, picks, tol, q('[data-all]').checked, q('[data-soft]').checked);
+      g.putImageData(new ImageData(res.data, W, H), 0, 0);
+      const pct = Math.round(res.removed / (W * H) * 100);
+      info.textContent = !picks.length ? (auto && auto.clear ? '바탕이 이미 투명합니다. 더 지울 곳(색 칸 등)을 눌러 주세요.' : '지울 곳을 그림에서 눌러 주세요.') : res.removed ? `지운 넓이 ${pct < 1 ? '1% 미만' : pct + '%'}${first.length && picks.length === 1 ? ' · 가장자리 바탕색을 자동으로 지웠습니다' : ''}` : '지워진 곳이 없습니다. “지우는 정도”를 올려 보세요.';
+      ok.disabled = !res.removed; q('[data-back]').disabled = !picks.length; q('[data-reset]').disabled = picks.length === first.length;
+    };
+    const redraw = () => { if (!raf) raf = setTimeout(draw, 16); };
+    cv.addEventListener('click', (ev) => {
+      const r = cv.getBoundingClientRect(); if (!r.width) return;
+      const x = clamp(Math.floor((ev.clientX - r.left) / r.width * W), 0, W - 1), y = clamp(Math.floor((ev.clientY - r.top) / r.height * H), 0, H - 1), o = (y * W + x) * 4;
+      if (orig.data[o + 3] < 16 || (res && res.gone[y * W + x])) { info.textContent = '이미 지워진 곳입니다. 남아 있는 색을 눌러 주세요.'; return; }
+      if (picks.length >= 200) { info.textContent = '너무 많이 눌렀습니다. “처음으로”를 눌러 다시 해 주세요.'; return; }
+      picks.push({ x, y, r: orig.data[o], g: orig.data[o + 1], b: orig.data[o + 2] }); redraw();
+    });
+    bg.addEventListener('input', (ev) => { if (ev.target.matches('[data-tol],[data-all],[data-soft]')) redraw(); });
+    q('[data-back]').onclick = () => { picks.pop(); redraw(); };
+    q('[data-reset]').onclick = () => { picks = first.slice(); redraw(); };
+    q('.bgrm-bgs').onclick = (ev) => { const b = ev.target.closest('[data-pv]'); if (!b) return; for (const x of bg.querySelectorAll('[data-pv]')) x.classList.toggle('on', x === b); cv.style.background = b.dataset.pv || ''; };
+    ok.onclick = async () => {
+      if (!res || !res.removed) return;
+      ok.disabled = true; ok.textContent = '적용 중…';
+      try {
+        const blob = await new Promise((r, j) => cv.toBlob(b => b ? r(b) : j(new Error('그림을 만들지 못했습니다')), 'image/png'));
+        const src = await API.stage(blob, isTxt ? 'icon.png' : 'nobg.png');
+        bg.remove();
+        if (!curSlide().elements.includes(e)) { toast('개체가 바뀌어 적용하지 못했습니다'); return; }
+        if (isTxt) replaceBox(e, imageEl(e.x, e.y, e.w, e.h, src, { fit: 'contain', rotate: e.rotate || 0, opacity: e.opacity == null ? 1 : e.opacity }));
+        else { e.src = src; commit(); rerenderEl(e.id); renderOverlay(); renderProps(); }
+        toast(isTxt ? '아이콘을 그림으로 바꾸고 배경을 지웠습니다 · 되돌리기 Ctrl+Z' : '배경을 지웠습니다 · 되돌리기 Ctrl+Z');
+      } catch (err) { ok.disabled = false; ok.textContent = '적용'; alert('배경 지우기 실패: ' + err.message); }
+    };
+    draw();
   }
 
   /* ---- 수식 ---- */

@@ -229,6 +229,15 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .tpick .tp-grid div { width: 18px; height: 18px; border: 1px solid var(--ui-border); border-radius: 3px; background: var(--ui-bg); cursor: pointer; }
 .tpick .tp-grid div.on { background: var(--ui-accent); border-color: var(--ui-accent); }
 .tpick .tp-label { padding: 2px 4px; font-size: 12px; color: var(--ui-muted); }
+/* 배경 지우기 창 */
+.bgrm { width: 720px; }
+.bgrm-view { display: flex; align-items: center; justify-content: center; min-height: 220px; padding: 10px; border-radius: 10px; border: 1px solid var(--ui-border); background: rgba(0,0,0,.18); position: relative; }
+.bgrm-view canvas { max-width: 100%; max-height: 52vh; cursor: crosshair; border-radius: 4px; background: repeating-conic-gradient(#d4d7dd 0% 25%, #f4f5f7 0% 50%) 0 0 / 20px 20px; }
+.bgrm-msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; color: var(--ui-muted, #9aa3b2); background: var(--ui-panel); border-radius: 10px; line-height: 1.6; }
+.bgrm-ck { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; margin-right: 12px; }
+.bgrm-bgs { display: inline-flex; gap: 5px; }
+.bgrm-bgs button { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--ui-border); padding: 0; cursor: pointer; background: repeating-conic-gradient(#c9cdd4 0% 25%, #f4f5f7 0% 50%) 0 0 / 10px 10px; }
+.bgrm-bgs button.on { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
 .icon-modal { width: 760px; max-height: 88vh; display: flex; flex-direction: column; }
 .icon-modal .icon-secs { overflow: auto; flex: 1; min-height: 0; margin: 0 -6px; padding: 0 6px; }
 .icon-modal.dragover { outline: 2px dashed var(--ui-accent); outline-offset: -6px; }
