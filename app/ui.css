@@ -79,6 +79,7 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .deck-meta span { white-space: nowrap; }
 .deck-actions { display: flex; gap: 6px; margin-top: 4px; }
 .deck-card.busy { opacity: .55; pointer-events: none; }
+.ck-col { display: inline-flex; }
 .deck-card.busy .btn[disabled] { opacity: 1; }
 .deck-actions .spacer { flex: 1; }
 .hub-empty { text-align: center; color: var(--ui-muted); padding: 70px 0; border: 1px dashed var(--ui-border); border-radius: 14px; }

@@ -433,6 +433,9 @@ function setFontStyles(box, st, theme) {
   box.style.textAlign = st.align || 'left';
   box.style.letterSpacing = st.letterSpacing ? st.letterSpacing + 'px' : '';
   box.style.textShadow = st.tshadow ? '0 4px 18px rgba(0,0,0,.45)' : '';
+  box.style.webkitTextStroke = st.outline ? `${st.outline}px ${themeColor(st.outlineColor || '#000000', theme)}` : '';
+  box.style.writingMode = st.vertical ? 'vertical-rl' : '';
+  box.style.setProperty('--pg', st.paraGap ? st.paraGap + 'px' : '0px');
 }
 const VALIGN = { middle: 'center', bottom: 'flex-end' };
 
@@ -526,7 +529,7 @@ function renderImage(e, node, theme, mode) {
   img.style.objectFit = e.fit || 'contain';
   const cx = e.cropX == null ? 50 : e.cropX, cy = e.cropY == null ? 50 : e.cropY, z = e.zoom || 1;
   img.style.objectPosition = `${cx}% ${cy}%`;
-  if (z !== 1 || e.flip) { img.style.transform = `scale(${e.flip ? -z : z}, ${z})`; img.style.transformOrigin = `${cx}% ${cy}%`; }
+  if (z !== 1 || e.flip || e.flipV) { img.style.transform = `scale(${e.flip ? -z : z}, ${e.flipV ? -z : z})`; img.style.transformOrigin = `${cx}% ${cy}%`; }
   const fx = e.fx || {}; const f = [];
   if (fx.b != null && fx.b !== 100) f.push(`brightness(${fx.b}%)`);
   if (fx.c != null && fx.c !== 100) f.push(`contrast(${fx.c}%)`);
@@ -599,10 +602,12 @@ function renderShape(e, node, theme, mode) {
     default: body = `<rect width="${w}" height="${h}" fill="${fill}"/>`;
   }
   if (e.shadow) node.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,.25))';
+  if (e.flip || e.flipV) body = `<g transform="translate(${e.flip ? w : 0},${e.flipV ? h : 0}) scale(${e.flip ? -1 : 1},${e.flipV ? -1 : 1})">${body}</g>`; // 좌우·상하 반전 (글자는 그대로)
   node.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">${defs}${body}</svg>`;
   // 도형 안 글자 (편집 화면에서는 비어 있어도 상자를 만들어 둠)
   if (!isLine && (e.html || mode === 'edit')) {
     const box = document.createElement('div'); box.className = 'shape-text';
+    if (e.style && e.style.padding != null && e.style.padding !== '') box.style.padding = e.style.padding + 'px';
     const inner = document.createElement('div'); inner.className = 'el-text-inner'; inner.innerHTML = e.html || '';
     box.appendChild(inner); node.appendChild(box);
     applyElementTextStyle(e, node, theme);
@@ -616,18 +621,53 @@ const SHAPES = [
   { id: 'blockArrow', name: '굵은 화살표' }, { id: 'doubleArrow', name: '양쪽 굵은 화살표' }, { id: 'line', name: '선' }, { id: 'arrow', name: '화살표 선' }, { id: 'dline', name: '양쪽 화살표 선' },
 ];
 
-/* ---------- 표 ---------- */
+/* ---------- 표 ----------
+   e.rows  칸 내용(HTML) 2차원 배열
+   e.cols  열 너비 비율 · e.rh 행 높이 비율 (없으면 균등)
+   e.cells { "행,열": { cs, rs, fill, align, color } }  합친 칸(colspan/rowspan)과 칸별 꾸밈 */
+function tableWeights(arr, n) { // 저장된 비율 → n개 비율 (없거나 개수가 다르면 평균으로 채움), 합 = 1
+  const a = Array.isArray(arr) ? arr.slice(0, n).map(v => Math.max(0.01, +v || 0)) : [];
+  const avg = a.length ? a.reduce((s, v) => s + v, 0) / a.length : 1;
+  while (a.length < n) a.push(avg);
+  const sum = a.reduce((s, v) => s + v, 0) || 1;
+  return a.map(v => v / sum);
+}
+function tableCovered(cells, nr, nc) { // 합친 칸에 가려져 그리지 않는 자리
+  const cov = new Set();
+  for (const k in (cells || {})) {
+    const [r, c] = k.split(',').map(Number); const s = cells[k];
+    const rs = Math.min(s.rs || 1, nr - r), cs = Math.min(s.cs || 1, nc - c);
+    for (let i = 0; i < rs; i++) for (let j = 0; j < cs; j++) if (i || j) cov.add((r + i) + ',' + (c + j));
+  }
+  return cov;
+}
 function renderTable(e, node, theme, mode) {
   const rows = e.rows && e.rows.length ? e.rows : [['']];
+  const nr = rows.length, nc = Math.max(1, ...rows.map(r => r.length));
+  const cells = e.cells || {}, covered = tableCovered(cells, nr, nc);
   const t = document.createElement('table');
   t.className = 'tbl lines-' + (e.lines || 'grid') + (e.band ? ' band' : '') + (e.header ? ' has-head' : '') + (e.firstCol ? ' first-col' : '');
   t.style.setProperty('--head', themeColor(e.headFill || '$accent', theme));
   t.style.setProperty('--headfg', themeColor(e.headColor || '#ffffff', theme));
   t.style.setProperty('--line', themeColor(e.lineColor || '$muted', theme));
+  const cg = document.createElement('colgroup');
+  tableWeights(e.cols, nc).forEach(w => { const col = document.createElement('col'); col.style.width = (w * 100).toFixed(3) + '%'; cg.appendChild(col); });
+  t.appendChild(cg);
+  const rh = tableWeights(e.rh, nr);
   const tb = document.createElement('tbody'); t.appendChild(tb);
   rows.forEach((r, ri) => {
-    const tr = document.createElement('tr');
-    r.forEach((c, ci) => { const td = document.createElement(ri === 0 && e.header ? 'th' : 'td'); td.innerHTML = c || ''; td.dataset.r = ri; td.dataset.c = ci; tr.appendChild(td); });
+    const tr = document.createElement('tr'); tr.style.height = (rh[ri] * 100).toFixed(3) + '%';
+    for (let ci = 0; ci < nc; ci++) {
+      const key = ri + ',' + ci; if (covered.has(key)) continue;
+      const td = document.createElement(ri === 0 && e.header ? 'th' : 'td'); td.innerHTML = r[ci] || ''; td.dataset.r = ri; td.dataset.c = ci;
+      const s = cells[key];
+      if (s) {
+        if (s.cs > 1) td.colSpan = Math.min(s.cs, nc - ci); if (s.rs > 1) td.rowSpan = Math.min(s.rs, nr - ri);
+        if (s.fill) { td.style.background = themeColor(s.fill, theme); td.classList.add('filled'); }
+        if (s.align) td.style.textAlign = s.align; if (s.color) td.style.color = themeColor(s.color, theme);
+      }
+      tr.appendChild(td);
+    }
     tb.appendChild(tr);
   });
   if (e.radius) { node.style.borderRadius = e.radius + 'px'; node.style.overflow = 'hidden'; }
@@ -650,7 +690,7 @@ function parseChartData(text) {
 }
 function chartPalette(e, theme) {
   const base = [theme.accent, theme.accent2, '#10b981', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316', '#64748b', '#ec4899', '#84cc16'];
-  if (e.colors && e.colors.length) return e.colors.map(c => themeColor(c, theme)).concat(base);
+  if (e.colors && e.colors.length) return base.map((b, i) => e.colors[i] ? themeColor(e.colors[i], theme) : b);
   return base;
 }
 function niceScale(min, max) {

@@ -27,6 +27,7 @@
 .el-text-inner { width: 100%; outline: none; min-height: 1em; white-space: pre-wrap; }
 .el-text-inner.pre { white-space: pre-wrap; tab-size: 4; }
 .el-text-inner p { margin: 0; }
+.el-text-inner > p:not(:last-child), .el-text-inner > div:not(:last-child) { margin-bottom: var(--pg, 0); } /* 문단 간격 */
 .el-text-inner ul, .el-text-inner ol { margin: 0; padding-left: 1.2em; }
 .el-text-inner li { margin: 0.12em 0; padding-left: 0.15em; }
 .el-text-inner ul > li::marker { color: var(--accent); }
@@ -64,6 +65,8 @@
 .tbl.first-col td:first-child { font-weight: 700; }
 .tbl.lines-h th, .tbl.lines-h td { border-left: 0; border-right: 0; }
 .tbl.lines-none th, .tbl.lines-none td { border: 0; }
+.slide.tbl-c .el-table th, .slide.tbl-c .el-table td { cursor: col-resize; }
+.slide.tbl-r .el-table th, .slide.tbl-r .el-table td { cursor: row-resize; }
 .tbl.lines-none.band tr:nth-child(even) td { background: color-mix(in srgb, var(--surface) 85%, transparent); }
 
 /* 차트 */

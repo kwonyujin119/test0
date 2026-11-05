@@ -118,7 +118,7 @@
       const i = curSlide().elements.indexOf(e);
       deck = JSON.parse(JSON.stringify(S.deck));
       const c = deck.slides[S.cur].elements[i];
-      if (e.type === 'table') c.rows = Array.from(node.querySelectorAll('tr')).map(tr => Array.from(tr.children).map(x => cleanHtml(x.innerHTML)));
+      if (e.type === 'table') c.rows = readTableRows(node, e);
       else { const h = editHosts(node, e)[0]; if (h) c.html = cleanHtml(h.innerHTML); }
       if (!S.dirty && JSON.stringify(c) === JSON.stringify(e)) return; // 바뀐 것 없음
     }
@@ -184,7 +184,8 @@
     old.replaceWith(n); markSelection();
   }
   function renderOverlay() {
-    overlay.innerHTML = '';
+    const guides = Array.from(overlay.querySelectorAll('.guide')); // 끌기·크기 조절 중 붙는 자리 안내선은 지우지 않음
+    overlay.innerHTML = ''; guides.forEach(g => overlay.appendChild(g));
     if (S.sel.length > 1) {
       const els = selEls().filter(e => !e.locked); if (els.length < 2) return;
       const b = bboxOf(els), k = S.k;
@@ -482,9 +483,10 @@
     if (e && e.type === 'embed') items.push({ label: '주소 바꾸기…', fn: () => openEmbedDialog(e) }, { label: '▶ 여기서 재생', fn: () => playEmbedHere(e.id) });
     if (e && (e.type === 'shape' || e.type === 'image' || e.type === 'text') && S.sel.length === 1) items.push({ label: '이 상자에 동영상 넣기…', fn: () => { const u = prompt('YouTube 주소 또는 퍼가기 코드를 붙여넣으세요'); if (u && !putEmbed(u)) alert('주소를 알아볼 수 없습니다'); } });
     items.push({ label: '복제', kbd: 'Ctrl+D', fn: duplicateSelected }, { label: '복사', kbd: 'Ctrl+C', fn: copySelected },
+      { label: '잘라내기', kbd: 'Ctrl+X', fn: () => { copySelected(); deleteSelected(); } }, { label: '붙여넣기', kbd: 'Ctrl+V', fn: () => { if (S.clip) pasteData(S.clip); else toast('먼저 복사하세요 (Ctrl+C)'); } },
       { label: '서식 복사', kbd: 'Ctrl+Shift+C', fn: copyStyle }, { label: '서식 붙여넣기', kbd: 'Ctrl+Shift+V', fn: pasteStyle }, { sep: true },
       S.sel.length > 1 ? { label: '묶기', kbd: 'Ctrl+G', fn: groupSel } : null, e && e.group ? { label: '묶음 풀기', kbd: 'Ctrl+Shift+G', fn: ungroupSel } : null,
-      { label: '맨 앞으로', fn: () => zOrder('front') }, { label: '맨 뒤로', fn: () => zOrder('back') }, { sep: true },
+      { label: '맨 앞으로', kbd: 'Ctrl+Shift+]', fn: () => zOrder('front') }, { label: '앞으로 한 단계', kbd: 'Ctrl+]', fn: () => zOrder('up') }, { label: '뒤로 한 단계', kbd: 'Ctrl+[', fn: () => zOrder('down') }, { label: '맨 뒤로', kbd: 'Ctrl+Shift+[', fn: () => zOrder('back') }, { sep: true },
       { label: e && e.locked ? '잠금 해제' : '잠금 (이동 방지)', fn: () => { for (const x of selEls()) x.locked = !x.locked; commit(); markSelection(); renderOverlay(); renderProps(); } },
       { label: '삭제', kbd: 'Del', danger: true, fn: deleteSelected });
     return items.filter(Boolean);
@@ -511,6 +513,7 @@
     if (t.closest('.el.playing') && !t.closest('.handle')) return; // 재생 중인 플레이어 조작
     const handle = t.closest('.handle');
     if (handle) { ev.preventDefault(); startResize(ev, handle.dataset.h); return; }
+    const tb = tableBorderHit(ev); if (tb) { ev.preventDefault(); startTableLineDrag(ev, tb); return; }
     const node = t.closest('.el');
     if (S.editing) { if (node && node.dataset.id === S.editing) return; endEdit(); }
     if (node) {
@@ -546,11 +549,15 @@
       renderOverlay(); updatePosInputs();
     }, () => { clearGuides(); if (moved) { commit(); renderProps(); } });
   }
-  function computeSnap(x, y, w, h, moving) {
-    const th = 7 / S.k; const others = curSlide().elements.filter(e => !moving.includes(e));
+  function snapLines(moving) { // 붙을 수 있는 세로·가로 선: 슬라이드 가장자리·가운데·여백, 다른 개체의 가장자리·가운데, 격자
+    const others = curSlide().elements.filter(e => !moving.includes(e));
     const vx = [0, SLIDE_W / 2, SLIDE_W, M, SLIDE_W - M], hy = [0, SLIDE_H / 2, SLIDE_H];
     for (const o of others) { vx.push(o.x, o.x + o.w / 2, o.x + o.w); hy.push(o.y, o.y + o.h / 2, o.y + o.h); }
     if (S.grid) { for (let v = 0; v <= SLIDE_W; v += 60) vx.push(v); for (let v = 0; v <= SLIDE_H; v += 60) hy.push(v); }
+    return { vx, hy };
+  }
+  function computeSnap(x, y, w, h, moving) {
+    const th = 7 / S.k; const { vx, hy } = snapLines(moving);
     let dx = 0, dy = 0, bx = th, by = th; const guides = [];
     for (const c of [x, x + w / 2, x + w]) for (const v of vx) { const d = Math.abs(v - c); if (d < bx) { bx = d; dx = v - c; guides[0] = { v }; } }
     for (const c of [y, y + h / 2, y + h]) for (const v of hy) { const d = Math.abs(v - c); if (d < by) { by = d; dy = v - c; guides[1] = { h: v }; } }
@@ -588,14 +595,24 @@
       if (h.includes('e')) w = o.w + dx; if (h.includes('w')) { x = o.x + dx; w = o.w - dx; }
       if (h.includes('s')) hh = o.h + dy; if (h.includes('n')) { y = o.y + dy; hh = o.h - dy; }
       const rk = e.type === 'image' || e.type === 'embed';
-      const keep = isCorner && ((rk && !m.shiftKey) || (!rk && m.shiftKey));
+      const keep = (isCorner && ((rk && !m.shiftKey) || (!rk && m.shiftKey))) || (e.ratioLock && !m.shiftKey);
       if (keep) { if (Math.abs(w / ratio - hh) * ratio > Math.abs(hh * ratio - w)) hh = w / ratio; else w = hh * ratio; if (h.includes('w')) x = o.x + o.w - w; if (h.includes('n')) y = o.y + o.h - hh; }
+      if (!keep && !o.r && !m.altKey) { // 크기를 바꿀 때도 다른 개체·슬라이드 가장자리에 붙음 (Alt: 끄기)
+        const { vx, hy } = snapLines([e]); const th = 7 / S.k, gs = [];
+        const near = (val, list) => { let best = null, bd = th; for (const v of list) { const d = Math.abs(v - val); if (d < bd) { bd = d; best = v; } } return best; };
+        let s;
+        if (h.includes('e') && (s = near(x + w, vx)) != null) { w = s - x; gs.push({ v: s }); }
+        if (h.includes('w') && (s = near(x, vx)) != null) { w += x - s; x = s; gs.push({ v: s }); }
+        if (h.includes('s') && (s = near(y + hh, hy)) != null) { hh = s - y; gs.push({ h: s }); }
+        if (h.includes('n') && (s = near(y, hy)) != null) { hh += y - s; y = s; gs.push({ h: s }); }
+        showGuides(gs);
+      }
       w = Math.max(16, w); hh = Math.max(16, hh);
       e.x = Math.round(x); e.y = Math.round(y); e.w = Math.round(w); e.h = Math.round(hh);
       if (e.type === 'shape' || e.type === 'chart') { rerenderEl(e.id); }
       else { node.style.left = e.x + 'px'; node.style.top = e.y + 'px'; node.style.width = e.w + 'px'; node.style.height = e.h + 'px'; }
       renderOverlay(); updatePosInputs();
-    }, () => { commit(); renderProps(); });
+    }, () => { clearGuides(); commit(); renderProps(); });
   }
   function startMarquee(ev) {
     const rect = overlay.getBoundingClientRect(); const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top; let box = null;
@@ -617,6 +634,93 @@
   const isLineShape = (e) => e.type === 'shape' && (e.shape === 'line' || e.shape === 'arrow' || e.shape === 'dline');
   const editable = (e) => !!e && (e.type === 'text' || e.type === 'table' || (e.type === 'shape' && !isLineShape(e)));
   function editHosts(node, e) { return e.type === 'table' ? Array.from(node.querySelectorAll('th,td')) : [node.querySelector('.el-text-inner')].filter(Boolean); }
+  /* 표 칸 내용을 행,열 자리로 읽음 (합친 칸 아래 가려진 자리는 저장된 값 유지 · Tab 으로 늘어난 줄은 빈 칸으로 채움) */
+  function readTableRows(node, e) {
+    const rows = (e.rows || []).map(r => r.slice());
+    node.querySelectorAll('th,td').forEach(td => { const r = +td.dataset.r, c = +td.dataset.c; if (!rows[r]) rows[r] = []; rows[r][c] = cleanHtml(td.innerHTML); });
+    const nc = Math.max(1, ...rows.map(r => r.length));
+    return rows.map(r => { const o = []; for (let i = 0; i < nc; i++) o.push(r[i] || ''); return o; });
+  }
+  function focusCell(id, r, c) {
+    const node = nodeOf(id); const td = node && node.querySelector(`[data-r="${r}"][data-c="${c}"]`); if (!td) return;
+    td.focus(); const rg = document.createRange(); rg.selectNodeContents(td); rg.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(rg);
+  }
+  /* 칸 꾸밈·합치기 (편집 중 글 도구 막대에서) */
+  function cellOp(cmd, val) {
+    const e = elById(S.editing || S.sel[0]); if (!e || e.type !== 'table' || !S.cell) return;
+    const { r, c } = S.cell, key = r + ',' + c;
+    e.cells = e.cells || {}; const s = e.cells[key] || (e.cells[key] = {});
+    const node = nodeOf(e.id), td = node && node.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+    const tidy = () => { if (!Object.keys(s).length) delete e.cells[key]; if (!Object.keys(e.cells).length) delete e.cells; };
+    if (cmd === 'cellFill' || cmd === 'cellFillClear') {
+      if (cmd === 'cellFill') s.fill = val; else delete s.fill;
+      if (td) { td.style.background = s.fill ? themeColor(s.fill, theme()) : ''; td.classList.toggle('filled', !!s.fill); }
+      tidy(); commit(); return;
+    }
+    if (cmd === 'cellAlign') { s.align = val; if (td) td.style.textAlign = val; tidy(); commit(); return; }
+    if (cmd === 'mergeR' || cmd === 'mergeD') {
+      const nr = e.rows.length, nc = e.rows[0].length, rs = s.rs || 1, cs = s.cs || 1;
+      const cov = tableCovered(e.cells, nr, nc);
+      const plain = (rr, cc) => rr < nr && cc < nc && !cov.has(rr + ',' + cc) && !((e.cells[rr + ',' + cc] || {}).rs > 1) && !((e.cells[rr + ',' + cc] || {}).cs > 1);
+      const eat = []; let ok = true;
+      if (cmd === 'mergeR') for (let i = 0; i < rs; i++) { if (!plain(r + i, c + cs)) ok = false; eat.push([r + i, c + cs]); }
+      else for (let j = 0; j < cs; j++) { if (!plain(r + rs, c + j)) ok = false; eat.push([r + rs, c + j]); }
+      if (!ok) { tidy(); toast(cmd === 'mergeR' ? '오른쪽에 합칠 수 있는 칸이 없습니다 (표 끝이거나 이미 합친 칸)' : '아래에 합칠 수 있는 칸이 없습니다 (표 끝이거나 이미 합친 칸)', 2600); return; }
+      if (S.editing) endEdit();
+      const extra = eat.map(([rr, cc]) => e.rows[rr][cc]).filter(x => x && stripHtml(x).trim());
+      if (extra.length) e.rows[r][c] = [e.rows[r][c], ...extra].filter(x => x && stripHtml(x).trim()).join(' ');
+      eat.forEach(([rr, cc]) => { e.rows[rr][cc] = ''; delete e.cells[rr + ',' + cc]; });
+      if (cmd === 'mergeR') s.cs = cs + 1; else s.rs = rs + 1;
+      e.cells[key] = s; commit(); rerenderEl(e.id); renderOverlay(); startEdit(e.id); focusCell(e.id, r, c); return;
+    }
+    if (cmd === 'split') {
+      if (!(s.rs > 1 || s.cs > 1)) { tidy(); toast('합친 칸이 아닙니다', 2000); return; }
+      if (S.editing) endEdit();
+      delete s.rs; delete s.cs; tidy(); commit(); rerenderEl(e.id); renderOverlay(); startEdit(e.id); focusCell(e.id, r, c);
+    }
+  }
+  /* 행·열을 넣고 뺄 때 합친 칸·칸 꾸밈의 자리를 따라 옮김. insert=true 면 idx 다음 자리에 추가, false 면 idx 삭제 */
+  function tableRemap(e, axis, idx, insert) {
+    const out = {}, cells = e.cells || {};
+    for (const k in cells) {
+      let [r, c] = k.split(',').map(Number); const s = Object.assign({}, cells[k]);
+      let p = axis === 'r' ? r : c, span = axis === 'r' ? (s.rs || 1) : (s.cs || 1);
+      if (insert) { if (p > idx) p++; else if (p + span - 1 > idx) span++; }
+      else { if (p === idx) { if (span > 1) span--; else continue; } else if (p > idx) p--; else if (p + span - 1 >= idx) span--; }
+      if (axis === 'r') { r = p; if (span > 1) s.rs = span; else delete s.rs; } else { c = p; if (span > 1) s.cs = span; else delete s.cs; }
+      if (Object.keys(s).length) out[r + ',' + c] = s;
+    }
+    if (Object.keys(out).length) e.cells = out; else delete e.cells;
+  }
+  /* 표를 잡은 채 칸 사이 경계를 끌면 열 너비·행 높이가 바뀜 */
+  function tableBorderHit(ev) {
+    const td = ev.target.closest ? ev.target.closest('th,td') : null; const node = td && td.closest('.el-table'); if (!node) return null;
+    const e = elById(node.dataset.id); if (!e || e.type !== 'table' || e.locked || e.rotate || !(S.sel.includes(e.id) || S.editing === e.id)) return null;
+    const nr = e.rows.length, nc = e.rows[0].length, r = +td.dataset.r, c = +td.dataset.c, rs = td.rowSpan || 1, cs = td.colSpan || 1;
+    const b = td.getBoundingClientRect(), th = 7;
+    if (ev.clientX > b.right - th && c + cs < nc) return { e, node, axis: 'c', i: c + cs - 1 };
+    if (ev.clientX < b.left + th && c > 0) return { e, node, axis: 'c', i: c - 1 };
+    if (ev.clientY > b.bottom - th && r + rs < nr) return { e, node, axis: 'r', i: r + rs - 1 };
+    if (ev.clientY < b.top + th && r > 0) return { e, node, axis: 'r', i: r - 1 };
+    return null;
+  }
+  function startTableLineDrag(ev, hit) {
+    const { e, node, axis, i } = hit; if (S.editing === e.id) endEdit();
+    const n = axis === 'c' ? e.rows[0].length : e.rows.length, key = axis === 'c' ? 'cols' : 'rh', total = axis === 'c' ? e.w : e.h;
+    const px0 = tableWeights(e[key], n).map(v => v * total); const s0 = axis === 'c' ? ev.clientX : ev.clientY, min = 24;
+    const apply = (w) => { const els = node.querySelectorAll(axis === 'c' ? 'col' : 'tr'); w.forEach((v, k) => { if (els[k]) els[k].style[axis === 'c' ? 'width' : 'height'] = (v * 100).toFixed(3) + '%'; }); };
+    let w = null;
+    track((m) => {
+      const d = ((axis === 'c' ? m.clientX : m.clientY) - s0) / S.k;
+      const a = clamp(px0[i] + d, min, px0[i] + px0[i + 1] - min); const px = px0.slice(); px[i] = a; px[i + 1] = px0[i] + px0[i + 1] - a;
+      w = px.map(v => v / total); apply(w);
+    }, () => { if (!w) return; e[key] = w.map(v => Math.round(v * 1000) / 1000); commit(); rerenderEl(e.id); renderOverlay(); });
+  }
+  stage.addEventListener('pointermove', (ev) => {
+    if (ev.buttons || !slideNode) return;
+    const h = (S.sel.length === 1 || S.editing) ? tableBorderHit(ev) : null;
+    slideNode.classList.toggle('tbl-c', !!h && h.axis === 'c'); slideNode.classList.toggle('tbl-r', !!h && h.axis === 'r');
+  });
   function startEdit(id, ev, selectAll) {
     const e = elById(id); if (!editable(e)) return;
     if (S.editing && S.editing !== id) endEdit();
@@ -649,7 +753,7 @@
     hosts.forEach(h => { h.removeEventListener('blur', onEditBlur); h.removeEventListener('focus', onCellFocus); h.contentEditable = 'false'; });
     let changed = false;
     if (e.type === 'table') {
-      const rows = Array.from(node.querySelectorAll('tr')).map(tr => Array.from(tr.children).map(c => cleanHtml(c.innerHTML)));
+      const rows = readTableRows(node, e);
       if (JSON.stringify(rows) !== JSON.stringify(e.rows)) { e.rows = rows; changed = true; }
     } else if (hosts[0]) {
       const html = cleanHtml(hosts[0].innerHTML);
@@ -693,7 +797,12 @@
       <button class="btn" data-cmd="size+" title="글자 크게">A+</button>
       <button class="btn" data-cmd="link" title="링크 (Ctrl+K)">🔗</button>
       <button class="btn" data-cmd="sym" title="기호 넣기 (① ★ → ㎡ ℃ …)">Ω</button>
-      <button class="btn" data-cmd="removeFormat" title="서식 지우기">✕</button>`;
+      <button class="btn" data-cmd="removeFormat" title="서식 지우기">✕</button>${e.type !== 'table' ? '' : `
+      <span class="sep"></span>
+      <input type="color" data-cmd="cellFill" value="#fde68a" title="이 칸 배경색">
+      <button class="btn" data-cmd="cellFillClear" title="칸 배경색 지우기">⌫</button>
+      <button class="btn" data-cmd="cellAlign" data-val="left" title="칸 왼쪽 정렬">⇤</button><button class="btn" data-cmd="cellAlign" data-val="center" title="칸 가운데 정렬">↔</button><button class="btn" data-cmd="cellAlign" data-val="right" title="칸 오른쪽 정렬">⇥</button>
+      <button class="btn" data-cmd="mergeR" title="오른쪽 칸과 합치기">합→</button><button class="btn" data-cmd="mergeD" title="아래 칸과 합치기">합↓</button><button class="btn" data-cmd="split" title="합친 칸 나누기">나누기</button>`}`;
     textToolbar.addEventListener('mousedown', (ev) => { if (ev.target.tagName !== 'INPUT') ev.preventDefault(); });
     textToolbar.addEventListener('click', (ev) => {
       const sb = ev.target.closest('[data-sym]'); if (sb) { exec('insertText', sb.dataset.sym); return; }
@@ -703,9 +812,11 @@
       if (cmd === 'hilite') { exec('hiliteColor', '#fde68a'); return; }
       if (cmd === 'sym') { let pop = textToolbar.querySelector('.sym-pop'); if (pop) { pop.remove(); return; } pop = document.createElement('div'); pop.className = 'sym-pop'; pop.innerHTML = SYMBOLS.map(c => `<button class="btn" data-sym="${esc(c)}">${esc(c)}</button>`).join(''); textToolbar.appendChild(pop); return; }
       if (cmd === 'link') { const u = prompt('링크 주소'); if (u) exec('createLink', u); return; }
+      if (/^(cellFillClear|cellAlign|mergeR|mergeD|split)$/.test(cmd)) { cellOp(cmd, b.dataset.val); return; }
       exec(cmd);
     });
     textToolbar.querySelector('input[type=color]').addEventListener('input', (ev) => exec('foreColor', ev.target.value));
+    const cf = textToolbar.querySelector('input[data-cmd=cellFill]'); if (cf) cf.addEventListener('input', (ev) => cellOp('cellFill', ev.target.value));
     main.appendChild(textToolbar); positionTextToolbar();
   }
   function positionTextToolbar() {
@@ -768,6 +879,7 @@
       ${mode === 'color' ? row('색', colorIn('slide.bg.color', bg.color || theme().bg) + '<div style="flex:3">' + swatches('slide.bg.color') + '</div>') : ''}
       ${mode === 'gradient' ? row('프리셋', `<div class="swatches">${GRADS.map(g => `<div class="swatch" data-k="slide.bg.gradient" data-val="${g}" style="background:${g}"></div>`).join('')}</div>`) + row('직접', `<input type="text" data-k="slide.bg.gradient" value="${esc(bg.gradient || '')}" placeholder="linear-gradient(...)">`) : ''}
       ${mode === 'image' ? row('이미지', `<button class="btn sm" data-act="bgImage">파일 선택…</button>`) + (bg.image ? row('맞춤', selIn('slide.bg.fit', bg.fit || 'cover', [['cover', '채우기'], ['contain', '맞추기']])) + row('어둡게', rng('slide.bg.dim', bg.dim || 0, 0, 0.85, 0.05, '사진 위 글자가 잘 보이도록 어둡게')) + row('바탕색', colorIn('slide.bg.color', bg.color || theme().bg)) : '') : ''}
+      ${row('', `<button class="btn sm" data-act="bgAll" title="지금 슬라이드의 배경(종류·색·이미지)을 모든 슬라이드에 똑같이">이 배경을 모든 슬라이드에</button>`)}
       ${row('장식', selIn('slide.decor', s.decor || '', DECORS))}
       ${row('전환', selIn('slide.transition', tr, TRANS))}
       ${morphOn ? hint('✨ 모핑: 이 슬라이드를 앞 슬라이드의 복제본(Ctrl+Shift+D)으로 만든 뒤 요소를 옮기거나 키우면, 발표 때 그 사이가 부드럽게 움직입니다.') : ''}
@@ -795,7 +907,7 @@
     </section>`;
   }
   function posSection(e) {
-    return `<section><h4>위치 · 크기 ${tog('locked', e.locked, e.locked ? '🔒 잠김' : '🔓', '잠그면 이동/크기 조절이 안 됩니다')}</h4>
+    return `<section><h4>위치 · 크기 ${tog('locked', e.locked, e.locked ? '🔒 잠김' : '🔓', '잠그면 이동/크기 조절이 안 됩니다')} ${tog('ratioLock', e.ratioLock, '⛶ 비율', '비율 고정: 너비나 높이를 바꾸면 다른 쪽도 따라 바뀝니다 (Shift 없이 끌어도 유지)')}</h4>
       <div class="grid4">
         ${num('x', e.x, 1, null, null, 'X')}${num('y', e.y, 1, null, null, 'Y')}${num('w', e.w, 1, 16, null, '너비')}${num('h', e.h, 1, 16, null, '높이')}
       </div>
@@ -817,7 +929,8 @@
     return `${row('글꼴', `<select data-k="style.font">${fontOptions(st.font)}</select>`)}
       ${row('크기', num('style.fontSize', st.fontSize, 2, 8, 400) + choice('style.fontSize', st.fontSize, (o.sizes || [24, 32, 40, 56, 72]).map(v => [v, String(v)])))}
       ${row('색', colorIn('style.color', st.color) + '<div style="flex:3">' + swatches('style.color') + '</div>')}
-      ${row('스타일', tog('style.bold', st.bold, '<b>B</b>', '굵게 (Ctrl+B)') + tog('style.italic', st.italic, '<i>I</i>', '기울임 (Ctrl+I)') + tog('style.underline', st.underline, '<u>U</u>', '밑줄') + tog('style.tshadow', st.tshadow, '그림자', '글자 그림자 (사진 위 글자에 좋음)'))}
+      ${row('스타일', tog('style.bold', st.bold, '<b>B</b>', '굵게 (Ctrl+B)') + tog('style.italic', st.italic, '<i>I</i>', '기울임 (Ctrl+I)') + tog('style.underline', st.underline, '<u>U</u>', '밑줄') + tog('style.tshadow', st.tshadow, '그림자', '글자 그림자 (사진 위 글자에 좋음)') + (e.type === 'text' || e.type === 'shape' ? tog('style.vertical', st.vertical, '세로', '세로 쓰기') : ''))}
+      ${row('외곽선', num('style.outline', st.outline || 0, 0.5, 0, 10, '글자 테두리 두께 (0 = 없음)') + colorIn('style.outlineColor', st.outlineColor || '#000000'))}
       ${row('가로 정렬', choice('style.align', st.align || 'left', [['left', '⇤', '왼쪽'], ['center', '↔', '가운데'], ['right', '⇥', '오른쪽']]))}
       ${o.valign === false ? '' : row('세로 정렬', choice('style.valign', st.valign || 'top', [['top', '⤒', '위'], ['middle', '↕', '가운데'], ['bottom', '⤓', '아래']]))}`;
   }
@@ -850,7 +963,7 @@
       body = `<section><h4>텍스트</h4>
         ${row('역할', selIn('role', e.role || 'text', Object.entries(ROLE_NAMES)))}
         ${fontRows(e, st)}
-        ${row('줄 간격', num('style.lineHeight', st.lineHeight || 1.5, 0.1, 0.8, 3) + small('자간') + num('style.letterSpacing', st.letterSpacing || 0, 0.5, -5, 20))}
+        ${row('줄 간격', num('style.lineHeight', st.lineHeight || 1.5, 0.1, 0.8, 3) + small('자간') + num('style.letterSpacing', st.letterSpacing || 0, 0.5, -5, 20) + small('문단') + num('style.paraGap', st.paraGap || 0, 2, 0, 200, '문단(줄바꿈) 사이 간격'))}
         ${row('글머리', selIn('style.list', st.list || '', LISTS))}
         ${row('맞춤', `<button class="btn sm" data-act="autofit" title="글이 상자 안에 꽉 차도록 글자 크기를 맞춥니다">글자 크기 자동 맞춤</button>`)}
       </section>
@@ -868,7 +981,7 @@
         ${row('모양', selIn('mask', e.mask || '', MASKS))}
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 400))}
         ${row('테두리', num('border', e.border || 0, 1, 0, 40) + colorIn('borderColor', e.borderColor || '#ffffff'))}
-        ${row('효과', tog('shadow', e.shadow, '그림자') + tog('flip', e.flip, '좌우 반전'))}
+        ${row('효과', tog('shadow', e.shadow, '그림자') + tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전'))}
       </section>
       <section><h4>자르기 <span class="muted" style="text-transform:none;font-weight:400">보여줄 부분 고르기</span></h4>
         ${row('확대', rng('zoom', e.zoom || 1, 1, 4, 0.05))}
@@ -893,14 +1006,17 @@
         ${line ? '' : row('그라데이션', `<button class="btn sm ${e.fill2 ? 'active' : ''}" data-act="gradToggle">${e.fill2 ? '켜짐' : '꺼짐'}</button>` + (e.fill2 ? colorIn('fill2', e.fill2) + num('gAngle', e.gAngle == null ? 90 : e.gAngle, 15, 0, 360, '방향 (도)') : ''))}
         ${row(line ? '굵기' : '선', num('strokeWidth', e.strokeWidth || 0, 1, 0, 60) + (line ? '' : colorIn('stroke', e.stroke || '$accent')) + tog('dash', e.dash, '점선'))}
         ${e.shape === 'rect' || e.shape === 'callout' ? row('모서리', num('radius', e.radius || 0, 4, 0, 400)) : ''}
-        ${row('효과', tog('shadow', e.shadow, '그림자'))}
+        ${row('효과', tog('shadow', e.shadow, '그림자') + (line ? '' : tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전')))}
       </section>
-      ${line ? '' : `<section><h4>도형 안 글자 <span class="muted" style="text-transform:none;font-weight:400">더블클릭으로 입력</span></h4>${fontRows(e, st)}</section>`}`;
+      ${line ? '' : `<section><h4>도형 안 글자 <span class="muted" style="text-transform:none;font-weight:400">더블클릭으로 입력</span></h4>${fontRows(e, st)}
+        ${row('안쪽 여백', num('style.padding', st.padding == null ? '' : st.padding, 4, 0, 300, '비우면 자동 (도형 크기의 4%·8%)'))}</section>`}`;
     } else if (e.type === 'table') {
       body = `<section><h4>표 <span class="muted" style="text-transform:none;font-weight:400">더블클릭: 칸 편집 · Tab: 다음 칸</span></h4>
         ${row('행', `<button class="btn sm" data-act="rowAdd">＋ 행 추가</button><button class="btn sm" data-act="rowDel">－ 행 삭제</button>`)}
         ${row('열', `<button class="btn sm" data-act="colAdd">＋ 열 추가</button><button class="btn sm" data-act="colDel">－ 열 삭제</button>`)}
         ${hint('편집 중인 칸 다음에 추가 / 그 칸을 삭제합니다')}
+        ${row('너비·높이', `<button class="btn sm" data-act="colsEven" ${e.cols ? '' : 'disabled'}>열 너비 균등</button><button class="btn sm" data-act="rowsEven" ${e.rh ? '' : 'disabled'}>행 높이 균등</button>`)}
+        ${hint('표를 잡은 채 칸 사이 경계를 끌면 열 너비·행 높이가 바뀝니다. 칸을 더블클릭해 편집할 때 도구 막대에서 칸 배경색 · 정렬 · 합치기')}
         ${row('강조', tog('header', e.header, '첫 행 머리글') + tog('firstCol', e.firstCol, '첫 열 굵게'))}
         ${row('줄무늬', tog('band', e.band, '한 줄씩 배경'))}
         ${row('선', choice('lines', e.lines || 'grid', [['grid', '격자'], ['h', '가로선'], ['none', '없음']]) + colorIn('lineColor', e.lineColor || '$muted'))}
@@ -916,12 +1032,13 @@
         <div class="cgrid-wrap"><table class="cgrid">${g.map((r, i) => `<tr>${r.map((c, j) => `<td><input type="text" data-cg="${i},${j}" value="${esc(c)}" ${i === 0 ? 'class="hd"' : ''} placeholder="${i === 0 ? (j === 0 ? '항목' : '계열 ' + j) : (j === 0 ? '이름' : '값')}"></td>`).join('')}</tr>`).join('')}</table></div>
         <div class="cgrid-tools"><button class="btn sm" data-act="cgRow">＋ 줄</button><button class="btn sm" data-act="cgCol">＋ 계열</button><button class="btn sm" data-act="cgRowDel" title="마지막 줄 지우기">－ 줄</button><button class="btn sm" data-act="cgColDel" title="마지막 계열 지우기">－ 계열</button></div>
         <details class="cgrid-raw"><summary class="muted" style="font-size:11.5px;cursor:pointer">텍스트로 편집 (쉼표·탭 구분)</summary><textarea data-k="data" class="mono" style="min-height:110px;margin-top:6px" spellcheck="false">${esc(e.data || '')}</textarea></details>
-        ${row('표시', tog('values', e.values, '값') + tog('legend', e.legend, '범례') + tog('grid', e.grid !== false, '격자'))}
+        ${row('표시', tog('values', e.values, '값') + tog('legend', e.legend, '범례') + tog('grid', e.grid !== false, '격자') + tog('axis', e.axis !== false, '눈금', '축의 숫자 눈금'))}
+        ${row('계열 색', (() => { const ser = parseChartData(e.data).series, pal = chartPalette(e, theme()); return ser.slice(0, 8).map((s, i) => `<label class="ck-col" title="${esc(s.name || '계열 ' + (i + 1))}">${colorIn('colors.' + i, pal[i])}</label>`).join('') + (e.colors ? '<button class="btn sm" data-act="colorsReset" title="테마의 강조색 순서로 되돌림">테마 색</button>' : ''); })())}
         ${row('단위', `<input type="text" data-k="unit" value="${esc(e.unit || '')}" placeholder="예: %, 명, 억원">`)}
         ${e.kind === 'donut' ? row('가운데', `<input type="text" data-k="center" value="${esc(e.center || '')}" placeholder="가운데 큰 글자 (예: 72%)">`) : ''}
         ${row('글자 크기', num('style.fontSize', st.fontSize, 2, 10, 80))}
         ${row('글자 색', colorIn('style.color', st.color) + '<div style="flex:3">' + swatches('style.color') + '</div>')}
-        ${hint('색은 테마의 강조색 순서로 칠해집니다 (🎨 디자인에서 바꿀 수 있음) · 발표 때 막대가 자라나는 효과가 나옵니다')}
+        ${hint('계열 색을 바꾸지 않으면 테마의 강조색 순서로 칠해집니다 · 발표 때 막대가 자라나는 효과가 나옵니다')}
       </section>`;
     } else if (e.type === 'math') {
       body = `<section><h4>수식 <span class="muted" style="text-transform:none;font-weight:400">LaTeX 문법</span></h4>
@@ -1002,7 +1119,7 @@
     const t = ev.target.closest('[data-k],[data-act],[data-align]'); if (!t) return;
     if (t.dataset.align) { alignSel(t.dataset.align); return; }
     if (t.dataset.act) { doAct(t.dataset.act); return; }
-    if (t.dataset.toggle) { const k = t.dataset.k; const cur = k.startsWith('slide.') ? getPath(curSlide(), k.slice(6)) : k.startsWith('deck.') ? getPath(S.deck, k.slice(5)) : (S.sel.length ? getPath(selEls()[0], k) : null); setProp(k, !cur, true); return; }
+    if (t.dataset.toggle) { setProp(t.dataset.k, !t.classList.contains('active'), true); return; } // 단추가 보여 주는 상태의 반대로 (기본이 켜짐인 항목도 첫 클릭에 꺼짐)
     if (t.dataset.val != null && t.tagName !== 'INPUT' && t.tagName !== 'SELECT') { let v = t.dataset.val; if (/^-?\d+(\.\d+)?$/.test(v)) v = parseFloat(v); setProp(t.dataset.k, v, true); }
   });
   function readVal(t) {
@@ -1029,6 +1146,8 @@
     for (const e of els) {
       let val = v;
       if (k === 'opacity') val = clamp(v / 100, 0, 1);
+      if ((k === 'w' || k === 'h') && e.ratioLock && e.w && e.h) { if (k === 'w') e.h = Math.max(16, Math.round(e.h * val / e.w)); else e.w = Math.max(16, Math.round(e.w * val / e.h)); }
+      if (k.startsWith('colors.')) { const i = +k.slice(7); e.colors = (e.colors || []).slice(); while (e.colors.length <= i) e.colors.push(''); e.colors[i] = v; rerenderEl(e.id); continue; }
       if (k === 'start' || k === 'end') { val = parseClock(v); if (!val) { delete e[k]; rerenderEl(e.id); continue; } }
       if (k === 'style.bg' && v === '') { delete e.style.bg; } else if (k === 'link' && !v) { delete e.link; } else setPath(e, k, val);
       if (k.startsWith('style.') && (val === '' || val === false) && k !== 'style.align' && k !== 'style.valign') delete e.style[k.slice(6)];
@@ -1049,6 +1168,8 @@
     const e = elById(S.sel[0]);
     switch (a) {
       case 'bgImage': $('fileBg').click(); break;
+      case 'bgAll': { const bg = curSlide().bg ? clone(curSlide().bg) : null; for (const s of S.deck.slides) { if (bg) s.bg = clone(bg); else delete s.bg; } commit({ all: true }); renderStage(); toast(`슬라이드 ${S.deck.slides.length}장에 같은 배경을 적용했습니다`); break; }
+      case 'colorsReset': for (const e of selEls()) delete e.colors; commit(); renderStage(); renderProps(); break;
       case 'dupSlide': duplicateSlide(); break;
       case 'delSlide': deleteSlide(); break;
       case 'moveUp': moveSlide(-1); break;
@@ -1067,7 +1188,7 @@
       case 'gray': if (e) { e.fx = Object.assign({}, e.fx, { s: 0 }); commit(); rerenderEl(e.id); renderProps(); } break;
       case 'fxReset': if (e) { delete e.fx; commit(); rerenderEl(e.id); renderProps(); } break;
       case 'cropReset': if (e) { delete e.cropX; delete e.cropY; delete e.zoom; commit(); rerenderEl(e.id); renderProps(); } break;
-      case 'rowAdd': case 'rowDel': case 'colAdd': case 'colDel': tableOp(a); break;
+      case 'rowAdd': case 'rowDel': case 'colAdd': case 'colDel': case 'colsEven': case 'rowsEven': tableOp(a); break;
       case 'mathDialog': if (e) openMathDialog(e); break;
       case 'playHere': if (e) playEmbedHere(e.id); break;
       case 'cgRow': { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); break; }
@@ -1255,14 +1376,27 @@
   }
   /* 서식 복사 / 붙여넣기 (Ctrl+Shift+C / V) */
   let styleClip = null;
-  function copyStyle() { const e = S.editing ? elById(S.editing) : selEls()[0]; if (!e) return; styleClip = { type: e.type, style: clone(e.style || {}), role: e.role, fill: e.fill, stroke: e.stroke, strokeWidth: e.strokeWidth, radius: e.radius, shadow: e.shadow, border: e.border, borderColor: e.borderColor }; toast('서식 복사'); }
+  /* 서식 복사·붙여넣기: 종류별로 꾸밈 속성 전부 (같은 종류끼리는 그대로, 다른 종류끼리는 글자 서식과 공통 속성만) */
+  const STYLE_KEYS = {
+    text: ['role', 'opacity'], shape: ['fill', 'fill2', 'fill2Op', 'gAngle', 'stroke', 'strokeWidth', 'dash', 'radius', 'shadow', 'opacity', 'flip', 'flipV'],
+    image: ['radius', 'shadow', 'border', 'borderColor', 'fit', 'mask', 'fx', 'flip', 'flipV', 'opacity'], table: ['header', 'band', 'firstCol', 'lines', 'headFill', 'headColor', 'lineColor', 'radius', 'opacity'],
+    chart: ['values', 'legend', 'grid', 'axis', 'colors', 'unit', 'opacity'], embed: ['radius', 'shadow', 'opacity'], math: ['opacity'],
+  };
+  const COMMON_KEYS = ['radius', 'shadow', 'opacity'];
+  function copyStyle() {
+    const e = S.editing ? elById(S.editing) : selEls()[0]; if (!e) return;
+    styleClip = { type: e.type, style: clone(e.style || {}), props: {} };
+    for (const k of STYLE_KEYS[e.type] || []) if (e[k] !== undefined) styleClip.props[k] = clone(e[k]);
+    toast('서식 복사');
+  }
   function pasteStyle() {
     if (!styleClip) { toast('먼저 Ctrl+Shift+C 로 서식을 복사하세요'); return; }
     const els = selEls(); if (!els.length) return;
     for (const e of els) {
-      if (e.type === 'text' && styleClip.type === 'text') { e.style = clone(styleClip.style); if (styleClip.role) e.role = styleClip.role; }
-      else if (e.type === 'shape' && styleClip.type === 'shape') { for (const k of ['fill', 'stroke', 'strokeWidth', 'radius', 'shadow']) if (styleClip[k] !== undefined) e[k] = styleClip[k]; }
-      else if (e.type === 'image' && styleClip.type === 'image') { for (const k of ['radius', 'shadow', 'border', 'borderColor']) if (styleClip[k] !== undefined) e[k] = styleClip[k]; }
+      const same = e.type === styleClip.type;
+      const keys = same ? (STYLE_KEYS[e.type] || []) : COMMON_KEYS.filter(k => (STYLE_KEYS[e.type] || []).includes(k) && styleClip.props[k] !== undefined);
+      for (const k of keys) { if (styleClip.props[k] === undefined) delete e[k]; else e[k] = clone(styleClip.props[k]); }
+      if (same || (TEXTY.includes(e.type) && TEXTY.includes(styleClip.type))) e.style = clone(styleClip.style);
     }
     commit(); renderStage(); renderProps(); toast('서식 붙여넣기');
   }
@@ -1504,10 +1638,13 @@
     const cell = S.cell; if (S.editing) endEdit();
     const rows = e.rows; const nc = rows[0] ? rows[0].length : 1;
     const ci = cell ? clamp(cell.c, 0, nc - 1) : nc - 1, ri = cell ? clamp(cell.r, 0, rows.length - 1) : rows.length - 1;
-    if (op === 'rowAdd') { rows.splice(ri + 1, 0, Array(nc).fill('')); e.h += Math.round(e.h / (rows.length - 1)); }
-    if (op === 'rowDel') { if (rows.length <= 1) return; rows.splice(ri, 1); e.h = Math.max(40, e.h - Math.round(e.h / (rows.length + 1))); }
-    if (op === 'colAdd') rows.forEach(r => r.splice(ci + 1, 0, ''));
-    if (op === 'colDel') { if (nc <= 1) return; rows.forEach(r => r.splice(ci, 1)); }
+    const wOp = (key, n, idx, ins) => { if (!e[key]) return; const w = tableWeights(e[key], n); if (ins) w.splice(idx + 1, 0, 1 / n); else w.splice(idx, 1); e[key] = w; };
+    if (op === 'rowAdd') { rows.splice(ri + 1, 0, Array(nc).fill('')); e.h += Math.round(e.h / (rows.length - 1)); wOp('rh', rows.length - 1, ri, true); tableRemap(e, 'r', ri, true); }
+    if (op === 'rowDel') { if (rows.length <= 1) return; rows.splice(ri, 1); e.h = Math.max(40, e.h - Math.round(e.h / (rows.length + 1))); wOp('rh', rows.length + 1, ri, false); tableRemap(e, 'r', ri, false); }
+    if (op === 'colAdd') { rows.forEach(r => r.splice(ci + 1, 0, '')); wOp('cols', nc, ci, true); tableRemap(e, 'c', ci, true); }
+    if (op === 'colDel') { if (nc <= 1) return; rows.forEach(r => r.splice(ci, 1)); wOp('cols', nc, ci, false); tableRemap(e, 'c', ci, false); }
+    if (op === 'colsEven') delete e.cols;
+    if (op === 'rowsEven') delete e.rh;
     S.cell = null; commit(); rerenderEl(e.id); renderOverlay(); renderProps();
   }
   function tablePicker(btn) {
@@ -1528,9 +1665,10 @@
     let j = cells.indexOf(cur) + (back ? -1 : 1);
     if (j >= cells.length) {
       const last = node.querySelector('tr:last-child'); const tr = document.createElement('tr'); const r = node.querySelectorAll('tr').length;
-      Array.from(last.children).forEach((_, ci) => { const td = document.createElement('td'); td.dataset.r = r; td.dataset.c = ci; td.contentEditable = 'true'; td.addEventListener('blur', onEditBlur); td.addEventListener('focus', onCellFocus); tr.appendChild(td); });
+      const e = elById(S.editing); const nc = e.rows[0] ? e.rows[0].length : last.children.length;
+      for (let ci = 0; ci < nc; ci++) { const td = document.createElement('td'); td.dataset.r = r; td.dataset.c = ci; td.contentEditable = 'true'; td.addEventListener('blur', onEditBlur); td.addEventListener('focus', onCellFocus); tr.appendChild(td); }
       last.parentNode.appendChild(tr);
-      const e = elById(S.editing); e.h += Math.round(e.h / r); node.style.height = e.h + 'px'; renderOverlay();
+      e.h += Math.round(e.h / r); node.style.height = e.h + 'px'; renderOverlay();
       cells = Array.from(node.querySelectorAll('th,td'));
     }
     const t = cells[clamp(j, 0, cells.length - 1)]; t.focus();
