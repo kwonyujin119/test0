@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-05T12:19:42.141Z",
+ "modified": "2026-11-05T12:36:23.836Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -188,6 +188,182 @@
    "noFooter": true
   },
   {
+   "id": "iywxxz1z0",
+   "bg": null,
+   "transition": "",
+   "notes": "12개 항목을 3부로 묶었다. Ⅰ은 왜, Ⅱ는 수요, Ⅲ은 공급.",
+   "elements": [
+    {
+     "id": "dmkdmq1z0",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 690,
+     "h": 1080,
+     "fill": "#0c2a4d",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#0369a1",
+     "gAngle": 160,
+     "mk": "0qdq6y010"
+    },
+    {
+     "id": "bvd9hv1z0",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 372,
+     "w": 500,
+     "h": 54,
+     "html": "PROFILE",
+     "style": {
+      "color": "#9ec9e8",
+      "fontSize": 30,
+      "bold": true,
+      "letterSpacing": 8
+     },
+     "mk": "yf39e0011"
+    },
+    {
+     "id": "nz3iqy1z0",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 428,
+     "w": 520,
+     "h": 170,
+     "html": "권유진",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 100,
+      "letterSpacing": -2
+     },
+     "mk": "doo86m012"
+    },
+    {
+     "id": "bos1hy1z0",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 620,
+     "w": 170,
+     "h": 8,
+     "fill": "#ffffff",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#ffffff",
+     "gAngle": 90,
+     "fill2Op": 0.25,
+     "mk": "hqkm9q013"
+    },
+    {
+     "id": "yvle5k1z0",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 790,
+     "y": 40,
+     "w": 1010,
+     "h": 330,
+     "html": "<b>Ⅰ. 2026</b><br><span style=\"font-size: 30px\"> - 소방학교 지휘역량강화센터 전입</span><div><span style=\"font-size: 30px\"> - 제31회 중앙소방 교육혁신 경연대회 연구개발 분야 4위</span></div><div><span style=\"font-size: 30px\">   (피지컬 AI 현장소방활동 도입에 관한 연구)</span></div>",
+     "style": {
+      "fontSize": 38,
+      "lineHeight": 1.7,
+      "valign": "middle"
+     },
+     "mk": "rsumrs014"
+    },
+    {
+     "id": "h9v3ly1z0",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 790,
+     "y": 576,
+     "w": 1010,
+     "h": 278,
+     "html": "<b>Ⅲ. 2015 - 2025</b><br><span style=\"font-size: 30px\"> - 2020 ~ 2025 서부소방서 현장대응단, 검단소방서 현장대응단</span><div><span style=\"font-size: 30px\"> - 2015 ~ 2020 강화소방서 119구조대, 서부소방서 정서진119수난구조대</span></div><div><span style=\"font-size: 30px\"> - 2015. 1. 임용 구조대원 경력채용 / 특수전사령부 제11공수특전여단 중사 만기 전역</span></div>",
+     "style": {
+      "fontSize": 38,
+      "lineHeight": 1.7,
+      "valign": "middle"
+     },
+     "mk": "58d0wk016"
+    },
+    {
+     "id": "esazlmo33",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 790,
+     "y": 320,
+     "w": 1010,
+     "h": 260,
+     "html": "<b>Ⅱ. 2025</b><br><span style=\"font-size:30px\"> - 2025 화재대응유공자 선정 (특별승진)<br> - APEC 2025 KOREA 소방안전대책</span>",
+     "style": {
+      "fontSize": 38,
+      "lineHeight": 1.7,
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "w680n0jwv",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 790,
+     "y": 868,
+     "w": 1010,
+     "h": 146,
+     "html": "<b>Ⅲ. 보유자격</b><br><span style=\"font-size: 30px\"> - 현장지휘관, 화재감식기사, 위험물기능사, 인명구조사, 응급구조사, 화재대응능력 등</span>",
+     "style": {
+      "fontSize": 38,
+      "lineHeight": 1.7,
+      "valign": "middle"
+     }
+    }
+   ],
+   "decor": "none",
+   "noFooter": true
+  },
+  {
    "id": "9km8tx017",
    "bg": null,
    "transition": "",
@@ -339,13 +515,13 @@
    "noFooter": true
   },
   {
-   "id": "9q0azf030",
+   "id": "vwb9gpwlw",
    "bg": null,
    "transition": "",
    "notes": "결론을 먼저 보여주고 본론에서 근거를 쌓는다. 교육생이 어디로 가는지 알고 듣게 만든다.",
    "elements": [
     {
-     "id": "tm5er4018",
+     "id": "gma49jwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -360,10 +536,11 @@
      "style": {
       "valign": "middle",
       "letterSpacing": -1
-     }
+     },
+     "mk": "tm5er4018"
     },
     {
-     "id": "lcjw2p019",
+     "id": "15q6qcwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -382,10 +559,11 @@
      "html": "",
      "style": {},
      "fill2": "#0c2a4d",
-     "gAngle": 110
+     "gAngle": 110,
+     "mk": "lcjw2p019"
     },
     {
-     "id": "byy0q7020",
+     "id": "v8dhbuwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -404,10 +582,11 @@
       "align": "center",
       "valign": "middle",
       "fontSize": 38
-     }
+     },
+     "mk": "byy0q7020"
     },
     {
-     "id": "67ywjk021",
+     "id": "eax7nvwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -426,10 +605,11 @@
      "html": "",
      "style": {},
      "fill2": "#7c2d12",
-     "gAngle": 135
+     "gAngle": 135,
+     "mk": "67ywjk021"
     },
     {
-     "id": "cu7oz6022",
+     "id": "jrd5zhwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -448,10 +628,11 @@
       "align": "center",
       "valign": "middle",
       "fontSize": 34
-     }
+     },
+     "mk": "cu7oz6022"
     },
     {
-     "id": "cf72mz023",
+     "id": "2d065jwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -470,10 +651,11 @@
      "html": "",
      "style": {},
      "fill2": "#0e7490",
-     "gAngle": 135
+     "gAngle": 135,
+     "mk": "cf72mz023"
     },
     {
-     "id": "ziie1s024",
+     "id": "twgbdwwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -492,10 +674,11 @@
       "align": "center",
       "valign": "middle",
       "fontSize": 34
-     }
+     },
+     "mk": "ziie1s024"
     },
     {
-     "id": "aeai0f025",
+     "id": "9j416bwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -514,10 +697,11 @@
      "html": "",
      "style": {},
      "fill2": "#1e293b",
-     "gAngle": 135
+     "gAngle": 135,
+     "mk": "aeai0f025"
     },
     {
-     "id": "xm9v5h026",
+     "id": "y2m9u7wlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -536,10 +720,11 @@
       "align": "center",
       "valign": "middle",
       "fontSize": 34
-     }
+     },
+     "mk": "xm9v5h026"
     },
     {
-     "id": "3v1dvg027",
+     "id": "dkh9smwlw",
      "step": 1,
      "anim": "up",
      "rotate": 0,
@@ -558,10 +743,11 @@
      "html": "",
      "style": {},
      "fill2": "#78350f",
-     "gAngle": 100
+     "gAngle": 100,
+     "mk": "3v1dvg027"
     },
     {
-     "id": "hjp4z1028",
+     "id": "5qsfynwlw",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -580,10 +766,11 @@
       "align": "center",
       "valign": "middle",
       "fontSize": 38
-     }
+     },
+     "mk": "hjp4z1028"
     },
     {
-     "id": "5zwbq3029",
+     "id": "m8ikugwlw",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -598,7 +785,8 @@
      "style": {
       "fontSize": 24,
       "color": "$muted"
-     }
+     },
+     "mk": "5zwbq3029"
     }
    ]
   },
