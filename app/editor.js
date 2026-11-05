@@ -743,7 +743,12 @@
   function onCellFocus(ev) { const c = ev.target; if (c.dataset && c.dataset.r != null) S.cell = { r: +c.dataset.r, c: +c.dataset.c }; }
   function onEditBlur() {
     // 같은 요소 안(다른 표 칸)이나 글 도구 막대로 옮긴 것은 편집 계속
-    setTimeout(() => { if (!S.editing) return; const n = nodeOf(S.editing), a = document.activeElement; if ((n && n.contains(a)) || (textToolbar && textToolbar.contains(a))) return; endEdit(); }, 0);
+    setTimeout(() => {
+      if (!S.editing) return; const n = nodeOf(S.editing), a = document.activeElement; if ((n && n.contains(a)) || (textToolbar && textToolbar.contains(a))) return;
+      // 글자를 끌어서 고른 채 속성 창의 크기·색 칸으로 간 경우: 편집을 이어 감 (값을 정하면 그 글자에만 적용)
+      if (a && a.dataset && HOLD_KEYS.includes(a.dataset.k) && props.contains(a) && editRange && !editRange.collapsed) { a.addEventListener('blur', onEditBlur, { once: true }); return; }
+      endEdit();
+    }, 0);
   }
   function endEdit() {
     if (!S.editing) return;
@@ -776,6 +781,58 @@
     if (!stripHtml(out) && !/<img/.test(out)) out = '';
     return out;
   }
+  /* ---- 글 편집 중 "끌어서 고른 글자만" 크기 바꾸기 ---- */
+  let editRange = null; // 글 도구의 크기 칸으로 초점이 옮겨가도 고른 범위를 기억
+  function selInEdit() { const n = S.editing && nodeOf(S.editing), sel = window.getSelection(); if (!n || !sel.rangeCount) return null; const r = sel.getRangeAt(0); return n.contains(r.commonAncestorContainer) ? r : null; }
+  document.addEventListener('selectionchange', () => { if (!S.editing) return; const r = selInEdit(); if (r) { editRange = r.cloneRange(); syncSizeBox(); } });
+  function restoreEditRange() {
+    const n = S.editing && nodeOf(S.editing); if (!n || !editRange || !n.contains(editRange.commonAncestorContainer)) return false;
+    const c = editRange.commonAncestorContainer, host = (c.nodeType === 1 ? c : c.parentNode).closest('[contenteditable="true"]'); if (host) host.focus();
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(editRange); return true;
+  }
+  /* 커서(또는 고른 글자의 첫머리) 자리의 글자 크기 */
+  function caretFontSize() {
+    const r = selInEdit() || editRange; if (!r) return null; let n = r.startContainer;
+    if (!r.collapsed) { const w = document.createTreeWalker(r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentNode, NodeFilter.SHOW_TEXT); let t; while ((t = w.nextNode())) { if (!t.length || !r.intersectsNode(t)) continue; if (t === r.startContainer && r.startOffset >= t.length) continue; n = t; break; } }
+    if (n.nodeType !== 1) n = n.parentNode;
+    return n ? Math.round(parseFloat(getComputedStyle(n).fontSize)) || null : null;
+  }
+  const HOLD_KEYS = ['style.fontSize', 'style.color'];
+  /* 글 편집 중 끌어서 고른 글자가 있는가 (속성 창 칸에 초점이 가 있으면 기억해 둔 범위를 되살림) */
+  function ensureEditSel() {
+    if (!S.editing) return false; const r = selInEdit(); if (r) return !r.collapsed;
+    if (editRange && !editRange.collapsed && restoreEditRange()) { const r2 = selInEdit(); return !!(r2 && !r2.collapsed); }
+    return false;
+  }
+  function syncSizeBox() { if (!textToolbar) return; const b = textToolbar.querySelector('[data-fs]'); if (b && document.activeElement !== b) { const v = caretFontSize(); if (v) b.value = v; } }
+  const fitFs = (v) => clamp(Math.round(v), 8, 400);
+  /* 고른 글자만: delta(±) 만큼, 또는 abs(px) 로. 고른 글자가 없으면 false (→ 상자 전체를 바꿈) */
+  function sizeSelection(delta, abs) {
+    const r = selInEdit(); if (!r || r.collapsed) return false;
+    const c = r.commonAncestorContainer, root = c.nodeType === 1 ? c : c.parentNode;
+    const sc = r.startContainer, so = r.startOffset, ec = r.endContainer, eo = r.endOffset;
+    const texts = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let t;
+    while ((t = w.nextNode())) if (t.length && r.intersectsNode(t)) texts.push(t);
+    const done = [];
+    for (let n of texts) { // 고른 글자 조각마다: 지금 크기를 재서 그 조각만 감쌈 (이미 크기를 준 조각이면 그 값을 고침)
+      const s = n === sc ? so : 0, e2 = n === ec ? eo : n.length; if (e2 <= s) continue;
+      if (e2 < n.length) n.splitText(e2);
+      if (s > 0) n = n.splitText(s);
+      const p = n.parentNode, cur = parseFloat(getComputedStyle(p).fontSize) || 40, v = fitFs(abs != null ? abs : cur + delta) + 'px';
+      let hit = null; for (let q = p; q && q.childNodes.length === 1 && q.getAttribute('contenteditable') !== 'true'; q = q.parentNode) if (q.tagName === 'SPAN' && q.style.fontSize) { hit = q; break; }
+      if (hit) { hit.style.fontSize = v; done.push(hit); }
+      else { const sp = document.createElement('span'); sp.style.fontSize = v; p.insertBefore(sp, n); sp.appendChild(n); done.push(sp); }
+    }
+    if (!done.length) return false;
+    const sel = window.getSelection(), nr = document.createRange(); nr.setStartBefore(done[0]); nr.setEndAfter(done[done.length - 1]); sel.removeAllRanges(); sel.addRange(nr);
+    markDirty(); syncSizeBox(); positionTextToolbar(); return true;
+  }
+  /* 상자 전체 크기를 바꿀 때: 글 안에 따로 크기를 준 부분도 같은 만큼 (delta) 또는 같은 비율 (k) 로 */
+  const inlineFs = (html, fn) => (html && html.indexOf('font-size') >= 0) ? html.replace(/font-size:\s*([\d.]+)px/g, (m, v) => 'font-size: ' + fitFs(fn(+v)) + 'px') : html;
+  function bumpInline(e, fn) {
+    if (e.type === 'table') { if (e.rows) e.rows = e.rows.map(r => r.map(c => inlineFs(c, fn))); }
+    else if (e.html) e.html = inlineFs(e.html, fn);
+  }
   function exec(cmd, val) { document.execCommand(cmd, false, val); }
   function showTextToolbar(node) {
     hideTextToolbar();
@@ -794,10 +851,11 @@
       <button class="btn" data-cmd="outdent" title="내어쓰기 (Shift+Tab)">⇤</button>
       <button class="btn" data-cmd="indent" title="들여쓰기 (Tab)">⇥</button>
       <span class="sep"></span>
-      <button class="btn" data-cmd="size-" title="글자 작게">A−</button>
-      <button class="btn" data-cmd="size+" title="글자 크게">A+</button>
+      <button class="btn" data-cmd="size-" title="글자 작게 (Ctrl+[) · 끌어서 고른 글자만, 고르지 않았으면 상자 전체">A−</button>
+      <input type="number" data-fs min="8" max="400" step="2" value="${Math.round(st.fontSize)}" title="글자 크기 · 끌어서 고른 글자만, 고르지 않았으면 상자 전체">
+      <button class="btn" data-cmd="size+" title="글자 크게 (Ctrl+]) · 끌어서 고른 글자만, 고르지 않았으면 상자 전체">A+</button>
       <button class="btn" data-cmd="link" title="링크 (Ctrl+K)">🔗</button>
-      <button class="btn" data-cmd="sym" title="기호 넣기 (① ★ → ㎡ ℃ …)">Ω</button>
+      <button class="btn" data-cmd="sym" title="기호 넣기 (① Ⅳ ★ → ㎡ ℃ …)">Ω</button>
       <button class="btn" data-cmd="removeFormat" title="서식 지우기">✕</button>${e.type !== 'table' ? '' : `
       <span class="sep"></span>
       <input type="color" data-cmd="cellFill" value="#fde68a" title="이 칸 배경색">
@@ -809,7 +867,7 @@
       const sb = ev.target.closest('[data-sym]'); if (sb) { exec('insertText', sb.dataset.sym); return; }
       const b = ev.target.closest('[data-cmd]'); if (!b || b.tagName === 'INPUT') return;
       const cmd = b.dataset.cmd; const e = elById(S.editing); if (!e) return;
-      if (cmd === 'size+' || cmd === 'size-') { const cur = resolveTextStyle(e, theme()).fontSize; e.style.fontSize = clamp(cur + (cmd === 'size+' ? 4 : -4), 10, 400); applyElementTextStyle(e, nodeOf(e.id), theme()); markDirty(); renderProps(); return; }
+      if (cmd === 'size+' || cmd === 'size-') { fontSizeStep(cmd === 'size+' ? 4 : -4); return; }
       if (cmd === 'hilite') { exec('hiliteColor', '#fde68a'); return; }
       if (cmd === 'sym') { let pop = textToolbar.querySelector('.sym-pop'); if (pop) { pop.remove(); return; } pop = document.createElement('div'); pop.className = 'sym-pop'; pop.innerHTML = SYMBOLS.map(c => `<button class="btn" data-sym="${esc(c)}">${esc(c)}</button>`).join(''); textToolbar.appendChild(pop); return; }
       if (cmd === 'link') { const u = prompt('링크 주소'); if (u) exec('createLink', u); return; }
@@ -817,6 +875,15 @@
       exec(cmd);
     });
     textToolbar.querySelector('input[type=color]').addEventListener('input', (ev) => exec('foreColor', ev.target.value));
+    const fsBox = textToolbar.querySelector('[data-fs]');
+    const fsApply = () => {
+      const v = +fsBox.value, e = elById(S.editing); if (!e || !isFinite(v) || v <= 0) { syncSizeBox(); return; }
+      restoreEditRange();
+      if (!sizeSelection(0, fitFs(v))) { e.style = e.style || {}; e.style.fontSize = fitFs(v); applyElementTextStyle(e, nodeOf(e.id), theme()); markDirty(); renderProps(); positionTextToolbar(); }
+      fsBox.value = fitFs(v);
+    };
+    fsBox.addEventListener('change', fsApply);
+    fsBox.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Enter') { ev.preventDefault(); fsApply(); } else if (ev.key === 'Escape') { ev.preventDefault(); restoreEditRange(); } });
     const cf = textToolbar.querySelector('input[data-cmd=cellFill]'); if (cf) cf.addEventListener('input', (ev) => cellOp('cellFill', ev.target.value));
     main.appendChild(textToolbar); positionTextToolbar();
   }
@@ -1118,8 +1185,10 @@
     ev.preventDefault(); const [r, c] = t.dataset.cg.split(',').map(Number); const nx = props.querySelector(`input[data-cg="${r + 1},${c}"]`);
     if (nx) nx.focus(); else { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); const i = props.querySelector(`input[data-cg="${r + 1},${c}"]`); if (i) i.focus(); }
   });
+  props.addEventListener('mousedown', (ev) => { if (S.editing && !/^(INPUT|SELECT|TEXTAREA|OPTION)$/.test(ev.target.tagName) && ev.target.closest('button,.swatch,[data-act],[data-align]')) ev.preventDefault(); });
   props.addEventListener('click', (ev) => {
     const t = ev.target.closest('[data-k],[data-act],[data-align]'); if (!t) return;
+    if (S.editing && (t.dataset.align || (t.dataset.act && t.dataset.act !== 'fsUp' && t.dataset.act !== 'fsDown'))) endEdit(); // 쓰던 글을 먼저 저장
     if (t.dataset.align) { alignSel(t.dataset.align); return; }
     if (t.dataset.act) { doAct(t.dataset.act); return; }
     if (t.dataset.toggle) { setProp(t.dataset.k, !t.classList.contains('active'), true); return; } // 단추가 보여 주는 상태의 반대로 (기본이 켜짐인 항목도 첫 클릭에 꺼짐)
@@ -1146,6 +1215,16 @@
       renderStage(); if (doCommit) renderProps(); return;
     }
     const els = selEls(); if (!els.length) return;
+    if (S.editing) {
+      if (k === 'style.fontSize' || k === 'style.color' || k === 'style.bold' || k === 'style.italic' || k === 'style.underline') {
+        const a = document.activeElement, held = a && a.dataset && a.dataset.k === k && props.contains(a) && editRange && !editRange.collapsed && !selInEdit();
+        if (held && !doCommit) return; // 속성 창 칸에 값을 넣는 중: 다 넣을 때까지 기다림
+        if (ensureEditSel()) {
+          if (k === 'style.fontSize') sizeSelection(0, v); else if (k === 'style.color') exec('foreColor', toHex(themeColor(v, theme()))); else exec(k.slice(6));
+          markDirty(); return;
+        }
+      } else if (!k.startsWith('style.')) endEdit(); // 글꼴 꾸밈이 아닌 속성은 쓰던 글을 먼저 저장하고 적용
+    }
     for (const e of els) {
       let val = v;
       if (k === 'opacity') val = clamp(v / 100, 0, 1);
@@ -1367,9 +1446,17 @@
   }
   /* 글자 크기 단계 조절: 편집 중이면 그 상자, 아니면 선택한 텍스트 상자 전부 */
   function fontSizeStep(delta) {
+    if (S.editing && sizeSelection(delta)) return; // 글을 쓰는 중에 끌어서 고른 글자가 있으면 그 글자만
     const els = (S.editing ? [elById(S.editing)] : selEls()).filter(e => e && TEXTY.includes(e.type)); if (!els.length) return;
-    for (const e of els) { e.style = e.style || {}; const cur = resolveTextStyle(e, theme()).fontSize; e.style.fontSize = clamp(Math.round(cur + delta), 8, 400); if (e.type === 'chart') rerenderEl(e.id); else applyElementTextStyle(e, nodeOf(e.id), theme()); }
-    if (S.editing) markDirty(); else commit();
+    for (const e of els) {
+      e.style = e.style || {}; const cur = resolveTextStyle(e, theme()).fontSize; e.style.fontSize = clamp(Math.round(cur + delta), 8, 400);
+      const node = nodeOf(e.id);
+      // 글 안에 따로 크기를 준 부분도 같은 만큼 (차이가 유지되게)
+      if (S.editing) { if (node) node.querySelectorAll('[style*="font-size"]').forEach(x => { const c = parseFloat(x.style.fontSize); if (c) x.style.fontSize = fitFs(c + delta) + 'px'; }); }
+      else { const before = e.type === 'table' ? JSON.stringify(e.rows) : e.html; bumpInline(e, v => v + delta); if ((e.type === 'table' ? JSON.stringify(e.rows) : e.html) !== before) { rerenderEl(e.id); continue; } }
+      if (e.type === 'chart') rerenderEl(e.id); else applyElementTextStyle(e, node, theme());
+    }
+    if (S.editing) { markDirty(); syncSizeBox(); positionTextToolbar(); } else { commit(); renderOverlay(); }
     renderProps();
   }
   function setAlign(a) {
@@ -1569,7 +1656,7 @@
   function startGroupResize(ev, h) {
     const els = selEls().filter(e => !e.locked); if (!els.length) return;
     const b = bboxOf(els), corner = h.slice(1);
-    const orig = els.map(e => ({ e, x: e.x, y: e.y, w: e.w, h: e.h, fs: TEXTY.includes(e.type) ? resolveTextStyle(e, theme()).fontSize : 0 }));
+    const orig = els.map(e => ({ e, x: e.x, y: e.y, w: e.w, h: e.h, fs: TEXTY.includes(e.type) ? resolveTextStyle(e, theme()).fontSize : 0, html: e.html, rows: e.rows }));
     const ax = corner.includes('w') ? b.x + b.w : b.x, ay = corner.includes('n') ? b.y + b.h : b.y;
     const sx = ev.clientX, sy = ev.clientY; let moved = false;
     track((m) => {
@@ -1579,7 +1666,7 @@
       for (const o of orig) {
         o.e.x = Math.round(ax + (o.x - ax) * k); o.e.y = Math.round(ay + (o.y - ay) * k);
         o.e.w = Math.max(8, Math.round(o.w * k)); o.e.h = Math.max(8, Math.round(o.h * k));
-        if (o.fs) { o.e.style = o.e.style || {}; o.e.style.fontSize = Math.max(6, Math.round(o.fs * k)); }
+        if (o.fs) { o.e.style = o.e.style || {}; o.e.style.fontSize = Math.max(6, Math.round(o.fs * k)); if (o.html != null) o.e.html = o.html; if (o.rows) o.e.rows = o.rows; bumpInline(o.e, v => v * k); }
       }
       renderStage();
     }, () => { if (moved) { commit(); renderProps(); } });
@@ -1694,9 +1781,9 @@
     '안전 · 소방': '🚒🧯🔥🚨🚑🚓⛑️🦺🪜💧🌊🚰🚿🏭🏢🏠🏗️⚡🔌🔋☢️☣️🛑🚧⛔🆘📞☎️🧰🔧🔨🪛⚙️🧲',
     '사람 · 감정': '😀😊🙂😉😎🤔😮😢😡👍👎👏🙌🤝👋✋👉👈👆👇💪🙏👀👥👤👨‍💼👩‍💼🧑‍🔧🧑‍🚒👨‍⚕️👩‍⚕️',
     '자연 · 사물': '🌍🌏☀️🌤️⛅🌧️⛈️❄️🌡️🌱🌳🍀🌸🍎☕🚗🚌🚆✈️🚀⛵🏔️🗺️🧭💰💳🎁📦🛒🏥🏛️⚖️',
-    '기호': '①②③④⑤⑥⑦⑧⑨⑩●○◎■□▲△▼▽◆◇★☆→←↑↓↔⇒⇔✓✗※∑√∞≈≠≤≥±×÷°℃㎡㎥㎏㎞㎜ΔΩπμσλθ',
+    '기호': '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅰⅱⅲⅳⅴ●○◎■□▲△▼▽◆◇★☆→←↑↓↔⇒⇔✓✗※∑√∞≈≠≤≥±×÷°℃㎡㎥㎏㎞㎜ΔΩπμσλθ',
   };
-  const SYMBOLS = Array.from('①②③④⑤⑥⑦⑧⑨⑩●○■□▲△▶◆★☆✓✗→←↑↓⇒⇔※∑√∞≈≠≤≥±×÷°℃㎡㎥㎏㎞㎜ΔΩπμσθλ²³½·…“”「」');
+  const SYMBOLS = Array.from('①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ●○■□▲△▶◆★☆✓✗→←↑↓⇒⇔※∑√∞≈≠≤≥±×÷°℃㎡㎥㎏㎞㎜ΔΩπμσθλ²³½·…“”「」');
   const graphemes = (s) => (window.Intl && Intl.Segmenter) ? Array.from(new Intl.Segmenter('ko', { granularity: 'grapheme' }).segment(s), x => x.segment) : Array.from(s);
   /* 내 심벌: 파일·글자를 끌어다 놓거나 잡은 개체를 더해 두고 다시 씀 (이 기기의 브라우저에 저장) */
   const MYSYM_KEY = 'gyoan:mySymbols', ICON_ORDER_KEY = 'gyoan:iconOrder', ICON_FOLD_KEY = 'gyoan:iconFold', MY = '내 심벌';
