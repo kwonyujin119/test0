@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-05T12:36:23.836Z",
+ "modified": "2026-11-05T12:41:25.251Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -189,8 +189,8 @@
   },
   {
    "id": "iywxxz1z0",
-   "bg": null,
-   "transition": "",
+   "bg": {},
+   "transition": "morph",
    "notes": "12개 항목을 3부로 묶었다. Ⅰ은 왜, Ⅱ는 수요, Ⅲ은 공급.",
    "elements": [
     {
@@ -290,7 +290,7 @@
      "type": "text",
      "role": "body",
      "x": 790,
-     "y": 40,
+     "y": 30,
      "w": 1010,
      "h": 330,
      "html": "<b>Ⅰ. 2026</b><br><span style=\"font-size: 30px\"> - 소방학교 지휘역량강화센터 전입</span><div><span style=\"font-size: 30px\"> - 제31회 중앙소방 교육혁신 경연대회 연구개발 분야 4위</span></div><div><span style=\"font-size: 30px\">   (피지컬 AI 현장소방활동 도입에 관한 연구)</span></div>",
@@ -313,7 +313,7 @@
      "y": 576,
      "w": 1010,
      "h": 278,
-     "html": "<b>Ⅲ. 2015 - 2025</b><br><span style=\"font-size: 30px\"> - 2020 ~ 2025 서부소방서 현장대응단, 검단소방서 현장대응단</span><div><span style=\"font-size: 30px\"> - 2015 ~ 2020 강화소방서 119구조대, 서부소방서 정서진119수난구조대</span></div><div><span style=\"font-size: 30px\"> - 2015. 1. 임용 구조대원 경력채용 / 특수전사령부 제11공수특전여단 중사 만기 전역</span></div>",
+     "html": "<b>Ⅲ. 2015 - 2025</b><br><span style=\"font-size: 30px\"> - 2020 ~ 2025 서부소방서 현장대응단, 검단소방서 현장대응단</span><div><span style=\"font-size: 30px\"> - 2015 ~ 2020 강화소방서 119구조대, 서부소방서 정서진119수난구조대</span></div><div><span style=\"font-size: 30px\"> - 2015. 1 임용 구조대원 경력채용 / 특수전사령부 제11공수특전여단 중사 만기 전역</span></div>",
      "style": {
       "fontSize": 38,
       "lineHeight": 1.7,
@@ -333,7 +333,7 @@
      "y": 320,
      "w": 1010,
      "h": 260,
-     "html": "<b>Ⅱ. 2025</b><br><span style=\"font-size:30px\"> - 2025 화재대응유공자 선정 (특별승진)<br> - APEC 2025 KOREA 소방안전대책</span>",
+     "html": "<b>Ⅱ. 2025</b><br><span style=\"font-size:30px\"> - 2025 화재대응유공자 선정 (특별승진)<br> - 2025 소방본부 현장대응과 APEC 2025 KOREA 소방안전대책</span>",
      "style": {
       "fontSize": 38,
       "lineHeight": 1.7,
