@@ -3,7 +3,7 @@
  "theme": "ocean",
  "transition": "fade",
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-05T13:43:00.906Z",
+ "modified": "2026-11-05T13:45:43.570Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -366,7 +366,7 @@
    "id": "9km8tx017",
    "bg": null,
    "transition": "",
-   "notes": "12개 항목을 3부로 묶었다. Ⅰ은 왜, Ⅱ는 수요, Ⅲ은 공급.",
+   "notes": "0. 프로필\n\n[ 1. 왜 용수인가 ]\n[ 1-1 화재 통계 ]\n1. 전국 화재 통계\n2. 화재 피해액\n\n[ 1-2 인천 대응 2단계 ]\n3. (영상) 인천시 대응 2단계\n4. 인천시 대응 2단계 통계 -> 최근으로 올 수록 피해액이 커진다.\n\n[ 1-3 화재 추세 ]\n5. 화재는 복잡해지고 있고 한건의 화재 규모가 거대해지고 있다.\n6. 다시 한번 상기해야할 것 : 소방력 3요소 - 인력, 장비, 용수\n\n\n[ 우선 - 방수 ]\n7. (이미지) 용수 - 사다리차 \n8. 상황별 방수량\n40mm , 65mm , 고성능 방수포 , 고가차 방수포 분당 방수량\n\n[ 그리고 - 급수 ]\n9. 급수 데이터 - 무중단 급수 체계 / 100mm , 150mm 급수 능력\n10. (이미지) 수운영관리시스템 - 루프형태 관로\n11. (이미지) 루프형태 관로\n12. 급수 데이터 - 무중단 급수 체계 -> 반만 맞다.\n  20시 공장지역 100mm 관로 / 20시 주택지역 200mm 관로 \n  200mm 관로가 능력이 좋다고 할 수 없다.\n13. ★☆★ 과장님들께서 하실 일 : 화재경계지구 급수 실증 조사\n    아니고, 제가 연구 하겠습니다. 다만 과장님들께서 도와주시면 제가 연구하고 실증해서 한눈에 파악할 수 있게 만들겠습니다.\n\n14. (실패사례) 대곡동 관로 / 유니크 당시 유수량\n15. (이미지) 26년 대응 유수량 / 24년 대응 유수량 / 22년 대응 유수량 \n16. (이미지) 수운영관리시스템 - 화재 현장 어느 소화전을 잡을 것인가?\n17. (이미지) 수운영관리시스템 - 유량계\n18. 결론\n    1. 루프형태 관로를 이해하고, 무중단 급수와 순환보수의 소블럭을 달리 설정\n    2. 유량계(=소블럭 초입)의 소화전이 우선순위\n    3. 중요지역별 실증 데이터 축적이 필요\n",
    "elements": [
     {
      "id": "0qdq6y010",
@@ -461,7 +461,7 @@
      "type": "text",
      "role": "body",
      "x": 790,
-     "y": 224,
+     "y": 214,
      "w": 1010,
      "h": 148,
      "html": "<b><span style=\"font-size: 38px\">Ⅰ. 왜 용수인가</span></b><br><span style=\"font-size:30px\">① 화재 통계 · </span>② <span style=\"font-size:30px\">인천 대응 2단계</span> · ③ <span style=\"font-size:30px\">화재 추세</span>",
@@ -483,7 +483,7 @@
      "y": 450,
      "w": 1010,
      "h": 136,
-     "html": "<b>Ⅱ. 우선 방수</b><br><span style=\"font-size:30px\"> </span><span style=\"font-size: 30px\">④</span> <span style=\"font-size:30px\">case one 석남 쿠팡물류센터 · </span><span style=\"font-size: 30px\">⑤</span><span style=\"font-size:30px\"> 상황별 분당 방수량<br><br></span>",
+     "html": "<b>Ⅱ. 우선 방수</b><br><span style=\"font-size:30px\"> </span><span style=\"font-size: 30px\">④</span><span style=\"font-size: 30px\"> </span><span style=\"font-size:30px\">case one 석남 쿠팡물류센터 · </span><span style=\"font-size: 30px\">⑤</span><span style=\"font-size:30px\"><span style=\"font-size: 30px\"> 상황별 분당 방수량</span><br><br></span>",
      "style": {
       "fontSize": 38,
       "lineHeight": 1.7,
@@ -502,7 +502,7 @@
      "y": 676,
      "w": 1058,
      "h": 211,
-     "html": "<b>Ⅲ. 그리고 급수</b><br><span style=\"font-size:30px\"> </span><span style=\"font-size: 30px\">⑥ </span><span style=\"font-size:30px\"><span style=\"font-size: 30px\">무중단 급수와</span><span style=\"font-size: 30px\"> 순</span><span style=\"font-size: 30px\">환 보수 ·  </span></span><span style=\"font-size: 30px\">⑦ 상황별 분당 급수량</span><span style=\"font-size: 30px\"> ·  </span><span style=\"font-size: 30px\">⑧ 루프형태 관로(손실)</span><div><span style=\"font-size: 30px\"> ⑨ 유량계-소블럭 초입</span><span style=\"background-color: initial\"> · </span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑩ 상수도 흐름</span></span><span style=\"background-color: initial\"> · </span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑪ 유량 분석</span></span><span style=\"background-color: initial\"> · </span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑫ 무중단 급수와 순환 보수 v2</span></span><span style=\"font-size: 30px\"></span></div>",
+     "html": "<b>Ⅲ. 그리고 급수</b><br><span style=\"font-size:30px\"> </span><span style=\"font-size: 30px\">⑥ </span><span style=\"font-size:30px\"><span style=\"font-size: 30px\">무중단 급수와</span><span style=\"font-size: 30px\"> 순</span><span style=\"font-size: 30px\">환 보수 ·  </span></span><span style=\"font-size: 30px\">⑦ 상황별 분당 급수량</span><span style=\"font-size: 30px\"> ·  </span><span style=\"font-size: 30px\">⑧ 루프형태 관로(손실)</span><div><span style=\"font-size: 30px\"> ⑨ 유량계-소블럭 초입</span><span style=\"background-color: initial\"><span style=\"font-size: 30px\"> · </span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑩ 상수도 흐름</span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\"> · </span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑪ 유량 분석</span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\"> · </span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑫ 무중단 급수와 순환 보수 v2</span></span><span style=\"font-size: 30px\"></span></div>",
      "style": {
       "fontSize": 38,
       "lineHeight": 1.7,
