@@ -11,9 +11,10 @@
   else {
     await API.init();
     try {
-      if (qs('draft')) deck = Draft.get(name);
+      if (qs('draft')) deck = Draft.get(name); // 편집 화면의 [미리보기]: 아직 저장하지 않은 작업본
+      if (deck && role === 'main' && !qs('print')) setTimeout(() => toast('아직 저장하지 않은 작업본을 보여 줍니다 (미리보기)', 3500), 800);
       if (!deck) deck = await API.load(name);
-    } catch (e) { document.body.innerHTML = `<div style="color:#fff;padding:40px;font-family:sans-serif">교안을 불러올 수 없습니다: ${esc(e.message)}<br><br><a href="gyoan.html" style="color:#8cf">← 목록으로</a></div>`; return; }
+    } catch (e) { document.body.innerHTML = `<div style="color:#fff;padding:40px;font-family:sans-serif">${esc(e.message)}<br><br><a href="gyoan.html" style="color:#8cf">← 목록으로</a></div>`; return; }
   }
   normalizeDeck(deck);
   if (!deck.slides.length) deck.slides = [newSlide('blank')];

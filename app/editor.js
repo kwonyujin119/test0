@@ -12,7 +12,7 @@
   if (!S.name) { location.href = 'gyoan.html'; return; }
   await API.init();
   try { S.deck = await API.load(S.name); }
-  catch (e) { alert(e.message); location.href = 'gyoan.html'; return; }
+  catch (e) { alert(e.message + '\n\n교안 목록으로 돌아갑니다.'); location.href = 'gyoan.html'; return; }
   S.base = S.deck.modified || ''; // 내가 불러온(또는 마지막으로 저장한) 판의 저장 시각
   migrate(S.deck);
   S.cur = clamp(parseInt(qs('slide') || '0', 10) || 0, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
@@ -44,23 +44,41 @@
     updateUndoButtons();
   }
   function restore(h, at) { // at: 바뀐 일이 일어난 슬라이드 (되돌린 뒤에도 그 슬라이드를 보여 줌)
-    S.deck = JSON.parse(h.deck); S.cur = clamp(at == null ? h.cur : at, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
+    S.deck = JSON.parse(h.deck); if (S.base) S.deck.modified = S.base; // 저장 시각은 되돌리지 않음 (내용만)
+    S.cur = clamp(at == null ? h.cur : at, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
     S.sel = S.sel.filter(id => elById(id)); S.editing = null; hideTextToolbar();
     renderAll(); markDirty();
   }
   function undo() { if (S.editing) return; flushNudge(); if (S.hi > 0) { const at = S.history[S.hi].cur; S.hi--; restore(S.history[S.hi], at); } }
   function redo() { if (S.editing) return; flushNudge(); if (S.hi < S.history.length - 1) { S.hi++; restore(S.history[S.hi]); } }
   function updateUndoButtons() { $('btnUndo').disabled = S.hi <= 0; $('btnRedo').disabled = S.hi >= S.history.length - 1; }
+  /* ---------- 임시 작업본 · 저장 ----------
+     · 고친 내용은 손을 멈출 때마다 이 기기에 "임시 작업본"으로 남김 (저장하지 않고 닫아도 다음에 이어서 할 수 있게)
+     · [저장] 을 누르면 저장소(GitHub · 내 PC · 이 브라우저)에 저장하고, 임시 작업본은 지움
+     · S.base = 내가 불러온(또는 마지막으로 저장한) 저장본의 저장 시각. 저장 직전에 저장소의 것과 다르면
+       그 사이 다른 곳에서 저장한 것이므로 덮어쓸지 물어봄 */
+  const when = fmtWhen;
+  const WHERE = { github: 'GitHub 저장소', server: '내 PC · decks 폴더', local: '이 브라우저 안' };
   let draftWarned = false;
   function draftPut(deck) {
-    const ok = Draft.put(S.name, deck || S.deck);
-    if (!ok && !draftWarned) { draftWarned = true; toast('이 기기의 임시 저장 공간이 가득 찼습니다 — 미리보기에는 마지막 저장본이 보일 수 있습니다. 저장 단추로 저장해 주세요', 6000); }
+    const ok = Draft.put(S.name, deck || S.deck, { base: S.base });
+    if (!ok && !draftWarned) { draftWarned = true; toast('이 기기의 임시 보관 공간이 가득 찼습니다 — 창을 닫기 전에 꼭 [저장] 을 눌러 주세요 (닫으면 저장하지 않은 내용이 사라집니다)', 7000); }
     return ok;
   }
+  /* 제목 옆의 저장 상태 글 */
+  function showSaveState() {
+    const el = $('saveState'); if (!el) return;
+    const t = S.base ? when(S.base) : '', d = S.base ? new Date(S.base) : null, today = d && d.toDateString() === new Date().toDateString();
+    let short = ''; try { short = !d || isNaN(d) ? '' : today ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }); } catch (e) { }
+    el.textContent = S.dirty ? '저장 안 됨' : short ? '저장됨 · ' + short : '';
+    el.title = S.dirty ? '저장하지 않은 변경이 있습니다 — [저장] 또는 Ctrl+S' + (t ? ` (마지막 저장: ${t})` : '') : t ? `마지막 저장: ${t} · ${WHERE[API.mode] || ''}` : '';
+  }
   function markDirty() {
+    const was = S.dirty;
     S.dirty = true; S.rev++; $('top').classList.add('is-dirty'); sizeLater();
-    // 임시본은 손을 멈춘 뒤 한가할 때 저장 (끌기·입력 중에 멈칫하지 않게)
-    clearTimeout(saveTimer); saveTimer = setTimeout(() => (window.requestIdleCallback || (f => f()))(() => draftPut(), { timeout: 3000 }), 800);
+    if (!was) showSaveState();
+    // 임시 작업본은 손을 멈춘 뒤 한가할 때 남김 (끌기·입력 중에 멈칫하지 않게). 그 사이 저장이 끝났으면 남기지 않음
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => (window.requestIdleCallback || (f => f()))(() => { if (S.dirty) draftPut(); }, { timeout: 3000 }), 800);
   }
   /* 변경 확정: 히스토리 + 더티 + 썸네일 */
   function commit(opts) {
@@ -75,37 +93,49 @@
     saving = save1().finally(() => { saving = null; });
     return saving;
   }
-  const when = (iso) => { try { return new Date(iso).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return String(iso); } };
   /* 저장 직전: 내가 불러온 뒤에 다른 곳에서 저장했는지 확인 */
   async function okToOverwrite() {
-    if (!S.base) return true;
     const cur = await API.peek(S.name);
-    if (!cur || cur <= S.base) return true;
-    return confirm(`이 교안이 다른 곳(다른 기기 · 다른 탭)에서 ${when(cur)}에 저장되었습니다.\n지금 저장하면 그쪽에서 고친 내용을 덮어씁니다.\n\n확인: 내 것으로 덮어쓰기\n취소: 저장하지 않음 (이 화면을 새로 고침하면 그쪽 내용을 불러옵니다)`);
+    if (cur == null || cur === S.base) return true; // 확인하지 못했으면(연결 끊김) 저장을 해 보고, 안 되면 거기서 알림
+    if (!cur) return S.deletedElsewhere || confirm('저장소에 이 교안이 없습니다 — 다른 곳에서 지웠거나 이름을 바꾼 것 같습니다.\n저장하면 같은 이름으로 다시 만들어집니다.\n\n저장할까요?');
+    return confirm(`이 교안이 다른 곳(다른 기기 · 다른 탭)에서 ${when(cur)}에 저장되었습니다.\n` + (S.base ? `지금 화면은 그 전(${when(S.base)}) 저장본에서 시작한 것입니다.\n` : '') + `\n지금 저장하면 그쪽에서 고친 내용을 덮어씁니다.\n\n확인: 내 것으로 덮어쓰기\n취소: 저장하지 않음 — 내 작업은 이 기기에 임시로 남고, 화면을 새로 고치면 어느 쪽으로 열지 고를 수 있습니다`);
+  }
+  /* 교안 파일이 저장된 직후. r0 = 저장을 시작할 때의 S.rev (그 뒤로 더 고쳤으면 '저장 안 됨' 으로 남김) */
+  function afterSaved(r0) {
+    S.base = S.deck.modified || S.base;
+    S.deletedElsewhere = false;
+    if (hubBus) hubBus.postMessage({ type: 'saved', name: S.name, tab: TAB });
+    if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); clearTimeout(saveTimer); Draft.clear(S.name); }
+    else draftPut(); // 저장하는 동안 더 고친 것: 임시 작업본의 출발점을 방금 저장본으로
+    showSaveState();
   }
   async function save1() {
     if (S.deletedElsewhere && !confirm('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다.\n저장할까요?')) return;
     const sb = $('btnSave'), sbHtml = sb.innerHTML; sb.disabled = true; sb.innerHTML = API.mode === 'github' ? '저장 중… (몇 초)' : '저장 중…';
+    const r0 = S.rev; // 저장하는 동안(GitHub 은 몇 초) 더 고친 내용은 '저장 안 됨' 으로 남김
     let retry = false;
     try {
-      const r0 = S.rev; // 저장하는 동안(GitHub 은 몇 초) 더 고친 내용은 '수정됨'으로 남김
-      if (!(await okToOverwrite())) { saveAgain = false; toast('저장하지 않았습니다'); return; }
+      if (!(await okToOverwrite())) { saveAgain = false; draftPut(); toast('저장하지 않았습니다 — 내 작업은 이 기기에 임시로 남아 있습니다', 4500); return; }
       await API.save(S.name, S.deck);
-      S.base = S.deck.modified || S.base;
-      if (hubBus) hubBus.postMessage({ type: 'saved', name: S.name, tab: TAB });
-      S.deletedElsewhere = false;
-      if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name); }
+      afterSaved(r0);
       const up = BIGV.pct();
       if (up != null) toast(`저장했습니다 — 영상은 아직 올리는 중입니다 (${up}%). 다 올라갈 때까지 이 창을 닫지 마세요`, 5000);
-      else toast('저장했습니다');
+      else toast(API.mode === 'local' ? '저장했습니다 — 이 브라우저 안에만 저장됩니다 (다른 기기에서는 보이지 않습니다)' : `저장했습니다 (${WHERE[API.mode]})`, API.mode === 'local' ? 4500 : 2200);
     } catch (e) {
       if (e.noToken || e.status === 401) { // 연결이 없거나 만료: 경고 대신 이 자리에서 바로 연결
         draftPut();
         const ok = await GH.connect({ expired: e.status === 401, reason: e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣으면 바로 저장합니다.' : '이 기기(브라우저·앱)에는 아직 GitHub 연결이 없습니다. 지금 연결하면 바로 저장합니다.' });
         ghChip();
         if (ok === true) retry = true;
-        else toast('이 기기에 임시 저장해 두었습니다 — 연결한 뒤 저장하면 저장소에 올라갑니다', 3500);
-      } else alert('저장 실패: ' + e.message);
+        else toast('아직 저장되지 않았습니다 — 이 기기에 임시로 남겨 두었습니다. 연결한 뒤 [저장] 을 누르면 저장소에 올라갑니다', 5000);
+      } else if (e.partial) { // 교안 파일은 저장됨 · 그림 몇 개가 덜 올라감
+        afterSaved(-1);
+        alert('교안은 저장했지만, ' + e.message + '\n\n그 그림은 이 화면에서는 보이지만 다른 기기에서는 아직 보이지 않습니다.');
+      } else {
+        draftPut();
+        const msg = e instanceof TypeError ? (API.mode === 'server' ? '내 PC 서버에 연결하지 못했습니다 (start.cmd 가 켜져 있는지 확인)' : '인터넷에 연결하지 못했습니다') : e.message;
+        alert('저장하지 못했습니다: ' + msg + '\n\n고친 내용은 이 기기에 임시로 남아 있습니다.\n연결을 확인한 뒤 다시 [저장] 을 눌러 주세요.');
+      }
     } finally { sb.disabled = false; sb.innerHTML = sbHtml; }
     const again = saveAgain && S.dirty; saveAgain = false;
     if (retry || again) { saving = null; return save(); }
@@ -134,10 +164,11 @@
     $('upStatus').after(c);
   }
   ghChip();
-  window.addEventListener('beforeunload', (ev) => { draftNow(); if (S.dirty || API.pending.size || API.failed.size) { ev.preventDefault(); ev.returnValue = ''; } });
-  /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰): 0.8초 기다리지 않고 바로 임시본 저장 — 쓰는 중인 글도 함께 (글 편집은 그대로 둠) */
+  window.addEventListener('beforeunload', (ev) => { const typing = draftNow(); if (typing || S.dirty || API.pending.size || API.failed.size) { ev.preventDefault(); ev.returnValue = ''; } });
+  /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰): 0.8초 기다리지 않고 바로 임시 작업본을 남김 — 쓰는 중인 글도 함께 (글 편집은 그대로 둠).
+     저장하지 않은 내용이 있으면 true */
   function draftNow() {
-    if (!S.deck || (!S.dirty && !S.editing)) return;
+    if (!S.deck || (!S.dirty && !S.editing)) return false;
     let deck = S.deck;
     const id = S.editing, e = id && elById(id), node = id && nodeOf(id);
     if (e && node) {
@@ -146,10 +177,11 @@
       const c = deck.slides[S.cur].elements[i];
       if (e.type === 'table') c.rows = readTableRows(node, e);
       else { const h = editHosts(node, e)[0]; if (h) c.html = cleanHtml(h.innerHTML); }
-      if (!S.dirty && JSON.stringify(c) === JSON.stringify(e)) return; // 바뀐 것 없음
+      if (!S.dirty && JSON.stringify(c) === JSON.stringify(e)) return false; // 바뀐 것 없음
     }
     clearTimeout(saveTimer);
     draftPut(deck);
+    return true;
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
   window.addEventListener('pagehide', draftNow);
@@ -242,7 +274,7 @@
   /* ---------- 렌더 ---------- */
   function renderAll() { renderThumbs(); renderStage(); renderProps(); updateTop(); }
   function updateTop() {
-    $('deckTitle').value = S.deck.title;
+    $('deckTitle').value = S.deck.title; document.title = (S.deck.title || S.name) + ' · 편집';
     $('theme').value = S.deck.theme;
     $('slideCount').textContent = `${S.cur + 1} / ${S.deck.slides.length}`;
     $('footSlide').textContent = `슬라이드 ${S.cur + 1} / ${S.deck.slides.length}  ·  ${S.deck.slides[S.cur].elements.length}개 요소`;
@@ -2053,15 +2085,16 @@
   themeSel.onchange = () => { setProp('deck.theme', themeSel.value, true); themeSel.blur(); };
   $('zoom').onchange = (ev) => { S.zoomMode = ev.target.value; layoutStage(); ev.target.blur(); };
   $('btnPresent').onclick = () => present(false);
-  $('btnPreview').onclick = () => { if (S.editing) endEdit(); draftPut(); window.open(`present.html?deck=${encodeURIComponent(S.name)}&draft=1&start=${S.cur}`, '_blank'); };
+  $('btnPreview').onclick = () => { if (S.editing) endEdit(); const d = S.dirty && draftPut(); window.open(`present.html?deck=${encodeURIComponent(S.name)}${d ? '&draft=1' : ''}&start=${S.cur}`, '_blank'); };
   $('btnExport').onclick = (ev) => {
     ev.stopPropagation();
+    const oldDraft = Draft.old(S.name); // [저장된 교안으로 열기] 를 골랐을 때 남겨 둔 작업본
     btnMenu(ev.currentTarget, [
       { label: 'JSON 파일 다운로드', fn: () => download(S.name + '.json', JSON.stringify(S.deck, null, 1), 'application/json') },
       { label: '단독 HTML (어디서나 발표)', fn: exportHtml },
       { label: 'PowerPoint 파일 (.pptx)', fn: exportPptx },
       { label: 'PDF / 인쇄용 보기', fn: () => openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&print=1`) },
-    ]);
+    ].concat(oldDraft ? [{ sep: true }, { label: `🕘 임시 작업본 되살리기 (${esc(when((oldDraft.info && oldDraft.info.at) || oldDraft.kept) || '남겨 둔 것')})`, fn: restoreOldDraft }] : []));
   };
   function download(name, text, type) {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
@@ -2199,7 +2232,7 @@
   async function openAfterSave(url) {
     const w = window.open('', '_blank');
     try { await save(); } catch (e) { }
-    if (S.dirty) { draftPut(); url += '&draft=1'; }
+    if (S.dirty && draftPut()) url += '&draft=1';
     if (w && !w.closed) w.location.href = url; else window.open(url, '_blank');
   }
   /* 글자 크기 단계 조절: 편집 중이면 그 상자, 아니면 선택한 텍스트 상자 전부 */
@@ -3285,11 +3318,66 @@
   window.__gyoan = { S, renderStage, gotoSlide }; // 개발용: 콘솔에서 상태 확인
   pushHistory();
   renderAll();
+  showSaveState();
   if (hubBus) hubBus.postMessage({ type: 'editing', name: S.name, tab: TAB }); // 같은 교안을 연 다른 탭이 있으면 서로 알림
-  const dr0 = Draft.get(S.name);
-  if (dr0 && JSON.stringify(dr0) !== JSON.stringify(S.deck)) {
-    const newer = !!S.deck.modified && (!dr0.modified || S.deck.modified > dr0.modified); // 임시본을 만든 뒤에 다른 곳에서 저장됨
-    if (confirm('저장하지 않은 임시 작업본이 있습니다. 불러올까요?' + (newer ? `\n\n주의: 저장된 교안이 이 임시본보다 나중(${when(S.deck.modified)})에 저장되었습니다 — 다른 기기에서 고친 것 같습니다.\n임시본을 불러와 저장하면 그 내용을 덮어쓰게 됩니다. 잘 모르겠으면 “취소”를 누르세요.` : ''))) { S.deck = dr0; S.base = dr0.modified || ''; migrate(S.deck); S.cur = clamp(S.cur, 0, S.deck.slides.length - 1); S.sel = []; S.ssel = [curSlide().id]; pushHistory(); renderAll(); markDirty(); }
-    else Draft.clear(S.name);
+
+  /* ---------- 이 기기에 남은 임시 작업본 ---------- */
+  /* 저장 시각만 빼고 내용이 같은지 */
+  function sameDeck(a, b) { const f = (d) => { const c = Object.assign({}, d); delete c.modified; return JSON.stringify(c); }; return f(a) === f(b); }
+  /* 작업본을 지금 화면으로. 그 전 화면은 되돌리기(Ctrl+Z)로 돌아올 수 있음. 저장 기준(S.base)은 지금 열어 둔 저장본 그대로 */
+  function loadDraftDeck(deck, msg) {
+    if (S.editing) endEdit();
+    S.deck = deck; migrate(S.deck); if (S.base) S.deck.modified = S.base;
+    S.cur = clamp(S.cur, 0, S.deck.slides.length - 1); S.sel = []; S.ssel = [curSlide().id];
+    pushHistory(); renderAll(); markDirty(); toast(msg, 8000);
   }
+  /* 열 때: 저장하지 않고 닫은 작업본이 있으면 어느 쪽으로 열지 물어봄. 어느 쪽을 골라도 다른 쪽을 지우지 않음 */
+  function offerDraft() {
+    const dr = Draft.get(S.name);
+    if (!dr) { Draft.clear(S.name); return Promise.resolve(); }
+    migrate(dr);
+    if (sameDeck(dr, S.deck)) { Draft.clear(S.name); return Promise.resolve(); } // 저장본과 같은 내용: 물어볼 것 없음
+    const info = Draft.info(S.name), at = info.at || '';
+    // 작업본을 만든 뒤에 저장본이 바뀌었는지 (다른 기기 · 다른 탭에서 저장)
+    const foreign = info.base !== undefined ? (info.base || '') !== (S.base || '') : !!(S.base && dr.modified && S.base > dr.modified);
+    const savedNewer = foreign || !!(at && S.base && S.base > at);
+    const a = dr.slides, b = S.deck.slides, diff = [];
+    for (let i = 0, n = Math.max(a.length, b.length); i < n; i++) if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) diff.push(i + 1);
+    const diffText = diff.length ? `서로 다른 슬라이드 <b>${diff.length}장</b> (${diff.slice(0, 12).join(', ')}번${diff.length > 12 ? ' …' : ''})` : '슬라이드 내용은 같고, 제목이나 디자인 설정만 다릅니다';
+    const card = (pick, icon, name, sub, whenLabel, time, n, btn, newer, primary) => `<div class="dr-card${primary ? ' rec' : ''}">
+        <div class="dr-name">${icon} ${name}${newer ? '<span class="dr-new">더 최근</span>' : ''}</div><div class="dr-sub">${sub}</div>
+        <div class="dr-row"><span>${whenLabel}</span><b>${esc(time || '알 수 없음')}</b></div><div class="dr-row"><span>슬라이드</span><b>${n}장</b></div>
+        <button class="btn${primary ? ' primary' : ''}" data-pick="${pick}">${btn}</button></div>`;
+    return new Promise((done) => {
+      const bg = document.createElement('div'); bg.className = 'modal-bg';
+      bg.innerHTML = `<div class="modal draft-modal"><h3>저장하지 않은 작업본이 이 기기에 남아 있습니다</h3>
+        <p class="dr-lead">지난번에 이 교안을 고친 뒤 <b>저장하지 않고</b> 창을 닫았습니다. 어느 쪽으로 열지 골라 주세요.<br><b>어느 쪽을 골라도 다른 쪽은 지워지지 않습니다.</b></p>
+        <div class="dr-cards">
+          ${card('draft', '📝', '저장하지 않은 작업본', '이 기기에만 있습니다', '마지막으로 고친 때', when(at), a.length, '이 작업본 이어서 하기', !savedNewer && !!at, !savedNewer)}
+          ${card('saved', '💾', '저장된 교안', esc(WHERE[API.mode] || ''), '저장한 때', when(S.base), b.length, '저장된 교안으로 열기', savedNewer, savedNewer)}
+        </div>
+        <p class="dr-diff">${diffText}</p>
+        ${foreign ? `<p class="dr-warn">⚠ 이 작업본을 만든 <b>뒤에</b> 저장된 교안이 다른 곳(다른 기기 · 다른 탭)에서 바뀌었${info.base !== undefined ? '습니다' : '을 수 있습니다'}.<br>작업본을 이어서 하고 저장하면 <b>그쪽에서 고친 내용이 사라집니다.</b> 잘 모르겠으면 [저장된 교안으로 열기] 를 고르세요.</p>` : ''}
+        <p class="dr-foot">고르지 않은 작업본은 <b>내보내기 ▾ → 임시 작업본 되살리기</b> 에 30일 동안 남습니다. · 작업본을 불러온 뒤에도 되돌리기(Ctrl+Z)로 저장된 교안으로 돌아올 수 있습니다.</p></div>`;
+      const pick = (which) => {
+        bg.remove();
+        if (which === 'draft') loadDraftDeck(dr, '저장하지 않은 작업본을 불러왔습니다 — 아직 저장되지 않았습니다. 확인한 뒤 [저장] 을 눌러 주세요 · 저장된 교안으로 돌아가려면 되돌리기(Ctrl+Z)');
+        else if (Draft.keep(S.name)) toast('저장된 교안으로 열었습니다 · 저장하지 않은 작업본은 [내보내기 ▾ → 임시 작업본 되살리기] 에 남겨 두었습니다', 8000);
+        else toast('저장된 교안으로 열었습니다 · 저장하지 않은 작업본은 아직 남아 있지만, 이 교안을 고치기 시작하면 새 작업본으로 바뀝니다', 8000);
+        done();
+      };
+      bg.addEventListener('click', (ev) => { const b = ev.target.closest('[data-pick]'); if (b) pick(b.dataset.pick); });
+      bg.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') pick('saved'); }); // Esc: 아무것도 지우지 않는 쪽
+      document.body.appendChild(bg);
+      const first = bg.querySelector('.btn.primary'); if (first) first.focus();
+    });
+  }
+  /* 남겨 둔 임시 작업본을 다시 불러오기 (내보내기 메뉴) */
+  function restoreOldDraft() {
+    const o = Draft.old(S.name); if (!o) { toast('남겨 둔 임시 작업본이 없습니다'); return; }
+    const t = when((o.info && o.info.at) || o.kept);
+    if (!confirm(`${t ? t + '에 고치던 ' : '남겨 둔 '}임시 작업본(슬라이드 ${o.deck.slides.length}장)을 지금 화면으로 불러올까요?\n\n· 지금 화면의 내용은 되돌리기(Ctrl+Z)로 돌아올 수 있습니다.\n· 불러온 뒤 [저장] 을 눌러야 저장됩니다.`)) return;
+    loadDraftDeck(JSON.parse(JSON.stringify(o.deck)), '임시 작업본을 불러왔습니다 — 아직 저장되지 않았습니다. 확인한 뒤 [저장] 을 눌러 주세요 · 되돌리기 Ctrl+Z');
+  }
+  await offerDraft();
 })();

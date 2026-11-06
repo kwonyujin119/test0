@@ -405,6 +405,29 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .text-toolbar > [data-cmd=cellFillClear], .text-toolbar > [data-cmd=cellAlign], .text-toolbar > [data-cmd=mergeR], .text-toolbar > [data-cmd=mergeD], .text-toolbar > [data-cmd=split] { --tc: 91,155,255; }
 .text-toolbar > [data-cmd=rowAdd], .text-toolbar > [data-cmd=colAdd] { --tc: 81,207,138; }
 .text-toolbar > [data-cmd=rowDel], .text-toolbar > [data-cmd=colDel] { --tc: 255,135,135; }
+/* 저장 상태 글 (제목 옆) · 임시 작업본 안내 창 */
+.ed-top .savestate { font-size: 11.5px; font-weight: 500; color: var(--ui-muted); cursor: default; }
+.ed-top.is-dirty .savestate { color: #fde68a; }
+@media (max-width: 1100px) { .ed-top .savestate { display: none; } }
+.draft-modal { width: 660px; max-width: 94vw; }
+.draft-modal .dr-lead { margin: 0 0 14px; font-size: 13.5px; line-height: 1.65; color: var(--ui-fg); }
+.draft-modal .dr-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.draft-modal .dr-card { display: flex; flex-direction: column; gap: 6px; padding: 14px; border: 2px solid var(--ui-border); border-radius: 12px; background: var(--ui-panel2); min-width: 0; }
+.draft-modal .dr-card.rec { border-color: var(--ui-accent); background: rgba(79,140,255,.10); }
+.draft-modal .dr-name { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.draft-modal .dr-new { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: #1f7a5a; color: #fff; }
+.draft-modal .dr-sub { font-size: 12px; color: var(--ui-muted); margin-bottom: 4px; }
+.draft-modal .dr-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; }
+.draft-modal .dr-row span { color: var(--ui-muted); white-space: nowrap; }
+.draft-modal .dr-row b { font-weight: 600; text-align: right; }
+.draft-modal .dr-card .btn { margin-top: 8px; justify-content: center; padding: 9px 10px; }
+.draft-modal .dr-diff { margin: 12px 0 0; font-size: 12.5px; color: var(--ui-muted); }
+.draft-modal .dr-diff b { color: var(--ui-fg); }
+.draft-modal .dr-warn { margin: 10px 0 0; padding: 10px 12px; border: 1px solid #8a6a16; border-radius: 10px; background: rgba(245,158,11,.12); color: #fde68a; font-size: 12.5px; line-height: 1.6; }
+.draft-modal .dr-foot { margin: 12px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--ui-muted); }
+.draft-modal .dr-foot b { color: var(--ui-fg); }
+@media (max-width: 560px) { .draft-modal .dr-cards { grid-template-columns: 1fr; } }
+.deck-meta .draft-chip { color: #fde68a; border: 1px solid #8a6a16; border-radius: 999px; padding: 0 7px; background: rgba(245,158,11,.12); cursor: help; }
 /* PPT 심벌 창 (PPT 파일 안의 그림·도형을 꺼내 끌어다 놓기) — 내 심벌 창보다 위에 떠 있음 */
 .pptsym { position: fixed; z-index: 1200; width: 336px; max-width: calc(100vw - 16px); max-height: min(78vh, 720px); display: flex; flex-direction: column; background: var(--ui-panel); border: 1px solid #46506a; border-radius: 12px; box-shadow: 0 18px 50px rgba(0,0,0,.6); font-size: 12.5px; color: var(--ui-fg); overflow: hidden; }
 .pptsym .ps-head { display: flex; align-items: center; gap: 8px; padding: 9px 8px 9px 12px; background: linear-gradient(90deg, rgba(245,158,11,.24), rgba(245,158,11,.06)); border-bottom: 1px solid var(--ui-border); cursor: move; user-select: none; touch-action: none; }

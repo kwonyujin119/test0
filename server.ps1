@@ -149,10 +149,20 @@ function Handle-Request($ctx) {
             'PUT' {
                 $bytes = Read-Body $ctx
                 $text = [System.Text.Encoding]::UTF8.GetString($bytes)
-                try { $null = ConvertFrom-Json $text } catch { Send-Json $ctx @{ error = 'invalid json' } 400; return }
-                # 직전 버전을 .bak 으로 보관
-                if (Test-Path $file) { Copy-Item $file ($file + '.bak') -Force }
-                [System.IO.File]::WriteAllText($file, $text, (New-Object System.Text.UTF8Encoding $false))
+                try { $parsed = ConvertFrom-Json $text } catch { Send-Json $ctx @{ error = 'invalid json' } 400; return }
+                if ($null -eq $parsed -or $null -eq $parsed.slides) { Send-Json $ctx @{ error = 'not a deck' } 400; return }   # 교안이 아닌 내용으로 덮어쓰지 않음
+                # 새 내용을 임시 파일에 다 쓴 뒤에 바꿔치기 (쓰는 도중 꺼져도 원래 파일이 반쪽이 되지 않게). 직전 버전은 .bak 으로 보관
+                $enc = New-Object System.Text.UTF8Encoding $false
+                $tmp = $file + '.tmp'
+                try {
+                    [System.IO.File]::WriteAllText($tmp, $text, $enc)
+                    if (Test-Path $file) { [System.IO.File]::Replace($tmp, $file, ($file + '.bak'), $true) } else { [System.IO.File]::Move($tmp, $file) }
+                } catch {
+                    # 바꿔치기를 못 하는 경우(다른 프로그램이 파일을 잡고 있음 등): 예전 방식으로 저장
+                    if (Test-Path $file) { Copy-Item $file ($file + '.bak') -Force }
+                    [System.IO.File]::WriteAllText($file, $text, $enc)
+                    if (Test-Path $tmp) { Remove-Item $tmp -Force -ErrorAction SilentlyContinue }
+                }
                 Send-Json $ctx @{ ok = $true; name = $name }; return
             }
             'DELETE' {

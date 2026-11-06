@@ -1018,7 +1018,11 @@ const GH = {
   async raw(path) {
     const r = await fetch(`${this.base()}/contents/${encPath(path)}?ref=${encodeURIComponent(this.cfg.branch)}`, { headers: this.headers('application/vnd.github.raw+json'), cache: 'no-store' });
     if (r.status === 404) return null;
-    if (!r.ok) throw new Error('GitHub 에서 읽지 못했습니다 (' + r.status + ')');
+    if (!r.ok) {
+      const e = new Error(r.status === 401 ? 'GitHub 토큰이 올바르지 않거나 만료되었습니다 — 목록 화면의 [GitHub 연결] 에서 새 토큰을 넣어 주세요'
+        : r.status === 403 || r.status === 429 ? 'GitHub 요청 한도를 넘었습니다 — 잠시 뒤에 다시 열어 주세요' : 'GitHub 에서 읽지 못했습니다 (' + r.status + ')');
+      e.status = r.status; throw e;
+    }
     return r.text();
   },
   async dir(path) {
@@ -1317,7 +1321,7 @@ const API = {
   _local() { try { return JSON.parse(localStorage.getItem('gyoan:decks') || '{}'); } catch (e) { return {}; } },
   _saveLocal(all) { localStorage.setItem('gyoan:decks', JSON.stringify(all)); },
   async list() {
-    if (this.mode === 'server') { const r = await fetch('api/decks', { cache: 'no-store' }); return r.json(); }
+    if (this.mode === 'server') { const r = await fetch('api/decks', { cache: 'no-store' }); if (!r.ok) throw new Error('내 PC 서버가 목록을 주지 않았습니다 (' + r.status + ')'); return r.json(); }
     if (this.mode === 'github') {
       const files = await GH.dir('decks');
       return files.filter(f => /\.json$/i.test(f.name)).map(f => {
@@ -1328,31 +1332,46 @@ const API = {
     const all = this._local();
     return Object.keys(all).map(name => ({ name, title: all[name].title || name, slides: (all[name].slides || []).length, theme: all[name].theme || '', modified: all[name].modified || '' }));
   },
+  /* 교안 읽기. 못 읽으면 까닭을 알 수 있는 오류 (없음 · 연결 안 됨 · 파일 손상) — notFound 면 그 이름의 교안이 없는 것 */
   async load(name) {
-    if (this.mode === 'server') {
-      const r = await fetch('api/decks/' + encodeURIComponent(name), { cache: 'no-store' });
-      if (!r.ok) throw new Error('교안을 찾을 수 없습니다: ' + name);
-      return r.json();
+    const none = () => { const e = new Error('교안을 찾을 수 없습니다: ' + name); e.notFound = true; return e; };
+    if (this.mode === 'local') { const d = this._local()[name]; if (!d) throw none(); return d; }
+    let text = null;
+    try {
+      if (this.mode === 'server') {
+        const r = await fetch('api/decks/' + encodeURIComponent(name), { cache: 'no-store' });
+        if (r.status === 404) throw none();
+        if (!r.ok) throw new Error('내 PC 서버에서 교안을 읽지 못했습니다 (' + r.status + ')');
+        text = await r.text();
+      } else {
+        // 토큰 없이 Pages 에서 볼 때는 배포된 파일을 직접 읽음 (요청 한도 없음)
+        if (!GH.token && GH.onPages) { try { const r = await fetch('decks/' + encodeURIComponent(name) + '.json', { cache: 'no-store' }); if (r.ok) text = await r.text(); } catch (e) { } }
+        if (text == null) text = await GH.raw('decks/' + name + '.json');
+        if (text == null) throw none();
+      }
+    } catch (e) {
+      if (e instanceof TypeError) throw new Error(this.mode === 'server' ? '교안을 불러오지 못했습니다 — 내 PC 서버(start.cmd)가 켜져 있는지 확인해 주세요' : '교안을 불러오지 못했습니다 — 인터넷 연결을 확인해 주세요'); // 연결이 끊김
+      throw e;
     }
-    if (this.mode === 'github') {
-      let text = null;
-      // 토큰 없이 Pages 에서 볼 때는 배포된 파일을 직접 읽음 (요청 한도 없음)
-      if (!GH.token && GH.onPages) { try { const r = await fetch('decks/' + encodeURIComponent(name) + '.json', { cache: 'no-store' }); if (r.ok) text = await r.text(); } catch (e) { } }
-      if (text == null) text = await GH.raw('decks/' + name + '.json');
-      if (text == null) throw new Error('교안을 찾을 수 없습니다: ' + name);
-      return JSON.parse(text);
-    }
-    const d = this._local()[name]; if (!d) throw new Error('교안을 찾을 수 없습니다: ' + name); return d;
+    let d = null; try { d = JSON.parse(text); } catch (e) { }
+    if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('교안 파일이 깨져 있어 읽을 수 없습니다: ' + name + '.json');
+    return d;
   },
-  /* 지금 저장되어 있는 교안의 저장 시각 (없거나 읽지 못하면 null) — 저장 전에 다른 곳에서 고쳤는지 확인하는 데 씀 */
-  async peek(name) { try { const d = await this.load(name); return (d && d.modified) || null; } catch (e) { return null; } },
-  async save(name, deck) {
-    deck.modified = new Date().toISOString();
+  /* 지금 저장되어 있는 교안의 저장 시각. 교안이 없거나 저장 시각이 없으면 '' · 확인하지 못했으면(연결 끊김 등) null
+     — 저장 전에 다른 곳에서 고쳤는지 확인하는 데 씀 */
+  async peek(name) { try { const d = await this.load(name); return (d && d.modified) || ''; } catch (e) { return e.notFound ? '' : null; } },
+  /* 교안 저장. 저장 시각(modified)은 교안 파일이 실제로 저장된 뒤에만 화면의 교안(deck)에 적음
+     — 저장에 실패했는데 "저장한 시각"만 바뀌어, 나중에 어느 쪽이 새것인지 헷갈리는 일이 없게.
+     opts.keepTime: 저장 시각을 바꾸지 않음 (이름 바꾸기처럼 내용이 그대로일 때) */
+  async save(name, deck, opts) {
+    const stamp = (opts && opts.keepTime && deck.modified) || new Date().toISOString();
+    const body = () => JSON.stringify(Object.assign({}, deck, { modified: stamp }), null, 1);
     if (this.mode === 'server') {
       await this.flush();
-      const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(deck, null, 1) });
-      if (!r.ok) throw new Error('저장 실패 (' + r.status + ')');
-      return r.json();
+      const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: body() });
+      if (!r.ok) throw new Error('내 PC 서버가 저장하지 못했습니다 (' + r.status + ')');
+      deck.modified = stamp;
+      return { ok: true, name };
     }
     if (this.mode === 'github') {
       if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
@@ -1360,14 +1379,17 @@ const API = {
       this._retryFailed();
       await Promise.all(Array.from(this.queuing)).catch(() => { }); // 방금 옮긴 이미지가 큐에 다 들어갈 때까지 (교안이 이미지보다 먼저 올라가지 않게)
       // 큐에 모인 이미지와 교안을 한 커밋으로
-      await GH.enqueue({ path: 'decks/' + name + '.json', content: JSON.stringify(deck, null, 1) }, { now: true, message: '교안 저장: ' + (deck.title || name) });
-      if (this.failed.size || this.pending.size) await this.flush(); // 따로 올라가던 이미지가 실패했으면 다시 올리고, 그래도 안 되면 저장 실패로 알림
+      await GH.enqueue({ path: 'decks/' + name + '.json', content: body() }, { now: true, message: '교안 저장: ' + (deck.title || name) });
+      deck.modified = stamp; // 여기까지 오면 교안 파일은 저장소에 들어감
+      // 따로 올라가던 이미지가 실패했으면 다시 올리고, 그래도 안 되면 "교안은 저장됐지만 그림이 덜 올라감" 으로 알림
+      if (this.failed.size || this.pending.size) { try { await this.flush(); } catch (e) { e.partial = true; throw e; } }
       return { ok: true, name };
     }
-    const all = this._local(); all[name] = deck;
+    const all = this._local(), text = body(); all[name] = JSON.parse(text);
     try { this._saveLocal(all); }
-    catch (e) { Draft.clear(name); try { this._saveLocal(all); } catch (e2) { throw new Error('이 브라우저의 저장 공간이 가득 찼습니다. 이미지를 줄이거나 “내보내기”로 파일로 받아 두세요'); } }
-    return { ok: true };
+    catch (e) { Draft.clearOld(name); try { this._saveLocal(all); } catch (e2) { throw new Error('이 브라우저의 저장 공간이 가득 찼습니다. 이미지를 줄이거나 “내보내기”로 파일로 받아 두세요'); } } // 남겨 둔 옛 작업본을 비워 자리를 내고 한 번 더
+    deck.modified = stamp;
+    return { ok: true, name };
   },
   async remove(name) {
     if (this.mode === 'server') {
@@ -1392,14 +1414,14 @@ const API = {
     const deck = await this.load(from);
     if (this.mode === 'github') {
       if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
-      deck.modified = new Date().toISOString();
+      // 내용은 그대로이므로 저장 시각을 바꾸지 않음 (이 교안을 열어 둔 편집 화면이 "다른 곳에서 고쳤다"고 잘못 알지 않게)
       await Promise.all([
         GH.enqueue({ path: 'decks/' + to + '.json', content: JSON.stringify(deck, null, 1) }, { message: `교안 이름 바꾸기: ${from} → ${to}` }),
         GH.enqueue({ path: 'decks/' + from + '.json', delete: true }, { now: true }),
       ]);
       return { ok: true };
     }
-    await this.save(to, deck); await this.remove(from); return { ok: true };
+    await this.save(to, deck, { keepTime: true }); await this.remove(from); return { ok: true };
   },
   /* 연결 전에 교안 안에 넣어 둔 이미지(data:)를 저장소 이미지 파일로 옮김 */
   async _liftImages(deck) {
@@ -1423,13 +1445,53 @@ const API = {
   },
 };
 
-/* 임시 저장(발표 미리보기용) */
+/* 임시 작업본: 저장하지 않은 편집 내용을 이 기기(브라우저)에만 보관 — 창을 닫아도 다음에 이어서 할 수 있게.
+   · 작업본   gyoan:draft:이름       (교안 내용 그대로 · 미리보기 창도 이것을 읽음)
+   · 꼬리표   gyoan:draftinfo:이름   { at: 마지막으로 고친 때, base: 이 작업본이 출발한 저장본의 저장 시각 }
+   · 보관본   gyoan:draftold:이름    { deck, info } — "저장된 교안으로 열기" 를 골랐을 때 버리지 않고 한 벌 남겨 둠 */
 const Draft = {
   key(name) { return 'gyoan:draft:' + name; },
-  put(name, deck) { try { localStorage.setItem(this.key(name), JSON.stringify(deck)); return true; } catch (e) { try { localStorage.removeItem(this.key(name)); } catch (e2) { } return false; } },
-  get(name) { try { return JSON.parse(localStorage.getItem(this.key(name))); } catch (e) { return null; } },
-  clear(name) { localStorage.removeItem(this.key(name)); },
+  infoKey(name) { return 'gyoan:draftinfo:' + name; },
+  oldKey(name) { return 'gyoan:draftold:' + name; },
+  _read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  _write(k, v) { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } },
+  _del(k) { try { localStorage.removeItem(k); } catch (e) { } },
+  /* 넣지 못하면(공간 부족) false — 그때도 먼저 있던 작업본은 지우지 않음 */
+  put(name, deck, info) {
+    const text = JSON.stringify(deck);
+    if (!this._write(this.key(name), text)) { this._del(this.oldKey(name)); if (!this._write(this.key(name), text)) return false; } // 보관본을 비워 자리를 내고 한 번 더
+    this._write(this.infoKey(name), Object.assign({ at: new Date().toISOString() }, info || {}));
+    return true;
+  },
+  get(name) { const d = this._read(this.key(name)); return d && typeof d === 'object' && Array.isArray(d.slides) ? d : null; },
+  has(name) { try { return localStorage.getItem(this.key(name)) != null; } catch (e) { return false; } },
+  info(name) { const i = this._read(this.infoKey(name)); return i && typeof i === 'object' ? i : {}; },
+  clear(name) { this._del(this.key(name)); this._del(this.infoKey(name)); },
+  /* 지금 작업본을 보관본으로 옮김 (버리지 않고 남겨 두기) */
+  keep(name) {
+    const deck = this.get(name); if (!deck) { this.clear(name); return false; }
+    const ok = this._write(this.oldKey(name), { deck, info: this.info(name), kept: new Date().toISOString() });
+    if (ok) this.clear(name); // 옮기지 못했으면(공간 부족) 작업본을 그대로 둠
+    return ok;
+  },
+  old(name) { // 보관본 (30일이 지난 것은 치움)
+    const o = this._read(this.oldKey(name)); if (!o || !o.deck || !Array.isArray(o.deck.slides)) return null;
+    if (o.kept && Date.now() - Date.parse(o.kept) > 30 * 86400000) { this._del(this.oldKey(name)); return null; }
+    return o;
+  },
+  clearOld(name) { this._del(this.oldKey(name)); },
+  /* 교안을 지웠을 때: 그 이름의 작업본·보관본을 모두 치움 (같은 이름으로 새로 만든 교안에 옛 작업본이 뜨지 않게) */
+  forget(name) { this.clear(name); this.clearOld(name); },
+  /* 교안 이름을 바꿨을 때: 작업본도 새 이름으로 */
+  move(from, to) {
+    for (const k of ['key', 'infoKey', 'oldKey']) { let v = null; try { v = localStorage.getItem(this[k](from)); } catch (e) { } if (v != null) { this._write(this[k](to), v); this._del(this[k](from)); } }
+  },
 };
+/* 저장 시각(ISO) → "11월 6일 오후 3:02" (이 기기의 시간대로) */
+function fmtWhen(iso) {
+  const d = new Date(iso); if (!iso || isNaN(d)) return '';
+  try { return d.toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return String(iso); }
+}
 
 function qs(k) { return new URLSearchParams(location.search).get(k); }
 function toast(msg, ms) {
