@@ -5,7 +5,7 @@
 const CACHE = 'ws-app-v4';
 const CORE = [
   './', 'index.html', 'gyoan.html', 'hangul.html', 'editor.html', 'present.html', 'shortcuts.html', 'manifest.webmanifest',
-  'app/common.js', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js',
+  'app/common.js', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/pptx.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js',
   'app/hwp/zip.js', 'app/hwp/hwpx.js', 'app/hwp/store.js', 'app/hwp/edit.js', 'app/hwp/ui.js', 'app/hwp/hwp.css',
   'app/icons/icon-192.png', 'app/icons/icon-512.png', 'app/icons/icon-maskable-512.png', 'app/icons/hangul-96.png', 'app/icons/gyoan-96.png',
 ];

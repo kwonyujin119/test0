@@ -1338,6 +1338,78 @@
   /* ---------- 속성 패널 ---------- */
   const row = (label, html) => `<div class="prow"><label>${label}</label><div class="ctrls">${html}</div></div>`;
   const num = (k, v, step, min, max, title) => `<input type="number" data-k="${k}" value="${v == null ? '' : v}" step="${step || 1}" ${min != null ? `min="${min}"` : ''} ${max != null ? `max="${max}"` : ''} ${title ? `title="${title}"` : ''}>`;
+  /* ---------- 색 팔레트 ----------
+     색 칸(□)을 누르면 브라우저의 색 고르기 창 대신 대표색 팔레트를 먼저 보여 줍니다.
+     (테마 색 · 색상별 5단계 · 무채색 · 최근 쓴 색 · 색 번호 직접 입력 · 화면에서 따오기 · 세밀하게 고르기)
+     고른 색은 원래 색 칸에 그대로 넣고 input/change 를 알리므로, 색을 쓰는 모든 곳이 그대로 동작합니다. */
+  const PAL_HUES = [
+    ['빨강', ['#fee2e2', '#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d']], ['주황', ['#ffedd5', '#fdba74', '#f97316', '#c2410c', '#7c2d12']],
+    ['노랑', ['#fef3c7', '#fcd34d', '#f59e0b', '#b45309', '#78350f']], ['연두', ['#ecfccb', '#bef264', '#84cc16', '#4d7c0f', '#365314']],
+    ['초록', ['#dcfce7', '#86efac', '#22c55e', '#15803d', '#14532d']], ['청록', ['#ccfbf1', '#5eead4', '#14b8a6', '#0f766e', '#134e4a']],
+    ['하늘', ['#e0f2fe', '#7dd3fc', '#0ea5e9', '#0369a1', '#0c4a6e']], ['파랑', ['#dbeafe', '#93c5fd', '#3b82f6', '#1d4ed8', '#1e3a8a']],
+    ['보라', ['#f3e8ff', '#d8b4fe', '#a855f7', '#7e22ce', '#581c87']], ['분홍', ['#fce7f3', '#f9a8d4', '#ec4899', '#be185d', '#831843']],
+  ];
+  const PAL_TONE = ['아주 연한', '연한', '기본', '진한', '아주 진한'];
+  const PAL_GRAY = [['#ffffff', '흰색'], ['#f3f4f6', '아주 연한 회색'], ['#d1d5db', '연한 회색'], ['#9ca3af', '회색'], ['#6b7280', '중간 회색'], ['#4b5563', '진한 회색'], ['#374151', '짙은 회색'], ['#1f2937', '먹색'], ['#111827', '검정에 가까운'], ['#000000', '검정']];
+  const PAL_KEY = 'gyoan:recentColors';
+  let palRecent = []; try { const a = JSON.parse(localStorage.getItem(PAL_KEY) || '[]'); if (Array.isArray(a)) palRecent = a.filter(c => /^#[0-9a-f]{6}$/i.test(c)).slice(0, 10); } catch (e) { }
+  function palRemember(c) {
+    c = String(c || '').toLowerCase(); if (!/^#[0-9a-f]{6}$/.test(c)) return;
+    palRecent = [c].concat(palRecent.filter(x => x !== c)).slice(0, 10);
+    try { localStorage.setItem(PAL_KEY, JSON.stringify(palRecent)); } catch (e) { }
+  }
+  let palPop = null;
+  function closePalette() { if (palPop) { palPop.remove(); palPop = null; document.removeEventListener('pointerdown', palOutside, true); } }
+  function palOutside(ev) { if (palPop && !palPop.contains(ev.target) && ev.target !== palPop._input) closePalette(); }
+  function openPalette(input) {
+    closePalette();
+    const t = theme(), cur = String(input.value || '').toLowerCase(), inBar = !!input.closest('.text-toolbar');
+    const sw = (c, title) => `<button type="button" class="cp-sw${c.toLowerCase() === cur ? ' on' : ''}" data-c="${c}" title="${esc(title)} ${c.toUpperCase()}" style="background:${c}"></button>`;
+    const themeCols = THEME_COLOR_KEYS.map(([k, n]) => [toHex(t[k]), n]).filter((x, i, a) => a.findIndex(y => y[0] === x[0]) === i);
+    const pop = palPop = document.createElement('div'); pop.className = 'cpal'; pop._input = input;
+    pop.innerHTML = `
+      <div class="cp-h">테마 색 <span>이 교안의 디자인 색</span></div>
+      <div class="cp-row">${themeCols.map(([c, n]) => sw(c, n)).join('')}</div>
+      <div class="cp-h">대표색 <span>위는 연하게 · 아래는 진하게</span></div>
+      <div class="cp-grid">${PAL_TONE.map((tn, r) => PAL_HUES.map(([hn, cs]) => sw(cs[r], tn + ' ' + hn)).join('')).join('')}</div>
+      <div class="cp-h">흰색 · 회색 · 검정</div>
+      <div class="cp-grid">${PAL_GRAY.map(([c, n]) => sw(c, n)).join('')}</div>
+      ${palRecent.length ? `<div class="cp-h">최근에 쓴 색</div><div class="cp-grid">${palRecent.map(c => sw(c, '최근')).join('')}</div>` : ''}
+      <div class="cp-foot"><span class="cp-now" style="background:${cur}" title="지금 색"></span><input type="text" class="cp-hex" value="${cur}" maxlength="7" spellcheck="false" title="색 번호 (#rrggbb) — 고치고 Enter">
+        ${window.EyeDropper ? '<button type="button" class="btn sm" data-pick title="화면의 아무 곳이나 눌러 그 색을 가져옵니다">🖍 화면에서</button>' : ''}<button type="button" class="btn sm" data-more title="색상판에서 세밀하게 고르기">세밀하게…</button></div>`;
+    (inBar ? input.closest('.text-toolbar') : document.body).appendChild(pop);
+    const r = input.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+    let left = clamp(r.left, 8, window.innerWidth - pw - 8), top = r.bottom + 6; if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+    pop.style.left = left + 'px'; pop.style.top = top + 'px';
+    const apply = (c, keep) => {
+      c = String(c).toLowerCase(); if (!/^#[0-9a-f]{6}$/.test(c)) return false;
+      if (inBar) restoreEditRange(); // 글 편집 중: 고른 글자에 색이 들어가게 범위를 되살림
+      input.value = c; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true }));
+      palRemember(c); if (!keep) closePalette(); return true;
+    };
+    pop.addEventListener('mousedown', (ev) => { if (!ev.target.closest('.cp-hex')) ev.preventDefault(); ev.stopPropagation(); }); // 글 편집 범위·초점을 건드리지 않게
+    pop.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+    pop.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      const b = ev.target.closest('.cp-sw'); if (b) { apply(b.dataset.c); return; }
+      if (ev.target.closest('[data-more]')) { closePalette(); try { if (input.showPicker) input.showPicker(); else { input._native = true; input.click(); } } catch (e) { input._native = true; input.click(); } return; }
+      if (ev.target.closest('[data-pick]')) { try { const res = await new window.EyeDropper().open(); if (res && res.sRGBHex) apply(res.sRGBHex); } catch (e) { } }
+    });
+    const hex = pop.querySelector('.cp-hex');
+    hex.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Enter') { ev.preventDefault(); let v = hex.value.trim(); if (/^[0-9a-f]{6}$/i.test(v)) v = '#' + v; if (/^#[0-9a-f]{3}$/i.test(v)) v = '#' + v.slice(1).split('').map(x => x + x).join(''); if (!apply(v)) { hex.select(); toast('색 번호는 #1f7a5a 처럼 넣어 주세요'); } } else if (ev.key === 'Escape') { ev.preventDefault(); closePalette(); } });
+    document.addEventListener('pointerdown', palOutside, true);
+  }
+  // 색 칸을 누르면: 팔레트 (세밀하게… 를 고르면 브라우저의 색 고르기 창)
+  document.addEventListener('click', (ev) => {
+    const inp = ev.target.closest && ev.target.closest('input[type=color]'); if (!inp || inp.disabled) return;
+    if (inp._native) { inp._native = false; return; }
+    ev.preventDefault();
+    if (palPop && palPop._input === inp) closePalette(); else openPalette(inp);
+  }, true);
+  document.addEventListener('change', (ev) => { const inp = ev.target; if (inp && inp.matches && inp.matches('input[type=color]')) palRemember(inp.value); }, true);
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && palPop) { ev.stopPropagation(); closePalette(); } }, true);
+  window.addEventListener('resize', closePalette);
+
   const colorIn = (k, v) => `<input type="color" data-k="${k}" value="${toHex(v)}">`;
   const selIn = (k, v, opts) => `<select data-k="${k}">${opts.map(o => `<option value="${esc(o[0])}" ${String(o[0]) === String(v) ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select>`;
   const tog = (k, v, label, title) => `<button class="btn sm ${v ? 'active' : ''}" data-k="${k}" data-toggle="1" title="${title || ''}">${label}</button>`;
@@ -1873,11 +1945,43 @@
     btnMenu(ev.currentTarget, [
       { label: 'JSON 파일 다운로드', fn: () => download(S.name + '.json', JSON.stringify(S.deck, null, 1), 'application/json') },
       { label: '단독 HTML (어디서나 발표)', fn: exportHtml },
+      { label: 'PowerPoint 파일 (.pptx)', fn: exportPptx },
       { label: 'PDF / 인쇄용 보기', fn: () => openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&print=1`) },
     ]);
   };
   function download(name, text, type) {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+  /* 필요할 때만 불러오는 프로그램 파일 (PPT 내보내기) */
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      if (document.querySelector(`script[data-lazy="${src}"]`)) { res(); return; }
+      const sc = document.createElement('script'); sc.src = src; sc.dataset.lazy = src;
+      sc.onload = () => res(); sc.onerror = () => { sc.remove(); rej(new Error('프로그램 파일을 불러오지 못했습니다 (' + src + ') — 인터넷 연결을 확인해 주세요')); };
+      document.head.appendChild(sc);
+    });
+  }
+  /* PowerPoint(.pptx) 로 내보내기 — 글·도형·표·그림은 PowerPoint 에서 고칠 수 있는 개체로 (app/pptx.js) */
+  let pptBusy = false;
+  async function exportPptx() {
+    if (pptBusy) { toast('PPT 파일을 만드는 중입니다…'); return; }
+    if (S.editing) endEdit();
+    const vids = new Map();
+    for (const sl of S.deck.slides) for (const e of sl.elements || []) { if (e.type !== 'embed' || e.hide) continue; const q = parseEmbed(e.url); if (q.kind === 'video' && /\.(mp4|m4v|mov)(?:[?#]|$)/i.test(q.src)) vids.set(q.src, 1); }
+    let withVideos = false;
+    if (vids.size) {
+      await loadAssetSizes(); const u = deckUsage(), mb = u.video / 1048576;
+      withVideos = confirm(`이 교안에는 동영상 파일이 ${vids.size}개 있습니다${u.video ? ` (약 ${fmtSize(u.video)})` : ''}.\n\n[확인] 동영상을 PPT 파일 안에 넣습니다${mb > 50 ? ' — 파일이 그만큼 커지고, 받는 데 시간이 걸립니다' : ''}\n[취소] 동영상은 넣지 않고 표지 그림만 넣습니다`);
+    }
+    pptBusy = true; toast('PPT 파일을 만드는 중…', 600000);
+    try {
+      await loadScript('app/hwp/zip.js'); await loadScript('app/pptx.js');
+      const site = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ? new URL('present.html?deck=' + encodeURIComponent(S.name), location.href).href : '';
+      const r = await PPTX.build(S.deck, { videos: withVideos, siteUrl: site, progress: (m) => toast('PPT 파일을 만드는 중 — ' + m, 600000) });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(r.blob); a.download = S.name + '.pptx'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      toast(`PPT 파일을 내려받았습니다 (${fmtSize(r.blob.size)})` + (r.warn.length ? ' — ' + r.warn.join(' · ') : ''), r.warn.length ? 9000 : 3500);
+    } catch (e) { toast('PPT 파일을 만들지 못했습니다'); alert('PPT 파일을 만들지 못했습니다: ' + (e && e.message || e)); }
+    finally { pptBusy = false; }
   }
   async function exportHtml() {
     if (S.editing) endEdit();

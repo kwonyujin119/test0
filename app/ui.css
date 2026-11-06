@@ -405,6 +405,20 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .text-toolbar > [data-cmd=cellFillClear], .text-toolbar > [data-cmd=cellAlign], .text-toolbar > [data-cmd=mergeR], .text-toolbar > [data-cmd=mergeD], .text-toolbar > [data-cmd=split] { --tc: 91,155,255; }
 .text-toolbar > [data-cmd=rowAdd], .text-toolbar > [data-cmd=colAdd] { --tc: 81,207,138; }
 .text-toolbar > [data-cmd=rowDel], .text-toolbar > [data-cmd=colDel] { --tc: 255,135,135; }
+/* 색 팔레트 (색 칸을 누르면 뜸) */
+.cpal { position: fixed; z-index: 3000; width: 292px; padding: 10px 12px 12px; background: var(--ui-panel); border: 1px solid #3a4151; border-radius: 12px; box-shadow: 0 18px 50px rgba(0,0,0,.6); font-size: 12px; color: var(--ui-fg); cursor: default; }
+.cpal .cp-h { margin: 8px 0 5px; font-weight: 700; color: var(--ui-fg); display: flex; align-items: baseline; gap: 6px; }
+.cpal .cp-h:first-child { margin-top: 0; }
+.cpal .cp-h span { font-weight: 400; color: var(--ui-muted); font-size: 11px; }
+.cpal .cp-row, .cpal .cp-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+.cpal .cp-sw { width: 100%; aspect-ratio: 1; padding: 0; border-radius: 5px; border: 1px solid rgba(255,255,255,.22); cursor: pointer; transition: transform .08s; }
+.cpal .cp-sw:hover { transform: scale(1.22); border-color: #fff; position: relative; z-index: 1; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+.cpal .cp-sw.on { outline: 2px solid #ffc21a; outline-offset: 1px; }
+.cpal .cp-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--ui-border); }
+.cpal .cp-now { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(255,255,255,.3); flex-shrink: 0; }
+.cpal .cp-hex { flex: 1; min-width: 0; width: auto; height: 26px; padding: 2px 6px; font-family: Consolas, monospace; font-size: 12.5px; text-transform: lowercase; }
+.cpal .btn.sm { padding: 4px 7px; font-size: 12px; background: var(--ui-panel2); border-color: var(--ui-border); min-width: 0; }
+.cpal .btn.sm::after { display: none; }
 /* 교안 용량 창 */
 .size-modal { width: 640px; }
 .size-modal h4 { margin: 16px 0 6px; font-size: 13px; color: var(--ui-fg); display: flex; align-items: baseline; gap: 8px; }
