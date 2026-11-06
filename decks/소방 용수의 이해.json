@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T10:43:06.300Z",
+ "modified": "2026-11-06T10:47:17.925Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -2949,51 +2949,6 @@
    "noFooter": true
   },
   {
-   "id": "35923lhu6",
-   "bg": null,
-   "transition": "",
-   "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
-   "elements": [
-    {
-     "id": "qdw33vhu6",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑧ 수운영관리시스템에서 본 루프형태 관로",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     },
-     "mk": "qn66zk124"
-    },
-    {
-     "id": "bus4cwhu6",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 120,
-     "y": 204,
-     "w": 1680,
-     "h": 779,
-     "src": "assets/clipboard-1793947167612-tpjht89.png",
-     "fit": "fill",
-     "radius": 18,
-     "shadow": false,
-     "mk": "oq1b9u125",
-     "border": 10
-    }
-   ]
-  },
-  {
    "id": "156ibv417",
    "bg": null,
    "transition": "",
@@ -3329,6 +3284,51 @@
       "fontSize": 24,
       "color": "$muted"
      }
+    }
+   ]
+  },
+  {
+   "id": "35923lhu6",
+   "bg": null,
+   "transition": "",
+   "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
+   "elements": [
+    {
+     "id": "qdw33vhu6",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "⑧ 수운영관리시스템에서 본 루프형태 관로",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "qn66zk124"
+    },
+    {
+     "id": "bus4cwhu6",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 120,
+     "y": 204,
+     "w": 1680,
+     "h": 779,
+     "src": "assets/clipboard-1793947167612-tpjht89.png",
+     "fit": "fill",
+     "radius": 18,
+     "shadow": false,
+     "mk": "oq1b9u125",
+     "border": 10
     }
    ]
   },
