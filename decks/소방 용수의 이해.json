@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T08:27:28.122Z",
+ "modified": "2026-11-06T08:35:17.233Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -2895,8 +2895,33 @@
      "fit": "fill",
      "radius": 0,
      "shadow": false
+    },
+    {
+     "id": "3sv9oi9f5",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1912,
+     "h": 1080,
+     "src": "assets/clipboard-1793954098412-y9f5nnl.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
     }
    ],
+   "decor": "none",
+   "noFooter": true
+  },
+  {
+   "id": "s0xg6r9u3",
+   "bg": null,
+   "transition": "",
+   "notes": "끊기지 않게 대는 방법 — 그리고 왜 그게 어려운가",
+   "elements": [],
    "decor": "none",
    "noFooter": true
   },
