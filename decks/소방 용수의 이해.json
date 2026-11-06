@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T10:47:17.925Z",
+ "modified": "2026-11-06T13:03:02.674Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -1551,15 +1551,8 @@
    ]
   },
   {
-   "id": "slhany64u",
-   "bg": null,
-   "transition": "",
-   "notes": "",
-   "elements": []
-  },
-  {
    "id": "zetmti134",
-   "bg": null,
+   "bg": {},
    "transition": "",
    "notes": "109시간은 통계적 이상치가 아니라 다른 범주의 사건이다.",
    "elements": [
@@ -1645,7 +1638,8 @@
       "fontSize": 38
      }
     }
-   ]
+   ],
+   "hidden": true
   },
   {
    "id": "7cibqt054",
@@ -2492,7 +2486,8 @@
      "style": {
       "valign": "middle",
       "letterSpacing": -1
-     }
+     },
+     "data": "차량,소진시간\n물탱크차 소형 4500L,1.6\n물탱크차 중형 6000L,2.1\n물탱크차 대형 12000L,4.3\n대형급수지원차 22000L,7.9"
     },
     {
      "id": "gk6vds228",
@@ -2506,7 +2501,7 @@
      "w": 1020,
      "h": 560,
      "kind": "hbar",
-     "data": "차량,소진시간\n펌프차 중형 2800L,1.0\n펌프차 대형 4500L,1.6\n물탱크차 소형 4500L,1.6\n물탱크차 중형 6000L,2.1\n물탱크차 대형 12000L,4.3\n대형급수지원차 22000L,7.9",
+     "data": "차량,소진시간\n물탱크차 소형 4500L,2.5\n물탱크차 중형 6000L,3.3\n물탱크차 대형 12000L,6.6\n대형급수지원차 22000L,12.2",
      "values": true,
      "legend": false,
      "grid": false,
@@ -2523,7 +2518,7 @@
      "type": "shape",
      "shape": "rect",
      "x": 1200,
-     "y": 246,
+     "y": 424,
      "w": 600,
      "h": 288,
      "fill": "#c2410c",
@@ -2545,7 +2540,7 @@
      "type": "text",
      "role": "text",
      "x": 1200,
-     "y": 276,
+     "y": 454,
      "w": 600,
      "h": 42,
      "html": "대형 물탱크차 12,000ℓ",
@@ -2567,10 +2562,10 @@
      "type": "text",
      "role": "text",
      "x": 1200,
-     "y": 326,
+     "y": 504,
      "w": 600,
      "h": 146,
-     "html": "4.3<span style=\"font-size:50px\"> 분</span>",
+     "html": "6.6<span style=\"font-size:50px\"> 분</span>",
      "style": {
       "fontSize": 124,
       "bold": true,
@@ -2590,7 +2585,7 @@
      "type": "text",
      "role": "text",
      "x": 1200,
-     "y": 480,
+     "y": 658,
      "w": 600,
      "h": 40,
      "html": "전량 방수 시 소진시간",
@@ -2610,10 +2605,10 @@
      "type": "text",
      "role": "body",
      "x": 1200,
-     "y": 552,
+     "y": 730,
      "w": 600,
-     "h": 300,
-     "html": "<ul><li>계산: 탱크용량 ÷ 2,800 L/min (A-1급 전량 방수)</li><li>물탱크차 용량은 「소방장비 분류 및 내용연수에 관한 규정」 별표1 법정 구분</li><li><b>이것이 무중단 급수가 선택이 아닌 이유입니다</b></li></ul>",
+     "h": 76,
+     "html": "<ul><li>계산: 탱크용량 ÷ 1,800 L/min</li></ul>",
      "style": {
       "fontSize": 30,
       "lineHeight": 1.6
@@ -2661,24 +2656,6 @@
       "align": "center",
       "valign": "middle",
       "fontSize": 34
-     }
-    },
-    {
-     "id": "g3x9y0236",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 966,
-     "w": 1680,
-     "h": 54,
-     "html": "소진시간은 법정 용량 ÷ KFI A-1급 규격방수량으로 산출한 계산값입니다 (문헌 인용값 아님)",
-     "style": {
-      "fontSize": 24,
-      "color": "$muted"
      }
     }
    ]
@@ -2936,15 +2913,6 @@
      "shadow": false
     }
    ],
-   "decor": "none",
-   "noFooter": true
-  },
-  {
-   "id": "s0xg6r9u3",
-   "bg": null,
-   "transition": "",
-   "notes": "끊기지 않게 대는 방법 — 그리고 왜 그게 어려운가",
-   "elements": [],
    "decor": "none",
    "noFooter": true
   },
