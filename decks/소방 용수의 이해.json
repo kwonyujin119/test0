@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T06:07:12.229Z",
+ "modified": "2026-11-06T06:08:26.733Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -1282,6 +1282,25 @@
       "fontSize": 24,
       "lineHeight": 1.6
      }
+    },
+    {
+     "id": "tywm7w6g6",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 120,
+     "y": 244,
+     "w": 1090,
+     "h": 610,
+     "url": "assets/삽입2-pmtbntv.mp4",
+     "radius": 18,
+     "autoplay": false,
+     "shadow": false,
+     "posterOf": "assets/삽입2-pmtbntv.mp4",
+     "poster": "assets/삽입2-poster-pmu1vl4.png",
+     "mk": "wyursi474"
     }
    ]
   },
