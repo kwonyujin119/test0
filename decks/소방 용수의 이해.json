@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T05:31:07.476Z",
+ "modified": "2026-11-06T05:39:53.793Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -8206,8 +8206,24 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "twbfshbxf",
+     "id": "nhhx6qkbe",
      "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 430,
+     "y": 224,
+     "w": 1065,
+     "h": 561,
+     "src": "assets/clipboard-1793943568324-okbcsha.png",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "twbfshbxf",
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8242,7 +8258,7 @@
     },
     {
      "id": "t5fslpihy",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8265,7 +8281,7 @@
     },
     {
      "id": "2wn1twihy",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8288,7 +8304,7 @@
     },
     {
      "id": "8igekdihy",
-     "step": 0,
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8320,8 +8336,24 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "8pasd18a9",
+     "id": "oya2w3mfo",
      "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 430,
+     "y": 219,
+     "w": 1065,
+     "h": 561,
+     "src": "assets/clipboard-1793943197824-gmfnzq4.png",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "8pasd18a9",
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8357,7 +8389,7 @@
     },
     {
      "id": "31myvp8a9",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8380,7 +8412,7 @@
     },
     {
      "id": "1mh7hk8a9",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8403,7 +8435,7 @@
     },
     {
      "id": "1mn20p8a9",
-     "step": 0,
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8412,121 +8444,6 @@
      "x": 841,
      "y": 289,
      "w": 449,
-     "h": 450,
-     "fill": "",
-     "stroke": "#fe0101",
-     "strokeWidth": 2,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "color": "#111111"
-     },
-     "fill2": "#f97316",
-     "gAngle": 135,
-     "mk": "hbk1skzxw"
-    }
-   ]
-  },
-  {
-   "id": "u62m2o4td",
-   "bg": null,
-   "transition": "",
-   "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
-   "elements": [
-    {
-     "id": "cy6ci44td",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 430,
-     "y": 224,
-     "w": 1065,
-     "h": 561,
-     "src": "assets/clipboard-1793942622072-4a666nt.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false,
-     "mk": "twbfshbxf"
-    },
-    {
-     "id": "44rscz4td",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑪ 현장별 유수량 비교 (26. 9. 18. 경서동 공장 화재)",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     },
-     "mk": "oazkfa205"
-    },
-    {
-     "id": "mh3su64td",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 426,
-     "y": 820,
-     "w": 1069,
-     "h": 114,
-     "fill": "#0c2a4d",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 20,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#0369a1",
-     "gAngle": 100,
-     "mk": "2n5teq212"
-    },
-    {
-     "id": "0xtqgr4td",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 254,
-     "y": 820,
-     "w": 1412,
-     "h": 114,
-     "html": "최대 유량 331 m3/h -&gt; (환산) 5,517 L/min",
-     "style": {
-      "color": "#ffffff",
-      "bold": true,
-      "lineHeight": 1.3,
-      "align": "center",
-      "valign": "middle",
-      "fontSize": 38
-     },
-     "mk": "t3f2wn213"
-    },
-    {
-     "id": "lyxm1h4td",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 991,
-     "y": 304,
-     "w": 131,
      "h": 450,
      "fill": "",
      "stroke": "#fe0101",
@@ -8561,7 +8478,7 @@
      "y": 80,
      "w": 1680,
      "h": 124,
-     "html": "⑪ 현장별 유수량 비교 (26. 9. 18. 경서동 공장 화재)",
+     "html": "⑪ 현장별 유수량 비교 (895블록 26. 9. 18. 경서동 공장 화재) ",
      "style": {
       "valign": "middle",
       "letterSpacing": -1
@@ -8570,7 +8487,7 @@
     },
     {
      "id": "axi3sq1oa",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -8593,7 +8510,7 @@
     },
     {
      "id": "bhgwns1oa",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
