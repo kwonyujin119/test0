@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T02:24:01.130Z",
+ "modified": "2026-11-06T02:45:32.126Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -830,7 +830,7 @@
      "y": 966,
      "w": 1680,
      "h": 54,
-     "html": "자료: 소방청 「화재통계연감」·2025 통계연보, e-나라지표 화재발생 현황 / 2015년은 국가화재정보시스템 당시 집계",
+     "html": "자료: 소방청 「화재통계연감」·2025 통계연보",
      "style": {
       "fontSize": 24,
       "color": "$muted"
@@ -889,8 +889,8 @@
      "opacity": 1,
      "type": "shape",
      "shape": "rect",
-     "x": 1220,
-     "y": 240,
+     "x": 1221,
+     "y": 320,
      "w": 580,
      "h": 200,
      "fill": "#c2410c",
@@ -911,11 +911,11 @@
      "opacity": 1,
      "type": "text",
      "role": "text",
-     "x": 1266,
-     "y": 240,
+     "x": 1267,
+     "y": 320,
      "w": 488,
      "h": 200,
-     "html": "2013년 1,061만원<br>→ 2024년 2,084만원<br><b>명목 약 2배</b>",
+     "html": "2013년 1,061만원<br>→ 2022년 3,009만원<br><b>약 3배</b>",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -933,8 +933,8 @@
      "opacity": 1,
      "type": "shape",
      "shape": "rect",
-     "x": 1220,
-     "y": 468,
+     "x": 1221,
+     "y": 548,
      "w": 580,
      "h": 180,
      "fill": "#475569",
@@ -955,11 +955,11 @@
      "opacity": 1,
      "type": "text",
      "role": "text",
-     "x": 1266,
-     "y": 468,
+     "x": 1267,
+     "y": 548,
      "w": 488,
      "h": 180,
-     "html": "같은 기간 화재 건수는<br><b>−15.3%</b>",
+     "html": "같은 기간 화재 건수는<br><b>약 −15%</b>",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -977,11 +977,11 @@
      "opacity": 1,
      "type": "text",
      "role": "body",
-     "x": 1220,
-     "y": 676,
+     "x": 1221,
+     "y": 756,
      "w": 580,
-     "h": 170,
-     "html": "<b>건당 평균은 소방청 공식 지표가 아니라</b> 총 재산피해액 ÷ 화재건수로 산출한 <b>계산값</b>입니다. 교안에 반드시 명시해야 합니다.",
+     "h": 57,
+     "html": "<b>건당 평균 :</b> 총 재산피해액 ÷ 화재건수로 산출한 <b>계산값</b>",
      "style": {
       "fontSize": 24,
       "lineHeight": 1.55
@@ -999,7 +999,7 @@
      "y": 966,
      "w": 1680,
      "h": 54,
-     "html": "자료: 소방청 화재통계연감·통계연보, 한국화재보험협회 『방재와보험』 / 2014·2015·2017·2021년은 총액 미확인",
+     "html": "자료: 소방청 화재통계연감·통계연보",
      "style": {
       "fontSize": 24,
       "color": "$muted"
@@ -1059,8 +1059,8 @@
      "opacity": 1,
      "type": "shape",
      "shape": "rect",
-     "x": 1180,
-     "y": 250,
+     "x": 1183,
+     "y": 410,
      "w": 620,
      "h": 200,
      "fill": "#0369a1",
@@ -1081,8 +1081,8 @@
      "opacity": 1,
      "type": "text",
      "role": "text",
-     "x": 1230,
-     "y": 250,
+     "x": 1233,
+     "y": 410,
      "w": 520,
      "h": 200,
      "html": "4년 연속 증가<br>4,530 → <b>1억 740만원</b>",
@@ -1103,11 +1103,11 @@
      "opacity": 1,
      "type": "text",
      "role": "body",
-     "x": 1180,
-     "y": 478,
+     "x": 1183,
+     "y": 638,
      "w": 620,
-     "h": 340,
-     "html": "<ul><li>한국화재보험협회가 <b>건당 평균을 직접 발표</b>하므로 계산값 논란이 없습니다</li><li>2022년 특수건물 전체 피해의 <b>77%가 대형화재 10건</b>에서 발생</li><li>단 <b>보험 의무가입 대상</b>에 한정된 모집단임을 명시해야 합니다</li></ul>",
+     "h": 211,
+     "html": "<ul><li>한국화재보험협회<b> 발표</b></li><li>2022년 특수건물 전체 피해의 <b>77%가 대형화재 10건</b>에서 발생</li><li><b>보험 의무가입 대상</b> 한정</li></ul>",
      "style": {
       "fontSize": 30,
       "lineHeight": 1.6
@@ -1165,11 +1165,11 @@
      "opacity": 1,
      "type": "text",
      "role": "caption",
-     "x": 120,
-     "y": 966,
+     "x": 200,
+     "y": 308,
      "w": 1680,
      "h": 54,
-     "html": "한국화재보험협회 『방재와보험』 특수건물 화재통계 (2021·2023년은 KFPA 원문 발표값, 2020·2022년은 계산값)",
+     "html": "한국화재보험협회 『방재와보험』 특수건물 화재통계",
      "style": {
       "fontSize": 24,
       "color": "$muted"
@@ -1351,88 +1351,6 @@
      "html": "",
      "style": {},
      "dash": true
-    },
-    {
-     "id": "nx7j82021",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.9,
-     "type": "shape",
-     "shape": "rect",
-     "x": 600,
-     "y": 472,
-     "w": 220,
-     "h": 46,
-     "fill": "#c2410c",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 23,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "keefo1022",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 600,
-     "y": 472,
-     "w": 220,
-     "h": 46,
-     "html": "영 상  자 리",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "d1we9c023",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 144,
-     "y": 532,
-     "w": 1132,
-     "h": 54,
-     "html": "여기에 영상 주소를 넣으십시오",
-     "style": {
-      "fontSize": 30,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "$title"
-     }
-    },
-    {
-     "id": "nfcexq024",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 854,
-     "w": 1180,
-     "h": 40,
-     "html": "영상 주소를 넣으면 발표 화면에서 바로 재생됩니다",
-     "style": {
-      "fontSize": 24,
-      "align": "center",
-      "color": "$muted"
-     }
     },
     {
      "id": "d5k2ko025",
@@ -7672,7 +7590,7 @@
      "y": 80,
      "w": 1680,
      "h": 124,
-     "html": "⑪ 실패 사례 — 대곡동 관로",
+     "html": "⑪ 실증 사례 — 대곡동 관로",
      "style": {
       "valign": "middle",
       "letterSpacing": -1
@@ -7805,9 +7723,9 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 120,
+     "x": 426,
      "y": 215,
-     "w": 1680,
+     "w": 1069,
      "h": 561,
      "src": "assets/clipboard-1793931614858-kcy7630.png",
      "fit": "contain",
@@ -7848,7 +7766,7 @@
      "y": 820,
      "w": 1412,
      "h": 114,
-     "html": "최대 유량 67 m3/h : 1,100 L/min",
+     "html": "최대 유량 67 m3/h -&gt; (환산) 1,100 L/min",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -8135,7 +8053,7 @@
   },
   {
    "id": "lpru7d237",
-   "bg": null,
+   "bg": {},
    "transition": "",
    "notes": "이 강의의 실제 목적. 여기서 협조를 얻지 못하면 나머지는 지식으로 끝난다. 톤을 낮추고 부탁으로.",
    "elements": [
@@ -8319,7 +8237,8 @@
       "color": "$muted"
      }
     }
-   ]
+   ],
+   "hidden": true
   },
   {
    "id": "ymmjrd249",
