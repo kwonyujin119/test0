@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T00:27:40.742Z",
+ "modified": "2026-11-06T00:28:13.031Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -2383,8 +2383,8 @@
      "type": "image",
      "x": 120,
      "y": 236,
-     "w": 1180,
-     "h": 600,
+     "w": 1473,
+     "h": 749,
      "src": "assets/clipboard-1793924793101-i59ygkt.jpg",
      "fit": "cover",
      "radius": 18,
@@ -2393,106 +2393,6 @@
       "b": 66,
       "c": 117,
       "s": 165
-     }
-    },
-    {
-     "id": "dzpne8073",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1348,
-     "y": 236,
-     "w": 452,
-     "h": 286,
-     "fill": "#c2410c",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 22,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#7c2d12",
-     "gAngle": 135
-    },
-    {
-     "id": "8827r2074",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.78,
-     "type": "text",
-     "role": "text",
-     "x": 1348,
-     "y": 287,
-     "w": 452,
-     "h": 40,
-     "html": "여기서 생긴 질문",
-     "style": {
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#ffffff",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "eaqvx5075",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 1374,
-     "y": 335,
-     "w": 400,
-     "h": 180,
-     "html": "<b>계산한 물과<br>실제 나온 물이<br>달랐습니다</b>",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 30,
-      "lineHeight": 1.5,
-      "align": "center"
-     }
-    },
-    {
-     "id": "m0mw92076",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 1348,
-     "y": 538,
-     "w": 452,
-     "h": 320,
-     "html": "상수도사업본부는 오리피스 공식으로 <b>분당 5,000L 이상</b>이라고 보았습니다.<br><br>소방이 현장에서 실증한 값은 <b>분당 3,000L</b>였습니다.<br><br>같은 소화전을 두고 숫자가 <b>1.7배</b> 벌어진 것입니다.",
-     "style": {
-      "fontSize": 24,
-      "lineHeight": 1.6
-     }
-    },
-    {
-     "id": "zpccvp077",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 966,
-     "w": 1680,
-     "h": 54,
-     "html": "현장 사진은 선생님이 넣어 주십시오 · 실증값은 인천소방본부 자료",
-     "style": {
-      "fontSize": 24,
-      "color": "$muted"
      }
     }
    ]
