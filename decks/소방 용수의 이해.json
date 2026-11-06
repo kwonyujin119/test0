@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T05:29:16.664Z",
+ "modified": "2026-11-06T05:29:50.528Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -8672,49 +8672,6 @@
      "radius": 0,
      "shadow": false,
      "mk": "xpjftr7qb"
-    }
-   ]
-  },
-  {
-   "id": "3xlmkj5f0",
-   "bg": null,
-   "transition": "",
-   "notes": "",
-   "elements": [
-    {
-     "id": "xpjftr7qb",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 360,
-     "y": 191,
-     "w": 1200,
-     "h": 699,
-     "src": "assets/clipboard-1793942805524-87qa8hm.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "flht9kd7p",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑪ 현장별 유수량 비교 (26. 9. 18. 경서동 공장 화재)",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     },
-     "mk": "oazkfa205"
     }
    ]
   }
