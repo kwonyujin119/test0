@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T05:39:53.793Z",
+ "modified": "2026-11-06T06:07:12.229Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -7498,6 +7498,22 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
+     "id": "j3hbuwq6s",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 426,
+     "y": 215,
+     "w": 1069,
+     "h": 561,
+     "src": "assets/clipboard-1793943809221-tq6r0dc.png",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
      "id": "oazkfa205",
      "step": 0,
      "anim": "fade",
@@ -7517,7 +7533,7 @@
     },
     {
      "id": "6ffa6e206",
-     "step": 0,
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -7533,7 +7549,7 @@
     },
     {
      "id": "2n5teq212",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -7555,7 +7571,7 @@
     },
     {
      "id": "t3f2wn213",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -7577,7 +7593,7 @@
     },
     {
      "id": "hbk1skzxw",
-     "step": 0,
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
