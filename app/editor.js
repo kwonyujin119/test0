@@ -1372,7 +1372,8 @@
   function showLayoutMenu(anchor, onPick) {
     closeMenus();
     const m = document.createElement('div'); m.className = 'layout-menu';
-    for (const L of LAYOUTS) {
+    const list = onPick ? LAYOUTS : LAYOUTS.filter(l => l.id === 'blank').concat(LAYOUTS.filter(l => l.id !== 'blank')); // 새로 넣을 때는 '빈 슬라이드'를 맨 앞에
+    for (const L of list) {
       const it = document.createElement('div'); it.className = 'layout-item';
       const pv = document.createElement('div'); pv.className = 'pv';
       const sl = renderSlide({ id: 'x', elements: layoutElements(L.id), bg: null, notes: '' }, S.deck, { mode: 'thumb' });
@@ -1384,7 +1385,11 @@
     }
     document.body.appendChild(m); openMenu = m;
     const a = (anchor || $('btnAddSlide')).getBoundingClientRect();
-    m.style.left = Math.min(a.left, innerWidth - m.offsetWidth - 8) + 'px'; m.style.top = (a.bottom + 6) + 'px';
+    // 단추 아래에 자리가 없으면(화면 맨 아래 단추) 위로 펼침 — 화면 밖으로 나가 안 보이던 문제
+    const h = m.offsetHeight; let top = a.bottom + 6;
+    if (top + h > innerHeight - 8) top = a.top - 6 - h;
+    if (top < 8) top = Math.max(8, Math.min(a.bottom + 6, innerHeight - h - 8));
+    m.style.left = Math.max(8, Math.min(a.left, innerWidth - m.offsetWidth - 8)) + 'px'; m.style.top = top + 'px';
   }
   function btnMenu(btn, items) {
     if (openMenu && openMenu._btn === btn) { closeMenus(); return; } // 같은 단추를 다시 누르면 닫힘
@@ -1395,7 +1400,8 @@
 
   /* ---------- 툴바 이벤트 ---------- */
   $('btnAddSlide').onclick = (ev) => { ev.stopPropagation(); showLayoutMenu(); };
-  $('btnAddSlide2').onclick = (ev) => { ev.stopPropagation(); showLayoutMenu($('btnAddSlide2')); };
+  $('btnAddSlide2').onclick = (ev) => { ev.stopPropagation(); closeMenus(); addSlide('blank'); toast('빈 슬라이드를 넣었습니다 · 다른 모양은 옆의 ▾'); }; // 누르면 바로 빈 슬라이드
+  $('btnAddSlide3').onclick = (ev) => { ev.stopPropagation(); showLayoutMenu($('btnAddSlide3')); };
   $('btnAddText').onclick = (ev) => { ev.stopPropagation(); btnMenu(ev.currentTarget, Object.entries(ROLE_NAMES).map(([id, n]) => ({ label: n, fn: () => addText(id) }))); };
   $('btnAddShape').onclick = (ev) => { ev.stopPropagation(); btnMenu(ev.currentTarget, SHAPES.map(s => ({ label: s.name, fn: () => addShape(s.id) }))); };
   $('btnAddImage').onclick = (ev) => {
