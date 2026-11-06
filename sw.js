@@ -36,12 +36,51 @@ function netFirst(req) {
     });
   });
 }
+/* 큰 동영상 (100MB 가 넘어 조각으로 나눠 올린 영상) — app/common.js 의 BIGV 와 짝
+   주소: bigvideo/소유자/저장소/꼬리표/조각수-조각크기-전체크기/이름.mp4
+   요청한 구간이 들어 있는 조각을 저장소에서 받아 그대로 흘려보냄 → 보통 영상 파일처럼 바로 재생·위치 이동이 됨.
+   한 번에 조각 하나의 끝까지만 보내고, 나머지는 브라우저가 이어서 요청함. */
+const BIGV = /^bigvideo\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(\d+)-(\d+)-(\d+)\/([^\/]+)$/;
+const BIGV_RAW = 'https://raw.githubusercontent.com/';
+function bigVideo(req, m) {
+  const n = +m[4], cs = +m[5], total = +m[6];
+  const part = (i) => `${BIGV_RAW}${m[1]}/${m[2]}/${m[3]}/p${String(i).padStart(4, '0')}`;
+  const base = { 'Content-Type': /\.webm$/i.test(m[7]) ? 'video/webm' : /\.og[gv]$/i.test(m[7]) ? 'video/ogg' : 'video/mp4', 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-store' };
+  if (!(n > 0 && cs > 0 && total > 0)) return Promise.resolve(new Response('', { status: 404 }));
+  const rm = /^bytes=(\d*)-(\d*)$/.exec((req.headers.get('range') || '').trim());
+  if (!rm || (rm[1] === '' && rm[2] === '')) { // 구간 없이 통째로 달라는 요청: 조각을 차례로 이어 보냄
+    let i = 0, rd = null;
+    const body = new ReadableStream({
+      async pull(c) {
+        for (;;) {
+          if (!rd) { if (i >= n) { c.close(); return; } const r = await fetch(part(i++)); if (!r.ok) throw new Error('part ' + r.status); rd = r.body.getReader(); }
+          const { done, value } = await rd.read();
+          if (done) { rd = null; continue; }
+          c.enqueue(value); return;
+        }
+      },
+      cancel() { if (rd) rd.cancel().catch(() => { }); },
+    });
+    return Promise.resolve(new Response(body, { status: 200, headers: Object.assign({ 'Content-Length': String(total) }, base) }));
+  }
+  let start, end = total - 1;
+  if (rm[1] === '') start = Math.max(0, total - +rm[2]); else { start = +rm[1]; if (rm[2] !== '') end = Math.min(end, +rm[2]); }
+  if (start >= total || start > end) return Promise.resolve(new Response('', { status: 416, headers: { 'Content-Range': 'bytes */' + total } }));
+  const i = Math.floor(start / cs), off = start - i * cs, plen = Math.min(cs, total - i * cs);
+  const last = Math.min(end, i * cs + plen - 1), want = last - start + 1, whole = off === 0 && want === plen;
+  return fetch(part(i), whole ? {} : { headers: { Range: `bytes=${off}-${off + want - 1}` } }).then(async r => {
+    if (!r.ok) return new Response('', { status: r.status === 404 ? 404 : 502 });
+    const body = whole || r.status === 206 ? r.body : (await r.blob()).slice(off, off + want); // 구간 요청이 통하지 않으면 받아서 잘라 냄
+    return new Response(body, { status: 206, headers: Object.assign({ 'Content-Range': `bytes ${start}-${last}/${total}`, 'Content-Length': String(want) }, base) });
+  });
+}
 self.addEventListener('fetch', e => {
   try {
     const req = e.request; const u = new URL(req.url);
     if (req.method !== 'GET' || u.origin !== self.location.origin) return;
-    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(u.hostname)) return;
     const rel = u.pathname.slice(new URL(self.registration.scope).pathname.length); // 앱 폴더 기준 경로
+    const bv = BIGV.exec(rel); if (bv) { e.respondWith(bigVideo(req, bv)); return; }      // 조각으로 올린 큰 영상
+    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(u.hostname)) return;
     if (/^(api|decks|assets|hwp)\//.test(rel) || req.headers.has('range')) return;  // 교안·이미지·문서 같은 데이터는 그대로 둠
     if (req.mode !== 'navigate' && !SHELL.test(u.pathname)) return;
     e.respondWith(netFirst(req).catch(() => fetch(req)));

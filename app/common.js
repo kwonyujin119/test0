@@ -875,11 +875,13 @@ function embedPlayer(e, p, autoplay) {
   const r = embedRange(e, p);
   if (p.kind === 'video') {
     const frag = r.start || r.end ? `#t=${r.start}${r.end ? ',' + r.end : ''}` : '';
-    const v = document.createElement('video'); v.src = API.resolveSrc(p.src) + frag; v.controls = true; v.playsInline = true; v.preload = 'metadata';
+    const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.preload = 'metadata';
+    const big = API.blobs[p.src] ? null : BIGV.parse(p.src); // 100MB 가 넘어 조각으로 올린 영상
+    if (big) BIGV.attach(v, big, p.src, frag, autoplay); else v.src = API.resolveSrc(p.src) + frag;
     const ps = embedPoster(e); if (ps && !autoplay) v.poster = API.resolveSrc(ps);
     if (autoplay) v.autoplay = true; if (e.loop) v.loop = true; if (e.muted) v.muted = true;
     // 방금 올린 영상: 사이트에 반영(1~2분)되기 전에는 저장소에서 바로 읽음
-    if (API.mode === 'github' && GH.cfg && !/^(data:|blob:|https?:)/i.test(p.src) && !API.blobs[p.src]) v.addEventListener('error', () => { if (v.dataset.fb) return; v.dataset.fb = '1'; v.src = GH.rawUrl(p.src) + frag; if (autoplay) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); } });
+    if (!big && API.mode === 'github' && GH.cfg && !/^(data:|blob:|https?:)/i.test(p.src) && !API.blobs[p.src]) v.addEventListener('error', () => { if (v.dataset.fb) return; v.dataset.fb = '1'; v.src = GH.rawUrl(p.src) + frag; if (autoplay) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); } });
     if (r.end) v.addEventListener('timeupdate', () => { if (v.currentTime >= r.end) { if (e.loop) v.currentTime = r.start; else v.pause(); } });
     return v;
   }
@@ -1002,10 +1004,12 @@ const GH = {
     if (r.status === 404 && method === 'GET') return null;
     if (!r.ok) {
       let msg = r.status + ' ' + r.statusText; try { const j = await r.json(); if (j.message) msg = j.message; } catch (e) { }
+      const tooLarge = r.status === 413 || /too large/i.test(msg); // "Sorry, your input was too large to process…"
       if (r.status === 401) msg = 'GitHub 토큰이 올바르지 않거나 만료되었습니다';
+      else if (tooLarge) msg = '파일이 너무 커서 GitHub 이 받지 않았습니다';
       else if (r.status === 403 && /rate limit/i.test(msg)) msg = 'GitHub 요청 한도를 넘었습니다. 잠시 후 다시 시도하거나 토큰을 연결하세요';
       else if (r.status === 403 || r.status === 404) msg = '저장소에 쓸 권한이 없습니다 (토큰 권한: Contents → Read and write)';
-      const err = new Error(msg); err.status = r.status; throw err;
+      const err = new Error(msg); err.status = r.status; if (tooLarge) err.tooLarge = true; throw err;
     }
     if (r.status === 204) return null;
     return r.json();
@@ -1034,9 +1038,15 @@ const GH = {
       const tree = [];
       for (const c of changes) {
         if (c.delete) tree.push({ path: c.path, mode: '100644', type: 'blob', sha: null });
-        else if (c.base64 != null) { const b = await this.api('POST', '/git/blobs', { content: c.base64, encoding: 'base64' }); tree.push({ path: c.path, mode: '100644', type: 'blob', sha: b.sha }); }
+        else if (c.base64 != null) {
+          if (c.error) continue; // 앞선 시도에서 너무 커서 거절된 파일
+          let b; try { b = c.sha ? { sha: c.sha } : await this.api('POST', '/git/blobs', { content: c.base64, encoding: 'base64' }); }
+          catch (e) { if (!e.tooLarge) throw e; c.error = e; continue; } // 너무 큰 파일 하나 때문에 교안 저장까지 막히지 않게: 그 파일만 빼고 나머지를 저장
+          c.sha = b.sha; tree.push({ path: c.path, mode: '100644', type: 'blob', sha: b.sha });
+        }
         else tree.push({ path: c.path, mode: '100644', type: 'blob', content: c.content });
       }
+      if (!tree.length) return null; // 올릴 것이 남지 않음 (모두 거절됨)
       const nt = await this.api('POST', '/git/trees', { base_tree: parent.tree.sha, tree });
       const nc = await this.api('POST', '/git/commits', { message, tree: nt.sha, parents: [head] });
       try { await this.api('PATCH', `/git/refs/heads/${br}`, { sha: nc.sha }); return nc; }
@@ -1061,7 +1071,7 @@ const GH = {
       const imgs = items.filter(x => !x.message && !x.change.delete).map(x => x.change.path.replace(/^assets\//, ''));
       let msg = main ? main.message : '이미지 추가: ' + imgs.join(', ');
       if (main && imgs.length) msg += ` (+이미지 ${imgs.length})`;
-      try { await this.commit(msg, items.map(x => x.change)); items.forEach(x => x.res(true)); }
+      try { await this.commit(msg, items.map(x => x.change)); items.forEach(x => x.change.error ? x.rej(x.change.error) : x.res(true)); }
       catch (e) { items.forEach(x => x.rej(e)); }
     });
     return this._chain;
@@ -1134,6 +1144,111 @@ function blobToBase64(blob) {
   return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(blob); });
 }
 
+/* ---------- 큰 동영상 (6MB 가 넘는 파일 · 100MB 가 넘어도 됨) ----------
+   GitHub 저장소에는 파일 하나가 100MB 를 넘으면 올라가지 않고, 수십 MB 를 한 번에 보내도 거절되거나 끊깁니다.
+   그래서 큰 영상은 4MB 조각으로 나눠
+   저장소의 꼬리표(tag) 아래에 따로 올립니다 (main 브랜치·사이트에는 들어가지 않아 사이트는 가벼운 그대로).
+   주소:  bigvideo/소유자/저장소/꼬리표/조각수-조각크기-전체크기/이름.mp4
+   재생:  서비스 워커(sw.js)가 필요한 조각만 받아 이어 보냄 → 보통 영상처럼 바로 재생·위치 이동.
+          서비스 워커가 없는 화면(내보낸 HTML · 처음 연 화면)은 조각을 모두 받아 이어 붙인 뒤 재생. */
+const BIGV = {
+  CHUNK: 4 * 1048576,    // 조각 크기 (GitHub 은 한 번에 큰 덩어리를 보내면 거절하거나 끊기므로 작게)
+  LIMIT: 6 * 1048576,    // 이보다 큰 영상은 조각으로 올림
+  MAX: 1024 * 1048576,   // 영상 하나의 한도 (1GB)
+  RAW: 'https://raw.githubusercontent.com/',
+  jobs: {},   // src → { shas, done, n, active }  올리는 중인 영상 (끊기면 올린 조각 다음부터 이어서)
+  ready: {},  // 꼬리표 → Promise<blob 주소>  조각을 모두 받아 이어 붙인 것
+  got: {},    // 꼬리표 → 받은 비율 (0~1)
+  parse(src) {
+    const m = /(?:^|\/)bigvideo\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(\d+)-(\d+)-(\d+)\/([^\/?#]+)/.exec(String(src || ''));
+    if (!m || !+m[4] || !+m[5] || !+m[6]) return null;
+    return { owner: m[1], repo: m[2], tag: m[3], n: +m[4], chunk: +m[5], total: +m[6], name: m[7] };
+  },
+  partName(i) { return 'p' + String(i).padStart(4, '0'); },
+  partUrl(b, i) { return `${this.RAW}${b.owner}/${b.repo}/${b.tag}/${this.partName(i)}`; },
+  mime(name) { return /\.webm$/i.test(name) ? 'video/webm' : /\.og[gv]$/i.test(name) ? 'video/ogg' : 'video/mp4'; },
+  newSrc(file, filename) {
+    const tag = 'video-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    return `bigvideo/${GH.cfg.owner}/${GH.cfg.repo}/${tag}/${Math.ceil(file.size / this.CHUNK)}-${this.CHUNK}-${file.size}/${uniqueAssetName(filename)}`;
+  },
+  /* 올리는 중인 영상의 진행률(%) — 없으면 null */
+  pct() { let d = 0, t = 0; for (const k in this.jobs) { const j = this.jobs[k]; if (j.active) { d += j.done; t += j.n; } } return t ? Math.floor(d / t * 100) : null; },
+  async _try(fn) { // 인터넷이 잠깐 끊기거나 GitHub 이 바쁠 때: 조금 기다렸다 다시
+    for (let k = 0; ; k++) {
+      try { return await fn(); }
+      catch (e) {
+        const st = e.status;
+        if (k >= 3 || e.noRetry || e.tooLarge || st === 401 || st === 404 || st === 422 || (st === 403 && !/한도/.test(e.message || ''))) throw e;
+        await new Promise(r => setTimeout(r, [3000, 10000, 30000][k]));
+      }
+    }
+  },
+  /* 조각으로 나눠 올림: 조각(blob) → 묶음(tree) → 기록(commit, 부모 없음) → 꼬리표(tag) */
+  async upload(src, file) {
+    const b = this.parse(src); if (!b) throw new Error('영상 주소가 올바르지 않습니다');
+    const job = this.jobs[src] || (this.jobs[src] = { shas: [], done: 0, n: b.n });
+    job.active = true; API._notify();
+    try {
+      for (let i = 0; i < b.n; i++) {
+        if (!job.shas[i]) {
+          let b64;
+          try { b64 = await blobToBase64(file.slice(i * b.chunk, Math.min(b.total, (i + 1) * b.chunk))); }
+          catch (e) { const er = new Error('영상 파일을 읽지 못했습니다 (파일을 옮기거나 지웠으면 다시 넣어 주세요)'); er.noRetry = true; throw er; }
+          job.shas[i] = (await this._try(() => GH.api('POST', '/git/blobs', { content: b64, encoding: 'base64' }))).sha;
+        }
+        job.done = i + 1; API._notify();
+      }
+      const tree = await this._try(() => GH.api('POST', '/git/trees', { tree: job.shas.map((sha, i) => ({ path: this.partName(i), mode: '100644', type: 'blob', sha })) }));
+      const c = await this._try(() => GH.api('POST', '/git/commits', { message: `동영상: ${b.name} (${Math.round(b.total / 1048576)}MB · 조각 ${b.n}개)`, tree: tree.sha, parents: [] }));
+      try { await this._try(() => GH.api('POST', '/git/refs', { ref: 'refs/tags/' + b.tag, sha: c.sha })); }
+      catch (e) { if (e.status !== 422) throw e; } // 이미 만들어져 있음 (다시 시도한 경우)
+      delete this.jobs[src];
+    } finally { if (this.jobs[src]) this.jobs[src].active = false; API._notify(); }
+  },
+  /* 조각을 모두 받아 하나로 이어 붙임 (서비스 워커를 쓸 수 없을 때) */
+  assemble(b) {
+    if (this.ready[b.tag]) return this.ready[b.tag];
+    this.got[b.tag] = 0;
+    const p = (async () => {
+      const parts = new Array(b.n); let next = 0, got = 0;
+      const worker = async () => {
+        while (next < b.n) {
+          const i = next++; let r = null;
+          for (let k = 0; k < 3; k++) {
+            try { r = await fetch(this.partUrl(b, i)); } catch (e) { r = null; }
+            if (r && (r.ok || r.status === 404)) break;
+            await new Promise(w => setTimeout(w, 1500 * (k + 1)));
+          }
+          if (!r || !r.ok) throw new Error('영상 조각을 받지 못했습니다');
+          parts[i] = await r.blob(); got += parts[i].size; this.got[b.tag] = Math.min(1, got / b.total);
+        }
+      };
+      await Promise.all([worker(), worker(), worker()]);
+      return URL.createObjectURL(new Blob(parts, { type: this.mime(b.name) }));
+    })();
+    this.ready[b.tag] = p; p.catch(() => { delete this.ready[b.tag]; });
+    return p;
+  },
+  /* <video> 에 큰 영상을 연결 */
+  attach(v, b, src, frag, autoplay) {
+    const whole = () => {
+      if (v.dataset.bigv) return; v.dataset.bigv = '1';
+      let tip = null;
+      const show = (t) => { const host = v.parentNode; if (!host) return; if (!tip) { tip = document.createElement('div'); tip.className = 'bigv-wait'; } if (tip.parentNode !== host) host.appendChild(tip); tip.textContent = t; };
+      const timer = setInterval(() => show(`영상을 받는 중… ${Math.floor((this.got[b.tag] || 0) * 100)}%`), 300);
+      this.assemble(b).then((url) => {
+        clearInterval(timer); if (tip) tip.remove();
+        v.src = url + frag;
+        if (autoplay && v.isConnected) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); }
+      }, () => { clearInterval(timer); show('영상을 불러오지 못했습니다 — 인터넷 연결을 확인하거나, 영상이 다 올라간 뒤에 다시 열어 주세요'); });
+    };
+    const sw = typeof navigator !== 'undefined' && navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (this.ready[b.tag] || !sw || !/^https?:$/.test(location.protocol) || /^https?:/i.test(src)) { whole(); return; }
+    v.addEventListener('error', whole); // 서비스 워커가 아직 예전 것이거나 조각을 보내지 못함 → 모두 받아서 재생
+    v.src = src + frag;
+  },
+};
+
 /* ---------- 저장 API (로컬 서버 ↔ GitHub 저장소 ↔ 브라우저 저장소 폴백) ---------- */
 const API = {
   mode: 'server', // 'server' | 'github' | 'local'
@@ -1151,9 +1266,18 @@ const API = {
     this._start(src, blob);
     return src;
   },
+  /* 100MB 가 넘는 동영상 (GitHub 연결 상태에서만): 조각으로 나눠 올림. 주소는 바로 돌려줌 */
+  stageBig(file, filename) {
+    const src = BIGV.newSrc(file, filename);
+    this.blobs[src] = URL.createObjectURL(file);
+    this._start(src, file);
+    return src;
+  },
   _start(src, blob) {
     let p;
-    if (this.mode === 'server') {
+    if (BIGV.parse(src)) {
+      p = BIGV.upload(src, blob);
+    } else if (this.mode === 'server') {
       p = fetch('api/assets?name=' + encodeURIComponent(src.slice(7)), { method: 'POST', body: blob }).then(r => { if (!r.ok) throw new Error('업로드 실패 (' + r.status + ')'); });
     } else {
       // 큐에 들어가기까지(base64 변환)를 따로 기억 → 교안 저장이 이 이미지를 기다렸다가 같은 커밋에 담음
@@ -1163,15 +1287,21 @@ const API = {
       p = queued.then(() => enq);
     }
     p = p.then(() => { this.pending.delete(src); this._notify(); },
-      (e) => { this.pending.delete(src); this.failed.set(src, blob); this._notify(); if (!e.noToken && e.status !== 401) toast('이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', 4000); });
+      (e) => {
+        this.pending.delete(src);
+        if (e.tooLarge) { this._notify(); const nm = src.replace(/^assets\//, ''); setTimeout(() => alert(`파일이 너무 커서 GitHub 에 올리지 못했습니다.\n(${nm})\n\n교안 저장은 그대로 됩니다.\n그 그림·영상 상자를 지우고 더 작은 파일로 다시 넣어 주세요.`), 0); return; } // 다시 시도해도 같은 결과 → 저장을 막지 않음
+        this.failed.set(src, blob); this._notify(); if (!e.noToken && e.status !== 401) toast(BIGV.parse(src) ? '영상 올리기 실패: ' + e.message + ' — [저장] 을 누르면 올린 곳 다음부터 이어서 올립니다' : '이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', BIGV.parse(src) ? 8000 : 4000); });
     this.pending.set(src, p); this._notify();
   },
   _retryFailed() { for (const [src, blob] of Array.from(this.failed)) { this.failed.delete(src); this._start(src, blob); } },
   /* 저장 전에 호출: 실패한 업로드 재시도 + 진행 중인 업로드 완료 대기 */
   async flush() {
     this._retryFailed();
-    await Promise.all(Array.from(this.pending.values()));
-    if (this.failed.size) throw new Error(`이미지 ${this.failed.size}개를 올리지 못했습니다. 네트워크를 확인하고 다시 저장해 주세요`);
+    // 큰 동영상(몇 분씩 걸림)은 기다리지 않음 — 따로 계속 올라가고, 진행률은 화면 위쪽에 보임
+    const small = (m) => Array.from(m.keys()).filter(src => !BIGV.parse(src));
+    await Promise.all(small(this.pending).map(src => this.pending.get(src)));
+    const bad = small(this.failed).length;
+    if (bad) throw new Error(`이미지 ${bad}개를 올리지 못했습니다. 네트워크를 확인하고 다시 저장해 주세요`);
   },
   async init() {
     if (location.protocol === 'file:') { this.mode = 'local'; return this.mode; }

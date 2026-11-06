@@ -95,7 +95,9 @@
       if (hubBus) hubBus.postMessage({ type: 'saved', name: S.name, tab: TAB });
       S.deletedElsewhere = false;
       if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); Draft.clear(S.name); }
-      toast('저장했습니다');
+      const up = BIGV.pct();
+      if (up != null) toast(`저장했습니다 — 영상은 아직 올리는 중입니다 (${up}%). 다 올라갈 때까지 이 창을 닫지 마세요`, 5000);
+      else toast('저장했습니다');
     } catch (e) {
       if (e.noToken || e.status === 401) { // 연결이 없거나 만료: 경고 대신 이 자리에서 바로 연결
         draftPut();
@@ -151,7 +153,7 @@
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
   window.addEventListener('pagehide', draftNow);
-  API.onPending = (n) => { const c = $('upStatus'); c.textContent = n ? `파일 올리는 중 ${n}` : ''; c.classList.toggle('show', n > 0); };
+  API.onPending = (n) => { const c = $('upStatus'), pc = BIGV.pct(); c.textContent = !n ? '' : pc != null ? `영상 올리는 중 ${pc}%` + (n > 1 ? ` · 파일 ${n - 1}` : '') : `파일 올리는 중 ${n}`; c.classList.toggle('show', n > 0); };
 
   /* ---------- 렌더 ---------- */
   function renderAll() { renderThumbs(); renderStage(); renderProps(); updateTop(); }
@@ -504,13 +506,15 @@
     const wasEditing = !!S.editing; if (wasEditing) endEdit();
     if (API.mode === 'local' || (API.mode === 'github' && !GH.token)) { alert('동영상 파일은 저장소에 연결된 뒤에 넣을 수 있습니다.\n교안 작업장 첫 화면의 [GitHub 연결] 을 먼저 해 주세요.\n(유튜브 주소는 지금도 붙여넣을 수 있습니다)'); return false; }
     const mb = file.size / 1048576, mbs = mb >= 10 ? Math.round(mb) : mb.toFixed(1);
-    if (mb > 95) {
-      if (API.mode === 'github') { alert(`이 영상은 ${mbs}MB 입니다.\nGitHub 저장소에는 100MB 가 넘는 파일을 올릴 수 없어 넣지 못했습니다.\n\n· 영상을 줄여서 다시 넣거나 (PowerPoint: 파일 → 정보 → 미디어 압축)\n· 유튜브에 올린 뒤 그 주소를 붙여넣어 주세요.`); return false; }
-      if (!confirm(`이 영상은 ${mbs}MB 입니다.\n이 PC 에서는 재생되지만, 100MB 가 넘는 파일은 GitHub(인터넷 사이트)에 올라가지 않습니다.\n그래도 넣을까요?`)) return false;
-    } else if (mb > 30 && API.mode === 'github') {
-      if (!confirm(`이 영상은 ${mbs}MB 입니다.\n올리는 데 몇 분 걸릴 수 있고, 다 올라갈 때까지 이 창을 닫으면 안 됩니다.\n계속할까요?`)) return false;
-    }
     const reuse = opt.reuse && API.blobs[opt.reuse.src] ? opt.reuse : null; // 이 화면에서 이미 올린 같은 영상 → 다시 올리지 않음
+    const big = API.mode === 'github' && file.size > BIGV.LIMIT; // 큰 영상: 조각으로 나눠 올림 (100MB 가 넘어도 됨)
+    if (reuse) { /* 묻지 않음 */ }
+    else if (big) {
+      if (file.size > BIGV.MAX) { alert(`이 영상은 ${mbs}MB 입니다.\n1GB(1024MB)가 넘는 영상은 올릴 수 없습니다.\n\n· 영상을 줄여서 다시 넣거나 (PowerPoint: 파일 → 정보 → 미디어 압축)\n· 유튜브에 올린 뒤 그 주소를 붙여넣어 주세요.`); return false; }
+      if (mb > 30 && !confirm(`이 영상은 ${mbs}MB 입니다.\n큰 영상은 여러 조각으로 나눠 올립니다. (재생할 때는 한 영상으로 이어집니다)\n\n· 올리는 데 인터넷 속도에 따라 몇 분에서 수십 분이 걸립니다.\n· 화면 위쪽의 "영상 올리는 중 …%" 가 사라질 때까지 이 창을 닫지 마세요.\n· 그동안 편집 · 저장 · ▶ 재생은 그대로 할 수 있습니다.\n\n계속할까요?`)) return false;
+    } else if (mb > 95) {
+      if (!confirm(`이 영상은 ${mbs}MB 입니다.\n이 PC 에서는 재생되지만, 100MB 가 넘는 파일은 이 PC 화면에서는 GitHub(인터넷 사이트)에 올라가지 않습니다.\n인터넷 사이트(github.io)에서 교안을 열어 넣으면 100MB 가 넘는 영상도 올라갑니다.\n\n그래도 이 PC 에만 넣을까요?`)) return false;
+    }
     if (!reuse) toast('영상을 확인하는 중…', 15000);
     const info = reuse || await probeVideo(file, opt.start || 0);
     if (!info.ok) {
@@ -522,7 +526,7 @@
     try {
       let name = (file.name || 'video.mp4').replace(/^.*[\\/]/, '');
       if (!/\.(mp4|webm|ogv|mov|m4v)$/i.test(name)) name = name.replace(/\.[^.]*$/, '') + (/webm/i.test(file.type || '') ? '.webm' : '.mp4'); // 주소만 보고도 동영상인 줄 알도록
-      const src = reuse ? reuse.src : await API.stage(file, name);
+      const src = reuse ? reuse.src : big ? API.stageBig(file, name) : await API.stage(file, name);
       let poster = reuse ? reuse.poster : '';
       if (!reuse) try {
         if (opt.poster) { const pp = await prepareImage(new File([opt.poster], name.replace(/\.[^.]+$/, '') + '-poster.png', { type: opt.poster.type || 'image/png' })); poster = await API.stage(pp.blob, pp.name); }
@@ -532,7 +536,7 @@
       const extra = { posterOf: src }; if (poster) extra.poster = poster;
       const st = Math.max(0, Math.round((opt.start || 0) * 10) / 10), en = opt.trimEnd && info.dur ? Math.round((info.dur - opt.trimEnd) * 10) / 10 : 0;
       if (st) extra.start = st; if (en > st) extra.end = en;
-      const tail = ' · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z';
+      const tail = (big && !reuse ? ' · 영상은 뒤에서 계속 올라갑니다 (위쪽 %)' : '') + ' · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z';
       // 상자(동영상·이미지 틀·도형·글 상자)가 하나 잡혀 있으면 그 자리에 채움 (붙여넣기 Ctrl+V · 끌어다 놓기)
       const tgt = at && at.into ? elById(at.into) : (!at && S.sel.length === 1 ? elById(S.sel[0]) : null);
       if (tgt && tgt.type === 'embed') {
@@ -1155,11 +1159,15 @@
     else if (e.html) e.html = inlineFs(e.html, fn);
   }
   function exec(cmd, val) { document.execCommand(cmd, false, val); }
+  /* 글자 도구 막대를 직접 옮겨 둔 자리 (없으면 편집 중인 상자 바로 위) */
+  const TTB_KEY = 'gyoan:ttbPos';
+  let ttbPos = null; try { const t = JSON.parse(localStorage.getItem(TTB_KEY) || 'null'); if (t && isFinite(t.left) && isFinite(t.top)) ttbPos = { left: +t.left, top: +t.top }; } catch (e) { }
   function showTextToolbar(node) {
     hideTextToolbar();
     const e = elById(node.dataset.id); const st = resolveTextStyle(e, theme());
     textToolbar = document.createElement('div'); textToolbar.className = 'text-toolbar';
     textToolbar.innerHTML = `
+      <span class="grip" title="끌어서 옮기기 · 옮긴 자리에 계속 뜹니다 (두 번 누르면 다시 상자 위로)">⠿</span>
       <button class="btn" data-cmd="bold" title="굵게 (Ctrl+B)"><b>B</b></button>
       <button class="btn" data-cmd="italic" title="기울임 (Ctrl+I)"><i>I</i></button>
       <button class="btn" data-cmd="underline" title="밑줄 (Ctrl+U)"><u>U</u></button>
@@ -1186,6 +1194,26 @@
       <span class="sep"></span>
       <button class="btn" data-cmd="rowAdd" title="이 칸 아래에 행 추가">＋행</button><button class="btn del" data-cmd="rowDel" title="이 칸이 있는 행 삭제">－행</button><button class="btn" data-cmd="colAdd" title="이 칸 오른쪽에 열 추가">＋열</button><button class="btn del" data-cmd="colDel" title="이 칸이 있는 열 삭제">－열</button>`}`;
     textToolbar.addEventListener('mousedown', (ev) => { if (ev.target.tagName !== 'INPUT') ev.preventDefault(); });
+    // 손잡이(⠿)나 막대의 빈 곳을 끌어서 옮김 — 옮긴 자리는 기억해 두고 다음에도 그 자리에 띄움
+    const tb = textToolbar, grip = tb.querySelector('.grip');
+    tb.addEventListener('pointerdown', (ev) => {
+      if (ev.button || !(ev.target === grip || ev.target === tb || ev.target.classList.contains('sep'))) return;
+      const mr = main.getBoundingClientRect(), r = tb.getBoundingClientRect(), dx = ev.clientX - r.left, dy = ev.clientY - r.top, x0 = ev.clientX, y0 = ev.clientY;
+      let moved = false;
+      const move = (m) => {
+        if (!moved && Math.abs(m.clientX - x0) + Math.abs(m.clientY - y0) < 4) return;
+        moved = true; tb.classList.add('dragging');
+        ttbPos = { left: Math.round(m.clientX - mr.left - dx), top: Math.round(m.clientY - mr.top - dy) }; positionTextToolbar();
+      };
+      const up = () => {
+        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+        tb.classList.remove('dragging');
+        if (moved) { tb.classList.add('moved'); try { localStorage.setItem(TTB_KEY, JSON.stringify(ttbPos)); } catch (e) { } }
+      };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+    });
+    grip.addEventListener('dblclick', () => { ttbPos = null; tb.classList.remove('moved'); try { localStorage.removeItem(TTB_KEY); } catch (e) { } positionTextToolbar(); toast('도구 막대를 다시 상자 위에 붙였습니다'); });
+    tb.classList.toggle('moved', !!ttbPos);
     textToolbar.addEventListener('click', (ev) => {
       const sb = ev.target.closest('[data-sym]'); if (sb) { exec('insertText', sb.dataset.sym); return; }
       const b = ev.target.closest('[data-cmd]'); if (!b || b.tagName === 'INPUT') return;
@@ -1218,6 +1246,7 @@
     const tw = textToolbar.offsetWidth, th = textToolbar.offsetHeight;
     let left = r.left - mr.left + r.width / 2 - tw / 2, top = r.top - mr.top - th - 10;
     left = clamp(left, 8, mr.width - tw - 8); if (top < 8) top = r.bottom - mr.top + 10;
+    if (ttbPos) { left = clamp(ttbPos.left, 8, Math.max(8, mr.width - tw - 8)); top = clamp(ttbPos.top, 8, Math.max(8, mr.height - th - 8)); } // 직접 옮겨 둔 자리 (화면 밖으로는 나가지 않게)
     textToolbar.style.left = left + 'px'; textToolbar.style.top = top + 'px';
   }
   function hideTextToolbar() { if (textToolbar) { textToolbar.remove(); textToolbar = null; } }
@@ -1769,7 +1798,7 @@
     for (const s of deck.slides) { if (s.bg && s.bg.image) s.bg.image = await toData(s.bg.image); for (const e of s.elements) {
         if (e.type === 'image' && e.src) e.src = await toData(e.src);
         else if (e.type === 'embed' && parseEmbed(e.url).kind === 'video' && !/^(https?:|data:)/i.test(e.url)) { // 동영상 파일은 HTML 에 담지 않고 사이트 주소로 연결
-          const old = e.url; vids++; if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) { e.url = new URL(old, location.href).href; } else vlocal++;
+          const old = e.url; vids++; if (BIGV.parse(old)) { /* 조각으로 올린 큰 영상: 어디서 열어도 저장소에서 받아 재생 */ } else if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) { e.url = new URL(old, location.href).href; } else vlocal++;
           if (e.poster && e.posterOf === old) { e.poster = await toData(e.poster); e.posterOf = e.url; }
         }
       } }
