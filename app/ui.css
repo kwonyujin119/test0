@@ -218,6 +218,14 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .asset-grid .a { aspect-ratio: 1; background: #000 center/cover no-repeat; border-radius: 8px; cursor: pointer; border: 2px solid transparent; position: relative; }
 .asset-grid .a:hover { border-color: var(--ui-accent); }
 .asset-grid .a span { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.7); font-size: 10px; padding: 2px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* PPT 안의 동영상 고르기 */
+.ppt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; max-height: 56vh; overflow: auto; padding: 2px; }
+.ppt-grid .pv { display: flex; flex-direction: column; gap: 2px; padding: 6px 6px 8px; border: 2px solid var(--ui-border); border-radius: 10px; cursor: pointer; min-width: 0; }
+.ppt-grid .pv:hover { border-color: var(--ui-accent); background: rgba(79,140,255,.10); }
+.ppt-grid .ph { aspect-ratio: 16 / 9; background: #000 center/contain no-repeat; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.ppt-grid .ph i { font-style: normal; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,0,0,.85); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; padding-left: 3px; }
+.ppt-grid b { font-size: 13px; }
+.ppt-grid span, .ppt-grid small { font-size: 11.5px; color: var(--ui-muted, #9aa4b2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dropzone-hint { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(79,140,255,.18); border: 3px dashed var(--ui-accent); z-index: 50; font-size: 24px; color: #cfe0ff; pointer-events: none; }
 .ed-main.dragover .dropzone-hint { display: flex; }
 

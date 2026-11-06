@@ -874,8 +874,12 @@ function embedRange(e, p) { return { start: e.start || p.start || 0, end: e.end 
 function embedPlayer(e, p, autoplay) {
   const r = embedRange(e, p);
   if (p.kind === 'video') {
-    const v = document.createElement('video'); v.src = API.resolveSrc(p.src) + (r.start || r.end ? `#t=${r.start}${r.end ? ',' + r.end : ''}` : ''); v.controls = true; v.playsInline = true; v.preload = 'metadata';
+    const frag = r.start || r.end ? `#t=${r.start}${r.end ? ',' + r.end : ''}` : '';
+    const v = document.createElement('video'); v.src = API.resolveSrc(p.src) + frag; v.controls = true; v.playsInline = true; v.preload = 'metadata';
+    const ps = embedPoster(e); if (ps && !autoplay) v.poster = API.resolveSrc(ps);
     if (autoplay) v.autoplay = true; if (e.loop) v.loop = true; if (e.muted) v.muted = true;
+    // 방금 올린 영상: 사이트에 반영(1~2분)되기 전에는 저장소에서 바로 읽음
+    if (API.mode === 'github' && GH.cfg && !/^(data:|blob:|https?:)/i.test(p.src) && !API.blobs[p.src]) v.addEventListener('error', () => { if (v.dataset.fb) return; v.dataset.fb = '1'; v.src = GH.rawUrl(p.src) + frag; if (autoplay) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); } });
     if (r.end) v.addEventListener('timeupdate', () => { if (v.currentTime >= r.end) { if (e.loop) v.currentTime = r.start; else v.pause(); } });
     return v;
   }
@@ -886,6 +890,8 @@ function embedPlayer(e, p, autoplay) {
   f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
   return f;
 }
+/* 동영상 파일의 표지 그림 (그 영상에 맞춰 만든 것일 때만 — 주소를 바꾸면 쓰지 않음) */
+function embedPoster(e) { return e.poster && e.posterOf === e.url ? e.poster : ''; }
 function renderEmbed(e, node, theme, mode) {
   const p = parseEmbed(e.url);
   if (e.radius) node.style.borderRadius = e.radius + 'px';
@@ -895,6 +901,7 @@ function renderEmbed(e, node, theme, mode) {
   // 편집 / 미리보기 / 인쇄: 가벼운 대체 화면 (편집 중에는 ▶ 를 누르면 그 자리에서 재생)
   const ph = document.createElement('div'); ph.className = 'embed-ph';
   if (p.kind === 'youtube') ph.style.backgroundImage = `url("https://i.ytimg.com/vi/${p.id}/hqdefault.jpg")`;
+  else if (p.kind === 'video' && embedPoster(e)) ph.style.backgroundImage = `url("${API.resolveSrc(embedPoster(e))}")`;
   const label = { youtube: 'YouTube', vimeo: 'Vimeo', video: '동영상 파일', web: '웹 페이지', none: '동영상·웹 주소를 넣으세요' }[p.kind];
   const r = embedRange(e, p); const range = (r.start || r.end) ? ` · ${fmtClock(r.start)} ~ ${r.end ? fmtClock(r.end) : '끝'}` : '';
   ph.innerHTML = `<div class="embed-play" ${mode === 'edit' && p.kind !== 'none' ? 'data-play="1" title="여기서 바로 재생"' : ''}>${p.kind === 'web' ? '🌐' : '▶'}</div><div class="embed-label">${esc(label)}${esc(range)}${p.kind === 'web' ? '<br><small>' + esc(p.src.slice(0, 70)) + '</small>' : ''}${mode === 'edit' && p.kind !== 'none' ? '<br><small>▶ 누르면 여기서 바로 재생</small>' : ''}</div>`;

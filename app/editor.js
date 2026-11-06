@@ -151,7 +151,7 @@
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
   window.addEventListener('pagehide', draftNow);
-  API.onPending = (n) => { const c = $('upStatus'); c.textContent = n ? `이미지 올리는 중 ${n}` : ''; c.classList.toggle('show', n > 0); };
+  API.onPending = (n) => { const c = $('upStatus'); c.textContent = n ? `파일 올리는 중 ${n}` : ''; c.classList.toggle('show', n > 0); };
 
   /* ---------- 렌더 ---------- */
   function renderAll() { renderThumbs(); renderStage(); renderProps(); updateTop(); }
@@ -466,6 +466,242 @@
     if (tgt && tgt.type === 'embed') { tgt.url = url; commit(); rerenderEl(tgt.id); renderProps(); toast('동영상 주소를 바꿨습니다'); return true; }
     if (tgt && (tgt.type === 'shape' || tgt.type === 'image' || tgt.type === 'text')) { replaceBox(tgt, embedEl(tgt.x, tgt.y, tgt.w, tgt.h, url, { radius: tgt.radius || 0, shadow: !!tgt.shadow })); toast('상자에 동영상을 넣었습니다 · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z', 3000); return true; }
     const [x, y] = centerBox(1280, 720); addElement(embedEl(x, y, 1280, 720, url)); toast('동영상을 넣었습니다 · ▶ 를 누르면 바로 재생'); return true;
+  }
+
+  /* ---------- 동영상 파일 (PC 의 파일 · PPT 안의 영상) ---------- */
+  const VIDEO_EXT = /\.(mp4|m4v|mov|webm|ogv|wmv|avi|mkv|mpg|mpeg|asf|3gp|flv)$/i;
+  function isVideoFile(f) { return !!f && (/^video\//.test(f.type || '') || VIDEO_EXT.test(f.name || '')); }
+  function isPptFile(f) { return !!f && /\.(pptx|ppsx|pptm|ppsm|potx|ppt|pps)$/i.test(f.name || ''); }
+  /* 브라우저가 이 영상을 틀 수 있는지 확인하고, 화면 크기·길이·표지 그림(영상의 한 장면)을 얻음 */
+  function probeVideo(blob, at) {
+    return new Promise((res) => {
+      const url = URL.createObjectURL(blob), v = document.createElement('video');
+      let done = false, meta = null;
+      const finish = (o) => { if (done) return; done = true; clearTimeout(timer); v.onerror = v.onseeked = v.onloadedmetadata = null; try { v.removeAttribute('src'); v.load(); } catch (e) { } URL.revokeObjectURL(url); res(o); };
+      const noPoster = () => finish(Object.assign(meta, { poster: null }));
+      const timer = setTimeout(() => { if (meta) noPoster(); else finish({ ok: false }); }, 12000);
+      v.muted = true; v.playsInline = true; v.preload = 'auto';
+      v.onerror = () => { if (meta) noPoster(); else finish({ ok: false }); };
+      v.onloadedmetadata = () => {
+        if (!v.videoWidth || !v.videoHeight) { finish({ ok: false }); return; } // 소리만 나오고 화면은 못 푸는 형식
+        meta = { ok: true, w: v.videoWidth, h: v.videoHeight, dur: isFinite(v.duration) ? v.duration : 0 };
+        const t = at > 0 ? at + 0.1 : Math.min(2, meta.dur * 0.1);
+        try { v.currentTime = Math.max(0, Math.min(t, meta.dur - 0.05)); } catch (e) { noPoster(); }
+      };
+      v.onseeked = () => {
+        try {
+          const k = Math.min(1, 960 / meta.w), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(meta.w * k)); c.height = Math.max(1, Math.round(meta.h * k));
+          c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+          c.toBlob(b => finish(Object.assign(meta, { poster: b || null })), 'image/jpeg', 0.8);
+        } catch (e) { noPoster(); }
+      };
+      v.src = url;
+    });
+  }
+  /* 동영상 파일을 넣음: 상자가 하나 잡혀 있으면 그 자리에, 아니면 새 상자로. opt = { poster(Blob), start(초), trimEnd(끝에서 잘라낸 초) } */
+  async function insertVideoFile(file, at, opt) {
+    opt = opt || {}; if (!file) return false;
+    const wasEditing = !!S.editing; if (wasEditing) endEdit();
+    if (API.mode === 'local' || (API.mode === 'github' && !GH.token)) { alert('동영상 파일은 저장소에 연결된 뒤에 넣을 수 있습니다.\n교안 작업장 첫 화면의 [GitHub 연결] 을 먼저 해 주세요.\n(유튜브 주소는 지금도 붙여넣을 수 있습니다)'); return false; }
+    const mb = file.size / 1048576, mbs = mb >= 10 ? Math.round(mb) : mb.toFixed(1);
+    if (mb > 95) {
+      if (API.mode === 'github') { alert(`이 영상은 ${mbs}MB 입니다.\nGitHub 저장소에는 100MB 가 넘는 파일을 올릴 수 없어 넣지 못했습니다.\n\n· 영상을 줄여서 다시 넣거나 (PowerPoint: 파일 → 정보 → 미디어 압축)\n· 유튜브에 올린 뒤 그 주소를 붙여넣어 주세요.`); return false; }
+      if (!confirm(`이 영상은 ${mbs}MB 입니다.\n이 PC 에서는 재생되지만, 100MB 가 넘는 파일은 GitHub(인터넷 사이트)에 올라가지 않습니다.\n그래도 넣을까요?`)) return false;
+    } else if (mb > 30 && API.mode === 'github') {
+      if (!confirm(`이 영상은 ${mbs}MB 입니다.\n올리는 데 몇 분 걸릴 수 있고, 다 올라갈 때까지 이 창을 닫으면 안 됩니다.\n계속할까요?`)) return false;
+    }
+    const reuse = opt.reuse && API.blobs[opt.reuse.src] ? opt.reuse : null; // 이 화면에서 이미 올린 같은 영상 → 다시 올리지 않음
+    if (!reuse) toast('영상을 확인하는 중…', 15000);
+    const info = reuse || await probeVideo(file, opt.start || 0);
+    if (!info.ok) {
+      toast('영상을 넣지 못했습니다');
+      const ext = ((file.name || '').match(/\.([a-z0-9]+)$/i) || [, ''])[1].toLowerCase();
+      alert(`이 영상${ext ? '(.' + ext + ')' : ''}은 웹 브라우저에서 재생되지 않는 형식입니다.\nmp4(H.264) 형식으로 바꾼 뒤 다시 넣어 주세요.\n\n· PowerPoint 에 들어 있는 영상이면 [파일 → 정보 → 미디어 압축] 으로 바뀌는 경우가 많습니다.`);
+      return false;
+    }
+    try {
+      let name = (file.name || 'video.mp4').replace(/^.*[\\/]/, '');
+      if (!/\.(mp4|webm|ogv|mov|m4v)$/i.test(name)) name = name.replace(/\.[^.]*$/, '') + (/webm/i.test(file.type || '') ? '.webm' : '.mp4'); // 주소만 보고도 동영상인 줄 알도록
+      const src = reuse ? reuse.src : await API.stage(file, name);
+      let poster = reuse ? reuse.poster : '';
+      if (!reuse) try {
+        if (opt.poster) { const pp = await prepareImage(new File([opt.poster], name.replace(/\.[^.]+$/, '') + '-poster.png', { type: opt.poster.type || 'image/png' })); poster = await API.stage(pp.blob, pp.name); }
+        else if (info.poster) poster = await API.stage(info.poster, name.replace(/\.[^.]+$/, '') + '-poster.jpg');
+      } catch (e) { if (info.poster) { try { poster = await API.stage(info.poster, name.replace(/\.[^.]+$/, '') + '-poster.jpg'); } catch (e2) { } } }
+      if (opt.onStaged) opt.onStaged({ ok: true, src, poster, w: info.w, h: info.h, dur: info.dur });
+      const extra = { posterOf: src }; if (poster) extra.poster = poster;
+      const st = Math.max(0, Math.round((opt.start || 0) * 10) / 10), en = opt.trimEnd && info.dur ? Math.round((info.dur - opt.trimEnd) * 10) / 10 : 0;
+      if (st) extra.start = st; if (en > st) extra.end = en;
+      const tail = ' · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z';
+      // 상자(동영상·이미지 틀·도형·글 상자)가 하나 잡혀 있으면 그 자리에 채움 (붙여넣기 Ctrl+V · 끌어다 놓기)
+      const tgt = at && at.into ? elById(at.into) : (!at && S.sel.length === 1 ? elById(S.sel[0]) : null);
+      if (tgt && tgt.type === 'embed') {
+        tgt.url = src; tgt.posterOf = src; if (poster) tgt.poster = poster; else delete tgt.poster;
+        if (extra.start) tgt.start = extra.start; else delete tgt.start; if (extra.end) tgt.end = extra.end; else delete tgt.end;
+        commit(); rerenderEl(tgt.id); renderProps(); toast('상자의 동영상을 바꿨습니다' + tail, 3500); return true;
+      }
+      if (tgt && (tgt.type === 'image' || ((tgt.type === 'shape' || tgt.type === 'text') && !wasEditing))) {
+        replaceBox(tgt, embedEl(tgt.x, tgt.y, tgt.w, tgt.h, src, Object.assign({ radius: tgt.radius || 0, shadow: !!tgt.shadow }, extra)));
+        toast('상자에 동영상을 넣었습니다' + tail, 3500); return true;
+      }
+      const r = Math.min(1280 / info.w, 720 / info.h), w = Math.round(info.w * r), h = Math.round(info.h * r);
+      const x = at ? Math.round(at.x - w / 2) : Math.round((SLIDE_W - w) / 2), y = at ? Math.round(at.y - h / 2) : Math.round((SLIDE_H - h) / 2);
+      addElement(embedEl(clamp(x, 0, SLIDE_W - w), clamp(y, 0, SLIDE_H - h), w, h, src, extra));
+      toast('동영상을 넣었습니다' + tail, 3500); return true;
+    } catch (e) { alert('동영상 삽입 실패: ' + e.message); return false; }
+  }
+
+  /* ---------- PPT(.pptx) 안의 영상 꺼내기 ----------
+     PowerPoint 에서 영상을 복사하면 클립보드에는 표지 그림만 담기고 영상은 PowerPoint 안에 남습니다.
+     그래서 PPT 파일을 직접 열어(pptx 는 ZIP 묶음) 그 안의 영상을 꺼냅니다. 필요한 부분만 읽으므로 큰 파일도 빠릅니다. */
+  async function zipIndex(file) {
+    const n = Math.min(file.size, 65557 + 20), tail = new Uint8Array(await file.slice(file.size - n).arrayBuffer()), tv = new DataView(tail.buffer);
+    let p = -1; for (let i = tail.length - 22; i >= 0; i--) if (tv.getUint32(i, true) === 0x06054b50) { p = i; break; }
+    if (p < 0) throw new Error('PowerPoint 파일(.pptx)이 아닙니다');
+    let cdSize = tv.getUint32(p + 12, true), cdOfs = tv.getUint32(p + 16, true);
+    if (cdOfs === 0xFFFFFFFF && p >= 20 && tv.getUint32(p - 20, true) === 0x07064b50) { // 4GB 넘는 묶음 (zip64)
+      const o = Number(tv.getBigUint64(p - 12, true)), z = new DataView(await file.slice(o, o + 56).arrayBuffer());
+      cdSize = Number(z.getBigUint64(40, true)); cdOfs = Number(z.getBigUint64(48, true));
+    }
+    const cd = new Uint8Array(await file.slice(cdOfs, cdOfs + cdSize).arrayBuffer()), dv = new DataView(cd.buffer), dec = new TextDecoder('utf-8');
+    const out = new Map();
+    for (let q = 0; q + 46 <= cd.length && dv.getUint32(q, true) === 0x02014b50;) {
+      const method = dv.getUint16(q + 10, true), nlen = dv.getUint16(q + 28, true), xlen = dv.getUint16(q + 30, true), clen = dv.getUint16(q + 32, true);
+      let csize = dv.getUint32(q + 20, true), usize = dv.getUint32(q + 24, true), lofs = dv.getUint32(q + 42, true);
+      const name = dec.decode(cd.subarray(q + 46, q + 46 + nlen));
+      for (let x = q + 46 + nlen, xe = x + xlen; x + 4 <= xe;) { // zip64 덧붙임
+        const id = dv.getUint16(x, true), sz = dv.getUint16(x + 2, true); let y = x + 4;
+        if (id === 1) { if (usize === 0xFFFFFFFF) { usize = Number(dv.getBigUint64(y, true)); y += 8; } if (csize === 0xFFFFFFFF) { csize = Number(dv.getBigUint64(y, true)); y += 8; } if (lofs === 0xFFFFFFFF) lofs = Number(dv.getBigUint64(y, true)); }
+        x += 4 + sz;
+      }
+      if (!name.endsWith('/')) out.set(name, { method, csize, usize, lofs });
+      q += 46 + nlen + xlen + clen;
+    }
+    return out;
+  }
+  async function zipBlob(file, ent, type) {
+    if (!ent) throw new Error('파일 안에서 찾지 못했습니다');
+    const lh = new DataView(await file.slice(ent.lofs, ent.lofs + 30).arrayBuffer());
+    if (lh.getUint32(0, true) !== 0x04034b50) throw new Error('파일이 바뀌었거나 손상되었습니다');
+    const start = ent.lofs + 30 + lh.getUint16(26, true) + lh.getUint16(28, true), raw = file.slice(start, start + ent.csize);
+    if (ent.method === 0) return new Blob([await raw.arrayBuffer()], { type: type || '' });
+    if (ent.method !== 8) throw new Error('지원하지 않는 압축 방식입니다');
+    const b = await new Response(raw.stream().pipeThrough(new DecompressionStream('deflate-raw'))).blob();
+    return new Blob([b], { type: type || '' });
+  }
+  const PPT_MIME = { mp4: 'video/mp4', m4v: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', wmv: 'video/x-ms-wmv', avi: 'video/x-msvideo', mpg: 'video/mpeg', mpeg: 'video/mpeg', mkv: 'video/x-matroska', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', bmp: 'image/bmp' };
+  const extOf = (s) => ((String(s || '').match(/\.([a-z0-9]+)$/i) || [, ''])[1]).toLowerCase();
+  function pptRels(xml, base) { // 관계 파일 → Map(rId → { type, target(묶음 안 경로), external })
+    const m = new Map(), dir = base.split('/').slice(0, -1);
+    for (const tag of xml.match(/<Relationship\b[^>]*>/g) || []) {
+      const a = {}; tag.replace(/([\w:]+)="([^"]*)"/g, (_, k, v) => { a[k] = v.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>'); return ''; });
+      if (!a.Id) continue;
+      const external = a.TargetMode === 'External'; let target = a.Target || '';
+      if (!external) { const parts = target.startsWith('/') ? [] : dir.slice(); for (const s of target.split('/')) { if (s === '..') parts.pop(); else if (s && s !== '.') parts.push(s); } target = parts.join('/'); }
+      m.set(a.Id, { type: a.Type || '', target, external });
+    }
+    return m;
+  }
+  async function readPptVideos(file) {
+    const idx = await zipIndex(file), text = async (n) => (await zipBlob(file, idx.get(n))).text();
+    if (!idx.has('ppt/presentation.xml')) throw new Error('PowerPoint 파일(.pptx)이 아닙니다');
+    let order = [];
+    try { // 슬라이드 순서 (파일 번호와 다를 수 있음)
+      const rels = pptRels(await text('ppt/_rels/presentation.xml.rels'), 'ppt/presentation.xml'), pres = await text('ppt/presentation.xml');
+      for (const m of pres.matchAll(/<p:sldId\b[^>]*\br:id="([^"]+)"/g)) { const r = rels.get(m[1]); if (r && idx.has(r.target)) order.push(r.target); }
+    } catch (e) { }
+    if (!order.length) order = Array.from(idx.keys()).filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a, b) => parseInt(a.slice(16)) - parseInt(b.slice(16)));
+    const vids = [];
+    for (let i = 0; i < order.length; i++) {
+      const sp = order[i], rn = sp.replace(/([^/]+)$/, '_rels/$1.rels'); if (!idx.has(rn)) continue;
+      const rels = pptRels(await text(rn), sp);
+      if (!Array.from(rels.values()).some(r => /\/(video|media)$/.test(r.type))) continue;
+      const doc = new DOMParser().parseFromString(await text(sp), 'application/xml');
+      const one = (el, n) => el.getElementsByTagNameNS('*', n)[0];
+      for (const pic of Array.from(doc.getElementsByTagNameNS('*', 'pic'))) {
+        const vf = one(pic, 'videoFile'); if (!vf) continue;
+        const md = one(pic, 'media'), blip = one(pic, 'blip'), nm = one(pic, 'cNvPr'), trim = one(pic, 'trim');
+        const r = (md && rels.get(md.getAttribute('r:embed') || md.getAttribute('r:link') || '')) || rels.get(vf.getAttribute('r:link') || ''); if (!r) continue;
+        const pr = blip && rels.get(blip.getAttribute('r:embed') || ''), ent = r.external ? null : idx.get(r.target);
+        const v = { slide: i + 1, name: (nm && nm.getAttribute('name')) || '동영상', path: r.target, ext: extOf(r.target), ent, size: ent ? ent.usize : 0,
+          posterEnt: pr && !pr.external && /^(png|jpe?g|gif|bmp)$/.test(extOf(pr.target)) ? idx.get(pr.target) : null, posterExt: pr ? extOf(pr.target) : '',
+          start: trim ? (parseFloat(trim.getAttribute('st')) || 0) / 1000 : 0, trimEnd: trim ? (parseFloat(trim.getAttribute('end')) || 0) / 1000 : 0 };
+        if (!ent) { if (/^https?:\/\//i.test(r.target)) v.url = r.target; else v.linked = true; }
+        vids.push(v);
+      }
+    }
+    return vids;
+  }
+  /* S.ppt = 지금 열어 둔 PPT { name, file, vids } — 이 화면을 닫을 때까지 기억 (PPT 에서 복사해 붙여넣은 영상을 알아보는 데도 씀) */
+  async function openPpt(file) {
+    if (S.editing) endEdit();
+    if (/\.(ppt|pps)$/i.test(file.name || '')) { alert('옛 형식(.ppt) 파일은 읽지 못합니다.\nPowerPoint 에서 [파일 → 다른 이름으로 저장] 으로 "PowerPoint 프레젠테이션(.pptx)" 으로 저장한 뒤 다시 넣어 주세요.'); return; }
+    toast('PPT 에서 영상을 찾는 중…', 15000);
+    let vids; try { vids = await readPptVideos(file); } catch (e) { toast('PPT 를 읽지 못했습니다'); alert('PPT 파일을 읽지 못했습니다: ' + e.message); return; }
+    if (!vids.length) { toast('PPT 에 동영상이 없습니다'); alert(`"${file.name}" 안에는 동영상이 없습니다.`); return; }
+    S.ppt = { name: file.name, file, vids };
+    toast(`PPT 에서 동영상 ${vids.length}개를 찾았습니다`);
+    showPptVideos();
+  }
+  function showPptVideos(only, note) {
+    const P = S.ppt; if (!P) { $('filePpt').click(); return; }
+    document.querySelectorAll('.modal-bg.ppt-videos').forEach(n => n.remove());
+    const list = only || P.vids, urls = [];
+    const fmt = (b) => b >= 1048576 ? (b / 1048576 >= 10 ? Math.round(b / 1048576) : (b / 1048576).toFixed(1)) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB';
+    const bg = document.createElement('div'); bg.className = 'modal-bg ppt-videos';
+    bg.innerHTML = `<div class="modal" style="width:720px;max-width:94vw"><h3>🎞 PPT 의 동영상 <span class="muted" style="font-weight:400;font-size:13px">${esc(P.name)} · ${P.vids.length}개</span></h3>
+      <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">${esc(note || '넣을 영상을 누르세요. 상자를 하나 잡아 두었으면 그 상자 자리에 들어갑니다.')}${only ? '' : '<br>이 PPT 를 열어 둔 동안에는 <b>PowerPoint 에서 영상을 복사(Ctrl+C)해서 여기에 붙여넣어도(Ctrl+V)</b> 영상으로 들어갑니다.'}</p>
+      <div class="ppt-grid">${list.map((v) => `<div class="pv" data-i="${P.vids.indexOf(v)}" title="${esc(v.name)}"><div class="ph"><i>▶</i></div><b>${v.slide}번 슬라이드</b><span>${esc(v.name)}</span><small>${v.url ? '인터넷 영상 (주소로 넣음)' : v.linked ? '⚠ PPT 안에 없음 (PC 파일에 연결)' : esc(v.ext.toUpperCase()) + ' · ' + fmt(v.size)}</small></div>`).join('')}</div>
+      <div class="actions"><button class="btn ghost" data-other>다른 PPT 열기…</button><span style="flex:1"></span><button class="btn" data-close>닫기</button></div></div>`;
+    const close = () => { bg.remove(); urls.forEach(u => URL.revokeObjectURL(u)); };
+    bg.onclick = (ev) => {
+      if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }
+      if (ev.target.closest('[data-other]')) { close(); $('filePpt').click(); return; }
+      const c = ev.target.closest('.pv'); if (!c) return; close(); takePptVideo(P.vids[+c.dataset.i]);
+    };
+    bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') close(); });
+    document.body.appendChild(bg);
+    list.forEach(async (v) => { // 표지 그림은 뒤에서 차례로
+      if (!v.posterEnt) return;
+      try { const u = URL.createObjectURL(await zipBlob(P.file, v.posterEnt, PPT_MIME[v.posterExt])); urls.push(u); const ph = bg.querySelector(`.pv[data-i="${P.vids.indexOf(v)}"] .ph`); if (ph) ph.style.backgroundImage = `url("${u}")`; } catch (e) { }
+    });
+  }
+  async function takePptVideo(v) {
+    const P = S.ppt; if (!P || !v) return false;
+    if (v.url) return putEmbed(v.url);
+    if (v.linked) { alert(`이 영상은 PPT 안에 들어 있지 않고, PC 의 파일에 연결만 되어 있습니다.\n\n${(() => { try { return decodeURIComponent(v.path); } catch (e) { return v.path; } })().replace(/^file:\/+/i, '')}\n\n그 영상 파일을 편집 화면에 끌어다 놓거나, 파일을 복사(Ctrl+C)한 뒤 여기에 붙여넣어(Ctrl+V) 주세요.`); return false; }
+    const same = P.vids.find(x => x.path === v.path && x.staged && API.blobs[x.staged.src]); // 같은 영상을 또 넣을 때는 올려 둔 것을 그대로 씀
+    if (same) return insertVideoFile(new File([], 'video.mp4'), null, { reuse: same.staged, start: v.start, trimEnd: v.trimEnd });
+    toast('PPT 에서 영상을 꺼내는 중…', 30000);
+    let blob, poster = null;
+    try { blob = await zipBlob(P.file, v.ent, PPT_MIME[v.ext] || 'video/mp4'); }
+    catch (e) { toast('영상을 꺼내지 못했습니다'); alert('PPT 파일에서 영상을 꺼내지 못했습니다.\nPPT 를 연 뒤에 그 파일을 고쳐 저장했다면, [PPT 에서 영상 가져오기] 로 파일을 다시 열어 주세요.\n(' + e.message + ')'); return false; }
+    if (v.posterEnt) { try { poster = await zipBlob(P.file, v.posterEnt, PPT_MIME[v.posterExt]); } catch (e) { } }
+    const base = String(v.name || 'video').replace(/\.[a-z0-9]{2,5}$/i, '') || 'video';
+    return insertVideoFile(new File([blob], base + '.' + (v.ext || 'mp4'), { type: blob.type }), null, { poster, start: v.start, trimEnd: v.trimEnd, onStaged: (st) => { v.staged = st; } });
+  }
+  /* 붙여넣은 그림이 열어 둔 PPT 의 어느 영상 표지인지 찾음 (16×16 으로 줄인 색 비교) */
+  async function imgSig(blob) {
+    const bmp = await createImageBitmap(blob), c = document.createElement('canvas'); c.width = c.height = 16;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.fillStyle = '#000'; g.fillRect(0, 0, 16, 16); g.drawImage(bmp, 0, 0, 16, 16); if (bmp.close) bmp.close();
+    const d = g.getImageData(0, 0, 16, 16).data, s = new Uint8Array(768); for (let i = 0, j = 0; i < d.length; i += 4) { s[j++] = d[i]; s[j++] = d[i + 1]; s[j++] = d[i + 2]; }
+    return s;
+  }
+  async function matchPptVideo(blob) {
+    const P = S.ppt; if (!P) return [];
+    let sig; try { sig = await imgSig(blob); } catch (e) { return []; }
+    const hits = [], seen = new Set(); P.stale = false;
+    for (const v of P.vids) {
+      if (!v.ent || !v.posterEnt || seen.has(v.path)) continue;
+      if (v.sig === undefined) {
+        let pb = null; try { pb = await zipBlob(P.file, v.posterEnt, PPT_MIME[v.posterExt]); } catch (e) { P.stale = true; continue; } // PPT 파일이 그 사이 바뀜 (다시 열어야 함)
+        try { v.sig = await imgSig(pb); } catch (e) { v.sig = null; }
+      }
+      if (!v.sig) continue;
+      let d = 0; for (let i = 0; i < 768; i++) d += Math.abs(sig[i] - v.sig[i]); d /= 768;
+      if (d < 12) { hits.push({ v, d }); seen.add(v.path); }
+    }
+    return hits.sort((a, b) => a.d - b.d);
   }
   function deleteSelected() {
     if (!S.sel.length) return;
@@ -1237,6 +1473,8 @@
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 200))}
         ${row('효과', tog('shadow', e.shadow, '그림자'))}
         ${row('', `<button class="btn sm" data-act="playHere">▶ 여기서 재생</button><button class="btn sm" data-act="openEmbed">새 창에서 확인</button>`)}
+        ${row('파일로 넣기', `<button class="btn sm" data-act="pickVideo" title="PC 의 동영상 파일(mp4)을 이 상자에">🎞 동영상 파일…</button><button class="btn sm" data-act="pickPpt" title="PPT 파일 안에 들어 있는 영상을 이 상자에">📽 PPT 에서…</button>`)}
+        ${hint('동영상 파일을 복사(Ctrl+C)해서 붙여넣거나(Ctrl+V) 끌어다 놓아도 됩니다 · PowerPoint 안의 영상은 [PPT 에서…] 로 그 PPT 파일을 한 번 열어 두면, 그 뒤로는 PowerPoint 에서 복사해 붙여넣어도 영상으로 들어갑니다')}
       </section>`;
     }
     return body + posSection(e) + animSection(e) + linkSection(e) + `<section><div class="grid2"><button class="btn sm" data-act="dup">복제</button><button class="btn sm danger" data-act="del">삭제</button></div></section>`;
@@ -1395,11 +1633,13 @@
       case 'rowAdd': case 'rowAddBefore': case 'rowDel': case 'colAdd': case 'colAddBefore': case 'colDel': case 'colsEven': case 'rowsEven': tableOp(a); break;
       case 'mathDialog': if (e) openMathDialog(e); break;
       case 'playHere': if (e) playEmbedHere(e.id); break;
+      case 'pickVideo': if (e) { S.sel = [e.id]; $('fileVideo').click(); } break;
+      case 'pickPpt': if (e) { S.sel = [e.id]; showPptVideos(); } break;
       case 'cgRow': { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); break; }
       case 'cgCol': { const g = readGrid(); g.forEach((r, i) => r.push(i === 0 ? '계열 ' + r.length : '')); setChartGrid(g, true); renderProps(); break; }
       case 'cgRowDel': { const g = readGrid(); if (g.length > 2) g.pop(); setChartGrid(g, true); renderProps(); break; }
       case 'cgColDel': { const g = readGrid(); if (g[0].length > 2) g.forEach(r => r.pop()); setChartGrid(g, true); renderProps(); break; }
-      case 'openEmbed': if (e) { const q = parseEmbed(e.url); window.open(q.kind === 'youtube' ? `https://www.youtube.com/watch?v=${q.id}` : e.url, '_blank', 'noopener'); } break;
+      case 'openEmbed': if (e) { const q = parseEmbed(e.url); window.open(q.kind === 'youtube' ? `https://www.youtube.com/watch?v=${q.id}` : q.kind === 'video' ? API.resolveSrc(e.url) : e.url, '_blank', 'noopener'); } break;
       case 'design': showDesign(); break;
       case 'outline': showOutline(); break;
       case 'album': $('fileAlbum').click(); break;
@@ -1471,6 +1711,8 @@
     ]);
   };
   $('fileImage').onchange = async (ev) => { for (const f of ev.target.files) await insertImageFile(f); ev.target.value = ''; };
+  $('fileVideo').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await insertVideoFile(f); };
+  $('filePpt').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await openPpt(f); };
   $('fileReplace').onchange = async (ev) => { const f = ev.target.files[0]; if (f) await replaceImage(ev.target.dataset.id, f); ev.target.value = ''; };
   $('fileBg').onchange = async (ev) => {
     const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
@@ -1493,7 +1735,7 @@
     };
     document.body.appendChild(bg);
     try {
-      const list = await API.assets();
+      const list = (await API.assets()).filter(a => /\.(png|jpe?g|gif|webp|svg|bmp|avif)$/i.test(a.name)); // 동영상 파일은 빼고
       bg.innerHTML = frame(` · ${list.length}개`, list.map(a => `<div class="a" data-src="${esc(a.src)}" style="background-image:url('${esc(a.src)}')" title="${esc(a.name)}"><span>${esc(a.name)}</span></div>`).join('') || '<div class="muted">아직 업로드된 이미지가 없습니다.</div>');
     } catch (e) { bg.innerHTML = frame('', `<div class="muted">목록을 불러오지 못했습니다: ${esc(e.message)}</div>`); }
   }
@@ -1522,16 +1764,23 @@
     if (S.editing) endEdit();
     toast('HTML 만드는 중…', 5000);
     const deck = clone(S.deck);
-    let lost = 0;
+    let lost = 0, vids = 0, vlocal = 0;
     const toData = async (src) => { if (!src || src.startsWith('data:')) return src; try { const b = await (await fetch(API.resolveSrc(src))).blob(); return await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); } catch (e) { lost++; return src; } };
-    for (const s of deck.slides) { if (s.bg && s.bg.image) s.bg.image = await toData(s.bg.image); for (const e of s.elements) if (e.type === 'image' && e.src) e.src = await toData(e.src); }
+    for (const s of deck.slides) { if (s.bg && s.bg.image) s.bg.image = await toData(s.bg.image); for (const e of s.elements) {
+        if (e.type === 'image' && e.src) e.src = await toData(e.src);
+        else if (e.type === 'embed' && parseEmbed(e.url).kind === 'video' && !/^(https?:|data:)/i.test(e.url)) { // 동영상 파일은 HTML 에 담지 않고 사이트 주소로 연결
+          const old = e.url; vids++; if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) { e.url = new URL(old, location.href).href; } else vlocal++;
+          if (e.poster && e.posterOf === old) { e.poster = await toData(e.poster); e.posterOf = e.url; }
+        }
+      } }
     let slideCss, uiCss, commonJs, presentJs;
     try { [slideCss, uiCss, commonJs, presentJs] = await Promise.all(['app/slide.css', 'app/ui.css', 'app/common.js', 'app/present.js'].map(u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ' (' + r.status + ')'); return r.text(); }))); }
     catch (err) { alert('HTML 파일을 만들지 못했습니다: 프로그램 파일을 읽을 수 없습니다 (' + err.message + ')\n서버(또는 사이트)로 연 화면에서 다시 해 주세요.'); return; }
     const json = JSON.stringify(deck).replace(/<\/script/gi, '<\\/script');
     const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(deck.title)}</title><style>${slideCss}\n${uiCss}</style></head><body class="present"><script>window.EMBEDDED_DECK=${json};<\/script><script>${commonJs}<\/script><script>${presentJs}<\/script></body></html>`;
     download(S.name + '.html', html, 'text/html');
-    toast(lost ? `HTML 파일을 내려받았습니다 — 이미지 ${lost}개는 넣지 못했습니다 (그 그림은 인터넷이 있어야 보입니다)` : 'HTML 파일을 내려받았습니다', lost ? 6000 : 2600);
+    const vnote = vlocal ? ` · 동영상 파일 ${vlocal}개는 담기지 않습니다 (HTML 파일 옆에 assets 폴더를 함께 두어야 재생)` : vids ? ` · 동영상 파일 ${vids}개는 인터넷이 있어야 재생됩니다` : '';
+    toast((lost ? `HTML 파일을 내려받았습니다 — 이미지 ${lost}개는 넣지 못했습니다 (그 그림은 인터넷이 있어야 보입니다)` : 'HTML 파일을 내려받았습니다') + vnote, lost || vnote ? 6000 : 2600);
   }
 
   /* ---------- 드래그 앤 드롭 / 붙여넣기 ---------- */
@@ -1541,7 +1790,15 @@
     main.classList.remove('dragover'); if (!ev.dataTransfer.files.length) return; ev.preventDefault();
     const r = overlay.getBoundingClientRect(); const at = { x: (ev.clientX - r.left) / S.k, y: (ev.clientY - r.top) / S.k };
     const ph = document.elementFromPoint(ev.clientX, ev.clientY); const slot = ph && ph.closest ? ph.closest('.el-image.img-empty') : null;
-    let n = 0; for (const f of ev.dataTransfer.files) { await insertImageFile(f, { x: at.x + n * 40, y: at.y + n * 40, into: n === 0 && slot ? slot.dataset.id : null }); n++; }
+    const files = Array.from(ev.dataTransfer.files);
+    const ppt = files.find(isPptFile); if (ppt) { await openPpt(ppt); return; }              // PPT 파일 → 그 안의 동영상 고르기
+    const box = ph && ph.closest ? ph.closest('.mode-edit .el[data-id]') : null;              // 상자 위에 놓으면 그 상자에
+    let n = 0; for (const f of files) {
+      const p = { x: at.x + n * 40, y: at.y + n * 40, into: n === 0 && slot ? slot.dataset.id : null };
+      if (isVideoFile(f)) { if (n === 0 && box && !slot) { const be = elById(box.dataset.id); if (be && ['embed', 'image', 'shape'].includes(be.type)) p.into = be.id; } await insertVideoFile(f, p); }
+      else await insertImageFile(f, p);
+      n++;
+    }
   });
   document.addEventListener('paste', async (ev) => {
     const text = ev.clipboardData.getData('text/plain') || '';
@@ -1549,7 +1806,20 @@
     const editingTable = S.editing && elById(S.editing) && elById(S.editing).type === 'table';
     const tableLike = /\t/.test(text) && text.trim().split(/\r?\n/).length > 1;
     const img = items.find(i => i.type.startsWith('image/'));
-    if (img && !text.trim() && !editingTable) { ev.preventDefault(); /* 글과 그림이 함께 든 복사본(엑셀 칸·워드 글)은 글을 붙임 */ const f = img.getAsFile(); await insertImageFile(new File([f], 'clipboard-' + Date.now() + '.' + (f.type.split('/')[1] || 'png'), { type: f.type })); return; }
+    const files = Array.from(ev.clipboardData.files || []);        // 탐색기에서 복사한 파일
+    const vfile = files.find(isVideoFile), pfile = files.find(isPptFile);
+    if ((vfile || pfile) && !text.trim() && !isTypingField()) { ev.preventDefault(); if (vfile) await insertVideoFile(vfile); else await openPpt(pfile); return; }
+    if (img && !text.trim() && !editingTable) {
+      ev.preventDefault(); /* 글과 그림이 함께 든 복사본(엑셀 칸·워드 글)은 글을 붙임 */ const f = img.getAsFile();
+      if (S.ppt && f) { // PowerPoint 에서 복사한 영상은 표지 그림만 넘어옴 → 열어 둔 PPT 에서 같은 표지의 영상을 찾아 넣음
+        const hits = await matchPptVideo(f);
+        if (hits.length === 1 || (hits.length > 1 && hits[1].d - hits[0].d > 3)) { if (await takePptVideo(hits[0].v)) { toast('PowerPoint 에서 복사한 영상을 넣었습니다 · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z', 3500); return; } }
+        else if (hits.length > 1) { showPptVideos(hits.map(h => h.v), '붙여넣은 그림과 표지가 비슷한 영상이 여러 개입니다. 넣을 영상을 고르세요.'); return; }
+      }
+      await insertImageFile(new File([f], 'clipboard-' + Date.now() + '.' + (f.type.split('/')[1] || 'png'), { type: f.type }));
+      if (S.ppt && S.ppt.stale) toast('열어 둔 PPT 파일이 바뀌어 영상을 찾지 못했습니다 — [더보기 → PPT 에서 영상 가져오기] 로 다시 열어 주세요', 6000);
+      return;
+    }
     if (S.editing) { // 서식 없는 텍스트로 붙여넣기
       ev.preventDefault(); if (text.startsWith(CLIP_TAG)) return;
       exec('insertHTML', esc(text).replace(/\r?\n/g, '<br>')); return;
@@ -1565,6 +1835,7 @@
 
   /* ---------- 키보드 (PowerPoint 와 같은 배치) ---------- */
   function isTyping() { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable); }
+  function isTypingField() { const a = document.activeElement; return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'); } // 속성 칸·대화상자에 글을 쓰는 중
   function present(fromStart) { openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&start=${fromStart ? 0 : S.cur}`); }
   /* 발표·인쇄 창: 저장(GitHub 은 몇 초)이 끝난 뒤에 window.open 을 부르면 팝업 차단에 걸릴 수 있어,
      클릭 직후에 빈 창을 먼저 열고 저장이 끝나면 주소를 넣음. 저장이 안 됐으면 이 기기의 임시본으로 보여 줌 */
@@ -2590,7 +2861,9 @@
     ev.stopPropagation();
     btnMenu(ev.currentTarget, [
       { label: '∑ 수식…', fn: () => openMathDialog(null) },
-      { label: '▶ 동영상 · 웹 페이지…', fn: () => openEmbedDialog(null) },
+      { label: '▶ 동영상 · 웹 페이지 (주소)…', fn: () => openEmbedDialog(null) },
+      { label: '🎞 동영상 파일…', fn: () => $('fileVideo').click() },
+      { label: '📽 PPT 에서 영상 가져오기…', fn: () => showPptVideos() },
       { sep: true },
       { label: '📝 개요로 슬라이드 만들기…', fn: showOutline },
       { label: '🖼 사진 앨범 (사진마다 한 장씩)…', fn: () => $('fileAlbum').click() },

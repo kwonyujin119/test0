@@ -44,7 +44,7 @@
       <button class="btn" id="btnAddTable" title="표 (엑셀 표는 Ctrl+V 로 바로)">▦ 표 ▾</button>
       <button class="btn" id="btnAddChart" title="차트">📊 차트 ▾</button>
       <button class="btn" id="btnAddIcon" title="아이콘 · 기호">☺ 아이콘</button>
-      <button class="btn" id="btnAddMore" title="수식 · 동영상 · 개요로 만들기 · 사진 앨범">더보기 ▾</button>
+      <button class="btn" id="btnAddMore" title="수식 · 동영상(주소·파일·PPT) · 개요로 만들기 · 사진 앨범">더보기 ▾</button>
     </div>
     <span class="sep"></span>
     <div class="group" id="alignGroup">
@@ -89,7 +89,7 @@
       <label class="muted">확대</label>
       <select id="zoom"><option value="fit">맞춤</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select>
     </div>
-    <div class="dropzone-hint">이미지를 여기에 놓으세요</div>
+    <div class="dropzone-hint">이미지·동영상·PPT 파일을 여기에 놓으세요</div>
   </div>
   <div class="ed-props" id="props"></div>
   <button class="btn" id="propsClose" title="속성 닫기">✕ 닫기</button>
@@ -98,6 +98,8 @@
 <input type="file" id="fileBg" accept="image/*" style="display:none">
 <input type="file" id="fileReplace" accept="image/*" style="display:none">
 <input type="file" id="fileAlbum" accept="image/*" multiple style="display:none">
+<input type="file" id="fileVideo" accept="video/*,.mp4,.m4v,.mov,.webm" style="display:none">
+<input type="file" id="filePpt" accept=".pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps" style="display:none">
 <script src="app/common.js"></script>
 <script src="app/editor.js"></script>
 <script src="app/pwa.js"></script>
