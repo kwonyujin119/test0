@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T00:26:45.514Z",
+ "modified": "2026-11-06T00:27:40.742Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -2388,7 +2388,12 @@
      "src": "assets/clipboard-1793924793101-i59ygkt.jpg",
      "fit": "cover",
      "radius": 18,
-     "shadow": false
+     "shadow": false,
+     "fx": {
+      "b": 66,
+      "c": 117,
+      "s": 165
+     }
     },
     {
      "id": "dzpne8073",
