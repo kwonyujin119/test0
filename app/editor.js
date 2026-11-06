@@ -225,7 +225,7 @@
     const e = elById(S.sel[0]); if (!e || e.locked) return;
     const k = S.k, cx = (e.x + e.w / 2) * k, cy = (e.y + e.h / 2) * k, hw = e.w * k / 2, hh = e.h * k / 2;
     const a = (e.rotate || 0) * Math.PI / 180, cos = Math.cos(a), sin = Math.sin(a);
-    const pts = { nw: [-hw, -hh], n: [0, -hh], ne: [hw, -hh], e: [hw, 0], se: [hw, hh], s: [0, hh], sw: [-hw, hh], w: [-hw, 0], rot: [0, -hh - 28] };
+    const pts = { nw: [-hw, -hh], n: [0, -hh], ne: [hw, -hh], e: [hw, 0], se: [hw, hh], s: [0, hh], sw: [-hw, hh], w: [-hw, 0], rot: [0, -hh - (e.type === 'table' && !e.rotate ? tabSize() + 22 : 28)] }; // 표는 위에 ✕ 줄이 있어 회전 손잡이를 더 위로
     const small = e.w * k < 40 || e.h * k < 40;
     for (const [h, [dx, dy]] of Object.entries(pts)) {
       if (small && h.length === 1 && h !== 'rot') continue;
@@ -233,6 +233,44 @@
       d.style.left = (cx + dx * cos - dy * sin) + 'px'; d.style.top = (cy + dx * sin + dy * cos) + 'px';
       d.title = h === 'rot' ? '회전 (Shift: 15° 단위)' : '';
       overlay.appendChild(d);
+    }
+    if (e.type === 'table' && !e.rotate) renderTableTabs(e);
+  }
+  /* 표를 잡으면 위·왼쪽에 줄마다 ✕ 손잡이: 누르면 그 열·행을 바로 지움 (올리면 지워질 줄이 빨갛게) · 끝의 ＋ 는 열·행 추가
+     한 번 누른 칸은 점선으로 표시 — 속성 창·오른쪽 단추 메뉴의 추가/삭제가 그 칸 기준 */
+  function tabSize() { return window.matchMedia && matchMedia('(pointer: coarse)').matches ? 24 : 15; } // 손가락으로 누르는 기기에서는 크게
+  function renderTableTabs(e) {
+    const node = nodeOf(e.id); if (!node || !e.rows || !e.rows.length) return;
+    const o = overlay.getBoundingClientRect(), nb = node.getBoundingClientRect();
+    const L = nb.left - o.left, T = nb.top - o.top, W = nb.width, H = nb.height;
+    const nr = e.rows.length, nc = e.rows[0] ? e.rows[0].length : 1;
+    const sz = tabSize(), gap = 7, off = sz + gap;
+    const mk = (cls, txt, title, x, y, w, h, fn, hl) => {
+      const d = document.createElement('div'); d.className = 'ttab ' + cls; d.textContent = txt; d.title = title;
+      d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.width = Math.max(4, w) + 'px'; d.style.height = Math.max(4, h) + 'px';
+      d.onclick = (ev) => { ev.stopPropagation(); fn(); };
+      if (hl) {
+        let mark = null;
+        d.onpointerenter = () => { mark = document.createElement('div'); mark.className = 'thl'; mark.style.left = hl[0] + 'px'; mark.style.top = hl[1] + 'px'; mark.style.width = hl[2] + 'px'; mark.style.height = hl[3] + 'px'; overlay.appendChild(mark); };
+        d.onpointerleave = () => { if (mark) mark.remove(); mark = null; };
+      }
+      overlay.appendChild(d);
+    };
+    let x = L;
+    tableWeights(e.cols, nc).forEach((wt, i) => {
+      const w = wt * W;
+      if (nc > 1) mk('c', w >= 12 ? '✕' : '', `${i + 1}열 삭제`, x + 1, T - off, w - 2, sz, () => tableOp('colDel', { c: i }), [x, T, w, H]);
+      x += w;
+    });
+    mk('add', '＋', '오른쪽 끝에 열 추가', L + W + 4, T - off, sz, sz, () => tableOp('colAdd', { c: nc - 1 }));
+    Array.from(node.querySelectorAll('tr')).forEach((tr, i) => {
+      const b = tr.getBoundingClientRect(); const y = b.top - o.top, h = Math.min(b.bottom, nb.bottom) - b.top; if (h <= 0) return;
+      if (nr > 1) mk('r', h >= 12 ? '✕' : '', `${i + 1}행 삭제`, L - off, y + 1, sz, h - 2, () => tableOp('rowDel', { r: i }), [L, y, W, h]);
+    });
+    mk('add', '＋', '맨 아래에 행 추가', L - off, T + H + 4, sz, sz, () => tableOp('rowAdd', { r: nr - 1 }));
+    if (!S.editing && S.cell && S.cell.id === e.id) {
+      const td = node.querySelector(`[data-r="${S.cell.r}"][data-c="${S.cell.c}"]`);
+      if (td) { const b = td.getBoundingClientRect(); const d = document.createElement('div'); d.className = 'cellmark'; d.style.left = (b.left - o.left) + 'px'; d.style.top = (b.top - o.top) + 'px'; d.style.width = b.width + 'px'; d.style.height = b.height + 'px'; overlay.appendChild(d); }
     }
   }
 
@@ -499,11 +537,23 @@
     const node = ev.target.closest('.el');
     if (S.editing) return;
     ev.preventDefault();
-    if (node) { if (!S.sel.includes(node.dataset.id)) { S.sel = [node.dataset.id]; markSelection(); renderOverlay(); renderProps(); } showMenu(ev.clientX, ev.clientY, elementMenuItems()); }
+    if (node) {
+      const td = ev.target.closest('th,td'), was = S.sel.includes(node.dataset.id);
+      if (!was) S.sel = [node.dataset.id];
+      if (td && td.dataset.r != null && S.sel.length === 1) S.cell = { id: node.dataset.id, r: +td.dataset.r, c: +td.dataset.c }; // 표: 오른쪽 단추로 누른 칸이 추가·삭제의 기준
+      if (!was || td) { markSelection(); renderOverlay(); renderProps(); }
+      showMenu(ev.clientX, ev.clientY, elementMenuItems());
+    }
     else showMenu(ev.clientX, ev.clientY, slideMenuItems());
   });
   function elementMenuItems() {
     const e = elById(S.sel[0]); const items = [];
+    if (e && e.type === 'table' && S.sel.length === 1 && !e.locked && S.cell && S.cell.id === e.id) {
+      const { r, c } = S.cell, at = { r, c };
+      items.push({ label: `이 행 삭제 (${r + 1}행)`, danger: true, fn: () => tableOp('rowDel', at) }, { label: `이 열 삭제 (${c + 1}열)`, danger: true, fn: () => tableOp('colDel', at) },
+        { label: '위에 행 추가', fn: () => tableOp('rowAddBefore', at) }, { label: '아래에 행 추가', fn: () => tableOp('rowAdd', at) },
+        { label: '왼쪽에 열 추가', fn: () => tableOp('colAddBefore', at) }, { label: '오른쪽에 열 추가', fn: () => tableOp('colAdd', at) }, { sep: true });
+    }
     if (e && editable(e)) items.push({ label: '글 편집', kbd: '더블클릭', fn: () => startEdit(e.id) });
     if (e && e.type === 'image') items.push({ label: '이미지 교체…', fn: () => { $('fileReplace').dataset.id = e.id; $('fileReplace').click(); } });
     if (e && S.sel.length === 1 && ((e.type === 'image' && e.src) || isIconText(e))) items.push({ label: e.type === 'image' ? '배경 지우기…' : '아이콘 배경 지우기…', fn: () => showBgRemove(e) });
@@ -541,6 +591,7 @@
     if (t.closest('.el.playing') && !t.closest('.handle')) return; // 재생 중인 플레이어 조작
     const handle = t.closest('.handle');
     if (handle) { ev.preventDefault(); startResize(ev, handle.dataset.h); return; }
+    if (t.closest('.ttab')) { ev.preventDefault(); return; } // 표의 ✕·＋ 손잡이 (누르면 click 에서 처리)
     const tb = tableBorderHit(ev); if (tb) { ev.preventDefault(); startTableLineDrag(ev, tb); return; }
     const node = t.closest('.el');
     if (S.editing) { if (node && node.dataset.id === S.editing) return; endEdit(); }
@@ -549,6 +600,7 @@
       const ids = ev.altKey ? [id] : groupOf(id);
       if (ev.shiftKey) { S.sel = ids.every(x => S.sel.includes(x)) ? S.sel.filter(x => !ids.includes(x)) : Array.from(new Set(S.sel.concat(ids))); }
       else if (!S.sel.includes(id)) S.sel = ids;
+      { const td = e.type === 'table' ? t.closest('th,td') : null; if (td && td.dataset.r != null) S.cell = { id, r: +td.dataset.r, c: +td.dataset.c }; } // 표: 누른 칸을 기억 (행·열 추가/삭제의 기준)
       markSelection(); renderOverlay(); renderProps();
       ev.preventDefault();
       if (!e.locked) startDrag(ev);
@@ -894,7 +946,9 @@
       <input type="color" data-cmd="cellFill" value="#fde68a" title="이 칸 배경색">
       <button class="btn" data-cmd="cellFillClear" title="칸 배경색 지우기">⌫</button>
       <button class="btn" data-cmd="cellAlign" data-val="left" title="칸 왼쪽 정렬">⇤</button><button class="btn" data-cmd="cellAlign" data-val="center" title="칸 가운데 정렬">↔</button><button class="btn" data-cmd="cellAlign" data-val="right" title="칸 오른쪽 정렬">⇥</button>
-      <button class="btn" data-cmd="mergeR" title="오른쪽 칸과 합치기">합→</button><button class="btn" data-cmd="mergeD" title="아래 칸과 합치기">합↓</button><button class="btn" data-cmd="split" title="합친 칸 나누기">나누기</button>`}`;
+      <button class="btn" data-cmd="mergeR" title="오른쪽 칸과 합치기">합→</button><button class="btn" data-cmd="mergeD" title="아래 칸과 합치기">합↓</button><button class="btn" data-cmd="split" title="합친 칸 나누기">나누기</button>
+      <span class="sep"></span>
+      <button class="btn" data-cmd="rowAdd" title="이 칸 아래에 행 추가">＋행</button><button class="btn del" data-cmd="rowDel" title="이 칸이 있는 행 삭제">－행</button><button class="btn" data-cmd="colAdd" title="이 칸 오른쪽에 열 추가">＋열</button><button class="btn del" data-cmd="colDel" title="이 칸이 있는 열 삭제">－열</button>`}`;
     textToolbar.addEventListener('mousedown', (ev) => { if (ev.target.tagName !== 'INPUT') ev.preventDefault(); });
     textToolbar.addEventListener('click', (ev) => {
       const sb = ev.target.closest('[data-sym]'); if (sb) { exec('insertText', sb.dataset.sym); return; }
@@ -905,6 +959,7 @@
       if (cmd === 'sym') { let pop = textToolbar.querySelector('.sym-pop'); if (pop) { pop.remove(); return; } pop = document.createElement('div'); pop.className = 'sym-pop'; pop.innerHTML = SYMBOLS.map(c => `<button class="btn" data-sym="${esc(c)}">${esc(c)}</button>`).join(''); textToolbar.appendChild(pop); return; }
       if (cmd === 'link') { const u = prompt('링크 주소'); if (u) exec('createLink', u); return; }
       if (/^(cellFillClear|cellAlign|mergeR|mergeD|split)$/.test(cmd)) { cellOp(cmd, b.dataset.val); return; }
+      if (/^(row|col)(Add|Del)$/.test(cmd)) { const id = e.id; tableOp(cmd); if (S.cell && S.cell.id === id) { const c = S.cell; startEdit(id); focusCell(id, c.r, c.c); S.cell = { id, r: c.r, c: c.c }; } return; } // 하던 편집을 이어 감
       exec(cmd);
     });
     textToolbar.querySelector('input[type=color]').addEventListener('input', (ev) => exec('foreColor', ev.target.value));
@@ -1130,9 +1185,12 @@
         ${row('안쪽 여백', num('style.padding', st.padding == null ? '' : st.padding, 4, 0, 300, '비우면 자동 (도형 크기의 4%·8%)'))}</section>`}`;
     } else if (e.type === 'table') {
       body = `<section><h4>표 <span class="muted" style="text-transform:none;font-weight:400">더블클릭: 칸 편집 · Tab: 다음 칸</span></h4>
-        ${row('행', `<button class="btn sm" data-act="rowAdd">＋ 행 추가</button><button class="btn sm" data-act="rowDel">－ 행 삭제</button>`)}
-        ${row('열', `<button class="btn sm" data-act="colAdd">＋ 열 추가</button><button class="btn sm" data-act="colDel">－ 열 삭제</button>`)}
-        ${hint('편집 중인 칸 다음에 추가 / 그 칸을 삭제합니다')}
+        ${(() => { const tc = S.cell && S.cell.id === e.id ? S.cell : null, nr = e.rows.length, nc = e.rows[0] ? e.rows[0].length : 1;
+          const rn = tc ? Math.min(tc.r, nr - 1) + 1 : nr, cn = tc ? Math.min(tc.c, nc - 1) + 1 : nc;
+          return row('삭제', `<button class="btn sm danger" data-act="rowDel" ${nr > 1 ? '' : 'disabled'}>－ ${rn}행 삭제</button><button class="btn sm danger" data-act="colDel" ${nc > 1 ? '' : 'disabled'}>－ ${cn}열 삭제</button>`)
+            + row('행 추가', `<button class="btn sm" data-act="rowAddBefore">＋ 위에</button><button class="btn sm" data-act="rowAdd">＋ 아래에</button>`)
+            + row('열 추가', `<button class="btn sm" data-act="colAddBefore">＋ 왼쪽에</button><button class="btn sm" data-act="colAdd">＋ 오른쪽에</button>`)
+            + hint(tc ? '표에서 누른 칸(노란 점선)이 기준입니다. 표 위·왼쪽의 ✕ 를 누르면 그 열·행을 바로 지웁니다 · 되돌리기 Ctrl+Z' : '표의 칸을 한 번 누르면 그 칸이 기준이 됩니다 (지금은 마지막 행·열). 표 위·왼쪽의 ✕ 를 누르면 그 열·행을 바로 지웁니다'); })()}
         ${row('너비·높이', `<button class="btn sm" data-act="colsEven" ${e.cols ? '' : 'disabled'}>열 너비 균등</button><button class="btn sm" data-act="rowsEven" ${e.rh ? '' : 'disabled'}>행 높이 균등</button>`)}
         ${hint('표를 잡은 채 칸 사이 경계를 끌면 열 너비·행 높이가 바뀝니다. 칸을 더블클릭해 편집할 때 도구 막대에서 칸 배경색 · 정렬 · 합치기')}
         ${row('강조', tog('header', e.header, '첫 행 머리글') + tog('firstCol', e.firstCol, '첫 열 굵게'))}
@@ -1334,7 +1392,7 @@
       case 'gray': if (e) { e.fx = Object.assign({}, e.fx, { s: 0 }); commit(); rerenderEl(e.id); renderProps(); } break;
       case 'fxReset': if (e) { delete e.fx; commit(); rerenderEl(e.id); renderProps(); } break;
       case 'cropReset': if (e) { delete e.cropX; delete e.cropY; delete e.zoom; commit(); rerenderEl(e.id); renderProps(); } break;
-      case 'rowAdd': case 'rowDel': case 'colAdd': case 'colDel': case 'colsEven': case 'rowsEven': tableOp(a); break;
+      case 'rowAdd': case 'rowAddBefore': case 'rowDel': case 'colAdd': case 'colAddBefore': case 'colDel': case 'colsEven': case 'rowsEven': tableOp(a); break;
       case 'mathDialog': if (e) openMathDialog(e); break;
       case 'playHere': if (e) playEmbedHere(e.id); break;
       case 'cgRow': { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); break; }
@@ -1802,11 +1860,16 @@
     const w = Math.min(1680, nc * 300), h = Math.min(860, rows.length * 80);
     const [x, y] = centerBox(w, h); addElement(tableEl(x, y, w, h, rows)); toast('붙여넣은 표를 만들었습니다');
   }
-  function tableOp(op) {
+  /* 행·열 추가/삭제. at = { r, c } 로 자리를 정함 (없으면 누른 칸·편집하던 칸, 그것도 없으면 마지막 줄)
+     rowAdd·colAdd 는 그 줄 다음에, rowAddBefore·colAddBefore 는 그 줄 앞에 넣음 */
+  function tableOp(op, at) {
     const e = elById(S.sel[0]); if (!e || e.type !== 'table') return;
-    const cell = S.cell && (S.cell.id == null || S.cell.id === e.id) ? S.cell : null; if (S.editing) endEdit();
+    const mine = S.cell && (S.cell.id == null || S.cell.id === e.id) ? S.cell : null, cell = at || mine; if (S.editing) endEdit();
     const rows = e.rows; const nc = rows[0] ? rows[0].length : 1;
-    const ci = cell ? clamp(cell.c, 0, nc - 1) : nc - 1, ri = cell ? clamp(cell.r, 0, rows.length - 1) : rows.length - 1;
+    const ci = cell && cell.c != null ? clamp(cell.c, 0, nc - 1) : nc - 1, ri = cell && cell.r != null ? clamp(cell.r, 0, rows.length - 1) : rows.length - 1;
+    const before = /Before$/.test(op); if (before) op = op.replace('Before', '');
+    const ra = before ? ri - 1 : ri, ca = before ? ci - 1 : ci; // 이 줄 다음 자리에 넣음 (-1 이면 맨 앞)
+    let nr2 = mine && mine.r != null ? mine.r : 0, nc2 = mine && mine.c != null ? mine.c : 0, msg = ''; // 끝난 뒤 기준 칸
     const keepMerged = (axis, idx) => { // 합친 칸의 글은 첫 칸에만 들어 있으므로, 그 줄을 지우기 전에 다음 줄로 옮김
       const cells = e.cells || {};
       for (const k in cells) {
@@ -1816,13 +1879,23 @@
       }
     };
     const wOp = (key, n, idx, ins) => { if (!e[key]) return; const w = tableWeights(e[key], n); if (ins) w.splice(idx + 1, 0, 1 / n); else w.splice(idx, 1); e[key] = w; };
-    if (op === 'rowAdd') { rows.splice(ri + 1, 0, Array(nc).fill('')); e.h += Math.round(e.h / (rows.length - 1)); wOp('rh', rows.length - 1, ri, true); tableRemap(e, 'r', ri, true); }
-    if (op === 'rowDel') { if (rows.length <= 1) return; keepMerged('r', ri); rows.splice(ri, 1); e.h = Math.max(40, e.h - Math.round(e.h / (rows.length + 1))); wOp('rh', rows.length + 1, ri, false); tableRemap(e, 'r', ri, false); }
-    if (op === 'colAdd') { rows.forEach(r => r.splice(ci + 1, 0, '')); wOp('cols', nc, ci, true); tableRemap(e, 'c', ci, true); }
-    if (op === 'colDel') { if (nc <= 1) return; keepMerged('c', ci); rows.forEach(r => r.splice(ci, 1)); wOp('cols', nc, ci, false); tableRemap(e, 'c', ci, false); }
+    if (op === 'rowAdd') { rows.splice(ra + 1, 0, Array(nc).fill('')); e.h += Math.round(e.h / (rows.length - 1)); wOp('rh', rows.length - 1, ra, true); tableRemap(e, 'r', ra, true); nr2 = ra + 1; if (cell && cell.c != null) nc2 = ci; }
+    if (op === 'rowDel') {
+      if (rows.length <= 1) { toast('행이 하나뿐이라 지울 수 없습니다 · 표를 통째로 지우려면 Del'); return; }
+      keepMerged('r', ri); rows.splice(ri, 1); e.h = Math.max(40, e.h - Math.round(e.h / (rows.length + 1))); wOp('rh', rows.length + 1, ri, false); tableRemap(e, 'r', ri, false);
+      nr2 = ri; if (cell && cell.c != null) nc2 = ci; msg = `${ri + 1}행을 지웠습니다 · 되돌리기 Ctrl+Z`;
+    }
+    if (op === 'colAdd') { rows.forEach(r => r.splice(ca + 1, 0, '')); wOp('cols', nc, ca, true); tableRemap(e, 'c', ca, true); nc2 = ca + 1; if (cell && cell.r != null) nr2 = ri; }
+    if (op === 'colDel') {
+      if (nc <= 1) { toast('열이 하나뿐이라 지울 수 없습니다 · 표를 통째로 지우려면 Del'); return; }
+      keepMerged('c', ci); rows.forEach(r => r.splice(ci, 1)); wOp('cols', nc, ci, false); tableRemap(e, 'c', ci, false);
+      nc2 = ci; if (cell && cell.r != null) nr2 = ri; msg = `${ci + 1}열을 지웠습니다 · 되돌리기 Ctrl+Z`;
+    }
     if (op === 'colsEven') delete e.cols;
     if (op === 'rowsEven') delete e.rh;
-    S.cell = null; commit(); rerenderEl(e.id); renderOverlay(); renderProps();
+    // 기준 칸을 남겨 둠: 같은 단추를 거듭 누르면 이어서 지우거나 넣을 수 있게
+    S.cell = (cell || /^(row|col)/.test(op) && /(Add|Del)$/.test(op)) ? { id: e.id, r: clamp(nr2, 0, rows.length - 1), c: clamp(nc2, 0, (rows[0] ? rows[0].length : 1) - 1) } : null;
+    commit(); rerenderEl(e.id); renderOverlay(); renderProps(); if (msg) toast(msg, 2600);
   }
   function tablePicker(btn) {
     closeMenus();

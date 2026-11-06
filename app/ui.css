@@ -227,6 +227,15 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .thumb .trb { position: absolute; left: 5px; bottom: 3px; font-size: 11px; z-index: 2; }
 .stage .el.grouped.selected { outline-style: dashed; }
 .selbox { position: absolute; border: 1.5px dashed var(--ui-accent); pointer-events: none; }
+/* 표 손잡이: 위·왼쪽의 ✕ (그 열·행 삭제) · 끝의 ＋ (추가) · 누른 칸 표시 */
+.ttab { position: absolute; z-index: 6; pointer-events: auto; cursor: pointer; display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-radius: 4px; background: #24406f; border: 1px solid #6ea1ff; color: #fff; font-size: 9px; line-height: 1; font-weight: 700; user-select: none; overflow: hidden; }
+.ttab.c:hover, .ttab.r:hover { background: #ef4444; border-color: #ef4444; color: #fff; }
+.ttab.add { background: #14532d; border-color: #22c55e; color: #fff; font-size: 11px; }
+.ttab.add:hover { background: #22c55e; border-color: #22c55e; color: #06220f; }
+.thl { position: absolute; z-index: 5; pointer-events: none; background: rgba(239,68,68,.28); outline: 2px solid #ef4444; outline-offset: -2px; }
+.cellmark { position: absolute; z-index: 5; pointer-events: none; outline: 2px dashed #ffc21a; outline-offset: -2px; }
+.text-toolbar .btn.del { color: #ff9a9a; }
+@media (pointer: coarse) { .ttab { font-size: 12px; } }
 .overlay.grid-on { background-image: linear-gradient(rgba(79,140,255,.2) 1px, transparent 1px), linear-gradient(90deg, rgba(79,140,255,.2) 1px, transparent 1px); }
 .mode-edit .el-hide { opacity: .22; outline: 1px dashed #888; }
 .mode-present .el-hide, .mode-thumb .el-hide { display: none !important; }
