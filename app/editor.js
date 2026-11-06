@@ -1774,12 +1774,15 @@
       </section>
       <section><h4>표 글자</h4>${fontRows(e, st, { valign: false, sizes: [20, 24, 28, 32, 40] })}</section>`;
     } else if (e.type === 'chart') {
-      const g = chartGrid(e.data);
+      const g = chartGrid(e.data), nr = g.length, nc = g[0].length;
+      const curRow = cgAt && cgAt.id === e.id ? Math.min(cgAt.r, nr - 1) : -1;
+      const xBtn = (act, i, what) => `<button class="cg-del" data-act="${act}" data-i="${i}" tabindex="-1" title="${what} 지우기 · 되돌리기 Ctrl+Z" aria-label="${what} 지우기">✕</button>`;
       body = `<section><h4>차트</h4>
         <div class="chart-kinds">${CHART_KINDS.map(([k, n]) => `<button class="ck ${(e.kind || 'bar') === k ? 'active' : ''}" data-k="kind" data-val="${k}" title="${n}">${chartPicto(k)}<span>${n}</span></button>`).join('')}</div>
         ${hint('아래 표에 바로 적으면 슬라이드의 차트가 따라 바뀝니다 · 첫 줄은 제목, 첫 칸은 항목 이름 · 엑셀 표를 복사해 칸에 붙여넣어도 됩니다')}
-        <div class="cgrid-wrap"><table class="cgrid">${g.map((r, i) => `<tr>${r.map((c, j) => `<td><input type="text" data-cg="${i},${j}" value="${esc(c)}" ${i === 0 ? 'class="hd"' : ''} placeholder="${i === 0 ? (j === 0 ? '항목' : '계열 ' + j) : (j === 0 ? '이름' : '값')}"></td>`).join('')}</tr>`).join('')}</table></div>
-        <div class="cgrid-tools"><button class="btn sm" data-act="cgRow">＋ 줄</button><button class="btn sm" data-act="cgCol">＋ 계열</button><button class="btn sm" data-act="cgRowDel" title="마지막 줄 지우기">－ 줄</button><button class="btn sm" data-act="cgColDel" title="마지막 계열 지우기">－ 계열</button></div>
+        <div class="cgrid-wrap"><table class="cgrid">${nc > 2 ? `<tr class="cg-x"><td></td>${g[0].slice(1).map((c, j) => `<td>${xBtn('cgColDel', j + 1, `'${esc(c || '계열 ' + (j + 1))}' 계열`)}</td>`).join('')}<td></td></tr>` : ''}${g.map((r, i) => `<tr${i === curRow ? ' class="cur"' : ''}>${r.map((c, j) => `<td><input type="text" data-cg="${i},${j}" value="${esc(c)}" ${i === 0 ? 'class="hd"' : ''} placeholder="${i === 0 ? (j === 0 ? '항목' : '계열 ' + j) : (j === 0 ? '이름' : '값')}"></td>`).join('')}<td class="cg-rx">${i > 0 && nr > 2 ? xBtn('cgRowDel', i, `'${esc(r[0] || i + '번째 줄')}' 줄`) : ''}</td></tr>`).join('')}</table></div>
+        <div class="cgrid-tools"><button class="btn sm" data-act="cgRow" title="고른 줄 바로 아래에 새 줄 (칸을 고르지 않았으면 맨 끝)">＋ 줄</button><button class="btn sm" data-act="cgRowDel" title="고른 줄 지우기 (칸을 고르지 않았으면 마지막 줄)">－ 줄</button><button class="btn sm" data-act="cgUp" title="고른 줄을 한 칸 위로">↑</button><button class="btn sm" data-act="cgDown" title="고른 줄을 한 칸 아래로">↓</button><span class="gap"></span><button class="btn sm" data-act="cgCol" title="오른쪽 끝에 새 계열">＋ 계열</button><button class="btn sm" data-act="cgColDel" title="고른 계열 지우기 (칸을 고르지 않았으면 마지막 계열)">－ 계열</button></div>
+        ${hint('칸을 누르면 그 줄(파란 띠)이 기준이 됩니다 · 줄 끝의 ✕ 는 그 줄을 바로 지웁니다 · ↑ ↓ 로 순서 바꾸기 · 잘못 지웠으면 Ctrl+Z')}
         <details class="cgrid-raw"><summary class="muted" style="font-size:11.5px;cursor:pointer">텍스트로 편집 (쉼표·탭 구분)</summary><textarea data-k="data" class="mono" style="min-height:110px;margin-top:6px" spellcheck="false">${esc(e.data || '')}</textarea></details>
         ${row('표시', tog('values', e.values, '값') + tog('legend', e.legend, '범례') + tog('grid', e.grid !== false, '격자') + tog('axis', e.axis !== false, '눈금', '축의 숫자 눈금'))}
         ${row('계열 색', (() => { const ser = parseChartData(e.data).series, pal = chartPalette(e, theme()); return ser.slice(0, 8).map((s, i) => `<label class="ck-col" title="${esc(s.name || '계열 ' + (i + 1))}">${colorIn('colors.' + i, pal[i])}</label>`).join('') + (e.colors ? '<button class="btn sm" data-act="colorsReset" title="테마의 강조색 순서로 되돌림">테마 색</button>' : ''); })())}
@@ -1843,6 +1846,58 @@
   function gridText(grid) { return grid.map(r => r.map(c => String(c).replace(/[,\t\r\n]/g, ' ')).join(',')).join('\n'); }
   function readGrid() { const g = []; props.querySelectorAll('input[data-cg]').forEach(i => { const [r, c] = i.dataset.cg.split(',').map(Number); (g[r] = g[r] || [])[c] = i.value; }); return g.map(r => Array.from(r, x => x == null ? '' : x)); }
   function setChartGrid(g, doCommit) { const t = gridText(g); const ta = props.querySelector('textarea[data-k="data"]'); if (ta) ta.value = t; setProp('data', t, doCommit); }
+  /* 표에서 마지막으로 누른 칸 — 줄·계열을 넣고 지우고 옮기는 기준 */
+  let cgAt = null;
+  const cgCell = (r, c) => props.querySelector(`input[data-cg="${r},${c}"]`);
+  function markCgRow() {
+    props.querySelectorAll('.cgrid tr.cur').forEach(tr => tr.classList.remove('cur'));
+    const i = cgAt && cgAt.id === S.sel[0] ? cgCell(cgAt.r, 0) : null; if (i) i.closest('tr').classList.add('cur');
+  }
+  props.addEventListener('focusin', (ev) => {
+    const t = ev.target; if (!t.dataset || t.dataset.cg == null) return;
+    const [r, c] = t.dataset.cg.split(',').map(Number); cgAt = { id: S.sel[0], r, c }; markCgRow();
+  });
+  /* 차트 표의 줄·계열 넣기 · 지우기 · 옮기기. i: 단추가 가리키는 줄·계열 (없으면 누른 칸, 그것도 없으면 맨 끝)
+     줄마다 따로 준 색(pointColors)과 계열 색(colors)은 제 줄·계열을 따라간다 */
+  function chartGridOp(op, i) {
+    const e = elById(S.sel[0]); if (!e || e.type !== 'chart') return;
+    const g = readGrid(); if (!g.length) return;
+    const nr = g.length, nc = g[0].length, at = cgAt && cgAt.id === e.id ? cgAt : null;
+    const head = parseChartData(gridText(g)).labels.length === nr ? 0 : 1; // 첫 줄이 숫자뿐이면 머리줄 없이 전부 항목
+    const blank = () => Array(nc).fill('');
+    const points = (fn) => { if (Array.isArray(e.pointColors)) { const a = e.pointColors.slice(); fn(a); e.pointColors = a; } };
+    let focus = null;
+    if (op === 'cgRow') {
+      const k = at ? Math.min(at.r, nr - 1) + 1 : nr;
+      g.splice(k, 0, blank()); points(a => { if (k - head < a.length) a.splice(Math.max(0, k - head), 0, ''); });
+      cgAt = { id: e.id, r: k, c: 0 }; focus = [k, 0];
+    } else if (op === 'cgRowDel') {
+      let r = i != null ? i : at ? Math.min(at.r, nr - 1) : nr - 1; if (r < 1) r = nr - 1;
+      if (nr > 2) { g.splice(r, 1); points(a => { if (r - head >= 0 && r - head < a.length) a.splice(r - head, 1); }); }
+      else g[1] = blank(); // 하나 남은 줄은 내용만 비움
+      cgAt = { id: e.id, r: Math.min(r, g.length - 1), c: at ? at.c : 0 };
+    } else if (op === 'cgUp' || op === 'cgDown') {
+      if (!at) { toast('옮길 줄의 칸을 먼저 누르세요'); return; }
+      const r = Math.min(at.r, nr - 1), r2 = r + (op === 'cgUp' ? -1 : 1);
+      if (r < 1 || r2 < 1 || r2 >= nr) return; // 제목 줄은 그대로, 맨 위·맨 아래에서는 멈춤
+      [g[r], g[r2]] = [g[r2], g[r]];
+      points(a => { const p = r - head, q = r2 - head; if (p < 0 || q < 0) return; while (a.length <= Math.max(p, q)) a.push(''); [a[p], a[q]] = [a[q], a[p]]; });
+      cgAt = { id: e.id, r: r2, c: at.c };
+    } else if (op === 'cgCol') {
+      g.forEach((r, k) => r.push(k === 0 ? '계열 ' + r.length : ''));
+      cgAt = { id: e.id, r: 0, c: nc }; focus = [0, nc];
+    } else if (op === 'cgColDel') {
+      let c = i != null ? i : at ? Math.min(at.c, nc - 1) : nc - 1; if (c < 1) c = nc - 1;
+      if (nc <= 2) { toast('계열은 하나 이상 있어야 합니다'); return; }
+      g.forEach(r => r.splice(c, 1));
+      if (Array.isArray(e.colors)) { const a = e.colors.slice(); if (c - 1 < a.length) a.splice(c - 1, 1); if (a.some(Boolean)) e.colors = a; else delete e.colors; }
+      if (at) cgAt = { id: e.id, r: at.r, c: Math.min(at.c, nc - 2) };
+    } else return;
+    setChartGrid(g, true); renderProps();
+    const el = focus && cgCell(focus[0], focus[1]);
+    if (el) { el.focus(); el.select(); el.scrollIntoView({ block: 'nearest' }); } // 넣은 줄·계열은 바로 적을 수 있게. 지우거나 옮긴 뒤에는 칸에 들어가지 않아 Ctrl+Z 가 바로 듣는다
+    else { const cur = props.querySelector('.cgrid tr.cur'); if (cur) cur.scrollIntoView({ block: 'nearest' }); }
+  }
   const CHART_PICTO = {
     bar: '<rect x="3" y="12" width="5" height="12"/><rect x="11" y="5" width="5" height="19"/><rect x="19" y="9" width="5" height="15"/>',
     hbar: '<rect x="2" y="3" width="20" height="5"/><rect x="2" y="11" width="13" height="5"/><rect x="2" y="19" width="17" height="5"/>',
@@ -1874,17 +1929,31 @@
     try { if (t.dataset.cg != null) setChartGrid(readGrid(), true); else if (t.dataset.k) setProp(t.dataset.k, readVal(t), true); }
     finally { propsEvt--; }
   });
-  props.addEventListener('keydown', (ev) => { // 표 칸에서 Enter = 아래 칸, 마지막 줄이면 새 줄
-    const t = ev.target; if (!t.dataset || t.dataset.cg == null || ev.key !== 'Enter' || ev.isComposing) return;
-    ev.preventDefault(); const [r, c] = t.dataset.cg.split(',').map(Number); const nx = props.querySelector(`input[data-cg="${r + 1},${c}"]`);
-    if (nx) nx.focus(); else { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); const i = props.querySelector(`input[data-cg="${r + 1},${c}"]`); if (i) i.focus(); }
+  props.addEventListener('keydown', (ev) => { // 표 칸에서 Enter = 아래 칸 (마지막 줄이면 새 줄), ↑ ↓ = 위·아래 칸
+    const t = ev.target; if (!t.dataset || t.dataset.cg == null || ev.isComposing || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    const [r, c] = t.dataset.cg.split(',').map(Number);
+    if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') { const nx = cgCell(r + (ev.key === 'ArrowUp' ? -1 : 1), c); if (nx) { ev.preventDefault(); nx.focus(); nx.select(); } return; }
+    if (ev.key !== 'Enter') return;
+    ev.preventDefault(); const nx = cgCell(r + 1, c);
+    if (nx) { nx.focus(); nx.select(); } else { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); const i = cgCell(r + 1, c); if (i) i.focus(); }
   });
   props.addEventListener('mousedown', (ev) => { if (S.editing && !/^(INPUT|SELECT|TEXTAREA|OPTION)$/.test(ev.target.tagName) && ev.target.closest('button,.swatch,[data-act],[data-align]')) ev.preventDefault(); });
+  /* 칸에 값을 적다가 곧바로 단추를 누르면, 적은 값이 먼저 반영되면서 창이 다시 그려져 누르던 단추가 사라지고 클릭이 없던 일이 된다.
+     그때는 손을 뗀 자리에 있는 같은 단추를 대신 눌러 준다 (단추가 그대로 있으면 브라우저가 클릭을 보내므로 손대지 않는다) */
+  const btnOf = (n) => { const t = n && n.closest ? n.closest('[data-act],[data-align],[data-k]') : null; return t && props.contains(t) && !/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName) ? t : null; };
+  const btnSig = (t) => [t.dataset.act, t.dataset.i, t.dataset.align, t.dataset.k, t.dataset.val].join('|');
+  let pressed = null;
+  props.addEventListener('mousedown', (ev) => { const t = ev.button === 0 ? btnOf(ev.target) : null; pressed = t ? { el: t, sig: btnSig(t) } : null; }, true);
+  window.addEventListener('mouseup', (ev) => {
+    const p = pressed; pressed = null; if (!p || p.el.isConnected) return;
+    const t = btnOf(document.elementFromPoint(ev.clientX, ev.clientY));
+    if (t && !t.disabled && btnSig(t) === p.sig) t.click();
+  }, true);
   props.addEventListener('click', (ev) => {
     const t = ev.target.closest('[data-k],[data-act],[data-align]'); if (!t) return;
     if (S.editing && (t.dataset.align || (t.dataset.act && t.dataset.act !== 'fsUp' && t.dataset.act !== 'fsDown'))) endEdit(); // 쓰던 글을 먼저 저장
     if (t.dataset.align) { alignSel(t.dataset.align); return; }
-    if (t.dataset.act) { doAct(t.dataset.act); return; }
+    if (t.dataset.act) { doAct(t.dataset.act, t); return; }
     if (t.dataset.toggle) { setProp(t.dataset.k, !t.classList.contains('active'), true); return; } // 단추가 보여 주는 상태의 반대로 (기본이 켜짐인 항목도 첫 클릭에 꺼짐)
     if (t.dataset.val != null && t.tagName !== 'INPUT' && t.tagName !== 'SELECT') { let v = t.dataset.val; if (/^-?\d+(\.\d+)?$/.test(v)) v = parseFloat(v); setProp(t.dataset.k, v, true); }
   });
@@ -1942,7 +2011,7 @@
     const e = elById(S.sel[0]); if (!e || S.sel.length !== 1) return;
     for (const k of ['x', 'y', 'w', 'h', 'rotate']) { const i = props.querySelector(`input[data-k="${k}"]`); if (i && document.activeElement !== i) i.value = e[k] || 0; }
   }
-  function doAct(a) {
+  function doAct(a, t) { // t: 누른 단추 (어느 줄·계열인지 data-i 로 알려 주는 단추가 있음)
     const e = elById(S.sel[0]);
     switch (a) {
       case 'bgImage': $('fileBg').click(); break;
@@ -1972,10 +2041,7 @@
       case 'playHere': if (e) playEmbedHere(e.id); break;
       case 'pickVideo': if (e) { S.sel = [e.id]; $('fileVideo').click(); } break;
       case 'pickPpt': if (e) { S.sel = [e.id]; showPptVideos(); } break;
-      case 'cgRow': { const g = readGrid(); g.push(Array(g[0].length).fill('')); setChartGrid(g, true); renderProps(); break; }
-      case 'cgCol': { const g = readGrid(); g.forEach((r, i) => r.push(i === 0 ? '계열 ' + r.length : '')); setChartGrid(g, true); renderProps(); break; }
-      case 'cgRowDel': { const g = readGrid(); if (g.length > 2) g.pop(); setChartGrid(g, true); renderProps(); break; }
-      case 'cgColDel': { const g = readGrid(); if (g[0].length > 2) g.forEach(r => r.pop()); setChartGrid(g, true); renderProps(); break; }
+      case 'cgRow': case 'cgCol': case 'cgRowDel': case 'cgColDel': case 'cgUp': case 'cgDown': chartGridOp(a, t && t.dataset.i != null ? +t.dataset.i : null); break;
       case 'openEmbed': if (e) { const q = parseEmbed(e.url); window.open(q.kind === 'youtube' ? `https://www.youtube.com/watch?v=${q.id}` : q.kind === 'video' ? API.resolveSrc(e.url) : e.url, '_blank', 'noopener'); } break;
       case 'design': showDesign(); break;
       case 'outline': showOutline(); break;
