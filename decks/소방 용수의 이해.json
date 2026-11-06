@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T02:45:32.126Z",
+ "modified": "2026-11-06T02:48:35.359Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -1433,6 +1433,141 @@
       "fontSize": 24,
       "lineHeight": 1.6
      }
+    }
+   ]
+  },
+  {
+   "id": "ga4apsad5",
+   "bg": null,
+   "transition": "",
+   "notes": "영상 자리 — 불길이 <b>동과 동 사이로 번지는 구간</b>을 보십시오. 저지선을 어디에 그을 것인가가 급수 계획보다 앞섭니다.",
+   "elements": [
+    {
+     "id": "q7gkbsad5",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "② 인천 대응 2단계 — 현장을 먼저 봅시다",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "azcu10019"
+    },
+    {
+     "id": "vdzacyad5",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 236,
+     "w": 1180,
+     "h": 664,
+     "fill": "none",
+     "stroke": "#c2410c",
+     "strokeWidth": 3,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "dash": true,
+     "mk": "nfti2g020"
+    },
+    {
+     "id": "wrqiyxad5",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1348,
+     "y": 236,
+     "w": 452,
+     "h": 262,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#7c2d12",
+     "gAngle": 135,
+     "mk": "d5k2ko025"
+    },
+    {
+     "id": "ptql36ad5",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "text",
+     "role": "text",
+     "x": 1348,
+     "y": 288,
+     "w": 452,
+     "h": 40,
+     "html": "무엇을 볼 것인가",
+     "style": {
+      "fontSize": 24,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "color": "#ffffff",
+      "letterSpacing": 2
+     },
+     "mk": "p7znik026"
+    },
+    {
+     "id": "8d5bnhad5",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1374,
+     "y": 336,
+     "w": 400,
+     "h": 172,
+     "html": "불길이 <b>동과 동 사이로 번지는 구간</b>을 보십시오. 저지선을 어디에 그을 것인가가 급수 계획보다 앞섭니다.",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 24,
+      "lineHeight": 1.5,
+      "align": "center"
+     },
+     "mk": "7hc0zi027"
+    },
+    {
+     "id": "pcjac7ad5",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1348,
+     "y": 524,
+     "w": 452,
+     "h": 330,
+     "html": "<b>넣을 영상 후보</b><br><br>· <b>2026.06 원창동</b> — 25개 동 확산, 저지선 구축으로 11시간여 만에 초진 (MBCNEWS)<br><br>· <b>2024.10 왕길동</b> — 드론 촬영, 연소확대 범위가 한눈에 (YTN)",
+     "style": {
+      "fontSize": 24,
+      "lineHeight": 1.6
+     },
+     "mk": "r9hesv028"
     }
    ]
   },
