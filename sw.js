@@ -2,10 +2,10 @@
    인터넷이 될 때는 늘 인터넷에서 받은 최신 화면을 그대로 씁니다 (받지 못할 때만 저장해 둔 사본).
    인터넷이 끊겼거나 먹통일 때는 저장해 둔 화면 파일(html·js·css)로 엽니다.
    교안·문서함·GitHub API 같은 데이터는 저장하지 않습니다. */
-const CACHE = 'ws-app-v4';
+const CACHE = 'ws-app-v5';
 const CORE = [
   './', 'index.html', 'gyoan.html', 'hangul.html', 'editor.html', 'present.html', 'shortcuts.html', 'manifest.webmanifest',
-  'app/common.js', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/pptx.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js',
+  'app/common.js', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/pptx.js', 'app/pptsym.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js',
   'app/hwp/zip.js', 'app/hwp/hwpx.js', 'app/hwp/store.js', 'app/hwp/edit.js', 'app/hwp/ui.js', 'app/hwp/hwp.css',
   'app/icons/icon-192.png', 'app/icons/icon-512.png', 'app/icons/icon-maskable-512.png', 'app/icons/hangul-96.png', 'app/icons/gyoan-96.png',
 ];

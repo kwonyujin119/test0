@@ -720,19 +720,132 @@
     }
     return vids;
   }
-  /* S.ppt = 지금 열어 둔 PPT { name, file, vids } — 이 화면을 닫을 때까지 기억 (PPT 에서 복사해 붙여넣은 영상을 알아보는 데도 씀) */
-  async function openPpt(file) {
+  /* S.ppt = 지금 열어 둔 PPT { name, file, vids, syms } — 이 화면을 닫을 때까지 기억 (PPT 에서 복사해 붙여넣은 영상을 알아보는 데도 씀) */
+  /* ---------- PPT 심벌 창 ----------
+     PPT 파일을 열면 그 안의 그림·도형·묶음을 하나씩 꺼내 작은 창에 늘어놓습니다 (app/pptsym.js).
+     심벌을 끌어서 슬라이드의 원하는 자리에 놓거나, [내 심벌] 창 위에 놓아 모아 둘 수 있습니다.
+     (PowerPoint 창에서 도형을 직접 끌어오면 PowerPoint 가 브라우저에 그림을 넘겨주지 않아, 파일을 여는 방식으로 함) */
+  let pptWant = '', pptDrag = null, pptPanel = null, innerDrag = false, symPaste = null, iconRedraw = null;
+  const PPTPOS_KEY = 'gyoan:pptSymPos';
+  const DROP_HELP = '끌어온 프로그램이 그림을 넘겨주지 않았습니다 — PowerPoint 의 도형은 복사(Ctrl+C)한 뒤 여기서 붙여넣기(Ctrl+V) 하거나, PPT 파일을 통째로 끌어다 놓으면 그 안의 심벌을 골라 넣을 수 있습니다';
+  document.addEventListener('dragstart', () => { innerDrag = true; }, true);
+  document.addEventListener('dragend', () => { innerDrag = false; pptDrag = null; }, true);
+  async function openPpt(file, want) {
+    want = want || pptWant; pptWant = '';
     if (S.editing) endEdit();
     if (/\.(ppt|pps)$/i.test(file.name || '')) { alert('옛 형식(.ppt) 파일은 읽지 못합니다.\nPowerPoint 에서 [파일 → 다른 이름으로 저장] 으로 "PowerPoint 프레젠테이션(.pptx)" 으로 저장한 뒤 다시 넣어 주세요.'); return; }
-    toast('PPT 에서 영상을 찾는 중…', 15000);
-    let vids; try { vids = await readPptVideos(file); } catch (e) { toast('PPT 를 읽지 못했습니다'); alert('PPT 파일을 읽지 못했습니다: ' + e.message); return; }
-    if (!vids.length) { toast('PPT 에 동영상이 없습니다'); alert(`"${file.name}" 안에는 동영상이 없습니다.`); return; }
-    S.ppt = { name: file.name, file, vids };
-    toast(`PPT 에서 동영상 ${vids.length}개를 찾았습니다`);
-    showPptVideos();
+    toast('PPT 파일을 읽는 중…', 15000);
+    let vids, syms = { items: [], skipped: 0 };
+    try { vids = await readPptVideos(file); } catch (e) { toast('PPT 를 읽지 못했습니다'); alert('PPT 파일을 읽지 못했습니다: ' + e.message); return; }
+    try { await loadScript('app/pptsym.js'); syms = await PPTSYM.read(file, { zipIndex, zipBlob, pptRels, extOf }); } catch (e) { syms = { items: [], skipped: 0, error: e.message }; }
+    if (!vids.length && !syms.items.length) {
+      toast('PPT 에서 가져올 것을 찾지 못했습니다');
+      alert(`"${file.name}" 안에서 가져올 그림·도형·동영상을 찾지 못했습니다.` + (syms.skipped ? `\n\n브라우저가 열 수 없는 형식(EMF·WMF)의 그림 ${syms.skipped}개는 건너뛰었습니다.\n그런 그림은 PowerPoint 에서 복사(Ctrl+C)한 뒤 여기에 붙여넣어(Ctrl+V) 주세요.` : '') + (syms.error ? '\n(' + syms.error + ')' : ''));
+      return;
+    }
+    closePptSyms();
+    S.ppt = { name: file.name, file, vids, syms };
+    if (syms.items.length && (want === 'sym' || !vids.length)) { toast(`PPT 에서 심벌 ${syms.items.length}개를 찾았습니다 · 끌어서 슬라이드나 내 심벌에 놓으세요`, 4000); showPptSyms(); }
+    else { toast(`PPT 에서 동영상 ${vids.length}개를 찾았습니다`); showPptVideos(); }
+  }
+  function closePptSyms() { if (pptPanel) pptPanel._close(); }
+  /* 심벌 하나를 슬라이드에 (at: 슬라이드 좌표 { x, y } — 없으면 가운데) */
+  async function placePptSym(it, at) {
+    const P = S.ppt; if (!P || !it) return false;
+    if (S.editing) endEdit();
+    const put = (w, h) => [Math.round(clamp(at ? at.x - w / 2 : (SLIDE_W - w) / 2, 0, Math.max(0, SLIDE_W - w))), Math.round(clamp(at ? at.y - h / 2 : (SLIDE_H - h) / 2, 0, Math.max(0, SLIDE_H - h)))];
+    if (it.kind === 'txt') {
+      const big = graphemes(it.c).length <= 2, w = big ? 220 : 360, h = 220, [x, y] = put(w, h);
+      addElement(textEl('text', x, y, w, h, esc(it.c), { style: Object.assign({ fontSize: big ? 150 : 60, align: 'center', valign: 'middle', lineHeight: 1 }, it.color ? { color: it.color } : {}) }));
+      return true;
+    }
+    let r; try { r = await PPTSYM.render(it); } catch (e) { toast('이 심벌은 가져오지 못했습니다: ' + e.message, 4500); return false; }
+    try {
+      let src;
+      if (it.kind === 'media') { const prep = await prepareImage(new File([r.blob], r.name, { type: r.blob.type })); src = await API.stage(prep.blob, prep.name); }
+      else src = await API.stage(r.blob, r.name);
+      const k = SLIDE_W / (P.syms.slideW || 1280); let w = r.w * k, h = r.h * k; const s = Math.min(1, 1400 / w, 900 / h); w = Math.max(8, Math.round(w * s)); h = Math.max(8, Math.round(h * s));
+      const [x, y] = put(w, h); addElement(imageEl(x, y, w, h, src));
+      if (r.approx) toast('모양이 PowerPoint 와 조금 다를 수 있는 도형입니다 — 똑같이 넣으려면 PowerPoint 에서 복사(Ctrl+C)해 붙여넣으세요(Ctrl+V)', 6000);
+      return true;
+    } catch (e) { alert('심벌을 넣지 못했습니다: ' + e.message); return false; }
+  }
+  /* 심벌 하나를 내 심벌에 */
+  async function pptSymToMy(it) {
+    const before = mySyms().length;
+    if (it.kind === 'txt') await addMySym({ t: 'txt', c: it.c });
+    else { const r = await PPTSYM.render(it); await addMySymFromDrop({ files: [new File([r.blob], r.name, { type: r.blob.type })], getData: () => '' }); }
+    return mySyms().length > before;
+  }
+  function showPptSyms() {
+    const P = S.ppt; if (!P || !P.syms || !P.syms.items.length) { pptWant = 'sym'; $('filePpt').click(); return; }
+    document.querySelectorAll('.modal-bg.ppt-videos').forEach(n => n.remove());
+    closePptSyms();
+    const items = P.syms.items, urls = [];
+    const el = pptPanel = document.createElement('div'); el.className = 'pptsym';
+    let html = '', last = 0;
+    for (const it of items) {
+      if (it.slide !== last) { if (last) html += '</div>'; last = it.slide; html += `<div class="ps-h">${it.slide}번 슬라이드</div><div class="ps-grid">`; }
+      html += `<div class="ps-it${it.kind === 'txt' ? ' txt' : ''}" draggable="true" data-i="${it.id}" title="${esc(it.name || '심벌')}">${it.kind === 'txt' ? `<span${it.color ? ` style="color:${esc(it.color)}"` : ''}>${esc(it.c)}</span>` : ''}<button type="button" class="ps-add" data-add title="내 심벌에 담기">＋</button></div>`;
+    }
+    html += '</div>';
+    el.innerHTML = `<div class="ps-head" title="끌어서 창 옮기기"><b>🧩 PPT 심벌</b><span class="ps-name">${esc(P.name)} · ${items.length}개</span><button type="button" class="ps-x" data-close title="닫기">×</button></div>
+      <div class="ps-tools"><button type="button" class="btn sm" data-my title="내 심벌 창을 엽니다 — 열어 둔 채로 심벌을 끌어다 놓으세요">⭐ 내 심벌 열기</button><button type="button" class="btn sm" data-all title="이 PPT 의 심벌을 모두 내 심벌에 담기">모두 담기</button>${P.vids.length ? `<button type="button" class="btn sm" data-vids title="이 PPT 의 동영상">🎞 동영상 ${P.vids.length}</button>` : ''}<button type="button" class="btn sm" data-other title="다른 PPT 파일 열기">📂 다른 PPT</button></div>
+      <div class="ps-body">${html}</div>
+      <div class="ps-foot"><b>끌어서</b> 슬라이드의 원하는 자리나 <b>내 심벌</b> 창에 놓으세요 · <b>누르면</b> 슬라이드 가운데에 · <b>＋</b> 는 내 심벌에 담기${P.syms.skipped ? `<br>※ EMF·WMF 그림 ${P.syms.skipped}개는 브라우저가 열지 못해 뺐습니다 (PowerPoint 에서 Ctrl+C → 여기서 Ctrl+V)` : ''}</div>`;
+    document.body.appendChild(el);
+    const place = (l, t) => { el.style.left = clamp(l, 0, Math.max(0, window.innerWidth - el.offsetWidth)) + 'px'; el.style.top = clamp(t, 0, Math.max(0, window.innerHeight - 60)) + 'px'; };
+    const pos = lsGet(PPTPOS_KEY, null); if (pos && isFinite(pos.l) && isFinite(pos.t)) place(pos.l, pos.t); else place(window.innerWidth - el.offsetWidth - 16, 112);
+    const byId = (n) => items[+n.dataset.i];
+    // 보이는 것부터 작은 그림을 그림
+    const load = async (tile) => {
+      const it = byId(tile); if (!it || it.kind === 'txt' || tile.dataset.done) return; tile.dataset.done = '1';
+      try { const r = await PPTSYM.render(it); if (!el.isConnected) return; const u = URL.createObjectURL(r.blob); urls.push(u); const im = new Image(); im.draggable = false; im.alt = ''; im.src = u; tile.insertBefore(im, tile.firstChild); if (r.approx) { tile.classList.add('approx'); tile.title += ' — 모양이 PowerPoint 와 조금 다를 수 있습니다'; } }
+      catch (e) { tile.classList.add('bad'); tile.draggable = false; tile.title = (it.name || '심벌') + ' — 가져올 수 없습니다 (' + e.message + ')'; }
+    };
+    const io = new IntersectionObserver((ents) => { for (const en of ents) if (en.isIntersecting) { io.unobserve(en.target); load(en.target); } }, { root: el.querySelector('.ps-body'), rootMargin: '200px' });
+    el.querySelectorAll('.ps-it').forEach(t => io.observe(t));
+    const myOpen = () => !!document.querySelector('.modal-bg .icon-modal');
+    const toMy = async (it) => { try { if (await pptSymToMy(it)) { toast('내 심벌에 담았습니다'); if (iconRedraw) iconRedraw(); return true; } } catch (e) { toast('이 심벌은 가져오지 못했습니다: ' + e.message, 4500); } return false; };
+    el.addEventListener('click', async (ev) => {
+      if (ev.target.closest('[data-close]')) { el._close(); return; }
+      if (ev.target.closest('[data-my]')) { if (!myOpen()) showIconPicker(); if (iconRedraw) iconRedraw(); return; }
+      if (ev.target.closest('[data-vids]')) { document.querySelectorAll('.modal-bg').forEach(n => { if (n.querySelector('.icon-modal')) n.remove(); }); showPptVideos(); return; }
+      if (ev.target.closest('[data-other]')) { pptWant = 'sym'; $('filePpt').click(); return; }
+      if (ev.target.closest('[data-all]')) {
+        const list = items.filter(it => !el.querySelector(`.ps-it.bad[data-i="${it.id}"]`));
+        if (!confirm(`이 PPT 의 심벌 ${list.length}개를 모두 내 심벌에 담을까요?` + (list.length > 60 ? '\n\n많이 담으면 내 심벌 목록이 길어지고 저장 공간도 많이 씁니다.\n필요한 것만 끌어다 놓는 쪽을 권합니다.' : ''))) return;
+        let n = 0;
+        for (let i = list.length - 1; i >= 0; i--) { // 내 심벌은 새것이 앞에 오므로 뒤에서부터 담아 순서를 지킴
+          toast(`내 심벌에 담는 중… ${list.length - i} / ${list.length}`, 20000);
+          try { if (await pptSymToMy(list[i])) n++; else break; /* 저장 공간이 가득 참 */ } catch (e) { }
+        }
+        toast(n === list.length ? `심벌 ${n}개를 내 심벌에 담았습니다` : `심벌 ${n}개를 담았습니다 (${list.length - n}개는 담지 못했습니다)`, 4000); if (iconRedraw) iconRedraw();
+        return;
+      }
+      const tile = ev.target.closest('.ps-it'); if (!tile || tile.classList.contains('bad')) return;
+      const it = byId(tile);
+      if (ev.target.closest('[data-add]') || myOpen()) { await toMy(it); return; } // 내 심벌 창이 열려 있으면 누르기 = 담기
+      if (await placePptSym(it)) toast('슬라이드에 넣었습니다 · 되돌리기 Ctrl+Z');
+    });
+    el.addEventListener('dragstart', (ev) => {
+      const tile = ev.target.closest && ev.target.closest('.ps-it'); if (!tile || tile.classList.contains('bad')) { ev.preventDefault(); return; }
+      pptDrag = byId(tile); ev.dataTransfer.setData('text/x-gyoan-pptsym', String(pptDrag.id)); ev.dataTransfer.effectAllowed = 'copy';
+      const im = tile.querySelector('img'); if (im && im.complete && im.naturalWidth) { try { ev.dataTransfer.setDragImage(im, im.width / 2, im.height / 2); } catch (e) { } }
+    });
+    // 제목 줄을 끌어 창 옮기기
+    const head = el.querySelector('.ps-head');
+    head.addEventListener('pointerdown', (ev) => {
+      if (ev.button !== 0 || ev.target.closest('button')) return; ev.preventDefault();
+      const r = el.getBoundingClientRect(), dx = ev.clientX - r.left, dy = ev.clientY - r.top;
+      const move = (e) => place(e.clientX - dx, e.clientY - dy);
+      const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); lsSet(PPTPOS_KEY, { l: parseFloat(el.style.left) || 0, t: parseFloat(el.style.top) || 0 }); };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    });
+    el._close = () => { io.disconnect(); el.remove(); urls.forEach(u => URL.revokeObjectURL(u)); if (pptPanel === el) pptPanel = null; };
   }
   function showPptVideos(only, note) {
-    const P = S.ppt; if (!P) { $('filePpt').click(); return; }
+    const P = S.ppt; if (!P || !P.vids.length) { pptWant = 'video'; $('filePpt').click(); return; }
     document.querySelectorAll('.modal-bg.ppt-videos').forEach(n => n.remove());
     const list = only || P.vids, urls = [];
     const fmt = (b) => b >= 1048576 ? (b / 1048576 >= 10 ? Math.round(b / 1048576) : (b / 1048576).toFixed(1)) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB';
@@ -740,11 +853,12 @@
     bg.innerHTML = `<div class="modal" style="width:720px;max-width:94vw"><h3>🎞 PPT 의 동영상 <span class="muted" style="font-weight:400;font-size:13px">${esc(P.name)} · ${P.vids.length}개</span></h3>
       <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">${esc(note || '넣을 영상을 누르세요. 상자를 하나 잡아 두었으면 그 상자 자리에 들어갑니다.')}${only ? '' : '<br>이 PPT 를 열어 둔 동안에는 <b>PowerPoint 에서 영상을 복사(Ctrl+C)해서 여기에 붙여넣어도(Ctrl+V)</b> 영상으로 들어갑니다.'}</p>
       <div class="ppt-grid">${list.map((v) => `<div class="pv" data-i="${P.vids.indexOf(v)}" title="${esc(v.name)}"><div class="ph"><i>▶</i></div><b>${v.slide}번 슬라이드</b><span>${esc(v.name)}</span><small>${v.url ? '인터넷 영상 (주소로 넣음)' : v.linked ? '⚠ PPT 안에 없음 (PC 파일에 연결)' : esc(v.ext.toUpperCase()) + ' · ' + fmt(v.size)}</small></div>`).join('')}</div>
-      <div class="actions"><button class="btn ghost" data-other>다른 PPT 열기…</button><span style="flex:1"></span><button class="btn" data-close>닫기</button></div></div>`;
+      <div class="actions"><button class="btn ghost" data-other>다른 PPT 열기…</button>${P.syms && P.syms.items.length ? `<button class="btn ghost" data-syms title="이 PPT 안의 그림·도형을 심벌로 꺼내 씁니다">🧩 그림·도형 ${P.syms.items.length}개</button>` : ''}<span style="flex:1"></span><button class="btn" data-close>닫기</button></div></div>`;
     const close = () => { bg.remove(); urls.forEach(u => URL.revokeObjectURL(u)); };
     bg.onclick = (ev) => {
       if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }
-      if (ev.target.closest('[data-other]')) { close(); $('filePpt').click(); return; }
+      if (ev.target.closest('[data-other]')) { close(); pptWant = 'video'; $('filePpt').click(); return; }
+      if (ev.target.closest('[data-syms]')) { close(); showPptSyms(); return; }
       const c = ev.target.closest('.pv'); if (!c) return; close(); takePptVideo(P.vids[+c.dataset.i]);
     };
     bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') close(); });
@@ -2007,11 +2121,28 @@
   }
 
   /* ---------- 드래그 앤 드롭 / 붙여넣기 ---------- */
-  main.addEventListener('dragover', (ev) => { if (ev.dataTransfer.types.includes('Files')) { ev.preventDefault(); main.classList.add('dragover'); } });
+  /* 받는 것: 그림·영상·PPT 파일 / PPT 심벌 창의 심벌 / 다른 프로그램에서 끌어온 글자·그림 주소.
+     아무 자료도 넘겨주지 않는 프로그램(PowerPoint 의 도형 등)에서 끌어오면 방법을 알려 줌 */
+  const dropKind = (dt) => { const t = Array.from(dt.types || []); return pptDrag ? 'sym' : t.includes('Files') ? 'files' : innerDrag ? '' : (t.includes('text/plain') || t.includes('text/html') || t.includes('text/uri-list')) ? 'data' : !t.length ? 'none' : ''; };
+  main.addEventListener('dragover', (ev) => { if (dropKind(ev.dataTransfer)) { ev.preventDefault(); if (pptDrag) ev.dataTransfer.dropEffect = 'copy'; main.classList.add('dragover'); } });
   main.addEventListener('dragleave', (ev) => { if (!main.contains(ev.relatedTarget)) main.classList.remove('dragover'); });
   main.addEventListener('drop', async (ev) => {
-    main.classList.remove('dragover'); if (!ev.dataTransfer.files.length) return; ev.preventDefault();
+    main.classList.remove('dragover'); const kind = dropKind(ev.dataTransfer); if (!kind) return; ev.preventDefault();
     const r = overlay.getBoundingClientRect(); const at = { x: (ev.clientX - r.left) / S.k, y: (ev.clientY - r.top) / S.k };
+    if (kind === 'sym') { const it = pptDrag; pptDrag = null; if (await placePptSym(it, at)) toast('심벌을 넣었습니다 · 되돌리기 Ctrl+Z'); return; }
+    if (kind !== 'files' || !ev.dataTransfer.files.length) {
+      const html = ev.dataTransfer.getData('text/html') || '', text = (ev.dataTransfer.getData('text/plain') || '').trim();
+      const m = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i.exec(html), url = m ? m[1].replace(/&amp;/g, '&') : /^(https?:\/\/\S+\.(png|jpe?g|gif|svg|webp)(\?\S*)?|data:image\/\S+)$/i.test(text) ? text : '';
+      if (url && /^(data:image\/|https?:)/i.test(url)) { // 웹 페이지 등에서 끌어온 그림
+        try { const b = await (await fetch(url)).blob(); if (/^image\//.test(b.type)) { await insertImageFile(new File([b], 'drop-' + Date.now() + '.' + ((b.type.split('/')[1] || 'png').replace('svg+xml', 'svg').replace('jpeg', 'jpg')), { type: b.type }), at); return; } } catch (e) { }
+        if (m) { toast('그 그림은 가져올 수 없는 곳에 있습니다 — 그림을 복사(Ctrl+C)해서 붙여넣어(Ctrl+V) 주세요', 6000); return; }
+      }
+      if (!text || /^file:/i.test(text)) { toast(DROP_HELP, 9000); return; }
+      if (putEmbed(text)) return;
+      const g = graphemes(text).length, big = g <= 3 && !/\n/.test(text), w = big ? 220 : clamp(g * 44, 320, 1120), h = big ? 220 : 160;
+      addElement(textEl('text', Math.round(clamp(at.x - w / 2, 0, SLIDE_W - w)), Math.round(clamp(at.y - h / 2, 0, SLIDE_H - h)), w, h, esc(text).replace(/\r?\n/g, '<br>'), { style: big ? { fontSize: 150, align: 'center', valign: 'middle', lineHeight: 1 } : { align: 'center', valign: 'middle' } }));
+      return;
+    }
     const ph = document.elementFromPoint(ev.clientX, ev.clientY); const slot = ph && ph.closest ? ph.closest('.el-image.img-empty') : null;
     const files = Array.from(ev.dataTransfer.files);
     const ppt = files.find(isPptFile); if (ppt) { await openPpt(ppt); return; }              // PPT 파일 → 그 안의 동영상 고르기
@@ -2024,7 +2155,8 @@
     }
   });
   document.addEventListener('paste', async (ev) => {
-    const text = ev.clipboardData.getData('text/plain') || '';
+    if (symPaste && symPaste(ev)) return;                          // 내 심벌 창이 열려 있으면 내 심벌에
+    const text = ev.clipboardData.getData('text/plain') || '', clipHtml = ev.clipboardData.getData('text/html') || '';
     const items = Array.from(ev.clipboardData.items || []);
     const editingTable = S.editing && elById(S.editing) && elById(S.editing).type === 'table';
     const tableLike = /\t/.test(text) && text.trim().split(/\r?\n/).length > 1;
@@ -2032,8 +2164,10 @@
     const files = Array.from(ev.clipboardData.files || []);        // 탐색기에서 복사한 파일
     const vfile = files.find(isVideoFile), pfile = files.find(isPptFile);
     if ((vfile || pfile) && !text.trim() && !isTypingField()) { ev.preventDefault(); if (vfile) await insertVideoFile(vfile); else await openPpt(pfile); return; }
-    if (img && !text.trim() && !editingTable) {
-      ev.preventDefault(); /* 글과 그림이 함께 든 복사본(엑셀 칸·워드 글)은 글을 붙임 */ const f = img.getAsFile();
+    // 글과 그림이 함께 든 복사본(엑셀 칸·워드 글)은 글을 붙임. 단 PowerPoint 의 도형(글자가 든 심벌)은 그림으로
+    const picFirst = !!img && (!text.trim() || ((!clipHtml || /Microsoft PowerPoint/i.test(clipHtml)) && !isTyping() && !text.startsWith(CLIP_TAG)));
+    if (picFirst && !editingTable) {
+      ev.preventDefault(); const f = img.getAsFile();
       if (S.ppt && f) { // PowerPoint 에서 복사한 영상은 표지 그림만 넘어옴 → 열어 둔 PPT 에서 같은 표지의 영상을 찾아 넣음
         const hits = await matchPptVideo(f);
         if (hits.length === 1 || (hits.length > 1 && hits[1].d - hits[0].d > 3)) { if (await takePptVideo(hits[0].v)) { toast('PowerPoint 에서 복사한 영상을 넣었습니다 · ▶ 를 누르면 바로 재생 · 되돌리기 Ctrl+Z', 3500); return; } }
@@ -2497,7 +2631,7 @@
   function symLater() { if (!symOn()) return; clearTimeout(symSt.timer); symSt.timer = setTimeout(symSync, 1200); }
   function symForget(id) { if (!symOn()) return; const d = lsGet(SYM_DEL_KEY, []); if (!d.includes(id)) { d.push(id); lsSet(SYM_DEL_KEY, d.slice(-300)); } } // 지운 것은 저장소에서도 지우도록 적어 둠
   function symLabel(n) {
-    const none = '그림(PNG·SVG)이나 글자를 끌어다 놓으면 모아 둡니다';
+    const none = '그림·글자를 끌어다 놓거나 붙여넣으면(Ctrl+V) 모아 둡니다';
     if (!symOn()) return n ? `${n}개 · 이 기기에 저장됨` : none;
     const head = (n ? `${n}개` : none) + ' · ';
     switch (symSt.state) {
@@ -2530,12 +2664,31 @@
     if (!n) { const t = (dt.getData('text/plain') || '').trim(); if (t) { for (const c of graphemes(t).filter(c => c.trim()).slice(0, 20)) { await addMySym({ t: 'txt', c }); n++; } } }
     return n;
   }
-  /* 잡은 개체 → 내 심벌 (글자·기호 상자, 이미지) */
+  /* 개체 하나 → 내 심벌 (글자·기호 상자, 이미지). 넣었으면 true, 못 넣으면 까닭(글) */
+  async function addMySymFromEl(e) {
+    if (e && e.type === 'image' && e.src) {
+      try { const b = await (await fetch(API.resolveSrc(e.src))).blob(); const small = /svg/i.test(b.type) && b.size < 60000; return (await addMySym(small ? { t: 'img', d: await blobToDataURL(b) } : { t: 'img', d: await shrinkImage(b), src: /^assets\//.test(e.src) ? e.src : '' })) ? true : '저장 공간이 가득 찼습니다'; }
+      catch (err) { return '이미지를 가져오지 못했습니다'; }
+    }
+    if (e && (e.type === 'text' || e.type === 'shape')) { const t = stripHtml(e.html || '').trim(); if (!t) return '글이 없는 상자입니다'; return (await addMySym({ t: 'txt', c: t.length > 12 ? t.slice(0, 12) : t, fs: e.type === 'text' ? (e.style && e.style.fontSize) : null })) ? true : '저장 공간이 가득 찼습니다'; }
+    return '글자·기호 상자나 이미지만 심벌로 둘 수 있습니다';
+  }
+  /* 잡은 개체 → 내 심벌 */
   async function addMySymFromSelection() {
     const e = S.sel.length === 1 ? elById(S.sel[0]) : null; if (!e) { toast('먼저 슬라이드에서 개체를 하나 잡으세요'); return false; }
-    if (e.type === 'image' && e.src) { const src = API.resolveSrc(e.src); try { const b = await (await fetch(src)).blob(); await addMySym({ t: 'img', d: await shrinkImage(b), src: /^assets\//.test(e.src) ? e.src : '' }); return true; } catch (err) { toast('이미지를 가져오지 못했습니다'); return false; } }
-    if (e.type === 'text' || e.type === 'shape') { const t = stripHtml(e.html || '').trim(); if (!t) { toast('글이 없는 상자입니다'); return false; } await addMySym({ t: 'txt', c: t.length > 12 ? t.slice(0, 12) : t, fs: e.type === 'text' ? (e.style && e.style.fontSize) : null }); return true; }
-    toast('글자·기호 상자나 이미지만 심벌로 둘 수 있습니다'); return false;
+    const r = await addMySymFromEl(e); if (r !== true) toast(r); return r === true;
+  }
+  /* 붙여넣기(Ctrl+V) → 내 심벌: 그림(PowerPoint 에서 복사한 도형·그림, 화면 캡처, 그림 파일) · 편집 화면에서 복사한 개체 · 글자 */
+  async function addMySymFromPaste(files, text) {
+    if (files.length) return addMySymFromDrop({ files: files.map((f, i) => new File([f], f.name && !/^image\.(png|bmp)$/i.test(f.name) ? f.name : `symbol-${Date.now().toString(36)}${i || ''}.` + ((f.type.split('/')[1] || 'png').replace('svg+xml', 'svg').replace('jpeg', 'jpg')), { type: f.type })), getData: () => '' });
+    if (text.startsWith(CLIP_TAG)) {
+      let data = null; try { data = JSON.parse(text.slice(CLIP_TAG.length)); } catch (e) { }
+      if (!data || data.kind !== 'els') { toast('슬라이드는 내 심벌에 넣을 수 없습니다 — 개체(그림·기호)를 복사해 주세요'); return 0; }
+      let n = 0, why = ''; for (const e of (data.items || []).slice().reverse().slice(0, 30)) { const r = await addMySymFromEl(e); if (r === true) n++; else why = r; }
+      if (!n && why) toast(why); return n;
+    }
+    const t = text.replace(/\s+/g, ' ').trim(); if (!t) return 0;
+    return (await addMySym({ t: 'txt', c: t.length > 12 ? t.slice(0, 12) : t })) ? 1 : 0;
   }
   function iconSections() {
     const names = [MY].concat(Object.keys(ICONS)); const order = lsGet(ICON_ORDER_KEY, []);
@@ -2552,14 +2705,14 @@
         if (name === MY) {
           const l = mySyms();
           grid = `<div class="icon-grid my-grid" data-drop="1">${l.map(it => `<button class="ic my" data-my="${esc(it.id)}" title="누르면 넣기 · 우클릭하면 지우기">${it.t === 'img' ? `<img src="${esc(it.d)}" alt="">` : esc(it.c)}</button>`).join('')}
-            <div class="my-drop" title="여기에 그림 파일이나 글자를 끌어다 놓으세요">＋<small>끌어다 놓기</small></div></div>
-            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">📁 파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label><span class="muted" data-symstate style="font-size:11.5px">${symLabel(l.length)}</span></div>`;
+            <div class="my-drop" title="여기에 그림 파일·글자·PPT 심벌을 끌어다 놓거나, 복사한 것을 붙여넣으세요(Ctrl+V)">＋<small>끌어다 놓기 · Ctrl+V</small></div></div>
+            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">📁 파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label><button class="btn sm" data-myppt="1" title="PPT 파일을 열어 그 안의 그림·도형을 심벌로 꺼냅니다 (꺼낸 것을 여기로 끌어다 놓기)">🧩 PPT 에서…</button><span class="muted" data-symstate style="font-size:11.5px">${symLabel(l.length)}</span></div>`;
         } else grid = `<div class="icon-grid">${graphemes(ICONS[name]).filter(c => c.trim()).map(c => `<button class="ic" data-ic="${esc(c)}">${esc(c)}</button>`).join('')}</div>`;
         return `<section class="icon-sec${open ? '' : ' fold'}" data-sec="${esc(name)}"><h4 draggable="true" title="누르면 접기·펴기 · 끌어서 순서 바꾸기"><span class="grip">⋮⋮</span><span class="nm">${esc(name)}</span><span class="cnt">${name === MY ? mySyms().length : graphemes(ICONS[name]).filter(c => c.trim()).length}</span><span class="arrow">${open ? '▾' : '▸'}</span></h4>${open ? grid : ''}</section>`;
       };
       bg.innerHTML = `<div class="modal icon-modal"><h3>아이콘 · 기호 <span class="muted" style="font-weight:400;font-size:13px">누르면 슬라이드 가운데에 들어갑니다 · 크기는 글자 크기(Ctrl+] / Ctrl+[)로</span></h3>
         <div class="icon-secs">${iconSections().map(secHtml).join('')}</div>
-        <div class="actions"><span class="muted" style="flex:1;font-size:12px">제목을 누르면 접고 펴기 · ⋮⋮ 를 끌면 순서 바꾸기 · 글을 쓰는 중에는 글 상자 위 도구의 Ω 버튼</span><button class="btn" data-close>닫기</button></div></div>`;
+        <div class="actions"><span class="muted" style="flex:1;font-size:12px">제목을 누르면 접고 펴기 · ⋮⋮ 를 끌면 순서 바꾸기 · <b>복사한 그림·기호는 Ctrl+V 로 내 심벌에</b> (PowerPoint 도형도 됩니다) · 글을 쓰는 중에는 글 상자 위 도구의 Ω 버튼</span><button class="btn" data-close>닫기</button></div></div>`;
     };
     const insertTxt = (c, fs) => { const [x, y] = centerBox(220, 220); bg.remove(); addElement(textEl('text', x, y, 220, 220, esc(c), { style: { fontSize: fs || (graphemes(c).length > 2 ? 60 : 150), align: 'center', valign: 'middle', lineHeight: 1 } })); };
     const insertImg = async (it) => {
@@ -2567,7 +2720,7 @@
       try {
         let src = it.src;
         if (src && !API.blobs[src] && !(await imgLoads(src)) && !(symOn() && await imgLoads(GH.rawUrl(src)))) src = ''; // 원본이 아직 이 기기에서 안 보이면 작은 그림으로
-        if (!src) { const b = await (await fetch(it.d)).blob(); src = await API.stage(b, 'symbol.png'); }
+        if (!src) { const b = await (await fetch(it.d)).blob(); src = await API.stage(b, /svg/i.test(b.type) ? 'symbol.svg' : 'symbol.png'); }
         const [x, y] = centerBox(300, 300); addElement(imageEl(x, y, 300, 300, src));
       } catch (err) { alert('심벌을 넣지 못했습니다: ' + err.message); }
     };
@@ -2578,6 +2731,7 @@
       if (ev.target.closest('[data-mysync]')) { ev.preventDefault(); symSync(); return; }
       const h = ev.target.closest('.icon-sec > h4'); if (h) { const n = h.parentNode.dataset.sec; if (fold.has(n)) fold.delete(n); else fold.add(n); lsSet(ICON_FOLD_KEY, Array.from(fold)); draw(); return; }
       if (ev.target.closest('[data-mysel]')) { if (await addMySymFromSelection()) { toast('내 심벌에 넣었습니다'); draw(); } return; }
+      if (ev.target.closest('[data-myppt]')) { showPptSyms(); return; }
       if (ev.target.closest('.my-drop')) { bg.querySelector('[data-myfile]').click(); return; }
       const my = ev.target.closest('[data-my]'); if (my) { const it = mySyms().find(x => x.id === my.dataset.my); if (!it) return; if (it.t === 'img') insertImg(it); else insertTxt(it.c, it.fs); return; }
       const b = ev.target.closest('[data-ic]'); if (b) insertTxt(b.dataset.ic);
@@ -2590,18 +2744,39 @@
     bg.addEventListener('dragover', (ev) => {
       const sec = ev.target.closest && ev.target.closest('.icon-sec');
       if (dragSec && sec) { ev.preventDefault(); if (sec !== dragSec) { const r = sec.getBoundingClientRect(); sec.parentNode.insertBefore(dragSec, ev.clientY < r.top + r.height / 2 ? sec : sec.nextSibling); } return; }
-      if (!dragSec && (ev.dataTransfer.types.includes('Files') || ev.dataTransfer.types.includes('text/plain'))) { ev.preventDefault(); bg.querySelector('.icon-modal').classList.add('dragover'); }
+      if (!dragSec && (pptDrag || ev.dataTransfer.types.includes('Files') || ev.dataTransfer.types.includes('text/plain') || !ev.dataTransfer.types.length)) { ev.preventDefault(); if (pptDrag) ev.dataTransfer.dropEffect = 'copy'; bg.querySelector('.icon-modal').classList.add('dragover'); }
     });
     bg.addEventListener('dragleave', (ev) => { if (ev.target === bg.querySelector('.icon-modal')) bg.querySelector('.icon-modal').classList.remove('dragover'); });
     bg.addEventListener('dragend', () => { if (dragSec) { lsSet(ICON_ORDER_KEY, Array.from(bg.querySelectorAll('.icon-sec')).map(x => x.dataset.sec)); dragSec = null; } });
     bg.addEventListener('drop', async (ev) => {
       bg.querySelector('.icon-modal').classList.remove('dragover');
       if (dragSec) { ev.preventDefault(); return; }
-      if (!ev.dataTransfer.files.length && !ev.dataTransfer.getData('text/plain')) return;
+      if (pptDrag) { // PPT 심벌 창에서 끌어온 심벌
+        ev.preventDefault(); const it = pptDrag; pptDrag = null;
+        try { if (await pptSymToMy(it)) { toast('내 심벌에 담았습니다'); showMy(); } } catch (err) { toast('이 심벌은 가져오지 못했습니다: ' + err.message, 4500); }
+        return;
+      }
+      if (!ev.dataTransfer.files.length && !ev.dataTransfer.getData('text/plain')) { if (!ev.dataTransfer.types.length) { ev.preventDefault(); toast(DROP_HELP, 9000); } return; }
       ev.preventDefault();
       try { const n = await addMySymFromDrop(ev.dataTransfer); if (n) { toast(`내 심벌에 ${n}개를 넣었습니다`); if (fold.has(MY)) { fold.delete(MY); lsSet(ICON_FOLD_KEY, Array.from(fold)); } draw(); } else toast('그림 파일이나 글자만 넣을 수 있습니다'); } catch (err) { alert(err.message); }
     });
     // 창을 열 때 다른 기기와 맞춤: 목록이 달라졌으면 다시 그리고, 아니면 상태 글만 고침
+    const showMy = () => { if (!bg.isConnected) return; if (fold.has(MY)) { fold.delete(MY); lsSet(ICON_FOLD_KEY, Array.from(fold)); } draw(); };
+    iconRedraw = showMy;
+    // 붙여넣기(Ctrl+V): 이 창이 열려 있는 동안에는 슬라이드가 아니라 내 심벌에 넣음
+    symPaste = (ev) => {
+      if (!bg.isConnected) { symPaste = null; return false; }
+      const cd = ev.clipboardData, text = cd.getData('text/plain') || '', html = cd.getData('text/html') || '';
+      const files = Array.from(cd.files || []).filter(f => /^image\//.test(f.type));
+      const pic = files.length > 0 && (!text.trim() || !html || /Microsoft PowerPoint/i.test(html));
+      if (!pic && ev.target && ev.target.dataset && ev.target.dataset.mytxt != null) return false; // 글 칸에는 글을 그대로 붙임
+      ev.preventDefault();
+      (async () => {
+        try { const n = await addMySymFromPaste(pic ? files : [], text); if (n) { toast(`내 심벌에 ${n}개를 넣었습니다`); showMy(); } else if (!text.startsWith(CLIP_TAG)) toast('내 심벌에는 그림이나 글자만 넣을 수 있습니다'); }
+        catch (err) { alert('내 심벌에 넣지 못했습니다: ' + err.message); }
+      })();
+      return true;
+    };
     symSt.onChange = (changed) => { if (!bg.isConnected) { symSt.onChange = null; return; } if (changed && !bg.querySelector('[data-mytxt]:focus')) draw(); else { const el = bg.querySelector('[data-symstate]'); if (el) el.innerHTML = symLabel(mySyms().length); } };
     draw(); document.body.appendChild(bg); symSync();
   }
@@ -3087,6 +3262,7 @@
       { label: '▶ 동영상 · 웹 페이지 (주소)…', fn: () => openEmbedDialog(null) },
       { label: '🎞 동영상 파일…', fn: () => $('fileVideo').click() },
       { label: '📽 PPT 에서 영상 가져오기…', fn: () => showPptVideos() },
+      { label: '🧩 PPT 에서 심벌·그림 가져오기…', fn: () => showPptSyms() },
       { sep: true },
       { label: '📝 개요로 슬라이드 만들기…', fn: showOutline },
       { label: '🖼 사진 앨범 (사진마다 한 장씩)…', fn: () => $('fileAlbum').click() },

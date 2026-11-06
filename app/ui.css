@@ -405,6 +405,32 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #
 .text-toolbar > [data-cmd=cellFillClear], .text-toolbar > [data-cmd=cellAlign], .text-toolbar > [data-cmd=mergeR], .text-toolbar > [data-cmd=mergeD], .text-toolbar > [data-cmd=split] { --tc: 91,155,255; }
 .text-toolbar > [data-cmd=rowAdd], .text-toolbar > [data-cmd=colAdd] { --tc: 81,207,138; }
 .text-toolbar > [data-cmd=rowDel], .text-toolbar > [data-cmd=colDel] { --tc: 255,135,135; }
+/* PPT 심벌 창 (PPT 파일 안의 그림·도형을 꺼내 끌어다 놓기) — 내 심벌 창보다 위에 떠 있음 */
+.pptsym { position: fixed; z-index: 1200; width: 336px; max-width: calc(100vw - 16px); max-height: min(78vh, 720px); display: flex; flex-direction: column; background: var(--ui-panel); border: 1px solid #46506a; border-radius: 12px; box-shadow: 0 18px 50px rgba(0,0,0,.6); font-size: 12.5px; color: var(--ui-fg); overflow: hidden; }
+.pptsym .ps-head { display: flex; align-items: center; gap: 8px; padding: 9px 8px 9px 12px; background: linear-gradient(90deg, rgba(245,158,11,.24), rgba(245,158,11,.06)); border-bottom: 1px solid var(--ui-border); cursor: move; user-select: none; touch-action: none; }
+.pptsym .ps-head b { font-size: 13.5px; white-space: nowrap; }
+.pptsym .ps-name { flex: 1; min-width: 0; color: var(--ui-muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pptsym .ps-x { width: 26px; height: 26px; border: 0; border-radius: 6px; background: transparent; color: var(--ui-fg); font-size: 18px; line-height: 1; cursor: pointer; }
+.pptsym .ps-x:hover { background: rgba(255,255,255,.12); }
+.pptsym .ps-tools { display: flex; gap: 5px; flex-wrap: wrap; padding: 8px 10px; border-bottom: 1px solid var(--ui-border); }
+.pptsym .ps-tools .btn.sm { padding: 4px 8px; font-size: 12px; }
+.pptsym .ps-body { flex: 1; min-height: 80px; overflow: auto; padding: 4px 10px 10px; }
+.pptsym .ps-h { margin: 10px 0 5px; font-size: 11.5px; font-weight: 700; color: var(--ui-muted); }
+.pptsym .ps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pptsym .ps-it { position: relative; aspect-ratio: 1; border: 1px solid var(--ui-border); border-radius: 8px; cursor: grab; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #c5cad4; background-image: linear-gradient(45deg, #aeb4c0 25%, transparent 25%, transparent 75%, #aeb4c0 75%), linear-gradient(45deg, #aeb4c0 25%, transparent 25%, transparent 75%, #aeb4c0 75%); background-size: 14px 14px; background-position: 0 0, 7px 7px; }
+.pptsym .ps-it:hover { border-color: var(--ui-accent); box-shadow: 0 0 0 2px rgba(79,140,255,.35); }
+.pptsym .ps-it:active { cursor: grabbing; }
+.pptsym .ps-it img { max-width: 86%; max-height: 86%; object-fit: contain; pointer-events: none; }
+.pptsym .ps-it.txt span { font-size: 30px; line-height: 1; color: #111; white-space: nowrap; }
+.pptsym .ps-it.approx::after { content: '≈'; position: absolute; left: 3px; bottom: 1px; font-size: 12px; font-weight: 700; color: #7a4a00; }
+.pptsym .ps-it.bad { cursor: not-allowed; opacity: .45; }
+.pptsym .ps-it.bad::before { content: '✕'; color: #7f1d1d; font-size: 18px; }
+.pptsym .ps-add { position: absolute; right: 2px; top: 2px; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 6px; background: #f59e0b; color: #1b1300; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer; opacity: 0; transition: opacity .1s; }
+.pptsym .ps-it:hover .ps-add, .pptsym .ps-add:focus { opacity: 1; }
+.pptsym .ps-it.bad .ps-add { display: none; }
+.pptsym .ps-foot { padding: 8px 12px; border-top: 1px solid var(--ui-border); color: var(--ui-muted); font-size: 11.5px; line-height: 1.55; }
+.pptsym .ps-foot b { color: var(--ui-fg); }
+@media (hover: none) { .pptsym .ps-add { opacity: 1; } }
 /* 색 팔레트 (색 칸을 누르면 뜸) */
 .cpal { position: fixed; z-index: 3000; width: 292px; padding: 10px 12px 12px; background: var(--ui-panel); border: 1px solid #3a4151; border-radius: 12px; box-shadow: 0 18px 50px rgba(0,0,0,.6); font-size: 12px; color: var(--ui-fg); cursor: default; }
 .cpal .cp-h { margin: 8px 0 5px; font-weight: 700; color: var(--ui-fg); display: flex; align-items: baseline; gap: 6px; }
