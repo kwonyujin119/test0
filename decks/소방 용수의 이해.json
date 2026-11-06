@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T00:28:13.031Z",
+ "modified": "2026-11-06T00:42:56.191Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -2383,8 +2383,8 @@
      "type": "image",
      "x": 120,
      "y": 236,
-     "w": 1473,
-     "h": 749,
+     "w": 1126,
+     "h": 682,
      "src": "assets/clipboard-1793924793101-i59ygkt.jpg",
      "fit": "cover",
      "radius": 18,
@@ -2394,6 +2394,120 @@
       "c": 117,
       "s": 165
      }
+    },
+    {
+     "id": "l4ash2a5o",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1410,
+     "y": 352,
+     "w": 348,
+     "h": 90,
+     "html": "소화전 · 상수도<br><b>오늘의 주제</b>",
+     "style": {
+      "color": "#fbe0d2",
+      "fontSize": 23,
+      "align": "center",
+      "lineHeight": 1.5
+     },
+     "mk": "owk90c049"
+    },
+    {
+     "id": "ghla5ka5o",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1385,
+     "y": 239,
+     "w": 399,
+     "h": 226,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 28,
+     "shadow": true,
+     "html": "",
+     "style": {
+      "fontSize": 27
+     },
+     "fill2": "#7c2d12",
+     "gAngle": 140,
+     "mk": "symw4z047",
+     "group": "gzrpbhv4v4"
+    },
+    {
+     "id": "gz9f1ia5o",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 1385,
+     "y": 269,
+     "w": 399,
+     "h": 57,
+     "html": "방수량<div><br></div>",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 33,
+      "bold": true,
+      "align": "center",
+      "valign": "middle"
+     },
+     "mk": "q5i9un048",
+     "group": "gzrpbhv4v4"
+    },
+    {
+     "id": "oajd06b1q",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 1385,
+     "y": 326,
+     "w": 399,
+     "h": 57,
+     "html": "사다리차 1대<div><br></div>",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 33,
+      "bold": true,
+      "align": "center",
+      "valign": "middle"
+     },
+     "group": "gzrpbhv4v4"
+    },
+    {
+     "id": "bowmtgmkj",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 1385,
+     "y": 378,
+     "w": 399,
+     "h": 57,
+     "html": "<div>1800 L/min</div>",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 33,
+      "bold": true,
+      "align": "center",
+      "valign": "middle"
+     },
+     "group": "gzrpbhv4v4"
     }
    ]
   },
