@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T05:29:50.528Z",
+ "modified": "2026-11-06T05:31:07.476Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -8550,23 +8550,6 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "bpe0mc1oa",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 430,
-     "y": 224,
-     "w": 1065,
-     "h": 561,
-     "src": "assets/clipboard-1793942622072-4a666nt.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false,
-     "mk": "twbfshbxf"
-    },
-    {
      "id": "c4n7j61oa",
      "step": 0,
      "anim": "fade",
@@ -8632,9 +8615,43 @@
      "mk": "t3f2wn213"
     },
     {
+     "id": "84fus6onp",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 428,
+     "y": 224,
+     "w": 1065,
+     "h": 561,
+     "src": "assets/clipboard-1793942805524-87qa8hm.png",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "mk": "xpjftr7qb"
+    },
+    {
+     "id": "bpe0mc1oa",
+     "step": 1,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 430,
+     "y": 224,
+     "w": 1065,
+     "h": 561,
+     "src": "assets/clipboard-1793942622072-4a666nt.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "mk": "twbfshbxf"
+    },
+    {
      "id": "0ykeyk1oa",
      "step": 1,
-     "anim": "fade",
+     "anim": "pop",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
@@ -8655,23 +8672,6 @@
      "fill2": "#f97316",
      "gAngle": 135,
      "mk": "hbk1skzxw"
-    },
-    {
-     "id": "84fus6onp",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 430,
-     "y": 224,
-     "w": 1065,
-     "h": 561,
-     "src": "assets/clipboard-1793942805524-87qa8hm.png",
-     "fit": "cover",
-     "radius": 0,
-     "shadow": false,
-     "mk": "xpjftr7qb"
     }
    ]
   }
