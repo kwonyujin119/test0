@@ -1256,13 +1256,14 @@ const API = {
   pending: new Map(), // src → 진행 중인 업로드
   queuing: new Set(), // GitHub 커밋 큐에 아직 들어가지 않은 이미지 (base64 변환 중)
   failed: new Map(),  // src → blob (실패한 업로드, 저장 때 재시도)
+  sizes: {},          // src → 바이트 (이 화면에서 넣은 파일의 크기 — 교안 용량 표시에 씀)
   onPending: null,    // 진행 중 개수가 바뀔 때 알림 (편집기 상태 표시)
   _notify() { if (this.onPending) this.onPending(this.pending.size); },
   /* 이미지를 넣을 때: src 를 즉시 돌려주고 업로드는 뒤에서 진행 */
   async stage(blob, filename) {
     if (this.mode === 'local' || (this.mode === 'github' && !GH.token)) return blobToDataURL(blob); // 연결 전: 교안 안에 넣어 두고, 연결 후 저장할 때 올림
     const src = 'assets/' + uniqueAssetName(filename);
-    this.blobs[src] = URL.createObjectURL(blob);
+    this.blobs[src] = URL.createObjectURL(blob); this.sizes[src] = blob.size;
     this._start(src, blob);
     return src;
   },

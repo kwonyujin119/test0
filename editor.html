@@ -18,36 +18,34 @@
     <a class="btn ghost" href="gyoan.html" title="교안 목록으로">← 목록</a>
     <div class="title"><input id="deckTitle" title="교안 제목"><span class="dirty" title="저장되지 않은 변경"></span><span class="upchip" id="upStatus"></span></div>
     <div class="grow"></div>
-    <label class="lbl muted">테마</label>
+    <div class="tgroup g-design" title="교안의 모양"><label class="lbl muted">테마</label>
     <select id="theme"></select>
-    <button class="btn" id="btnDesign" title="테마 · 색 · 글꼴 · 꼬리말(슬라이드 번호)">🎨 디자인</button>
-    <span class="sep"></span>
-    <button class="btn icon" id="btnUndo" title="실행 취소 (Ctrl+Z)">↶</button>
-    <button class="btn icon" id="btnRedo" title="다시 실행 (Ctrl+Y)">↷</button>
-    <span class="sep"></span>
-    <button class="btn" id="btnSave" title="저장 (Ctrl+S)">💾 저장</button>
-    <button class="btn" id="btnExport" title="내보내기">내보내기 ▾</button>
-    <button class="btn" id="btnPreview" title="저장하지 않고 현재 슬라이드부터 미리보기">미리보기</button>
-    <button class="btn primary" id="btnPresent" title="저장하고 현재 슬라이드부터 발표 (Shift+F5 · 처음부터는 F5)">▶ 발표</button>
+    <button class="btn" id="btnDesign" title="테마 · 색 · 글꼴 · 꼬리말(슬라이드 번호)">🎨 디자인</button></div>
+    <div class="tgroup g-undo" title="되돌리기"><button class="btn icon" id="btnUndo" title="실행 취소 (Ctrl+Z)">↶</button>
+    <button class="btn icon" id="btnRedo" title="다시 실행 (Ctrl+Y)">↷</button></div>
+    <div class="tgroup g-file" title="저장 · 내보내기"><button class="btn" id="btnSave" title="저장 (Ctrl+S)">💾 저장</button>
+    <button class="btn" id="btnExport" title="내보내기">내보내기 ▾</button></div>
+    <div class="tgroup g-show" title="보기 · 발표"><button class="btn" id="btnPreview" title="저장하지 않고 현재 슬라이드부터 미리보기">미리보기</button>
+    <button class="btn primary" id="btnPresent" title="저장하고 현재 슬라이드부터 발표 (Shift+F5 · 처음부터는 F5)">▶ 발표</button></div>
     <button class="btn icon" id="btnHelp" title="단축키 (F1)">?</button>
     <button class="btn" id="btnProps" title="선택한 슬라이드·개체의 속성">⚙ 속성</button>
   </div>
   <div class="ed-tools">
-    <div class="group">
+    <div class="group g-slide" data-label="슬라이드">
       <button class="btn" id="btnAddSlide" title="새 슬라이드 (Ctrl+M)">＋ 슬라이드 ▾</button>
     </div>
     <span class="sep"></span>
-    <div class="group">
-      <button class="btn" id="btnAddText" title="텍스트 상자">T 텍스트 ▾</button>
-      <button class="btn" id="btnAddImage" title="이미지 (붙여넣기 Ctrl+V · 끌어다 놓기도 됨)">🖼 이미지 ▾</button>
-      <button class="btn" id="btnAddShape" title="도형 (더블클릭하면 안에 글 쓰기)">◆ 도형 ▾</button>
-      <button class="btn" id="btnAddTable" title="표 (엑셀 표는 Ctrl+V 로 바로)">▦ 표 ▾</button>
-      <button class="btn" id="btnAddChart" title="차트">📊 차트 ▾</button>
-      <button class="btn" id="btnAddIcon" title="아이콘 · 기호">☺ 아이콘</button>
-      <button class="btn" id="btnAddMore" title="수식 · 동영상(주소·파일·PPT) · 개요로 만들기 · 사진 앨범">더보기 ▾</button>
+    <div class="group g-insert" data-label="넣기">
+      <button class="btn" id="btnAddText" title="텍스트 상자"><i class="ic i-text">T</i> 텍스트 ▾</button>
+      <button class="btn" id="btnAddImage" title="이미지 (붙여넣기 Ctrl+V · 끌어다 놓기도 됨)"><i class="ic i-image">🖼</i> 이미지 ▾</button>
+      <button class="btn" id="btnAddShape" title="도형 (더블클릭하면 안에 글 쓰기)"><i class="ic i-shape">◆</i> 도형 ▾</button>
+      <button class="btn" id="btnAddTable" title="표 (엑셀 표는 Ctrl+V 로 바로)"><i class="ic i-table">▦</i> 표 ▾</button>
+      <button class="btn" id="btnAddChart" title="차트"><i class="ic i-chart">📊</i> 차트 ▾</button>
+      <button class="btn" id="btnAddIcon" title="아이콘 · 기호"><i class="ic i-icon">☺</i> 아이콘</button>
+      <button class="btn" id="btnAddMore" title="수식 · 동영상(주소·파일·PPT) · 개요로 만들기 · 사진 앨범"><i class="ic i-more">＋</i> 더보기 ▾</button>
     </div>
     <span class="sep"></span>
-    <div class="group" id="alignGroup">
+    <div class="group g-align" id="alignGroup" data-label="맞춤">
       <button class="btn icon sm" data-align="left" title="왼쪽 정렬">⇤</button>
       <button class="btn icon sm" data-align="hcenter" title="가로 가운데">↔</button>
       <button class="btn icon sm" data-align="right" title="오른쪽 정렬">⇥</button>
@@ -56,20 +54,20 @@
       <button class="btn icon sm" data-align="bottom" title="아래 정렬">⤓</button>
     </div>
     <span class="sep"></span>
-    <div class="group">
+    <div class="group g-arrange" data-label="정리">
       <button class="btn sm" id="btnOrder" title="앞뒤 순서 · 등간격">순서 ▾</button>
       <button class="btn sm" id="btnGroup" title="묶기 (Ctrl+G) / 풀기 (Ctrl+Shift+G)">묶기</button>
       <button class="btn sm" id="btnDup" title="복제 (Ctrl+D)">복제</button>
       <button class="btn sm danger" id="btnDel" title="삭제 (Delete)">삭제</button>
     </div>
     <div class="grow" style="flex:1"></div>
-    <div class="group">
+    <div class="group g-view" data-label="찾기 · 목록">
       <button class="btn sm" id="btnFind" title="찾기 (Ctrl+F) · 바꾸기 (Ctrl+H)">🔍 찾기</button>
       <button class="btn sm" id="btnLayers" title="개체 목록 · 선택 창 (Alt+F10)">☰ 개체</button>
     </div>
   </div>
   <div class="ed-side">
-    <div class="side-head"><span>슬라이드 <span id="slideCount"></span></span><span class="muted">드래그로 순서 변경</span></div>
+    <div class="side-head"><span class="sh-t">슬라이드 <span id="slideCount"></span></span><span class="muted">드래그로 순서 변경</span></div>
     <div class="thumbs" id="thumbs"></div>
     <div class="add-split">
       <button class="btn" id="btnAddSlide2" title="빈 슬라이드를 지금 슬라이드 다음에 넣습니다">＋<span class="wide"> 새 슬라이드</span></button>
@@ -83,6 +81,7 @@
       <span class="muted" id="hint" style="margin-left:10px">더블클릭 = 글 편집 · Ctrl+V = 이미지·표 붙여넣기 · F1 = 단축키</span>
       <span class="grow"></span>
       <span id="footSel" class="muted"></span>
+      <button class="btn sm" id="btnSize" title="이 교안의 용량 — 누르면 무엇이 얼마나 차지하는지 보여 줍니다">📦 용량 …</button>
       <button class="btn sm" id="btnGrid" title="격자 보기 · 격자에 맞춰 붙기">▦ 격자</button>
       <span class="sep"></span>
       <span class="sep"></span>

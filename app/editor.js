@@ -58,7 +58,7 @@
     return ok;
   }
   function markDirty() {
-    S.dirty = true; S.rev++; $('top').classList.add('is-dirty');
+    S.dirty = true; S.rev++; $('top').classList.add('is-dirty'); sizeLater();
     // 임시본은 손을 멈춘 뒤 한가할 때 저장 (끌기·입력 중에 멈칫하지 않게)
     clearTimeout(saveTimer); saveTimer = setTimeout(() => (window.requestIdleCallback || (f => f()))(() => draftPut(), { timeout: 3000 }), 800);
   }
@@ -153,7 +153,91 @@
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
   window.addEventListener('pagehide', draftNow);
-  API.onPending = (n) => { const c = $('upStatus'), pc = BIGV.pct(); c.textContent = !n ? '' : pc != null ? `영상 올리는 중 ${pc}%` + (n > 1 ? ` · 파일 ${n - 1}` : '') : `파일 올리는 중 ${n}`; c.classList.toggle('show', n > 0); };
+  API.onPending = (n) => { const c = $('upStatus'), pc = BIGV.pct(); c.textContent = !n ? '' : pc != null ? `영상 올리는 중 ${pc}%` + (n > 1 ? ` · 파일 ${n - 1}` : '') : `파일 올리는 중 ${n}`; c.classList.toggle('show', n > 0);  if (!n) sizeLater(); };
+  /* ---------- 교안 용량: 이 교안이 쓰는 글·그림·동영상이 얼마나 되는지 ---------- */
+  const fmtSize = (b) => b >= 1073741824 ? (b / 1073741824).toFixed(2) + 'GB' : b >= 1048576 ? (b / 1048576 >= 100 ? Math.round(b / 1048576) : (b / 1048576).toFixed(1)) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB';
+  let assetSizes = null, assetSizesAt = 0, assetSizesP = null; // 자료 폴더의 파일 크기 (src → 바이트)
+  function loadAssetSizes(force) {
+    if (API.mode === 'local' || (API.mode === 'github' && !GH.cfg)) return Promise.resolve(null);
+    if (!force && assetSizes && Date.now() - assetSizesAt < 60000) return Promise.resolve(assetSizes);
+    if (assetSizesP) return assetSizesP;
+    assetSizesP = API.assets().then(list => { assetSizes = new Map((list || []).map(a => [a.src, a.size || 0])); assetSizesAt = Date.now(); return assetSizes; }, () => assetSizes)
+      .then(r => { assetSizesP = null; return r; });
+    return assetSizesP;
+  }
+  /* { json, files:[{src,name,kind,size,known,slides}], image, video, inline, web, total, unknown } */
+  function deckUsage() {
+    const json = new Blob([JSON.stringify(S.deck)]).size, map = new Map();
+    let inline = 0, web = 0;
+    const add = (src, kind, i) => {
+      if (!src) return;
+      if (/^data:/i.test(src)) { inline += Math.round(Math.max(0, src.length - src.indexOf(',') - 1) * 0.75); return; } // 교안 파일 안에 든 그림 (글·배치 쪽에 이미 들어 있음)
+      if (/^https?:/i.test(src) && !BIGV.parse(src)) { web++; return; }
+      let f = map.get(src);
+      if (!f) {
+        const big = BIGV.parse(src); let size = null;
+        if (big) size = big.total; else if (API.sizes && API.sizes[src] != null) size = API.sizes[src]; else if (assetSizes && assetSizes.has(src)) size = assetSizes.get(src);
+        f = { src, kind, name: big ? big.name : src.replace(/^.*\//, ''), size: size || 0, known: size != null, slides: [] }; map.set(src, f);
+      }
+      if (!f.slides.includes(i)) f.slides.push(i);
+    };
+    S.deck.slides.forEach((s, i) => {
+      if (s.bg && s.bg.image) add(s.bg.image, 'image', i);
+      for (const e of s.elements || []) {
+        if (e.type === 'image') add(e.src, 'image', i);
+        else if (e.type === 'embed') { const p = parseEmbed(e.url); if (p.kind === 'video') add(e.url, 'video', i); else if (p.kind !== 'none') web++; add(embedPoster(e), 'image', i); }
+      }
+    });
+    const files = Array.from(map.values()).sort((a, b) => b.size - a.size);
+    const sum = (k) => files.filter(f => f.kind === k).reduce((a, f) => a + f.size, 0);
+    const image = sum('image'), video = sum('video');
+    return { json, files, image, video, inline, web, total: json + image + video, unknown: files.filter(f => !f.known).length };
+  }
+  var sizeTimer = null; // (var: 초기화 도중에 markDirty 가 먼저 불려도 안전하게)
+  function sizeLater() { clearTimeout(sizeTimer); sizeTimer = setTimeout(() => (window.requestIdleCallback || (f => f()))(updateSizeChip, { timeout: 2000 }), 900); }
+  function updateSizeChip() {
+    const b = $('btnSize'); if (!b || !S.deck) return;
+    const u = deckUsage(), mb = u.total / 1048576;
+    b.textContent = `📦 용량 ${fmtSize(u.total)}${u.unknown ? '+' : ''}`;
+    b.dataset.lv = mb >= 500 ? 'big' : mb >= 100 ? 'mid' : 'ok';
+  }
+  async function showDeckSize() {
+    document.querySelectorAll('.modal-bg.size-bg').forEach(n => n.remove());
+    const bg = document.createElement('div'); bg.className = 'modal-bg size-bg';
+    bg.innerHTML = `<div class="modal size-modal"><h3>📦 이 교안의 용량</h3><p class="muted">계산하는 중…</p></div>`;
+    const close = () => bg.remove();
+    bg.onclick = (ev) => {
+      if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }
+      const r = ev.target.closest('.r[data-slide]'); if (r) { close(); gotoSlide(+r.dataset.slide); }
+    };
+    bg.tabIndex = -1; bg.addEventListener('keydown', (ev) => { ev.stopPropagation(); if (ev.key === 'Escape') close(); });
+    document.body.appendChild(bg); bg.focus();
+    await loadAssetSizes(true);
+    if (!bg.isConnected) return;
+    const u = deckUsage(); updateSizeChip();
+    const K = { json: ['글 · 배치', '#9aa7bd'], image: ['그림', '#5b9bff'], video: ['동영상', '#f5b82e'] };
+    const parts = [['json', u.json], ['image', u.image], ['video', u.video]].filter(p => p[1] > 0);
+    const nImg = u.files.filter(f => f.kind === 'image').length, nVid = u.files.filter(f => f.kind === 'video').length;
+    const top = u.files[0] ? u.files[0].size : 0;
+    const slidesOf = (f) => { const a = f.slides.map(i => i + 1); return '슬라이드 ' + (a.length > 4 ? a.slice(0, 4).join(', ') + ' 외 ' + (a.length - 4) + '곳' : a.join(', ')); };
+    const store = assetSizes ? Array.from(assetSizes.values()).reduce((a, b) => a + b, 0) : 0;
+    const notes = [];
+    if (u.unknown) notes.push(`크기를 확인하지 못한 파일 ${u.unknown}개는 합계에서 빠져 있습니다 (저장소에 아직 없거나 찾을 수 없는 파일).`);
+    if (u.inline) notes.push(`교안 파일 안에 직접 들어 있는 그림이 ${fmtSize(u.inline)} 있습니다 (“글 · 배치”에 포함). GitHub 에 연결해 저장하면 따로 빠져서 교안이 가벼워집니다.`);
+    if (u.web) notes.push(`유튜브 영상 · 웹 페이지처럼 주소로 연결한 것 ${u.web}개는 용량에 들어가지 않습니다.`);
+    notes.push('같은 파일을 여러 슬라이드에 써도 한 번만 셉니다.');
+    if (assetSizes) notes.push(`참고: 저장소의 자료 폴더(모든 교안의 그림·작은 영상)는 모두 ${fmtSize(store)} · 파일 ${assetSizes.size}개입니다.` + (API.mode === 'github' ? ' 6MB 가 넘는 영상은 따로 보관되어 여기에 들어가지 않습니다.' : ''));
+    bg.querySelector('.modal').innerHTML = `<h3>📦 이 교안의 용량</h3>
+      <div class="size-total"><b>${fmtSize(u.total)}${u.unknown ? '<small>+</small>' : ''}</b><span>슬라이드 ${S.deck.slides.length}장 · 그림 ${nImg}개 · 동영상 ${nVid}개</span></div>
+      <div class="size-bar">${parts.map(([k, v]) => `<i style="flex:${v} 0 0;background:${K[k][1]}" title="${K[k][0]} ${fmtSize(v)}"></i>`).join('')}</div>
+      <div class="size-legend">${parts.map(([k, v]) => `<span style="--k:${K[k][1]}">${K[k][0]} <b>${fmtSize(v)}</b> <em>${Math.round(v / u.total * 100)}%</em></span>`).join('')}</div>
+      ${u.files.length ? `<h4>큰 파일부터 <span class="muted">누르면 그 슬라이드로 갑니다</span></h4>
+      <div class="size-list">${u.files.slice(0, 60).map(f => `<div class="r" data-slide="${f.slides[0]}" title="${esc(f.name)}"><span class="ki ${f.kind}">${f.kind === 'video' ? '▶' : '🖼'}</span><span class="nm">${esc(f.name)}</span><span class="sl">${slidesOf(f)}</span><span class="sz">${f.known ? fmtSize(f.size) : '모름'}</span><i class="mt" style="width:${top ? Math.max(1, Math.round(f.size / top * 100)) : 0}%;background:${K[f.kind][1]}"></i></div>`).join('')}</div>${u.files.length > 60 ? `<p class="size-note">작은 파일 ${u.files.length - 60}개는 줄였습니다.</p>` : ''}` : '<p class="muted">이 교안에는 그림·동영상 파일이 없습니다.</p>'}
+      <div class="size-note">${notes.map(n => '· ' + esc(n)).join('<br>')}</div>
+      <div class="actions"><button class="btn" data-close>닫기</button></div>`;
+  }
+  $('btnSize').onclick = showDeckSize;
+  sizeLater(); loadAssetSizes().then(sizeLater);
 
   /* ---------- 렌더 ---------- */
   function renderAll() { renderThumbs(); renderStage(); renderProps(); updateTop(); }
@@ -1303,6 +1387,12 @@
     if (!els.length) props.innerHTML = slideProps();
     else if (els.length === 1) props.innerHTML = elementProps(els[0]);
     else props.innerHTML = multiProps(els);
+    // 묶음마다 성격에 맞는 색 (ui.css 의 section[data-kind])
+    props.querySelectorAll('section').forEach(sec => {
+      const h = sec.querySelector('h4'), t = h && h.firstChild ? String(h.firstChild.textContent || '') : '';
+      sec.dataset.kind = !h ? 'act' : /배경/.test(t) ? 'bg' : /노트/.test(t) ? 'note' : /슬라이드 작업/.test(t) ? 'slide' : /교안 전체/.test(t) ? 'deck' : /위치|개 선택/.test(t) ? 'pos' : /애니메이션/.test(t) ? 'anim' : /링크/.test(t) ? 'link'
+        : /텍스트|글자/.test(t) ? 'text' : /꾸밈|보정|자르기/.test(t) ? 'style' : 'obj';
+    });
   }
   function slideProps() {
     const s = curSlide(); const bg = s.bg || {};
