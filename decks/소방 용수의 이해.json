@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T10:11:32.056Z",
+ "modified": "2026-11-06T10:43:06.300Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -1296,7 +1296,7 @@
      "h": 610,
      "url": "assets/삽입2-pmtbntv.mp4",
      "radius": 18,
-     "autoplay": false,
+     "autoplay": true,
      "shadow": false,
      "posterOf": "assets/삽입2-pmtbntv.mp4",
      "poster": "assets/삽입2-poster-pmu1vl4.png",
@@ -1428,7 +1428,7 @@
      "h": 590,
      "url": "bigvideo/kwonyujin119/test0/video-mw4kqghezvqi/37-4194304-153324885/제목_없음-qghefkx.mp4",
      "radius": 18,
-     "autoplay": false,
+     "autoplay": true,
      "shadow": false,
      "posterOf": "bigvideo/kwonyujin119/test0/video-mw4kqghezvqi/37-4194304-153324885/제목_없음-qghefkx.mp4",
      "poster": "assets/제목_없음-poster-qgknjtg.jpg",
@@ -2458,7 +2458,7 @@
      "y": 705,
      "w": 1412,
      "h": 110,
-     "html": "<b>압력을 올리면 유량이 떨어집니다</b> — 0.85MPa 2,800 → 1.4MPa 2,000 L/min",
+     "html": "<b>압력이 오르면 방수량도 오릅니다.</b>",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -2988,7 +2988,8 @@
      "fit": "fill",
      "radius": 18,
      "shadow": false,
-     "mk": "oq1b9u125"
+     "mk": "oq1b9u125",
+     "border": 10
     }
    ]
   },
