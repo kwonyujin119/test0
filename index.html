@@ -4,30 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>업무 공간</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>업</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231a73e8'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>업</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
 <style>
   .ws { max-width: 980px; margin: 0 auto; padding: 56px 24px 80px; }
   .ws h1 { margin: 0; font-size: 32px; letter-spacing: -.6px; }
   .ws .sub { color: var(--ui-muted); margin-top: 6px; }
   .ws-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 30px; }
-  .ws-card { display: flex; flex-direction: column; gap: 12px; padding: 26px; border-radius: 16px; background: var(--ui-panel); border: 1px solid var(--ui-border); color: var(--ui-fg); transition: border-color .15s, transform .15s, background .15s; }
-  .ws-card:hover { border-color: var(--ui-accent); transform: translateY(-2px); background: #1b1f28; }
-  .ws-ico { width: 54px; height: 54px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; font-weight: 800; color: #fff; }
-  .ws-card h2 { margin: 0; font-size: 21px; }
+  .ws-card { display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 12px; background: var(--ui-panel); border: 1px solid var(--ui-border); color: var(--ui-fg); transition: border-color .15s, box-shadow .15s; }
+  .ws-card:hover { border-color: var(--ui-border2); box-shadow: var(--ui-shadow-sm); }
+  .ws-ico { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font-size: 21px; font-weight: 700; color: #fff; }
+  .ws-card h2 { margin: 0; font-size: 19px; }
   .ws-card p { margin: 0; color: var(--ui-muted); line-height: 1.6; }
-  .ws-card ul { margin: 0; padding-left: 18px; color: #c3c8d4; font-size: 13.5px; line-height: 1.75; }
+  .ws-card ul { margin: 0; padding-left: 18px; color: var(--ui-fg); font-size: 13.5px; line-height: 1.75; }
   .ws-card .go { margin-top: auto; color: var(--ui-accent); font-weight: 600; }
   .ws-foot { margin-top: 34px; color: var(--ui-muted); font-size: 13px; line-height: 1.7; }
-  .ws-foot b { color: #c3c8d4; }
-  .ws-app { margin-top: 22px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 16px 20px; border-radius: 14px; background: linear-gradient(90deg, #17352b, #18233a); border: 1px solid #2a4a3f; }
+  .ws-foot b { color: var(--ui-fg); }
+  .ws-app { margin-top: 22px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 16px 20px; border-radius: 12px; background: var(--ui-panel); border: 1px solid var(--ui-border); }
   .ws-app .t { flex: 1; min-width: 240px; line-height: 1.6; }
   .ws-app .t b { font-size: 15px; }
-  .ws-app .t div { color: #b9c3d3; font-size: 13px; }
-  .ws-app button { background: #1f9a6e; color: #fff; border: 0; border-radius: 10px; padding: 11px 18px; font: 700 14px var(--ui-font); cursor: pointer; }
-  .ws-app button:hover { background: #24b07e; }
-  .ws-app button { font-size: 15px; padding: 13px 22px; box-shadow: 0 6px 18px rgba(31,154,110,.35); }
+  .ws-app .t div { color: var(--ui-muted); font-size: 13px; }
+  .ws-app button { background: var(--ui-accent); color: var(--ui-on-accent); border: 0; border-radius: 8px; padding: 11px 20px; font: 600 14.5px var(--ui-font); cursor: pointer; }
+  .ws-app button:hover { background: var(--ui-accent-hover); }
+  .ws-app a { color: var(--ui-muted); }
+  .ws-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
   html.in-app .ws-app { display: none; }
   @media (max-width: 640px) {
     .ws { padding: 28px 16px 60px; }
@@ -39,13 +41,15 @@
   }
 </style>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f1115">
+<meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="app/icons/icon-192.png">
 </head>
 <body>
 <div class="ws">
+  <div class="ws-head"><div>
   <h1>업무 공간</h1>
   <div class="sub">사무실에서도, 집에서도 같은 화면에서 이어서 작업합니다.</div>
+  </div><button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button></div>
 
   <div class="ws-app" id="appBox"></div>
 
@@ -62,7 +66,7 @@
       <span class="go">한글 작업장 열기 →</span>
     </a>
     <a class="ws-card" href="gyoan.html">
-      <div class="ws-ico" style="background:#4f8cff">교</div>
+      <div class="ws-ico" style="background:#1a73e8">교</div>
       <h2>교안 작업장</h2>
       <p>강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
       <ul>
@@ -81,11 +85,11 @@
 function renderAppBox() {
   const box = document.getElementById('appBox'); if (!window.PWA || PWA.standalone) return;
   if (PWA.installed) {
-    box.innerHTML = `<div class="t"><b>✅ 앱을 설치했습니다</b><div>이제 ${/ios|android/.test(PWA.os) ? '홈 화면' : '바탕화면·시작 메뉴·작업 표시줄'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
+    box.innerHTML = `<div class="t"><b>앱을 설치했습니다</b><div>이제 ${/ios|android/.test(PWA.os) ? '홈 화면' : '바탕화면·시작 메뉴·작업 표시줄'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
     return;
   }
-  const label = PWA.prompt ? '⬇ 앱으로 설치 (클릭 한 번)' : '⬇ 앱으로 설치';
-  box.innerHTML = `<div class="t"><b>업무 공간을 앱으로 설치하세요</b><div>${/ios|android/.test(PWA.os) ? '단추를 누르면 <b>홈 화면</b>에 <b>업무 공간</b> 아이콘이 생기고, 앱처럼 전체 화면으로 열립니다.' : '단추를 누르면 바로 설치되고, 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생깁니다. 주소창 없는 전용 창으로 열리고, hwpx 파일도 바로 열 수 있습니다.'}</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:stretch"><button type="button" id="btnInstall">${label}</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="업무 공간 설치.cmd" style="text-align:center;font-size:12.5px;color:#b9c3d3">안 되면: Windows 설치 파일 ⬇</a>' : ''}</div>`;
+  const label = PWA.prompt ? '앱으로 설치 (클릭 한 번)' : '앱으로 설치';
+  box.innerHTML = `<div class="t"><b>업무 공간을 앱으로 설치하세요</b><div>${/ios|android/.test(PWA.os) ? '단추를 누르면 <b>홈 화면</b>에 <b>업무 공간</b> 아이콘이 생기고, 앱처럼 전체 화면으로 열립니다.' : '단추를 누르면 바로 설치되고, 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생깁니다. 주소창 없는 전용 창으로 열리고, hwpx 파일도 바로 열 수 있습니다.'}</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:stretch"><button type="button" id="btnInstall">${label}</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="업무 공간 설치.cmd" style="text-align:center;font-size:12.5px">안 되면: Windows 설치 파일 받기</a>' : ''}</div>`;
   document.getElementById('btnInstall').onclick = () => PWA.start();
 }
 window.addEventListener('pwa-change', renderAppBox);

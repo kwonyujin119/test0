@@ -120,8 +120,8 @@
     if (!want) { if (el) el.remove(); return; }
     if (el) return;
     el = document.createElement('div'); el.id = 'pwaPill';
-    el.innerHTML = '<button type="button" data-i>⬇ 앱으로 설치</button><button type="button" data-x title="닫기">✕</button>';
-    el.style.cssText = 'position:fixed;left:16px;bottom:40px;z-index:90;display:flex;align-items:center;background:#1f7a5a;color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:600 13px/1 "Pretendard Variable","Malgun Gothic",sans-serif;overflow:hidden';
+    el.innerHTML = '<button type="button" data-i>앱으로 설치</button><button type="button" data-x title="닫기">✕</button>';
+    el.style.cssText = 'position:fixed;left:16px;bottom:40px;z-index:90;display:flex;align-items:center;background:#2d2f31;color:#fff;border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,.25);font:600 13px/1 "Pretendard Variable","Malgun Gothic",sans-serif;overflow:hidden';
     el.querySelectorAll('button').forEach(b => { b.style.cssText = 'background:none;border:0;color:#fff;font:inherit;padding:10px 14px;cursor:pointer'; });
     el.querySelector('[data-x]').style.padding = '10px 12px 10px 4px';
     el.querySelector('[data-i]').onclick = () => start();

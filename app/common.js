@@ -135,6 +135,80 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ 
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function stripHtml(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || '').trim(); }
 
+/* ---------- 선 아이콘 ----------
+   24×24 칸에 선으로만 그린 그림 (글자 색을 따라감). icon('save') 는 SVG 문자열,
+   HTML 의 <i data-ic="save"></i> 는 fillIcons() 가 채운다 */
+const ICONS = {
+  back: '<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
+  palette: '<path d="M12 3a9 9 0 0 0 0 18c1.2 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.3-4-7.7-9-7.7Z"/><path d="M7.5 12v.01"/><path d="M9.5 7.8v.01"/><path d="M14.5 7.5v.01"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
+  save: '<path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M8 3v5h7V3"/><path d="M7 21v-7h10v7"/>',
+  export: '<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff: '<path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.9 3.8"/><path d="M6.5 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/>',
+  play: '<path d="M7 4.5v15l12-7.5Z"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.6 2.6 0 0 1 5 .7c0 1.8-2.5 2.2-2.5 4"/><path d="M12 17.3v.01"/>',
+  sliders: '<path d="M4 7h8"/><path d="M16 7h4"/><circle cx="14" cy="7" r="2"/><path d="M4 17h4"/><path d="M12 17h8"/><circle cx="10" cy="17" r="2"/>',
+  plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
+  text: '<path d="M5 7V5h14v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-4.5-4.5L7 20"/>',
+  shape: '<rect x="3" y="11" width="10" height="10" rx="1.5"/><circle cx="16" cy="8" r="5"/>',
+  table: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M3 15h18"/><path d="M10 4v16"/>',
+  chart: '<path d="M4 20h16"/><path d="M7 17v-6"/><path d="M12 17V6"/><path d="M17 17v-8"/>',
+  smile: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.8v.01"/><path d="M15 9.8v.01"/>',
+  more: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8"/><path d="M8 12h8"/>',
+  alignL: '<path d="M4 3v18"/><rect x="8" y="6" width="12" height="4" rx="1"/><rect x="8" y="14" width="7" height="4" rx="1"/>',
+  alignH: '<path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/>',
+  alignR: '<path d="M20 3v18"/><rect x="4" y="6" width="12" height="4" rx="1"/><rect x="9" y="14" width="7" height="4" rx="1"/>',
+  alignT: '<path d="M3 4h18"/><rect x="6" y="8" width="4" height="12" rx="1"/><rect x="14" y="8" width="4" height="7" rx="1"/>',
+  alignV: '<path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/>',
+  alignB: '<path d="M3 20h18"/><rect x="6" y="4" width="4" height="12" rx="1"/><rect x="14" y="9" width="4" height="7" rx="1"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
+  box: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5"/><path d="M12 12v9"/>',
+  grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.9 19.1 1.4-1.4"/><path d="m17.7 6.3 1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  unlock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/>',
+  x: '<path d="m6 6 12 12"/><path d="m18 6-12 12"/>',
+};
+function icon(name, size) {
+  const z = size || 18;
+  return `<svg class="ico" viewBox="0 0 24 24" width="${z}" height="${z}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+}
+function fillIcons(root) { (root || document).querySelectorAll('[data-ic]').forEach(n => { if (!n.firstChild) n.innerHTML = icon(n.dataset.ic); }); }
+
+/* ---------- 화면 밝게 · 어둡게 ----------
+   고른 적이 없으면 기기 설정(밝은 모드·어두운 모드)을 따르고, 고르면 이 기기에 기억한다.
+   페이지 머리의 짧은 스크립트가 먼저 <html data-theme> 를 정해 두므로 여기서는 단추만 맡는다 */
+const UiTheme = {
+  KEY: 'ws:theme',
+  get() { return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'; },
+  set(t) {
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem(this.KEY, t); } catch (e) { }
+    this.paint();
+  },
+  paint() {
+    const dark = this.get() === 'dark';
+    const m = document.querySelector('meta[name="theme-color"]'); if (m && !document.body.classList.contains('present')) m.content = dark ? '#242628' : '#ffffff';
+    document.querySelectorAll('[data-ui-theme]').forEach(b => {
+      b.innerHTML = icon(dark ? 'sun' : 'moon'); b.title = dark ? '화면을 밝게' : '화면을 어둡게'; b.setAttribute('aria-label', b.title);
+    });
+  },
+  init() {
+    if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = 'light';
+    document.addEventListener('click', (ev) => { const b = ev.target.closest && ev.target.closest('[data-ui-theme]'); if (b) this.set(this.get() === 'dark' ? 'light' : 'dark'); });
+    window.addEventListener('storage', (ev) => { if (ev.key === this.KEY && (ev.newValue === 'dark' || ev.newValue === 'light')) { document.documentElement.dataset.theme = ev.newValue; this.paint(); } }); // 다른 창에서 바꾸면 같이 바뀜
+    this.paint();
+  },
+};
+if (typeof document !== 'undefined' && document.body) { fillIcons(document); UiTheme.init(); }
+
 /* ---------- 모델 생성 ---------- */
 function newDeck(title) {
   const d = { title: title || '새 교안', theme: 'clean', created: new Date().toISOString(), slides: [] };
@@ -1088,7 +1162,7 @@ const GH = {
       const bg = document.createElement('div'); bg.className = 'modal-bg';
       bg.innerHTML = `<div class="modal" style="width:560px;max-width:94vw">
       <h3>GitHub 저장소에 바로 저장</h3>
-      ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:#fde68a">${esc(opts.reason)}</p>` : ''}
+      ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ui-warn-fg)">${esc(opts.reason)}</p>` : ''}
       ${opts.expired ? '' : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
       그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 교안 작업장과 한글 작업장이 함께 씁니다.</p>`}
       <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1;min-width:0"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1;min-width:0"></div>

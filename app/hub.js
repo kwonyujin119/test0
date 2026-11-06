@@ -73,14 +73,14 @@
   function card(d) {
     const c = document.createElement('div'); c.className = 'deck-card';
     const th = document.createElement('div'); th.className = 'deck-thumb';
-    th.innerHTML = '<div class="play"><span>▶ 발표 시작</span></div>';
+    th.innerHTML = '<div class="play"><span>발표 시작</span></div>';
     th.title = '클릭하면 발표를 시작합니다';
     th.onclick = () => open('present.html?deck=' + encodeURIComponent(d.name), true);
     c.appendChild(th);
     const body = document.createElement('div'); body.className = 'deck-body';
     /* 카드 아래 줄: 슬라이드 수 · 저장한 때(이 기기의 시간) · 파일 이름 · 이 기기에 저장 안 한 작업본이 있으면 표시 */
     const meta = (state) => `<span>${state || (d.slides === '' ? '불러오는 중…' : `슬라이드 ${d.slides}장`)}</span><span title="마지막으로 저장한 때">${esc(d.modified || '')}</span><span class="muted">${esc(d.name)}.json</span>`
-      + (Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">✎ 저장 안 한 작업본</span>' : '');
+      + (Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : '');
     body.innerHTML = `<div class="deck-title">${esc(d.title)}</div><div class="deck-meta">${meta()}</div>`;
     // 첫 슬라이드 썸네일
     const ck = d.name + '|' + (d.size || '') + '|' + (d.modified || '');
@@ -98,8 +98,8 @@
       fit(); new ResizeObserver(fit).observe(th);
     }).catch(() => { if (d.partial) body.querySelector('.deck-meta').innerHTML = meta('⚠ 내용을 읽지 못했습니다'); }); // 목록에는 있는데 열 수 없는 교안 (연결 끊김 · 파일 손상)
     const act = document.createElement('div'); act.className = 'deck-actions';
-    act.innerHTML = `<button class="btn sm primary" data-a="present">▶ 발표</button>
-      <button class="btn sm" data-a="edit">✎ 편집</button>
+    act.innerHTML = `<button class="btn sm primary" data-a="present">${icon('play', 14)}발표</button>
+      <button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button>
       <span class="spacer"></span>
       <button class="btn sm ghost" data-a="dup" title="복제">복제</button>
       <button class="btn sm ghost" data-a="rename" title="이름 바꾸기">이름</button>

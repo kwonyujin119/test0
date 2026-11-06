@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>교안 작업장</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%234f8cff'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231a73e8'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
 <link rel="stylesheet" href="app/slide.css">
 <style>.crumb{font-size:13px;color:var(--ui-muted);margin-bottom:2px}.crumb a{color:var(--ui-muted)}.crumb a:hover{color:var(--ui-fg)}</style>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f1115">
+<meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="app/icons/icon-192.png">
 </head>
 <body>
@@ -25,7 +26,8 @@
       <input type="search" id="q" placeholder="교안 검색…" aria-label="교안 검색">
       <button class="btn" id="btnGh" title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none">GitHub 연결</button>
       <button class="btn" id="btnImport" title="내보내기로 받아 둔 교안 파일(.json)을 목록에 추가합니다">가져오기</button>
-      <button class="btn primary" id="btnNew">＋ 새 교안</button>
+      <button class="btn primary" id="btnNew"><i data-ic="plus"></i>새 교안</button>
+      <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
     </div>
   </div>
   <div class="hub-notice" id="notice" style="display:none"></div>

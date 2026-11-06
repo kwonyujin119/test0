@@ -157,9 +157,9 @@
     let c = $('ghChip');
     if (API.mode !== 'github' || GH.token) { if (c) c.remove(); return; }
     if (c) return;
-    c = document.createElement('button'); c.id = 'ghChip'; c.className = 'btn sm'; c.textContent = '🔗 GitHub 연결';
+    c = document.createElement('button'); c.id = 'ghChip'; c.className = 'btn sm'; c.textContent = 'GitHub 연결';
     c.title = '이 기기에는 아직 연결이 없어 임시 저장만 됩니다. 눌러서 토큰을 한 번 넣으면 저장소에 저장됩니다.';
-    c.style.cssText = 'margin-left:8px;border-color:#6b5416;color:#fde68a;background:#2b2410';
+    c.style.cssText = 'margin-left:8px;border-color:var(--ui-warn-border);color:var(--ui-warn-fg);background:var(--ui-warn-bg)';
     c.onclick = async () => { if ((await GH.connect()) === true) { ghChip(); if (S.dirty) save(); } else ghChip(); };
     $('upStatus').after(c);
   }
@@ -230,13 +230,13 @@
   function updateSizeChip() {
     const b = $('btnSize'); if (!b || !S.deck) return;
     const u = deckUsage(), mb = u.total / 1048576;
-    b.textContent = `📦 용량 ${fmtSize(u.total)}${u.unknown ? '+' : ''}`;
+    b.textContent = `용량 ${fmtSize(u.total)}${u.unknown ? '+' : ''}`;
     b.dataset.lv = mb >= 500 ? 'big' : mb >= 100 ? 'mid' : 'ok';
   }
   async function showDeckSize() {
     document.querySelectorAll('.modal-bg.size-bg').forEach(n => n.remove());
     const bg = document.createElement('div'); bg.className = 'modal-bg size-bg';
-    bg.innerHTML = `<div class="modal size-modal"><h3>📦 이 교안의 용량</h3><p class="muted">계산하는 중…</p></div>`;
+    bg.innerHTML = `<div class="modal size-modal"><h3>이 교안의 용량</h3><p class="muted">계산하는 중…</p></div>`;
     const close = () => bg.remove();
     bg.onclick = (ev) => {
       if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }
@@ -259,12 +259,12 @@
     if (u.web) notes.push(`유튜브 영상 · 웹 페이지처럼 주소로 연결한 것 ${u.web}개는 용량에 들어가지 않습니다.`);
     notes.push('같은 파일을 여러 슬라이드에 써도 한 번만 셉니다.');
     if (assetSizes) notes.push(`참고: 저장소의 자료 폴더(모든 교안의 그림·작은 영상)는 모두 ${fmtSize(store)} · 파일 ${assetSizes.size}개입니다.` + (API.mode === 'github' ? ' 6MB 가 넘는 영상은 따로 보관되어 여기에 들어가지 않습니다.' : ''));
-    bg.querySelector('.modal').innerHTML = `<h3>📦 이 교안의 용량</h3>
+    bg.querySelector('.modal').innerHTML = `<h3>이 교안의 용량</h3>
       <div class="size-total"><b>${fmtSize(u.total)}${u.unknown ? '<small>+</small>' : ''}</b><span>슬라이드 ${S.deck.slides.length}장 · 그림 ${nImg}개 · 동영상 ${nVid}개</span></div>
       <div class="size-bar">${parts.map(([k, v]) => `<i style="flex:${v} 0 0;background:${K[k][1]}" title="${K[k][0]} ${fmtSize(v)}"></i>`).join('')}</div>
       <div class="size-legend">${parts.map(([k, v]) => `<span style="--k:${K[k][1]}">${K[k][0]} <b>${fmtSize(v)}</b> <em>${Math.round(v / u.total * 100)}%</em></span>`).join('')}</div>
       ${u.files.length ? `<h4>큰 파일부터 <span class="muted">누르면 그 슬라이드로 갑니다</span></h4>
-      <div class="size-list">${u.files.slice(0, 60).map(f => `<div class="r" data-slide="${f.slides[0]}" title="${esc(f.name)}"><span class="ki ${f.kind}">${f.kind === 'video' ? '▶' : '🖼'}</span><span class="nm">${esc(f.name)}</span><span class="sl">${slidesOf(f)}</span><span class="sz">${f.known ? fmtSize(f.size) : '모름'}</span><i class="mt" style="width:${top ? Math.max(1, Math.round(f.size / top * 100)) : 0}%;background:${K[f.kind][1]}"></i></div>`).join('')}</div>${u.files.length > 60 ? `<p class="size-note">작은 파일 ${u.files.length - 60}개는 줄였습니다.</p>` : ''}` : '<p class="muted">이 교안에는 그림·동영상 파일이 없습니다.</p>'}
+      <div class="size-list">${u.files.slice(0, 60).map(f => `<div class="r" data-slide="${f.slides[0]}" title="${esc(f.name)}"><span class="ki ${f.kind}">${f.kind === 'video' ? '▶' : icon('image', 14)}</span><span class="nm">${esc(f.name)}</span><span class="sl">${slidesOf(f)}</span><span class="sz">${f.known ? fmtSize(f.size) : '모름'}</span><i class="mt" style="width:${top ? Math.max(1, Math.round(f.size / top * 100)) : 0}%;background:${K[f.kind][1]}"></i></div>`).join('')}</div>${u.files.length > 60 ? `<p class="size-note">작은 파일 ${u.files.length - 60}개는 줄였습니다.</p>` : ''}` : '<p class="muted">이 교안에는 그림·동영상 파일이 없습니다.</p>'}
       <div class="size-note">${notes.map(n => '· ' + esc(n)).join('<br>')}</div>
       <div class="actions"><button class="btn" data-close>닫기</button></div>`;
   }
@@ -416,7 +416,7 @@
     const n = document.createElement('div'); n.className = 'n'; n.textContent = i + 1; t.appendChild(n);
     const ms = maxStep(s); if (ms > 0) { const b = document.createElement('div'); b.className = 'steps'; b.textContent = `▸${ms}`; t.appendChild(b); }
     if (s.hidden) { const b = document.createElement('div'); b.className = 'hidb'; b.textContent = '숨김'; t.appendChild(b); }
-    const trn = s.transition === 'morph' || (!s.transition && S.deck.transition === 'morph'); if (trn && i > 0) { const b = document.createElement('div'); b.className = 'trb'; b.textContent = '✨'; b.title = '모핑 전환'; t.appendChild(b); }
+    const trn = s.transition === 'morph' || (!s.transition && S.deck.transition === 'morph'); if (trn && i > 0) { const b = document.createElement('div'); b.className = 'trb'; b.textContent = '모핑'; b.title = '모핑 전환'; t.appendChild(b); }
     t.onclick = (ev) => {
       S.focus = 'thumbs';
       if (ev.shiftKey) { // Shift: 현재 슬라이드부터 여기까지 범위
@@ -821,8 +821,8 @@
       html += `<div class="ps-it${it.kind === 'txt' ? ' txt' : ''}" draggable="true" data-i="${it.id}" title="${esc(it.name || '심벌')}">${it.kind === 'txt' ? `<span${it.color ? ` style="color:${esc(it.color)}"` : ''}>${esc(it.c)}</span>` : ''}<button type="button" class="ps-add" data-add title="내 심벌에 담기">＋</button></div>`;
     }
     html += '</div>';
-    el.innerHTML = `<div class="ps-head" title="끌어서 창 옮기기"><b>🧩 PPT 심벌</b><span class="ps-name">${esc(P.name)} · ${items.length}개</span><button type="button" class="ps-x" data-close title="닫기">×</button></div>
-      <div class="ps-tools"><button type="button" class="btn sm" data-my title="내 심벌 창을 엽니다 — 열어 둔 채로 심벌을 끌어다 놓으세요">⭐ 내 심벌 열기</button><button type="button" class="btn sm" data-all title="이 PPT 의 심벌을 모두 내 심벌에 담기">모두 담기</button>${P.vids.length ? `<button type="button" class="btn sm" data-vids title="이 PPT 의 동영상">🎞 동영상 ${P.vids.length}</button>` : ''}<button type="button" class="btn sm" data-other title="다른 PPT 파일 열기">📂 다른 PPT</button></div>
+    el.innerHTML = `<div class="ps-head" title="끌어서 창 옮기기"><b>PPT 심벌</b><span class="ps-name">${esc(P.name)} · ${items.length}개</span><button type="button" class="ps-x" data-close title="닫기">×</button></div>
+      <div class="ps-tools"><button type="button" class="btn sm" data-my title="내 심벌 창을 엽니다 — 열어 둔 채로 심벌을 끌어다 놓으세요">내 심벌 열기</button><button type="button" class="btn sm" data-all title="이 PPT 의 심벌을 모두 내 심벌에 담기">모두 담기</button>${P.vids.length ? `<button type="button" class="btn sm" data-vids title="이 PPT 의 동영상">동영상 ${P.vids.length}</button>` : ''}<button type="button" class="btn sm" data-other title="다른 PPT 파일 열기">다른 PPT</button></div>
       <div class="ps-body">${html}</div>
       <div class="ps-foot"><b>끌어서</b> 슬라이드의 원하는 자리나 <b>내 심벌</b> 창에 놓으세요 · <b>누르면</b> 슬라이드 가운데에 · <b>＋</b> 는 내 심벌에 담기${P.syms.skipped ? `<br>※ EMF·WMF 그림 ${P.syms.skipped}개는 브라우저가 열지 못해 뺐습니다 (PowerPoint 에서 Ctrl+C → 여기서 Ctrl+V)` : ''}</div>`;
     document.body.appendChild(el);
@@ -882,10 +882,10 @@
     const list = only || P.vids, urls = [];
     const fmt = (b) => b >= 1048576 ? (b / 1048576 >= 10 ? Math.round(b / 1048576) : (b / 1048576).toFixed(1)) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB';
     const bg = document.createElement('div'); bg.className = 'modal-bg ppt-videos';
-    bg.innerHTML = `<div class="modal" style="width:720px;max-width:94vw"><h3>🎞 PPT 의 동영상 <span class="muted" style="font-weight:400;font-size:13px">${esc(P.name)} · ${P.vids.length}개</span></h3>
+    bg.innerHTML = `<div class="modal" style="width:720px;max-width:94vw"><h3>PPT 의 동영상 <span class="muted" style="font-weight:400;font-size:13px">${esc(P.name)} · ${P.vids.length}개</span></h3>
       <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">${esc(note || '넣을 영상을 누르세요. 상자를 하나 잡아 두었으면 그 상자 자리에 들어갑니다.')}${only ? '' : '<br>이 PPT 를 열어 둔 동안에는 <b>PowerPoint 에서 영상을 복사(Ctrl+C)해서 여기에 붙여넣어도(Ctrl+V)</b> 영상으로 들어갑니다.'}</p>
       <div class="ppt-grid">${list.map((v) => `<div class="pv" data-i="${P.vids.indexOf(v)}" title="${esc(v.name)}"><div class="ph"><i>▶</i></div><b>${v.slide}번 슬라이드</b><span>${esc(v.name)}</span><small>${v.url ? '인터넷 영상 (주소로 넣음)' : v.linked ? '⚠ PPT 안에 없음 (PC 파일에 연결)' : esc(v.ext.toUpperCase()) + ' · ' + fmt(v.size)}</small></div>`).join('')}</div>
-      <div class="actions"><button class="btn ghost" data-other>다른 PPT 열기…</button>${P.syms && P.syms.items.length ? `<button class="btn ghost" data-syms title="이 PPT 안의 그림·도형을 심벌로 꺼내 씁니다">🧩 그림·도형 ${P.syms.items.length}개</button>` : ''}<span style="flex:1"></span><button class="btn" data-close>닫기</button></div></div>`;
+      <div class="actions"><button class="btn ghost" data-other>다른 PPT 열기…</button>${P.syms && P.syms.items.length ? `<button class="btn ghost" data-syms title="이 PPT 안의 그림·도형을 심벌로 꺼내 씁니다">그림·도형 ${P.syms.items.length}개</button>` : ''}<span style="flex:1"></span><button class="btn" data-close>닫기</button></div></div>`;
     const close = () => { bg.remove(); urls.forEach(u => URL.revokeObjectURL(u)); };
     bg.onclick = (ev) => {
       if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }
@@ -1028,7 +1028,7 @@
     if (e && e.type === 'image') items.push({ label: '이미지 교체…', fn: () => { $('fileReplace').dataset.id = e.id; $('fileReplace').click(); } });
     if (e && S.sel.length === 1 && ((e.type === 'image' && e.src) || isIconText(e))) items.push({ label: e.type === 'image' ? '배경 지우기…' : '아이콘 배경 지우기…', fn: () => showBgRemove(e) });
     if (e && e.type === 'math') items.push({ label: '수식 편집…', fn: () => openMathDialog(e) });
-    if (e && e.type === 'embed') items.push({ label: '주소 바꾸기…', fn: () => openEmbedDialog(e) }, { label: '▶ 여기서 재생', fn: () => playEmbedHere(e.id) });
+    if (e && e.type === 'embed') items.push({ label: '주소 바꾸기…', fn: () => openEmbedDialog(e) }, { label: '여기서 재생', fn: () => playEmbedHere(e.id) });
     if (e && (e.type === 'shape' || e.type === 'image' || e.type === 'text') && S.sel.length === 1) items.push({ label: '이 상자에 동영상 넣기…', fn: () => { const u = prompt('YouTube 주소 또는 퍼가기 코드를 붙여넣으세요'); if (u && !putEmbed(u)) alert('주소를 알아볼 수 없습니다'); } });
     items.push({ label: '복제', kbd: 'Ctrl+D', fn: duplicateSelected }, { label: '복사', kbd: 'Ctrl+C', fn: copySelected },
       { label: '잘라내기', kbd: 'Ctrl+X', fn: () => { copySelected(); deleteSelected(); } }, { label: '붙여넣기', kbd: 'Ctrl+V', fn: () => { if (S.clip) pasteData(S.clip); else toast('먼저 복사하세요 (Ctrl+C)'); } },
@@ -1413,7 +1413,7 @@
       <button class="btn" data-cmd="size-" title="글자 작게 (Ctrl+[) · 끌어서 고른 글자만, 고르지 않았으면 상자 전체">A−</button>
       <input type="number" data-fs min="8" max="400" step="2" value="${Math.round(st.fontSize)}" title="글자 크기 · 끌어서 고른 글자만, 고르지 않았으면 상자 전체">
       <button class="btn" data-cmd="size+" title="글자 크게 (Ctrl+]) · 끌어서 고른 글자만, 고르지 않았으면 상자 전체">A+</button>
-      <button class="btn" data-cmd="link" title="링크 (Ctrl+K)">🔗</button>
+      <button class="btn" data-cmd="link" title="링크 (Ctrl+K)" aria-label="링크">${icon('link', 16)}</button>
       <button class="btn" data-cmd="sym" title="기호 넣기 (① Ⅳ ★ → ㎡ ℃ …)">Ω</button>
       <button class="btn" data-cmd="removeFormat" title="서식 지우기">✕</button>${e.type !== 'table' ? '' : `
       <span class="sep"></span>
@@ -1522,7 +1522,7 @@
       <div class="cp-grid">${PAL_GRAY.map(([c, n]) => sw(c, n)).join('')}</div>
       ${palRecent.length ? `<div class="cp-h">최근에 쓴 색</div><div class="cp-grid">${palRecent.map(c => sw(c, '최근')).join('')}</div>` : ''}
       <div class="cp-foot"><span class="cp-now" style="background:${cur}" title="지금 색"></span><input type="text" class="cp-hex" value="${cur}" maxlength="7" spellcheck="false" title="색 번호 (#rrggbb) — 고치고 Enter">
-        ${window.EyeDropper ? '<button type="button" class="btn sm" data-pick title="화면의 아무 곳이나 눌러 그 색을 가져옵니다">🖍 화면에서</button>' : ''}<button type="button" class="btn sm" data-more title="색상판에서 세밀하게 고르기">세밀하게…</button></div>`;
+        ${window.EyeDropper ? '<button type="button" class="btn sm" data-pick title="화면의 아무 곳이나 눌러 그 색을 가져옵니다">화면에서 고르기</button>' : ''}<button type="button" class="btn sm" data-more title="색상판에서 세밀하게 고르기">세밀하게…</button></div>`;
     (inBar ? input.closest('.text-toolbar') : document.body).appendChild(pop);
     const r = input.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
     let left = clamp(r.left, 8, window.innerWidth - pw - 8), top = r.bottom + 6; if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
@@ -1576,7 +1576,7 @@
   const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['none', '효과 없음']];
   const EMPHS = [['pulse', '두근 (크게)'], ['shake', '흔들기'], ['glow', '빛나기']];
   const SPEEDS = [['', '기본'], ['0.3', '빠르게'], ['0.5', '보통'], ['1', '느리게'], ['2', '아주 느리게']];
-  const TRANS = [['', '기본 (교안 설정)'], ['none', '없음'], ['fade', '페이드'], ['slide', '밀어내기'], ['up', '위로 밀기'], ['cover', '덮기'], ['wipe', '닦아내기'], ['zoom', '확대'], ['blur', '흐리게'], ['morph', '모핑 ✨ (같은 요소가 움직임)']];
+  const TRANS = [['', '기본 (교안 설정)'], ['none', '없음'], ['fade', '페이드'], ['slide', '밀어내기'], ['up', '위로 밀기'], ['cover', '덮기'], ['wipe', '닦아내기'], ['zoom', '확대'], ['blur', '흐리게'], ['morph', '모핑 (같은 요소가 움직임)']];
   const DECORS = [['', '테마 기본'], ['none', '없음'], ['bar-left', '왼쪽 바'], ['bar-top', '위쪽 바'], ['band-bottom', '아래 띠'], ['corner', '모서리 원'], ['frame', '테두리'], ['grid', '모눈']];
   const LISTS = [['', '• 기본'], ['check', '✔ 체크'], ['arrow', '➜ 화살표'], ['dash', '– 줄표'], ['square', '■ 네모'], ['star', '★ 별'], ['none', '기호 없음']];
   const MASKS = [['', '사각형'], ['circle', '원'], ['hexagon', '육각형'], ['diamond', '마름모'], ['triangle', '삼각형'], ['arch', '아치'], ['blob', '자유 모양']];
@@ -1626,8 +1626,8 @@
       ${row('', `<button class="btn sm" data-act="bgAll" title="지금 슬라이드의 배경(종류·색·이미지)을 모든 슬라이드에 똑같이">이 배경을 모든 슬라이드에</button>`)}
       ${row('장식', selIn('slide.decor', s.decor || '', DECORS))}
       ${row('전환', selIn('slide.transition', tr, TRANS))}
-      ${morphOn ? hint('✨ 모핑: 이 슬라이드를 앞 슬라이드의 복제본(Ctrl+Shift+D)으로 만든 뒤 요소를 옮기거나 키우면, 발표 때 그 사이가 부드럽게 움직입니다.') : ''}
-      ${row('발표', tog('slide.hidden', s.hidden, s.hidden ? '🙈 숨긴 슬라이드' : '보임', '숨기면 발표 때 건너뜁니다 (번호로는 이동 가능)') + tog('slide.noFooter', s.noFooter, '꼬리말 숨김'))}
+      ${morphOn ? hint('모핑: 이 슬라이드를 앞 슬라이드의 복제본(Ctrl+Shift+D)으로 만든 뒤 요소를 옮기거나 키우면, 발표 때 그 사이가 부드럽게 움직입니다.') : ''}
+      ${row('발표', tog('slide.hidden', s.hidden, s.hidden ? '숨긴 슬라이드' : '보임', '숨기면 발표 때 건너뜁니다 (번호로는 이동 가능)') + tog('slide.noFooter', s.noFooter, '꼬리말 숨김'))}
     </section>
     <section><h4>발표자 노트 <span class="muted" style="text-transform:none;font-weight:400">발표자 보기(S)에서 표시</span></h4>
       <textarea data-k="slide.notes" placeholder="이 슬라이드에서 말할 내용, 참고 사항…">${esc(s.notes || '')}</textarea>
@@ -1638,25 +1638,25 @@
         <button class="btn sm" data-act="layout">레이아웃 적용…</button>
         <button class="btn sm" data-act="moveUp">▲ 위로</button>
         <button class="btn sm" data-act="moveDown">▼ 아래로</button>
-        <button class="btn sm" data-act="outline">📝 개요로 만들기…</button>
-        <button class="btn sm" data-act="album">🖼 사진 앨범…</button>
+        <button class="btn sm" data-act="outline">개요로 만들기…</button>
+        <button class="btn sm" data-act="album">사진 앨범…</button>
         <button class="btn sm danger" data-act="delSlide" style="grid-column:1/-1">슬라이드 삭제</button>
       </div>
     </section>
     <section><h4>교안 전체</h4>
       ${row('기본 전환', selIn('deck.transition', S.deck.transition || 'fade', TRANS.slice(1)))}
       ${row('테마', selIn('deck.theme', S.deck.theme, THEMES.map(t => [t.id, t.name])))}
-      ${row('', '<button class="btn sm" data-act="design">🎨 디자인 · 색 · 글꼴 · 꼬리말…</button>')}
+      ${row('', '<button class="btn sm" data-act="design">디자인 · 색 · 글꼴 · 꼬리말…</button>')}
       <div class="muted" style="font-size:12px;margin-top:6px">슬라이드 ${S.deck.slides.length}장${S.deck.slides.some(x => x.hidden) ? ` (숨김 ${S.deck.slides.filter(x => x.hidden).length})` : ''} · 파일: decks/${esc(S.name)}.json</div>
     </section>`;
   }
   function posSection(e) {
-    return `<section><h4>위치 · 크기 ${tog('locked', e.locked, e.locked ? '🔒 잠김' : '🔓', '잠그면 이동/크기 조절이 안 됩니다')} ${tog('ratioLock', e.ratioLock, '⛶ 비율', '비율 고정: 너비나 높이를 바꾸면 다른 쪽도 따라 바뀝니다 (Shift 없이 끌어도 유지)')}</h4>
+    return `<section><h4>위치 · 크기 ${tog('locked', e.locked, e.locked ? '잠김' : '잠금', '잠그면 이동/크기 조절이 안 됩니다')} ${tog('ratioLock', e.ratioLock, '비율', '비율 고정: 너비나 높이를 바꾸면 다른 쪽도 따라 바뀝니다 (Shift 없이 끌어도 유지)')}</h4>
       <div class="grid4">
         ${num('x', e.x, 1, null, null, 'X')}${num('y', e.y, 1, null, null, 'Y')}${num('w', e.w, 1, 16, null, '너비')}${num('h', e.h, 1, 16, null, '높이')}
       </div>
       <div class="prow" style="margin-top:6px"><label>회전</label><div class="ctrls">${num('rotate', e.rotate || 0, 1, -180, 180)}${small('투명도')}${num('opacity', Math.round((e.opacity == null ? 1 : e.opacity) * 100), 5, 0, 100)}</div></div>
-      ${e.group ? hint('⛓ 묶음에 들어 있습니다 · Ctrl+Shift+G 로 풀기 · Alt+클릭으로 하나만 선택') : ''}
+      ${e.group ? hint('묶음에 들어 있습니다 · Ctrl+Shift+G 로 풀기 · Alt+클릭으로 하나만 선택') : ''}
     </section>`;
   }
   /* 최근 쓴 글꼴 (이 기기에 저장 · 최근 것이 맨 위) */
@@ -1696,8 +1696,8 @@
     const v = e.link || '';
     const opts = [['', '없음'], ['next', '다음 슬라이드'], ['prev', '이전 슬라이드'], ['first', '첫 슬라이드'], ['last', '마지막 슬라이드']]
       .concat(S.deck.slides.map((s, i) => ['slide:' + s.id, `${i + 1}. ${slideTitle(s).slice(0, 22)}`]));
-    if (v.startsWith('url:')) opts.push([v, '🌐 ' + v.slice(4, 44)]);
-    opts.push(['__url', '🌐 웹 주소 입력…']);
+    if (v.startsWith('url:')) opts.push([v, '웹: ' + v.slice(4, 44)]);
+    opts.push(['__url', '웹 주소 입력…']);
     return `<section><h4>링크 <span class="muted" style="text-transform:none;font-weight:400">발표 중 클릭하면 이동 (목차·버튼에 좋음)</span></h4>${row('이동', selIn('link', v, opts))}</section>`;
   }
   function elementProps(e) {
@@ -1710,7 +1710,7 @@
         ${row('줄 간격', num('style.lineHeight', st.lineHeight || 1.5, 0.1, 0.8, 3) + small('자간') + num('style.letterSpacing', st.letterSpacing || 0, 0.5, -5, 20) + small('문단') + num('style.paraGap', st.paraGap || 0, 2, 0, 200, '문단(줄바꿈) 사이 간격'))}
         ${row('글머리', selIn('style.list', st.list || '', LISTS))}
         ${row('맞춤', `<button class="btn sm" data-act="autofit" title="글이 상자 안에 꽉 차도록 글자 크기를 맞춥니다">글자 크기 자동 맞춤</button>`)}
-        ${isIconText(e) ? row('아이콘', `<button class="btn sm" data-act="bgRemove" title="아이콘의 바탕 칸(색 네모·동그라미 등)을 눌러서 지웁니다 · 아이콘은 그림으로 바뀝니다">🪄 아이콘 배경 지우기…</button>`) : ''}
+        ${isIconText(e) ? row('아이콘', `<button class="btn sm" data-act="bgRemove" title="아이콘의 바탕 칸(색 네모·동그라미 등)을 눌러서 지웁니다 · 아이콘은 그림으로 바뀝니다">아이콘 배경 지우기…</button>`) : ''}
       </section>
       <section><h4>상자 꾸밈</h4>
         ${row('배경', colorIn('style.bg', st.bg || theme().surface) + '<div style="flex:3">' + swatches('style.bg', true) + '</div>')}
@@ -1722,7 +1722,7 @@
       const fx = e.fx || {};
       body = `<section><h4>이미지</h4>
         ${row('파일', `<button class="btn sm" data-act="replaceImage">교체…</button><button class="btn sm" data-act="fitRatio" title="원본 비율로 높이 조정">원본 비율</button>`)}
-        ${e.src ? row('배경', `<button class="btn sm" data-act="bgRemove" title="바탕색(흰 배경 등)을 투명하게 만듭니다 · 지울 곳을 눌러 고를 수 있습니다">🪄 배경 지우기…</button>`) : ''}
+        ${e.src ? row('배경', `<button class="btn sm" data-act="bgRemove" title="바탕색(흰 배경 등)을 투명하게 만듭니다 · 지울 곳을 눌러 고를 수 있습니다">배경 지우기…</button>`) : ''}
         ${row('맞춤', choice('fit', e.fit || 'contain', [['contain', '맞추기'], ['cover', '채우기'], ['fill', '늘이기']]))}
         ${row('모양', selIn('mask', e.mask || '', MASKS))}
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 400))}
@@ -1813,7 +1813,7 @@
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 200))}
         ${row('효과', tog('shadow', e.shadow, '그림자'))}
         ${row('', `<button class="btn sm" data-act="playHere">▶ 여기서 재생</button><button class="btn sm" data-act="openEmbed">새 창에서 확인</button>`)}
-        ${row('파일로 넣기', `<button class="btn sm" data-act="pickVideo" title="PC 의 동영상 파일(mp4)을 이 상자에">🎞 동영상 파일…</button><button class="btn sm" data-act="pickPpt" title="PPT 파일 안에 들어 있는 영상을 이 상자에">📽 PPT 에서…</button>`)}
+        ${row('파일로 넣기', `<button class="btn sm" data-act="pickVideo" title="PC 의 동영상 파일(mp4)을 이 상자에">동영상 파일…</button><button class="btn sm" data-act="pickPpt" title="PPT 파일 안에 들어 있는 영상을 이 상자에">PPT 에서…</button>`)}
         ${hint('동영상 파일을 복사(Ctrl+C)해서 붙여넣거나(Ctrl+V) 끌어다 놓아도 됩니다 · PowerPoint 안의 영상은 [PPT 에서…] 로 그 PPT 파일을 한 번 열어 두면, 그 뒤로는 PowerPoint 에서 복사해 붙여넣어도 영상으로 들어갑니다')}
       </section>`;
     }
@@ -1822,7 +1822,7 @@
   function multiProps(els) {
     const grouped = els.length > 1 && els.every(e => e.group && e.group === els[0].group);
     const texty = els.filter(e => e.type !== 'image' && e.type !== 'embed');
-    return `<section><h4>${els.length}개 선택${grouped ? ' · ⛓ 묶음' : ''}</h4>
+    return `<section><h4>${els.length}개 선택${grouped ? ' · 묶음' : ''}</h4>
       ${row('묶기', `<button class="btn sm" data-act="group" title="Ctrl+G">묶기</button><button class="btn sm" data-act="ungroup" title="Ctrl+Shift+G">풀기</button>`)}
       ${row('정렬', `<div class="grid4" style="flex:1">${['left', 'hcenter', 'right', 'top', 'vcenter', 'bottom'].map((a, i) => `<button class="btn sm icon" data-align="${a}">${['⇤', '↔', '⇥', '⤒', '↕', '⤓'][i]}</button>`).join('')}</div>`)}
       ${row('분포', `<button class="btn sm" data-act="distH">가로 등간격</button><button class="btn sm" data-act="distV">세로 등간격</button>`)}
@@ -2063,7 +2063,7 @@
     for (const it of items) {
       if (it.sep) { m.appendChild(document.createElement('hr')); continue; }
       const d = document.createElement('div'); d.className = 'mi' + (it.danger ? ' danger' : ''); d.innerHTML = `<span>${it.label}</span>${it.kbd ? `<kbd>${it.kbd}</kbd>` : ''}`;
-      if (it.danger) d.style.color = '#fca5a5';
+      if (it.danger) d.style.color = 'var(--ui-danger)';
       d.onclick = () => { closeMenus(); it.fn(); }; m.appendChild(d);
     }
     document.body.appendChild(m); openMenu = m;
@@ -2160,7 +2160,7 @@
       { label: '단독 HTML (어디서나 발표)', fn: exportHtml },
       { label: 'PowerPoint 파일 (.pptx)', fn: exportPptx },
       { label: 'PDF / 인쇄용 보기', fn: () => openAfterSave(`present.html?deck=${encodeURIComponent(S.name)}&print=1`) },
-    ].concat(oldDraft ? [{ sep: true }, { label: `🕘 임시 작업본 되살리기 (${esc(when((oldDraft.info && oldDraft.info.at) || oldDraft.kept) || '남겨 둔 것')})`, fn: restoreOldDraft }] : []));
+    ].concat(oldDraft ? [{ sep: true }, { label: `임시 작업본 되살리기 (${esc(when((oldDraft.info && oldDraft.info.at) || oldDraft.kept) || '남겨 둔 것')})`, fn: restoreOldDraft }] : []));
   };
   function download(name, text, type) {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
@@ -2805,7 +2805,7 @@
           const l = mySyms();
           grid = `<div class="icon-grid my-grid" data-drop="1">${l.map(it => `<button class="ic my" data-my="${esc(it.id)}" title="누르면 넣기 · 우클릭하면 지우기">${it.t === 'img' ? `<img src="${esc(it.d)}" alt="">` : esc(it.c)}</button>`).join('')}
             <div class="my-drop" title="여기에 그림 파일·글자·PPT 심벌을 끌어다 놓거나, 복사한 것을 붙여넣으세요(Ctrl+V)">＋<small>끌어다 놓기 · Ctrl+V</small></div></div>
-            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">📁 파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label><button class="btn sm" data-myppt="1" title="PPT 파일을 열어 그 안의 그림·도형을 심벌로 꺼냅니다 (꺼낸 것을 여기로 끌어다 놓기)">🧩 PPT 에서…</button><span class="muted" data-symstate style="font-size:11.5px">${symLabel(l.length)}</span></div>`;
+            <div class="my-tools"><button class="btn sm" data-mysel="1" title="슬라이드에서 잡은 글자·기호 상자나 이미지를 내 심벌로">＋ 잡은 개체 추가</button><input type="text" data-mytxt="1" placeholder="기호·글자 입력 후 Enter" style="width:150px"><label class="btn sm" title="그림 파일 고르기">파일…<input type="file" accept="image/*" multiple data-myfile="1" hidden></label><button class="btn sm" data-myppt="1" title="PPT 파일을 열어 그 안의 그림·도형을 심벌로 꺼냅니다 (꺼낸 것을 여기로 끌어다 놓기)">PPT 에서…</button><span class="muted" data-symstate style="font-size:11.5px">${symLabel(l.length)}</span></div>`;
         } else grid = `<div class="icon-grid">${graphemes(ICONS[name]).filter(c => c.trim()).map(c => `<button class="ic" data-ic="${esc(c)}">${esc(c)}</button>`).join('')}</div>`;
         return `<section class="icon-sec${open ? '' : ' fold'}" data-sec="${esc(name)}"><h4 draggable="true" title="누르면 접기·펴기 · 끌어서 순서 바꾸기"><span class="grip">⋮⋮</span><span class="nm">${esc(name)}</span><span class="cnt">${name === MY ? mySyms().length : graphemes(ICONS[name]).filter(c => c.trim()).length}</span><span class="arrow">${open ? '▾' : '▸'}</span></h4>${open ? grid : ''}</section>`;
       };
@@ -3083,7 +3083,7 @@
     const sel = (k, v) => `<select data-dk="${k}">${fontOptions(v || '', ['', '테마 기본'])}</select>`;
     const draw = () => {
       const d = S.deck, t = theme(), ft = d.footer || {};
-      bg.innerHTML = `<div class="modal design-modal"><h3>🎨 디자인 <span class="muted" style="font-weight:400;font-size:13px">교안 전체에 바로 적용됩니다 · Ctrl+Z 로 되돌리기</span></h3>
+      bg.innerHTML = `<div class="modal design-modal"><h3>디자인 <span class="muted" style="font-weight:400;font-size:13px">교안 전체에 바로 적용됩니다 · Ctrl+Z 로 되돌리기</span></h3>
         <h4>테마</h4><div class="theme-grid">${THEMES.map(x => `<div class="theme-card ${x.id === d.theme ? 'on' : ''}" data-theme="${x.id}"><div class="pv"></div><span>${esc(x.name)}</span></div>`).join('')}</div>
         <div class="design-cols">
           <div><h4>색 직접 지정</h4>${THEME_COLOR_KEYS.map(([k, n]) => `<label class="drow"><span>${n}</span><input type="color" data-color="${k}" value="${toHex(t[k])}">${d.colors && d.colors[k] ? '<em>바꿈</em>' : ''}</label>`).join('')}
@@ -3182,7 +3182,7 @@
 
   /* ---- 개체 목록 (Alt+F10) ---- */
   let layersOn = false;
-  const TYPE_ICON = { text: 'T', image: '🖼', shape: '◆', table: '▦', chart: '📊', math: '∑', embed: '▶' };
+  const TYPE_ICON = { text: icon('text', 15), image: icon('image', 15), shape: icon('shape', 15), table: icon('table', 15), chart: icon('chart', 15), math: '∑', embed: '▶' };
   function elLabel(e) {
     if (e.name) return e.name;
     if (e.type === 'text' || e.type === 'shape') { const t = stripHtml((e.html || '').replace(/<\/(li|p|div)>|<br\s*\/?>/gi, ' · ')).replace(/^[\s·]+|[\s·]+$/g, ''); if (t) return t.slice(0, 26); }
@@ -3226,7 +3226,7 @@
     }
     const els = curSlide().elements.slice().reverse();
     p.innerHTML = `<div class="lh"><b>개체 목록</b><span class="muted">위쪽 = 앞쪽 · 끌어서 순서 바꾸기</span><button class="btn sm ghost" data-lclose title="닫기 (Alt+F10)">✕</button></div>` +
-      (els.map(e => `<div class="li ${S.sel.includes(e.id) ? 'on' : ''} ${e.hide ? 'off' : ''}" draggable="true" data-id="${e.id}"><span class="ti">${TYPE_ICON[e.type] || '?'}</span><span class="nm" title="더블클릭: 이름 바꾸기">${esc(elLabel(e))}</span>${e.group ? '<span class="gp" title="묶음">⛓</span>' : ''}${e.step ? `<span class="st" title="${e.step}번째 클릭에 나타남">${e.step}</span>` : ''}<button class="ib" data-lhide title="${e.hide ? '보이기' : '숨기기'}">${e.hide ? '🙈' : '👁'}</button><button class="ib" data-llock title="잠금">${e.locked ? '🔒' : '🔓'}</button></div>`).join('') || '<div class="muted" style="padding:12px">이 슬라이드에 요소가 없습니다</div>');
+      (els.map(e => `<div class="li ${S.sel.includes(e.id) ? 'on' : ''} ${e.hide ? 'off' : ''}" draggable="true" data-id="${e.id}"><span class="ti">${TYPE_ICON[e.type] || '?'}</span><span class="nm" title="더블클릭: 이름 바꾸기">${esc(elLabel(e))}</span>${e.group ? '<span class="gp" title="묶음">' + icon('link', 13) + '</span>' : ''}${e.step ? `<span class="st" title="${e.step}번째 클릭에 나타남">${e.step}</span>` : ''}<button class="ib" data-lhide title="${e.hide ? '보이기' : '숨기기'}">${icon(e.hide ? 'eyeOff' : 'eye', 15)}</button><button class="ib" data-llock title="잠금">${icon(e.locked ? 'lock' : 'unlock', 15)}</button></div>`).join('') || '<div class="muted" style="padding:12px">이 슬라이드에 요소가 없습니다</div>');
   }
 
   /* ---- 개요로 슬라이드 만들기 ---- */
@@ -3295,7 +3295,7 @@
   function showOutline() {
     if (S.editing) endEdit();
     const bg = document.createElement('div'); bg.className = 'modal-bg';
-    bg.innerHTML = `<div class="modal outline-modal"><h3>📝 개요로 슬라이드 만들기 <span class="muted" style="font-weight:400;font-size:13px">한글·워드·메모장·ChatGPT 에서 쓴 개요를 붙여넣으세요</span></h3>
+    bg.innerHTML = `<div class="modal outline-modal"><h3>개요로 슬라이드 만들기 <span class="muted" style="font-weight:400;font-size:13px">한글·워드·메모장·ChatGPT 에서 쓴 개요를 붙여넣으세요</span></h3>
       <div class="outline-help"><code># 제목</code> 첫 번째는 표지, 그다음부터 섹션 구분 · <code>## 제목</code> 새 슬라이드 · <code>- 항목</code> 글머리 (앞에 빈칸 두 개 = 하위 항목) · <code>1. 항목</code> 번호 목록 · <code>&gt; 문장</code> 발표자 노트 · <code>**굵게**</code><br>제목 기호(#)가 하나도 없으면 빈 줄로 슬라이드를 나누고, 각 묶음의 첫 줄이 제목이 됩니다.</div>
       <textarea id="olText" class="mono" spellcheck="false" placeholder="${esc(OUTLINE_SAMPLE)}"></textarea>
       <div class="actions"><span id="olInfo" class="muted" style="flex:1;font-size:12.5px">현재 슬라이드 뒤에 추가됩니다</span><button class="btn" data-sample>예시 넣기</button><button class="btn" data-close>취소</button><button class="btn primary" id="olGo">슬라이드 만들기</button></div></div>`;
@@ -3357,14 +3357,14 @@
   $('btnAddMore').onclick = (ev) => {
     ev.stopPropagation();
     btnMenu(ev.currentTarget, [
-      { label: '∑ 수식…', fn: () => openMathDialog(null) },
-      { label: '▶ 동영상 · 웹 페이지 (주소)…', fn: () => openEmbedDialog(null) },
-      { label: '🎞 동영상 파일…', fn: () => $('fileVideo').click() },
-      { label: '📽 PPT 에서 영상 가져오기…', fn: () => showPptVideos() },
-      { label: '🧩 PPT 에서 심벌·그림 가져오기…', fn: () => showPptSyms() },
+      { label: '수식…', fn: () => openMathDialog(null) },
+      { label: '동영상 · 웹 페이지 (주소)…', fn: () => openEmbedDialog(null) },
+      { label: '동영상 파일…', fn: () => $('fileVideo').click() },
+      { label: 'PPT 에서 영상 가져오기…', fn: () => showPptVideos() },
+      { label: 'PPT 에서 심벌·그림 가져오기…', fn: () => showPptSyms() },
       { sep: true },
-      { label: '📝 개요로 슬라이드 만들기…', fn: showOutline },
-      { label: '🖼 사진 앨범 (사진마다 한 장씩)…', fn: () => $('fileAlbum').click() },
+      { label: '개요로 슬라이드 만들기…', fn: showOutline },
+      { label: '사진 앨범 (사진마다 한 장씩)…', fn: () => $('fileAlbum').click() },
     ]);
   };
   $('btnOrder').onclick = (ev) => {
@@ -3419,8 +3419,8 @@
       bg.innerHTML = `<div class="modal draft-modal"><h3>저장하지 않은 작업본이 이 기기에 남아 있습니다</h3>
         <p class="dr-lead">지난번에 이 교안을 고친 뒤 <b>저장하지 않고</b> 창을 닫았습니다. 어느 쪽으로 열지 골라 주세요.<br><b>어느 쪽을 골라도 다른 쪽은 지워지지 않습니다.</b></p>
         <div class="dr-cards">
-          ${card('draft', '📝', '저장하지 않은 작업본', '이 기기에만 있습니다', '마지막으로 고친 때', when(at), a.length, '이 작업본 이어서 하기', !savedNewer && !!at, !savedNewer)}
-          ${card('saved', '💾', '저장된 교안', esc(WHERE[API.mode] || ''), '저장한 때', when(S.base), b.length, '저장된 교안으로 열기', savedNewer, savedNewer)}
+          ${card('draft', icon('edit', 16), '저장하지 않은 작업본', '이 기기에만 있습니다', '마지막으로 고친 때', when(at), a.length, '이 작업본 이어서 하기', !savedNewer && !!at, !savedNewer)}
+          ${card('saved', icon('save', 16), '저장된 교안', esc(WHERE[API.mode] || ''), '저장한 때', when(S.base), b.length, '저장된 교안으로 열기', savedNewer, savedNewer)}
         </div>
         <p class="dr-diff">${diffText}</p>
         ${foreign ? `<p class="dr-warn">⚠ 이 작업본을 만든 <b>뒤에</b> 저장된 교안이 다른 곳(다른 기기 · 다른 탭)에서 바뀌었${info.base !== undefined ? '습니다' : '을 수 있습니다'}.<br>작업본을 이어서 하고 저장하면 <b>그쪽에서 고친 내용이 사라집니다.</b> 잘 모르겠으면 [저장된 교안으로 열기] 를 고르세요.</p>` : ''}
