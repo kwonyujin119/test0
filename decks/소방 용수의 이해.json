@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-06T08:36:24.166Z",
+ "modified": "2026-11-06T09:06:15.137Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -6374,6 +6374,137 @@
    ]
   },
   {
+   "id": "pf8a5r0oi",
+   "bg": null,
+   "transition": "",
+   "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
+   "elements": [
+    {
+     "id": "2f4titndx",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 426,
+     "y": 217,
+     "w": 1069,
+     "h": 558,
+     "src": "assets/clipboard-1793955609559-undxc1t.png",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "yz6hyi0oi",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "⑪ 현장별 유수량 비교 (24. 1. 21. 대곡동 가구공장 화재)",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "oazkfa205"
+    },
+    {
+     "id": "3jwxnz0oi",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 426,
+     "y": 820,
+     "w": 1069,
+     "h": 114,
+     "fill": "#0c2a4d",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#0369a1",
+     "gAngle": 100,
+     "mk": "2n5teq212"
+    },
+    {
+     "id": "pjl74b0oi",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 254,
+     "y": 820,
+     "w": 1412,
+     "h": 114,
+     "html": "최대 유량 67 m3/h -&gt; (환산) 1,100 L/min",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "lineHeight": 1.3,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 38
+     },
+     "mk": "t3f2wn213"
+    },
+    {
+     "id": "rzhgq2pnn",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 426,
+     "y": 215,
+     "w": 1069,
+     "h": 560,
+     "src": "assets/clipboard-1793955545254-t9rpuc8.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "mk": "hlib559rp"
+    },
+    {
+     "id": "1kbl1m0oi",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 931,
+     "y": 264,
+     "w": 131,
+     "h": 450,
+     "fill": "",
+     "stroke": "#fe0101",
+     "strokeWidth": 2,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "color": "#111111"
+     },
+     "fill2": "#f97316",
+     "gAngle": 135,
+     "mk": "hbk1skzxw"
+    }
+   ]
+  },
+  {
    "id": "dpg2eb227",
    "bg": null,
    "transition": "",
@@ -6403,122 +6534,15 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
+     "type": "image",
      "x": 120,
      "y": 236,
      "w": 1180,
      "h": 600,
-     "fill": "none",
-     "stroke": "#0369a1",
-     "strokeWidth": 3,
+     "src": "assets/clipboard-1793954745807-c4wqa7o.png",
+     "fit": "cover",
      "radius": 18,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "dash": true
-    },
-    {
-     "id": "4zuvi9217",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.9,
-     "type": "shape",
-     "shape": "rect",
-     "x": 600,
-     "y": 440,
-     "w": 220,
-     "h": 46,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 23,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "wkgkv3218",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 600,
-     "y": 440,
-     "w": 220,
-     "h": 46,
-     "html": "이 미 지  자 리",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "jzljwa219",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 144,
-     "y": 500,
-     "w": 1132,
-     "h": 54,
-     "html": "수운영관리시스템 — 화재 현장 주변 소화전",
-     "style": {
-      "fontSize": 30,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "$title"
-     }
-    },
-    {
-     "id": "7e79dl220",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 150,
-     "y": 560,
-     "w": 1120,
-     "h": 112,
-     "html": "화재 지점과 주변 소화전, 블록 경계가 함께 표시된 화면\n어느 소화전이 어느 블록인지 구분되는 자료",
-     "style": {
-      "fontSize": 24,
-      "align": "center",
-      "lineHeight": 1.5,
-      "color": "$muted"
-     }
-    },
-    {
-     "id": "8lntw2221",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 790,
-     "w": 1180,
-     "h": 40,
-     "html": "인천시 상수도사업본부 수운영관리시스템",
-     "style": {
-      "fontSize": 24,
-      "align": "center",
-      "color": "$muted"
-     }
+     "shadow": false
     },
     {
      "id": "scr3vj222",
@@ -7021,7 +7045,7 @@
      "y": 80,
      "w": 1680,
      "h": 124,
-     "html": "⑪ 현장별 유수량 비교 (26. 6. 16. 원창동 공장 화재)",
+     "html": "⑪ 현장별 유수량 비교 (862블록 26. 6. 16. 원창동 공장 화재)",
      "style": {
       "valign": "middle",
       "letterSpacing": -1
@@ -7152,7 +7176,7 @@
      "y": 80,
      "w": 1680,
      "h": 124,
-     "html": "⑪ 현장별 유수량 비교 (26. 7. 18. 석남동 물류창고 화재)",
+     "html": "⑪ 현장별 유수량 비교 (813블록 <span style=\"background-color: initial\">26. 7. 18. 석남동 물류창고 화재)</span>",
      "style": {
       "valign": "middle",
       "letterSpacing": -1
@@ -7468,6 +7492,79 @@
      "radius": 0,
      "shadow": false,
      "border": 5
+    }
+   ]
+  },
+  {
+   "id": "vmsha190y",
+   "bg": null,
+   "transition": "",
+   "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
+   "elements": [
+    {
+     "id": "533oea90y",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "⑪ 현장별 유수량 비교 (895블록 26. 9. 18. 경서동 공장 화재) ",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "oazkfa205"
+    },
+    {
+     "id": "ql2r7190y",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 426,
+     "y": 820,
+     "w": 1069,
+     "h": 114,
+     "fill": "#0c2a4d",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#0369a1",
+     "gAngle": 100,
+     "mk": "2n5teq212"
+    },
+    {
+     "id": "c6ds8g90y",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 254,
+     "y": 820,
+     "w": 1412,
+     "h": 114,
+     "html": "청라 아파트 단지   VS   서부산업단지(주물공단)",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "lineHeight": 1.3,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 38
+     },
+     "mk": "t3f2wn213"
     }
    ]
   }
