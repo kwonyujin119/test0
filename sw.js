@@ -27,7 +27,10 @@ function saveCopy(req, res) { // 받은 최신 파일을 사본으로 (다음에
 function netFirst(req) {
   const nav = req.mode === 'navigate';
   return caches.match(req, { ignoreSearch: true }).then(cached => {
-    const net = fetch(req);
+    /* 브라우저가 묵혀 둔 파일(서버가 10분 동안 그대로 쓰라고 한 것)을 쓰지 않고, 매번 서버에 새것인지 물어봄.
+       새 버전을 올린 직후에 새 화면(html)과 옛 꾸밈·옛 스크립트(css·js)가 섞여 보이지 않게 하려는 것 — 바뀌지 않은 파일은 다시 받지 않는다 */
+    const fresh = { cache: 'no-cache' };
+    const net = nav ? fetch(req.url, fresh).then(r => r.redirected ? fetch(req) : r) : fetch(req, fresh);
     if (!cached) return net.then(r => { saveCopy(req, r); return r; }).catch(err => nav ? caches.match('index.html').then(m => { if (m) return m; throw err; }) : Promise.reject(err));
     return new Promise(resolve => {
       let done = false; const finish = (r) => { if (!done) { done = true; clearTimeout(timer); resolve(r); } };
