@@ -1150,3 +1150,6 @@ body.notes-view { background: var(--ui-bg); }
   .ed { grid-template-columns: 148px minmax(0, 1fr) 264px; }
   .ed-props .prow .ctrls { flex-wrap: wrap; } /* 좁은 속성 창: 단추 글자가 겹치지 않게 다음 줄로 */
 }
+/* 슬라이드 안의 글자는 화면 꾸밈의 영향을 받지 않는다 (교안 모양이 바뀌지 않게) */
+.slide { font-size: 14px; letter-spacing: normal; text-rendering: auto; font-feature-settings: normal; }
+.slide h1, .slide h2, .slide h3, .slide h4 { letter-spacing: normal; }
