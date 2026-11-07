@@ -60,6 +60,22 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1
+    },
+    {
+     "id": "yyp5vd5my",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 810,
+     "y": 390,
+     "w": 300,
+     "h": 300,
+     "src": "assets/symbol-n5mtirz.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
     }
    ]
   },
@@ -77,7 +93,7 @@
      "y": 260,
      "w": 1680,
      "h": 600,
-     "html": "<ul><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li></ul>",
+     "html": "<ul><li>ㅁㄴㅇㄹⅠⅠⅢⅤⅦⅧⅨⅩ○●</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li><li>ㅁㄴㅇㄹ</li></ul>",
      "style": {
       "fontSize": 56
      },
@@ -103,11 +119,31 @@
      "anim": "zoom",
      "rotate": 0,
      "opacity": 1
+    },
+    {
+     "id": "7h4rgzm8v",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 850,
+     "y": 430,
+     "w": 994,
+     "h": 220,
+     "html": "✓ⅤⅦⅦⅦ",
+     "style": {
+      "fontSize": 150,
+      "align": "center",
+      "valign": "middle",
+      "lineHeight": 1
+     }
     }
    ],
    "decor": "none"
   }
  ],
- "modified": "2026-10-31T12:33:08.582Z",
+ "modified": "2026-11-07T10:58:13.712Z",
  "transition": "fade"
 }
