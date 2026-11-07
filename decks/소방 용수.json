@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-07T12:23:30.339Z",
+ "modified": "2026-11-07T12:37:39.662Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -2664,15 +2664,20 @@
      "h": 1090,
      "src": "assets/clipboard-1793924793101-i59ygkt.jpg",
      "fit": "cover",
-     "radius": 0,
-     "shadow": false,
+     "radius": 20,
+     "shadow": true,
      "mk": "wu1acr710",
      "fx": {
       "sepia": 0,
       "blur": 0,
-      "c": 131,
-      "b": 72
-     }
+      "c": 147,
+      "b": 64,
+      "s": 137
+     },
+     "mask": "",
+     "cropY": 100,
+     "cropX": 100,
+     "zoom": 1
     },
     {
      "id": "mdg2csrum",
