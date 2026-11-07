@@ -171,6 +171,7 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: v
 .guide { position: absolute; background: #f43f5e; pointer-events: none; z-index: 7; }
 .guide.v { width: 1px; top: 0; bottom: 0; } .guide.h { height: 1px; left: 0; right: 0; }
 .marquee { position: absolute; border: 1px solid var(--ui-accent); background: color-mix(in srgb, var(--ui-accent) 12%, transparent); pointer-events: none; z-index: 8; }
+.sizetip { position: absolute; transform: translateX(-50%); padding: 2px 8px; border-radius: 6px; background: var(--ui-fg); color: var(--ui-bg); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; z-index: 9; }
 .stage-foot { height: 34px; display: flex; align-items: center; gap: 10px; padding: 0 12px; color: var(--ui-muted); font-size: 12px; border-top: 1px solid var(--ui-border); background: var(--ui-panel); }
 .stage-foot .grow { flex: 1; }
 .text-toolbar { position: absolute; z-index: 20; display: flex; gap: 2px; background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 10px; padding: 4px; box-shadow: var(--ui-shadow); align-items: center; }
@@ -221,6 +222,11 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: v
 .prow .ctrls .btn { flex: 1; justify-content: center; }
 .prow .ctrls .btn.icon { flex: 0 0 auto; }
 .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.nl { display: flex; flex-direction: column; gap: 2px; min-width: 0; } /* 이름표 붙은 숫자 칸 (X · Y · 너비 · 높이) */
+.nl > span { color: var(--ui-muted); font-size: 11px; line-height: 1; padding-left: 2px; }
+.nl input[type=number] { width: 100%; }
+.nl .ctrls { display: flex; gap: 4px; } .nl .ctrls .btn { flex: 1; justify-content: center; }
+.align6 { grid-template-columns: repeat(6, 1fr); } .align6 .btn.icon { width: 100%; padding-left: 0; padding-right: 0; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .swatches { display: flex; gap: 5px; flex-wrap: wrap; }
 .swatch { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(var(--ui-tint), .2); cursor: pointer; }
