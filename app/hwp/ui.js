@@ -184,19 +184,21 @@
     return new Promise(res => {
       let done = false;
       const c = GH.cfg || GH.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main' };
-      dialog('문서함 연결 (GitHub)', `${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 토큰은 <b>이 기기에만</b> 기억되고 교안 작업장과 함께 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
+      const linked = !!GH.token && !opts.expired; // 이미 연결됨 → 상태를 보여 주고, 토큰 칸은 바꿀 때만
+      dialog(linked ? '문서함 연결 (GitHub) — 연결되어 있습니다' : '문서함 연결 (GitHub)', `${linked ? `<div class="info" style="margin-bottom:10px"><b>이 기기는 GitHub 저장소 ${escH(c.owner)}/${escH(c.repo)} 에 연결되어 있습니다.</b> 교안 작업장과 같은 연결입니다. 토큰을 바꿀 때만 아래에 새 토큰을 넣고 [바꾸기], 그대로 두려면 [취소].</div>` : ''}${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 토큰은 <b>이 기기에만</b> 기억되고 교안 작업장과 함께 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
         <div class="grid1" style="margin-top:12px"><label>저장소</label><div style="display:flex;gap:6px;align-items:center"><input id="g_o" value="${escH(c.owner)}" aria-label="사용자"><span>/</span><input id="g_r" value="${escH(c.repo)}" aria-label="저장소"></div>
-        <label for="g_t">토큰</label><input id="g_t" type="password" placeholder="github_pat_… 붙여넣기" autocomplete="off"></div>
+        <label for="g_t">토큰</label><input id="g_t" type="password" placeholder="${linked ? '바꿀 때만: 새 토큰 붙여넣기' : 'github_pat_… 붙여넣기'}" autocomplete="off"></div>
         <details class="howto"${opts.expired || !GH.token ? ' open' : ''}><summary>토큰 만드는 법</summary><ol>
           <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> 를 엽니다.</li>
           <li><b>Repository access</b> → <i>Only select repositories</i> → <b>${escH(c.repo)}</b></li>
           <li><b>Permissions</b> → <b>Contents</b> → <i>Read and write</i></li>
           <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
         </ol>${opts.expired ? '<p>기간이 끝난 토큰은 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 목록</a>에서 그 토큰을 열고 <i>Regenerate token</i> 을 누르면 같은 권한으로 새 문자열을 받습니다.</p>' : ''}</details>`, {
-        okText: '연결', noFocus: true, init: q => setTimeout(() => q('#g_t').focus(), 0),
+        okText: linked ? '바꾸기' : '연결', noFocus: true, init: q => setTimeout(() => { if (!linked) q('#g_t').focus(); }, 0),
         onOk: async (q) => {
           const cfg = { owner: q('#g_o').value.trim(), repo: q('#g_r').value.trim(), branch: c.branch || 'main', token: q('#g_t').value.trim() };
-          if (!cfg.owner || !cfg.repo || !cfg.token) { alert('저장소와 토큰을 입력하세요'); return false; }
+          if (linked && !cfg.token && cfg.owner === c.owner && cfg.repo === c.repo) { done = true; res(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
+          if (!cfg.owner || !cfg.repo || !cfg.token) { alert(linked ? '바꾸려면 새 토큰을 붙여넣어 주세요' : '저장소와 토큰을 입력하세요'); return false; }
           // 확인을 통과한 토큰만 이 기기에 기억 (틀린 토큰이 남아 '연결됨'으로 여겨지지 않게)
           const prev = GH.cfg; GH.cfg = cfg;
           try { const r = await GH.check(); if (!r.push) { GH.cfg = prev; alert('이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요)'); return false; } }
