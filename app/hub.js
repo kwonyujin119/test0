@@ -133,7 +133,7 @@
     const ck = d.name + '|' + (d.size || '') + '|' + (d.modified || '');
     if (!deckCache.has(ck)) deckCache.set(ck, API.load(d.name).catch(e => { deckCache.delete(ck); throw e; }));
     return deckCache.get(ck).then(deck => {
-      if (d.partial && !d._read) { d._read = true; d.title = deck.title || d.name; d.slides = (deck.slides || []).length; d.modified = fmtWhen(deck.modified); d._t = Date.parse(deck.modified) || 0; }
+      if (d.partial && !d._read) { d._read = true; d.title = deck.title || d.name; d.slides = (deck.slides || []).length; const when = deck.modified || deck.created; d.modified = fmtWhen(when); d._t = Date.parse(when) || 0; }
       return deck;
     });
   }

@@ -1145,3 +1145,8 @@ body.notes-view { background: var(--ui-bg); }
 .thumb .slide { position: absolute; left: 0; top: 0; } /* 크기 맞추기 전에도 썸네일 칸을 늘리지 않게 */
 @media (min-width: 821px) { .ed-side .thumbs { flex: 1 0 auto; } }
 @media (max-width: 820px) { .thumb { overflow: hidden; } .ed-top .title input { width: 104px; } }
+.shell ~ #pwaPill { left: auto !important; right: 16px !important; bottom: 16px !important; } /* 왼쪽 메뉴를 가리지 않게 */
+@media (min-width: 821px) and (max-width: 1100px) {
+  .ed { grid-template-columns: 148px minmax(0, 1fr) 264px; }
+  .ed-props .prow .ctrls { flex-wrap: wrap; } /* 좁은 속성 창: 단추 글자가 겹치지 않게 다음 줄로 */
+}
