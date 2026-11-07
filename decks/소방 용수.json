@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-07T10:46:57.435Z",
+ "modified": "2026-11-07T12:21:22.862Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -2641,6 +2641,32 @@
       "lineHeight": 1.4,
       "bold": true
      }
+    }
+   ],
+   "hidden": false
+  },
+  {
+   "id": "6sh7v7ntt",
+   "bg": null,
+   "transition": "",
+   "notes": "이 강의가 시작된 지점. 계산값과 실측값이 왜 다른가 — Ⅲ부 전체가 그 답이다.",
+   "elements": [
+    {
+     "id": "5gcgasntt",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793924793101-i59ygkt.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "mk": "wu1acr710"
     }
    ],
    "hidden": false
