@@ -145,8 +145,9 @@
     for (const o of VE.p.titles) if (f.t >= o.start && f.t < o.end) drawTitle(c, W, H, o, f.t);
     if (!f.noCaption && VE.p.cap.on) { const cap = VE.capAt(f.t); if (cap) drawCaption(c, W, H, cap, f.t); }
     /* 캐릭터로 바꾼 영상이라는 표시 */
-    if (usesChar && VE.p.aiLabel) {
-      const u = Math.min(W, H) * .024, label = 'AI 캐릭터', m = Math.min(W, H) * .03; c.font = `600 ${u}px ${FONT}`; c.textBaseline = 'middle'; c.textAlign = 'left';
+    const usesVoice = !!(VE.dub && VE.dub.labelAt(f.t, clip)), showChar = usesChar && VE.p.aiLabel;
+    if (showChar || usesVoice) {
+      const u = Math.min(W, H) * .024, label = showChar && usesVoice ? 'AI 캐릭터 · AI 음성' : showChar ? 'AI 캐릭터' : 'AI 음성', m = Math.min(W, H) * .03; c.font = `600 ${u}px ${FONT}`; c.textBaseline = 'middle'; c.textAlign = 'left';
       const w = c.measureText(label).width + u * 1.2, h = u * 1.8; c.fillStyle = 'rgba(12,13,15,.62)'; c.beginPath(); c.roundRect(W - m - w, m, w, h, h / 2); c.fill(); c.fillStyle = '#fff'; c.fillText(label, W - m - w + u * .6, m + h / 2);
     }
     c.restore();

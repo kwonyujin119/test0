@@ -70,7 +70,7 @@ const VE = window.VE = {};
     media: [], clips: [], titles: [], music: [],
     cap: { on: true, style: 'outline', size: 1, pos: 'bottom', maxChars: 26 },
     voice: { clean: false, denoise: .85, level: true, preset: 'none', pitch: 0 },
-    aiLabel: true, faceOk: false,
+    aiLabel: true, aiVoiceLabel: true, faceOk: false,
   });
   VE.p = VE.newProject(); VE.rt = new Map(); VE.sel = null; VE.rev = 1;
   const ASPECTS = VE.ASPECTS = { '16:9': [16, 9], '9:16': [9, 16], '1:1': [1, 1], '4:5': [4, 5] };
@@ -80,7 +80,7 @@ const VE = window.VE = {};
   VE.clip = id => VE.p.clips.find(c => c.id === id);
 
   /* 되돌리기 */
-  const SNAP_KEYS = ['clips', 'titles', 'music', 'aspect', 'bg', 'cap', 'voice', 'aiLabel'];
+  const SNAP_KEYS = ['clips', 'titles', 'music', 'aspect', 'bg', 'cap', 'voice', 'aiLabel', 'aiVoiceLabel'];
   const undoS = [], redoS = [];
   const snapStr = () => { const o = {}; SNAP_KEYS.forEach(k => o[k] = VE.p[k]); return JSON.stringify(o); };
   VE.snap = () => { undoS.push(snapStr()); if (undoS.length > 120) undoS.shift(); redoS.length = 0; VE.emit('history'); };

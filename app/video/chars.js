@@ -1,4 +1,4 @@
-/* 영상 작업장 — 얼굴 자리에 그리는 캐릭터
+/* 영상 작업장 — 얼굴 자리에 그리는 캐릭터 · 사진 가상 인물(app/video/people/, 사용자가 준 그림)
    기본 그림은 코드로 그린 임시 캐릭터다. 사용자가 그림(PNG·SVG)을 넣으면 그것을 쓴다.
    얼굴 값: blinkL·blinkR(0 뜸~1 감음), mouth(0~1 벌림), smile(0~1), brow(0~1 올림), yaw·pitch(-1~1 고개 방향) */
 'use strict';
@@ -23,6 +23,51 @@
     ell(c, x, y + h * .35, w, h, dark);
     if (tongue && open > .22) { c.save(); c.beginPath(); c.ellipse(x, y + h * .35, w, h, 0, 0, TAU); c.clip(); ell(c, x, y + h * 1.05, w * .7, h * .62, tongue); c.restore(); }
   };
+
+  /* 사진으로 만든 가상 인물: 얼굴 자리에 맞춰 얹고, 말할 때 턱을 내려 입을 벌린다
+     a = 1000px 너비 그림 안의 기준점 (얼굴 가운데 cx·cy, 볼 사이 너비 fw, 입 가운데 mx · 너비 mw, 입술 사이 ly, 턱 chin) — 얼굴 인식으로 잰 값 */
+  const photos = {}; const photoWait = [];
+  function loadPhoto(id, file, a) {
+    if (photos[id]) return photos[id].p;
+    const o = photos[id] = {};
+    o.p = new Promise(res => {
+      /* decode() 는 창이 가려져 있으면 끝나지 않을 수 있어 onload 로 기다린다 */
+      const img = new Image();
+      new Promise((ok, bad) => { img.onload = ok; img.onerror = () => bad(new Error(file)); img.src = file; }).then(() => {
+        /* 턱 조각: 입술 사이부터 턱 아래까지. 옆과 아래는 흐리게 지워 이음매를 감춘다 */
+        /* 가운데(입 너비쯤)만 온전히 움직이고 볼 쪽으로 갈수록 덜 움직여 이음매가 보이지 않게 한다 */
+        const jw = Math.round(a.fw * .95), jh = Math.round(a.chin - a.ly + a.fw * .3), x0 = Math.round(a.mx - jw / 2), y0 = Math.round(a.ly);
+        const cv = document.createElement('canvas'); cv.width = jw; cv.height = jh; const c = cv.getContext('2d');
+        c.drawImage(img, x0, y0, jw, jh, 0, 0, jw, jh); c.globalCompositeOperation = 'destination-in';
+        let g = c.createLinearGradient(0, 0, jw, 0); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.24, '#000'); g.addColorStop(.76, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(0, 0, jw, jh);
+        g = c.createLinearGradient(0, 0, 0, jh); g.addColorStop(0, '#000'); g.addColorStop(.5, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(0, 0, jw, jh);
+        o.img = img; o.jaw = cv; o.x0 = x0; o.y0 = y0; o.ready = true; VE.emit && VE.emit('chars'); res();
+      }).catch(e => { console.warn('가상 인물 그림을 읽지 못했습니다', e); res(); });
+    });
+    photoWait.push(o.p); return o.p;
+  }
+  function photoChar(id, name, file, a) {
+    return {
+      name, group: '가상 인물', cover: 1, photo: true, load: () => loadPhoto(id, file, a),
+      draw(c, f) {
+        const o = photos[id]; if (!o || !o.ready) { loadPhoto(id, file, a); return; }
+        /* 단위 공간: 얼굴 너비 2 → 사진 얼굴을 조금 크게(0.92 × 2) 얹어 실제 얼굴을 덮음 */
+        const s = 1.84 / a.fw; c.translate(0, .18); c.scale(s, s); c.translate(-a.cx, -a.cy);
+        c.drawImage(o.img, 0, 0);
+        const open = Math.max(0, Math.min(1, (f.mouth - .06) / .94));
+        if (open > 0) {
+          /* 벌어진 입 속: 입꼬리는 그대로, 가운데가 가장 깊은 렌즈꼴 + 윗니 살짝 */
+          const d = open * a.fw * .055, hw = a.mw * .44;
+          c.save(); c.beginPath(); c.moveTo(a.mx - hw, a.ly); c.quadraticCurveTo(a.mx, a.ly - d * .2, a.mx + hw, a.ly); c.quadraticCurveTo(a.mx, a.ly + d * 2.3, a.mx - hw, a.ly); c.closePath();
+          const g = c.createLinearGradient(0, a.ly, 0, a.ly + d * 1.1); g.addColorStop(0, '#1e0c0e'); g.addColorStop(1, '#4b2427'); c.fillStyle = g; c.fill();
+          c.clip(); const t = c.createLinearGradient(0, a.ly - d * .2, 0, a.ly + d * .38); t.addColorStop(0, 'rgba(226,216,208,.78)'); t.addColorStop(1, 'rgba(226,216,208,0)'); c.fillStyle = t; c.fillRect(a.mx - hw * .58, a.ly - d * .2, hw * 1.16, d * .58); c.restore();
+          c.drawImage(o.jaw, o.x0, o.y0 + d);
+        }
+      },
+    };
+  }
+  /* 내보내기 전에 사진이 다 읽혔는지 기다림 */
+  VE.charsReady = () => { for (const k in CHARS) if (CHARS[k].load) CHARS[k].load(); return Promise.all(photoWait); };
 
   const CHARS = {
     cat: {
@@ -82,6 +127,12 @@
         for (const s of [-1, 1]) ell(c, s * .84, .72, .04, .04, side);
       },
     },
+    personM: photoChar('personM', '남성', 'app/video/people/virtual-m.webp', { cx: 512.2, cy: 333.1, fw: 282, mx: 512.2, mw: 127.3, ly: 399.8, chin: 499.2 }),
+    personF: photoChar('personF', '여성', 'app/video/people/virtual-f.webp', { cx: 521, cy: 354.4, fw: 291.9, mx: 524.4, mw: 126.5, ly: 433.7, chin: 529.7 }),
+    leadM: photoChar('leadM', '팀장 (남)', 'app/video/people/lead-m.webp', { cx: 352.2, cy: 342.4, fw: 277.5, mx: 352.7, mw: 115.4, ly: 410.2, chin: 502.9 }),
+    leadF: photoChar('leadF', '팀장 (여)', 'app/video/people/lead-f.webp', { cx: 540.9, cy: 383.1, fw: 320.2, mx: 537.9, mw: 133.4, ly: 470.6, chin: 572.5 }),
+    ceoM: photoChar('ceoM', '대표 (남)', 'app/video/people/ceo-m.webp', { cx: 507.4, cy: 362.4, fw: 302.3, mx: 508, mw: 124.2, ly: 440.2, chin: 536.3 }),
+    ceoF: photoChar('ceoF', '대표 (여)', 'app/video/people/ceo-f.webp', { cx: 528.4, cy: 362.3, fw: 308.3, mx: 525.3, mw: 135.5, ly: 442.7, chin: 547.6 }),
     teacherA: {
       name: '가상 강사 1', group: '가상 인물', cover: 1.3, draw(c, f) {
         const fx = f.yaw * .14, fy = f.pitch * .09, skin = '#f6d3b6', shade = '#e8b995', hair = '#2f2a2a', ink = '#1f1b1b', lens = '#2f2a2a';
