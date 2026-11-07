@@ -73,15 +73,15 @@
       <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 누르거나 화면을 눌러 닫기 · 전체 설명서: <a href="shortcuts.html" target="_blank" onclick="event.stopPropagation()">shortcuts.html</a></div>
     </div></div>
     <div class="pmenu peek" id="pmenu">
-      <button class="btn sm" data-a="notes" title="발표자 보기 (S)">노트</button>
-      <button class="btn sm" data-a="overview" title="한눈에 보기 (O)">목록</button>
-      <button class="btn sm" data-a="full" title="전체화면 (F)">전체화면</button>
-      <button class="btn sm" data-a="help" title="도움말 (?)">?</button>
-      <button class="btn sm" data-a="exit" title="종료 (Esc)">✕</button>
+      <button class="btn sm" data-a="notes" title="발표자 보기 (S)">${icon('notes', 16)}노트</button>
+      <button class="btn sm" data-a="overview" title="한눈에 보기 (O)">${icon('gallery', 16)}목록</button>
+      <button class="btn sm" data-a="full" title="전체화면 (F)">${icon('expand', 16)}전체화면</button>
+      <button class="btn sm icon" data-a="help" title="도움말 (?)" aria-label="도움말">${icon('help', 16)}</button>
+      <button class="btn sm icon" data-a="exit" title="종료 (Esc)" aria-label="종료">${icon('x', 16)}</button>
     </div>
     <div class="pend" id="pend">
-      <div>발표가 끝났습니다</div>
-      <div style="display:flex;gap:10px"><button class="btn" data-a="back">← 마지막 슬라이드</button><button class="btn" data-a="first">처음부터</button><button class="btn primary" data-a="exit">종료</button></div>
+      <div class="pend-t">발표가 끝났습니다</div>
+      <div class="pend-a"><button class="btn" data-a="back">마지막 슬라이드로</button><button class="btn" data-a="first">처음부터</button><button class="btn ink" data-a="exit">종료</button></div>
     </div>`;
   const $ = (id) => document.getElementById(id);
   const pstage = $('pstage'), pbar = $('pbar'), pnum = $('pnum'), pblank = $('pblank'), pdraw = $('pdraw'), plaser = $('plaser'), phud = $('phud'), pgoto = $('pgoto');

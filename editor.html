@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>편집 · 교안 작업장</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231a73e8'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316171a'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800'>교</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
@@ -16,38 +16,41 @@
 <body>
 <div class="ed">
   <div class="ed-top" id="top">
-    <a class="btn ghost" href="gyoan.html" title="교안 목록으로"><i data-ic="back"></i>목록</a>
-    <div class="title"><input id="deckTitle" title="교안 제목"><span class="dirty" title="저장되지 않은 변경"></span><span class="savestate" id="saveState"></span><span class="upchip" id="upStatus"></span></div>
+    <a class="ed-home" href="gyoan.html" title="교안 목록으로" aria-label="교안 목록으로"><i data-ic="back"></i><span class="mark">교</span></a>
+    <div class="title"><input id="deckTitle" title="교안 제목" aria-label="교안 제목"><span class="dirty" title="저장되지 않은 변경"></span><span class="savestate" id="saveState"></span><span class="upchip" id="upStatus"></span></div>
     <div class="grow"></div>
-    <div class="tgroup g-design" title="교안의 모양"><label class="lbl muted">테마</label>
-    <select id="theme"></select>
-    <button class="btn" id="btnDesign" title="테마 · 색 · 글꼴 · 꼬리말(슬라이드 번호)"><i data-ic="palette"></i>디자인</button></div>
-    <div class="tgroup g-undo" title="되돌리기"><button class="btn icon" id="btnUndo" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소"><i data-ic="undo"></i></button>
+    <div class="tgroup g-undo"><button class="btn icon" id="btnUndo" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소"><i data-ic="undo"></i></button>
     <button class="btn icon" id="btnRedo" title="다시 실행 (Ctrl+Y)" aria-label="다시 실행"><i data-ic="redo"></i></button></div>
-    <div class="tgroup g-file" title="저장 · 내보내기"><button class="btn" id="btnSave" title="저장 (Ctrl+S)"><i data-ic="save"></i>저장</button>
-    <button class="btn" id="btnExport" title="내보내기"><i data-ic="export"></i>내보내기 <span class="caret">▾</span></button></div>
-    <div class="tgroup g-show" title="보기 · 발표"><button class="btn" id="btnPreview" title="저장하지 않고 현재 슬라이드부터 미리보기"><i data-ic="eye"></i>미리보기</button>
-    <button class="btn primary" id="btnPresent" title="저장하고 현재 슬라이드부터 발표 (Shift+F5 · 처음부터는 F5)"><i data-ic="play"></i>발표</button></div>
+    <div class="tgroup g-view"><button class="btn icon" id="btnFind" title="찾기 (Ctrl+F) · 바꾸기 (Ctrl+H)" aria-label="찾기"><i data-ic="search"></i></button>
+    <button class="btn icon" id="btnLayers" title="개체 목록 · 선택 창 (Alt+F10)" aria-label="개체 목록"><i data-ic="layers"></i></button>
     <button class="btn icon" data-ui-theme title="화면을 어둡게"></button>
-    <button class="btn icon" id="btnHelp" title="단축키 (F1)" aria-label="단축키"><i data-ic="help"></i></button>
+    <button class="btn icon" id="btnHelp" title="단축키 (F1)" aria-label="단축키"><i data-ic="help"></i></button></div>
+    <div class="tgroup g-design"><label class="lbl muted" for="theme">테마</label>
+    <select id="theme" aria-label="테마"></select>
+    <button class="btn" id="btnDesign" title="테마 · 색 · 글꼴 · 꼬리말(슬라이드 번호)"><i data-ic="palette"></i>디자인</button></div>
+    <div class="tgroup g-file"><button class="btn" id="btnSave" title="저장 (Ctrl+S)"><i data-ic="save"></i>저장</button>
+    <button class="btn" id="btnExport" title="내보내기"><i data-ic="export"></i>내보내기</button></div>
+    <div class="tgroup g-show"><button class="btn" id="btnPreview" title="저장하지 않고 현재 슬라이드부터 미리보기"><i data-ic="eye"></i>미리보기</button>
+    <button class="btn ink" id="btnPresent" title="저장하고 현재 슬라이드부터 발표 (Shift+F5 · 처음부터는 F5)"><i data-ic="play"></i>발표</button></div>
     <button class="btn" id="btnProps" title="선택한 슬라이드·개체의 속성"><i data-ic="sliders"></i>속성</button>
   </div>
-  <div class="ed-tools">
-    <div class="group g-slide" data-label="슬라이드">
-      <button class="btn" id="btnAddSlide" title="새 슬라이드 (Ctrl+M)"><i data-ic="plus"></i>슬라이드 <span class="caret">▾</span></button>
+  <div class="ed-tools" role="toolbar" aria-label="넣기">
+    <div class="group g-slide">
+      <button class="btn" id="btnAddSlide" title="새 슬라이드 (Ctrl+M)"><i data-ic="slideAdd"></i>슬라이드</button>
     </div>
     <span class="sep"></span>
-    <div class="group g-insert" data-label="넣기">
-      <button class="btn" id="btnAddText" title="텍스트 상자"><i data-ic="text"></i>텍스트 <span class="caret">▾</span></button>
-      <button class="btn" id="btnAddImage" title="이미지 (붙여넣기 Ctrl+V · 끌어다 놓기도 됨)"><i data-ic="image"></i>이미지 <span class="caret">▾</span></button>
-      <button class="btn" id="btnAddShape" title="도형 (더블클릭하면 안에 글 쓰기)"><i data-ic="shape"></i>도형 <span class="caret">▾</span></button>
-      <button class="btn" id="btnAddTable" title="표 (엑셀 표는 Ctrl+V 로 바로)"><i data-ic="table"></i>표 <span class="caret">▾</span></button>
-      <button class="btn" id="btnAddChart" title="차트"><i data-ic="chart"></i>차트 <span class="caret">▾</span></button>
+    <div class="group g-insert">
+      <button class="btn" id="btnAddText" title="텍스트 상자"><i data-ic="text"></i>텍스트</button>
+      <button class="btn" id="btnAddImage" title="이미지 (붙여넣기 Ctrl+V · 끌어다 놓기도 됨)"><i data-ic="image"></i>이미지</button>
+      <button class="btn" id="btnAddShape" title="도형 (더블클릭하면 안에 글 쓰기)"><i data-ic="shape"></i>도형</button>
+      <button class="btn" id="btnAddTable" title="표 (엑셀 표는 Ctrl+V 로 바로)"><i data-ic="table"></i>표</button>
+      <button class="btn" id="btnAddChart" title="차트"><i data-ic="chart"></i>차트</button>
       <button class="btn" id="btnAddIcon" title="아이콘 · 기호"><i data-ic="smile"></i>아이콘</button>
-      <button class="btn" id="btnAddMore" title="수식 · 동영상(주소·파일·PPT) · 개요로 만들기 · 사진 앨범"><i data-ic="more"></i>더보기 <span class="caret">▾</span></button>
+      <button class="btn" id="btnAddMore" title="수식 · 동영상(주소·파일·PPT) · 개요로 만들기 · 사진 앨범"><i data-ic="more"></i>더보기</button>
     </div>
-    <span class="sep"></span>
-    <div class="group g-align" id="alignGroup" data-label="맞춤">
+  </div>
+  <div class="ed-ctx" role="toolbar" aria-label="선택한 개체 정리">
+    <div class="group g-align" id="alignGroup">
       <button class="btn icon sm" data-align="left" title="왼쪽 정렬" aria-label="왼쪽 정렬"><i data-ic="alignL"></i></button>
       <button class="btn icon sm" data-align="hcenter" title="가로 가운데" aria-label="가로 가운데"><i data-ic="alignH"></i></button>
       <button class="btn icon sm" data-align="right" title="오른쪽 정렬" aria-label="오른쪽 정렬"><i data-ic="alignR"></i></button>
@@ -56,20 +59,15 @@
       <button class="btn icon sm" data-align="bottom" title="아래 정렬" aria-label="아래 정렬"><i data-ic="alignB"></i></button>
     </div>
     <span class="sep"></span>
-    <div class="group g-arrange" data-label="정리">
-      <button class="btn sm" id="btnOrder" title="앞뒤 순서 · 등간격">순서 <span class="caret">▾</span></button>
+    <div class="group g-arrange">
+      <button class="btn sm" id="btnOrder" title="앞뒤 순서 · 등간격">순서</button>
       <button class="btn sm" id="btnGroup" title="묶기 (Ctrl+G) / 풀기 (Ctrl+Shift+G)">묶기</button>
       <button class="btn sm" id="btnDup" title="복제 (Ctrl+D)">복제</button>
       <button class="btn sm danger" id="btnDel" title="삭제 (Delete)">삭제</button>
     </div>
-    <div class="grow" style="flex:1"></div>
-    <div class="group g-view" data-label="찾기 · 목록">
-      <button class="btn sm" id="btnFind" title="찾기 (Ctrl+F) · 바꾸기 (Ctrl+H)"><i data-ic="search"></i>찾기</button>
-      <button class="btn sm" id="btnLayers" title="개체 목록 · 선택 창 (Alt+F10)"><i data-ic="layers"></i>개체</button>
-    </div>
   </div>
   <div class="ed-side">
-    <div class="side-head"><span class="sh-t">슬라이드 <span id="slideCount"></span></span><span class="muted">드래그로 순서 변경</span></div>
+    <div class="side-head"><span class="sh-t">슬라이드 <span id="slideCount"></span></span></div>
     <div class="thumbs" id="thumbs"></div>
     <div class="add-split">
       <button class="btn" id="btnAddSlide2" title="빈 슬라이드를 지금 슬라이드 다음에 넣습니다"><i data-ic="plus"></i><span class="wide">새 슬라이드</span></button>
@@ -80,14 +78,14 @@
     <div class="stage" id="stage"><div class="overlay" id="overlay"></div></div>
     <div class="stage-foot">
       <span id="footSlide"></span>
-      <span class="muted" id="hint" style="margin-left:10px">더블클릭 = 글 편집 · Ctrl+V = 이미지·표 붙여넣기 · F1 = 단축키</span>
+      <span class="muted" id="hint">더블클릭 = 글 편집 · Ctrl+V = 이미지·표 붙여넣기 · F1 = 단축키</span>
       <span class="grow"></span>
       <span id="footSel" class="muted"></span>
       <button class="btn sm" id="btnSize" title="이 교안의 용량 — 누르면 무엇이 얼마나 차지하는지 보여 줍니다">용량 …</button>
       <button class="btn sm" id="btnGrid" title="격자 보기 · 격자에 맞춰 붙기"><i data-ic="grid"></i>격자</button>
+      <button class="btn sm" id="btnMinUi" title="양옆 패널 숨기기 · 보이기 (Ctrl+\)" aria-pressed="false"><i data-ic="panels"></i>패널</button>
       <span class="sep"></span>
-      <label class="muted">확대</label>
-      <select id="zoom"><option value="fit">맞춤</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select>
+      <select id="zoom" aria-label="확대"><option value="fit">맞춤</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select>
     </div>
     <div class="dropzone-hint">이미지·동영상·PPT 파일을 여기에 놓으세요</div>
   </div>

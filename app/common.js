@@ -175,6 +175,18 @@ const ICONS = {
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   edit: '<path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/>',
   x: '<path d="m6 6 12 12"/><path d="m18 6-12 12"/>',
+  stack: '<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M7 5.5h10"/><path d="M9.5 2.5h5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  import: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4"/>',
+  gallery: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  rows: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+  dots: '<path d="M5 12h.01"/><path d="M12 12h.01"/><path d="M19 12h.01"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>',
+  trash: '<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5"/><path d="M14 11v5"/>',
+  slideAdd: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6"/><path d="M9 12h6"/>',
+  panels: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16"/><path d="M16 4v16"/>',
+  expand: '<path d="M4 9V5a1 1 0 0 1 1-1h4"/><path d="M15 4h4a1 1 0 0 1 1 1v4"/><path d="M20 15v4a1 1 0 0 1-1 1h-4"/><path d="M9 20H5a1 1 0 0 1-1-1v-4"/>',
+  notes: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h3"/>',
 };
 function icon(name, size) {
   const z = size || 18;
@@ -195,7 +207,7 @@ const UiTheme = {
   },
   paint() {
     const dark = this.get() === 'dark';
-    const m = document.querySelector('meta[name="theme-color"]'); if (m && !document.body.classList.contains('present')) m.content = dark ? '#242628' : '#ffffff';
+    const m = document.querySelector('meta[name="theme-color"]'); if (m && !document.body.classList.contains('present')) m.content = dark ? '#17181b' : '#ffffff';
     document.querySelectorAll('[data-ui-theme]').forEach(b => {
       b.innerHTML = icon(dark ? 'sun' : 'moon'); b.title = dark ? '화면을 밝게' : '화면을 어둡게'; b.setAttribute('aria-label', b.title);
     });
