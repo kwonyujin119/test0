@@ -3800,13 +3800,71 @@
    "noFooter": true
   },
   {
+   "id": "pmpc3zwgi",
+   "bg": null,
+   "transition": "",
+   "notes": "환류 — 주의집중. 자갈밭에서 흰색 이어버드 찾기. 3단: 사진 → 정답 → GPT 화면.",
+   "elements": [
+    {
+     "id": "8bdd8lurk",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793953612871-nurjyd5.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "3sv9oi9f5",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793954098412-y9f5nnl.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "maqcr7qro",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793954167606-zqrolni.png",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    }
+   ],
+   "decor": "none",
+   "noFooter": true
+  },
+  {
    "id": "156ibv417",
    "bg": {},
    "transition": "",
    "notes": "구도심·고지대가 왜 어려운지가 이 표 하나로 설명된다.",
    "elements": [
     {
-     "id": "pb182",
+     "id": "pb192",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -3826,7 +3884,7 @@
      "style": {}
     },
     {
-     "id": "pf182",
+     "id": "pf192",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -3835,7 +3893,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 32,
+     "w": 30,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -3846,7 +3904,7 @@
      "style": {}
     },
     {
-     "id": "pb181",
+     "id": "pb191",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -3866,7 +3924,7 @@
      "style": {}
     },
     {
-     "id": "pf181",
+     "id": "pf191",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -3886,7 +3944,7 @@
      "style": {}
     },
     {
-     "id": "pb180",
+     "id": "pb190",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -3906,7 +3964,7 @@
      "style": {}
     },
     {
-     "id": "pf180",
+     "id": "pf190",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4078,7 +4136,7 @@
    "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
    "elements": [
     {
-     "id": "pb192",
+     "id": "pb202",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4098,7 +4156,7 @@
      "style": {}
     },
     {
-     "id": "pf192",
+     "id": "pf202",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4107,7 +4165,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 64,
+     "w": 61,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -4118,7 +4176,7 @@
      "style": {}
     },
     {
-     "id": "pb191",
+     "id": "pb201",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4138,7 +4196,7 @@
      "style": {}
     },
     {
-     "id": "pf191",
+     "id": "pf201",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4158,7 +4216,7 @@
      "style": {}
     },
     {
-     "id": "pb190",
+     "id": "pb200",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4178,7 +4236,7 @@
      "style": {}
     },
     {
-     "id": "pf190",
+     "id": "pf200",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4263,7 +4321,7 @@
    "notes": "OX — 답: 아닙니다 / 같은 주입점을 쓰면 <b>합쳐서 통수능력을 넘을 수 없습니다</b>",
    "elements": [
     {
-     "id": "pb202",
+     "id": "pb212",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4283,7 +4341,7 @@
      "style": {}
     },
     {
-     "id": "pf202",
+     "id": "pf212",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4292,7 +4350,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 95,
+     "w": 91,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -4303,7 +4361,7 @@
      "style": {}
     },
     {
-     "id": "pb201",
+     "id": "pb211",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4323,7 +4381,7 @@
      "style": {}
     },
     {
-     "id": "pf201",
+     "id": "pf211",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4343,7 +4401,7 @@
      "style": {}
     },
     {
-     "id": "pb200",
+     "id": "pb210",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4363,7 +4421,7 @@
      "style": {}
     },
     {
-     "id": "pf200",
+     "id": "pf210",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4646,7 +4704,7 @@
    "notes": "교안 16번. 루프 구조와 간섭을 그림으로 보여준다. 순환급수 ④단계와 연결.",
    "elements": [
     {
-     "id": "pb212",
+     "id": "pb222",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4666,7 +4724,7 @@
      "style": {}
     },
     {
-     "id": "pf212",
+     "id": "pf222",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4675,7 +4733,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 127,
+     "w": 121,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -4686,7 +4744,7 @@
      "style": {}
     },
     {
-     "id": "pb211",
+     "id": "pb221",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4706,7 +4764,7 @@
      "style": {}
     },
     {
-     "id": "pf211",
+     "id": "pf221",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4726,7 +4784,7 @@
      "style": {}
     },
     {
-     "id": "pb210",
+     "id": "pb220",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -4746,7 +4804,7 @@
      "style": {}
     },
     {
-     "id": "pf210",
+     "id": "pf220",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5191,168 +5249,6 @@
    "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
    "elements": [
     {
-     "id": "pb222",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1280,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#cfdce7",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pf222",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1280,
-     "y": 0,
-     "w": 159,
-     "h": 7,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pb221",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 640,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#cfdce7",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pf221",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 640,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pb220",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 0,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#cfdce7",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pf220",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 0,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "qn66zk124",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 50,
-     "w": 1680,
-     "h": 100,
-     "html": "⑧ 수운영관리시스템에서 본 루프형태 관로",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "oq1b9u125",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 120,
-     "y": 165,
-     "w": 1680,
-     "h": 835,
-     "src": "assets/clipboard-1793947167612-tpjht89.png",
-     "fit": "cover",
-     "radius": 40,
-     "shadow": false
-    }
-   ]
-  },
-  {
-   "id": "995rme589",
-   "bg": null,
-   "transition": "",
-   "notes": "OX — 답: 반만 맞습니다 / 관경보다 <b>어디에 붙어 있느냐</b>가 더 결정적입니다",
-   "elements": [
-    {
      "id": "pb232",
      "step": 0,
      "anim": "none",
@@ -5382,7 +5278,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 191,
+     "w": 151,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -5454,6 +5350,168 @@
     },
     {
      "id": "pf230",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "qn66zk124",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 50,
+     "w": 1680,
+     "h": 100,
+     "html": "⑧ 수운영관리시스템에서 본 루프형태 관로",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "oq1b9u125",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 120,
+     "y": 165,
+     "w": 1680,
+     "h": 835,
+     "src": "assets/clipboard-1793947167612-tpjht89.png",
+     "fit": "cover",
+     "radius": 40,
+     "shadow": false
+    }
+   ]
+  },
+  {
+   "id": "995rme589",
+   "bg": null,
+   "transition": "",
+   "notes": "OX — 답: 반만 맞습니다 / 관경보다 <b>어디에 붙어 있느냐</b>가 더 결정적입니다",
+   "elements": [
+    {
+     "id": "pb242",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1280,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf242",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1280,
+     "y": 0,
+     "w": 182,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pb241",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 640,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf241",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 640,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pb240",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf240",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5736,7 +5794,7 @@
    "notes": "이 장이 \"배관 굵을수록 좋다\"에 대한 완전한 답이다. 반만 맞다는 말의 나머지 반.",
    "elements": [
     {
-     "id": "pb242",
+     "id": "pb252",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5756,7 +5814,7 @@
      "style": {}
     },
     {
-     "id": "pf242",
+     "id": "pf252",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5765,7 +5823,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 223,
+     "w": 212,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -5776,7 +5834,7 @@
      "style": {}
     },
     {
-     "id": "pb241",
+     "id": "pb251",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5796,7 +5854,7 @@
      "style": {}
     },
     {
-     "id": "pf241",
+     "id": "pf251",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5816,7 +5874,7 @@
      "style": {}
     },
     {
-     "id": "pb240",
+     "id": "pb250",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -5836,7 +5894,7 @@
      "style": {}
     },
     {
-     "id": "pf240",
+     "id": "pf250",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6132,170 +6190,6 @@
    "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
    "elements": [
     {
-     "id": "pb252",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1280,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#cfdce7",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pf252",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1280,
-     "y": 0,
-     "w": 254,
-     "h": 7,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pb251",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 640,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#cfdce7",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pf251",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 640,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pb250",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 0,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#cfdce7",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "pf250",
-     "step": 0,
-     "anim": "none",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 0,
-     "y": 0,
-     "w": 636,
-     "h": 7,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "s9yd0sclt",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 50,
-     "w": 1680,
-     "h": 100,
-     "html": "⑧ 수운영관리시스템에서 본 루프형태 관로",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     },
-     "mk": "qn66zk124"
-    },
-    {
-     "id": "1n2rd1clt",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 120,
-     "y": 165,
-     "w": 1680,
-     "h": 835,
-     "src": "assets/clipboard-1793947167612-tpjht89.png",
-     "fit": "cover",
-     "radius": 40,
-     "shadow": false,
-     "mk": "oq1b9u125"
-    }
-   ]
-  },
-  {
-   "id": "b40sbu699",
-   "bg": null,
-   "transition": "",
-   "notes": "교안 18번. 선단/종단 개념. 체크카드와 연결된다.",
-   "elements": [
-    {
      "id": "pb262",
      "step": 0,
      "anim": "none",
@@ -6325,7 +6219,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 286,
+     "w": 242,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -6397,6 +6291,170 @@
     },
     {
      "id": "pf260",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "s9yd0sclt",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 50,
+     "w": 1680,
+     "h": 100,
+     "html": "⑧ 수운영관리시스템에서 본 루프형태 관로",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "qn66zk124"
+    },
+    {
+     "id": "1n2rd1clt",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 120,
+     "y": 165,
+     "w": 1680,
+     "h": 835,
+     "src": "assets/clipboard-1793947167612-tpjht89.png",
+     "fit": "cover",
+     "radius": 40,
+     "shadow": false,
+     "mk": "oq1b9u125"
+    }
+   ]
+  },
+  {
+   "id": "b40sbu699",
+   "bg": null,
+   "transition": "",
+   "notes": "교안 18번. 선단/종단 개념. 체크카드와 연결된다.",
+   "elements": [
+    {
+     "id": "pb272",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1280,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf272",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1280,
+     "y": 0,
+     "w": 273,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pb271",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 640,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf271",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 640,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pb270",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf270",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6888,7 +6946,7 @@
    "notes": "체크카드 ①번과 직결. \"이 소화전은 선단인가 종단인가\"의 판단 기준.",
    "elements": [
     {
-     "id": "pb272",
+     "id": "pb282",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6908,7 +6966,7 @@
      "style": {}
     },
     {
-     "id": "pf272",
+     "id": "pf282",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6917,7 +6975,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 318,
+     "w": 303,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -6928,7 +6986,7 @@
      "style": {}
     },
     {
-     "id": "pb271",
+     "id": "pb281",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6948,7 +7006,7 @@
      "style": {}
     },
     {
-     "id": "pf271",
+     "id": "pf281",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6968,7 +7026,7 @@
      "style": {}
     },
     {
-     "id": "pb270",
+     "id": "pb280",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -6988,7 +7046,7 @@
      "style": {}
     },
     {
-     "id": "pf270",
+     "id": "pf280",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7197,7 +7255,7 @@
    "notes": "소화전 뒤의 구조를 모르면 급수 계획이 성립하지 않는다. 주입점이 핵심 개념.",
    "elements": [
     {
-     "id": "pb282",
+     "id": "pb292",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7217,7 +7275,7 @@
      "style": {}
     },
     {
-     "id": "pf282",
+     "id": "pf292",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7226,7 +7284,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 350,
+     "w": 333,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -7237,7 +7295,7 @@
      "style": {}
     },
     {
-     "id": "pb281",
+     "id": "pb291",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7257,7 +7315,7 @@
      "style": {}
     },
     {
-     "id": "pf281",
+     "id": "pf291",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7277,7 +7335,7 @@
      "style": {}
     },
     {
-     "id": "pb280",
+     "id": "pb290",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7297,7 +7355,7 @@
      "style": {}
     },
     {
-     "id": "pf280",
+     "id": "pf290",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7888,7 +7946,7 @@
    "notes": "병목이 어디인지가 이 장에서 숫자로 끝난다. 정수장은 절반만 돌고 있다.",
    "elements": [
     {
-     "id": "pb292",
+     "id": "pb302",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7908,7 +7966,7 @@
      "style": {}
     },
     {
-     "id": "pf292",
+     "id": "pf302",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7917,7 +7975,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 382,
+     "w": 363,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -7928,7 +7986,7 @@
      "style": {}
     },
     {
-     "id": "pb291",
+     "id": "pb301",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7948,7 +8006,7 @@
      "style": {}
     },
     {
-     "id": "pf291",
+     "id": "pf301",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7968,7 +8026,7 @@
      "style": {}
     },
     {
-     "id": "pb290",
+     "id": "pb300",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -7988,7 +8046,7 @@
      "style": {}
     },
     {
-     "id": "pf290",
+     "id": "pf300",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8375,7 +8433,7 @@
    "notes": "실패를 복기하는 장. 책임을 묻는 자리가 아니라 구조를 보는 자리로 끌고 간다.",
    "elements": [
     {
-     "id": "pb302",
+     "id": "pb312",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8395,7 +8453,7 @@
      "style": {}
     },
     {
-     "id": "pf302",
+     "id": "pf312",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8404,7 +8462,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 413,
+     "w": 394,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -8415,7 +8473,7 @@
      "style": {}
     },
     {
-     "id": "pb301",
+     "id": "pb311",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8435,7 +8493,7 @@
      "style": {}
     },
     {
-     "id": "pf301",
+     "id": "pf311",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8455,7 +8513,7 @@
      "style": {}
     },
     {
-     "id": "pb300",
+     "id": "pb310",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8475,7 +8533,7 @@
      "style": {}
     },
     {
-     "id": "pf300",
+     "id": "pf310",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8615,7 +8673,7 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "pb312",
+     "id": "pb322",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8635,7 +8693,7 @@
      "style": {}
     },
     {
-     "id": "pf312",
+     "id": "pf322",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8644,7 +8702,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 445,
+     "w": 424,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -8655,7 +8713,7 @@
      "style": {}
     },
     {
-     "id": "pb311",
+     "id": "pb321",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8675,7 +8733,7 @@
      "style": {}
     },
     {
-     "id": "pf311",
+     "id": "pf321",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8695,7 +8753,7 @@
      "style": {}
     },
     {
-     "id": "pb310",
+     "id": "pb320",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8715,7 +8773,7 @@
      "style": {}
     },
     {
-     "id": "pf310",
+     "id": "pf320",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8882,7 +8940,7 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "pb322",
+     "id": "pb332",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8902,7 +8960,7 @@
      "style": {}
     },
     {
-     "id": "pf322",
+     "id": "pf332",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8911,7 +8969,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 477,
+     "w": 454,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -8922,7 +8980,7 @@
      "style": {}
     },
     {
-     "id": "pb321",
+     "id": "pb331",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8942,7 +9000,7 @@
      "style": {}
     },
     {
-     "id": "pf321",
+     "id": "pf331",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8962,7 +9020,7 @@
      "style": {}
     },
     {
-     "id": "pb320",
+     "id": "pb330",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -8982,7 +9040,7 @@
      "style": {}
     },
     {
-     "id": "pf320",
+     "id": "pf330",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9154,7 +9212,7 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "pb332",
+     "id": "pb342",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9174,7 +9232,7 @@
      "style": {}
     },
     {
-     "id": "pf332",
+     "id": "pf342",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9183,7 +9241,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 509,
+     "w": 485,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -9194,7 +9252,7 @@
      "style": {}
     },
     {
-     "id": "pb331",
+     "id": "pb341",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9214,7 +9272,7 @@
      "style": {}
     },
     {
-     "id": "pf331",
+     "id": "pf341",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9234,7 +9292,7 @@
      "style": {}
     },
     {
-     "id": "pb330",
+     "id": "pb340",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9254,7 +9312,7 @@
      "style": {}
     },
     {
-     "id": "pf330",
+     "id": "pf340",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9425,7 +9483,7 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "pb342",
+     "id": "pb352",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9445,7 +9503,7 @@
      "style": {}
     },
     {
-     "id": "pf342",
+     "id": "pf352",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9454,7 +9512,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 541,
+     "w": 515,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -9465,7 +9523,7 @@
      "style": {}
     },
     {
-     "id": "pb341",
+     "id": "pb351",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9485,7 +9543,7 @@
      "style": {}
     },
     {
-     "id": "pf341",
+     "id": "pf351",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9505,7 +9563,7 @@
      "style": {}
     },
     {
-     "id": "pb340",
+     "id": "pb350",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9525,7 +9583,7 @@
      "style": {}
     },
     {
-     "id": "pf340",
+     "id": "pf350",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9697,7 +9755,7 @@
    "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
    "elements": [
     {
-     "id": "pb352",
+     "id": "pb362",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9717,7 +9775,7 @@
      "style": {}
     },
     {
-     "id": "pf352",
+     "id": "pf362",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9726,7 +9784,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 572,
+     "w": 545,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -9737,7 +9795,7 @@
      "style": {}
     },
     {
-     "id": "pb351",
+     "id": "pb361",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9757,7 +9815,7 @@
      "style": {}
     },
     {
-     "id": "pf351",
+     "id": "pf361",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9777,7 +9835,7 @@
      "style": {}
     },
     {
-     "id": "pb350",
+     "id": "pb360",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9797,7 +9855,7 @@
      "style": {}
     },
     {
-     "id": "pf350",
+     "id": "pf360",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9970,7 +10028,7 @@
    "notes": "",
    "elements": [
     {
-     "id": "pb362",
+     "id": "pb372",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9990,7 +10048,7 @@
      "style": {}
     },
     {
-     "id": "pf362",
+     "id": "pf372",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -9999,7 +10057,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 604,
+     "w": 575,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -10010,7 +10068,7 @@
      "style": {}
     },
     {
-     "id": "pb361",
+     "id": "pb371",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10030,7 +10088,7 @@
      "style": {}
     },
     {
-     "id": "pf361",
+     "id": "pf371",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10050,7 +10108,7 @@
      "style": {}
     },
     {
-     "id": "pb360",
+     "id": "pb370",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10070,7 +10128,7 @@
      "style": {}
     },
     {
-     "id": "pf360",
+     "id": "pf370",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10191,13 +10249,13 @@
    ]
   },
   {
-   "id": "dpg2eb227",
+   "id": "vmsha190y",
    "bg": null,
    "transition": "",
-   "notes": "체크카드의 ②번. 2대째를 어디에 붙일 것인가가 실제 판단 지점이다.",
+   "notes": "청라(주거)와 서부산업단지(공장)의 유량 그래프를 나란히 비교할 자리.",
    "elements": [
     {
-     "id": "pb372",
+     "id": "pb382",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10217,7 +10275,7 @@
      "style": {}
     },
     {
-     "id": "pf372",
+     "id": "pf382",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10226,7 +10284,7 @@
      "shape": "rect",
      "x": 1280,
      "y": 0,
-     "w": 636,
+     "w": 606,
      "h": 7,
      "fill": "#0369a1",
      "stroke": "",
@@ -10237,7 +10295,7 @@
      "style": {}
     },
     {
-     "id": "pb371",
+     "id": "pb381",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10257,7 +10315,7 @@
      "style": {}
     },
     {
-     "id": "pf371",
+     "id": "pf381",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10277,7 +10335,7 @@
      "style": {}
     },
     {
-     "id": "pb370",
+     "id": "pb380",
      "step": 0,
      "anim": "none",
      "rotate": 0,
@@ -10297,7 +10355,284 @@
      "style": {}
     },
     {
-     "id": "pf370",
+     "id": "pf380",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "533oea90y",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "⑪ 현장별 유수량 비교 (895블록 26. 9. 18. 경서동 공장 화재) ",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "oazkfa205"
+    },
+    {
+     "id": "ql2r7190y",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 426,
+     "y": 820,
+     "w": 1069,
+     "h": 114,
+     "fill": "#0c2a4d",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#0369a1",
+     "gAngle": 100,
+     "mk": "2n5teq212"
+    },
+    {
+     "id": "c6ds8g90y",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 254,
+     "y": 820,
+     "w": 1412,
+     "h": 114,
+     "html": "청라 아파트 단지   VS   서부산업단지(주물공단)",
+     "style": {
+      "color": "#ffffff",
+      "bold": true,
+      "lineHeight": 1.3,
+      "align": "center",
+      "valign": "middle",
+      "fontSize": 38
+     },
+     "mk": "t3f2wn213"
+    },
+    {
+     "id": "sl1",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 230,
+     "w": 1680,
+     "h": 560,
+     "fill": "none",
+     "stroke": "#0369a1",
+     "strokeWidth": 4,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sl2",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 790,
+     "y": 448,
+     "w": 340,
+     "h": 58,
+     "fill": "#0369a1",
+     "fill2": "#0e7490",
+     "gAngle": 135,
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 29,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sl3",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 790,
+     "y": 448,
+     "w": 340,
+     "h": 58,
+     "html": "이 미 지  자 리",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 28,
+      "bold": true,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sl4",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 160,
+     "y": 520,
+     "w": 1600,
+     "h": 90,
+     "html": "두 지역의 <b>유량 그래프</b>를 나란히 넣을 자리입니다",
+     "style": {
+      "color": "#4a6885",
+      "fontSize": 28,
+      "bold": false,
+      "align": "center",
+      "valign": "middle"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dpg2eb227",
+   "bg": null,
+   "transition": "",
+   "notes": "체크카드의 ②번. 2대째를 어디에 붙일 것인가가 실제 판단 지점이다.",
+   "elements": [
+    {
+     "id": "pb392",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1280,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf392",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1280,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pb391",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 640,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf391",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 640,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pb390",
+     "step": 0,
+     "anim": "none",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 636,
+     "h": 7,
+     "fill": "#cfdce7",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "pf390",
      "step": 0,
      "anim": "none",
      "rotate": 0,
