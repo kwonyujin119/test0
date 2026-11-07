@@ -2,6 +2,10 @@
 (() => {
   const doc = docEl();
   const H = () => W.doc.header;
+  const GUEST = Access.isGuest; // 보기 전용: 고치는 명령·단축키·끌기를 막고, 저장 API 는 access.js 가 막음
+  const guestSay = () => toast('보기 전용(게스트) 모드입니다 — 고치려면 첫 화면에서 관리자로 입장하세요', 2600);
+  const viewOnly = () => { if (!GUEST) return; doc.contentEditable = 'false'; doc.querySelectorAll('[contenteditable]').forEach(n => n.setAttribute('contenteditable', 'false')); };
+  for (const id of ['roleChip', 'roleChip2']) { const n = $id(id); if (n) n.innerHTML = Access.chip(); }
   const escH = s => esc(s);
   let savedRange = null;
   const keepSel = () => { const r = rng(); if (r && inDoc(r.startContainer)) savedRange = r.cloneRange(); };
@@ -60,6 +64,7 @@
     fillStyles(); fillFonts();
     $id('start').hidden = true;
     document.body.classList.add('has-doc');
+    viewOnly();
     setView(viewPref(), true);
     layout();
     if (!W.reflow) { const cw = $id('canvas').clientWidth, pw = d.page(0).w / HU; if (cw < pw + 60) setZoom('width'); else setZoom(1); }
@@ -125,7 +130,7 @@
   function saveAsMenu() {
     dialog('다른 이름으로 저장', `<div class="grid1"><label>파일 이름</label><input id="sa_nm" value="${escH(W.name)}"></div>
       <div class="info" style="margin-top:12px">· <b>내 PC</b>: hwpx 파일로 저장합니다. 한글에서 바로 열립니다.<br>· <b>문서함</b>: 암호화해서 GitHub 문서함에 올립니다. 집·사무실 어디서나 엽니다.</div>`, {
-      foot: `<button class="tb" data-x="cancel">취소</button><button class="tb" id="sa_box">🔒 문서함에 저장</button><button class="tb primary" id="sa_pc">💾 내 PC 에 저장</button>`,
+      foot: `<button class="tb" data-x="cancel">취소</button><button class="tb" id="sa_box">${icon('lock', 15)}문서함에 저장</button><button class="tb primary" id="sa_pc">${icon('save', 15)}내 PC 에 저장</button>`,
       init: (q, close) => {
         const nm = () => { const v = q('#sa_nm').value.trim(); if (v) setName(v); };
         q('#sa_pc').onclick = () => { nm(); close(false); save('pc'); };
@@ -137,10 +142,10 @@
   function updateState() {
     const s = $id('saveState'); s.classList.toggle('dirty', W.dirty);
     const where = W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '저장 안 됨';
-    s.textContent = W.dirty ? '● 수정됨' : (W.boxId || W.handle ? '✓ 저장됨' : '');
+    s.textContent = W.dirty ? '수정됨' : (W.boxId || W.handle ? '저장됨' : '');
     s.classList.toggle('ok', !W.dirty && !!(W.boxId || W.handle));
-    s.title = W.dirty ? '저장하지 않은 내용이 있습니다 (이 기기에는 자동으로 임시 저장됨) — 💾 저장 또는 Ctrl+S' : (W.boxId || W.handle ? where + '에 저장되어 있습니다' : '');
-    $id('stSaved').textContent = W.doc ? '저장 위치: ' + (W.boxId ? '🔒 문서함' : W.handle ? '💻 내 PC 파일' : '아직 저장 안 함') : '';
+    s.title = W.dirty ? '저장하지 않은 내용이 있습니다 (이 기기에는 자동으로 임시 저장됨) — 저장 또는 Ctrl+S' : (W.boxId || W.handle ? where + '에 저장되어 있습니다' : '');
+    $id('stSaved').textContent = W.doc ? (GUEST ? '보기 전용' : '저장 위치: ' + (W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '아직 저장 안 함')) : '';
   }
   window.onDocChanged = () => { rev++; if (!W.dirty) { W.dirty = true; } updateState(); scheduleDraft(); };
   let draftT = null, buildMs = 0;
@@ -240,7 +245,7 @@
   }
   async function boxDialog() {
     if (!(await boxEnsure())) return;
-    const d = dialog('🔒 문서함', '<div id="bx" class="muted">불러오는 중…</div>', {
+    const d = dialog(icon('lock', 16) + '문서함', '<div id="bx" class="muted">불러오는 중…</div>', {
       width: 720,
       foot: `<button class="tb" id="bx_lock" title="이 기기에 기억한 암호를 지웁니다">잠그기</button><span class="grow"></span><button class="tb" id="bx_up">PC 파일 올리기</button>${W.doc ? '<button class="tb" id="bx_cur">현재 문서 저장</button>' : ''}<button class="tb" data-x="cancel">닫기</button>`,
       noEnter: true,
@@ -273,13 +278,120 @@
     render();
   }
 
+
+  /* ---------- best 문서 (레퍼런스) ---------- */
+  const fmtKB = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+  const fmtDay = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('ko-KR', { year: '2-digit', month: 'short', day: 'numeric' }); };
+  const bestMeta = it => { const m = it.meta || {}; return [m.chars ? m.chars.toLocaleString() + '자' : '', m.tables ? '표 ' + m.tables : '', m.images ? '그림 ' + m.images : '', it.size ? fmtKB(it.size) : '', fmtDay(it.added), it.device || ''].filter(Boolean).join(' · '); };
+  /* GitHub 모드: 문서함 암호를 먼저 연다 (같은 암호로 잠가 올리므로) */
+  async function bestReady() {
+    await BestDocs.init();
+    if (BestDocs.mode() !== 'github') return true;
+    if (GUEST) return false;
+    return boxEnsure();
+  }
+  async function bestOpen(it, asNew) {
+    if (!(await confirmDiscard())) return;
+    toast('레퍼런스를 여는 중…', 20000);
+    const u = await BestDocs.file(it.id);
+    await openBytes(u.buffer.slice(u.byteOffset, u.byteOffset + u.byteLength), { name: asNew ? '새 문서 — ' + it.name + ' 기반' : it.name, dirty: !!asNew });
+    if (asNew) toast('레퍼런스를 바탕으로 새 문서를 열었습니다 — 고친 뒤 [다른 이름으로] 저장하세요', 3200);
+  }
+  function bestStructDialog(rec) {
+    const m = rec.meta || {};
+    const pg = m.page ? `${Math.round(m.page.w / MM)}×${Math.round(m.page.h / MM)}mm${m.page.land ? ' 가로' : ''} · 여백 위 ${Math.round(m.page.top / MM)} 아래 ${Math.round(m.page.bottom / MM)} 왼 ${Math.round(m.page.left / MM)} 오른 ${Math.round(m.page.right / MM)}` : '';
+    const rows = (rec.struct || []).slice(0, 400).map(x => x.t === 'table' ? `<div><small>표 ${x.rows.length}×${(x.rows[0] || []).length}</small><em class="tbl">${escH((x.rows[0] || []).join(' | ').slice(0, 90))}</em></div>`
+      : `<div class="${x.level != null ? 'lv' + Math.min(3, x.level) : ''}"><small>${escH(x.st)}${x.size ? ' ' + x.size + 'pt' : ''}${x.bold ? ' 진하게' : ''}</small><span>${escH(x.text.slice(0, 140))}</span></div>`).join('');
+    dialog(icon('list', 16) + escH(rec.name) + ' — 구조', `<div class="best-struct">
+      <div class="kv"><span>용지</span><span>${escH(pg)}</span><span>글자 수</span><span>${(m.chars || 0).toLocaleString()}자 · 문단 ${m.paras || 0} · 표 ${m.tables || 0} · 그림 ${m.images || 0}</span>
+      <span>글꼴</span><span>${escH((m.fonts || []).join(', ') || '—')}</span><span>스타일</span><span>${escH((m.styles || []).map(x => x.name + '(' + x.count + ')').join(', ') || '—')}</span>
+      ${rec.note ? `<span>메모</span><span>${escH(rec.note)}</span>` : ''}${rec.tags && rec.tags.length ? `<span>꼬리표</span><span>${rec.tags.map(t => '<span class="tag">' + escH(t) + '</span>').join(' ')}</span>` : ''}</div>
+      <div class="ol">${rows || '<div><span class="muted">뽑힌 구조가 없습니다</span></div>'}</div>
+      ${(rec.struct || []).length > 400 ? '<p class="muted" style="margin:6px 0 0;font-size:12px">앞 400개 항목만 보입니다.</p>' : ''}</div>`, {
+      width: 760, noEnter: true,
+      foot: `<button class="tb" id="bs_copy">본문 글 복사</button><span class="grow"></span><button class="tb primary" data-x="cancel">닫기</button>`,
+      init: q => { q('#bs_copy').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(rec.text || '') : Promise.reject()).then(() => toast('본문 글을 복사했습니다'), () => toast('복사하지 못했습니다')); }; },
+    });
+  }
+  function bestEditDialog(it, after) {
+    dialog('best 문서 정보', `<div class="grid1"><label>이름</label><input id="be_nm" value="${escH(it.name)}"><label>메모</label><input id="be_note" value="${escH(it.note || '')}" placeholder="어떤 점이 좋은 문서인지 (예: 공문 서식, 표 정리 깔끔)"><label>꼬리표</label><input id="be_tags" value="${escH((it.tags || []).join(', '))}" placeholder="쉼표로 구분 (예: 공문, 보고서)"></div>`, {
+      okText: '저장', onOk: async q => { try { await BestDocs.update(it.id, { name: q('#be_nm').value, note: q('#be_note').value, tags: q('#be_tags').value.split(/[,，]/) }); toast('고쳤습니다'); after(); } catch (e) { alert(e.message); return false; } } });
+  }
+  async function bestUpload(files, after) {
+    files = Array.from(files || []).filter(f => /\.hwpx$/i.test(f.name));
+    if (!files.length) { toast('.hwpx 파일을 골라 주세요'); return; }
+    if (!(await bestReady())) return;
+    let note = '', tags = [];
+    const meta = await new Promise(res => dialog(icon('bookmark', 16) + 'best 문서 올리기', `<p style="margin:0 0 10px">${files.length === 1 ? `<b>${escH(files[0].name)}</b>` : `${files.length}개 파일`} 을(를) 레퍼런스로 올립니다. 본문 글과 구조(스타일·글꼴·표)를 함께 뽑아 저장합니다.</p>
+      <div class="grid1"><label>메모</label><input id="bu_note" placeholder="어떤 점이 좋은 문서인지 (예: 공문 서식, 표 정리 깔끔)"><label>꼬리표</label><input id="bu_tags" placeholder="쉼표로 구분 (예: 공문, 보고서)"></div>
+      <div class="info" style="margin-top:12px">저장 위치: <b>${escH(BestDocs.MODE_NAMES[BestDocs.mode()])}</b>${BestDocs.mode() === 'github' ? ' — 문서함과 같은 암호로 잠가 올립니다' : BestDocs.mode() === 'local' ? ' — 내 PC 서버(start.cmd)나 GitHub 연결이 없어 이 브라우저에만 남습니다' : ''}</div>`, {
+      okText: '올리기', onOk: q => { res({ note: q('#bu_note').value, tags: q('#bu_tags').value.split(/[,，]/) }); }, onClose: () => res(null) }));
+    if (!meta) return;
+    let n = 0;
+    for (const f of files) {
+      try { await BestDocs.add(f, { note: meta.note, tags: meta.tags, progress: m => toast(f.name + ' — ' + m, 20000) }); n++; }
+      catch (e) { console.error(e); alert(`"${f.name}" 을(를) 올리지 못했습니다.\n\n` + e.message); }
+    }
+    if (n) toast(`best 문서 ${n}개를 올렸습니다`, 2600);
+    after();
+  }
+  const bestItemHtml = (it, full) => `<div class="best-item" data-id="${escH(it.id)}"><div class="bi-ico">${icon('bookmark')}</div>
+      <div class="bi-text"><div class="bi-name" title="${escH(it.name)}">${escH(it.name)}</div><div class="bi-meta"><span>${escH(bestMeta(it))}</span>${it.tags && it.tags.length ? `<span class="bi-tags">${it.tags.map(t => '<span class="tag">' + escH(t) + '</span>').join('')}</span>` : ''}</div>${it.note ? `<div class="bi-note">${escH(it.note)}</div>` : ''}</div>
+      <div class="bi-act"><button class="tb" data-b="open" title="이 문서를 엽니다">${icon('eye', 14)}열기</button>${GUEST ? '' : `<button class="tb" data-b="new" title="이 문서를 바탕으로 새 문서를 시작합니다 (원본은 그대로)">${icon('filePlus', 14)}바탕으로 새 문서</button>`}<button class="tb" data-b="struct" title="뽑아 둔 구조·본문 글 보기">${icon('list', 14)}구조</button>${full && !GUEST ? `<button class="tb" data-b="edit" title="이름·메모·꼬리표">${icon('edit', 14)}</button><button class="tb danger" data-b="del" title="레퍼런스에서 지우기">${icon('trash', 14)}</button>` : ''}</div></div>`;
+  async function bestAct(b, items, after, d) {
+    const id = b.closest('[data-id]').dataset.id; const it = items.find(x => x.id === id); if (!it) return;
+    const old = b.innerHTML; b.disabled = true;
+    try {
+      if (b.dataset.b === 'open') { b.textContent = '여는 중…'; if (d) d.close(false); await bestOpen(it, false); }
+      if (b.dataset.b === 'new') { b.textContent = '여는 중…'; if (d) d.close(false); await bestOpen(it, true); }
+      if (b.dataset.b === 'struct') { b.textContent = '읽는 중…'; bestStructDialog(await BestDocs.get(id)); }
+      if (b.dataset.b === 'edit') bestEditDialog(it, after);
+      if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) best 문서에서 지울까요?`)) { b.textContent = '지우는 중…'; await BestDocs.remove(id); toast('지웠습니다'); after(); } }
+    } catch (e) { console.error(e); alert(e.message); }
+    finally { b.disabled = false; b.innerHTML = old; }
+  }
+  async function bestDialog() {
+    if (!(await bestReady())) { if (GUEST && BestDocs.mode() === 'github') toast('게스트 모드에서는 GitHub 의 best 문서를 열 수 없습니다 (암호로 잠겨 있음)', 3000); return; }
+    const d = dialog(icon('bookmark', 16) + 'best 문서 — 레퍼런스', '<div id="bl" class="muted">불러오는 중…</div>' + (GUEST ? '' : `<div class="best-drop" id="bl_drop"><b>여기에 .hwpx 파일을 끌어다 놓거나</b> 눌러서 고르세요<br>올린 문서는 누적되어 레퍼런스가 되고, 앞으로 그 레퍼런스를 바탕으로 문서를 만들 수 있습니다.</div>`), {
+      width: 780, noEnter: true, noFocus: true,
+      foot: `<span class="muted" style="font-size:12px">저장 위치: ${escH(BestDocs.MODE_NAMES[BestDocs.mode()])}</span><span class="grow"></span>${GUEST ? '' : `<button class="tb" id="bl_up">${icon('upload', 15)}hwpx 올리기</button>`}<button class="tb primary" data-x="cancel">닫기</button>`,
+    });
+    const q = d.q; let items = [];
+    const pick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.hwpx'; inp.multiple = true; inp.onchange = () => bestUpload(inp.files, render); inp.click(); };
+    if (q('#bl_up')) q('#bl_up').onclick = pick;
+    const drop = q('#bl_drop');
+    if (drop) {
+      drop.onclick = pick;
+      drop.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('over'); });
+      drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+      drop.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('over'); $id('dropMask').hidden = true; dragDepth = 0; bestUpload(e.dataTransfer.files, render); });
+    }
+    async function render() {
+      try { items = await BestDocs.list(); } catch (e) { q('#bl').innerHTML = `<div class="best-empty">${escH(e.message)}</div>`; return; }
+      if (!items.length) { q('#bl').innerHTML = `<div class="best-empty"><b>아직 올린 best 문서가 없습니다</b><br>${GUEST ? '관리자가 올리면 여기에 보입니다.' : '잘 만든 hwpx 문서를 올려 두면 레퍼런스로 쌓입니다.'}</div>`; return; }
+      q('#bl').innerHTML = `<div class="best-list">${items.map(it => bestItemHtml(it, true)).join('')}</div>`;
+      q('#bl').onclick = e => { const b = e.target.closest('[data-b]'); if (b && !b.disabled) bestAct(b, items, render, d); };
+    }
+    render();
+  }
+  /* 시작 화면의 best 문서 줄 (최근 5개) */
+  async function renderBestList() {
+    const box = $id('bestList'); if (!box) return;
+    await BestDocs.init();
+    if (BestDocs.mode() === 'github' && !HwpStore.box.unlocked) { box.innerHTML = ''; return; } // 암호를 열기 전에는 목록을 읽을 수 없음 — [best 문서] 단추에서 연다
+    let items = []; try { items = await BestDocs.list(); } catch (e) { box.innerHTML = ''; return; }
+    if (!items.length) { box.innerHTML = ''; return; }
+    box.innerHTML = `<h4>best 문서 <span class="muted">— 레퍼런스 ${items.length}개 · ${escH(BestDocs.MODE_NAMES[BestDocs.mode()])}</span></h4>${items.slice(0, 5).map(it => `<div class="dl-item" data-id="${escH(it.id)}"><span class="nm2">${icon('bookmark', 15)}${escH(it.name)}</span><span class="bi-meta">${escH(bestMeta(it))}</span><button class="tb" data-b="open">열기</button>${GUEST ? '' : '<button class="tb" data-b="new">바탕으로 새 문서</button>'}</div>`).join('')}${items.length > 5 ? `<div class="dl-item"><span class="muted">그 밖에 ${items.length - 5}개 — [best 문서] 에서 모두 봅니다</span></div>` : ''}`;
+    box.onclick = e => { const b = e.target.closest('[data-b]'); if (b && !b.disabled) bestAct(b, items, renderBestList, null); };
+  }
   /* ---------- 시작 화면 ---------- */
   async function showStart() {
     $id('start').hidden = false;
-    const list = await HwpStore.drafts.list();
+    renderBestList();
+    const list = GUEST ? [] : await HwpStore.drafts.list();
     const box = $id('draftList');
     if (!list.length) { box.innerHTML = ''; return; }
-    box.innerHTML = `<h4>저장하지 않고 닫은 문서 <span class="muted">— 이 기기에 임시로 남아 있습니다</span></h4>${list.slice(0, 8).map(x => `<div class="dl-item" data-id="${escH(x.id)}"><span class="nm2">📝 ${escH(x.name)}${x.boxId ? ' <span class="muted">(문서함)</span>' : ''}</span><span class="muted">${new Date(x.time).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span><button class="tb primary" data-d="open">이어서 편집</button><button class="tb danger" data-d="del" title="이 임시본을 지웁니다">지우기</button></div>`).join('')}`;
+    box.innerHTML = `<h4>저장하지 않고 닫은 문서 <span class="muted">— 이 기기에 임시로 남아 있습니다</span></h4>${list.slice(0, 8).map(x => `<div class="dl-item" data-id="${escH(x.id)}"><span class="nm2">${icon('file', 15)}${escH(x.name)}${x.boxId ? ' <span class="muted">(문서함)</span>' : ''}</span><span class="muted">${new Date(x.time).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span><button class="tb primary" data-d="open">이어서 편집</button><button class="tb danger" data-d="del" title="이 임시본을 지웁니다">지우기</button></div>`).join('')}`;
     box.onclick = async e => {
       const b = e.target.closest('[data-d]'); if (!b) return; const id = b.closest('.dl-item').dataset.id;
       if (b.dataset.d === 'del') { const nm = (list.find(x => x.id === id) || {}).name || ''; if (!confirm(`"${nm}" 임시본을 지울까요?\n지우면 되살릴 수 없습니다.`)) return; await HwpStore.drafts.del(id); showStart(); return; }
@@ -398,10 +510,13 @@
 
   /* ---------- 명령 ---------- */
   const ALIGN = { alJ: 'JUSTIFY', alL: 'LEFT', alC: 'CENTER', alR: 'RIGHT', alD: 'DISTRIBUTE' };
+  const GUEST_OK = /^(open|help|best|print|find|replace|zoomIn|zoomOut)$/;
   function act(a) {
+    if (GUEST && !GUEST_OK.test(a)) { guestSay(); return; }
     if (a === 'new') return newDoc();
     if (a === 'open') return openDialog();
     if (a === 'box') return boxDialog();
+    if (a === 'best') return bestDialog();
     if (a === 'help') return helpDialog();
     if (!needDoc()) return;
     if (ALIGN[a]) { backSel(); return applyPp({ align: ALIGN[a] }); }
@@ -471,7 +586,7 @@
   function setView(v, quiet) {
     W.reflow = v === 'reflow';
     document.body.classList.toggle('reflow', W.reflow);
-    $id('btnView').textContent = W.reflow ? '📱 화면 맞춤' : '📄 쪽 보기';
+    $id('btnView').innerHTML = W.reflow ? icon('phone', 14) + '<span>화면 맞춤</span>' : icon('page', 14) + '<span>쪽 보기</span>';
     if (!quiet) { try { localStorage.setItem('hwp:view', v); } catch (e) { } }
     // 화면 맞춤 보기는 확대/축소 없이 1배로 그림 → 쪽 보기의 배율은 기억해 두었다가 돌아올 때 되살림 (끌기·내어쓰기 계산이 배율로 나뉘지 않게)
     if (W.reflow) { if (W.zoom !== 1) { W.pageZoom = W.zoom; W.zoom = 1; applyZoom(); } }
@@ -534,7 +649,7 @@
     return null;
   }
   doc.addEventListener('mousemove', e => {
-    if (drag) return;
+    if (drag || GUEST) return;
     const td = e.target.closest && e.target.closest('td'); const ed = td && edgeOf(td, e);
     doc.classList.toggle('colrs', !!(ed && ed.kind === 'col')); doc.classList.toggle('rowrs', !!(ed && ed.kind === 'row'));
   });
@@ -548,7 +663,7 @@
     if (pic) { e.preventDefault(); selectPic(pic); return; }
     hidePic();
     const td = e.target.closest('td');
-    const ed = td && edgeOf(td, e);
+    const ed = td && !GUEST && edgeOf(td, e);
     if (ed) { e.preventDefault(); startResize(ed, e); return; }
     if (W.cells && !e.shiftKey) clearCells();
     if (td && e.shiftKey && (W.cells || cellOf(rng() && rng().startContainer))) { // Shift+클릭: 셀 블록 넓히기
@@ -592,7 +707,7 @@
   function selectPic(pic) { hidePic(); clearCells(); W.selPic = pic; pic.classList.add('picsel'); sel().removeAllRanges(); placePicHandle(); }
   function hidePic() { if (W.selPic) W.selPic.classList.remove('picsel'); W.selPic = null; $id('picHandle').hidden = true; }
   function placePicHandle() {
-    const p = W.selPic; const h = $id('picHandle'); if (!p || !p.isConnected) { hidePic(); return; }
+    const p = W.selPic; const h = $id('picHandle'); if (!p || !p.isConnected || GUEST) { if (!p || !p.isConnected) hidePic(); return; }
     const s = $id('sheet').getBoundingClientRect(), r = p.getBoundingClientRect();
     h.style.left = ((r.right - s.left) / W.zoom - 6) + 'px'; h.style.top = ((r.bottom - s.top) / W.zoom - 6) + 'px'; h.hidden = false;
   }
@@ -616,7 +731,7 @@
     e.preventDefault();
     const hw = files.find(f => /\.hwpx?$/i.test(f.name));
     if (hw) { let handle = null; try { const it = Array.from(e.dataTransfer.items).find(i => i.kind === 'file'); if (it && it.getAsFileSystemHandle) handle = await it.getAsFileSystemHandle(); } catch (er) { } await openFile(hw, handle && handle.kind === 'file' ? handle : null); return; }
-    if (!W.doc) return;
+    if (!W.doc || GUEST) return;
     const pos = document.caretPositionFromPoint ? document.caretPositionFromPoint(e.clientX, e.clientY) : null;
     const rr = pos ? (() => { const x = document.createRange(); x.setStart(pos.offsetNode, pos.offset); return x; })() : document.caretRangeFromPoint && document.caretRangeFromPoint(e.clientX, e.clientY);
     if (rr && inDoc(rr.startContainer)) { const s = sel(); s.removeAllRanges(); s.addRange(rr); }
@@ -672,7 +787,8 @@
       return;
     }
     if (k === 'esc') { if (!$id('findBar').hidden) { closeFind(); e.preventDefault(); return; } if (W.cells) { const a = W.cellAnchor; clearCells(); if (a) caretToEnd(a.querySelector('.hp')); e.preventDefault(); return; } if (W.selPic) { hidePic(); return; } setChord(null); return; }
-    if (!W.doc) { if (MAP[k] && /^(ctrl\+o|alt\+o|alt\+n|f1)$/.test(k)) { e.preventDefault(); MAP[k](); } return; }
+    if (!W.doc) { if (MAP[k] && /^(ctrl\+o|alt\+o|alt\+n|f1)$/.test(k) && !(GUEST && k === 'alt+n')) { e.preventDefault(); MAP[k](); } return; }
+    if (GUEST) { if (/^(ctrl\+o|alt\+o|ctrl\+p|alt\+p|ctrl\+f|ctrl\+l|f1)$/.test(k)) { e.preventDefault(); MAP[k](); } else if (/^(ctrl|alt)\+[a-z0-9\[\]]$|^f\d$|^ctrl\+enter$/.test(k) && !/^ctrl\+(c|a)$/.test(k)) e.preventDefault(); return; }
     const inEditor = inDoc(e.target) || e.target === document.body || e.target === $id('canvas');
     if (!inEditor && !/^(ctrl|alt)\+|^f\d/.test(k)) return;
     if (e.target.closest && e.target.closest('#findBar')) return;
@@ -1000,7 +1116,7 @@
 
   /* ---------- 시작 ---------- */
   doc.addEventListener('keyup', () => window.onSelChange());
-  window.__hwp = { W, act, openBytes, loadDoc, save, build };
+  window.__hwp = { W, act, openBytes, loadDoc, save, build, dialog, boxEnsure };
   (async () => {
     GH.load();
     $id('selZoom').value = '1';
@@ -1012,7 +1128,7 @@
       launched = true; const h = p.files[0];
       try { await openFile(await h.getFile(), h); } catch (e) { alert('파일을 열 수 없습니다: ' + e.message); }
     });
-    if (q.get('new') === '1') { loadDoc(HwpxDoc.blank(), { name: '새 문서' }); return; }
+    if (q.get('new') === '1' && !GUEST) { loadDoc(HwpxDoc.blank(), { name: '새 문서' }); return; }
     await new Promise(r => setTimeout(r, 0));
     if (!launched && !W.doc) showStart();
   })();

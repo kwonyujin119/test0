@@ -160,6 +160,8 @@ const HwpStore = (() => {
 
   return {
     canFS, pickOpen, pickSave, pickSaveHandle, writeHandle, download, drafts,
-    box: { ready, unlock, restoreKey, lock, exists, list, load, save, remove, rename, get unlocked() { return !!key; } },
+    box: { ready, unlock, restoreKey, lock, exists, list, load, save, remove, rename, get unlocked() { return !!key; },
+      /* best 문서(best.js)가 같은 암호로 잠가 올릴 때 씀 */
+      read: ghBin, seal: (u8, path) => seal(u8, path), open: (u8, path) => open(u8, path) },
   };
 })();

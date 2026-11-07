@@ -4,10 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>한글 작업장</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231f7a5a'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>한</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316171a'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800'>한</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap">
+<script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="app/ui.css">
+<link rel="stylesheet" href="app/hub.css">
 <link rel="stylesheet" href="app/hwp/hwp.css">
 <style id="docCss"></style>
 <style id="printCss"></style>
@@ -18,24 +21,27 @@
 <body>
 <header id="top">
   <div class="bar1">
-    <a class="crumb" href="index.html" title="업무 공간으로">업무 공간</a><span class="crumb-sep">›</span><b class="app">한글 작업장</b>
+    <a class="crumb" href="index.html" title="업무 공간으로"><i data-ic="back"></i><span class="mark">한</span><span class="crumb-t">한글 작업장</span></a>
     <span class="vsep"></span>
     <button class="nm" id="docName" title="눌러서 문서 이름 바꾸기">문서</button>
     <span id="saveState" class="state"></span>
     <span class="grow"></span>
-    <button class="tb" data-act="new" title="새 문서 (Alt+N)">📄 새 문서</button>
-    <button class="tb" data-act="open" title="불러오기 (Alt+O, Ctrl+O)">📂 열기</button>
-    <button class="tb" data-act="save" title="저장하기 (Alt+S, Ctrl+S)">💾 저장</button>
-    <button class="tb" data-act="saveAs" title="다른 이름으로 저장 (Alt+V)">다른 이름으로</button>
-    <button class="tb" data-act="box" title="문서함 — 암호로 잠가 GitHub 에 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 엽니다">🔒 문서함</button>
-    <button class="tb" data-act="print" title="인쇄 · PDF 저장 (Alt+P)">🖨 인쇄</button>
-    <button class="tb" data-act="help" title="단축키 모음 (F1)">❔ 단축키</button>
+    <span class="role" id="roleChip"></span>
+    <button class="tb" data-act="new" data-admin title="새 문서 (Alt+N)"><i data-ic="filePlus"></i><span>새 문서</span></button>
+    <button class="tb" data-act="open" title="불러오기 (Alt+O, Ctrl+O)"><i data-ic="folder"></i><span>열기</span></button>
+    <button class="tb" data-act="save" data-admin title="저장하기 (Alt+S, Ctrl+S)"><i data-ic="save"></i><span>저장</span></button>
+    <button class="tb" data-act="saveAs" data-admin title="다른 이름으로 저장 (Alt+V)"><i data-ic="export"></i><span>다른 이름으로</span></button>
+    <button class="tb" data-act="box" data-admin title="문서함 — 암호로 잠가 GitHub 에 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 엽니다"><i data-ic="lock"></i><span>문서함</span></button>
+    <button class="tb" data-act="best" title="best 문서 — 잘 만든 문서를 올려 두면 레퍼런스로 쌓입니다"><i data-ic="bookmark"></i><span>best 문서</span></button>
+    <button class="tb" data-act="print" title="인쇄 · PDF 저장 (Alt+P)"><i data-ic="print"></i><span>인쇄</span></button>
+    <button class="tb icon" data-act="help" title="단축키 모음 (F1)" aria-label="단축키"><i data-ic="help"></i></button>
+    <button class="tb icon" data-ui-theme title="화면을 어둡게"></button>
   </div>
-  <div class="bar2" id="ribbon">
-    <select id="selStyle" title="스타일 (F6) · Ctrl+1 바탕글, Ctrl+2 본문, Ctrl+3~9 개요 1~7"></select>
-    <span class="fontbox"><input id="inFont" list="fontList" title="글꼴 — 이름을 쓰거나 ▾ 에서 고르세요" spellcheck="false"><button class="ib sm" id="btnFont" type="button" title="글꼴 목록 (미리보기)">▾</button></span>
+  <div class="bar2" id="ribbon" data-admin>
+    <select id="selStyle" title="스타일 (F6) · Ctrl+1 바탕글, Ctrl+2 본문, Ctrl+3~9 개요 1~7" aria-label="스타일"></select>
+    <span class="fontbox"><input id="inFont" list="fontList" title="글꼴 — 이름을 쓰거나 ▾ 에서 고르세요" spellcheck="false" aria-label="글꼴"><button class="ib sm" id="btnFont" type="button" title="글꼴 목록 (미리보기)" aria-label="글꼴 목록">▾</button></span>
     <datalist id="fontList"></datalist>
-    <input id="inSize" type="number" min="1" max="4096" step="0.5" title="글자 크기 pt (크게: Alt+Shift+E 또는 Ctrl+] · 작게: Alt+Shift+R 또는 Ctrl+[)">
+    <input id="inSize" type="number" min="1" max="4096" step="0.5" title="글자 크기 pt (크게: Alt+Shift+E 또는 Ctrl+] · 작게: Alt+Shift+R 또는 Ctrl+[)" aria-label="글자 크기">
     <span class="vsep"></span>
     <button class="ib" data-act="bold" title="진하게 (Ctrl+B · Alt+Shift+B)"><b>가</b></button>
     <button class="ib" data-act="italic" title="기울임 (Ctrl+I · Alt+Shift+I)"><i>가</i></button>
@@ -43,54 +49,59 @@
     <button class="ib" data-act="strike" title="취소선"><s>가</s></button>
     <button class="ib" data-act="sup" title="위 첨자">x²</button>
     <button class="ib" data-act="sub" title="아래 첨자">x₂</button>
-    <label class="clr" title="글자 색"><span>가</span><input type="color" id="inColor" value="#000000"></label>
-    <label class="clr hl" title="형광펜(음영 색)"><span>펜</span><input type="color" id="inShade" value="#ffff00"></label>
-    <button class="ib sm" data-act="shadeNone" title="형광펜 지우기">✕</button>
+    <label class="clr" title="글자 색"><span>가</span><input type="color" id="inColor" value="#000000" aria-label="글자 색"></label>
+    <label class="clr hl" title="형광펜(음영 색)"><span>펜</span><input type="color" id="inShade" value="#ffff00" aria-label="형광펜 색"></label>
+    <button class="ib sm" data-act="shadeNone" title="형광펜 지우기" aria-label="형광펜 지우기"><i data-ic="x"></i></button>
     <span class="vsep"></span>
-    <button class="ib" data-act="alJ" title="양쪽 정렬 (Ctrl+Shift+M)">☰</button>
-    <button class="ib" data-act="alL" title="왼쪽 정렬 (Ctrl+Shift+L)">⯇</button>
-    <button class="ib" data-act="alC" title="가운데 정렬 (Ctrl+Shift+C)">≡</button>
-    <button class="ib" data-act="alR" title="오른쪽 정렬 (Ctrl+Shift+R)">⯈</button>
-    <button class="ib" data-act="alD" title="배분 정렬 (Ctrl+Shift+T · 브라우저 탭에서는 Ctrl+Alt+T)">⇔</button>
-    <select id="selLs" title="줄 간격 (Alt+Shift+Z 넓게 / Alt+Shift+A 좁게)"></select>
-    <button class="ib" data-act="indentL" title="왼쪽 여백 줄이기">⇤</button>
-    <button class="ib" data-act="indentR" title="왼쪽 여백 늘리기">⇥</button>
-    <button class="ib" data-act="outline" title="개요 번호 켜기/끄기">1.</button>
-    <button class="ib" data-act="bullet" title="글머리표 켜기/끄기">•</button>
+    <button class="ib" data-act="alJ" title="양쪽 정렬 (Ctrl+Shift+M)" aria-label="양쪽 정렬"><i data-ic="textJ"></i></button>
+    <button class="ib" data-act="alL" title="왼쪽 정렬 (Ctrl+Shift+L)" aria-label="왼쪽 정렬"><i data-ic="textL"></i></button>
+    <button class="ib" data-act="alC" title="가운데 정렬 (Ctrl+Shift+C)" aria-label="가운데 정렬"><i data-ic="textC"></i></button>
+    <button class="ib" data-act="alR" title="오른쪽 정렬 (Ctrl+Shift+R)" aria-label="오른쪽 정렬"><i data-ic="textR"></i></button>
+    <button class="ib" data-act="alD" title="배분 정렬 (Ctrl+Shift+T · 브라우저 탭에서는 Ctrl+Alt+T)" aria-label="배분 정렬"><i data-ic="textD"></i></button>
+    <select id="selLs" title="줄 간격 (Alt+Shift+Z 넓게 / Alt+Shift+A 좁게)" aria-label="줄 간격"></select>
+    <button class="ib" data-act="indentL" title="왼쪽 여백 줄이기" aria-label="왼쪽 여백 줄이기"><i data-ic="indentL"></i></button>
+    <button class="ib" data-act="indentR" title="왼쪽 여백 늘리기" aria-label="왼쪽 여백 늘리기"><i data-ic="indentR"></i></button>
+    <button class="ib" data-act="outline" title="개요 번호 켜기/끄기" aria-label="개요 번호"><i data-ic="listNum"></i></button>
+    <button class="ib" data-act="bullet" title="글머리표 켜기/끄기" aria-label="글머리표"><i data-ic="list"></i></button>
     <span class="vsep"></span>
-    <button class="tb" data-act="charDlg" title="글자 모양 (Alt+L)">가 글자</button>
-    <button class="tb" data-act="paraDlg" title="문단 모양 (Alt+T)">¶ 문단</button>
-    <button class="tb" data-act="table" title="표 만들기 (Ctrl+N 다음 T · 브라우저 탭에서는 Ctrl+Alt+N 다음 T)">▦ 표</button>
-    <button class="tb" data-act="image" title="그림 넣기 (Ctrl+N 다음 I · 브라우저 탭에서는 Ctrl+Alt+N 다음 I)">🖼 그림</button>
-    <button class="tb" data-act="pageBreak" title="쪽 나누기 (Ctrl+Enter)">⤓ 쪽</button>
-    <button class="tb" data-act="symbol" title="문자표 (Ctrl+F10)">※ 문자표</button>
-    <button class="tb" data-act="find" title="찾기 (Ctrl+F) · 찾아 바꾸기 (Ctrl+H 또는 Ctrl+F2)">🔍 찾기</button>
-    <button class="tb" data-act="pageDlg" title="편집 용지 (F7)">📐 용지</button>
-    <button class="tb" data-act="pageNum" title="쪽 번호 매기기 (Ctrl+N 다음 P · 브라우저 탭에서는 Ctrl+Alt+N 다음 P)"># 쪽 번호</button>
-    <button class="tb" data-act="headFoot" title="머리말/꼬리말 (Ctrl+N 다음 H · 브라우저 탭에서는 Ctrl+Alt+N 다음 H)">머리말</button>
+    <button class="tb" data-act="charDlg" title="글자 모양 (Alt+L)"><i data-ic="type"></i><span>글자</span></button>
+    <button class="tb" data-act="paraDlg" title="문단 모양 (Alt+T)"><i data-ic="paragraph"></i><span>문단</span></button>
+    <button class="tb" data-act="table" title="표 만들기 (Ctrl+N 다음 T · 브라우저 탭에서는 Ctrl+Alt+N 다음 T)"><i data-ic="table"></i><span>표</span></button>
+    <button class="tb" data-act="image" title="그림 넣기 (Ctrl+N 다음 I · 브라우저 탭에서는 Ctrl+Alt+N 다음 I)"><i data-ic="image"></i><span>그림</span></button>
+    <button class="tb" data-act="pageBreak" title="쪽 나누기 (Ctrl+Enter)"><i data-ic="pageBreak"></i><span>쪽 나누기</span></button>
+    <button class="tb" data-act="symbol" title="문자표 (Ctrl+F10)"><i data-ic="symbol"></i><span>문자표</span></button>
+    <button class="tb" data-act="find" title="찾기 (Ctrl+F) · 찾아 바꾸기 (Ctrl+H 또는 Ctrl+F2)"><i data-ic="search"></i><span>찾기</span></button>
+    <button class="tb" data-act="pageDlg" title="편집 용지 (F7)"><i data-ic="ruler"></i><span>용지</span></button>
+    <button class="tb" data-act="pageNum" title="쪽 번호 매기기 (Ctrl+N 다음 P · 브라우저 탭에서는 Ctrl+Alt+N 다음 P)"><i data-ic="hash"></i><span>쪽 번호</span></button>
+    <button class="tb" data-act="headFoot" title="머리말/꼬리말 (Ctrl+N 다음 H · 브라우저 탭에서는 Ctrl+Alt+N 다음 H)"><i data-ic="layout"></i><span>머리말</span></button>
+  </div>
+  <div class="bar2 guest-bar" data-guest>
+    <span class="guest-note"><i data-ic="eye"></i>보기 전용 — 문서를 열어 읽고 인쇄할 수 있습니다. 고치려면 <a href="index.html?mode=1">관리자로 입장</a>하세요.</span>
+    <span class="grow"></span>
+    <button class="tb" data-act="find" title="찾기 (Ctrl+F)"><i data-ic="search"></i><span>찾기</span></button>
   </div>
   <div class="bar3" id="tableBar" hidden>
     <b class="lbl">표</b>
-    <button class="tb" data-act="rowAbove" title="위에 줄 추가">↥ 위 줄</button>
-    <button class="tb" data-act="rowBelow" title="아래에 줄 추가 (표 안 Ctrl+Enter)">↧ 아래 줄</button>
-    <button class="tb" data-act="colLeft" title="왼쪽에 칸 추가">↤ 왼 칸</button>
-    <button class="tb" data-act="colRight" title="오른쪽에 칸 추가">↦ 오른 칸</button>
+    <button class="tb" data-act="rowAbove" title="위에 줄 추가">위 줄</button>
+    <button class="tb" data-act="rowBelow" title="아래에 줄 추가 (표 안 Ctrl+Enter)">아래 줄</button>
+    <button class="tb" data-act="colLeft" title="왼쪽에 칸 추가">왼 칸</button>
+    <button class="tb" data-act="colRight" title="오른쪽에 칸 추가">오른 칸</button>
     <button class="tb" data-act="rowDel" title="줄 지우기 (Alt+Delete)">줄 지우기</button>
     <button class="tb" data-act="colDel" title="칸 지우기 (Alt+Delete)">칸 지우기</button>
     <span class="vsep"></span>
-    <button class="tb" data-act="cellPick" id="btnCellPick" title="눌러서 켠 뒤 셀을 차례로 누르면 블록으로 잡힘 (휴대폰용)">☐ 셀 선택</button>
+    <button class="tb" data-act="cellPick" id="btnCellPick" title="눌러서 켠 뒤 셀을 차례로 누르면 블록으로 잡힘 (휴대폰용)"><i data-ic="grid"></i>셀 선택</button>
     <button class="tb" data-act="merge" title="셀 합치기 (셀 블록에서 M)">셀 합치기</button>
     <button class="tb" data-act="split" title="셀 나누기 (셀 블록에서 S)">셀 나누기</button>
     <button class="tb" data-act="eqW" title="셀 너비를 같게 (셀 블록에서 W)">너비 같게</button>
     <button class="tb" data-act="eqH" title="셀 높이를 같게 (셀 블록에서 H)">높이 같게</button>
     <span class="vsep"></span>
-    <label class="clr" title="셀 배경색"><span>배경</span><input type="color" id="inCellFill" value="#e8eef8"></label>
-    <button class="ib sm" data-act="cellFillNone" title="셀 배경 지우기">✕</button>
+    <label class="clr" title="셀 배경색"><span>배경</span><input type="color" id="inCellFill" value="#e8eef8" aria-label="셀 배경색"></label>
+    <button class="ib sm" data-act="cellFillNone" title="셀 배경 지우기" aria-label="셀 배경 지우기"><i data-ic="x"></i></button>
     <button class="tb" data-act="cellDlg" title="셀 테두리/배경 (셀 블록에서 L)">테두리</button>
-    <select id="selVa" title="셀 안 세로 정렬"><option value="top">위</option><option value="middle">가운데</option><option value="bottom">아래</option></select>
+    <select id="selVa" title="셀 안 세로 정렬" aria-label="셀 안 세로 정렬"><option value="top">위</option><option value="middle">가운데</option><option value="bottom">아래</option></select>
     <span class="grow"></span>
     <span class="hint">F5 셀 블록 · 셀 테두리 끌어서 너비 조절</span>
-    <button class="tb danger" data-act="tableDel" title="표 지우기">표 지우기</button>
+    <button class="tb danger" data-act="tableDel" title="표 지우기"><i data-ic="trash"></i>표 지우기</button>
   </div>
 </header>
 
@@ -98,42 +109,50 @@
   <div id="sheetWrap"><div id="sheet"><div id="pages"></div><div id="doc" contenteditable="true" spellcheck="false" autocapitalize="off"></div><div id="picHandle" hidden></div></div></div>
 </main>
 
-<div id="fontPanel" hidden><input id="fontQ" placeholder="글꼴 찾기…" spellcheck="false"><div id="fontItems"></div></div>
+<div id="fontPanel" hidden><input id="fontQ" placeholder="글꼴 찾기…" spellcheck="false" aria-label="글꼴 찾기"><div id="fontItems"></div></div>
 <div id="findBar" hidden>
-  <div class="row"><input id="fq" placeholder="찾을 내용" spellcheck="false"><button class="tb" id="fPrev" title="이전 (Shift+Enter)">▲</button><button class="tb" id="fNext" title="다음 (Enter)">▼</button><label class="chk"><input type="checkbox" id="fCase">대소문자</label><span id="fMsg" class="muted"></span><button class="tb" id="fClose" title="닫기 (Esc)">✕</button></div>
-  <div class="row" id="fRepRow"><input id="fr" placeholder="바꿀 내용" spellcheck="false"><button class="tb" id="fRep">바꾸기</button><button class="tb" id="fRepAll">모두 바꾸기</button></div>
+  <div class="row"><input id="fq" placeholder="찾을 내용" spellcheck="false" aria-label="찾을 내용"><button class="tb icon" id="fPrev" title="이전 (Shift+Enter)" aria-label="이전">▲</button><button class="tb icon" id="fNext" title="다음 (Enter)" aria-label="다음">▼</button><label class="chk"><input type="checkbox" id="fCase">대소문자</label><span id="fMsg" class="muted"></span><button class="tb icon" id="fClose" title="닫기 (Esc)" aria-label="닫기"><i data-ic="x"></i></button></div>
+  <div class="row" id="fRepRow"><input id="fr" placeholder="바꿀 내용" spellcheck="false" aria-label="바꿀 내용"><button class="tb" id="fRep">바꾸기</button><button class="tb" id="fRepAll">모두 바꾸기</button></div>
 </div>
 
 <footer id="status">
   <span id="stPage">1/1 쪽</span><span id="stSec"></span><span id="stChars"></span><span id="stMode">삽입</span><span id="stChord" class="chord"></span>
   <span class="grow"></span>
-  <span id="stSaved" title="편집 중인 내용은 이 기기에 자동으로 임시 저장됩니다. 원본에 남기려면 💾 저장 (Ctrl+S)"></span>
-  <button class="ib sm" id="btnView" title="쪽 보기 ↔ 화면 맞춤 보기 (휴대폰에 편한 보기)">📄 쪽 보기</button>
-  <button class="ib sm" data-act="zoomOut" title="축소 (Ctrl+마우스 휠)">－</button>
-  <select id="selZoom" title="확대/축소"><option value="0.5">50%</option><option value="0.75">75%</option><option value="0.9">90%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option><option value="fit">쪽 맞춤</option><option value="width">폭 맞춤</option></select>
-  <button class="ib sm" data-act="zoomIn" title="확대">＋</button>
+  <span id="stSaved" title="편집 중인 내용은 이 기기에 자동으로 임시 저장됩니다. 원본에 남기려면 저장 (Ctrl+S)"></span>
+  <button class="ib sm" id="btnView" title="쪽 보기 ↔ 화면 맞춤 보기 (휴대폰에 편한 보기)"><i data-ic="page"></i><span>쪽 보기</span></button>
+  <button class="ib sm" data-act="zoomOut" title="축소 (Ctrl+마우스 휠)" aria-label="축소"><i data-ic="minus"></i></button>
+  <select id="selZoom" title="확대/축소" aria-label="확대/축소"><option value="0.5">50%</option><option value="0.75">75%</option><option value="0.9">90%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option><option value="fit">쪽 맞춤</option><option value="width">폭 맞춤</option></select>
+  <button class="ib sm" data-act="zoomIn" title="확대" aria-label="확대"><i data-ic="plus"></i></button>
 </footer>
 
 <div id="start" hidden>
   <div class="card">
-    <a class="back" href="index.html">← 업무 공간</a>
-    <h1>한글 작업장</h1>
-    <p class="muted">한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다. 사무실의 한글에서 그대로 열립니다.</p>
-    <div class="big">
-      <button data-act="new"><b>📄 새 문서</b><span>빈 A4 문서</span></button>
-      <button data-act="open"><b>📂 <i class="only-pc">내 PC 에서 열기</i><i class="only-mob">파일 열기</i></b><span>.hwpx 파일<i class="only-pc"> (끌어다 놓아도 됩니다)</i></span></button>
-      <button data-act="box"><b>🔒 문서함</b><span>집·사무실 어디서나 같은 문서</span></button>
+    <div class="start-head">
+      <a class="back" href="index.html"><i data-ic="back"></i>업무 공간</a>
+      <span class="grow"></span>
+      <span id="roleChip2"></span>
     </div>
-    <div id="draftList"></div>
-    <p class="note">· 처음이면 <b>새 문서</b>로 시작하거나, 사무실에서 저장한 <b>.hwpx</b> 파일을 여세요. 다른 기기에서도 이어서 하려면 <b>문서함</b>에 저장합니다.<br>· <b>.hwp</b>(옛 형식) 파일은 한글에서 <b>파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 올려 주세요.<br>· 편집 중인 내용은 이 브라우저에 자동으로 임시 저장되어, 창을 닫아도 다시 열 수 있습니다.</p>
+    <div class="start-title"><span class="mark lg">한</span><div><h1>한글 작업장</h1><p class="muted">한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다. 사무실의 한글에서 그대로 열립니다.</p></div></div>
+    <div class="big">
+      <button data-act="new" data-admin><i data-ic="filePlus"></i><b>새 문서</b><span>빈 A4 문서</span></button>
+      <button data-act="open"><i data-ic="folder"></i><b><i class="only-pc">내 PC 에서 열기</i><i class="only-mob">파일 열기</i></b><span>.hwpx 파일<i class="only-pc"> (끌어다 놓아도 됩니다)</i></span></button>
+      <button data-act="box" data-admin><i data-ic="lock"></i><b>문서함</b><span>집·사무실 어디서나 같은 문서</span></button>
+      <button data-act="best"><i data-ic="bookmark"></i><b>best 문서</b><span>레퍼런스로 쌓아 둔 문서</span></button>
+    </div>
+    <div id="draftList" data-admin></div>
+    <div id="bestList"></div>
+    <p class="note" data-admin>· 처음이면 <b>새 문서</b>로 시작하거나, 사무실에서 저장한 <b>.hwpx</b> 파일을 여세요. 다른 기기에서도 이어서 하려면 <b>문서함</b>에 저장합니다.<br>· <b>.hwp</b>(옛 형식) 파일은 한글에서 <b>파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 올려 주세요.<br>· 편집 중인 내용은 이 브라우저에 자동으로 임시 저장되어, 창을 닫아도 다시 열 수 있습니다.</p>
+    <p class="note" data-guest>· 게스트 모드에서는 <b>.hwpx</b> 파일을 열어 읽고 인쇄할 수 있습니다. 고치거나 저장하려면 첫 화면에서 <a href="index.html?mode=1">관리자로 입장</a>하세요.</p>
   </div>
 </div>
-<div id="dropMask" hidden><div>hwpx 문서는 열고, 그림은 커서 위치에 넣습니다</div></div>
+<div id="dropMask" hidden><div><i data-ic="import"></i><b>hwpx 문서는 열고, 그림은 커서 위치에 넣습니다</b></div></div>
 
 <script src="app/common.js"></script>
 <script src="app/hwp/zip.js"></script>
 <script src="app/hwp/hwpx.js"></script>
 <script src="app/hwp/store.js"></script>
+<script src="app/hwp/best.js"></script>
+<script src="app/access.js"></script>
 <script src="app/hwp/edit.js"></script>
 <script src="app/hwp/ui.js"></script>
 <script src="app/pwa.js"></script>

@@ -13,7 +13,8 @@ $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DecksDir = Join-Path $Root 'decks'
 $AssetsDir = Join-Path $Root 'assets'
 $TrashDir = Join-Path $DecksDir '.trash'
-foreach ($d in @($DecksDir, $AssetsDir)) { if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d | Out-Null } }
+$BestDir = Join-Path $Root 'best'     # 한글 작업장 best 문서(레퍼런스): <id>.hwpx + <id>.json
+foreach ($d in @($DecksDir, $AssetsDir, $BestDir)) { if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d | Out-Null } }
 
 $Mime = @{
     '.html' = 'text/html; charset=utf-8'; '.htm' = 'text/html; charset=utf-8'
@@ -26,6 +27,7 @@ $Mime = @{
     '.m4v' = 'video/mp4'; '.mov' = 'video/quicktime'; '.ogv' = 'video/ogg'; '.ogg' = 'audio/ogg'; '.m4a' = 'audio/mp4'
     '.woff' = 'font/woff'; '.woff2' = 'font/woff2'; '.ttf' = 'font/ttf'; '.otf' = 'font/otf'
     '.pdf' = 'application/pdf'; '.webmanifest' = 'application/manifest+json'
+    '.hwpx' = 'application/hwp+zip'
 }
 
 function Send-Bytes($ctx, [int]$status, [string]$type, [byte[]]$bytes) {
@@ -193,6 +195,64 @@ function Handle-Request($ctx) {
             $bytes = Read-Body $ctx
             [System.IO.File]::WriteAllBytes((Join-Path $AssetsDir $fname), $bytes)
             Send-Json $ctx @{ ok = $true; src = 'assets/' + $fname; name = $fname }; return
+        }
+    }
+    # ---------- best 문서 (한글 작업장 레퍼런스) ----------
+    # GET  /api/best            목록 (구조·본문 글은 뺀 요약)
+    # GET  /api/best/<id>       기록 전체 (best/<id>.json)
+    # PUT  /api/best/<id>       기록 저장      POST /api/best/<id>/file  원본 hwpx 저장 (best/<id>.hwpx)
+    # DELETE /api/best/<id>     best/.trash 로 이동
+    if ($path -eq '/api/best') {
+        if ($method -eq 'GET') {
+            $list = @()
+            Get-ChildItem -Path $BestDir -Filter '*.json' -File | Sort-Object LastWriteTime -Descending | ForEach-Object {
+                try {
+                    $o = ConvertFrom-Json ([System.IO.File]::ReadAllText($_.FullName, [System.Text.Encoding]::UTF8))
+                    foreach ($k in @('struct', 'text', 'outline')) { if ($o.PSObject.Properties[$k]) { $o.PSObject.Properties.Remove($k) } }
+                    if (-not $o.id) { $o | Add-Member -NotePropertyName id -NotePropertyValue $_.BaseName -Force }
+                    $list += $o
+                } catch { }
+            }
+            Send-Text $ctx 200 'application/json; charset=utf-8' (ConvertTo-Json -InputObject @($list) -Depth 12 -Compress); return
+        }
+    }
+    if ($path -like '/api/best/*') {
+        $rest = $path.Substring('/api/best/'.Length)
+        $isFile = $rest -like '*/file'
+        if ($isFile) { $rest = $rest.Substring(0, $rest.Length - 5) }
+        $id = Get-SafeName $rest
+        if (-not $id -or $id -eq '.trash' -or $id -eq 'index') { Send-Json $ctx @{ error = 'bad id' } 400; return }
+        $jf = Join-Path $BestDir ($id + '.json'); $hf = Join-Path $BestDir ($id + '.hwpx')
+        if ($isFile -and $method -eq 'POST') {
+            $bytes = Read-Body $ctx
+            if ($bytes.Length -lt 4 -or $bytes[0] -ne 0x50 -or $bytes[1] -ne 0x4B) { Send-Json $ctx @{ error = 'not hwpx' } 400; return }   # zip(PK) 이 아니면 거절
+            [System.IO.File]::WriteAllBytes($hf, $bytes)
+            Send-Json $ctx @{ ok = $true; id = $id; size = $bytes.Length }; return
+        }
+        switch ($method) {
+            'GET' {
+                if (-not (Test-Path $jf)) { Send-Json $ctx @{ error = 'not found' } 404; return }
+                Send-Bytes $ctx 200 'application/json; charset=utf-8' ([System.IO.File]::ReadAllBytes($jf)); return
+            }
+            'PUT' {
+                $text = [System.Text.Encoding]::UTF8.GetString((Read-Body $ctx))
+                try { $parsed = ConvertFrom-Json $text } catch { Send-Json $ctx @{ error = 'invalid json' } 400; return }
+                if ($null -eq $parsed -or -not $parsed.name) { Send-Json $ctx @{ error = 'not a best record' } 400; return }
+                $enc = New-Object System.Text.UTF8Encoding $false
+                $tmp = $jf + '.tmp'
+                [System.IO.File]::WriteAllText($tmp, $text, $enc)
+                if (Test-Path $jf) { [System.IO.File]::Replace($tmp, $jf, $null) } else { [System.IO.File]::Move($tmp, $jf) }
+                Send-Json $ctx @{ ok = $true; id = $id }; return
+            }
+            'DELETE' {
+                if (-not (Test-Path $jf) -and -not (Test-Path $hf)) { Send-Json $ctx @{ error = 'not found' } 404; return }
+                $bt = Join-Path $BestDir '.trash'
+                if (-not (Test-Path $bt)) { New-Item -ItemType Directory -Path $bt | Out-Null }
+                $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+                if (Test-Path $jf) { Move-Item $jf (Join-Path $bt ("$id-$stamp.json")) -Force }
+                if (Test-Path $hf) { Move-Item $hf (Join-Path $bt ("$id-$stamp.hwpx")) -Force }
+                Send-Json $ctx @{ ok = $true; trashed = $true }; return
+            }
         }
     }
     if ($path -like '/api/*') { Send-Json $ctx @{ error = 'unknown api' } 404; return }

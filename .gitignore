@@ -5,3 +5,5 @@ Thumbs.db
 *.log
 .claude/launch.json
 decks/*.tmp
+best/.trash/
+best/*.tmp

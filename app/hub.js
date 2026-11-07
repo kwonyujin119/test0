@@ -20,9 +20,15 @@
     notice.style.display = 'block';
     notice.innerHTML = '서버 없이 열렸습니다. 지금은 교안이 <b>브라우저 안에만</b> 저장됩니다. 폴더의 <b>start.cmd</b> 를 실행해 열면 decks/ 폴더에 파일로 저장되고 Git 으로 관리할 수 있습니다.';
   }
-  if (API.mode === 'github') {
+  const GUEST = Access.isGuest; // 보기 전용: 새 교안·가져오기·편집·⋯ 메뉴를 감추고 저장 API 는 access.js 가 막음
+  $('roleChip').innerHTML = Access.chip();
+  if (API.mode === 'github' && !GUEST) {
     $('btnGh').style.display = '';
     ghNotice();
+  }
+  if (GUEST) {
+    notice.style.display = 'block'; notice.className = 'hub-notice guest';
+    notice.innerHTML = `${icon('eye', 15)} <b>보기 전용(게스트)</b> 으로 들어왔습니다. 교안을 열어 발표할 수 있고, 고치거나 저장하는 일은 할 수 없습니다. <a href="index.html?mode=1">관리자로 입장</a>`;
   }
 
   /* ---------- 창: 글 입력 · 확인 (브라우저 기본 창 대신) ---------- */
@@ -180,7 +186,8 @@
       empty.innerHTML = kw ? `<b>"${esc(kw)}" 이(가) 들어간 교안이 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`
         : filter === 'draft' ? '<b>저장하지 않은 작업본이 없습니다</b><span>편집하다가 저장하지 않고 닫으면 여기에 모입니다.</span>'
           : filter === 'week' ? '<b>최근 7일 동안 저장한 교안이 없습니다</b>'
-            : `<b>첫 교안을 만들어 보세요</b><span>새 교안을 만들거나 PowerPoint 파일을 이 화면에 끌어다 놓으세요.</span><button class="btn ink" id="emptyNew">${icon('plus')}새 교안</button>`;
+            : GUEST ? '<b>아직 교안이 없습니다</b><span>관리자가 교안을 만들면 여기에 보입니다.</span>'
+              : `<b>첫 교안을 만들어 보세요</b><span>새 교안을 만들거나 PowerPoint 파일을 이 화면에 끌어다 놓으세요.</span><button class="btn ink" id="emptyNew">${icon('plus')}새 교안</button>`;
       const en = $('emptyNew'); if (en) en.onclick = () => $('btnNew').click();
     }
     /* 불러오기 전: 빈 카드 자리 */
@@ -188,17 +195,17 @@
   }
 
   function renderResume(d) {
-    resume.innerHTML = `<div class="resume-main deck-thumb loading" tabindex="0" role="link" aria-label="${esc(d.title)} 편집"></div>
+    resume.innerHTML = `<div class="resume-main deck-thumb loading" tabindex="0" role="link" aria-label="${esc(d.title)} ${GUEST ? '발표' : '편집'}"></div>
       <div class="resume-side">
-        <div class="eyebrow">이어서 작업</div>
+        <div class="eyebrow">${GUEST ? '최근 교안' : '이어서 작업'}</div>
         <h2 class="resume-title">${esc(d.title)}</h2>
         <div class="resume-meta"><span data-m></span></div>
         <div class="resume-film" data-film></div>
         <div class="resume-cta">
-          <button class="btn ink lg" data-go="edit">${icon('edit')}이어서 편집</button>
+          ${GUEST ? `<button class="btn ink lg" data-go="present">${icon('play')}발표</button>` : `<button class="btn ink lg" data-go="edit">${icon('edit')}이어서 편집</button>
           <button class="btn lg" data-go="present">${icon('play')}발표</button>
           <span class="flex"></span>
-          <button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>
+          <button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`}
         </div>
       </div>`;
     const meta = () => { resume.querySelector('[data-m]').textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', relTime(timeOf(d))].filter(Boolean).join(' · '); };
@@ -206,9 +213,9 @@
     const main = resume.querySelector('.resume-main');
     main.onclick = () => openEditor(d.name);
     main.onkeydown = (ev) => { if (ev.key === 'Enter') openEditor(d.name); };
-    resume.querySelector('[data-go=edit]').onclick = () => openEditor(d.name);
+    if (!GUEST) resume.querySelector('[data-go=edit]').onclick = () => openEditor(d.name);
     resume.querySelector('[data-go=present]').onclick = () => openPresent(d.name);
-    resume.querySelector('[data-more]').onclick = (ev) => actionMenu(ev.currentTarget, d, main);
+    if (!GUEST) resume.querySelector('[data-more]').onclick = (ev) => actionMenu(ev.currentTarget, d, main);
     loadDeck(d).then(deck => {
       meta();
       resume.querySelector('.resume-title').textContent = d.title;
@@ -217,7 +224,7 @@
       const film = resume.querySelector('[data-film]');
       deck.slides.slice(1, 5).forEach((s, i) => {
         const t = document.createElement('button'); t.className = 'film-t'; t.title = `${i + 2}번 슬라이드 편집`; t.setAttribute('aria-label', t.title);
-        t.onclick = () => { location.href = 'editor.html?deck=' + encodeURIComponent(d.name) + '&slide=' + (i + 1); };
+        t.onclick = () => { if (GUEST) openPresent(d.name); else location.href = 'editor.html?deck=' + encodeURIComponent(d.name) + '&slide=' + (i + 1); };
         film.appendChild(t); drawSlide(t, s, deck);
       });
     }).catch(() => { main.classList.remove('loading'); });
@@ -225,18 +232,18 @@
 
   function card(d) {
     const c = document.createElement('article'); c.className = 'deck-card';
-    const th = document.createElement('div'); th.className = 'deck-thumb loading'; th.tabIndex = 0; th.setAttribute('role', 'link'); th.setAttribute('aria-label', d.title + ' 편집');
-    th.innerHTML = `<div class="deck-hover"><button class="btn ink" data-a="present">${icon('play', 16)}발표</button><button class="btn" data-a="edit">${icon('edit', 16)}편집</button></div>`;
+    const th = document.createElement('div'); th.className = 'deck-thumb loading'; th.tabIndex = 0; th.setAttribute('role', 'link'); th.setAttribute('aria-label', d.title + (GUEST ? ' 발표' : ' 편집'));
+    th.innerHTML = `<div class="deck-hover"><button class="btn ink" data-a="present">${icon('play', 16)}발표</button>${GUEST ? '' : `<button class="btn" data-a="edit">${icon('edit', 16)}편집</button>`}</div>`;
     th.onclick = (ev) => { if (!ev.target.closest('button')) openEditor(d.name); };
     th.onkeydown = (ev) => { if (ev.key === 'Enter' && ev.target === th) openEditor(d.name); };
     c.appendChild(th);
     const body = document.createElement('div'); body.className = 'deck-body';
     /* 카드 아래 줄: 슬라이드 수 · 저장한 때 · (목록 보기에서) 파일 이름 · 이 기기에 저장 안 한 작업본 */
     const meta = (state) => `<span>${state || (d.slides === '' ? '불러오는 중…' : `${d.slides}장`)}</span><span title="마지막으로 저장한 때: ${esc(d.modified || '')}">${esc(relTime(timeOf(d)))}</span><span class="deck-file">${esc(d.name)}.json</span>`
-      + (Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : '');
+      + (!GUEST && Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : '');
     body.innerHTML = `<div class="deck-text"><div class="deck-title" title="${esc(d.title)}">${esc(d.title)}</div><div class="deck-meta">${meta()}</div></div>
-      <div class="deck-actions"><button class="btn sm" data-a="present">${icon('play', 14)}발표</button><button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button></div>
-      <button class="btn icon ghost kebab" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`;
+      <div class="deck-actions"><button class="btn sm" data-a="present">${icon('play', 14)}발표</button>${GUEST ? '' : `<button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button>`}</div>
+      ${GUEST ? '' : `<button class="btn icon ghost kebab" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`}`;
     loadDeck(d).then(deck => {
       if (d.partial) { body.querySelector('.deck-title').textContent = d.title; body.querySelector('.deck-meta').innerHTML = meta(); }
       if (!deck.slides || !deck.slides.length) { th.classList.remove('loading'); return; }
@@ -319,7 +326,7 @@
   }
 
   function openPresent(name) { window.open('present.html?deck=' + encodeURIComponent(name), '_blank'); }
-  function openEditor(name) { location.href = 'editor.html?deck=' + encodeURIComponent(name); }
+  function openEditor(name) { if (GUEST) { openPresent(name); return; } location.href = 'editor.html?deck=' + encodeURIComponent(name); }
   function sanitize(n) { return n.replace(/[\\/:*?"<>|]/g, '_').trim(); }
   function uniqueName(base) { let n = sanitize(base), i = 2; while (decks.some(d => d.name === n)) n = sanitize(base) + ' ' + (i++); return n; }
 
@@ -387,6 +394,7 @@
   $('fileImport').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await importFile(f); };
   const isPpt = (f) => !!f && /\.(pptx|ppsx|pptm|ppsm|potx|ppt|pps|pot)$/i.test(f.name || '');
   async function importFile(f) {
+    if (GUEST) { toast('게스트 모드에서는 가져올 수 없습니다 — 첫 화면에서 관리자로 입장하세요', 3200); return; }
     if (isPpt(f)) return importPpt(f);
     const done = hold('btnImport', '가져오는 중…');
     try {
@@ -437,7 +445,7 @@
   }
   // 이 화면에 파일 끌어다 놓기 (.pptx → 교안, .json → 교안 파일 가져오기)
   const dropOk = (dt) => dt && Array.from(dt.types || []).includes('Files');
-  document.addEventListener('dragover', (ev) => { if (dropOk(ev.dataTransfer)) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; document.body.classList.add('dragover'); } });
+  document.addEventListener('dragover', (ev) => { if (GUEST) return; if (dropOk(ev.dataTransfer)) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; document.body.classList.add('dragover'); } });
   document.addEventListener('dragleave', (ev) => { if (!ev.relatedTarget) document.body.classList.remove('dragover'); });
   document.addEventListener('drop', async (ev) => {
     document.body.classList.remove('dragover'); if (!dropOk(ev.dataTransfer)) return; ev.preventDefault();
