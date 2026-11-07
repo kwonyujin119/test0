@@ -2,7 +2,7 @@
   "id": "/test0/",
   "name": "업무 공간",
   "short_name": "업무 공간",
-  "description": "한글(hwpx) 문서 편집과 강의 교안 작업을 하는 개인 업무 앱",
+  "description": "한글(hwpx) 문서 편집, 강의 교안 작업, 영상 편집을 하는 개인 업무 앱",
   "lang": "ko",
   "start_url": "./index.html",
   "scope": "./",
@@ -17,7 +17,8 @@
   ],
   "shortcuts": [
     { "name": "한글 작업장", "short_name": "한글", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "교안 작업장", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] }
+    { "name": "교안 작업장", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "영상 작업장", "short_name": "영상", "url": "./video.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
   ],
   "file_handlers": [
     { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } },
