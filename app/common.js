@@ -1171,14 +1171,16 @@ const GH = {
     opts = opts || {};
     return new Promise(done => {
       const c = this.cfg || this.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main', token: '' };
+      const linked = !!c.token && !opts.expired && !opts.reason; // 이미 이 기기에 토큰이 있음 → 연결 상태를 먼저 보여 주고, 토큰 칸은 '바꾸기' 용
       const bg = document.createElement('div'); bg.className = 'modal-bg';
       bg.innerHTML = `<div class="modal" style="width:560px;max-width:94vw">
-      <h3>GitHub 저장소에 바로 저장</h3>
+      <h3>${linked ? 'GitHub 연결 — 연결되어 있습니다' : 'GitHub 저장소에 바로 저장'}</h3>
+      ${linked ? `<div class="gh-state" id="ghState">이 기기는 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 에 연결되어 있습니다. <span id="ghStateMsg">연결 상태를 확인하는 중…</span></div>` : ''}
       ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ui-warn-fg)">${esc(opts.reason)}</p>` : ''}
-      ${opts.expired ? '' : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
+      ${opts.expired ? '' : linked ? `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">저장할 때마다 이 저장소에 커밋이 쌓입니다. 교안 작업장과 한글 작업장이 같은 연결을 씁니다. 토큰을 바꾸려면 아래에 새 토큰을 붙여넣고 [바꾸기], 그대로 두려면 [닫기].</p>` : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
       그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 교안 작업장과 한글 작업장이 함께 씁니다.</p>`}
       <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1;min-width:0"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1;min-width:0"></div>
-      <div class="row"><label style="width:70px" for="ghToken">토큰</label><input type="password" id="ghToken" placeholder="github_pat_… 또는 ghp_… 붙여넣기" value="" style="flex:1;min-width:0" autocomplete="off"></div>
+      <div class="row"><label style="width:70px" for="ghToken">토큰</label><input type="password" id="ghToken" placeholder="${linked ? '바꿀 때만: 새 토큰 붙여넣기' : 'github_pat_… 또는 ghp_… 붙여넣기'}" value="" style="flex:1;min-width:0" autocomplete="off"></div>
       <details class="gh-adv"><summary>고급 설정 (보통은 그대로 두세요)</summary>
         <div class="row"><label style="width:70px" for="ghBranch">브랜치</label><input type="text" id="ghBranch" value="${esc(c.branch || 'main')}" style="width:140px"></div>
       </details>
@@ -1196,8 +1198,8 @@ const GH = {
       <div class="actions">
         ${c.token ? '<button class="btn ghost danger" id="ghClear">연결 해제</button>' : ''}
         <span class="spacer" style="flex:1"></span>
-        <button class="btn" id="ghCancel">${opts.cancelText || '나중에'}</button>
-        <button class="btn primary" id="ghOk">연결</button>
+        <button class="btn" id="ghCancel">${opts.cancelText || (linked ? '닫기' : '나중에')}</button>
+        <button class="btn primary" id="ghOk">${linked ? '바꾸기' : '연결'}</button>
       </div></div>`;
       document.body.appendChild(bg);
       const $ = (id) => bg.querySelector('#' + id);
@@ -1207,19 +1209,24 @@ const GH = {
       bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { if (!checking()) close(false); } else if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') $('ghOk').click(); });
       $('ghCancel').onclick = () => { if (!checking()) close(false); };
       if ($('ghClear')) $('ghClear').onclick = () => { if (confirm('이 기기에 저장된 GitHub 토큰을 지울까요?')) { this.clear(); close('cleared'); } };
+      if (linked) { // 지금 토큰으로 저장소에 쓸 수 있는지 바로 확인해 보여 줌
+        this.check().then(r => { const m = $('ghStateMsg'); if (!m) return; if (r.push) { $('ghState').classList.add('ok'); m.textContent = '확인했습니다 — 저장소에 쓸 수 있습니다.'; } else { $('ghState').classList.add('warn'); m.textContent = '이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요). 새 토큰을 넣어 주세요.'; $('ghToken').placeholder = '새 토큰 붙여넣기'; } })
+          .catch(e => { const m = $('ghStateMsg'); if (!m) return; $('ghState').classList.add('warn'); m.textContent = e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣어 주세요.' : '지금은 확인하지 못했습니다 (' + e.message + ').'; if (e.status === 401) $('ghToken').placeholder = '새 토큰 붙여넣기'; });
+      }
       $('ghOk').onclick = async () => {
         const cfg = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim().replace(/\s+/g, '') };
         if (!cfg.owner || !cfg.repo) { alert('저장소 이름을 입력하세요'); return; }
-        if (!cfg.token) { $('ghToken').focus(); toast('토큰을 붙여넣어 주세요'); return; }
+        if (!cfg.token && linked && cfg.owner === c.owner && cfg.repo === c.repo) { close(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
+        if (!cfg.token) { $('ghToken').focus(); toast(linked ? '바꾸려면 새 토큰을 붙여넣어 주세요' : '토큰을 붙여넣어 주세요'); return; }
         $('ghOk').disabled = true; $('ghOk').textContent = '확인 중…';
         const prev = this.cfg; this.cfg = cfg;
         try {
           const r = await this.check();
           if (!r.push) throw new Error('이 토큰으로는 저장소에 쓸 수 없습니다. 토큰 권한에서 Contents → Read and write 를 확인하세요.');
-          this.save(cfg); toast('GitHub 에 연결했습니다 — 이 기기에서는 다시 넣지 않아도 됩니다', 2600); close(true);
+          this.save(cfg); toast(linked ? 'GitHub 토큰을 바꿨습니다' : 'GitHub 에 연결했습니다 — 이 기기에서는 다시 넣지 않아도 됩니다', 2600); close(true);
         } catch (e) { this.cfg = prev; alert('연결 실패: ' + e.message); $('ghOk').disabled = false; $('ghOk').textContent = '연결'; }
       };
-      setTimeout(() => $('ghToken').focus(), 50);
+      setTimeout(() => (linked ? $('ghCancel') : $('ghToken')).focus(), 50);
     });
   },
   /* 연결 확인: 저장소 접근 가능 여부와 쓰기 권한 */

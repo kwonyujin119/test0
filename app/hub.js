@@ -24,6 +24,7 @@
   $('roleChip').innerHTML = Access.chip();
   if (API.mode === 'github' && !GUEST) {
     $('btnGh').style.display = '';
+    ghButton();
     ghNotice();
   }
   if (GUEST) {
@@ -75,6 +76,12 @@
   }
 
   /* ---------- GitHub 연결 (GitHub Pages 에서 열었을 때) ---------- */
+  function ghButton() { // 왼쪽 메뉴의 단추: 연결돼 있으면 '연결됨' 표시
+    const b = $('btnGh'); if (!b) return;
+    if (GH.token) { b.innerHTML = '<i data-ic="link"></i><span>GitHub</span><em>연결됨</em>'; b.title = `GitHub 저장소 ${GH.cfg.owner}/${GH.cfg.repo} 에 연결되어 있습니다 — 누르면 상태 확인 · 토큰 바꾸기`; }
+    else { b.innerHTML = '<i data-ic="link"></i><span>GitHub 연결</span>'; b.title = 'GitHub 저장소에 바로 저장하도록 토큰 연결'; }
+    fillIcons(b);
+  }
   function ghNotice() {
     notice.style.display = 'block';
     const repo = `<b>${esc(GH.cfg.owner)}/${esc(GH.cfg.repo)}</b>`;
