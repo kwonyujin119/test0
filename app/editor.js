@@ -2099,7 +2099,7 @@
   function btnMenu(btn, items) {
     if (openMenu && openMenu._btn === btn) { closeMenus(); return; } // 같은 단추를 다시 누르면 닫힘
     const r = btn.getBoundingClientRect(); showMenu(r.left, r.bottom + 6, items);
-    if (openMenu) openMenu._btn = btn;
+    if (openMenu) { openMenu._btn = btn; if (r.bottom + 6 + openMenu.offsetHeight > innerHeight - 8) openMenu.style.top = Math.max(8, r.top - 6 - openMenu.offsetHeight) + 'px'; } // 화면 아래쪽 단추(떠 있는 도구 막대): 단추를 가리지 않게 위로 펼침
   }
   document.addEventListener('pointerdown', (ev) => { if (openMenu && !openMenu.contains(ev.target) && ev.target.closest('.btn') !== openMenu._btn) closeMenus(); });
 
@@ -2636,7 +2636,7 @@
     m.addEventListener('mouseover', (ev) => { const d = ev.target.closest('[data-r]'); if (!d) return; const r = +d.dataset.r, c = +d.dataset.c; m.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', +x.dataset.r <= r && +x.dataset.c <= c)); lab.textContent = `${r}행 × ${c}열 표`; });
     m.addEventListener('click', (ev) => { const d = ev.target.closest('[data-r]'); if (!d) return; closeMenus(); addTable(+d.dataset.r, +d.dataset.c); });
     document.body.appendChild(m); openMenu = m;
-    const r = btn.getBoundingClientRect(); m.style.left = r.left + 'px'; m.style.top = (r.bottom + 6) + 'px';
+    const r = btn.getBoundingClientRect(); m.style.left = Math.min(r.left, innerWidth - m.offsetWidth - 8) + 'px'; m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? Math.max(8, r.top - 6 - m.offsetHeight) : r.bottom + 6) + 'px';
   }
   /* 표 편집 중 Tab: 다음 칸 · 마지막 칸이면 줄 추가 */
   function tableTab(back) {
@@ -3367,6 +3367,11 @@
     overlay.style.backgroundSize = S.grid ? `${60 * S.k}px ${60 * S.k}px` : '';
     const b = $('btnGrid'); if (b) b.classList.toggle('active', !!S.grid);
   }
+  /* 패널 숨기기: 슬라이드만 크게 (Ctrl+\) */
+  const setMinUi = (on) => { document.querySelector('.ed').classList.toggle('ui-min', on); $('btnMinUi').classList.toggle('active', on); $('btnMinUi').setAttribute('aria-pressed', on); try { localStorage.setItem('gyoan:minui', on ? '1' : '0'); } catch (e) { } };
+  $('btnMinUi').onclick = () => setMinUi(!document.querySelector('.ed').classList.contains('ui-min'));
+  document.addEventListener('keydown', (ev) => { if ((ev.ctrlKey || ev.metaKey) && ev.key === '\\') { ev.preventDefault(); $('btnMinUi').click(); } });
+  try { if (localStorage.getItem('gyoan:minui') === '1' && innerWidth > 820) setMinUi(true); } catch (e) { }
   $('btnGrid').onclick = () => { S.grid = !S.grid; try { localStorage.setItem('gyoan:grid', S.grid ? '1' : '0'); } catch (e) { } applyGrid(); toast(S.grid ? '격자 켜짐 · 60px 간격에 맞춰 붙습니다' : '격자 꺼짐'); };
 
   function toggleHideSlide() {

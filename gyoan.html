@@ -4,58 +4,61 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>교안 작업장</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231a73e8'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>교</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316171a'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800'>교</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
 <link rel="stylesheet" href="app/slide.css">
-<style>.crumb{font-size:13px;color:var(--ui-muted);margin-bottom:2px}.crumb a{color:var(--ui-muted)}.crumb a:hover{color:var(--ui-fg)}</style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="app/icons/icon-192.png">
 </head>
 <body>
-<div class="hub">
-  <div class="hub-head">
-    <div>
-      <div class="crumb"><a href="index.html" title="업무 공간으로">← 업무 공간</a></div>
-      <h1>교안 작업장</h1>
-      <div class="sub" id="sub">교안을 모아두고, 편집하고, 바로 발표합니다.</div>
-    </div>
-    <div class="hub-tools">
-      <input type="search" id="q" placeholder="교안 검색…" aria-label="교안 검색">
-      <button class="btn" id="btnGh" title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none">GitHub 연결</button>
-      <button class="btn" id="btnImport" title="PowerPoint 파일(.pptx)이나 내보내기로 받아 둔 교안 파일(.json)을 교안으로 가져옵니다">가져오기</button>
-      <button class="btn primary" id="btnNew"><i data-ic="plus"></i>새 교안</button>
-      <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
-    </div>
-  </div>
-  <div class="hub-notice" id="notice" style="display:none"></div>
-  <div class="deck-grid" id="grid"></div>
-  <div class="hub-empty" id="empty" style="display:none">아직 교안이 없습니다. <b>＋ 새 교안</b>을 눌러 시작하세요.</div>
+<div class="shell">
+  <aside class="rail" aria-label="교안 작업장 메뉴">
+    <a class="brand" href="gyoan.html"><span class="mark">교</span><b>교안 작업장</b></a>
+    <button class="btn ink wide" id="btnNew"><i data-ic="plus"></i>새 교안</button>
+    <nav class="rail-nav" id="nav" aria-label="교안 분류">
+      <button class="rail-item on" data-filter="all"><i data-ic="stack"></i><span>모든 교안</span><em id="cAll"></em></button>
+      <button class="rail-item" data-filter="week"><i data-ic="clock"></i><span>최근 7일</span><em id="cWeek"></em></button>
+      <button class="rail-item" data-filter="draft"><i data-ic="edit"></i><span>저장 안 한 작업본</span><em id="cDraft"></em></button>
+    </nav>
+    <div class="rail-grow"></div>
+    <nav class="rail-nav quiet" aria-label="도구">
+      <button class="rail-item" id="btnImport" title="PowerPoint 파일(.pptx)이나 내보내기로 받아 둔 교안 파일(.json)을 교안으로 가져옵니다"><i data-ic="import"></i><span>가져오기</span></button>
+      <button class="rail-item" id="btnGh" title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none"><i data-ic="link"></i><span>GitHub 연결</span></button>
+      <button class="rail-item" id="btnGuide"><i data-ic="help"></i><span>사용 안내</span></button>
+      <a class="rail-item" href="index.html"><i data-ic="back"></i><span>업무 공간으로</span></a>
+    </nav>
+  </aside>
 
-  <div class="hub-help">
-    <div>
-      <h4>발표 조작 (프레젠터 리모컨 동일)</h4>
-      <p><kbd>→</kbd> <kbd>PgDn</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> 다음 / <kbd>←</kbd> <kbd>PgUp</kbd> <kbd>Backspace</kbd> 이전</p>
-      <p><kbd>F5</kbd> <kbd>F</kbd> 전체화면 · <kbd>B</kbd> 검은 화면 · <kbd>Esc</kbd> 종료 · <kbd>F1</kbd> 도움말</p>
-      <p><a href="shortcuts.html">단축키 설명서 보기 →</a></p>
-    </div>
-    <div>
-      <h4>파일 구조</h4>
-      <p><b>decks/</b> 교안 1개 = JSON 파일 1개</p>
-      <p><b>assets/</b> 이미지 파일 · 모두 Git 으로 관리됩니다.</p>
-      <p>GitHub Pages 주소로 열면 어디서나 발표할 수 있고, 토큰을 연결하면 편집·저장도 됩니다.</p>
-    </div>
-    <div>
-      <h4>팁</h4>
-      <p>편집기에서 이미지를 붙여넣기(Ctrl+V)하거나 끌어다 놓으면 바로 들어갑니다.</p>
-      <p>PowerPoint 파일(.pptx)을 이 화면에 끌어다 놓으면 교안으로 바뀝니다. 앱으로 설치했으면 탐색기에서 [연결 프로그램 → 업무 공간] 으로 열 수도 있습니다.</p>
-      <p>발표 중 <kbd>S</kbd> 를 누르면 발표자 노트 창이 열립니다 (듀얼 모니터).</p>
-    </div>
-  </div>
+  <main class="hub">
+    <header class="hub-bar">
+      <h1 id="pageTitle">모든 교안</h1>
+      <span class="hub-count" id="sub"></span>
+      <div class="hub-tools">
+        <label class="searchbox"><i data-ic="search"></i><input type="search" id="q" placeholder="교안 검색" aria-label="교안 검색"><kbd>/</kbd></label>
+        <select id="sort" aria-label="정렬">
+          <option value="recent">최근 저장순</option>
+          <option value="title">제목순</option>
+          <option value="slides">슬라이드 많은 순</option>
+        </select>
+        <div class="seg" role="group" aria-label="보기 방식">
+          <button class="seg-b on" data-view="grid" title="격자로 보기" aria-label="격자로 보기"><i data-ic="gallery"></i></button>
+          <button class="seg-b" data-view="list" title="목록으로 보기" aria-label="목록으로 보기"><i data-ic="rows"></i></button>
+        </div>
+        <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
+      </div>
+    </header>
+    <div class="hub-notice" id="notice" style="display:none"></div>
+    <section class="resume" id="resume" style="display:none" aria-label="이어서 작업"></section>
+    <h2 class="hub-h2" id="gridHead" style="display:none">모든 교안</h2>
+    <div class="deck-grid" id="grid"></div>
+    <div class="hub-empty" id="empty" style="display:none"></div>
+  </main>
 </div>
 <input type="file" id="fileImport" accept=".json,.pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps,application/json" style="display:none">
+<div class="drop-veil"><div><i data-ic="import"></i><b>여기에 놓으면 교안으로 가져옵니다</b><span>PowerPoint(.pptx) · 교안 파일(.json)</span></div></div>
 <script src="app/common.js"></script>
 <script src="app/hub.js"></script>
 <script src="app/pwa.js"></script>

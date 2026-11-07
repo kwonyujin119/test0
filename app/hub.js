@@ -2,22 +2,70 @@
 'use strict';
 (async function () {
   await API.init();
-  const grid = document.getElementById('grid');
-  const empty = document.getElementById('empty');
-  const notice = document.getElementById('notice');
-  const q = document.getElementById('q');
+  const $ = (id) => document.getElementById(id);
+  const grid = $('grid'), empty = $('empty'), notice = $('notice'), q = $('q'), resume = $('resume'), gridHead = $('gridHead');
   let decks = [];
   const removed = new Map();   // 방금 지운(이름 바꾼) 교안: 목록이 잠깐 옛것을 돌려줘도 다시 보이지 않게
   const deckCache = new Map(); // 썸네일용 교안 내용 (목록을 다시 그릴 때 또 받지 않게)
   const bus = ('BroadcastChannel' in window) ? new BroadcastChannel('gyoan:hub') : null; // 열려 있는 편집기 창에 알림
+
+  /* 이 기기에 기억해 두는 보기 설정 */
+  const PREF = 'gyoan:hub';
+  const pref = (() => { try { return Object.assign({ view: 'grid', sort: 'recent' }, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { return { view: 'grid', sort: 'recent' }; } })();
+  const savePref = () => { try { localStorage.setItem(PREF, JSON.stringify(pref)); } catch (e) { } };
+  let filter = 'all';
+  const FILTER_NAMES = { all: '모든 교안', week: '최근 7일', draft: '저장 안 한 작업본' };
 
   if (API.mode === 'local') {
     notice.style.display = 'block';
     notice.innerHTML = '서버 없이 열렸습니다. 지금은 교안이 <b>브라우저 안에만</b> 저장됩니다. 폴더의 <b>start.cmd</b> 를 실행해 열면 decks/ 폴더에 파일로 저장되고 Git 으로 관리할 수 있습니다.';
   }
   if (API.mode === 'github') {
-    document.getElementById('btnGh').style.display = '';
+    $('btnGh').style.display = '';
     ghNotice();
+  }
+
+  /* ---------- 창: 글 입력 · 확인 (브라우저 기본 창 대신) ---------- */
+  function dialog(build) {
+    return new Promise((resolve) => {
+      const bg = document.createElement('div'); bg.className = 'modal-bg';
+      const m = document.createElement('div'); m.className = 'modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+      bg.appendChild(m);
+      const prevFocus = document.activeElement;
+      const close = (v) => { document.removeEventListener('keydown', onKey, true); bg.remove(); if (prevFocus && prevFocus.focus) prevFocus.focus(); resolve(v); };
+      const onKey = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); close(null); } };
+      document.addEventListener('keydown', onKey, true);
+      bg.addEventListener('pointerdown', (ev) => { if (ev.target === bg) close(null); });
+      build(m, close);
+      document.body.appendChild(bg);
+      const first = m.querySelector('[autofocus]') || m.querySelector('input,button.primary,button.ink');
+      if (first) { first.focus(); if (first.select) first.select(); }
+    });
+  }
+  function askText(title, label, value, okLabel) {
+    return dialog((m, close) => {
+      m.classList.add('ask');
+      m.innerHTML = `<h3>${esc(title)}</h3><p class="modal-desc">${esc(label)}</p><input type="text" value="${esc(value || '')}" autofocus aria-label="${esc(title)}"><div class="actions"><button class="btn" data-x>취소</button><button class="btn ink" data-ok>${esc(okLabel || '확인')}</button></div>`;
+      const inp = m.querySelector('input');
+      m.querySelector('[data-x]').onclick = () => close(null);
+      m.querySelector('[data-ok]').onclick = () => close(inp.value.trim() || null);
+      inp.onkeydown = (ev) => { if (ev.key === 'Enter' && !ev.isComposing) close(inp.value.trim() || null); };
+    });
+  }
+  function askConfirm(title, desc, okLabel) {
+    return dialog((m, close) => {
+      m.classList.add('ask');
+      m.innerHTML = `<h3>${esc(title)}</h3><p class="modal-desc">${esc(desc)}</p><div class="actions"><button class="btn" data-x>취소</button><button class="btn danger-solid" data-ok autofocus>${esc(okLabel)}</button></div>`;
+      m.querySelector('[data-x]').onclick = () => close(false);
+      m.querySelector('[data-ok]').onclick = () => close(true);
+    });
+  }
+  function tell(title, desc) {
+    return dialog((m, close) => {
+      m.classList.add('ask');
+      m.innerHTML = `<h3>${esc(title)}</h3><p class="modal-desc">${esc(desc)}</p><div class="actions"><button class="btn ink" data-ok autofocus>확인</button></div>`;
+      m.querySelector('[data-ok]').onclick = () => close(true);
+    });
   }
 
   /* ---------- GitHub 연결 (GitHub Pages 에서 열었을 때) ---------- */
@@ -27,7 +75,7 @@
     if (GH.token) {
       notice.className = 'hub-notice ok';
       notice.innerHTML = `GitHub 저장소 ${repo} 에 바로 저장됩니다. 저장할 때마다 커밋이 하나씩 쌓이고, 내 PC 에서는 <code>git pull</code> 로 받으면 됩니다. <a href="#" id="ghOff">연결 해제</a>`;
-      notice.querySelector('#ghOff').onclick = (ev) => { ev.preventDefault(); if (confirm('이 브라우저에 저장된 GitHub 토큰을 지울까요?')) { GH.clear(); location.reload(); } };
+      notice.querySelector('#ghOff').onclick = async (ev) => { ev.preventDefault(); if (await askConfirm('GitHub 연결을 해제할까요?', '이 브라우저에 저장된 GitHub 토큰을 지웁니다. 저장소의 교안은 그대로입니다.', '연결 해제')) { GH.clear(); location.reload(); } };
     } else {
       notice.className = 'hub-notice';
       notice.innerHTML = `지금은 <b>보기 · 발표만</b> 가능합니다 (GitHub 저장소 ${repo} 의 교안). 여기서 편집하고 저장하려면 <a href="#" id="ghOn">GitHub 연결</a> 로 토큰을 한 번만 등록하세요.`;
@@ -46,135 +94,297 @@
       return fn();
     }
   }
-  function fail(what, e) { if (e.quiet) toast('GitHub 에 연결하면 저장소에 저장할 수 있습니다', 2600); else alert(what + e.message); }
-  const emptyHtml = empty.innerHTML;
-  document.getElementById('btnGh').onclick = ghDialog;
+  function fail(what, e) { if (e.quiet) toast('GitHub 에 연결하면 저장소에 저장할 수 있습니다', 2600); else tell(what.replace(/[:\s]+$/, ''), e.message); }
+  $('btnGh').onclick = ghDialog;
 
-  let listOk = false;
+  let listOk = false, loadedOnce = false;
   /* 새로 만들기·가져오기·복제 전에: 최신 목록을 확인 (목록을 못 읽은 채 같은 이름으로 덮어쓰지 않게) */
-  async function freshList() { await refresh(); if (!listOk) alert('교안 목록을 확인할 수 없어 진행하지 않았습니다. 인터넷 연결을 확인한 뒤 다시 해 주세요.'); return listOk; }
+  async function freshList() { await refresh(); if (!listOk) tell('목록을 확인할 수 없습니다', '교안 목록을 확인할 수 없어 진행하지 않았습니다. 인터넷 연결을 확인한 뒤 다시 해 주세요.'); return listOk; }
   window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); // 뒤로 가기로 돌아오면 목록을 새로
   async function refresh() {
     try { decks = await API.list(); listOk = true; } catch (e) { listOk = false; toast('목록을 불러오지 못했습니다' + (e && e.message ? ' — ' + e.message : '') + (decks.length ? ' (이전 목록을 보여 줍니다)' : ''), 4000); } // 실패해도 보이던 목록은 그대로
     decks = decks.filter(d => !(removed.has(d.name) && Date.now() - removed.get(d.name) < 120000));
+    loadedOnce = true;
     render();
+    /* 목록에 제목·날짜가 없는 저장소(GitHub): 내용을 다 읽은 뒤 한 번 더 정렬해 그림 */
+    const partial = decks.filter(d => d.partial && !d._read);
+    if (partial.length) Promise.all(partial.map(d => loadDeck(d).catch(() => null))).then(() => { if (!document.querySelector('.deck-card.busy')) render(); });
   }
 
+  /* ---------- 때 ---------- */
+  function timeOf(d) {
+    if (d._t) return d._t;
+    const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(d.modified || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]).getTime() : 0;
+  }
+  function relTime(t) {
+    if (!t) return '';
+    const now = new Date(), d = new Date(t), mins = Math.floor((now - d) / 60000);
+    if (mins < 1) return '방금';
+    if (mins < 60) return `${mins}분 전`;
+    if (mins < 60 * 24 && d.getDate() === now.getDate()) return `${Math.floor(mins / 60)}시간 전`;
+    const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    if (d >= y && d < new Date(now.getFullYear(), now.getMonth(), now.getDate())) return '어제';
+    return d.getFullYear() === now.getFullYear() ? `${d.getMonth() + 1}월 ${d.getDate()}일` : `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+  }
+
+  /* ---------- 교안 내용 (썸네일용) ---------- */
+  function loadDeck(d) {
+    const ck = d.name + '|' + (d.size || '') + '|' + (d.modified || '');
+    if (!deckCache.has(ck)) deckCache.set(ck, API.load(d.name).catch(e => { deckCache.delete(ck); throw e; }));
+    return deckCache.get(ck).then(deck => {
+      if (d.partial && !d._read) { d._read = true; d.title = deck.title || d.name; d.slides = (deck.slides || []).length; d.modified = fmtWhen(deck.modified); d._t = Date.parse(deck.modified) || 0; }
+      return deck;
+    });
+  }
+  function drawSlide(box, slide, deck) {
+    const s = renderSlide(slide, deck, { mode: 'thumb' });
+    box.insertBefore(s, box.firstChild); box.classList.remove('loading');
+    const fit = () => fitSlide(box, s);
+    fit(); new ResizeObserver(fit).observe(box);
+  }
+
+  /* ---------- 그리기 ---------- */
+  const inWeek = (d) => { const t = timeOf(d); return t && Date.now() - t < 7 * 864e5; };
+  function sorted(list) {
+    const by = { recent: (a, b) => timeOf(b) - timeOf(a), title: (a, b) => (a.title || a.name).localeCompare(b.title || b.name, 'ko'), slides: (a, b) => (+b.slides || 0) - (+a.slides || 0) };
+    return list.slice().sort(by[pref.sort] || by.recent);
+  }
   function render() {
     const kw = (q.value || '').trim().toLowerCase();
-    const list = decks.filter(d => !kw || (d.title + ' ' + d.name).toLowerCase().includes(kw));
+    let list = decks.filter(d => !kw || ((d.title || '') + ' ' + d.name).toLowerCase().includes(kw));
+    if (filter === 'week') list = list.filter(inWeek);
+    if (filter === 'draft') list = list.filter(d => Draft.has(d.name));
+    list = sorted(list);
+
+    $('cAll').textContent = decks.length || '';
+    $('cWeek').textContent = decks.filter(inWeek).length || '';
+    $('cDraft').textContent = decks.filter(d => Draft.has(d.name)).length || '';
+    $('pageTitle').textContent = kw ? '검색 결과' : FILTER_NAMES[filter];
+    $('sub').textContent = loadedOnce ? `${list.length}개` : '';
+
+    /* 맨 위: 가장 최근에 저장한 교안 (전체 목록에서만) */
+    const hero = filter === 'all' && !kw && pref.sort === 'recent' && list.length > 1 ? list[0] : null;
+    resume.innerHTML = ''; resume.style.display = hero ? '' : 'none';
+    if (hero) { renderResume(hero); list = list.slice(1); }
+    gridHead.style.display = hero ? '' : 'none';
+    gridHead.textContent = '다른 교안';
+
+    grid.className = 'deck-grid' + (pref.view === 'list' ? ' list' : '');
     grid.innerHTML = '';
-    empty.style.display = list.length ? 'none' : 'block';
-    empty.innerHTML = !list.length && decks.length ? `"${esc(kw)}" 이(가) 들어간 교안이 없습니다. 검색 칸을 비우면 전체가 보입니다.` : emptyHtml;
     for (const d of list) grid.appendChild(card(d));
-    document.getElementById('sub').textContent = decks.length ? `교안 ${decks.length}개` : '교안을 모아두고, 편집하고, 바로 발표합니다.';
+
+    const none = loadedOnce && !list.length && !hero;
+    empty.style.display = none ? '' : 'none';
+    if (none) {
+      empty.innerHTML = kw ? `<b>"${esc(kw)}" 이(가) 들어간 교안이 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`
+        : filter === 'draft' ? '<b>저장하지 않은 작업본이 없습니다</b><span>편집하다가 저장하지 않고 닫으면 여기에 모입니다.</span>'
+          : filter === 'week' ? '<b>최근 7일 동안 저장한 교안이 없습니다</b>'
+            : `<b>첫 교안을 만들어 보세요</b><span>새 교안을 만들거나 PowerPoint 파일을 이 화면에 끌어다 놓으세요.</span><button class="btn ink" id="emptyNew">${icon('plus')}새 교안</button>`;
+      const en = $('emptyNew'); if (en) en.onclick = () => $('btnNew').click();
+    }
+    /* 불러오기 전: 빈 카드 자리 */
+    if (!loadedOnce) for (let i = 0; i < 6; i++) { const c = document.createElement('div'); c.className = 'deck-card ghost'; c.innerHTML = '<div class="deck-thumb loading"></div><div class="deck-body"><div class="line"></div><div class="line short"></div></div>'; grid.appendChild(c); }
+  }
+
+  function renderResume(d) {
+    resume.innerHTML = `<div class="resume-main deck-thumb loading" tabindex="0" role="link" aria-label="${esc(d.title)} 편집"></div>
+      <div class="resume-side">
+        <div class="eyebrow">이어서 작업</div>
+        <h2 class="resume-title">${esc(d.title)}</h2>
+        <div class="resume-meta"><span data-m></span></div>
+        <div class="resume-film" data-film></div>
+        <div class="resume-cta">
+          <button class="btn ink lg" data-go="edit">${icon('edit')}이어서 편집</button>
+          <button class="btn lg" data-go="present">${icon('play')}발표</button>
+          <span class="flex"></span>
+          <button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>
+        </div>
+      </div>`;
+    const meta = () => { resume.querySelector('[data-m]').textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', relTime(timeOf(d))].filter(Boolean).join(' · '); };
+    meta();
+    const main = resume.querySelector('.resume-main');
+    main.onclick = () => openEditor(d.name);
+    main.onkeydown = (ev) => { if (ev.key === 'Enter') openEditor(d.name); };
+    resume.querySelector('[data-go=edit]').onclick = () => openEditor(d.name);
+    resume.querySelector('[data-go=present]').onclick = () => openPresent(d.name);
+    resume.querySelector('[data-more]').onclick = (ev) => actionMenu(ev.currentTarget, d, main);
+    loadDeck(d).then(deck => {
+      meta();
+      resume.querySelector('.resume-title').textContent = d.title;
+      if (!deck.slides || !deck.slides.length) return;
+      drawSlide(main, deck.slides[0], deck);
+      const film = resume.querySelector('[data-film]');
+      deck.slides.slice(1, 5).forEach((s, i) => {
+        const t = document.createElement('button'); t.className = 'film-t'; t.title = `${i + 2}번 슬라이드 편집`; t.setAttribute('aria-label', t.title);
+        t.onclick = () => { location.href = 'editor.html?deck=' + encodeURIComponent(d.name) + '&slide=' + (i + 1); };
+        film.appendChild(t); drawSlide(t, s, deck);
+      });
+    }).catch(() => { main.classList.remove('loading'); });
   }
 
   function card(d) {
-    const c = document.createElement('div'); c.className = 'deck-card';
-    const th = document.createElement('div'); th.className = 'deck-thumb';
-    th.innerHTML = '<div class="play"><span>발표 시작</span></div>';
-    th.title = '클릭하면 발표를 시작합니다';
-    th.onclick = () => open('present.html?deck=' + encodeURIComponent(d.name), true);
+    const c = document.createElement('article'); c.className = 'deck-card';
+    const th = document.createElement('div'); th.className = 'deck-thumb loading'; th.tabIndex = 0; th.setAttribute('role', 'link'); th.setAttribute('aria-label', d.title + ' 편집');
+    th.innerHTML = `<div class="deck-hover"><button class="btn ink" data-a="present">${icon('play', 16)}발표</button><button class="btn" data-a="edit">${icon('edit', 16)}편집</button></div>`;
+    th.onclick = (ev) => { if (!ev.target.closest('button')) openEditor(d.name); };
+    th.onkeydown = (ev) => { if (ev.key === 'Enter' && ev.target === th) openEditor(d.name); };
     c.appendChild(th);
     const body = document.createElement('div'); body.className = 'deck-body';
-    /* 카드 아래 줄: 슬라이드 수 · 저장한 때(이 기기의 시간) · 파일 이름 · 이 기기에 저장 안 한 작업본이 있으면 표시 */
-    const meta = (state) => `<span>${state || (d.slides === '' ? '불러오는 중…' : `슬라이드 ${d.slides}장`)}</span><span title="마지막으로 저장한 때">${esc(d.modified || '')}</span><span class="muted">${esc(d.name)}.json</span>`
+    /* 카드 아래 줄: 슬라이드 수 · 저장한 때 · (목록 보기에서) 파일 이름 · 이 기기에 저장 안 한 작업본 */
+    const meta = (state) => `<span>${state || (d.slides === '' ? '불러오는 중…' : `${d.slides}장`)}</span><span title="마지막으로 저장한 때: ${esc(d.modified || '')}">${esc(relTime(timeOf(d)))}</span><span class="deck-file">${esc(d.name)}.json</span>`
       + (Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : '');
-    body.innerHTML = `<div class="deck-title">${esc(d.title)}</div><div class="deck-meta">${meta()}</div>`;
-    // 첫 슬라이드 썸네일
-    const ck = d.name + '|' + (d.size || '') + '|' + (d.modified || '');
-    (deckCache.has(ck) ? Promise.resolve(deckCache.get(ck)) : API.load(d.name).then(deck => { deckCache.set(ck, deck); return deck; })).then(deck => {
-      if (d.partial) {
-        d.title = deck.title || d.name; d.slides = (deck.slides || []).length;
-        d.modified = fmtWhen(deck.modified);
-        body.querySelector('.deck-title').textContent = d.title;
-        body.querySelector('.deck-meta').innerHTML = meta();
-      }
-      if (!deck.slides || !deck.slides.length) return;
-      const s = renderSlide(deck.slides[0], deck, { mode: 'thumb' });
-      th.insertBefore(s, th.firstChild);
-      const fit = () => fitSlide(th, s);
-      fit(); new ResizeObserver(fit).observe(th);
-    }).catch(() => { if (d.partial) body.querySelector('.deck-meta').innerHTML = meta('⚠ 내용을 읽지 못했습니다'); }); // 목록에는 있는데 열 수 없는 교안 (연결 끊김 · 파일 손상)
-    const act = document.createElement('div'); act.className = 'deck-actions';
-    act.innerHTML = `<button class="btn sm primary" data-a="present">${icon('play', 14)}발표</button>
-      <button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button>
-      <span class="spacer"></span>
-      <button class="btn sm ghost" data-a="dup" title="복제">복제</button>
-      <button class="btn sm ghost" data-a="rename" title="이름 바꾸기">이름</button>
-      <button class="btn sm ghost danger" data-a="del" title="삭제">삭제</button>`;
-    act.onclick = async (ev) => {
+    body.innerHTML = `<div class="deck-text"><div class="deck-title" title="${esc(d.title)}">${esc(d.title)}</div><div class="deck-meta">${meta()}</div></div>
+      <div class="deck-actions"><button class="btn sm" data-a="present">${icon('play', 14)}발표</button><button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button></div>
+      <button class="btn icon ghost kebab" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`;
+    loadDeck(d).then(deck => {
+      if (d.partial) { body.querySelector('.deck-title').textContent = d.title; body.querySelector('.deck-meta').innerHTML = meta(); }
+      if (!deck.slides || !deck.slides.length) { th.classList.remove('loading'); return; }
+      drawSlide(th, deck.slides[0], deck);
+    }).catch(() => { th.classList.remove('loading'); th.classList.add('broken'); if (d.partial) body.querySelector('.deck-meta').innerHTML = meta('내용을 읽지 못했습니다'); }); // 목록에는 있는데 열 수 없는 교안 (연결 끊김 · 파일 손상)
+    c.addEventListener('click', (ev) => {
+      const more = ev.target.closest('[data-more]'); if (more) { actionMenu(more, d, c); return; }
       const btn = ev.target.closest('button[data-a]'); if (!btn || c.classList.contains('busy')) return;
-      const a = btn.dataset.a;
-      /* 일하는 동안: 카드를 흐리게, 단추는 "…중"으로 (GitHub 은 몇 초 걸림 · 두 번 누름 방지) */
-      const busy = (label) => {
-        c.classList.add('busy'); act.querySelectorAll('button').forEach(b => b.disabled = true);
-        const old = btn.textContent; btn.textContent = label;
-        return () => { c.classList.remove('busy'); act.querySelectorAll('button').forEach(b => b.disabled = false); btn.textContent = old; };
-      };
-      if (a === 'present') open('present.html?deck=' + encodeURIComponent(d.name), true);
-      if (a === 'edit') open('editor.html?deck=' + encodeURIComponent(d.name));
-      if (a === 'del') {
-        const how = API.mode === 'server' ? '(decks/.trash 폴더로 이동합니다)' : API.mode === 'github' ? '(저장소에서 지웁니다. Git 기록에는 남습니다)' : '';
-        if (!confirm(`"${d.title}" 교안을 삭제할까요?\n${how}`)) return;
-        const done = busy('삭제 중…');
-        if (API.mode === 'github') toast('저장소에서 지우는 중… (몇 초 걸립니다)', 4000);
-        try { await ghTry(() => API.remove(d.name)); }
-        catch (e) { done(); fail('삭제 실패: ', e); return; }
-        Draft.forget(d.name); // 이 기기에 남은 작업본도 치움 (같은 이름으로 새로 만든 교안에 옛 작업본이 뜨지 않게)
-        removed.set(d.name, Date.now()); decks = decks.filter(x => x.name !== d.name); render(); // 목록을 다시 받기 전에 바로 지움
-        toast(API.mode === 'server' ? '삭제했습니다 (decks/.trash 폴더에 보관)' : '삭제했습니다', 3000);
-        if (bus) bus.postMessage({ type: 'deleted', name: d.name });
-        refresh();
-      }
-      if (a === 'dup') {
-        const done = busy('복제 중…');
-        if (!(await freshList())) { done(); return; } // 최신 목록에서 겹치지 않는 이름을 고름
-        try {
-          const deck = await API.load(d.name); const name = uniqueName(d.name + ' 사본');
-          deck.title = (deck.title || d.name) + ' 사본'; removed.delete(name); Draft.forget(name);
-          await ghTry(() => API.save(name, deck)); toast('복제했습니다');
-        } catch (e) { done(); fail('복제 실패: ', e); return; }
-        refresh();
-      }
-      if (a === 'rename') {
-        const nn = prompt('새 파일 이름 (목록 아래에 작게 보이는 이름입니다 · 교안 제목은 편집기 맨 위에서 바꿉니다)', d.name); if (!nn || nn === d.name) return;
-        const safe = sanitize(nn); if (!safe) return;
-        const done = busy('바꾸는 중…');
-        if (!(await freshList())) { done(); return; } // 최신 목록으로 확인 (다른 기기에서 만든 같은 이름의 교안을 덮어쓰지 않게)
-        if (decks.some(x => x.name === safe)) { done(); alert('같은 이름의 교안이 있습니다'); return; }
-        if (!decks.some(x => x.name === d.name)) { done(); alert('이 교안은 이미 지워졌거나 이름이 바뀌었습니다. 목록을 새로 고쳤습니다.'); return; }
-        try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe)); toast('이름을 바꿨습니다'); }
-        catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
-        Draft.forget(safe); Draft.move(d.name, safe); // 이 기기에 남은 작업본도 새 이름으로
-        removed.set(d.name, Date.now());
-        if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: safe });
-        refresh();
-      }
-    };
-    body.appendChild(act); c.appendChild(body);
+      if (btn.dataset.a === 'present') openPresent(d.name);
+      if (btn.dataset.a === 'edit') openEditor(d.name);
+    });
+    c.appendChild(body);
     return c;
   }
 
-  function open(url, newTab) { if (newTab) window.open(url, '_blank'); else location.href = url; }
+  /* ---------- ⋯ 메뉴: 복제 · 이름 바꾸기 · 삭제 ---------- */
+  let openMenu = null;
+  function closeMenu() { if (openMenu) { openMenu.remove(); openMenu = null; } }
+  document.addEventListener('pointerdown', (ev) => { if (openMenu && !openMenu.contains(ev.target)) closeMenu(); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeMenu(); });
+  window.addEventListener('resize', closeMenu);
+  function actionMenu(btn, d, host) {
+    const same = openMenu && openMenu._btn === btn; closeMenu(); if (same) return;
+    const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu'); m._btn = btn;
+    const items = [['dup', 'copy', '복제'], ['rename', 'edit', '파일 이름 바꾸기'], null, ['del', 'trash', '삭제']];
+    for (const it of items) {
+      if (!it) { m.appendChild(document.createElement('hr')); continue; }
+      const b = document.createElement('div'); b.className = 'mi' + (it[0] === 'del' ? ' danger' : ''); b.setAttribute('role', 'menuitem'); b.tabIndex = 0;
+      b.innerHTML = `${icon(it[1], 16)}<span>${it[2]}</span>`;
+      const go = () => { closeMenu(); act(it[0], d, host); };
+      b.onclick = go; b.onkeydown = (ev) => { if (ev.key === 'Enter') go(); };
+      m.appendChild(b);
+    }
+    document.body.appendChild(m); openMenu = m;
+    const r = btn.getBoundingClientRect();
+    m.style.position = 'fixed';
+    m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + 'px';
+    m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? r.top - 6 - m.offsetHeight : r.bottom + 6) + 'px';
+  }
+  async function act(a, d, host) {
+    /* 일하는 동안: 카드를 흐리게 (GitHub 은 몇 초 걸림 · 두 번 누름 방지) */
+    const busy = () => { host.classList.add('busy'); return () => host.classList.remove('busy'); };
+    if (a === 'del') {
+      const how = API.mode === 'server' ? 'decks/.trash 폴더로 옮깁니다.' : API.mode === 'github' ? '저장소에서 지웁니다. Git 기록에는 남습니다.' : '이 브라우저에서 지웁니다.';
+      if (!(await askConfirm(`"${d.title}" 교안을 삭제할까요?`, how, '삭제'))) return;
+      const done = busy();
+      if (API.mode === 'github') toast('저장소에서 지우는 중… (몇 초 걸립니다)', 4000);
+      try { await ghTry(() => API.remove(d.name)); }
+      catch (e) { done(); fail('삭제 실패: ', e); return; }
+      Draft.forget(d.name); // 이 기기에 남은 작업본도 치움 (같은 이름으로 새로 만든 교안에 옛 작업본이 뜨지 않게)
+      removed.set(d.name, Date.now()); decks = decks.filter(x => x.name !== d.name); render(); // 목록을 다시 받기 전에 바로 지움
+      toast(API.mode === 'server' ? '삭제했습니다 (decks/.trash 폴더에 보관)' : '삭제했습니다', 3000);
+      if (bus) bus.postMessage({ type: 'deleted', name: d.name });
+      refresh();
+    }
+    if (a === 'dup') {
+      const done = busy();
+      if (!(await freshList())) { done(); return; } // 최신 목록에서 겹치지 않는 이름을 고름
+      try {
+        const deck = clone(await API.load(d.name)); const name = uniqueName(d.name + ' 사본');
+        deck.title = (deck.title || d.name) + ' 사본'; removed.delete(name); Draft.forget(name);
+        await ghTry(() => API.save(name, deck)); toast('복제했습니다');
+      } catch (e) { done(); fail('복제 실패: ', e); return; }
+      refresh();
+    }
+    if (a === 'rename') {
+      const nn = await askText('파일 이름 바꾸기', '교안 파일의 이름입니다. 화면에 보이는 교안 제목은 편집기 맨 위에서 바꿉니다.', d.name, '바꾸기'); if (!nn || nn === d.name) return;
+      const safe = sanitize(nn); if (!safe) return;
+      const done = busy();
+      if (!(await freshList())) { done(); return; } // 최신 목록으로 확인 (다른 기기에서 만든 같은 이름의 교안을 덮어쓰지 않게)
+      if (decks.some(x => x.name === safe)) { done(); tell('같은 이름의 교안이 있습니다', '다른 이름을 골라 주세요.'); return; }
+      if (!decks.some(x => x.name === d.name)) { done(); tell('교안을 찾을 수 없습니다', '이 교안은 이미 지워졌거나 이름이 바뀌었습니다. 목록을 새로 고쳤습니다.'); return; }
+      try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe)); toast('이름을 바꿨습니다'); }
+      catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
+      Draft.forget(safe); Draft.move(d.name, safe); // 이 기기에 남은 작업본도 새 이름으로
+      removed.set(d.name, Date.now());
+      if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: safe });
+      refresh();
+    }
+  }
+
+  function openPresent(name) { window.open('present.html?deck=' + encodeURIComponent(name), '_blank'); }
+  function openEditor(name) { location.href = 'editor.html?deck=' + encodeURIComponent(name); }
   function sanitize(n) { return n.replace(/[\\/:*?"<>|]/g, '_').trim(); }
   function uniqueName(base) { let n = sanitize(base), i = 2; while (decks.some(d => d.name === n)) n = sanitize(base) + ' ' + (i++); return n; }
 
-  /* 위쪽 단추: 일하는 동안 "…중"으로 바꾸고 잠금 */
-  function hold(id, label) { const b = document.getElementById(id); const old = b.textContent; b.disabled = true; b.textContent = label; return () => { b.disabled = false; b.textContent = old; }; }
-  document.getElementById('btnNew').onclick = async () => {
-    const title = (prompt('새 교안 제목', '새 교안') || '').trim(); if (!title) return;
+  /* 단추: 일하는 동안 "…중"으로 바꾸고 잠금 (아이콘은 그대로) */
+  function hold(id, label) {
+    const b = $(id); const sp = b.querySelector('span') || b; const old = sp.textContent; const html = sp === b ? b.innerHTML : null;
+    b.disabled = true; sp.textContent = label;
+    return () => { b.disabled = false; if (html !== null) b.innerHTML = html; else sp.textContent = old; };
+  }
+
+  /* ---------- 새 교안: 제목과 테마를 한 창에서 ---------- */
+  function newDeckDialog() {
+    return dialog((m, close) => {
+      m.classList.add('new-deck');
+      m.innerHTML = `<h3>새 교안</h3>
+        <label class="field"><span>제목</span><input type="text" id="ndTitle" value="새 교안" autofocus></label>
+        <div class="field"><span>테마</span><div class="nd-grid" id="ndGrid" role="radiogroup" aria-label="테마"></div></div>
+        <div class="actions"><span class="modal-desc" style="margin:0 auto 0 0">테마는 나중에 언제든 바꿀 수 있습니다.</span><button class="btn" data-x>취소</button><button class="btn ink" data-ok>만들기</button></div>`;
+      let pick = 'clean';
+      const g = m.querySelector('#ndGrid'), inp = m.querySelector('#ndTitle');
+      const done = () => { const t = inp.value.trim(); if (!t) { inp.focus(); return; } close({ title: t, theme: pick }); };
+      for (const t of THEMES) {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'nd-theme' + (t.id === pick ? ' on' : ''); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', t.id === pick);
+        b.innerHTML = `<span class="pv"></span><span class="nm">${esc(t.name)}</span>`;
+        b.onclick = () => { pick = t.id; g.querySelectorAll('.nd-theme').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', on); }); };
+        b.ondblclick = done;
+        g.appendChild(b);
+        const preview = { title: inp.value, theme: t.id, slides: [] };
+        const pv = b.querySelector('.pv'), sl = renderSlide(newSlide('title', { title: '교안 제목', subtitle: '부제목 · 강의자 이름' }), preview, { mode: 'thumb' });
+        pv.appendChild(sl); requestAnimationFrame(() => fitSlide(pv, sl));
+      }
+      m.querySelector('[data-x]').onclick = () => close(null);
+      m.querySelector('[data-ok]').onclick = done;
+      inp.onkeydown = (ev) => { if (ev.key === 'Enter' && !ev.isComposing) done(); };
+    });
+  }
+  $('btnNew').onclick = async () => {
+    const r = await newDeckDialog(); if (!r) return;
     const done = hold('btnNew', '만드는 중…');
     if (!(await freshList())) { done(); return; }
-    const name = uniqueName(title); if (!name) { done(); alert('제목에 쓸 수 있는 글자가 없습니다'); return; }
+    const name = uniqueName(r.title); if (!name) { done(); tell('제목을 바꿔 주세요', '제목에 쓸 수 있는 글자가 없습니다.'); return; }
     removed.delete(name); Draft.forget(name);
-    const deck = newDeck(title);
+    const deck = newDeck(r.title); deck.theme = r.theme;
     try { await ghTry(() => API.save(name, deck)); } catch (e) { done(); fail('만들기 실패: ', e); return; }
     location.href = 'editor.html?deck=' + encodeURIComponent(name);
   };
-  document.getElementById('btnImport').onclick = () => document.getElementById('fileImport').click();
-  document.getElementById('fileImport').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await importFile(f); };
+
+  /* ---------- 사용 안내 ---------- */
+  $('btnGuide').onclick = () => dialog((m, close) => {
+    m.classList.add('guide-modal');
+    m.innerHTML = `<h3>사용 안내</h3><div class="guide-cols">
+      <section><h4>발표 조작 <small>프레젠터 리모컨 동일</small></h4>
+        <p><kbd>→</kbd> <kbd>PgDn</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> 다음</p><p><kbd>←</kbd> <kbd>PgUp</kbd> <kbd>Backspace</kbd> 이전</p>
+        <p><kbd>F5</kbd> <kbd>F</kbd> 전체화면 · <kbd>B</kbd> 검은 화면</p><p><kbd>S</kbd> 발표자 노트 창 (듀얼 모니터)</p><p><kbd>Esc</kbd> 종료 · <kbd>F1</kbd> 도움말</p></section>
+      <section><h4>파일</h4><p><b>decks/</b> 교안 1개 = JSON 파일 1개</p><p><b>assets/</b> 이미지 파일 · 모두 Git 으로 관리됩니다.</p>
+        <p>GitHub Pages 주소로 열면 어디서나 발표할 수 있고, 토큰을 연결하면 편집·저장도 됩니다.</p></section>
+      <section><h4>편리한 기능</h4><p>편집기에서 이미지를 붙여넣기(<kbd>Ctrl+V</kbd>)하거나 끌어다 놓으면 바로 들어갑니다.</p>
+        <p>PowerPoint 파일(.pptx)을 이 화면에 끌어다 놓으면 교안으로 바뀝니다. 앱으로 설치했으면 탐색기에서 [연결 프로그램 → 업무 공간] 으로 열 수도 있습니다.</p></section>
+    </div><div class="actions"><a class="btn" href="shortcuts.html">단축키 설명서</a><button class="btn ink" data-ok autofocus>닫기</button></div>`;
+    m.querySelector('[data-ok]').onclick = () => close(true);
+  });
+
+  /* ---------- 가져오기 ---------- */
+  $('btnImport').onclick = () => $('fileImport').click();
+  $('fileImport').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await importFile(f); };
   const isPpt = (f) => !!f && /\.(pptx|ppsx|pptm|ppsm|potx|ppt|pps|pot)$/i.test(f.name || '');
   async function importFile(f) {
     if (isPpt(f)) return importPpt(f);
@@ -203,7 +413,7 @@
   let importing = false;
   async function importPpt(f) {
     if (importing) { toast('다른 파일을 가져오는 중입니다 — 끝난 뒤 다시 해 주세요'); return; }
-    if (/\.(ppt|pps|pot)$/i.test(f.name || '')) { alert(`"${f.name}" 은 옛 형식(.ppt) 파일이라 읽지 못합니다.\nPowerPoint 에서 [파일 → 다른 이름으로 저장] 으로 "PowerPoint 프레젠테이션(.pptx)" 으로 저장한 뒤 다시 열어 주세요.`); return; }
+    if (/\.(ppt|pps|pot)$/i.test(f.name || '')) { tell('옛 형식 파일입니다', `"${f.name}" 은 옛 형식(.ppt) 파일이라 읽지 못합니다. PowerPoint 에서 [파일 → 다른 이름으로 저장] 으로 "PowerPoint 프레젠테이션(.pptx)" 으로 저장한 뒤 다시 열어 주세요.`); return; }
     importing = true; const done = hold('btnImport', '변환 중…');
     try {
       toast('PPT 파일을 읽는 중…', 60000);
@@ -222,7 +432,7 @@
       try { sessionStorage.setItem('gyoan:imported', JSON.stringify({ name, summary: parts, warnings: r.warnings })); } catch (e) { }
       toast('교안으로 바꿨습니다 — ' + parts, 4000);
       location.href = 'editor.html?deck=' + encodeURIComponent(name);
-    } catch (e) { toast('PPT 를 가져오지 못했습니다'); if (!e.quiet) alert('PPT 를 교안으로 바꾸지 못했습니다: ' + e.message); else fail('', e); }
+    } catch (e) { toast('PPT 를 가져오지 못했습니다'); if (!e.quiet) tell('PPT 를 교안으로 바꾸지 못했습니다', e.message); else fail('', e); }
     finally { importing = false; done(); }
   }
   // 이 화면에 파일 끌어다 놓기 (.pptx → 교안, .json → 교안 파일 가져오기)
@@ -238,8 +448,25 @@
   // 앱으로 설치한 뒤 탐색기에서 .pptx 를 [연결 프로그램 → 업무 공간] 으로 열면 여기로 파일이 넘어옴
   if ('launchQueue' in window) window.launchQueue.setConsumer(async (p) => {
     if (!p.files || !p.files.length) return;
-    try { await importFile(await p.files[0].getFile()); } catch (e) { alert('파일을 열 수 없습니다: ' + e.message); }
+    try { await importFile(await p.files[0].getFile()); } catch (e) { tell('파일을 열 수 없습니다', e.message); }
   });
+
+  /* ---------- 위쪽 도구 ---------- */
   q.oninput = render;
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === '/' && !ev.ctrlKey && !ev.metaKey && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !document.querySelector('.modal-bg')) { ev.preventDefault(); q.focus(); }
+    if (ev.key === 'Escape' && document.activeElement === q) { q.value = ''; q.blur(); render(); }
+  });
+  const sortSel = $('sort'); sortSel.value = pref.sort; sortSel.onchange = () => { pref.sort = sortSel.value; savePref(); render(); };
+  const paintView = () => document.querySelectorAll('.seg-b').forEach(b => { const on = b.dataset.view === pref.view; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  document.querySelectorAll('.seg-b').forEach(b => b.onclick = () => { pref.view = b.dataset.view; savePref(); paintView(); render(); });
+  paintView();
+  $('nav').querySelectorAll('[data-filter]').forEach(b => b.onclick = () => {
+    filter = b.dataset.filter;
+    $('nav').querySelectorAll('[data-filter]').forEach(x => { x.classList.toggle('on', x === b); if (x === b) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current'); });
+    render();
+  });
+
+  render(); // 불러오기 전 빈 카드 자리
   refresh();
 })();
