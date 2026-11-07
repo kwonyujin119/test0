@@ -289,13 +289,13 @@
      "type": "text",
      "role": "body",
      "x": 790,
-     "y": 30,
+     "y": 40,
      "w": 1010,
-     "h": 330,
+     "h": 220,
      "html": "<b>Ⅰ. 2026</b><br><span style=\"font-size: 30px\"> - 소방학교 지휘역량강화센터 전입</span><div><span style=\"font-size: 30px\"> - 제31회 중앙소방 교육혁신 경연대회 연구개발 분야 4위</span></div><div><span style=\"font-size: 30px\">   (피지컬 AI 현장소방활동 도입에 관한 연구)</span></div>",
      "style": {
       "fontSize": 38,
-      "lineHeight": 1.7,
+      "lineHeight": 1.45,
       "valign": "middle"
      },
      "mk": "rsumrs014"
@@ -309,13 +309,13 @@
      "type": "text",
      "role": "body",
      "x": 790,
-     "y": 576,
+     "y": 509,
      "w": 1010,
-     "h": 278,
+     "h": 275,
      "html": "<b>Ⅲ. 2015 - 2025</b><br><span style=\"font-size: 30px\"> - 2020 ~ 2025 서부소방서 현장대응단, 검단소방서 현장대응단</span><div><span style=\"font-size: 30px\"> - 2015 ~ 2020 강화소방서 119구조대, 서부소방서 정서진119수난구조대</span></div><div><span style=\"font-size: 30px\"> - 2015. 1 임용 / 구조대원 경력채용 / 특수전사령부 제11공수특전여단 중사 만기 전역</span></div>",
      "style": {
       "fontSize": 38,
-      "lineHeight": 1.7,
+      "lineHeight": 1.45,
       "valign": "middle"
      },
      "mk": "58d0wk016"
@@ -329,13 +329,13 @@
      "type": "text",
      "role": "body",
      "x": 790,
-     "y": 320,
+     "y": 302,
      "w": 1010,
-     "h": 260,
+     "h": 165,
      "html": "<b>Ⅱ. 2025</b><br><span style=\"font-size:30px\"> - 2025 화재대응유공자 선정 (특별승진)<br> - 2025 소방본부 현장대응과 APEC 2025 KOREA 소방안전대책</span>",
      "style": {
       "fontSize": 38,
-      "lineHeight": 1.7,
+      "lineHeight": 1.45,
       "valign": "middle"
      }
     },
@@ -348,13 +348,13 @@
      "type": "text",
      "role": "body",
      "x": 790,
-     "y": 868,
+     "y": 826,
      "w": 1010,
-     "h": 146,
+     "h": 165,
      "html": "<b>Ⅳ. 보유자격</b><br><span style=\"font-size: 30px\"> - 현장지휘관, 화재감식기사, 위험물기능사, 인명구조사, 응급구조사, 화재대응능력 등</span>",
      "style": {
       "fontSize": 38,
-      "lineHeight": 1.7,
+      "lineHeight": 1.45,
       "valign": "middle"
      }
     }
@@ -501,8 +501,8 @@
      "role": "body",
      "x": 790,
      "y": 676,
-     "w": 1058,
-     "h": 211,
+     "w": 1010,
+     "h": 268,
      "html": "<b>Ⅲ. 그리고 급수</b><br><span style=\"font-size:30px\"> </span><span style=\"font-size: 30px\">⑥ </span><span style=\"font-size:30px\"><span style=\"font-size: 30px\">무중단 급수와</span><span style=\"font-size: 30px\"> 순</span><span style=\"font-size: 30px\">환 보수 ·  </span></span><span style=\"font-size: 30px\">⑦ 상황별 분당 급수량</span><span style=\"font-size: 30px\"> ·  </span><span style=\"font-size: 30px\">⑧ 루프형태 관로(손실)</span><div><span style=\"font-size: 30px\"> ⑨ 유량계-소블럭 초입</span><span style=\"background-color: initial\"><span style=\"font-size: 30px\"> · </span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑩ 상수도 흐름</span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\"> · </span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑪ 유량 분석</span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\"> · </span></span><span style=\"background-color: initial\"><span style=\"font-size: 30px\">⑫ 무중단 급수와 순환 보수 v2</span></span><span style=\"font-size: 30px\"></span></div>",
      "style": {
       "fontSize": 38,
@@ -2217,7 +2217,7 @@
      "y": 355,
      "w": 399,
      "h": 57,
-     "html": "사다리차 1대<div><br></div>",
+     "html": "사다리차 1대",
      "style": {
       "color": "#ffffff",
       "fontSize": 33,
@@ -2284,7 +2284,7 @@
      "y": 681,
      "w": 399,
      "h": 57,
-     "html": "사다리차 10대<div><br></div>",
+     "html": "사다리차 10대",
      "style": {
       "color": "#ffffff",
       "fontSize": 33,
@@ -2663,7 +2663,7 @@
   {
    "id": "sxk8qv123",
    "bg": {
-    "gradient": "linear-gradient(150deg, #c2410c 0%, #7c2d12 100%)"
+    "gradient": "linear-gradient(150deg, #0c2a4d 0%, #0e7490 100%)"
    },
    "transition": "",
    "notes": "끊기지 않게 대는 방법 — 그리고 왜 그게 어려운가",
@@ -2680,14 +2680,14 @@
      "y": 0,
      "w": 1920,
      "h": 1080,
-     "fill": "#c2410c",
+     "fill": "#0c2a4d",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
      "shadow": false,
      "html": "",
      "style": {},
-     "fill2": "#7c2d12",
+     "fill2": "#0e7490",
      "gAngle": 150
     },
     {
@@ -2859,129 +2859,6 @@
    "noFooter": true
   },
   {
-   "id": "pmpc3zwgi",
-   "bg": null,
-   "transition": "",
-   "notes": "끊기지 않게 대는 방법 — 그리고 왜 그게 어려운가",
-   "elements": [
-    {
-     "id": "8bdd8lurk",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 0,
-     "y": 0,
-     "w": 1920,
-     "h": 1080,
-     "src": "assets/clipboard-1793953612871-nurjyd5.jpg",
-     "fit": "fill",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "3sv9oi9f5",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 0,
-     "y": 0,
-     "w": 1920,
-     "h": 1080,
-     "src": "assets/clipboard-1793954098412-y9f5nnl.jpg",
-     "fit": "fill",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "maqcr7qro",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 0,
-     "y": 0,
-     "w": 1931,
-     "h": 1084,
-     "src": "assets/clipboard-1793954167606-zqrolni.png",
-     "fit": "fill",
-     "radius": 0,
-     "shadow": false
-    }
-   ],
-   "decor": "none",
-   "noFooter": true
-  },
-  {
-   "id": "35923lhu6",
-   "bg": null,
-   "transition": "",
-   "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
-   "elements": [
-    {
-     "id": "qdw33vhu6",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑧ 수운영관리시스템",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     },
-     "mk": "qn66zk124"
-    },
-    {
-     "id": "bus4cwhu6",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 120,
-     "y": 204,
-     "w": 1680,
-     "h": 779,
-     "src": "assets/clipboard-1793947167612-tpjht89.png",
-     "fit": "fill",
-     "radius": 18,
-     "shadow": false,
-     "mk": "oq1b9u125",
-     "border": 10
-    },
-    {
-     "id": "86eo7dfkd",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "text",
-     "x": 388,
-     "y": 713,
-     "w": 191,
-     "h": 202,
-     "html": "🔥",
-     "style": {
-      "fontSize": 150,
-      "align": "center",
-      "valign": "middle",
-      "lineHeight": 1
-     }
-    }
-   ]
-  },
-  {
    "id": "156ibv417",
    "bg": {},
    "transition": "",
@@ -3035,7 +2912,7 @@
      "x": 1180,
      "y": 290,
      "w": 620,
-     "h": 250,
+     "h": 310,
      "rows": [
       [
        "충수 조건",
@@ -3134,6 +3011,71 @@
    "hidden": false
   },
   {
+   "id": "35923lhu6",
+   "bg": null,
+   "transition": "",
+   "notes": "공개 자료에 없는 화면이다. 상수도사업본부에 교육용으로 요청해야 한다.",
+   "elements": [
+    {
+     "id": "qdw33vhu6",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "⑧ 수운영관리시스템",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     },
+     "mk": "qn66zk124"
+    },
+    {
+     "id": "bus4cwhu6",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 120,
+     "y": 204,
+     "w": 1680,
+     "h": 779,
+     "src": "assets/clipboard-1793947167612-tpjht89.png",
+     "fit": "fill",
+     "radius": 18,
+     "shadow": false,
+     "mk": "oq1b9u125",
+     "border": 10
+    },
+    {
+     "id": "86eo7dfkd",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "text",
+     "x": 388,
+     "y": 713,
+     "w": 191,
+     "h": 202,
+     "html": "🔥",
+     "style": {
+      "fontSize": 150,
+      "align": "center",
+      "valign": "middle",
+      "lineHeight": 1
+     }
+    }
+   ]
+  },
+  {
    "id": "ma1d0c639",
    "bg": null,
    "transition": "",
@@ -3171,7 +3113,7 @@
      "y": 224,
      "w": 1680,
      "h": 190,
-     "html": "같은 루프에서 <b>소화전 2개를 점령하면</b> 두 대가 각각 제 능력을 낸다",
+     "html": "⑧ 같은 루프에서 <b>소화전 2개를 점령하면</b> 두 대가 각각 제 능력을 낸다",
      "style": {
       "fontSize": 50,
       "lineHeight": 1.35,
@@ -3901,7 +3843,7 @@
      "y": 224,
      "w": 1680,
      "h": 190,
-     "html": "소화전은 <b>상수도 배관이 굵을수록</b> 급수능력이 좋다",
+     "html": "⑧ 소화전은 <b>상수도 배관이 굵을수록</b> 급수능력이 좋다",
      "style": {
       "fontSize": 50,
       "lineHeight": 1.35,
@@ -6190,7 +6132,7 @@
      "y": 820,
      "w": 1412,
      "h": 114,
-     "html": "최대 유량 67 m3/h -&gt; (환산) 1,100 L/min",
+     "html": "최대 유량 67 m3/h -&gt; (환산) 1,117 L/min",
      "style": {
       "color": "#ffffff",
       "bold": true,
@@ -6356,497 +6298,6 @@
      "mk": "hbk1skzxw"
     }
    ]
-  },
-  {
-   "id": "dpg2eb227",
-   "bg": null,
-   "transition": "",
-   "notes": "체크카드의 ②번. 2대째를 어디에 붙일 것인가가 실제 판단 지점이다.",
-   "elements": [
-    {
-     "id": "tjqxk3215",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑪ 어느 소화전을 잡을 것인가",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "nvo8y0216",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 120,
-     "y": 236,
-     "w": 1180,
-     "h": 600,
-     "src": "assets/clipboard-1793954745807-c4wqa7o.png",
-     "fit": "cover",
-     "radius": 18,
-     "shadow": false
-    },
-    {
-     "id": "scr3vj222",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 1348,
-     "y": 236,
-     "w": 452,
-     "h": 252,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 22,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#0e7490",
-     "gAngle": 135
-    },
-    {
-     "id": "ilblgj223",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.78,
-     "type": "text",
-     "role": "text",
-     "x": 1348,
-     "y": 264,
-     "w": 452,
-     "h": 40,
-     "html": "판단 순서",
-     "style": {
-      "fontSize": 24,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "color": "#ffffff",
-      "letterSpacing": 2
-     }
-    },
-    {
-     "id": "d84gis224",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 1374,
-     "y": 310,
-     "w": 400,
-     "h": 162,
-     "html": "<b>① 관경<br>② 선단인가<br>③ 같은 블록인가</b>",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 30,
-      "lineHeight": 1.6,
-      "align": "center"
-     }
-    },
-    {
-     "id": "9be9je225",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 1348,
-     "y": 504,
-     "w": 452,
-     "h": 352,
-     "html": "현장 가까운 소화전이 <b>항상 정답은 아닙니다</b>.<br><br>무중단 급수는 <b>현장 블록</b>에서, 순환 급수는 <b>다른 블록</b>에서 해야 둘이 서로 물을 빼앗지 않습니다.<br><br>순환급수 ④단계가 \"<b>전용소화전은 현장 인근을 피하고 다른 배관을 쓰라</b>\"고 권고하는 이유입니다.",
-     "style": {
-      "fontSize": 24,
-      "lineHeight": 1.6
-     }
-    },
-    {
-     "id": "0c4pcp226",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 966,
-     "w": 1680,
-     "h": 54,
-     "html": "인천소방본부 「화재현장 무중단 급수체계 표준화 마련」(2025.6) 순환급수 ④단계",
-     "style": {
-      "fontSize": 24,
-      "color": "$muted"
-     }
-    }
-   ]
-  },
-  {
-   "id": "ymmjrd249",
-   "bg": null,
-   "transition": "",
-   "notes": "세 줄만 남기고 간다. 하나씩 올리면서 각각 한 문장씩 덧붙인다.",
-   "elements": [
-    {
-     "id": "twu2xl238",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "heading",
-     "x": 120,
-     "y": 80,
-     "w": 1680,
-     "h": 124,
-     "html": "⑫ 결론 — 세 가지",
-     "style": {
-      "valign": "middle",
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "d7y91n239",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 120,
-     "y": 232,
-     "w": 1680,
-     "h": 200,
-     "fill": "#0369a1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#0e7490",
-     "gAngle": 120
-    },
-    {
-     "id": "3xgu2x240",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.5,
-     "type": "text",
-     "role": "text",
-     "x": 160,
-     "y": 273,
-     "w": 96,
-     "h": 96,
-     "html": "1",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 70,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "lineHeight": 1.35,
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "aq5fao241",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 270,
-     "y": 277,
-     "w": 1480,
-     "h": 156,
-     "html": "<b>루프형태 관로를 이해하고,</b><br>무중단 급수와 순환 보수의 <b>소블록을 달리</b> 설정한다",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 38,
-      "lineHeight": 1.5
-     }
-    },
-    {
-     "id": "rfdt61242",
-     "step": 1,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 120,
-     "y": 452,
-     "w": 1680,
-     "h": 200,
-     "fill": "#0e7490",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#134e4a",
-     "gAngle": 120
-    },
-    {
-     "id": "4q1akz243",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.5,
-     "type": "text",
-     "role": "text",
-     "x": 160,
-     "y": 493,
-     "w": 96,
-     "h": 96,
-     "html": "2",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 70,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "lineHeight": 1.35,
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "brzzjw244",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 270,
-     "y": 497,
-     "w": 1480,
-     "h": 156,
-     "html": "<b>유량계(= 소블록 초입)의 소화전이 우선순위</b>다<br>멀어질수록 같은 관경이라도 능력이 떨어진다",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 38,
-      "lineHeight": 1.5
-     }
-    },
-    {
-     "id": "mujldf245",
-     "step": 2,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 120,
-     "y": 672,
-     "w": 1680,
-     "h": 200,
-     "fill": "#c2410c",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#7c2d12",
-     "gAngle": 120
-    },
-    {
-     "id": "82d780246",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 0.5,
-     "type": "text",
-     "role": "text",
-     "x": 160,
-     "y": 713,
-     "w": 96,
-     "h": 96,
-     "html": "3",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 70,
-      "bold": true,
-      "align": "center",
-      "valign": "middle",
-      "lineHeight": 1.35,
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "s7tmxw247",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "body",
-     "x": 270,
-     "y": 717,
-     "w": 1480,
-     "h": 156,
-     "html": "<b>중요지역별 실증 데이터 축적이 필요하다</b><br>계산으로는 안 됩니다 — 재야 압니다",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 38,
-      "lineHeight": 1.5
-     }
-    },
-    {
-     "id": "hvkq8a248",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "caption",
-     "x": 120,
-     "y": 966,
-     "w": 1680,
-     "h": 54,
-     "html": "소방 용수의 이해 · 인천소방학교 지휘역량강화센터",
-     "style": {
-      "fontSize": 24,
-      "color": "$muted"
-     }
-    }
-   ]
-  },
-  {
-   "id": "vdyit3821",
-   "bg": {
-    "gradient": "linear-gradient(150deg, #06243f 0%, #0e7490 100%)"
-   },
-   "transition": "",
-   "notes": "질문. 모르는 것은 모른다고 하고 확인해서 알려준다.",
-   "elements": [
-    {
-     "id": "q5494b816",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 0,
-     "y": 0,
-     "w": 1920,
-     "h": 1080,
-     "fill": "#06243f",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#0e7490",
-     "gAngle": 150
-    },
-    {
-     "id": "p5b2bk817",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 858,
-     "y": 252,
-     "w": 204,
-     "h": 220,
-     "src": "assets/ifa-emblem.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "66rvms818",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "title",
-     "x": 120,
-     "y": 504,
-     "w": 1680,
-     "h": 170,
-     "html": "질문",
-     "style": {
-      "color": "#ffffff",
-      "fontSize": 104,
-      "align": "center",
-      "valign": "middle",
-      "letterSpacing": -2
-     }
-    },
-    {
-     "id": "9qgxbk819",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "rect",
-     "x": 860,
-     "y": 718,
-     "w": 200,
-     "h": 8,
-     "fill": "#ffffff",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 4,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#ffffff",
-     "gAngle": 90,
-     "fill2Op": 0.2
-    },
-    {
-     "id": "zv56ge820",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "role": "subtitle",
-     "x": 120,
-     "y": 754,
-     "w": 1680,
-     "h": 76,
-     "html": "인천소방학교 지휘역량강화센터",
-     "style": {
-      "color": "#9ec9e8",
-      "fontSize": 34,
-      "align": "center"
-     }
-    }
-   ],
-   "decor": "none",
-   "noFooter": true
   },
   {
    "id": "kp327rihy",
@@ -7349,13 +6800,13 @@
    ]
   },
   {
-   "id": "vmsha190y",
+   "id": "dpg2eb227",
    "bg": null,
    "transition": "",
-   "notes": "세 해를 나란히 놓으면 \"그때는 되고 이번엔 안 된 이유\"가 보인다.",
+   "notes": "체크카드의 ②번. 2대째를 어디에 붙일 것인가가 실제 판단 지점이다.",
    "elements": [
     {
-     "id": "533oea90y",
+     "id": "tjqxk3215",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7366,60 +6817,478 @@
      "y": 80,
      "w": 1680,
      "h": 124,
-     "html": "⑪ 현장별 유수량 비교 (895블록 26. 9. 18. 경서동 공장 화재) ",
+     "html": "⑪ 어느 소화전을 잡을 것인가",
      "style": {
       "valign": "middle",
       "letterSpacing": -1
-     },
-     "mk": "oazkfa205"
+     }
     },
     {
-     "id": "ql2r7190y",
-     "step": 2,
+     "id": "nvo8y0216",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 120,
+     "y": 236,
+     "w": 1180,
+     "h": 600,
+     "src": "assets/clipboard-1793954745807-c4wqa7o.png",
+     "fit": "cover",
+     "radius": 18,
+     "shadow": false
+    },
+    {
+     "id": "scr3vj222",
+     "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "shape": "rect",
-     "x": 426,
-     "y": 820,
-     "w": 1069,
-     "h": 114,
-     "fill": "#0c2a4d",
+     "x": 1348,
+     "y": 236,
+     "w": 452,
+     "h": 252,
+     "fill": "#0369a1",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 20,
+     "radius": 22,
      "shadow": false,
      "html": "",
      "style": {},
-     "fill2": "#0369a1",
-     "gAngle": 100,
-     "mk": "2n5teq212"
+     "fill2": "#0e7490",
+     "gAngle": 135
     },
     {
-     "id": "c6ds8g90y",
+     "id": "ilblgj223",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "text",
+     "role": "text",
+     "x": 1348,
+     "y": 264,
+     "w": 452,
+     "h": 40,
+     "html": "판단 순서",
+     "style": {
+      "fontSize": 24,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "color": "#ffffff",
+      "letterSpacing": 2
+     }
+    },
+    {
+     "id": "d84gis224",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1374,
+     "y": 310,
+     "w": 400,
+     "h": 162,
+     "html": "<b>① 관경<br>② 선단인가<br>③ 같은 블록인가</b>",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 30,
+      "lineHeight": 1.6,
+      "align": "center"
+     }
+    },
+    {
+     "id": "9be9je225",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 1348,
+     "y": 504,
+     "w": 452,
+     "h": 352,
+     "html": "현장 가까운 소화전이 <b>항상 정답은 아닙니다</b>.<br><br>무중단 급수는 <b>현장 블록</b>에서, 순환 급수는 <b>다른 블록</b>에서 해야 둘이 서로 물을 빼앗지 않습니다.<br><br>순환급수 ④단계가 \"<b>전용소화전은 현장 인근을 피하고 다른 배관을 쓰라</b>\"고 권고하는 이유입니다.",
+     "style": {
+      "fontSize": 24,
+      "lineHeight": 1.6
+     }
+    },
+    {
+     "id": "0c4pcp226",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 966,
+     "w": 1680,
+     "h": 54,
+     "html": "인천소방본부 「화재현장 무중단 급수체계 표준화 마련」(2025.6) 순환급수 ④단계",
+     "style": {
+      "fontSize": 24,
+      "color": "$muted"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ymmjrd249",
+   "bg": null,
+   "transition": "",
+   "notes": "세 줄만 남기고 간다. 하나씩 올리면서 각각 한 문장씩 덧붙인다.",
+   "elements": [
+    {
+     "id": "twu2xl238",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "heading",
+     "x": 120,
+     "y": 80,
+     "w": 1680,
+     "h": 124,
+     "html": "⑫ 결론 — 세 가지",
+     "style": {
+      "valign": "middle",
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "d7y91n239",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 232,
+     "w": 1680,
+     "h": 200,
+     "fill": "#0369a1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#0e7490",
+     "gAngle": 120
+    },
+    {
+     "id": "3xgu2x240",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "text",
+     "role": "text",
+     "x": 160,
+     "y": 273,
+     "w": 96,
+     "h": 96,
+     "html": "1",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 70,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "lineHeight": 1.35,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "aq5fao241",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 270,
+     "y": 277,
+     "w": 1480,
+     "h": 156,
+     "html": "<b>루프형태 관로를 이해하고,</b><br>무중단 급수와 순환 보수의 <b>소블록을 달리</b> 설정한다",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 38,
+      "lineHeight": 1.5
+     }
+    },
+    {
+     "id": "rfdt61242",
+     "step": 1,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 452,
+     "w": 1680,
+     "h": 200,
+     "fill": "#0e7490",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#134e4a",
+     "gAngle": 120
+    },
+    {
+     "id": "4q1akz243",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "text",
+     "role": "text",
+     "x": 160,
+     "y": 493,
+     "w": 96,
+     "h": 96,
+     "html": "2",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 70,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "lineHeight": 1.35,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "brzzjw244",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "body",
+     "x": 270,
+     "y": 497,
+     "w": 1480,
+     "h": 156,
+     "html": "<b>유량계(= 소블록 초입)의 소화전이 우선순위</b>다<br>멀어질수록 같은 관경이라도 능력이 떨어진다",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 38,
+      "lineHeight": 1.5
+     }
+    },
+    {
+     "id": "mujldf245",
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 120,
+     "y": 672,
+     "w": 1680,
+     "h": 200,
+     "fill": "#c2410c",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#7c2d12",
+     "gAngle": 120
+    },
+    {
+     "id": "82d780246",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "text",
+     "role": "text",
+     "x": 160,
+     "y": 713,
+     "w": 96,
+     "h": 96,
+     "html": "3",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 70,
+      "bold": true,
+      "align": "center",
+      "valign": "middle",
+      "lineHeight": 1.35,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "s7tmxw247",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "role": "text",
-     "x": 254,
-     "y": 820,
-     "w": 1412,
-     "h": 114,
-     "html": "청라 아파트 단지   VS   서부산업단지(주물공단)",
+     "role": "body",
+     "x": 270,
+     "y": 717,
+     "w": 1480,
+     "h": 156,
+     "html": "<b>중요지역별 실증 데이터 축적이 필요하다</b><br>계산으로는 안 됩니다 — 재야 압니다",
      "style": {
       "color": "#ffffff",
-      "bold": true,
-      "lineHeight": 1.3,
-      "align": "center",
-      "valign": "middle",
-      "fontSize": 38
-     },
-     "mk": "t3f2wn213"
+      "fontSize": 38,
+      "lineHeight": 1.5
+     }
+    },
+    {
+     "id": "hvkq8a248",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "caption",
+     "x": 120,
+     "y": 966,
+     "w": 1680,
+     "h": 54,
+     "html": "소방 용수의 이해 · 인천소방학교 지휘역량강화센터",
+     "style": {
+      "fontSize": 24,
+      "color": "$muted"
+     }
     }
    ]
+  },
+  {
+   "id": "vdyit3821",
+   "bg": {
+    "gradient": "linear-gradient(150deg, #06243f 0%, #0e7490 100%)"
+   },
+   "transition": "",
+   "notes": "질문. 모르는 것은 모른다고 하고 확인해서 알려준다.",
+   "elements": [
+    {
+     "id": "q5494b816",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "fill": "#06243f",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#0e7490",
+     "gAngle": 150
+    },
+    {
+     "id": "p5b2bk817",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 858,
+     "y": 252,
+     "w": 204,
+     "h": 220,
+     "src": "assets/ifa-emblem.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "66rvms818",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 504,
+     "w": 1680,
+     "h": 170,
+     "html": "질문",
+     "style": {
+      "color": "#ffffff",
+      "fontSize": 104,
+      "align": "center",
+      "valign": "middle",
+      "letterSpacing": -2
+     }
+    },
+    {
+     "id": "9qgxbk819",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 860,
+     "y": 718,
+     "w": 200,
+     "h": 8,
+     "fill": "#ffffff",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#ffffff",
+     "gAngle": 90,
+     "fill2Op": 0.2
+    },
+    {
+     "id": "zv56ge820",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 754,
+     "w": 1680,
+     "h": 76,
+     "html": "인천소방학교 지휘역량강화센터",
+     "style": {
+      "color": "#9ec9e8",
+      "fontSize": 34,
+      "align": "center"
+     }
+    }
+   ],
+   "decor": "none",
+   "noFooter": true
   }
  ]
 }
