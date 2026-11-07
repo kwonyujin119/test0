@@ -632,7 +632,7 @@ body.print-mode .print-page .step-hidden { visibility: visible; }
 }
 
 /* ===== 휴대폰·좁은 화면 ===== */
-#btnProps, #propsClose { display: none; }
+#btnProps, #propsClose, #btnEditText { display: none; }
 @media (max-width: 820px) {
   .ed { grid-template-columns: 1fr; grid-template-rows: auto auto minmax(0, 1fr) auto; height: 100dvh; }
   .ed-top { flex-wrap: nowrap; overflow-x: auto; padding: 6px 8px; gap: 6px; scrollbar-width: none; }
@@ -1055,6 +1055,8 @@ body.dragover .drop-veil { display: flex; }
   .ed-ctx:has(#btnDel[disabled]) { display: none; }
   .ed-ctx .group { display: flex; gap: 2px; flex-shrink: 0; }
   .ed-ctx .sep { flex-shrink: 0; }
+  .ed-main, .ed-side, .ed-top, .ed-tools { grid-column: 1; } /* 정리 막대와 같은 칸에 겹침 (두 번째 열이 생기지 않게) */
+  #btnEditText:not([hidden]) { display: inline-flex; }
   .ed-side { padding: 6px 8px; }
   .thumbs { padding: 2px; }
   .thumb { margin-left: 0; }
