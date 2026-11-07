@@ -27,6 +27,9 @@
     return g;
   }
 
+  /* AI 목소리로 바꾼 장면은 원래 소리를 끈다 */
+  const dubbed = c => !!(VE.dub && c && VE.dub.active(c.mid));
+
   /* ---------- 요소 고르기 ---------- */
   const isTimed = c => { const m = VE.media(c.mid); return m && m.kind !== 'image'; };
   const pickEl = (c, avoid) => { const a = VE.el(c.mid, 'a'); if (a && a !== avoid) return a; return VE.el(c.mid, 'b'); };
@@ -38,7 +41,7 @@
   const seekEl = (el, s) => { if (el && Math.abs(el.currentTime - s) > .012) { try { el.currentTime = s; } catch (e) { } } };
 
   P.seek = (t, opts) => {
-    P.t = clamp(t, 0, VE.total()); const at = VE.at(P.t);
+    P.t = clamp(t, 0, VE.total()); const at = VE.at(P.t); if (VE.dub) VE.dub.stopAll();
     if (!at) { active = next = null; dirty = true; VE.emit('time'); return; }
     if (active && active.el && (!active.clip || active.clip.id !== at.clip.id) && P.playing) active.el.pause();
     active = bind(at); next = null;
@@ -49,11 +52,12 @@
     if (!VE.p.clips.length) return; await ensureAudio();
     if (P.t >= VE.total() - .02) P.t = 0;
     const at = VE.at(P.t); active = bind(at); next = null; P.playing = true; lastNow = performance.now();
-    if (active.el) { const g = wire(active.el); if (g) g.gain.value = VE.mixFade(at.clip, P.t - at.start, VE.clipLen(at.clip)); seekEl(active.el, at.src); active.el.playbackRate = at.clip.speed || 1; try { await active.el.play(); } catch (e) { console.warn(e); } }
+    if (VE.dub) VE.dub.stopAll();
+    if (active.el) { const g = wire(active.el); if (g) g.gain.value = dubbed(at.clip) ? 0 : VE.mixFade(at.clip, P.t - at.start, VE.clipLen(at.clip)); seekEl(active.el, at.src); active.el.playbackRate = at.clip.speed || 1; try { await active.el.play(); } catch (e) { console.warn(e); } }
     VE.emit('playstate');
   };
   P.pause = () => {
-    P.playing = false; if (active && active.el) active.el.pause(); if (next && next.el) next.el.pause(); stopSide(); dirty = true; VE.emit('playstate');
+    P.playing = false; if (active && active.el) active.el.pause(); if (next && next.el) next.el.pause(); stopSide(); if (VE.dub) VE.dub.stopAll(); dirty = true; VE.emit('playstate');
   };
   P.toggle = () => P.playing ? P.pause() : P.play();
   P.setTrimPreview = v => { trimPreview = v; dirty = true; };
@@ -109,8 +113,9 @@
       if (nt !== P.t) { P.t = nt; } dirty = true;
       VE.emit('time');
       /* 소리 크기 · 페이드 */
-      if (P.playing && active.el && audio) { const g = wire(active.el); if (g) { const cc = active.clip, local = (P.t - active.start); g.gain.value = active.el.muted ? 0 : VE.mixFade(cc, local, VE.clipLen(cc)); } if (next && next.el && next.el !== active.el) { const ng = wire(next.el); if (ng) ng.gain.value = 0; } }
+      if (P.playing && active.el && audio) { const g = wire(active.el); if (g) { const cc = active.clip, local = (P.t - active.start); g.gain.value = active.el.muted || dubbed(cc) ? 0 : VE.mixFade(cc, local, VE.clipLen(cc)); } if (next && next.el && next.el !== active.el) { const ng = wire(next.el); if (ng) ng.gain.value = 0; } }
       syncMusic();
+      if (VE.dub) VE.dub.sync(audio, P.playing && active ? { clip: active.clip, src: active.el ? active.el.currentTime : active.clip.in + (P.t - active.start) * (active.clip.speed || 1) } : null);
     }
     if (dirty) { dirty = false; P.draw(); }
   }

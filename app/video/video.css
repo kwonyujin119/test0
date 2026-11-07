@@ -251,3 +251,23 @@ body:not(.ve-panel-open) .ve-panel { display: none; }
   .ve-slots { grid-template-columns: repeat(2, 1fr); }
   .ve-count { font-size: 110px; }
 }
+
+/* 공개 AI 목소리 */
+.ve-voices { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--ui-border2); border-radius: 8px; padding: 3px; max-height: 312px; overflow: auto; }
+.ve-voice { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; cursor: pointer; outline: none; }
+.ve-voice:hover { background: var(--ui-hover); }
+.ve-voice:focus-visible { box-shadow: 0 0 0 2px var(--ui-accent); }
+.ve-voice.on { background: var(--ui-accent-soft); }
+.ve-voice .play { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--ui-border2); background: var(--ui-btn); color: var(--ui-fg); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.ve-voice .play:hover { border-color: var(--ui-accent); color: var(--ui-accent-fg); }
+.ve-voice .play svg { width: 13px; height: 13px; }
+.ve-voice .nm { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ve-voice .nm b { font-size: 13px; font-weight: 600; color: var(--ui-fg); }
+.ve-voice .nm span { font-size: 11.5px; color: var(--ui-muted); }
+.ve-voice.on .nm b { color: var(--ui-accent-fg); }
+.ve-voice .dot { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--ui-border2); }
+.ve-voice.on .dot { border: 4px solid var(--ui-accent); }
+.ve-ta { display: block; width: 100%; box-sizing: border-box; min-height: 120px; resize: vertical; border: 1px solid var(--ui-border2); border-radius: 8px; background: var(--ui-panel); color: var(--ui-fg); padding: 9px 11px; font: inherit; font-size: 13px; line-height: 1.65; }
+.ve-ta:focus { outline: none; border-color: var(--ui-accent); box-shadow: 0 0 0 3px var(--ui-accent-soft); }
+.ve-credit { margin: 12px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--ui-muted); word-break: keep-all; }
+.ve-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }

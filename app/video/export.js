@@ -5,16 +5,22 @@
   const SR = 48000;
 
   /* 클립 하나의 소리를 SR·스테레오로 차례로 내놓음 */
-  async function* clipAudio(MB, o, speed) {
+  /* AI 목소리로 바꾼 장면: 원본 시간 그대로 만든 소리를 1초씩 내놓음 (원본 소리와 같은 모양) */
+  async function* dubBuffers(o) {
+    const pcm = VE.dub.renderSrc(o.mid, o.in, o.out + .05, SR);
+    for (let p = 0; p < pcm.length; p += SR) { const a = pcm.subarray(p, Math.min(pcm.length, p + SR)); yield { buffer: { sampleRate: SR, length: a.length, numberOfChannels: 1, getChannelData: () => a }, timestamp: o.in + p / SR }; }
+  }
+  async function* clipAudio(MB, o, speed, isMain) {
     /* o = { mid, in, out, vol, fadeIn, fadeOut } */
     const len = (o.out - o.in) / speed, need = Math.round(len * SR), r = VE.rt.get(o.mid), m = VE.media(o.mid);
+    const useDub = isMain && VE.dub && VE.dub.active(o.mid);
     await VE.openInput(o.mid);
     const declick = Math.round(SR * .004), env = (n) => { const local = n / SR; let g = VE.mixFade(o, local, len); if (n < declick) g *= n / declick; if (need - n < declick) g *= (need - n) / declick; return g; };
     const pitchFix = speed !== 1 ? [new VoiceDSP.Shifter(SR), new VoiceDSP.Shifter(SR)] : null; if (pitchFix) pitchFix.forEach(s => { s.ratio = 1 / speed; });
     let made = 0;
-    if (r.aTrack && m.hasAudio) {
-      const sink = new MB.AudioBufferSink(r.aTrack);
-      for await (const { buffer, timestamp } of sink.buffers(o.in, o.out + .05)) {
+    if (useDub || (r.aTrack && m.hasAudio)) {
+      const iter = useDub ? dubBuffers(o) : new MB.AudioBufferSink(r.aTrack).buffers(o.in, o.out + .05);
+      for await (const { buffer, timestamp } of iter) {
         const sr = buffer.sampleRate, a = buffer.getChannelData(0), b = buffer.numberOfChannels > 1 ? buffer.getChannelData(1) : a, end = timestamp + buffer.length / sr;
         /* 이 버퍼가 덮는 출력 표본 수 */
         let last = Math.ceil((end - o.in) / speed * SR); if (last > need) last = need; const cnt = last - made; if (cnt <= 0) continue;
@@ -43,7 +49,7 @@
       return filled;
     }
   }
-  async function* mainAudio(MB) { for (const c of VE.p.clips) { const m = VE.media(c.mid); if (m.kind === 'image') { const n = Math.round(VE.clipLen(c) * SR); let left = n; while (left > 0) { const k = Math.min(left, SR); yield [new Float32Array(k), new Float32Array(k)]; left -= k; } continue; } yield* clipAudio(MB, c, c.speed || 1); } }
+  async function* mainAudio(MB) { for (const c of VE.p.clips) { const m = VE.media(c.mid); if (m.kind === 'image') { const n = Math.round(VE.clipLen(c) * SR); let left = n; while (left > 0) { const k = Math.min(left, SR); yield [new Float32Array(k), new Float32Array(k)]; left -= k; } continue; } yield* clipAudio(MB, c, c.speed || 1, true); } }
 
   VE.exportSupport = async (fmt, w, h) => {
     const MB = await VE.mb(); const vcodecs = fmt === 'webm' ? ['vp9', 'vp8', 'av1'] : ['avc', 'hevc', 'av1', 'vp9'], acodecs = fmt === 'webm' ? ['opus'] : ['aac', 'opus'];
@@ -58,6 +64,7 @@
     const { v: vc, a: ac } = await VE.exportSupport(opts.fmt, W, H); if (!vc) throw new Error('이 브라우저는 영상 만들기(WebCodecs)를 지원하지 않습니다. PC 의 크롬이나 엣지에서 해 주세요.');
     for (const c of VE.p.clips) { const m = VE.media(c.mid); if (m.offline) throw new Error(`${m.name}: 원본 파일을 다시 연결해 주세요`); if (m.noDecode) throw new Error(`${m.name}: 이 브라우저가 풀 수 없는 영상 형식입니다`); }
     /* 얼굴 분석이 남아 있으면 먼저 */
+    if (VE.charsReady) await VE.charsReady();
     if (VE.needFaceJobs().length) await VE.runFaceJobs(p => opts.onProg && opts.onProg({ stage: '얼굴 위치 찾는 중', ratio: p.ratio, eta: p.eta }), sig);
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d', { alpha: false, desynchronized: false, willReadFrequently: false });
     const target = opts.writable ? new MB.StreamTarget(opts.writable, { chunked: true }) : new MB.BufferTarget();
@@ -69,6 +76,7 @@
     await output.start();
 
     /* 소리 준비 */
+    if (VE.dub && VE.dub.anyActive()) await VE.dub.loadAll();
     const dsp = new VoiceDSP(SR, 2); dsp.set(VE.p.voice); const lat = dsp.active ? dsp.latency : 0;
     const main = new Puller(mainAudio(MB)); const totalS = Math.round(total * SR); let audioOut = 0, skip = lat;
     const music = VE.p.music.map(o => ({ o, start: Math.round(o.start * SR), end: Math.round((o.start + o.out - o.in) * SR), puller: null }));
