@@ -25,7 +25,7 @@
     <div class="hub-tools">
       <input type="search" id="q" placeholder="교안 검색…" aria-label="교안 검색">
       <button class="btn" id="btnGh" title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none">GitHub 연결</button>
-      <button class="btn" id="btnImport" title="내보내기로 받아 둔 교안 파일(.json)을 목록에 추가합니다">가져오기</button>
+      <button class="btn" id="btnImport" title="PowerPoint 파일(.pptx)이나 내보내기로 받아 둔 교안 파일(.json)을 교안으로 가져옵니다">가져오기</button>
       <button class="btn primary" id="btnNew"><i data-ic="plus"></i>새 교안</button>
       <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
     </div>
@@ -50,11 +50,12 @@
     <div>
       <h4>팁</h4>
       <p>편집기에서 이미지를 붙여넣기(Ctrl+V)하거나 끌어다 놓으면 바로 들어갑니다.</p>
+      <p>PowerPoint 파일(.pptx)을 이 화면에 끌어다 놓으면 교안으로 바뀝니다. 앱으로 설치했으면 탐색기에서 [연결 프로그램 → 업무 공간] 으로 열 수도 있습니다.</p>
       <p>발표 중 <kbd>S</kbd> 를 누르면 발표자 노트 창이 열립니다 (듀얼 모니터).</p>
     </div>
   </div>
 </div>
-<input type="file" id="fileImport" accept="application/json,.json" style="display:none">
+<input type="file" id="fileImport" accept=".json,.pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps,application/json" style="display:none">
 <script src="app/common.js"></script>
 <script src="app/hub.js"></script>
 <script src="app/pwa.js"></script>

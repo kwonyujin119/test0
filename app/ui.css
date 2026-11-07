@@ -98,6 +98,7 @@ kbd { display: inline-block; padding: 1px 7px; border-radius: 5px; background: v
 
 /* ===== 허브 ===== */
 .hub { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+body.dragover .hub { outline: 2px dashed var(--ui-accent); outline-offset: -12px; border-radius: 12px; }
 .hub-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
 .hub-head h1 { margin: 0; font-size: 28px; letter-spacing: -.5px; }
 .hub-head .sub { color: var(--ui-muted); margin-top: 4px; }

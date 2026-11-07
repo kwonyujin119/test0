@@ -17,6 +17,10 @@
   migrate(S.deck);
   S.cur = clamp(parseInt(qs('slide') || '0', 10) || 0, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
   document.title = S.deck.title + ' · 편집';
+  try { // 교안 목록에서 PPT 를 교안으로 바꿔 열었을 때: 결과 요약 한 번
+    const im = JSON.parse(sessionStorage.getItem('gyoan:imported') || 'null'); if (im && im.name === S.name) { sessionStorage.removeItem('gyoan:imported');
+      setTimeout(() => { toast('PPT 에서 가져온 교안입니다 — ' + im.summary + ' · 글자·그림을 바로 고칠 수 있고, [발표] 로 바로 발표합니다', 7000); if (im.warnings && im.warnings.length) alert('PPT 를 교안으로 바꿨습니다. 다만 아래는 그대로 가져오지 못했습니다:\n\n· ' + im.warnings.join('\n· ')); }, 400); }
+  } catch (e) { }
 
   function migrate(d) {
     if (!d.slides || !d.slides.length) d.slides = [newSlide('title', { title: d.title })];

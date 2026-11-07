@@ -20,7 +20,14 @@
     { "name": "교안 작업장", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] }
   ],
   "file_handlers": [
-    { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } }
+    { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } },
+    { "action": "./gyoan.html", "accept": {
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow": [".ppsx"],
+      "application/vnd.ms-powerpoint.presentation.macroEnabled.12": [".pptm"],
+      "application/vnd.ms-powerpoint.slideshow.macroEnabled.12": [".ppsm"],
+      "application/vnd.openxmlformats-officedocument.presentationml.template": [".potx"],
+      "application/vnd.ms-powerpoint": [".ppt", ".pps"] } }
   ],
   "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
   "related_applications": [{ "platform": "webapp", "url": "https://kwonyujin119.github.io/test0/manifest.webmanifest" }],

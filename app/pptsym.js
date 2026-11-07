@@ -476,5 +476,6 @@ const PPTSYM = (() => {
     it._r.catch(() => { });
     return it._r;
   }
-  return { read, render };
+  /* _ : PPT → 교안 변환기(app/pptin.js)가 같은 그리기·색·글자 읽기를 쓰기 위한 내부 함수 */
+  return { read, render, _: { PX, MIME, kid, kids, attr, numA, f2, colorOf, parseTheme, fillOf, lineOf, geomOf, xfOf, boxOf, tf, nodeSvg, readText, plainText, blipRid, dataUrl, hasMedia, isPh, nameOf, graphemes } };
 })();

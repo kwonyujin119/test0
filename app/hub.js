@@ -174,19 +174,72 @@
     location.href = 'editor.html?deck=' + encodeURIComponent(name);
   };
   document.getElementById('btnImport').onclick = () => document.getElementById('fileImport').click();
-  document.getElementById('fileImport').onchange = async (ev) => {
-    const f = ev.target.files[0]; if (!f) return;
+  document.getElementById('fileImport').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await importFile(f); };
+  const isPpt = (f) => !!f && /\.(pptx|ppsx|pptm|ppsm|potx|ppt|pps|pot)$/i.test(f.name || '');
+  async function importFile(f) {
+    if (isPpt(f)) return importPpt(f);
     const done = hold('btnImport', '가져오는 중…');
     try {
       const deck = JSON.parse(await f.text());
       if (!deck || !Array.isArray(deck.slides)) throw new Error('교안 형식이 아닙니다');
       normalizeDeck(deck);
-      if (!(await freshList())) { done(); ev.target.value = ''; return; }
+      if (!(await freshList())) { done(); return; }
       const name = uniqueName(f.name.replace(/\.json$/i, '') || '가져온 교안'); removed.delete(name); Draft.forget(name);
       await ghTry(() => API.save(name, deck)); toast('가져왔습니다'); refresh();
     } catch (e) { fail('가져오기 실패: ', e); }
-    done(); ev.target.value = '';
-  };
+    done();
+  }
+  /* ---------- PowerPoint 파일 → 교안 (app/pptin.js) ----------
+     [가져오기] 로 고르거나, 이 화면에 끌어다 놓거나, 설치한 앱에서 탐색기의 .pptx 를 열면 여기로 옴.
+     바꾼 교안은 저장소에 저장한 뒤 편집기로 열림 (거기서 바로 [발표]) */
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      if (document.querySelector(`script[data-lazy="${src}"]`)) { res(); return; }
+      const sc = document.createElement('script'); sc.src = src; sc.dataset.lazy = src;
+      sc.onload = () => res(); sc.onerror = () => { sc.remove(); rej(new Error('프로그램 파일을 불러오지 못했습니다 (' + src + ') — 인터넷 연결을 확인해 주세요')); };
+      document.head.appendChild(sc);
+    });
+  }
+  let importing = false;
+  async function importPpt(f) {
+    if (importing) { toast('다른 파일을 가져오는 중입니다 — 끝난 뒤 다시 해 주세요'); return; }
+    if (/\.(ppt|pps|pot)$/i.test(f.name || '')) { alert(`"${f.name}" 은 옛 형식(.ppt) 파일이라 읽지 못합니다.\nPowerPoint 에서 [파일 → 다른 이름으로 저장] 으로 "PowerPoint 프레젠테이션(.pptx)" 으로 저장한 뒤 다시 열어 주세요.`); return; }
+    importing = true; const done = hold('btnImport', '변환 중…');
+    try {
+      toast('PPT 파일을 읽는 중…', 60000);
+      await loadScript('app/pptsym.js'); await loadScript('app/pptin.js');
+      if (!(await freshList())) return;
+      const canVideo = API.mode === 'server' || (API.mode === 'github' && !!GH.token);
+      const r = await PPTIN.toDeck(f, {
+        stage: (blob, name) => API.stage(blob, name),
+        progress: (m) => toast(m, 60000),
+        video: canVideo ? async (file, name, poster) => { if (file.size > BIGV.MAX) throw new Error('1GB 가 넘는 동영상'); const src = API.mode === 'github' && file.size > BIGV.LIMIT ? API.stageBig(file, name) : await API.stage(file, name); return { src, poster }; } : null,
+      });
+      const name = uniqueName(r.deck.title || f.name.replace(/\.[^.]+$/, '') || '가져온 교안'); removed.delete(name); Draft.forget(name);
+      toast('교안을 저장하는 중…', 60000);
+      await ghTry(() => API.save(name, r.deck));
+      const s = r.stats, parts = [`슬라이드 ${s.slides}장`, s.text ? `글 상자 ${s.text}` : '', s.image ? `그림 ${s.image}` : '', s.shape + s.drawn ? `도형 ${s.shape + s.drawn}` : '', s.table ? `표 ${s.table}` : '', s.chart ? `차트 ${s.chart}` : '', s.video ? `동영상 ${s.video}` : ''].filter(Boolean).join(' · ');
+      try { sessionStorage.setItem('gyoan:imported', JSON.stringify({ name, summary: parts, warnings: r.warnings })); } catch (e) { }
+      toast('교안으로 바꿨습니다 — ' + parts, 4000);
+      location.href = 'editor.html?deck=' + encodeURIComponent(name);
+    } catch (e) { toast('PPT 를 가져오지 못했습니다'); if (!e.quiet) alert('PPT 를 교안으로 바꾸지 못했습니다: ' + e.message); else fail('', e); }
+    finally { importing = false; done(); }
+  }
+  // 이 화면에 파일 끌어다 놓기 (.pptx → 교안, .json → 교안 파일 가져오기)
+  const dropOk = (dt) => dt && Array.from(dt.types || []).includes('Files');
+  document.addEventListener('dragover', (ev) => { if (dropOk(ev.dataTransfer)) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; document.body.classList.add('dragover'); } });
+  document.addEventListener('dragleave', (ev) => { if (!ev.relatedTarget) document.body.classList.remove('dragover'); });
+  document.addEventListener('drop', async (ev) => {
+    document.body.classList.remove('dragover'); if (!dropOk(ev.dataTransfer)) return; ev.preventDefault();
+    const files = Array.from(ev.dataTransfer.files); const f = files.find(isPpt) || files.find(x => /\.json$/i.test(x.name || ''));
+    if (!f) { toast('PowerPoint 파일(.pptx)이나 교안 파일(.json)을 놓아 주세요', 4000); return; }
+    await importFile(f);
+  });
+  // 앱으로 설치한 뒤 탐색기에서 .pptx 를 [연결 프로그램 → 업무 공간] 으로 열면 여기로 파일이 넘어옴
+  if ('launchQueue' in window) window.launchQueue.setConsumer(async (p) => {
+    if (!p.files || !p.files.length) return;
+    try { await importFile(await p.files[0].getFile()); } catch (e) { alert('파일을 열 수 없습니다: ' + e.message); }
+  });
   q.oninput = render;
   refresh();
 })();
