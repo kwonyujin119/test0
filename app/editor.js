@@ -985,6 +985,61 @@
     for (const e of els) { e[k] = Math.round(pos); pos += e[sz] + gap; }
     commit(); renderStage(); renderProps();
   }
+  /* ---- 크기 맞추기 ---- */
+  /* 슬라이드 밖으로 나가지 않게 자리만 옮김 (슬라이드보다 크면 왼쪽 위에 맞춤) */
+  function keepIn(e) { e.x = Math.round(clamp(e.x, 0, Math.max(0, SLIDE_W - e.w))); e.y = Math.round(clamp(e.y, 0, Math.max(0, SLIDE_H - e.h))); }
+  /* 고른 것마다 fn(요소, 처음 고른 것) 이 돌려주는 w·h 로 (한쪽만 주면 비율 고정이 켜진 것은 다른 쪽도 따라감) · 왼쪽 위 모서리는 그대로 */
+  function resizeSel(fn, msg) {
+    const all = selEls(), els = all.filter(e => !e.locked); if (!els.length) return;
+    for (const e of els) {
+      const r = fn(e, all[0]) || {}; let w = r.w, h = r.h;
+      if (w != null && h == null && ratioOn(e) && e.w && e.h) h = w * e.h / e.w;
+      if (h != null && w == null && ratioOn(e) && e.w && e.h) w = h * e.w / e.h;
+      if (w != null) e.w = Math.max(8, Math.round(w)); if (h != null) e.h = Math.max(8, Math.round(h));
+      keepIn(e);
+    }
+    commit(); renderStage(); renderProps(); if (msg && els.length > 1) toast(`${els.length}개를 ${msg}`);
+  }
+  /* 슬라이드에 맞춤(비율 유지·가운데) 또는 채움(슬라이드 전체 · 그림은 ‘채우기’로 자름) */
+  function fitToSlide(cover) {
+    const els = selEls().filter(e => !e.locked); if (!els.length) return;
+    for (const e of els) {
+      if (cover) { e.x = 0; e.y = 0; e.w = SLIDE_W; e.h = SLIDE_H; if (e.type === 'image') e.fit = 'cover'; continue; }
+      const nat = e.type === 'image' ? natOf(e) : null, rw = nat ? nat.w : e.w, rh = nat ? nat.h : e.h; // 그림은 상자가 아니라 그림의 비율로
+      const k = Math.min(SLIDE_W / rw, SLIDE_H / rh);
+      e.w = Math.round(rw * k); e.h = Math.round(rh * k); e.x = Math.round((SLIDE_W - e.w) / 2); e.y = Math.round((SLIDE_H - e.h) / 2);
+    }
+    commit(); renderStage(); renderProps();
+  }
+  /* 상자의 비율을 그림의 비율로 — ‘맞추기’면 보이는 그림 크기 그대로 여백만 없애고(줄임), ‘채우기·늘이기’면 잘리던 부분이 보이게 키움. 가운데 고정 */
+  function fitBoxToImage(e, d) {
+    const r = d.w / d.h, cx = e.x + e.w / 2, cy = e.y + e.h / 2, shrink = (e.fit || 'contain') === 'contain';
+    if ((e.w / e.h > r) === shrink) e.w = Math.round(e.h * r); else e.h = Math.round(e.w / r);
+    e.x = Math.round(cx - e.w / 2); e.y = Math.round(cy - e.h / 2);
+  }
+  /* 가로 한 줄(같은 높이) · 세로 한 줄(같은 너비) 로 나란히 — 처음 고른 것의 크기 기준, 슬라이드를 넘치면 함께 줄임 */
+  function arrange(axis) {
+    const all = selEls(), els = all.filter(e => !e.locked); if (els.length < 2) { toast('2개 이상 고르세요'); return; }
+    const H = axis === 'h', first = all[0], GAP = 24, LIM = H ? SLIDE_W : SLIDE_H;
+    els.sort((a, b) => H ? (a.x - b.x) || (a.y - b.y) : (a.y - b.y) || (a.x - b.x));
+    for (const e of els) { if (H) { e.w = Math.max(8, Math.round(first.h * e.w / e.h)); e.h = first.h; } else { e.h = Math.max(8, Math.round(first.w * e.h / e.w)); e.w = first.w; } }
+    let start = Math.min(...els.map(e => H ? e.x : e.y)), cross = Math.min(...els.map(e => H ? e.y : e.x));
+    const gaps = GAP * (els.length - 1), sum = () => els.reduce((s, e) => s + (H ? e.w : e.h), 0);
+    if (sum() + gaps > LIM) { const k = (LIM - gaps) / sum(); for (const e of els) { e.w = Math.max(8, Math.round(e.w * k)); e.h = Math.max(8, Math.round(e.h * k)); } start = 0; }
+    if (start + sum() + gaps > LIM) start = LIM - sum() - gaps;
+    const thick = Math.max(...els.map(e => H ? e.h : e.w)); if (cross + thick > (H ? SLIDE_H : SLIDE_W)) cross = Math.max(0, (H ? SLIDE_H : SLIDE_W) - thick);
+    let pos = start;
+    for (const e of els) { if (H) { e.x = Math.round(pos); e.y = Math.round(cross); pos += e.w + GAP; } else { e.y = Math.round(pos); e.x = Math.round(cross); pos += e.h + GAP; } }
+    commit(); renderStage(); renderProps(); toast(`${els.length}개를 ${H ? '같은 높이로 가로 한 줄' : '같은 너비로 세로 한 줄'}에 놓았습니다`);
+  }
+  /* 크기를 끌어 바꾸는 동안 상자 아래에 치수를 보여 줌 */
+  function showSizeTip(e) {
+    let d = overlay.querySelector('.sizetip');
+    if (!d) { d = document.createElement('div'); d.className = 'sizetip'; overlay.appendChild(d); }
+    d.textContent = fmtDims(e.w, e.h);
+    d.style.left = ((e.x + e.w / 2) * S.k) + 'px'; d.style.top = ((e.y + e.h) * S.k + 8) + 'px';
+  }
+  function hideSizeTip() { const d = overlay.querySelector('.sizetip'); if (d) d.remove(); }
   function nudge(dx, dy) {
     const els = selEls().filter(e => !e.locked); if (!els.length) return;
     for (const e of els) { e.x += dx; e.y += dy; const n = nodeOf(e.id); if (n) { n.style.left = e.x + 'px'; n.style.top = e.y + 'px'; } }
@@ -1170,8 +1225,8 @@
       e.x = Math.round(x); e.y = Math.round(y); e.w = Math.round(w); e.h = Math.round(hh);
       if (e.type === 'shape' || e.type === 'chart') { rerenderEl(e.id); }
       else { node.style.left = e.x + 'px'; node.style.top = e.y + 'px'; node.style.width = e.w + 'px'; node.style.height = e.h + 'px'; }
-      renderOverlay(); updatePosInputs();
-    }, () => { clearGuides(); if (sized) { commit(); renderProps(); } });
+      renderOverlay(); updatePosInputs(); showSizeTip(e);
+    }, () => { clearGuides(); hideSizeTip(); if (sized) { commit(); renderProps(); } });
   }
   function startMarquee(ev) {
     const rect = overlay.getBoundingClientRect(); const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top; let box = null;
@@ -1488,6 +1543,29 @@
   /* ---------- 속성 패널 ---------- */
   const row = (label, html) => `<div class="prow"><label>${label}</label><div class="ctrls">${html}</div></div>`;
   const num = (k, v, step, min, max, title) => `<input type="number" data-k="${k}" value="${v == null ? '' : v}" step="${step || 1}" ${min != null ? `min="${min}"` : ''} ${max != null ? `max="${max}"` : ''} ${title ? `title="${title}"` : ''}>`;
+  /* 위치·크기 칸의 단위 — px(슬라이드 1920×1080 기준) · cm(16:9 슬라이드 = 33.87×19.05cm, PowerPoint 와 같음) · %(슬라이드 너비·높이에 대한 비율). 이 기기에 기억 */
+  const UNITS = [['px', 'px', '슬라이드 기준 픽셀 (1920×1080)'], ['cm', 'cm', '센티미터 (PowerPoint 와 같은 33.87×19.05cm 슬라이드 기준)'], ['pct', '%', '슬라이드 너비·높이에 대한 비율']];
+  const PX_CM = SLIDE_W / 33.867;
+  let sizeUnit = 'px'; try { sizeUnit = localStorage.getItem('gyoan:sizeUnit') || 'px'; } catch (e) { }
+  if (!UNITS.some(u => u[0] === sizeUnit)) sizeUnit = 'px';
+  const vert = (k) => k === 'y' || k === 'h';
+  const toUnit = (k, px) => sizeUnit === 'cm' ? Math.round(px / PX_CM * 100) / 100 : sizeUnit === 'pct' ? Math.round(px / (vert(k) ? SLIDE_H : SLIDE_W) * 1000) / 10 : Math.round(px);
+  const fromUnit = (k, v) => Math.round(sizeUnit === 'cm' ? v * PX_CM : sizeUnit === 'pct' ? v * (vert(k) ? SLIDE_H : SLIDE_W) / 100 : v);
+  const unitStep = () => sizeUnit === 'cm' ? 0.1 : sizeUnit === 'pct' ? 0.5 : 1;
+  const fmtDims = (w, h) => sizeUnit === 'cm' ? `${(w / PX_CM).toFixed(1)} × ${(h / PX_CM).toFixed(1)} cm` : sizeUnit === 'pct' ? `${Math.round(w / SLIDE_W * 100)} × ${Math.round(h / SLIDE_H * 100)} %` : `${Math.round(w)} × ${Math.round(h)} px`;
+  /* 이름표가 붙은 위치·크기 칸 (data-dim: 값을 지금 단위로 보여 주고 px 로 바꿔 넣음) */
+  const dimIn = (k, v, label, title) => `<label class="nl" title="${title || ''}"><span>${label}</span><input type="number" data-k="${k}" data-dim="1" value="${v === '' ? '' : toUnit(k, v || 0)}" step="${unitStep()}" ${k === 'w' || k === 'h' ? `min="${toUnit(k, 16)}"` : ''}></label>`;
+  /* 비율 고정: 그림·동영상은 따로 끄지 않는 한 켜짐, 나머지는 켜야 함 */
+  const ratioOn = (e) => e.ratioLock != null ? !!e.ratioLock : (e.type === 'image' || e.type === 'embed');
+  /* 그림의 원본 픽셀 크기 (한 번 재면 기억 · 재는 동안은 null, 끝나면 속성 창을 다시 그림) */
+  const natAt = new Map();
+  function natOf(e) {
+    if (!e || e.type !== 'image' || !e.src) return null;
+    if (natAt.has(e.src)) return natAt.get(e.src);
+    natAt.set(e.src, null);
+    imageSize(e.src).then(d => { natAt.set(e.src, d); if (S.sel.length === 1 && S.sel[0] === e.id && !propsEvt && !props.contains(document.activeElement)) renderProps(); }).catch(() => natAt.delete(e.src));
+    return null;
+  }
   /* ---------- 색 팔레트 ----------
      색 칸(□)을 누르면 브라우저의 색 고르기 창 대신 대표색 팔레트를 먼저 보여 줍니다.
      (테마 색 · 색상별 5단계 · 무채색 · 최근 쓴 색 · 색 번호 직접 입력 · 화면에서 따오기 · 세밀하게 고르기)
@@ -1654,11 +1732,23 @@
       <div class="muted" style="font-size:12px;margin-top:6px">슬라이드 ${S.deck.slides.length}장${S.deck.slides.some(x => x.hidden) ? ` (숨김 ${S.deck.slides.filter(x => x.hidden).length})` : ''} · 파일: decks/${esc(S.name)}.json</div>
     </section>`;
   }
+  const ALIGN_BTNS = (what) => `<div class="grid4 align6" style="flex:1">${[['left', '⇤', '왼쪽'], ['hcenter', '↔', '가로 가운데'], ['right', '⇥', '오른쪽'], ['top', '⤒', '위'], ['vcenter', '↕', '세로 가운데'], ['bottom', '⤓', '아래']].map(([a, s, n]) => `<button class="btn sm icon" data-align="${a}" title="${what} ${n}에 맞춤">${s}</button>`).join('')}</div>`;
+  const unitBtns = () => UNITS.map(([u, n, t]) => `<button class="btn sm ${sizeUnit === u ? 'active' : ''}" data-act="unit" data-v="${u}" title="${t}">${n}</button>`).join('');
+  const widthBtns = () => [['1', '꽉', '슬라이드 너비 전체'], ['0.5', '½', '슬라이드 너비의 ½'], ['0.3333', '⅓', '슬라이드 너비의 ⅓'], ['0.25', '¼', '슬라이드 너비의 ¼']].map(([f, n, t]) => `<button class="btn sm" data-act="sizeW" data-v="${f}" title="${t} (비율 고정이 켜져 있으면 높이도 따라감)">${n}</button>`).join('');
   function posSection(e) {
-    return `<section><h4>위치 · 크기 ${tog('locked', e.locked, e.locked ? '잠김' : '잠금', '잠그면 이동/크기 조절이 안 됩니다')} ${tog('ratioLock', e.ratioLock, '비율', '비율 고정: 너비나 높이를 바꾸면 다른 쪽도 따라 바뀝니다 (Shift 없이 끌어도 유지)')}</h4>
+    const nat = natOf(e), pct = nat ? Math.round(e.w / nat.w * 100) : null;
+    const gap = nat && (e.fit || 'contain') === 'contain' && Math.abs(e.w / e.h - nat.w / nat.h) > 0.02; // 상자와 그림의 비율이 달라 남는 여백
+    return `<section><h4>위치 · 크기 <span>${tog('locked', e.locked, e.locked ? '잠김' : '잠금', '잠그면 이동/크기 조절이 안 됩니다')} ${tog('ratioLock', ratioOn(e), '비율', '비율 고정: 너비나 높이를 바꾸면 다른 쪽도 따라 바뀝니다 (그림·동영상은 기본으로 켜짐 · Shift 없이 끌어도 유지)')}</span></h4>
       <div class="grid4">
-        ${num('x', e.x, 1, null, null, 'X')}${num('y', e.y, 1, null, null, 'Y')}${num('w', e.w, 1, 16, null, '너비')}${num('h', e.h, 1, 16, null, '높이')}
+        ${dimIn('x', e.x, 'X', '왼쪽 가장자리의 위치')}${dimIn('y', e.y, 'Y', '위 가장자리의 위치')}${dimIn('w', e.w, '너비')}${dimIn('h', e.h, '높이')}
       </div>
+      ${row('단위', unitBtns())}
+      ${row('너비를', widthBtns())}
+      ${row('슬라이드에', `<button class="btn sm" data-act="fitSlide" title="비율을 지키며 슬라이드에 꽉 차게 키우거나 줄이고 가운데에 놓음">맞춤</button><button class="btn sm" data-act="fillSlide" title="슬라이드 전체를 덮음 (그림은 ‘채우기’로 넘치는 부분을 잘라냄)">채움</button>` + (nat ? `<button class="btn sm" data-act="natSize" title="원본 그림의 픽셀 크기 그대로 (슬라이드보다 크면 맞춰 줄임)">원본 크기</button>` : ''))}
+      ${row('정렬', ALIGN_BTNS('슬라이드'))}
+      ${row('배율', `<button class="btn sm" data-act="scaleBy" data-v="0.9" title="지금 크기의 90% 로">−10%</button><button class="btn sm" data-act="scaleBy" data-v="1.1" title="지금 크기의 110% 로">+10%</button>` + (nat ? `<input type="number" data-k="scalePct" value="${pct}" step="5" min="1" max="2000" style="flex:0 0 64px" title="원본 그림의 픽셀 크기에 대한 비율 (100 = 원본 크기)">` + small('%') : ''))}
+      ${nat ? hint(`원본 ${nat.w}×${nat.h}px · 지금 ${pct}%` + (gap ? ' · 상자와 그림의 비율이 달라 여백이 생깁니다' : '')) : e.type === 'image' && e.src ? hint('원본 크기를 재는 중…') : ''}
+      ${e.type === 'image' && e.src ? row('', `<button class="btn sm ${gap ? 'primary' : ''}" data-act="fitRatio" title="상자의 비율을 그림의 비율과 같게 — 보이는 그림은 그대로, 남는 여백만 없앰">상자를 그림에 맞춤</button>`) : ''}
       <div class="prow" style="margin-top:6px"><label>회전</label><div class="ctrls">${num('rotate', e.rotate || 0, 1, -180, 180)}${small('투명도')}${num('opacity', Math.round((e.opacity == null ? 1 : e.opacity) * 100), 5, 0, 100)}</div></div>
       ${e.group ? hint('묶음에 들어 있습니다 · Ctrl+Shift+G 로 풀기 · Alt+클릭으로 하나만 선택') : ''}
     </section>`;
@@ -1725,7 +1815,7 @@
     } else if (e.type === 'image') {
       const fx = e.fx || {};
       body = `<section><h4>이미지</h4>
-        ${row('파일', `<button class="btn sm" data-act="replaceImage">교체…</button><button class="btn sm" data-act="fitRatio" title="원본 비율로 높이 조정">원본 비율</button>`)}
+        ${row('파일', `<button class="btn sm" data-act="replaceImage">교체…</button>`)}
         ${e.src ? row('배경', `<button class="btn sm" data-act="bgRemove" title="바탕을 투명하게 만듭니다 · 사진·사물은 AI 로 자동 분리, 단색 바탕은 눌러서 지우기">배경 지우기…</button>`) : ''}
         ${row('맞춤', choice('fit', e.fit || 'contain', [['contain', '맞추기'], ['cover', '채우기'], ['fill', '늘이기']]))}
         ${row('모양', selIn('mask', e.mask || '', MASKS))}
@@ -1733,6 +1823,7 @@
         ${row('테두리', num('border', e.border || 0, 1, 0, 40) + colorIn('borderColor', e.borderColor || '#ffffff'))}
         ${row('효과', tog('shadow', e.shadow, '그림자') + tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전'))}
       </section>
+      ${posSection(e)}
       <section><h4>자르기 <span class="muted" style="text-transform:none;font-weight:400">보여줄 부분 고르기</span></h4>
         ${row('확대', rng('zoom', e.zoom || 1, 1, 4, 0.05))}
         ${row('가로 위치', rng('cropX', e.cropX == null ? 50 : e.cropX, 0, 100))}
@@ -1821,16 +1912,20 @@
         ${hint('동영상 파일을 복사(Ctrl+C)해서 붙여넣거나(Ctrl+V) 끌어다 놓아도 됩니다 · PowerPoint 안의 영상은 [PPT 에서…] 로 그 PPT 파일을 한 번 열어 두면, 그 뒤로는 PowerPoint 에서 복사해 붙여넣어도 영상으로 들어갑니다')}
       </section>`;
     }
-    return body + posSection(e) + animSection(e) + linkSection(e) + `<section><div class="grid2"><button class="btn sm" data-act="dup">복제</button><button class="btn sm danger" data-act="del">삭제</button></div></section>`;
+    return body + (e.type === 'image' ? '' : posSection(e)) + animSection(e) + linkSection(e) + `<section><div class="grid2"><button class="btn sm" data-act="dup">복제</button><button class="btn sm danger" data-act="del">삭제</button></div></section>`;
   }
   function multiProps(els) {
     const grouped = els.length > 1 && els.every(e => e.group && e.group === els[0].group);
     const texty = els.filter(e => e.type !== 'image' && e.type !== 'embed');
     return `<section><h4>${els.length}개 선택${grouped ? ' · 묶음' : ''}</h4>
       ${row('묶기', `<button class="btn sm" data-act="group" title="Ctrl+G">묶기</button><button class="btn sm" data-act="ungroup" title="Ctrl+Shift+G">풀기</button>`)}
-      ${row('정렬', `<div class="grid4" style="flex:1">${['left', 'hcenter', 'right', 'top', 'vcenter', 'bottom'].map((a, i) => `<button class="btn sm icon" data-align="${a}">${['⇤', '↔', '⇥', '⤒', '↕', '⤓'][i]}</button>`).join('')}</div>`)}
+      ${row('정렬', ALIGN_BTNS('서로'))}
       ${row('분포', `<button class="btn sm" data-act="distH">가로 등간격</button><button class="btn sm" data-act="distV">세로 등간격</button>`)}
-      ${row('크기', `<button class="btn sm" data-act="sameW">같은 너비</button><button class="btn sm" data-act="sameH">같은 높이</button>`)}
+      <div class="grid4">${dimIn('w', commonVal(els, 'w'), '너비', '고른 것 모두 이 너비로 (그림은 비율대로 높이도)')}${dimIn('h', commonVal(els, 'h'), '높이', '고른 것 모두 이 높이로 (그림은 비율대로 너비도)')}<div class="nl" style="grid-column:span 2"><span>단위</span><div class="ctrls">${unitBtns()}</div></div></div>
+      ${row('크기', `<button class="btn sm" data-act="sameW" title="처음 고른 것의 너비로">같은 너비</button><button class="btn sm" data-act="sameH" title="처음 고른 것의 높이로">같은 높이</button><button class="btn sm" data-act="sameSize" title="처음 고른 것의 너비·높이로">같은 크기</button>`)}
+      ${row('나란히', `<button class="btn sm" data-act="rowFit" title="같은 높이로 맞춰 왼쪽부터 한 줄로 · 슬라이드를 넘치면 함께 줄임">가로 한 줄</button><button class="btn sm" data-act="colFit" title="같은 너비로 맞춰 위부터 한 줄로 · 슬라이드를 넘치면 함께 줄임">세로 한 줄</button>`)}
+      ${row('너비를', widthBtns())}
+      ${row('배율', `<button class="btn sm" data-act="scaleBy" data-v="0.9" title="각각 지금 크기의 90% 로">−10%</button><button class="btn sm" data-act="scaleBy" data-v="1.1" title="각각 지금 크기의 110% 로">+10%</button>`)}
       ${texty.length ? row('글자', `<button class="btn sm" data-act="fsDown" title="Ctrl+[">가−</button><button class="btn sm" data-act="fsUp" title="Ctrl+]">가+</button>`) : ''}
       ${hint('모서리 손잡이를 끌면 함께 크기가 바뀝니다')}
     </section>
@@ -1925,12 +2020,13 @@
   props.addEventListener('focusin', (ev) => noteRatio(ev.target));
   const emptyNum = (t) => t.type === 'number' && t.value.trim() === '';
   /* 속성 변경 */
-  props.addEventListener('input', (ev) => { const t = ev.target; if (emptyNum(t) && t.dataset.cg == null) return; noteRatio(t); if (t.dataset.cg != null) { setChartGrid(readGrid(), false); return; } if (t.dataset.k && (t.type === 'number' || t.type === 'color' || t.type === 'range' || t.tagName === 'TEXTAREA')) setProp(t.dataset.k, readVal(t), false); });
+  const propVal = (t) => t.dataset.dim ? fromUnit(t.dataset.k, readVal(t)) : readVal(t); // 위치·크기 칸은 고른 단위(cm·%)를 px 로
+  props.addEventListener('input', (ev) => { const t = ev.target; if (emptyNum(t) && t.dataset.cg == null) return; noteRatio(t); if (t.dataset.cg != null) { setChartGrid(readGrid(), false); return; } if (t.dataset.k && (t.type === 'number' || t.type === 'color' || t.type === 'range' || t.tagName === 'TEXTAREA')) setProp(t.dataset.k, propVal(t), false); });
   props.addEventListener('change', (ev) => {
     const t = ev.target;
     if (emptyNum(t) && t.dataset.cg == null) { renderProps(); return; } // 비워 둔 숫자 칸: 0 으로 쓰지 않고 원래 값으로
     propsEvt++;
-    try { if (t.dataset.cg != null) setChartGrid(readGrid(), true); else if (t.dataset.k) setProp(t.dataset.k, readVal(t), true); }
+    try { if (t.dataset.cg != null) setChartGrid(readGrid(), true); else if (t.dataset.k) setProp(t.dataset.k, propVal(t), true); }
     finally { propsEvt--; }
   });
   props.addEventListener('keydown', (ev) => { // 표 칸에서 Enter = 아래 칸 (마지막 줄이면 새 줄), ↑ ↓ = 위·아래 칸
@@ -1982,6 +2078,11 @@
       renderStage(); if (doCommit) renderProps(); return;
     }
     const els = selEls(); if (!els.length) return;
+    if (k === 'scalePct') { // 원본 그림 크기에 대한 비율 (왼쪽 위 모서리 고정)
+      const e = els[0], nat = natOf(e); if (!nat || !(v > 0)) return;
+      e.w = Math.max(8, Math.round(nat.w * v / 100)); e.h = Math.max(8, Math.round(nat.h * v / 100));
+      rerenderEl(e.id); renderOverlay(); if (doCommit) { commit(); renderProps(); } else { markDirty(); updatePosInputs(); } return;
+    }
     if (S.editing) {
       if (k === 'style.fontSize' || k === 'style.color' || k === 'style.bold' || k === 'style.italic' || k === 'style.underline') {
         const a = document.activeElement, held = a && a.dataset && a.dataset.k === k && props.contains(a) && editRange && !editRange.collapsed && !selInEdit();
@@ -1997,7 +2098,7 @@
       if (k === 'opacity') val = clamp(v / 100, 0, 1);
       if (k === 'w' || k === 'h') val = Math.max(8, val);
       if (k === 'style.fontSize' && !(val > 0)) continue;
-      if ((k === 'w' || k === 'h') && e.ratioLock && e.w && e.h) { const rt = ratioAt.get(e.id) || e.w / e.h; if (k === 'w') e.h = Math.max(8, Math.round(val / rt)); else e.w = Math.max(8, Math.round(val * rt)); }
+      if ((k === 'w' || k === 'h') && ratioOn(e) && e.w && e.h) { const rt = ratioAt.get(e.id) || e.w / e.h; if (k === 'w') e.h = Math.max(8, Math.round(val / rt)); else e.w = Math.max(8, Math.round(val * rt)); }
       if (k.startsWith('colors.')) { const i = +k.slice(7); e.colors = (e.colors || []).slice(); while (e.colors.length <= i) e.colors.push(''); e.colors[i] = v; rerenderEl(e.id); continue; }
       if (k === 'start' || k === 'end') { val = parseClock(v); if (!val) { delete e[k]; rerenderEl(e.id); continue; } }
       if (k === 'style.bg' && v === '') { delete e.style.bg; } else if (k === 'link' && !v) { delete e.link; } else setPath(e, k, val);
@@ -2013,7 +2114,7 @@
   }
   function updatePosInputs() {
     const e = elById(S.sel[0]); if (!e || S.sel.length !== 1) return;
-    for (const k of ['x', 'y', 'w', 'h', 'rotate']) { const i = props.querySelector(`input[data-k="${k}"]`); if (i && document.activeElement !== i) i.value = e[k] || 0; }
+    for (const k of ['x', 'y', 'w', 'h', 'rotate']) { const i = props.querySelector(`input[data-k="${k}"]`); if (i && document.activeElement !== i) i.value = i.dataset.dim ? toUnit(k, e[k] || 0) : e[k] || 0; }
   }
   function doAct(a, t) { // t: 누른 단추 (어느 줄·계열인지 data-i 로 알려 주는 단추가 있음)
     const e = elById(S.sel[0]);
@@ -2030,11 +2131,20 @@
       case 'del': deleteSelected(); break;
       case 'bgRemove': if (e) showBgRemove(e); break;
       case 'replaceImage': if (e) { $('fileReplace').dataset.id = e.id; $('fileReplace').click(); } break;
-      case 'fitRatio': if (e && e.src) imageSize(e.src).then(d => { e.h = Math.round(e.w * d.h / d.w); commit(); rerenderEl(e.id); renderOverlay(); renderProps(); }); break;
+      case 'fitRatio': if (e && e.src) imageSize(e.src).then(d => { fitBoxToImage(e, d); commit(); rerenderEl(e.id); renderOverlay(); renderProps(); }); break;
       case 'distH': distribute('h'); break;
       case 'distV': distribute('v'); break;
-      case 'sameW': { const els = selEls(); for (const x of els) if (!x.locked) x.w = els[0].w; commit(); renderStage(); break; }
-      case 'sameH': { const els = selEls(); for (const x of els) if (!x.locked) x.h = els[0].h; commit(); renderStage(); break; }
+      case 'sameW': resizeSel((x, f) => ({ w: f.w }), '처음 고른 것과 같은 너비'); break;
+      case 'sameH': resizeSel((x, f) => ({ h: f.h }), '처음 고른 것과 같은 높이'); break;
+      case 'sameSize': resizeSel((x, f) => ({ w: f.w, h: f.h }), '처음 고른 것과 같은 크기'); break;
+      case 'unit': sizeUnit = t.dataset.v; try { localStorage.setItem('gyoan:sizeUnit', sizeUnit); } catch (x) { } renderProps(); break;
+      case 'sizeW': resizeSel(() => ({ w: Math.round(SLIDE_W * +t.dataset.v) }), `슬라이드 너비의 ${t.textContent}`); break;
+      case 'scaleBy': resizeSel(x => ({ w: x.w * +t.dataset.v, h: x.h * +t.dataset.v }), `${Math.round(+t.dataset.v * 100)}% 크기로`); break;
+      case 'fitSlide': fitToSlide(false); break;
+      case 'fillSlide': fitToSlide(true); break;
+      case 'natSize': if (e) { const nat = natOf(e); if (!nat) break; const k = Math.min(1, SLIDE_W / nat.w, SLIDE_H / nat.h); e.w = Math.round(nat.w * k); e.h = Math.round(nat.h * k); keepIn(e); commit(); rerenderEl(e.id); renderOverlay(); renderProps(); toast(k < 1 ? `원본(${nat.w}×${nat.h}px)이 슬라이드보다 커서 ${Math.round(k * 100)}% 로 맞췄습니다` : `원본 크기 ${nat.w}×${nat.h}px`); } break;
+      case 'rowFit': arrange('h'); break;
+      case 'colFit': arrange('v'); break;
       case 'autofit': if (e) autofit(e); break;
       case 'gradToggle': if (e) { if (e.fill2) e.fill2 = ''; else { e.fill2 = '$accent2'; if (e.gAngle == null) e.gAngle = 135; } commit(); rerenderEl(e.id); renderProps(); } break;
       case 'gray': if (e) { e.fx = Object.assign({}, e.fx, { s: 0 }); commit(); rerenderEl(e.id); renderProps(); } break;
