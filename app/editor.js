@@ -1726,7 +1726,7 @@
       const fx = e.fx || {};
       body = `<section><h4>이미지</h4>
         ${row('파일', `<button class="btn sm" data-act="replaceImage">교체…</button><button class="btn sm" data-act="fitRatio" title="원본 비율로 높이 조정">원본 비율</button>`)}
-        ${e.src ? row('배경', `<button class="btn sm" data-act="bgRemove" title="바탕색(흰 배경 등)을 투명하게 만듭니다 · 지울 곳을 눌러 고를 수 있습니다">배경 지우기…</button>`) : ''}
+        ${e.src ? row('배경', `<button class="btn sm" data-act="bgRemove" title="바탕을 투명하게 만듭니다 · 사진·사물은 AI 로 자동 분리, 단색 바탕은 눌러서 지우기">배경 지우기…</button>`) : ''}
         ${row('맞춤', choice('fit', e.fit || 'contain', [['contain', '맞추기'], ['cover', '채우기'], ['fill', '늘이기']]))}
         ${row('모양', selIn('mask', e.mask || '', MASKS))}
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 400))}
@@ -2972,6 +2972,7 @@
     const bg = document.createElement('div'); bg.className = 'modal-bg';
     bg.innerHTML = `<div class="modal bgrm"><h3>${isTxt ? '아이콘 ' : ''}배경 지우기 <span class="muted" style="font-weight:400;font-size:13px">지울 곳을 그림에서 누르세요 · 누를 때마다 더 지워집니다</span></h3>
       <div class="bgrm-view"><canvas></canvas><div class="bgrm-msg">불러오는 중…</div></div>
+      ${isTxt ? '' : `<div class="row bgrm-ai"><button class="btn primary sm" data-ai title="사진·사물의 배경을 AI 가 알아서 분리합니다 (그림은 이 기기 안에서만 처리 · 처음 한 번 모델을 내려받음)">AI 로 자동 지우기</button><span class="muted" data-aimsg style="flex:1;font-size:12.5px">사진처럼 배경이 복잡하면 AI 로, 단색 바탕은 아래에서 눌러서 지우세요</span></div>`}
       <div class="row"><label style="white-space:nowrap">지우는 정도</label><input type="range" min="4" max="160" value="48" data-tol style="flex:1"><span class="muted" data-tolv style="width:30px;text-align:right">48</span></div>
       <div class="row" style="flex-wrap:wrap"><label class="bgrm-ck" title="켜면 눌러서 고른 색을 그림 어디에 있든 모두 지웁니다 (글자 안쪽의 막힌 틈까지)"><input type="checkbox" data-all> 떨어져 있는 같은 색도 지우기</label><label class="bgrm-ck" title="경계를 반투명하게 다듬어 흰 테두리가 남지 않게 합니다"><input type="checkbox" data-soft checked> 가장자리 부드럽게</label>
         <span style="flex:1"></span><span class="bgrm-bgs" title="확인용 바탕"><button class="on" data-pv="" title="투명(체크 무늬)"></button><button data-pv="#ffffff" title="흰 바탕" style="background:#fff"></button><button data-pv="#111827" title="어두운 바탕" style="background:#111827"></button></span></div>
@@ -2987,7 +2988,7 @@
     const W = work.width, H = work.height; let orig;
     try { orig = work.getContext('2d').getImageData(0, 0, W, H); } catch (err) { msg.textContent = '이 그림은 보안 제한 때문에 배경을 지울 수 없습니다.'; return; }
     cv.width = W; cv.height = H; msg.remove();
-    const g = cv.getContext('2d'); let picks = [], res = null, raf = 0;
+    const g = cv.getContext('2d'); let picks = [], res = null, raf = 0, aiBase = null; // aiBase: AI 로 분리하기 전의 원본 (되돌리기용)
     const auto = borderColor(orig, W, H); const first = auto && !auto.clear ? [{ auto: true, r: auto.r, g: auto.g, b: auto.b }] : [];
     picks = first.slice();
     const draw = () => {
@@ -2997,7 +2998,7 @@
       g.putImageData(new ImageData(res.data, W, H), 0, 0);
       const pct = Math.round(res.removed / (W * H) * 100);
       info.textContent = !picks.length ? (auto && auto.clear ? '바탕이 이미 투명합니다. 더 지울 곳(색 칸 등)을 눌러 주세요.' : '지울 곳을 그림에서 눌러 주세요.') : res.removed ? `지운 넓이 ${pct < 1 ? '1% 미만' : pct + '%'}${first.length && picks.length === 1 ? ' · 가장자리 바탕색을 자동으로 지웠습니다' : ''}` : '지워진 곳이 없습니다. “지우는 정도”를 올려 보세요.';
-      ok.disabled = !res.removed; q('[data-back]').disabled = !picks.length; q('[data-reset]').disabled = picks.length === first.length;
+      ok.disabled = !res.removed && !aiBase; q('[data-back]').disabled = !picks.length; q('[data-reset]').disabled = picks.length === first.length && !aiBase;
     };
     const redraw = () => { if (!raf) raf = setTimeout(draw, 16); };
     cv.addEventListener('click', (ev) => {
@@ -3010,9 +3011,28 @@
     bg.addEventListener('input', (ev) => { if (ev.target.matches('[data-tol],[data-all],[data-soft]')) redraw(); });
     q('[data-back]').onclick = () => { picks.pop(); redraw(); };
     q('[data-reset]').onclick = () => { picks = first.slice(); redraw(); };
+    /* AI 로 자동 분리 (app/bgai.js): 결과를 바탕 그림으로 삼고, 그 위에서 눌러 더 지울 수 있음 */
+    const aiBtn = q('[data-ai]'), aiMsg = q('[data-aimsg]');
+    if (aiBtn) aiBtn.onclick = async () => {
+      aiBtn.disabled = true; const old = aiBtn.textContent; aiBtn.textContent = '처리 중…';
+      const say = (t) => { if (bg.isConnected) aiMsg.textContent = t; };
+      try {
+        await loadScript('app/bgai.js');
+        if (!(await BGAI.cached()) && !confirm(`처음 한 번 AI 모델(${BGAI.info().mb}MB)을 내려받습니다. 이 기기에 보관되어 다음부터는 바로 됩니다.\n(그림은 서버로 보내지 않고 이 기기 안에서만 처리합니다)\n\n계속할까요?`)) { aiBtn.disabled = false; aiBtn.textContent = old; return; }
+        const base = aiBase || orig, alpha = await BGAI.mask(base, say);
+        if (!bg.isConnected) return;
+        const d = new Uint8ClampedArray(base.data); let cnt = 0;
+        for (let i = 0; i < W * H; i++) { const a = Math.min(d[i * 4 + 3], alpha[i]); if (a < 8 && d[i * 4 + 3] >= 16) cnt++; d[i * 4 + 3] = a; }
+        aiBase = orig; orig = new ImageData(d, W, H); picks = []; first.length = 0; // AI 결과 위에서 이어서 작업
+        q('[data-reset]').onclick = () => { orig = aiBase; aiBase = null; picks = []; redraw(); aiMsg.textContent = 'AI 결과를 되돌렸습니다'; };
+        draw(); ok.disabled = false; q('[data-reset]').disabled = false;
+        say(`AI 가 배경을 분리했습니다${BGAI.info().ep === 'webgpu' ? '' : ' (CPU)'} · 남은 곳이 있으면 눌러서 더 지우고, [적용] 을 누르세요`);
+      } catch (err) { say('AI 배경 지우기를 쓰지 못했습니다: ' + err.message); }
+      aiBtn.disabled = false; aiBtn.textContent = old;
+    };
     q('.bgrm-bgs').onclick = (ev) => { const b = ev.target.closest('[data-pv]'); if (!b) return; for (const x of bg.querySelectorAll('[data-pv]')) x.classList.toggle('on', x === b); cv.style.background = b.dataset.pv || ''; };
     ok.onclick = async () => {
-      if (!res || !res.removed) return;
+      if (!res || (!res.removed && !aiBase)) return;
       ok.disabled = true; ok.textContent = '적용 중…';
       try {
         const blob = await new Promise((r, j) => cv.toBlob(b => b ? r(b) : j(new Error('그림을 만들지 못했습니다')), 'image/png'));
