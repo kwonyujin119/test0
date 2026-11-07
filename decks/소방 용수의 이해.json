@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": null,
  "created": "2026-11-04T11:45:45.642637Z",
- "modified": "2026-11-07T00:35:55.700Z",
+ "modified": "2026-11-07T00:37:59.324Z",
  "footer": {
   "text": "소방 용수의 이해 · 지휘역량강화센터 · 권유진",
   "num": true,
@@ -6496,42 +6496,6 @@
       "fontSize": 24,
       "color": "$muted"
      }
-    },
-    {
-     "id": "c3c5lw3ld",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 508,
-     "y": 12,
-     "w": 792,
-     "h": 1056,
-     "src": "assets/34530-93bm6a2.jpg",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "g0726d88f",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "shape": "heart",
-     "x": 1053,
-     "y": 375,
-     "w": 831,
-     "h": 693,
-     "fill": "$accent",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {}
     }
    ]
   },
