@@ -293,7 +293,7 @@
   }
   function layoutStage() {
     if (!slideNode) return;
-    if (S.zoomMode === 'fit') { S.k = fitSlide(stage, slideNode, 36); }
+    if (S.zoomMode === 'fit') { S.k = fitSlide(stage, slideNode, window.innerWidth <= 640 ? 6 : 36); }
     else {
       const k = parseFloat(S.zoomMode); S.k = k;
       slideNode.style.transform = `scale(${k})`; slideNode.style.transformOrigin = '0 0'; slideNode.style.position = 'absolute';
@@ -320,6 +320,7 @@
     $('footSel').textContent = S.sel.length ? `${S.sel.length}개 선택` : '';
     const has = S.sel.length > 0;
     document.querySelectorAll('#alignGroup .btn, #btnOrder, #btnGroup, #btnDup, #btnDel').forEach(b => b.disabled = !has);
+    { const one = S.sel.length === 1 ? elById(S.sel[0]) : null; const bt = $('btnEditText'); if (bt) bt.hidden = !(one && (one.type === 'text' || one.type === 'shape' || one.type === 'table')); }
     { const gb = $('btnGroup'), els = selEls(); if (!gb.dataset.l) gb.dataset.l = gb.innerHTML; // 묶인 것을 잡았으면 '풀기'
       const un = els.length > 1 && els.every(e => e.group && e.group === els[0].group); gb.innerHTML = un ? gb.dataset.l.replace('묶기', '풀기') : gb.dataset.l; gb.classList.toggle('active', un); }
     renderLayers();
@@ -1051,7 +1052,8 @@
 
   /* ---------- 포인터 상호작용 ---------- */
   stage.addEventListener('pointerdown', onPointerDown);
-  stage.addEventListener('dblclick', (ev) => {
+  stage.addEventListener('dblclick', (ev) => { if (Date.now() - touchOpenAt < 700) return; openByDouble(ev); }); // 터치로 이미 열었으면 건너뜀
+  function openByDouble(ev) {
     const node = ev.target.closest('.el'); if (!node) return;
     const e = elById(node.dataset.id); if (!e) return;
     if (e.type === 'image') { S.sel = [e.id]; $('fileReplace').dataset.id = e.id; $('fileReplace').click(); }
@@ -1059,7 +1061,44 @@
     else if (e.type === 'embed') openEmbedDialog(e);
     else if (e.type === 'chart') { S.sel = [e.id]; markSelection(); renderOverlay(); renderProps(); const ta = props.querySelector('input[data-cg="1,1"]') || props.querySelector('textarea[data-k="data"]'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center' }); } }
     else startEdit(e.id, ev);
-  });
+  }
+  /* 손가락: 같은 개체를 0.4초 안에 두 번 두드리면 더블클릭과 같음 (글 고치기 · 그림 바꾸기 …) */
+  let lastTap = null, touchOpenAt = 0;
+  function touchDouble(ev, node) {
+    if (ev.pointerType !== 'touch') return false;
+    const now = Date.now(), t = lastTap; lastTap = { id: node ? node.dataset.id : '', x: ev.clientX, y: ev.clientY, at: now };
+    if (!node || !t || t.id !== node.dataset.id || now - t.at > 400 || Math.hypot(ev.clientX - t.x, ev.clientY - t.y) > 24) return false;
+    lastTap = null; touchOpenAt = now; openByDouble(ev); return true;
+  }
+  /* 두 손가락: 벌리면 확대, 오므리면 축소, 함께 움직이면 이동 (맞춤 으로 돌아가려면 아래 배율에서 '맞춤') */
+  const pinch = { pts: new Map(), on: false, d0: 0, k0: 1, p: null };
+  const stageRectOf = () => stage.getBoundingClientRect();
+  stage.addEventListener('pointerdown', (ev) => {
+    if (ev.pointerType !== 'touch') return;
+    pinch.pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pinch.pts.size !== 2) return;
+    const [a, b] = Array.from(pinch.pts.entries());
+    pinch.syn = true; window.dispatchEvent(new PointerEvent('pointerup', { pointerId: a[0], pointerType: 'touch', clientX: a[1].x, clientY: a[1].y, bubbles: true })); pinch.syn = false; // 첫 손가락이 시작한 끌기는 여기서 끝
+    if (S.editing) endEdit();
+    const r = stageRectOf(), cx = (a[1].x + b[1].x) / 2, cy = (a[1].y + b[1].y) / 2;
+    const left = parseFloat(slideNode.style.left) || 0, top = parseFloat(slideNode.style.top) || 0;
+    pinch.on = true; pinch.d0 = Math.hypot(a[1].x - b[1].x, a[1].y - b[1].y) || 1; pinch.k0 = S.k;
+    pinch.p = { x: (cx - r.left + stage.scrollLeft - left) / S.k, y: (cy - r.top + stage.scrollTop - top) / S.k }; // 두 손가락 가운데에 있는 슬라이드 위의 점
+    ev.stopPropagation(); ev.preventDefault();
+  }, true);
+  window.addEventListener('pointermove', (ev) => {
+    if (ev.pointerType !== 'touch' || !pinch.pts.has(ev.pointerId)) return;
+    pinch.pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (!pinch.on || pinch.pts.size < 2) return;
+    const [a, b] = Array.from(pinch.pts.values());
+    const d = Math.hypot(a.x - b.x, a.y - b.y) || 1, cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+    const k = clamp(pinch.k0 * d / pinch.d0, 0.08, 3);
+    S.zoomMode = String(k); $('zoom').value = ''; layoutStage();
+    const r = stageRectOf(), left = parseFloat(slideNode.style.left) || 0, top = parseFloat(slideNode.style.top) || 0;
+    stage.scrollLeft = left + pinch.p.x * k - (cx - r.left); stage.scrollTop = top + pinch.p.y * k - (cy - r.top);
+  }, true);
+  const pinchEnd = (ev) => { if (ev.pointerType !== 'touch' || pinch.syn) return; pinch.pts.delete(ev.pointerId); if (pinch.pts.size < 2) pinch.on = false; };
+  window.addEventListener('pointerup', pinchEnd, true); window.addEventListener('pointercancel', pinchEnd, true);
   stage.addEventListener('pointerover', (ev) => { const n = ev.target.closest('.el'); slideNode?.querySelectorAll('.el.hover').forEach(x => x.classList.remove('hover')); if (n) n.classList.add('hover'); });
   stage.addEventListener('pointerleave', () => slideNode?.querySelectorAll('.el.hover').forEach(x => x.classList.remove('hover')));
   stage.addEventListener('contextmenu', (ev) => {
@@ -1123,7 +1162,9 @@
     if (t.closest('.ttab')) { ev.preventDefault(); return; } // 표의 ✕·＋ 손잡이 (누르면 click 에서 처리)
     const tb = tableBorderHit(ev); if (tb) { ev.preventDefault(); startTableLineDrag(ev, tb); return; }
     const node = t.closest('.el');
+    if (pinch.on) return; // 두 손가락으로 확대·이동하는 중
     if (S.editing) { if (node && node.dataset.id === S.editing) return; endEdit(); }
+    if (touchDouble(ev, node)) { ev.preventDefault(); return; }
     if (node) {
       const id = node.dataset.id; const e = elById(id); if (!e) return;
       const ids = ev.altKey ? [id] : groupOf(id);
@@ -1141,9 +1182,10 @@
   }
   function track(onMove, onUp) {
     // 마우스 움직임은 화면 한 번 그릴 때 한 번만 처리 (끌기·크기 조절이 부드럽게)
-    let last = null, raf = 0;
-    const mv = (e) => { last = e; if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (last) onMove(last); }); };
-    const up = (e) => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); if (raf) { cancelAnimationFrame(raf); raf = 0; if (last) onMove(last); } onUp(e); };
+    let last = null, raf = 0, pid = null;
+    const mine = (e) => { if (e.pointerType !== 'touch') return true; if (pid == null) pid = e.pointerId; return e.pointerId === pid; };
+    const mv = (e) => { if (!mine(e)) return; last = e; if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (last) onMove(last); }); };
+    const up = (e) => { if (!mine(e)) return; window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); if (raf) { cancelAnimationFrame(raf); raf = 0; if (last) onMove(last); } onUp(e); };
     window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
   }
   function startDrag(ev) {
@@ -2258,6 +2300,7 @@
   }
   document.querySelectorAll('#alignGroup .btn').forEach(b => b.onclick = () => alignSel(b.dataset.align));
   $('btnDup').onclick = duplicateSelected; $('btnDel').onclick = deleteSelected;
+  if ($('btnEditText')) $('btnEditText').onclick = () => { const e = S.sel.length === 1 ? elById(S.sel[0]) : null; if (e) startEdit(e.id, null, false); };
   $('btnUndo').onclick = undo; $('btnRedo').onclick = redo;
   $('btnSave').onclick = save;
   $('deckTitle').onchange = (ev) => { S.deck.title = ev.target.value.trim() || S.deck.title; ev.target.value = S.deck.title; document.title = S.deck.title + ' · 편집'; commit({ all: true }); };
