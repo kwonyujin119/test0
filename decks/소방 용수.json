@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-07T12:21:22.862Z",
+ "modified": "2026-11-07T12:22:42.540Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -2646,13 +2646,13 @@
    "hidden": false
   },
   {
-   "id": "6sh7v7ntt",
+   "id": "0hg6barum",
    "bg": null,
    "transition": "",
    "notes": "이 강의가 시작된 지점. 계산값과 실측값이 왜 다른가 — Ⅲ부 전체가 그 답이다.",
    "elements": [
     {
-     "id": "5gcgasntt",
+     "id": "mn36rtrum",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2660,13 +2660,84 @@
      "type": "image",
      "x": 0,
      "y": 0,
-     "w": 1920,
-     "h": 1080,
+     "w": 1937,
+     "h": 1090,
      "src": "assets/clipboard-1793924793101-i59ygkt.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
-     "mk": "wu1acr710"
+     "mk": "wu1acr710",
+     "fx": {
+      "sepia": 0,
+      "blur": 0,
+      "c": 131,
+      "b": 72
+     }
+    },
+    {
+     "id": "mdg2csrum",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 74,
+     "w": 14,
+     "h": 14,
+     "shape": "rect",
+     "fill": "#F04E23",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 3,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "mk": "rs3zl0219"
+    },
+    {
+     "id": "9whk8trum",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 146,
+     "y": 62,
+     "w": 700,
+     "h": 38,
+     "role": "text",
+     "html": "02 · 우선 방수 · CASE ONE",
+     "style": {
+      "fontSize": 22,
+      "color": "#6E7787",
+      "lineHeight": 1.45,
+      "bold": true,
+      "letterSpacing": 3
+     },
+     "mk": "pfn9sm772"
+    },
+    {
+     "id": "lmb736rum",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 104,
+     "w": 760,
+     "h": 200,
+     "role": "text",
+     "html": "석남 쿠팡물류센터<br>사다리차 10대",
+     "style": {
+      "fontSize": 60,
+      "color": "#0E1116",
+      "lineHeight": 1.2,
+      "bold": true,
+      "letterSpacing": -2
+     },
+     "mk": "0ucoxr999"
     }
    ],
    "hidden": false
