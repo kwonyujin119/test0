@@ -93,7 +93,25 @@
   let chain = Promise.resolve(), timer = 0;
   const queue = fn => (chain = chain.then(fn, fn));
   /* 저장 뒤 잠시 기다렸다 올림 (여러 번 저장해도 한 번에) */
-  S.soon = () => { if (!S.cfg().on) return; clearTimeout(timer); timer = setTimeout(() => S.push(VE.p).catch(() => { }), 4000); };
+  S.soon = (ms) => { if (!S.cfg().on) return; clearTimeout(timer); timer = setTimeout(() => S.pushAll().catch(() => { }), ms == null ? 4000 : ms); };
+  /* 이 기기에서 고친 뒤 아직 올리지 않은 프로젝트 (빈 새 프로젝트는 뺌) */
+  const hasContent = p => p && ((p.media || []).length || (p.clips || []).length || (p.titles || []).length);
+  S.sentRev = id => ((st().p || {})[id] || {}).rev || 0;
+  S.isSent = p => !!p && S.sentRev(p.id) >= (p.updated || 0);
+  S.pending = async () => {
+    const all = (await VE.idb.all('projects').catch(() => [])).map(x => x.value).filter(Boolean);
+    const cur = all.findIndex(p => p.id === VE.p.id); if (cur >= 0) all[cur] = VE.p; else all.push(VE.p);
+    return all.filter(p => (hasContent(p) || S.sentRev(p.id)) && !S.isSent(p)).sort((a, b) => (a.id === VE.p.id ? -1 : b.id === VE.p.id ? 1 : (b.updated || 0) - (a.updated || 0)));
+  };
+  /* 올리지 않은 프로젝트를 모두 올림 — 연결을 켤 때 · 열 때 · 저장할 때 · 다시 온라인이 될 때. 중간에 끊겨도 다음에 이어서 */
+  let allRun = null;
+  S.pushAll = () => allRun || (allRun = (async () => {
+    try {
+      if (!S.cfg().on) return 0; const list = await S.pending(); let n = 0;
+      for (const p of list) { await S.push(p, { bg: p.id !== VE.p.id }); n++; }
+      S.unsent = (await S.pending()).length; VE.emit('sync'); return n;
+    } finally { allRun = null; }
+  })());
   S.push = (p, opts) => queue(async () => {
     opts = opts || {};
     try {
@@ -101,14 +119,14 @@
       p = clean(p); const s0 = st();
       /* 다른 기기에서 그 사이 고쳤는지 */
       const idx0 = (await readJSON('projects/index.json')) || { projects: {} }, remote = idx0.projects[p.id], base = s0.p[p.id] && s0.p[p.id].rev;
-      if (!opts.force && remote && remote.updated > (base || 0) && remote.updated !== p.updated) { set('conflict', `다른 기기(${remote.device || '?'})에서 고친 내용이 있습니다`); VE.emit('syncConflict', { p, remote }); return; }
+      if (!opts.force && remote && remote.updated > (base || 0) && remote.updated !== p.updated) { if (opts.bg) return; /* 열려 있지 않은 프로젝트는 열 때 묻는다 */ set('conflict', `다른 기기(${remote.device || '?'})에서 고친 내용이 있습니다`); VE.emit('syncConflict', { p, remote }); return; }
       const changes = []; let total = 0, done = 0;
       const todo = []; for (const m of p.media) { if (s0.media[m.id] && s0.media[m.id].done) continue; const blob = await VE.idb.get('blobs', m.id).catch(() => null); if (blob) { todo.push([m, blob]); total += blob.size; } }
       for (const [m, blob] of todo) {
         if (await readJSON(`media/${m.id}.json`)) { setSt(s => { s.media[m.id] = { done: true }; }); continue; }
         const rec = (st().media[m.id]) || { parts: [] }, n = Math.max(1, Math.ceil(blob.size / PART)), parts = [];
         for (let i = 0; i < n; i++) {
-          if (!rec.parts[i]) { set('busy', `${m.name} 올리는 중`, total ? done / total : null); rec.parts[i] = await putBlob(blob.slice(i * PART, (i + 1) * PART)); setSt(s => { s.media[m.id] = { parts: rec.parts.slice() }; }); }
+          if (!rec.parts[i]) { set('busy', `'${p.name}' 의 ${m.name} 올리는 중`, total ? done / total : null); rec.parts[i] = await putBlob(blob.slice(i * PART, (i + 1) * PART)); setSt(s => { s.media[m.id] = { parts: rec.parts.slice() }; }); }
           parts.push(rec.parts[i]); done += Math.min(PART, blob.size - i * PART); set('busy', `${m.name} 올리는 중`, total ? done / total : null);
         }
         parts.forEach((sha, i) => changes.push({ path: `media/${m.id}/part-${String(i).padStart(4, '0')}`, sha }));
@@ -116,11 +134,11 @@
       }
       /* AI 목소리 저장분 */
       const dubs = []; for (const m of p.media) if (m.dub && m.dub.segs) for (const sg of m.dub.segs) { if (s0.dub[sg.k]) continue; const v = await VE.idb.get('cache', sg.k).catch(() => null); if (v) { changes.push({ path: `dub/${sg.k}.bin`, sha: await putBlob(new Blob([v])) }); dubs.push(sg.k); } }
-      set('busy', '편집 내용 올리는 중', null);
+      set('busy', `'${p.name}' 올리는 중`, null);
       const json = JSON.stringify(p), info = { name: p.name, updated: p.updated, device: S.device(), media: p.media.length };
       await commit(`영상 저장: ${p.name} (${S.device()})`, async head => { const idx = (await readJSON('projects/index.json', head)) || { projects: {} }; idx.projects[p.id] = info; return [...changes, { path: `projects/${p.id}.json`, content: json }, { path: 'projects/index.json', content: JSON.stringify(idx, null, 1) }]; });
       setSt(s => { s.p[p.id] = { rev: p.updated }; for (const [m] of todo) s.media[m.id] = { done: true }; for (const k of dubs) s.dub[k] = 1; });
-      set('ok', '다른 기기와 연결됨');
+      S.lastSent = Date.now(); set('ok', '다른 기기와 연결됨');
     } catch (e) { console.warn('연결 실패', e); set('error', e.message || String(e)); throw e; }
   });
 
@@ -154,4 +172,7 @@
   /* 프로젝트 지우기 (저장소의 목록과 편집 내용에서. 올린 영상 조각은 저장소 기록에 남음) */
   S.remove = (id) => queue(async () => { if (!(await S.ready())) return; await commit('영상 프로젝트 지움', async head => { const idx = (await readJSON('projects/index.json', head)) || { projects: {} }; const had = !!idx.projects[id]; delete idx.projects[id]; return had ? [{ path: `projects/${id}.json`, delete: true }, { path: 'projects/index.json', content: JSON.stringify(idx, null, 1) }] : [{ path: 'projects/index.json', content: JSON.stringify(idx, null, 1) }]; }); setSt(s => { delete s.p[id]; }); });
   S.init = () => { if (S.cfg().on) set('idle', '연결 확인 중'); else set('off', '이 기기에만 저장'); };
+  /* 휴대폰은 화면을 끄거나 다른 앱으로 가면 올리다 끊기기 쉽다 → 다시 돌아오거나 인터넷이 다시 되면 이어서 올림 */
+  addEventListener('online', () => S.soon(1500));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') S.soon(1500); });
 })();
