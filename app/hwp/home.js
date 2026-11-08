@@ -21,18 +21,17 @@ const HwpHome = (() => {
   const box = { state: 'idle', items: [], err: '' };  // noconn(GitHub 연결 없음) · locked(암호) · loading · ok · err
   const best = { state: 'idle', items: [], err: '' }; // locked(GitHub 암호) · loading · ok · err
   let drafts = [], draftsLoaded = false, inited = false;
-  let openMenu = null;
 
   /* ---------- 보이기 / 숨기기 ---------- */
   function show(which) {
     if (which && FILTERS[which]) setFilter(which);
     root.hidden = false;
-    banner();
     render();  // 받아 둔 자료로 먼저 그리고
     refresh(); // 새로 받아 다시 그림
   }
   function hide() { closeMenu(); root.hidden = true; }
-  function banner() { const W = U().W; $('hmEditing').hidden = !W.doc; if (W.doc) $('hmEditName').textContent = W.name; }
+  /* "지금 ○○ 을(를) 편집하는 중" 띠: 그 문서가 "이어서 작업" 자리에 이미 보이면 줄임 */
+  function banner(hero) { const W = U().W; $('hmEditing').hidden = !W.doc || !!(hero && hero.cur); if (W.doc) $('hmEditName').textContent = W.name; }
 
   /* ---------- 자료 ---------- */
   async function refresh() {
@@ -78,15 +77,16 @@ const HwpHome = (() => {
     b.title = on ? `GitHub 저장소 ${GH.cfg.owner}/${GH.cfg.repo} 에 연결되어 있습니다 — 누르면 상태 확인 · 토큰 바꾸기` : 'GitHub 저장소에 문서함·best 문서를 올리도록 토큰 연결 (교안 작업장과 같은 연결)';
   }
 
-  /* ---------- 도구 줄 아래 한 줄 알림: 지금 어디에 저장되는지 ---------- */
-  function notice() {
+  /* ---------- 도구 줄 아래 한 줄 알림: 지금 어디에 저장되는지 (문서 자리에 같은 안내 판이 보이면 줄임) ---------- */
+  function notice(panelShown) {
     const n = $('hmNotice'); n.hidden = false; n.className = 'hub-notice'; n.innerHTML = '';
     const link = (id, label) => `<a href="#" id="${id}">${label}</a>`;
-    if (GUEST) { n.className += ' guest'; n.innerHTML = `${icon('eye', 15)} <b>보기 전용(게스트)</b> 으로 들어왔습니다. hwpx 문서를 열어 읽고 인쇄할 수 있고, 고치거나 저장하는 일은 할 수 없습니다. <a href="index.html?mode=1">관리자로 입장</a>`; return; }
-    if (box.state === 'noconn') n.innerHTML = `지금은 <b>PC 파일 열기 · 편집 · 저장</b>이 됩니다. 집·사무실·휴대폰 어디서나 같은 문서를 열려면 ${link('hmGhOn', 'GitHub 연결')} 로 토큰을 한 번만 등록하세요 — 문서함과 best 문서가 그 저장소에 암호로 잠겨 보관됩니다.`;
-    else if (box.state === 'locked') n.innerHTML = `${icon('lock', 14)} <b>문서함이 잠겨 있습니다.</b> 암호를 입력하면 문서함의 문서가 이 화면에 보입니다. ${link('hmUnlock', '문서함 열기')}`;
-    else if (box.state === 'err') n.innerHTML = `<b>문서함을 읽지 못했습니다.</b> ${esc(box.err)} ${link('hmRetry', '다시 시도')}`;
-    else if (box.state === 'ok' || box.state === 'loading') { n.className += ' ok'; n.innerHTML = `GitHub 저장소 <b>${esc(GH.cfg.owner)}/${esc(GH.cfg.repo)}</b> 에 연결되어 있습니다. 문서함과 best 문서는 암호로 잠가 올라가며, 교안 작업장과 같은 연결을 씁니다. ${link('hmLock', '잠그기')} · ${link('hmGhOff', '연결 해제')}`; }
+    if (GUEST) { n.className += ' guest'; n.innerHTML = `${icon('eye', 15)}<span>보기 전용입니다. hwpx 문서를 읽고 인쇄할 수 있습니다. <a href="index.html?mode=1">관리자로 입장</a></span>`; return; }
+    if (panelShown) { n.hidden = true; return; }
+    if (box.state === 'noconn') n.innerHTML = `${icon('info', 15)}<span>지금은 이 기기에서만 저장됩니다. 집·사무실·휴대폰에서 같은 문서를 열려면 ${link('hmGhOn', 'GitHub 연결')}</span>`;
+    else if (box.state === 'locked') n.innerHTML = `${icon('lock', 15)}<span>문서함이 잠겨 있습니다. ${link('hmUnlock', '문서함 열기')}</span>`;
+    else if (box.state === 'err') n.innerHTML = `${icon('info', 15)}<span>문서함을 읽지 못했습니다. ${esc(box.err)} ${link('hmRetry', '다시 시도')}</span>`;
+    else if (box.state === 'ok' || box.state === 'loading') n.innerHTML = `${icon('link', 15)}<span>GitHub 저장소 <b>${esc(GH.cfg.owner)}/${esc(GH.cfg.repo)}</b> 에 암호로 잠가 보관합니다 · ${link('hmLock', '잠그기')} · ${link('hmGhOff', '연결 해제')}</span>`;
     else { n.hidden = true; return; }
     const on = (id, fn) => { const a = n.querySelector('#' + id); if (a) a.onclick = ev => { ev.preventDefault(); fn(); }; };
     on('hmGhOn', unlock); on('hmUnlock', unlock); on('hmRetry', loadBox); on('hmLock', lock);
@@ -161,34 +161,15 @@ const HwpHome = (() => {
   function empty(html) { const d = document.createElement('div'); d.className = 'hub-empty'; d.innerHTML = html; return d; }
   function headBtn(host, label, ic, fn, cls) { const b = document.createElement('button'); b.className = 'btn sm' + (cls ? ' ' + cls : ''); b.innerHTML = (ic ? icon(ic, 14) : '') + esc(label); b.onclick = fn; host.appendChild(b); return b; }
 
-  /* ---------- ⋯ 메뉴 ---------- */
-  function closeMenu() { if (openMenu) { openMenu.remove(); openMenu = null; } }
-  document.addEventListener('pointerdown', ev => { if (openMenu && !openMenu.contains(ev.target)) closeMenu(); });
-  window.addEventListener('resize', closeMenu);
-  function menu(btn, items, host) {
-    const same = openMenu && openMenu._btn === btn; closeMenu(); if (same) return;
-    const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu'); m._btn = btn;
-    for (const it of items) {
-      if (!it) { m.appendChild(document.createElement('hr')); continue; }
-      const b = document.createElement('div'); b.className = 'mi' + (it.danger ? ' danger' : ''); b.setAttribute('role', 'menuitem'); b.tabIndex = 0;
-      b.innerHTML = `${icon(it.icon, 16)}<span>${esc(it.label)}</span>`;
-      const go = () => { closeMenu(); run(it, host); };
-      b.onclick = go; b.onkeydown = ev => { if (ev.key === 'Enter') go(); };
-      m.appendChild(b);
-    }
-    document.body.appendChild(m); openMenu = m;
-    const r = btn.getBoundingClientRect();
-    m.style.position = 'fixed';
-    m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + 'px';
-    m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? r.top - 6 - m.offsetHeight : r.bottom + 6) + 'px';
-    const first = m.querySelector('.mi'); if (first) first.focus();
-  }
+  /* ---------- ⋯ 메뉴 (ui.js 의 펼침 메뉴를 같이 씀) ---------- */
+  const menu = (btn, items, host) => U().popMenu(btn, items.map(it => it && Object.assign({}, it, { run: () => run(it, host) })), { alignRight: true, focus: true });
+  const closeMenu = () => U().closePop();
 
   /* ---------- 문서(문서함 · 임시본) 카드 ---------- */
   function docCard(x) {
     const W = U().W;
     const openDraft = async () => { if (!(await U().confirmDiscard())) return; const r = await HwpStore.drafts.get(x.draft.id); if (!r) { toast('임시본이 이미 지워졌습니다'); loadDrafts(); return; } toast('임시본을 여는 중…', 20000); await U().openBytes(await r.blob.arrayBuffer(), { name: r.name, draftId: x.draft.id, boxId: r.boxId || null, dirty: true }); };
-    const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('문서함에서 여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id }); };
+    const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('문서함에서 여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id, savedTime: Date.parse(x.box.modified) || null }); };
     const open = x.cur ? async () => hide() : (x.draft ? openDraft : openBox);
     const print = async () => { await open(); if (U().W.doc && root.hidden) U().act('print'); };
     const dl = async () => { toast('받는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); HwpStore.download(x.box.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); toast('내려받기 폴더에 저장했습니다 (' + x.box.name + '.hwpx)', 2600); };
@@ -197,7 +178,7 @@ const HwpHome = (() => {
     const delDraft = async () => { if (!(await U().askConfirm(`"${x.name}" 임시본을 지울까요?`, x.box ? '문서함에 저장된 문서는 그대로 두고, 이 기기에 남은 저장 안 한 작업본만 지웁니다.' : '지우면 되살릴 수 없습니다.', '지우기', true))) return; await HwpStore.drafts.del(x.draft.id); loadDrafts(); };
     const openLabel = x.cur ? '편집으로 돌아가기' : x.draft ? '이어서 편집' : GUEST ? '열기' : '열어서 편집';
     const o = { id: x.id, cur: x.cur, title: x.name, preview: x.preview,
-      meta: [x.cur ? '지금 편집 중' : '', relTime(x.time), x.kind === 'box' ? '문서함' : (x.draft.boxId ? '문서함 문서 · 이 기기' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
+      meta: [x.cur ? '지금 편집 중' : '', relTime(x.time) + (x.time ? (x.draft ? ' 임시 저장' : ' 저장') : ''), x.kind === 'box' ? '문서함' : (x.draft.boxId ? '문서함 문서 · 이 기기' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
       chip: x.draft ? '저장 안 한 작업본' : '',
       actions: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄', icon: 'print', run: print }],
       menu: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄 · PDF 저장', icon: 'print', run: print }] };
@@ -220,7 +201,8 @@ const HwpHome = (() => {
   function renderHero(x) {
     const R = $('hmResume'); R.hidden = !x; if (!x) return;
     const o = docCard(x);
-    R.innerHTML = `${sheetHtml(o.title, o.preview)}<div class="rs-side"><div class="eyebrow">${x.cur ? '지금 편집 중' : '이어서 작업'}</div><h2 class="rs-title">${esc(o.title)}</h2><div class="meta">${o.meta.filter(Boolean).map(esc).join(' · ')}${o.chip ? ` · <span class="draft-chip">${esc(o.chip)}</span>` : ''}</div>
+    const when = x.time ? new Date(x.time).toLocaleString('ko-KR') : '';
+    R.innerHTML = `${sheetHtml(o.title, o.preview)}<div class="rs-side"><div class="eyebrow">${x.cur ? '지금 편집 중' : '이어서 작업'}</div><h2 class="rs-title">${esc(o.title)}</h2><div class="meta" title="${esc(when)}">${o.meta.slice(1).filter(Boolean).map(m => `<span>${esc(m)}</span>`).join(' · ')}${o.chip ? ` · <span class="draft-chip">${esc(o.chip)}</span>` : ''}</div>
       <div class="rs-facts">${x.box ? `<span>${icon('lock', 14)}GitHub 문서함에 암호로 보관 · 다른 기기에서도 같은 문서</span>` : `<span>${icon('clock', 14)}이 브라우저에 자동 임시 저장된 작업본 · 저장하면 문서함이나 PC 파일로</span>`}</div>
       <div class="cta"><button class="btn ink lg" data-a="0">${icon('edit')}${esc(o.actions[0].label)}</button><button class="btn lg" data-a="1">${icon('print')}인쇄</button><span class="flex"></span><button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(o.title)} 더 보기">${icon('dots')}</button></div></div>`;
     const sheet = R.querySelector('.doc-sheet'); sheet.querySelector('.ds-hover').remove();
@@ -230,37 +212,44 @@ const HwpHome = (() => {
     R.querySelector('[data-more]').onclick = ev => menu(ev.currentTarget, o.menu, R);
   }
 
-  /* ---------- 문서 격자 ---------- */
+  /* ---------- 문서 격자 ----------
+     돌려주는 값: 문서함 상태(연결 없음 · 잠김 · 오류)를 이 자리의 안내 판으로 보였는지 — 보였으면 위 한 줄 알림은 줄임 */
   function renderDocs(list, hero, q) {
     const S = $('secDocs'), body = $('docsBody'), acts = $('docsActs'), head = $('docsHead'), cnt = $('docsCnt');
-    S.hidden = filter === 'best' || GUEST; if (S.hidden) return;
+    S.hidden = filter === 'best' || GUEST; if (S.hidden) return false;
     acts.innerHTML = '';
-    head.textContent = hero ? '다른 문서' : (q ? '검색 결과' : FILTERS[filter]);
+    // 제목은 "이어서 작업" 아래 나머지일 때만 ("모든 문서" 아래 또 "모든 문서" 가 보이지 않게)
+    head.textContent = '다른 문서'; head.hidden = cnt.hidden = !hero;
     cnt.textContent = list.length ? `${list.length}개` : '';
     const W = U().W;
     if (filter === 'box' && box.state === 'ok') {
-      headBtn(acts, 'PC 파일 올리기', 'upload', boxUpload);
+      headBtn(acts, '파일 올리기', 'upload', boxUpload).title = '내 PC 의 .hwpx 파일을 문서함에 올립니다';
       if (W.doc) headBtn(acts, W.boxId ? '현재 문서 저장' : '현재 문서를 문서함에', 'save', () => { hide(); U().save('box'); });
       headBtn(acts, '잠그기', 'lock', lock, 'ghost').title = '이 기기에 기억한 문서함 암호를 지웁니다';
     }
-    if (list.length) { const g = grid(); for (const x of list) g.appendChild(card(docCard(x))); body.replaceChildren(g); return; }
-    if (hero) { body.innerHTML = ''; S.hidden = true; return; } // 문서가 하나뿐이면 "이어서 작업"만
-    const loading = !draftsLoaded || box.state === 'idle' || box.state === 'loading';
-    if (loading) { body.replaceChildren(ghosts(5)); return; }
-    if (q) { body.replaceChildren(empty(`<b>"${esc(kw)}" 이(가) 들어간 문서가 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`)); return; }
-    if (filter === 'box' || filter === 'all') {
-      body.innerHTML = '';
-      if (box.state === 'noconn') { body.appendChild(panel('lock', '<b>문서함</b>은 GitHub 저장소에 <b>암호로 잠가</b> 보관해 집·사무실·휴대폰 어디서나 같은 문서를 엽니다.', API.mode === 'github' ? '이 기기에는 아직 GitHub 연결이 없습니다. 토큰을 한 번 넣고 문서함 암호를 입력하면 문서가 여기에 바로 보입니다.' : '내 PC 서버에서 열었습니다. 문서함을 쓰려면 GitHub 저장소를 연결하세요 (교안 작업장과 같은 연결을 씁니다).', [['GitHub 연결', 'link', unlock, 'ink']])); if (filter === 'box') return; }
-      else if (box.state === 'locked') { body.appendChild(panel('lock', '<b>문서함이 잠겨 있습니다.</b> 암호를 입력하면 문서가 여기에 바로 보입니다.', '', [['문서함 열기', 'unlock', unlock, 'ink']])); return; }
-      else if (box.state === 'err') { body.appendChild(panel('info', `<b>문서함을 읽지 못했습니다.</b> ${esc(box.err)}`, '', [['다시 시도', 'redo', loadBox]])); return; }
-      else if (filter === 'box') { body.appendChild(panel('folder', '<b>문서함이 비어 있습니다.</b> 지금 편집 중인 문서를 저장하거나 PC 의 hwpx 파일을 올리면, 다른 기기에서도 같은 문서를 엽니다.', '', [])); return; }
-      const e = empty(`<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나, PC 의 .hwpx 파일을 열거나 이 화면에 끌어다 놓으세요.</span><div class="hub-empty-cta"><button class="btn ink" id="emNew">${icon('plus')}새 문서</button><button class="btn" id="emOpen">${icon('folder')}PC 파일 열기</button></div>`);
-      body.appendChild(e);
+    $('secDocs').querySelector('.hm-head').hidden = !hero && !acts.children.length;
+    if (list.length) { const g = grid(); for (const x of list) g.appendChild(card(docCard(x))); body.replaceChildren(g); return false; }
+    if (hero) { body.innerHTML = ''; S.hidden = true; return false; } // 문서가 하나뿐이면 "이어서 작업"만
+    const loading = !draftsLoaded || box.state === 'idle' || (box.state === 'loading' && filter !== 'draft');
+    if (loading) { body.replaceChildren(ghosts(5)); return false; }
+    if (q) { body.replaceChildren(empty(`<b>"${esc(kw)}" 이(가) 들어간 문서가 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`)); return false; }
+    const boxPanel = () => {
+      if (box.state === 'noconn') return panel('link', '<b>문서함은 GitHub 연결이 있어야 씁니다.</b>', '토큰을 한 번 넣고 문서함 암호를 정하면, 문서가 암호로 잠겨 보관되고 집·사무실·휴대폰 어디서나 같은 문서를 엽니다 (교안 작업장과 같은 연결).', [['GitHub 연결', 'link', unlock]]);
+      if (box.state === 'locked') return panel('lock', '<b>문서함이 잠겨 있습니다.</b>', '암호를 입력하면 문서가 여기에 바로 보입니다.', [['문서함 열기', 'unlock', unlock]]);
+      if (box.state === 'err') return panel('info', '<b>문서함을 읽지 못했습니다.</b>', esc(box.err), [['다시 시도', 'redo', loadBox]]);
+      return null;
+    };
+    if (filter === 'box') { const bp = boxPanel(); body.replaceChildren(bp || panel('folder', '<b>문서함이 비어 있습니다.</b>', '편집 중인 문서를 문서함에 저장하거나 PC 의 hwpx 파일을 올리면, 다른 기기에서도 같은 문서를 엽니다.', [['파일 올리기', 'upload', boxUpload]])); return !!bp; }
+    if (filter === 'all') {
+      if (box.state === 'locked' || box.state === 'err') { body.replaceChildren(boxPanel()); return true; }
+      const e = empty(`${W.doc ? '<b>문서함과 이 기기에 남은 문서가 없습니다</b><span>지금 문서를 문서함에 저장하면 다른 기기에서도 여기에 보입니다.</span>' : '<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나 PC 의 .hwpx 파일을 이 화면에 끌어다 놓으세요.</span>'}<div class="hub-empty-cta"><button class="btn ink" id="emNew">${icon('plus')}새 문서</button><button class="btn ghost" id="emOpen">${icon('import')}파일 가져오기</button></div>`);
+      body.replaceChildren(e);
       e.querySelector('#emNew').onclick = () => U().newDoc(); e.querySelector('#emOpen').onclick = () => U().openDialog();
-      return;
+      return false;
     }
     if (filter === 'week') body.replaceChildren(empty('<b>최근 7일 동안 저장한 문서가 없습니다</b>'));
     if (filter === 'draft') body.replaceChildren(empty('<b>저장하지 않은 작업본이 없습니다</b><span>편집하다가 저장하지 않고 닫으면 여기에 모입니다.</span>'));
+    return false;
   }
 
   /* ---------- best 문서 ---------- */
@@ -291,7 +280,7 @@ const HwpHome = (() => {
     const body = $('bestBody'), acts = $('bestActs'), cnt = $('bestCnt');
     acts.innerHTML = ''; cnt.textContent = '';
     if (best.state === 'idle' || (best.state === 'loading' && !best.items.length)) { body.replaceChildren(ghosts(4)); return 0; }
-    if (best.state === 'locked') { body.replaceChildren(panel('lock', GUEST ? '<b>best 문서는 암호로 잠겨 있습니다.</b> 게스트 모드에서는 볼 수 없습니다.' : '<b>best 문서는 문서함과 같은 암호로 잠겨 있습니다.</b> 암호를 입력하면 여기에 바로 보입니다.', '', GUEST ? [] : [['암호 입력', 'unlock', unlock, 'ink']])); return 0; }
+    if (best.state === 'locked') { body.replaceChildren(panel('lock', GUEST ? '<b>best 문서는 암호로 잠겨 있습니다.</b> 게스트 모드에서는 볼 수 없습니다.' : '<b>best 문서는 문서함과 같은 암호로 잠겨 있습니다.</b> 암호를 입력하면 여기에 바로 보입니다.', '', GUEST ? [] : [['암호 입력', 'unlock', unlock]])); return 0; }
     if (best.state === 'err') { body.replaceChildren(panel('info', `<b>best 문서 목록을 읽지 못했습니다.</b> ${esc(best.err)}`, '', [['다시 시도', 'redo', loadBest]])); return 0; }
     if (!GUEST) headBtn(acts, 'hwpx 올리기', 'upload', pickBest);
     const list = sorted(best.items.map(it => ({ it, name: it.name, time: Date.parse(it.added) || 0 }))).map(x => x.it).filter(it => match(it.name, it.note, (it.tags || []).join(' '), it.meta && it.meta.preview));
@@ -312,8 +301,8 @@ const HwpHome = (() => {
     const all = docs();
     $('cAll').textContent = all.length || ''; $('cBox').textContent = box.items.length || ''; $('cWeek').textContent = all.filter(inWeek).length || '';
     $('cDraft').textContent = drafts.length || ''; $('cBest').textContent = best.items.length || '';
+    $('dDraft').hidden = !drafts.length; // 노란 점: 저장 안 한 작업본이 있을 때만
     $('hmTitle').textContent = q ? '검색 결과' : FILTERS[filter];
-    notice();
     let list = all.filter(x => match(x.name, x.preview));
     if (filter === 'box') list = list.filter(x => x.kind === 'box');
     if (filter === 'week') list = list.filter(inWeek);
@@ -321,9 +310,9 @@ const HwpHome = (() => {
     if (filter === 'best' || GUEST) list = [];
     list = sorted(list);
     const hero = filter === 'all' && !q && pref.sort === 'recent' && list.length ? list[0] : null;
-    renderHero(hero);
+    renderHero(hero); banner(hero);
     const rest = hero ? list.slice(1) : list;
-    renderDocs(rest, hero, q);
+    notice(renderDocs(rest, hero, q));
     const nb = renderBest(match, q);
     const shown = list.length + nb;
     $('hmSub').textContent = (q || filter !== 'all') ? `${shown}개` : (all.length ? `문서 ${all.length}개` : '');
@@ -361,7 +350,7 @@ const HwpHome = (() => {
       const inField = /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '');
       if (ev.key === '/' && !ev.ctrlKey && !ev.metaKey && !ev.altKey && !inField) { ev.preventDefault(); $('hmQ').focus(); return; }
       if (ev.key === 'Escape') {
-        if (openMenu) { closeMenu(); return; }
+        if (closeMenu()) return;
         if (document.activeElement === $('hmQ')) { if (kw) { $('hmQ').value = ''; kw = ''; render(); } else $('hmQ').blur(); return; }
         if (U().W.doc) hide(); // 문서를 열어 둔 채 왔으면 편집으로
       }
