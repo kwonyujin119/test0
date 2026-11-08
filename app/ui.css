@@ -1153,9 +1153,11 @@ body.notes-view { background: var(--ui-bg); }
 [data-ws="doc"]   { --ws-bg: #e9f1fd; --ws-line: #c9dbf6; --ws-fg: #2353a8; --ws-dot: #5b8de0; }
 [data-ws="pres"]  { --ws-bg: #fdeee4; --ws-line: #f3d2bc; --ws-fg: #9c4512; --ws-dot: #e28452; }
 [data-ws="video"] { --ws-bg: #f1ecfc; --ws-line: #dad0f5; --ws-fg: #5a40b0; --ws-dot: #9178e2; }
+[data-ws="secret"] { --ws-bg: #e6f4f1; --ws-line: #c4e4dd; --ws-fg: #1c6b5c; --ws-dot: #3fa58f; }
 :root[data-theme=dark][data-ws="doc"],   :root[data-theme=dark] [data-ws="doc"]   { --ws-bg: #1a2436; --ws-line: #2b3d5c; --ws-fg: #a7c4f5; --ws-dot: #6f9be6; }
 :root[data-theme=dark][data-ws="pres"],  :root[data-theme=dark] [data-ws="pres"]  { --ws-bg: #33231b; --ws-line: #53382a; --ws-fg: #f4b896; --ws-dot: #e2885a; }
 :root[data-theme=dark][data-ws="video"], :root[data-theme=dark] [data-ws="video"] { --ws-bg: #251f39; --ws-line: #3d3360; --ws-fg: #c6b8f6; --ws-dot: #9a83e8; }
+:root[data-theme=dark][data-ws="secret"], :root[data-theme=dark] [data-ws="secret"] { --ws-bg: #15282a; --ws-line: #24413f; --ws-fg: #9bd8c9; --ws-dot: #4cb39b; }
 :root[data-ws] .mark { background: var(--ws-bg); color: var(--ws-fg); box-shadow: inset 0 0 0 1px var(--ws-line); }
 :root[data-ws] .shell > .rail { background: color-mix(in srgb, var(--ws-bg) 50%, var(--ui-bg)); }
 :root[data-ws] .rail-item.on { background: color-mix(in srgb, var(--ws-line) 65%, transparent); color: var(--ws-fg); }
