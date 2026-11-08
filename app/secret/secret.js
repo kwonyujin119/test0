@@ -757,12 +757,7 @@
     fillIcons($('vApis'));
     const on = $('lkOn'), off = $('lkOff'), op = $('lkOpen');
     if (op) op.onclick = () => unlock();
-    if (on) on.onclick = async () => {
-      const p = await askPass('잠금 암호 걸기', '4자 이상. 이 암호는 어디에도 저장하지 않습니다.', true); if (!p) return;
-      const salt = crypto.getRandomValues(new Uint8Array(16)); lockKey = await derive(p, salt);
-      keyMem = Object.fromEntries(cfg.apis.map(a => [a.id, a.key || ''])); cfg.apis.forEach(a => { a.key = ''; });
-      cfg.lock = { salt: b64(salt) }; await sealKeys(); toast('키를 잠갔습니다', 2000); renderApis();
-    };
+    if (on) on.onclick = async () => { if (await lockFlow('잠금 암호 걸기', '4자 이상. 이 암호는 어디에도 저장하지 않습니다.')) { toast('키를 잠갔습니다', 2000); renderApis(); } };
     if (off) off.onclick = async () => {
       if (!(await unlock())) return;
       cfg.apis.forEach(a => { a.key = keyMem[a.id] || ''; }); cfg.lock = null; lockKey = null; keyMem = null; saveCfg(); toast('잠금을 껐습니다', 2000); renderApis();
@@ -1258,7 +1253,7 @@
   const chatPath = id => `secret/chats/${String(id).replace(/[^\w-]/g, '')}.json`;
   const plainChat = c => { const o = Object.assign({}, c); delete o.live; return o; };
 
-  function setSy(state, msg) { SY.state = state; SY.msg = msg || ''; sy.err = state === 'bad' ? SY.msg : ''; paintSync(); }
+  function setSy(state, msg) { SY.state = state; SY.msg = msg || ''; sy.err = state === 'bad' ? SY.msg : ''; paintSync(); renderBanner(); }
   function paintSync() {
     const em = $('cSync'); if (!em) return;
     em.className = SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : '';
@@ -1367,9 +1362,9 @@
     box.innerHTML = `<span class="ico-wrap">${icon('cloud', 20)}</span><div class="tx"><b>모든 기기에서 같게 보기</b> — 대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 의 secret 폴더에 두고, 휴대폰 · PC 어디서 열어도 같게 맞춥니다. API 키는 잠금 암호를 건 경우에만 암호화된 채로 옮겨집니다.
       <div class="st ${SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : ''}">${!sy.on ? '꺼져 있음 — 이 기기에만 저장 중' : SY.state === 'busy' ? '맞추는 중…' : SY.state === 'bad' ? esc(SY.msg || sy.err) : `켜짐 · 마지막으로 맞춘 때 ${esc(when)}`}</div>
       ${!c.token ? `<div class="tok"><input type="password" id="syTok" placeholder="GitHub 토큰 (${esc(c.repo)} 저장소 Contents 읽기 · 쓰기)" autocomplete="off"><button class="btn" id="syTokOk">넣기</button></div><p class="sc-fine" style="text-align:left;margin:4px 0 0">영상(VIDEO) 동기화에 쓰는 것과 같은 토큰입니다. 이 기기에 한 번만 넣으면 됩니다.</p>` : ''}</div>
-      <div class="acts">${sy.on ? `<button class="btn" id="syNow">${icon('refresh', 15)}지금 맞추기</button><button class="btn ghost" id="syOff">끄기</button>` : `<button class="btn ink" id="syOn"${c.token ? '' : ' disabled'}>${icon('cloud', 15)}켜기</button>`}</div>`;
+      <div class="acts">${sy.on ? `<button class="btn" id="syNow">${icon('refresh', 15)}지금 맞추기</button><button class="btn ghost" id="syOff">끄기</button>` : `<button class="btn ink" id="syOn">${icon('cloud', 15)}이 기기 연결</button>`}</div>`;
     const on = $('syOn'), off = $('syOff'), now = $('syNow'), tk = $('syTokOk');
-    if (on) on.onclick = () => enableSync();
+    if (on) on.onclick = () => connectDevice();
     if (now) now.onclick = () => syncNow({ force: true });
     if (off) off.onclick = async () => { if (await confirmBox('동기화를 끌까요?', '이 기기의 자료는 그대로 남고, 다른 기기와 더 이상 맞추지 않습니다.', '끄기')) { sy.on = false; saveSy(); setSy('off'); } };
     if (tk) tk.onclick = () => { const v = $('syTok').value.trim(); if (!v) return; const o = LS.get('ve:sync', {}); o.token = v; LS.set('ve:sync', o); renderSyncBox(); toast('토큰을 넣었습니다. [켜기] 를 누르세요', 2200); };
@@ -1382,8 +1377,68 @@
       const k = await derive(pass, unb64(L.salt)); const got = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(L.iv) }, k, unb64(L.data))));
       if (!cfg.lock) { cfg.lock = { salt: L.salt, iv: L.iv, data: L.data }; lockKey = k; keyMem = Object.assign({}, got); cfg.apis.forEach(a => { if (a.key && !keyMem[a.id]) keyMem[a.id] = a.key; a.key = ''; }); await sealKeys(); }
       else { if (!(await unlock())) return false; for (const id in got) if (!keyMem[id]) keyMem[id] = got[id]; await sealKeys(); }
-      saveCfg(); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); return true;
+      saveCfg(); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); renderBanner(); return true;
     } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
+  }
+
+  /* =====================================================================
+     이 기기 연결 — 단추 하나로: 토큰(없을 때만) → 동기화 켜기 → 자료 받기 → API 키 (다른 기기에서 잠근 것 받기 / 처음이면 옮길지 묻기)
+     ===================================================================== */
+  const hasKey = a => cfg.lock ? !!(keyMem && keyMem[a.id]) : !!a.key;
+  function askToken() {
+    return new Promise(res => {
+      const c = ghCfg();
+      const d = dialog(`<h3>GitHub 토큰 한 번만 넣기</h3>
+        <p class="modal-desc">SECRET 자료를 비공개 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 에 두고 모든 기기에서 같게 맞추려면, 이 기기에 토큰이 한 번 필요합니다. 영상(VIDEO) 동기화에 쓴 토큰이 있으면 그것을 붙여 넣으세요.</p>
+        <ol class="sc-steps1"><li>토큰이 없으면 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub 토큰 만들기</a> 를 엽니다.</li><li>Repository access 에서 <b>${esc(c.repo)}</b> 를 고르고, Permissions 의 <b>Contents</b> 를 <b>Read and write</b> 로 합니다.</li><li>만든 토큰을 아래에 붙여 넣습니다.</li></ol>
+        <form class="sc-form"><label>토큰<input type="password" name="tok" placeholder="github_pat_…" autocomplete="off" required></label>
+        <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">연결</button></div></form>`, 'sc-dlg');
+      const f = d.el.querySelector('form'); setTimeout(() => f.tok.focus(), 30);
+      let done = false; const fin = v => { if (done) return; done = true; d.close(); res(v); };
+      d.bg.addEventListener('closed', () => fin(null)); d.el.querySelector('[data-x]').onclick = () => fin(null);
+      f.onsubmit = e => { e.preventDefault(); const v = f.tok.value.trim(); if (v) fin(v); };
+    });
+  }
+  async function lockFlow(title, desc) {
+    const p = await askPass(title, desc, true); if (!p) return false;
+    const salt = crypto.getRandomValues(new Uint8Array(16)); lockKey = await derive(p, salt);
+    keyMem = Object.fromEntries(cfg.apis.map(a => [a.id, a.key || ''])); cfg.apis.forEach(a => { a.key = ''; });
+    cfg.lock = { salt: b64(salt) }; await sealKeys(); return true;
+  }
+  let connecting = false;
+  async function connectDevice() {
+    if (connecting) return; connecting = true; renderBanner();
+    try {
+      let c = ghCfg();
+      if (!c.token) {
+        const tok = await askToken(); if (!tok) return;
+        const o = LS.get('ve:sync', {}); o.token = tok; LS.set('ve:sync', o); c = ghCfg();
+      }
+      await enableSync();
+      if (!sy.on) return; // 실패 문구는 배너에
+      const ai = aiApis();
+      if (cfg.lockRemote && ai.some(a => !hasKey(a))) await adoptRemoteKeys();
+      else if (!cfg.lock && cfg.apis.some(a => a.key) && !sy.askedLock) {
+        sy.askedLock = true; saveSy();
+        if (await confirmBox('API 키도 다른 기기로 옮길까요?', '잠금 암호를 정하면 키를 암호화해 함께 옮깁니다. 다른 기기에서는 [이 기기 연결] 을 누르고 같은 암호만 넣으면 됩니다. 옮기지 않으면 기기마다 키를 따로 넣습니다.', '암호 정하기'))
+          if (await lockFlow('키 잠금 암호 정하기', '4자 이상. 다른 기기에서 같은 암호를 넣으면 키가 옮겨집니다. 이 암호는 어디에도 저장하지 않습니다.')) toast('API 키도 함께 옮겨집니다', 2400);
+      }
+      toast('이 기기 연결을 마쳤습니다. 이제 휴대폰 · PC 어디서나 같게 보입니다', 3000);
+    } finally { connecting = false; renderBanner(); }
+  }
+  function renderBanner() {
+    const b = $('syncBanner'); if (!b) return;
+    const needKey = sy.on && cfg.lockRemote && aiApis().some(a => !hasKey(a));
+    let html = '', bad = false;
+    if (connecting) html = `<span class="ico-b">${icon('cloud', 18)}</span><div class="tx"><b>이 기기를 연결하는 중…</b><span>${esc(SY.msg || '잠시만 기다려 주세요')}</span></div>`;
+    else if (!sy.on && !sy.dismiss) html = `<span class="ico-b">${icon('cloud', 18)}</span><div class="tx"><b>휴대폰 · PC 어디서나 같게 보려면 이 기기를 한 번 연결하세요</b><span>대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 저장소로 맞춥니다.</span></div><div class="acts"><button class="btn ink" id="bnConnect">${icon('cloud', 15)}이 기기 연결</button><button class="btn ghost" id="bnLater">이 기기만 쓰기</button></div>`;
+    else if (sy.on && SY.state === 'bad') { bad = true; html = `<span class="ico-b">${icon('alert', 18)}</span><div class="tx"><b>다른 기기와 맞추지 못했습니다</b><span>${esc(SY.msg || sy.err || '')}</span></div><div class="acts"><button class="btn" id="bnConnect">다시 연결</button></div>`; }
+    else if (needKey) html = `<span class="ico-b">${icon('key', 18)}</span><div class="tx"><b>다른 기기에서 등록한 API 키가 있습니다</b><span>그 기기에서 정한 키 잠금 암호를 넣으면 이 기기에서도 바로 씁니다.</span></div><div class="acts"><button class="btn ink" id="bnKeys">${icon('key', 15)}키 받기</button></div>`;
+    b.hidden = !html; b.classList.toggle('bad', bad); b.innerHTML = html;
+    const cn = $('bnConnect'), lt = $('bnLater'), ky = $('bnKeys');
+    if (cn) cn.onclick = () => connectDevice();
+    if (lt) lt.onclick = () => { sy.dismiss = true; saveSy(); renderBanner(); toast('왼쪽 [기기 동기화] 에서 언제든 연결할 수 있습니다', 2600); };
+    if (ky) ky.onclick = async () => { await adoptRemoteKeys(); renderBanner(); };
   }
 
   /* =====================================================================
@@ -1416,7 +1471,59 @@
   /* =====================================================================
      전략 브리핑 — 증권사 데일리 시황 · 투자전략 리포트 (briefing 브랜치의 strategy/)
      ===================================================================== */
-  const sui = { mode: 'daily', dates: null, date: '' };
+
+  /* ---------- 전략 요약 (AI 없이): 여러 증권사 리포트에 공통으로 많이 나온 문장 · 낱말 · 기업을 규칙으로 고름 ---------- */
+  const SUM_STOP = new Set('있는 있다 있음 대한 위한 따른 통해 이후 이번 지난 전일 금일 오늘 내일 관련 가운데 기록 대비 수준 정도 경우 이상 이하 중심 주요 최근 현재 향후 모두 일부 하는 했다 한다 되는 된다 것으로 에서 으로 대해 위해 전반 시황 마감 리포트 증권 코멘트 데일리 Daily Weekly 주간 주차'.split(' '));
+  const sumWords = t => [...new Set((String(t).match(/[A-Za-z][A-Za-z0-9&]{1,}|[가-힣]{2,}/g) || []).map(w => /^[가-힣]/.test(w) && w.length > 2 ? w.replace(/(은|는|이|가|을|를|의|에|와|과|로|으로|도|만|에서|까지|부터)$/, '') : w).filter(w => w.length >= 2 && !SUM_STOP.has(w)))];
+  const RISK = /우려|리스크|위험|부담|경계|하락|급락|약세|매도|투매|불확실|변동성|조정/;
+  const ACT = /비중|매수|관심|추천|Top\s*Picks|대응|분할|선별|유망|주목|편입|매력|저가|트레이딩|포트폴리오/i;
+  const gram2 = t => { const s = String(t).replace(/[^가-힣A-Za-z0-9]/g, ''); const o = new Set(); for (let i = 0; i < s.length - 1; i++) o.add(s.slice(i, i + 2)); return o; };
+  const jac2 = (a, b) => { let n = 0; for (const x of a) if (b.has(x)) n++; return n / (a.size + b.size - n || 1); };
+  function keyPoints(list, n, filter) {
+    const df = new Map(); for (const x of list) for (const w of sumWords(x.title + ' ' + x.summary)) df.set(w, (df.get(w) || 0) + 1);
+    const cand = [];
+    for (const x of list) for (let t of String(x.summary || '').split(/\n|(?<=[.다])\s+(?=[가-힣A-Z])/)) {
+      t = t.replace(/^[\s\-·•:▶►◆■□○●*]+/, '').replace(/\s+/g, ' ').trim();
+      if (t.length < 14 || t.length > 170 || (filter && !filter.test(t))) continue;
+      const ws = sumWords(t); if (ws.length < 3) continue;
+      const score = ws.reduce((a, w) => a + Math.max(0, (df.get(w) || 0) - 1), 0) / Math.sqrt(ws.length) + (/\d/.test(t) ? 0.6 : 0);
+      cand.push({ t, x, score, g: gram2(t), w: new Set(ws) });
+    }
+    cand.sort((a, b) => b.score - a.score);
+    const out = [];
+    for (const c of cand) {
+      const same = out.find(o => jac2(o.g, c.g) >= 0.32 || jac2(o.w, c.w) >= 0.3); // 글자 조각이나 낱말이 많이 겹치면 같은 내용
+      if (same) { if (!same.who.some(w => w.broker === c.x.broker)) same.who.push(c.x); continue; }
+      if (out.length < n) out.push({ t: c.t, g: c.g, w: c.w, who: [c.x] });
+    }
+    /* 여러 증권사가 함께 짚은 내용을 앞으로 */
+    return out.sort((a, b) => b.who.length - a.who.length);
+  }
+  function renderStratSum(d) {
+    const daily = d.daily || [], weekly = d.weekly || [];
+    const dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
+    $('sLead').innerHTML = `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 리포트 <b>${daily.length}개</b>와 최근 7일 주간 리포트 <b>${weekly.length}개</b>에서, 여러 증권사가 공통으로 많이 쓴 문장 · 낱말 · 기업을 규칙으로 골랐습니다. AI 토큰은 쓰지 않습니다. 원문 요약은 [일간 전략] · [주간 전략] 에 그대로 있습니다.`;
+    $('sKw').innerHTML = (d.dailyKeywords || []).length ? '<span>오늘의 핵심 말</span>' + d.dailyKeywords.map(k => `<b>${esc(k.word)} <em>${k.count}</em></b>`).join('') : '';
+    const extra = coExtra(), coCount = new Map();
+    for (const x of daily.concat(weekly)) for (const c of new Set(secFindCompanies(x.title + '\n' + x.summary, extra).map(c => (window.SEC_ALIAS || {})[c] || c))) coCount.set(c, (coCount.get(c) || 0) + 1); // 리포트 하나에 한 번만 셈
+    const cos = [...coCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 14);
+    const pts = (arr, cls) => arr.length ? `<ol class="sc-pts">${arr.map((p, i) => `<li class="${cls || ''}"><i>${i + 1}</i><span>${esc(p.t)}</span><span class="who">${p.who.length > 1 ? `${p.who.length}곳이 함께 짚음 · ` : ''}${p.who.slice(0, 4).map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.broker)}</a>`).join(' · ')}</span></li>`).join('')}</ol>` : '<p class="sc-fine" style="text-align:left">고를 만한 문장이 없습니다.</p>';
+    const core = keyPoints(daily, 7), risk = keyPoints(daily, 4, RISK), act = keyPoints(daily.concat(weekly), 12, ACT).filter(p => !RISK.test(p.t)).slice(0, 5), wk = keyPoints(weekly, 5);
+    $('sList').innerHTML = `<div class="sc-sum2">
+      <section class="sc-card wide"><h2>오늘 증권사들이 공통으로 짚은 것</h2><p class="sub">여러 리포트에 겹쳐 나온 낱말이 많은 문장 순 · 같은 내용을 쓴 증권사를 함께 표시</p>${pts(core)}</section>
+      <section class="sc-card"><h2>위험 요인</h2><p class="sub">우려 · 부담 · 변동성 · 매도 같은 말이 든 문장</p>${pts(risk, 'risk')}</section>
+      <section class="sc-card"><h2>전략 · 대응</h2><p class="sub">비중 · 매수 · 관심 · 대응 같은 말이 든 문장 (일간 + 주간)</p>${pts(act)}</section>
+      <section class="sc-card"><h2>많이 언급된 기업</h2><p class="sub">리포트 제목 · 요약에 나온 횟수 · 누르면 그 기업 노트로</p>${cos.length ? `<div class="sc-cos">${cos.map(([c, n]) => `<button type="button" data-sco="${esc(c)}">${esc(c)} <em>${n}</em></button>`).join('')}</div>` : '<p class="sc-fine" style="text-align:left">없음</p>'}</section>
+      <section class="sc-card"><h2>이번 주 큰 흐름</h2><p class="sub">최근 7일 주간 전략 리포트에서 · 자주 나온 말: ${(d.weeklyKeywords || []).slice(0, 6).map(k => esc(k.word)).join(', ') || '없음'}</p>${pts(wk)}</section>
+      <div class="wide" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="sumNote">${icon('edit', 15)}이 요약을 노트에 남기기</button><button class="btn ghost" id="sumAsk">${icon('sparkle', 15)}이 요약으로 내 종목 점검 받기 (AI)</button></div>
+    </div>`;
+    $('sList').querySelectorAll('[data-sco]').forEach(b => b.onclick = () => { nui.co = b.dataset.sco; show('notes'); });
+    const plain = () => [`[전략 요약 ${d.dailyDate || ''}]`, '핵심: ' + core.slice(0, 5).map(p => '- ' + p.t).join('\n'), '위험: ' + risk.map(p => '- ' + p.t).join('\n'), '대응: ' + act.map(p => '- ' + p.t).join('\n'), '많이 언급: ' + cos.map(([c, n]) => `${c}(${n})`).join(', ')].join('\n');
+    $('sumNote').onclick = () => editNote(null, ymdLocal(new Date()), plain() + '\n');
+    $('sumAsk').onclick = () => { show('chat'); send('오늘 증권사 전략 리포트를 규칙으로 요약한 내용이야. 이것을 바탕으로 내 보유 · 관심 종목(get_portfolio)과 나의 원칙에 맞춰 오늘 대응을 짧게 정리해 줘.\n\n' + plain()); };
+  }
+
+  const sui = { mode: 'sum', dates: null, date: '' };
   $('sMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; sui.mode = b.dataset.v; $('sMode').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderStrat(); };
   $('sReload').onclick = () => renderStrat(true);
   $('sDate').onchange = e => { sui.date = e.target.value; renderStrat(); };
@@ -1430,6 +1537,7 @@
     $('sDate').innerHTML = sui.dates.map(d => { const x = new Date(d + 'T00:00'); return `<option value="${d}"${d === sui.date ? ' selected' : ''}>${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}</option>`; }).join('');
     let d; try { d = await getBrief('strategy/' + sui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
     if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 전략 브리핑 파일이 없습니다.</div>'; return; }
+    if (sui.mode === 'sum') { renderStratSum(d); return; }
     const list = sui.mode === 'weekly' ? d.weekly || [] : d.daily || [], kw = sui.mode === 'weekly' ? d.weeklyKeywords || [] : d.dailyKeywords || [];
     const t = d.generatedAt ? new Date(d.generatedAt) : null, dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
     $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. 매일 07:10 쯤 (08:30 보충).`;
@@ -1461,7 +1569,7 @@
   $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'chat');
-  paintSync();
+  paintSync(); renderBanner();
   (async () => {
     try { chats = (await IDB.all()) || []; } catch (e) { chats = []; }
     const old = LS.get(K_CHATS, null); // 예전처럼 localStorage 에 있던 대화를 옮김

@@ -16,6 +16,8 @@ window.SEC_COMPANIES = [
   'AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'GOOG', 'META', 'TSLA', 'AVGO', 'NFLX', 'INTC', 'QCOM', 'MU', 'ORCL', 'PLTR', 'BRK.B', 'LLY', 'NVO', 'COST', 'WMT', 'JPM',
   'TSM', 'ASML', 'ARM', 'ADBE', 'CRM', 'COIN', 'MSTR', 'UNH', 'XOM', 'CVX', 'SPY', 'QQQ',
 ];
+/* 같은 기업의 다른 이름 (전략 요약에서 하나로 셈) */
+window.SEC_ALIAS = { MSFT: '마이크로소프트', AMZN: '아마존', NVDA: '엔비디아', AAPL: '애플', GOOGL: '알파벳', GOOG: '알파벳', '구글': '알파벳', META: '메타', TSLA: '테슬라', AVGO: '브로드컴', PLTR: '팔란티어', NFLX: '넷플릭스', INTC: '인텔', QCOM: '퀄컴', MU: '마이크론', ORCL: '오라클', TSM: 'TSMC', LLY: '일라이릴리', '현대자동차': '현대차', '네이버': 'NAVER', '포스코홀딩스': 'POSCO홀딩스', 'LS일렉트릭': 'LS ELECTRIC', '스트래티지': '마이크로스트래티지', MSTR: '마이크로스트래티지', COIN: '코인베이스', UNH: '유나이티드헬스', XOM: '엑손모빌', CVX: '셰브론', JPM: 'JP모건', WMT: '월마트', COST: '코스트코', ADBE: '어도비', CRM: '세일즈포스' };
 /* 글에서 기업 이름 찾기: 긴 이름부터 찾고, 찾은 자리는 지워서 '에코프로비엠' 안의 '에코프로' 같은 겹침을 막는다. 영문 티커는 낱말 단위로만 */
 window.secFindCompanies = function (text, extra) {
   let s = ' ' + String(text || '') + ' ';
