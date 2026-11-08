@@ -332,3 +332,9 @@ body.ve-full .ve-transport { background: var(--ui-panel); padding-bottom: calc(8
 .ve-steps a, .ve-sync .ve-note a { color: var(--ui-accent-fg); text-decoration: underline; text-underline-offset: 2px; }
 .ve-sync input[type=text] { width: 100%; }
 @media (max-width: 820px) { .ve-syncbtn span { display: none; } .ve-syncbtn { padding: 6px 5px; min-width: 30px; } }
+.ve-sync .ve-field input[type=password] { width: 100%; }
+.ve-sync .ve-field input.bad { border-color: var(--ui-danger); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ui-danger) 20%, transparent); }
+.ve-sync .ve-lab .ve-ok { color: var(--ui-ok-fg, #1a7f37); font-weight: 500; }
+.ve-sync .ve-lab .ve-warn { color: var(--ui-warn-fg); font-weight: 500; }
+.ve-adv { margin: 0 0 10px; font-size: 12.5px; }
+.ve-adv summary { cursor: pointer; color: var(--ui-muted, inherit); margin-bottom: 6px; }
