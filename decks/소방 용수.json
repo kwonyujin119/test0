@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-08T00:53:28.287Z",
+ "modified": "2026-11-08T01:32:15.608Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -5527,24 +5527,6 @@
      "style": {}
     },
     {
-     "id": "f71nhu960",
-     "step": 2,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 690,
-     "y": 270,
-     "w": 530,
-     "h": 230,
-     "src": "assets/ai-water-suction.jpg",
-     "fit": "cover",
-     "radius": 24,
-     "shadow": false,
-     "cropX": 50,
-     "cropY": 55
-    },
-    {
      "id": "0jemdj340",
      "step": 2,
      "anim": "up",
@@ -5783,7 +5765,7 @@
     },
     {
      "id": "x7dfxs173",
-     "step": 4,
+     "step": 2,
      "anim": "up",
      "rotate": 0,
      "opacity": 1,
@@ -5901,6 +5883,25 @@
       "color": "#6E7787",
       "lineHeight": 1.45
      }
+    },
+    {
+     "id": "idypie33u",
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 696,
+     "y": 270,
+     "w": 530,
+     "h": 230,
+     "src": "assets/ai-water-direct.jpg",
+     "fit": "cover",
+     "radius": 24,
+     "shadow": false,
+     "cropX": 50,
+     "cropY": 55,
+     "mk": "yetgu2115"
     }
    ],
    "hidden": false
