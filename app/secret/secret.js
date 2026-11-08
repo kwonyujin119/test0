@@ -20,6 +20,7 @@
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/>',
     alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
     cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 7.97Z"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>',
     calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/>',
   };
   for (const k in ICO) if (!ICONS[k]) ICONS[k] = ICO[k];
@@ -1554,13 +1555,93 @@
   }
 
   /* =====================================================================
+     전략 요약 — 모닝 브리핑(뉴스) + 전략 브리핑(증권사 리포트)을 규칙으로 합쳐 요약 (AI 토큰 안 씀)
+     · 함께 가리키는 말: 뉴스 제목과 리포트에 둘 다 많이 나온 낱말
+     · 시장 온도: 오름(반등 · 상승 · 매수 …) / 내림(급락 · 우려 · 매도 …) 신호 문장 수
+     · 핵심 이슈: 뉴스 큰 이슈마다 낱말이 가장 많이 겹치는 증권사 문장을 붙임
+     ===================================================================== */
+  const POS = /반등|상승|급등|매수|회복|호조|최고치|개선|기대|강세|순매수|돌파/;
+  const NEG = /급락|폭락|우려|투매|매도|하락|리스크|경계|부담|공포|약세|순매도|침체|쇼크/;
+  const WHEN = /일정|발표\s*예정|예정|FOMC|CPI|PCE|고용지표|금통위|실적\s*발표|다음\s*주|내주|주간\s*일정|어닝/;
+  $('mReload').onclick = () => renderSum(true);
+  async function renderSum(force) {
+    const box = $('mList'); if (force) bui.cache = {};
+    box.innerHTML = '<div class="sc-bmsg">뉴스와 리포트를 불러오는 중…</div>';
+    let mi = null, si = null;
+    try { [mi, si] = await Promise.all([getBrief('index.json'), getBrief('strategy/index.json')]); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    const md = mi && (mi.dates || [])[0] ? await getBrief(mi.dates[0] + '.json').catch(() => null) : null;
+    const sd = si && (si.dates || [])[0] ? await getBrief('strategy/' + si.dates[0] + '.json').catch(() => null) : null;
+    if (!md && !sd) { box.innerHTML = '<div class="sc-bmsg">아직 모닝 브리핑 · 전략 브리핑이 없습니다. 내일 아침 7시 이후에 다시 열어 보세요.</div>'; return; }
+    const news = [], seen = new Set();
+    for (const it of ((md && md.items) || []).concat(...((md && md.byFeed) || []).map(f => f.items || []))) { const k = it.link || it.title; if (seen.has(k)) continue; seen.add(k); news.push(it); }
+    const daily = (sd && sd.daily) || [], weekly = (sd && sd.weekly) || [], reps = daily.concat(weekly);
+    const fmtD = s => { if (!s) return ''; const x = new Date(s); return `${x.getMonth() + 1}월 ${x.getDate()}일 ${String(x.getHours()).padStart(2, '0')}:${String(x.getMinutes()).padStart(2, '0')}`; };
+    $('mLead').innerHTML = `모닝 브리핑 뉴스 <b>${news.length}건</b>${md ? ` (${fmtD(md.generatedAt)})` : ''} + 증권사 리포트 <b>${reps.length}개</b>${sd ? ` (${fmtD(sd.generatedAt)}, 데일리 ${sd.dailyDate || ''})` : ''}를 합쳐, 둘이 함께 가리키는 것을 규칙으로 골랐습니다. AI 토큰은 쓰지 않습니다.`;
+    /* 1. 함께 가리키는 말 */
+    const cnt = arr => { const m = new Map(); for (const t of arr) for (const w of sumWords(t)) m.set(w, (m.get(w) || 0) + 1); return m; };
+    const nw = cnt(news.map(n => n.title)), rw = cnt(reps.map(r => r.title + ' ' + r.summary));
+    const GEN = new Set(['시장', '미국', '증시', '국내', '주식', '투자', '전망', '한국', '글로벌', '투자자', '종목', '기업']); // 너무 흔한 말은 뺌
+    const both = [...nw.keys()].filter(w => !GEN.has(w) && rw.has(w) && nw.get(w) >= 2 && rw.get(w) >= 2).map(w => ({ w, n: nw.get(w), r: rw.get(w), s: nw.get(w) / Math.max(1, news.length) + rw.get(w) / Math.max(1, reps.length) })).sort((a, b) => b.s - a.s).slice(0, 10);
+    /* 2. 시장 온도 */
+    let pos = 0, neg = 0;
+    for (const t of news.map(n => n.title).concat(...reps.map(r => String(r.summary).split('\n')))) { if (POS.test(t)) pos++; if (NEG.test(t)) neg++; }
+    const tot = pos + neg || 1, pp = Math.round(pos / tot * 100);
+    const mood = pp >= 60 ? '오름 신호가 우세' : pp <= 40 ? '내림 · 위험 신호가 우세' : '오름 · 내림 신호가 엇갈림';
+    /* 3. 핵심 이슈 + 증권사 시각 */
+    const pool = keyPoints(daily.concat(weekly), 60);
+    const issues = ((md && md.items) || []).slice(0, 6).map(it => {
+      const ws = new Set(sumWords(it.title)); let best = null, bs = 0;
+      for (const p of pool) { let s = 0; for (const w of p.w) if (ws.has(w)) s++; if (s > bs) { bs = s; best = p; } }
+      return { it, view: bs >= 2 ? best : null };
+    });
+    /* 4. 위험 · 대응 · 일정 */
+    const riskR = keyPoints(daily, 3, RISK), riskN = news.filter(n => NEG.test(n.title)).sort((a, b) => (b.sources || 0) - (a.sources || 0)).slice(0, 3);
+    const act = keyPoints(reps, 12, ACT).filter(p => !RISK.test(p.t)).slice(0, 4);
+    const schedN = news.filter(n => WHEN.test(n.title)).sort((a, b) => (b.sources || 0) - (a.sources || 0)).slice(0, 4), schedR = keyPoints(reps, 3, WHEN);
+    /* 5. 주목 기업 (뉴스 + 리포트) · 내 종목 표시 */
+    const extra = coExtra(), alias = window.SEC_ALIAS || {}, coN = new Map(), coR = new Map();
+    for (const n of news) for (const c of new Set(secFindCompanies(n.title, extra).map(c => alias[c] || c))) coN.set(c, (coN.get(c) || 0) + 1);
+    for (const r of reps) for (const c of new Set(secFindCompanies(r.title + '\n' + r.summary, extra).map(c => alias[c] || c))) coR.set(c, (coR.get(c) || 0) + 1);
+    const myNames = new Set(watch.items.flatMap(it => [it.symbol, it.name]).filter(Boolean).map(x => alias[x] || x));
+    const cos = [...new Set([...coN.keys(), ...coR.keys()])].map(c => ({ c, n: coN.get(c) || 0, r: coR.get(c) || 0 })).sort((a, b) => (b.n + b.r) - (a.n + a.r)).slice(0, 14);
+    /* 6. 내 종목 관련 */
+    const mine = watch.items.map(it => { const names = [it.symbol, it.name].filter(Boolean); const hn = news.filter(n => names.some(x => n.title.includes(x))); const hr = reps.filter(r => names.some(x => (r.title + r.summary).includes(x))); return { it, hn, hr }; }).filter(x => x.hn.length || x.hr.length);
+    const pts = (arr, cls) => arr.length ? `<ol class="sc-pts">${arr.map((p, i) => `<li class="${cls || ''}"><i>${i + 1}</i><span>${esc(p.t)}</span><span class="who">${p.who.length > 1 ? `${p.who.length}곳 · ` : ''}${p.who.slice(0, 3).map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.broker)}</a>`).join(' · ')}</span></li>`).join('')}</ol>` : '';
+    const nl = (arr, cls) => arr.length ? `<ol class="sc-pts">${arr.map((n, i) => `<li class="${cls || ''}"><i>${i + 1}</i><span><a href="${esc(n.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(n.title)}</a></span><span class="who">뉴스 · ${esc(n.source)}${n.sources > 1 ? ` 외 · ${n.sources}개 언론` : ''}</span></li>`).join('')}</ol>` : '';
+    const top3 = both.slice(0, 3).map(b => b.w);
+    box.innerHTML = `<div class="sc-sum2">
+      <section class="sc-card wide"><div class="sc-hero">
+        <div><h2>${top3.length ? `오늘 뉴스와 증권사가 함께 가리키는 것: ${top3.map(esc).join(' · ')}` : '오늘 뉴스와 리포트가 함께 가리키는 말이 뚜렷하지 않습니다'}</h2>
+          <p class="sub">뉴스 제목과 리포트에 둘 다 2번 이상 나온 낱말 (뉴스 건수 / 리포트 수)</p>
+          <div class="sc-both">${both.map(b => `<b>${esc(b.w)} <em>${b.n} / ${b.r}</em></b>`).join('') || '<span class="sc-fine">없음</span>'}</div></div>
+        <div class="sc-temp"><p class="sub" style="margin:0">시장 온도 — 오름 · 내림 신호가 든 문장 수</p><b class="v">${mood}</b>
+          <div class="bar" role="img" aria-label="오름 ${pos} · 내림 ${neg}"><i class="pos" style="width:${pp}%"></i><i class="neg" style="width:${100 - pp}%"></i></div>
+          <div class="lg"><span>오름 신호 ${pos}</span><span>내림 · 위험 신호 ${neg}</span></div></div>
+      </div></section>
+      <section class="sc-card wide"><h2>핵심 이슈와 증권사 시각</h2><p class="sub">모닝 브리핑의 큰 이슈마다, 낱말이 가장 많이 겹치는 증권사 리포트 문장을 붙였습니다</p>
+        ${issues.length ? `<ol class="sc-iss">${issues.map(({ it, view }, i) => `<li><i>${i + 1}</i><a class="h" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a><span class="m">${esc(it.category || '')} · ${esc(it.source)}${it.sources > 1 ? ` 외 ${it.sources}개 언론` : ''}</span>${view ? `<div class="v">${esc(view.t)}<small>증권사 시각 · ${view.who.slice(0, 3).map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(x.broker)}</a>`).join(' · ')}</small></div>` : '<div class="v none">이 이슈를 직접 다룬 증권사 문장은 찾지 못했습니다</div>'}</li>`).join('')}</ol>` : '<p class="sc-fine" style="text-align:left">모닝 브리핑이 아직 없습니다.</p>'}</section>
+      <section class="sc-card"><h2>위험 요인</h2><p class="sub">증권사가 짚은 위험 + 여러 언론이 다룬 하락 · 우려 뉴스</p>${pts(riskR, 'risk')}${nl(riskN, 'risk')}${!riskR.length && !riskN.length ? '<p class="sc-fine" style="text-align:left">눈에 띄는 위험 신호가 없습니다.</p>' : ''}</section>
+      <section class="sc-card"><h2>전략 · 대응</h2><p class="sub">증권사 리포트에서 비중 · 매수 · 주목 · 대응이 든 문장</p>${pts(act) || '<p class="sc-fine" style="text-align:left">없음</p>'}</section>
+      <section class="sc-card"><h2>주목 기업</h2><p class="sub">뉴스 + 리포트에서 함께 많이 나온 기업 (뉴스 / 리포트) · 테두리 진한 것은 내 종목 · 누르면 그 기업 노트로</p>
+        ${cos.length ? `<div class="sc-cos">${cos.map(x => `<button type="button" class="${myNames.has(x.c) ? 'mine' : ''}" data-mco="${esc(x.c)}">${esc(x.c)} <em>${x.n} / ${x.r}</em></button>`).join('')}</div>` : '<p class="sc-fine" style="text-align:left">없음</p>'}</section>
+      <section class="sc-card"><h2>확인할 일정</h2><p class="sub">발표 · FOMC · CPI · 실적 발표 · 이번 주 같은 말이 든 뉴스와 리포트 문장</p>${nl(schedN)}${pts(schedR)}${!schedN.length && !schedR.length ? '<p class="sc-fine" style="text-align:left">찾지 못했습니다.</p>' : ''}</section>
+      ${mine.length ? `<section class="sc-card wide"><h2>내 종목 관련</h2><p class="sub">관심 종목 · 보유에 적은 종목이 나온 뉴스와 리포트</p><div class="sc-mine2">${mine.map(x => `<div><b>${esc(x.it.name || x.it.symbol)}</b> — 뉴스 ${x.hn.length}건 · 리포트 ${x.hr.length}개<br>${x.hn.slice(0, 2).map(n => `<a href="${esc(n.link)}" target="_blank" rel="noopener">${esc(n.title)}</a>`).join('<br>')}${x.hr.slice(0, 1).map(r => `<br><a href="${esc(r.link)}" target="_blank" rel="noopener">[${esc(r.broker)}] ${esc(r.title)}</a>`).join('')}</div>`).join('')}</div></section>` : ''}
+      <div class="wide" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="mNote">${icon('edit', 15)}이 요약을 노트에 남기기</button><button class="btn ghost" id="mAsk">${icon('sparkle', 15)}이 요약으로 오늘 내 대응 묻기 (AI)</button></div>
+    </div>`;
+    box.querySelectorAll('[data-mco]').forEach(b => b.onclick = () => { nui.co = b.dataset.mco; show('notes'); });
+    const plain = () => [`[전략 요약 ${ymdLocal(new Date())}]`, `함께 가리키는 것: ${both.slice(0, 6).map(b => b.w).join(', ')}`, `시장 온도: ${mood} (오름 ${pos} · 내림 ${neg})`, '핵심 이슈:', ...issues.map(({ it, view }) => `- ${it.title}${view ? ` → [${view.who[0].broker}] ${view.t}` : ''}`), '위험:', ...riskR.map(p => '- ' + p.t), ...riskN.map(n => '- ' + n.title), '대응:', ...act.map(p => '- ' + p.t), `주목 기업: ${cos.map(x => x.c).join(', ')}`].join('\n');
+    $('mNote').onclick = () => editNote(null, ymdLocal(new Date()), plain() + '\n');
+    $('mAsk').onclick = () => { show('chat'); send('오늘 모닝 브리핑과 증권사 전략 리포트를 규칙으로 합친 요약이야. 이것을 바탕으로 내 보유 · 관심 종목(get_portfolio), 나의 원칙, 매매 일지(get_journal)에 맞춰 오늘 할 일과 하지 말 일을 짧게 정리해 줘.\n\n' + plain()); };
+  }
+
+  /* =====================================================================
      화면 전환 (2)
      ===================================================================== */
-  const VIEWS = { chat: 'vChat', history: 'vHistory', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { chat: 'vChat', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat();
     try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
