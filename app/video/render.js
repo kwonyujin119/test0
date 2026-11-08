@@ -1,4 +1,4 @@
-/* 영상 — 한 장면 그리기. 미리보기와 내보내기가 같은 함수를 써서 결과가 같다 */
+/* VIDEO — 한 장면 그리기. 미리보기와 내보내기가 같은 함수를 써서 결과가 같다 */
 'use strict';
 (() => {
   const small = document.createElement('canvas'); small.width = 64; small.height = 36;

@@ -1,4 +1,4 @@
-/* 문서 — best 문서 (레퍼런스 보관함)
+/* DOCUMENT — best 문서 (레퍼런스 보관함)
    잘 만든 hwpx 문서를 올려 두면 누적되어 레퍼런스가 된다. 올릴 때 본문 글과 구조(문단마다 스타일·정렬·글꼴·크기, 표의 칸 글)를
    뽑아 함께 저장하므로, 앞으로 "이 레퍼런스처럼 써 줘" 같은 자동 문서 만들기의 재료가 된다.
 
@@ -24,7 +24,7 @@ const BestDocs = (() => {
   const newId = () => Date.now().toString(36) + crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
   const safeName = n => String(n || '').replace(/\.hwpx$/i, '').replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').trim().replace(/^\.+/, '').slice(0, 80) || '문서';
 
-  /* 문서는 API.init() 을 따로 부르지 않으므로 여기서 한 번 (내 PC 서버가 있는지 → GitHub 연결인지) */
+  /* DOCUMENT는 API.init() 을 따로 부르지 않으므로 여기서 한 번 (내 PC 서버가 있는지 → GitHub 연결인지) */
   let inited = null;
   const init = () => inited || (inited = (typeof API !== 'undefined' ? API.init() : Promise.resolve('local')).catch(() => 'local'));
   function mode() {

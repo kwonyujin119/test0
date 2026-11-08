@@ -636,7 +636,7 @@
   async function insertVideoFile(file, at, opt) {
     opt = opt || {}; if (!file) return false;
     const wasEditing = !!S.editing; if (wasEditing) endEdit();
-    if (API.mode === 'local' || (API.mode === 'github' && !GH.token)) { alert('동영상 파일은 저장소에 연결된 뒤에 넣을 수 있습니다.\n발표 첫 화면의 [GitHub 연결] 을 먼저 해 주세요.\n(유튜브 주소는 지금도 붙여넣을 수 있습니다)'); return false; }
+    if (API.mode === 'local' || (API.mode === 'github' && !GH.token)) { alert('동영상 파일은 저장소에 연결된 뒤에 넣을 수 있습니다.\nPRESENTATION 첫 화면의 [GitHub 연결] 을 먼저 해 주세요.\n(유튜브 주소는 지금도 붙여넣을 수 있습니다)'); return false; }
     const mb = file.size / 1048576, mbs = mb >= 10 ? Math.round(mb) : mb.toFixed(1);
     const reuse = opt.reuse && API.blobs[opt.reuse.src] ? opt.reuse : null; // 이 화면에서 이미 올린 같은 영상 → 다시 올리지 않음
     const big = API.mode === 'github' && file.size > BIGV.LIMIT; // 큰 영상: 조각으로 나눠 올림 (100MB 가 넘어도 됨)

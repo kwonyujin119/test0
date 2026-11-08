@@ -1,4 +1,4 @@
-/* 문서 — 편집 핵심 (쪽 나누기 표시, 글자/문단 모양 적용, 표, 되돌리기, 붙여넣기) */
+/* DOCUMENT — 편집 핵심 (쪽 나누기 표시, 글자/문단 모양 적용, 표, 되돌리기, 붙여넣기) */
 const W = {
   doc: null, name: '', handle: null, boxId: null, draftId: null, dirty: false, zoom: 1, pages: [],
   cells: null,        // 셀 블록 (Set<td>)

@@ -1,4 +1,4 @@
-/* 영상 — 시작, 윗줄, 재생 단추, 단축키, 내보내기 창, 첫 화면에서 온 요청 */
+/* VIDEO — 시작, 윗줄, 재생 단추, 단축키, 내보내기 창, 첫 화면에서 온 요청 */
 'use strict';
 (() => {
   const $ = VE.$;
@@ -119,7 +119,7 @@
   }
   function syncDialog() {
     const S = VE.sync, c = S.cfg(), bg = document.createElement('div'); bg.className = 'modal-bg';
-    const repoUrl = `https://github.com/new?name=${encodeURIComponent(c.repo)}&visibility=private&description=${encodeURIComponent('영상 (비공개)')}`;
+    const repoUrl = `https://github.com/new?name=${encodeURIComponent(c.repo)}&visibility=private&description=${encodeURIComponent('VIDEO (비공개)')}`;
     bg.innerHTML = `<div class="modal ve-sync" role="dialog" aria-modal="true" aria-label="다른 기기와 연결"><h3>다른 기기와 연결</h3>
       <p class="ve-desc">휴대폰과 PC 에서 같은 영상 프로젝트를 이어서 편집합니다. 편집 내용과 영상 파일을 <b>GitHub 비공개 저장소</b>에 올리고 받습니다. 얼굴이 나오는 영상이라 공개 저장소는 쓰지 않습니다.</p>
       <details class="ve-steps"${c.on ? '' : ' open'}><summary>처음 한 번 준비 (약 3분)</summary><ol>
@@ -180,7 +180,7 @@
     } catch (e) { }
   }
   addEventListener('pagehide', () => { savePoster(true); });
-  function syncName() { $('veName').value = VE.p.name; document.title = VE.p.name + ' - 영상'; }
+  function syncName() { $('veName').value = VE.p.name; document.title = VE.p.name + ' - VIDEO'; }
 
   /* ---------- 창 어디든 끌어다 놓기 ---------- */
   function bindDrop() {
@@ -240,7 +240,7 @@
     $('tlDelete').onclick = () => VE.deleteSel(); $('tlHead').onclick = () => VE.trimToPlayhead('head'); $('tlTail').onclick = () => VE.trimToPlayhead('tail');
     $('tlSnap').onclick = () => { VE.tl.snap = !VE.tl.snap; $('tlSnap').classList.toggle('active', VE.tl.snap); $('tlSnap').setAttribute('aria-pressed', String(VE.tl.snap)); }; $('tlSnap').classList.add('active');
     $('tlFit').onclick = () => VE.fitTimeline(); $('tlZoom').oninput = e => VE.tl.zoomFromSlider(+e.target.value);
-    const nm = $('veName'); nm.oninput = () => { VE.p.name = nm.value || '새 영상'; document.title = VE.p.name + ' - 영상'; VE.saveSoon(); }; nm.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') nm.blur(); };
+    const nm = $('veName'); nm.oninput = () => { VE.p.name = nm.value || '새 영상'; document.title = VE.p.name + ' - VIDEO'; VE.saveSoon(); }; nm.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') nm.blur(); };
     addEventListener('keydown', keys); bindDrop();
     /* 타임라인 높이 끌기 */
     const sp = $('veSplit'); sp.onpointerdown = ev => { sp.setPointerCapture(ev.pointerId); const y0 = ev.clientY, h0 = $('veTimeline').offsetHeight; sp.onpointermove = e => { const h = clamp(h0 + y0 - e.clientY, 170, innerHeight * .62); document.documentElement.style.setProperty('--tlh', h + 'px'); }; sp.onpointerup = () => { sp.onpointermove = null; try { localStorage.setItem('ve:tlh', document.documentElement.style.getPropertyValue('--tlh')); } catch (e) { } }; };

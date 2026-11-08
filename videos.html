@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-ws="video">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>영상</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316171a'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>영</text></svg>">
+<title>VIDEO</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23f1ecfc'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='%235a40b0' font-family='sans-serif' font-weight='700'>V</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
@@ -17,15 +17,15 @@
 <body>
 <div id="vhGate" hidden>
   <div class="vh-gate">
-    <span class="mark" aria-hidden="true">영</span>
-    <h1>영상 편집은 관리자만 씁니다</h1>
+    <span class="mark" aria-hidden="true">V</span>
+    <h1>VIDEO는 관리자만 씁니다</h1>
     <p>게스트 모드는 보기 전용입니다. 영상을 편집하려면 접속코드를 입력해 주세요.</p>
-    <div class="vh-row"><a class="btn" href="index.html"><i data-ic="back"></i>업무 공간으로</a><button class="btn ink" id="gateIn"><i data-ic="key"></i>관리자로 입장</button></div>
+    <div class="vh-row"><a class="btn" href="index.html"><i data-ic="back"></i>DPV로</a><button class="btn ink" id="gateIn"><i data-ic="key"></i>관리자로 입장</button></div>
   </div>
 </div>
 <div class="shell" id="vhApp">
-  <aside class="rail" aria-label="영상 메뉴">
-    <a class="brand" href="videos.html"><span class="mark">영</span><b>영상</b></a>
+  <aside class="rail" aria-label="VIDEO 메뉴">
+    <a class="brand" href="videos.html"><span class="mark">V</span><b>VIDEO</b></a>
     <div class="rail-role" id="roleChip"></div>
     <button class="btn ink wide" id="btnNew"><i data-ic="plus"></i>새 영상</button>
     <nav class="rail-nav" id="nav" aria-label="영상 분류">
@@ -39,7 +39,7 @@
       <button class="rail-item" id="btnImport" title="영상 · 사진 · 소리 파일로 새 영상을 시작합니다"><i data-ic="import"></i><span>파일 가져오기</span></button>
       <button class="rail-item" id="btnRec" title="화면이나 카메라를 녹화해 새 영상을 시작합니다"><i data-ic="record"></i><span>녹화로 시작</span></button>
       <button class="rail-item" id="btnSync" title="휴대폰 · PC 에서 같은 영상 프로젝트를 이어서 편집"><i data-ic="cloud"></i><span>다른 기기와 연결</span><em id="syncState"></em></button>
-      <a class="rail-item" href="index.html"><i data-ic="back"></i><span>업무 공간으로</span></a>
+      <a class="rail-item" href="index.html"><i data-ic="back"></i><span>DPV로</span></a>
     </nav>
   </aside>
 

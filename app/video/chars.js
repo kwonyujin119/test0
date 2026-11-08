@@ -1,4 +1,4 @@
-/* 영상 — 얼굴 자리에 그리는 캐릭터 · 사진 가상 인물(app/video/people/, 사용자가 준 그림)
+/* VIDEO — 얼굴 자리에 그리는 캐릭터 · 사진 가상 인물(app/video/people/, 사용자가 준 그림)
    기본 그림은 코드로 그린 임시 캐릭터다. 사용자가 그림(PNG·SVG)을 넣으면 그것을 쓴다.
    얼굴 값: blinkL·blinkR(0 뜸~1 감음), mouth(0~1 벌림), smile(0~1), brow(0~1 올림), yaw·pitch(-1~1 고개 방향) */
 'use strict';

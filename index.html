@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>업무 공간</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2316171a'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>업</text></svg>">
+<title>DPV</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2316171a'/><text x='50' y='61' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>DPV</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
@@ -17,9 +17,9 @@
 <div class="ws">
   <header class="ws-head">
     <div class="brand">
-      <div class="ws-mark" aria-hidden="true">업</div>
+      <div class="ws-mark" aria-hidden="true">DPV</div>
       <div>
-        <h1>업무 공간</h1>
+        <h1>DPV</h1>
         <div class="sub" id="headSub">사무실에서도, 집에서도 같은 화면에서 이어서 작업합니다.</div>
       </div>
     </div>
@@ -60,27 +60,27 @@
   <!-- 입장 뒤: 작업장 고르기 (순서는 늘 같게) -->
   <main id="space" hidden>
     <div class="ws-grid">
-      <article class="ws-card">
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">문</div><h2><a class="card-link" href="hangul.html">문서</a></h2></div>
+      <article class="ws-card" data-ws="doc">
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">D</div><h2><a class="card-link" href="hangul.html">DOCUMENT</a></h2></div>
         <p class="desc" data-admin>설치 없이 · 한글과 같은 단축키 · hwpx 그대로 저장</p>
         <p class="desc" data-guest>hwpx 문서를 열어 보고 인쇄합니다.</p>
         <div class="stat" id="hwpStat">문서함 · best 문서 · 내 PC 파일</div>
         <a class="resume-link empty" id="hwpResume"><span class="rl-text"><span class="rl-title">저장하지 않고 닫은 문서가 없습니다</span></span></a>
-        <span class="go" aria-hidden="true">문서 열기<i data-ic="arrowRight"></i></span>
+        <span class="go" aria-hidden="true">DOCUMENT 열기<i data-ic="arrowRight"></i></span>
       </article>
-      <article class="ws-card">
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">발</div><h2><a class="card-link" href="gyoan.html">발표</a></h2></div>
+      <article class="ws-card" data-ws="pres">
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">P</div><h2><a class="card-link" href="gyoan.html">PRESENTATION</a></h2></div>
         <p class="desc">강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
         <div class="stat" id="deckStat">교안 목록을 읽는 중…</div>
         <a class="resume-link empty" id="deckResume"><span class="rl-text"><span class="rl-title">최근 교안을 찾는 중…</span></span></a>
-        <span class="go" aria-hidden="true">발표 열기<i data-ic="arrowRight"></i></span>
+        <span class="go" aria-hidden="true">PRESENTATION 열기<i data-ic="arrowRight"></i></span>
       </article>
-      <article class="ws-card">
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">영</div><h2><a class="card-link" href="videos.html">영상</a></h2></div>
+      <article class="ws-card" data-ws="video">
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">V</div><h2><a class="card-link" href="videos.html">VIDEO</a></h2></div>
         <p class="desc">강의 영상을 자르고 자막을 넣습니다. 파일은 이 기기에서만 처리합니다.</p>
         <div class="stat" id="videoStat">컷 편집 · 화면 녹화 · 자동 자막</div>
         <a class="resume-link empty" id="videoResume"><span class="rl-text"><span class="rl-title">이 기기에서 만든 영상이 없습니다</span></span></a>
-        <span class="go" aria-hidden="true">영상 열기<i data-ic="arrowRight"></i></span>
+        <span class="go" aria-hidden="true">VIDEO 열기<i data-ic="arrowRight"></i></span>
       </article>
     </div>
 
@@ -216,8 +216,8 @@
     if (!window.PWA || PWA.standalone || off) { box.hidden = true; return; }
     const mobile = /ios|android/.test(PWA.os);
     const close = `<button type="button" class="btn icon ghost sm app-x" title="닫기" aria-label="설치 안내 닫기">${icon('x', 16)}</button>`;
-    if (PWA.installed) box.innerHTML = `${icon('check', 20)}<div class="t"><b>앱을 설치했습니다</b><p>${mobile ? '홈 화면' : '바탕화면 · 시작 메뉴'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 탭은 닫아도 됩니다.</p></div>${close}`;
-    else box.innerHTML = `${icon('download', 20)}<div class="t"><b>업무 공간을 앱으로 설치</b><p>${mobile ? '홈 화면에 아이콘이 생기고 앱처럼 전체 화면으로 열립니다.' : '바탕화면 · 시작 메뉴에 아이콘이 생기고, 주소창 없는 창으로 열립니다. hwpx 파일도 바로 열립니다.'}</p></div><div class="acts"><button type="button" class="btn" id="btnInstall">앱으로 설치</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="업무 공간 설치.cmd">안 되면: Windows 설치 파일</a>' : ''}</div>${close}`;
+    if (PWA.installed) box.innerHTML = `${icon('check', 20)}<div class="t"><b>앱을 설치했습니다</b><p>${mobile ? '홈 화면' : '바탕화면 · 시작 메뉴'}의 <b>DPV</b> 아이콘으로 여세요. 이 탭은 닫아도 됩니다.</p></div>${close}`;
+    else box.innerHTML = `${icon('download', 20)}<div class="t"><b>DPV를 앱으로 설치</b><p>${mobile ? '홈 화면에 아이콘이 생기고 앱처럼 전체 화면으로 열립니다.' : '바탕화면 · 시작 메뉴에 아이콘이 생기고, 주소창 없는 창으로 열립니다. hwpx 파일도 바로 열립니다.'}</p></div><div class="acts"><button type="button" class="btn" id="btnInstall">앱으로 설치</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="DPV 설치.cmd">안 되면: Windows 설치 파일</a>' : ''}</div>${close}`;
     box.hidden = false;
     const b = $('btnInstall'); if (b) b.onclick = () => PWA.start();
     box.querySelector('.app-x').onclick = () => { try { localStorage.setItem(HINT, 'off'); } catch (e) { } box.hidden = true; };

@@ -139,7 +139,7 @@ li.step-hidden { visibility: hidden; }
 @keyframes a-glow { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 28px var(--accent2)); } }
 @keyframes a-out { from { opacity: var(--op, 1); } to { opacity: 0; } }
 
-/* ===== 발표 화면 보완 (슬라이드 내용과 무관 · 편집기 · 목록) ===== */
+/* ===== PRESENTATION 화면 보완 (슬라이드 내용과 무관 · 편집기 · 목록) ===== */
 /* 편집기 무대: 손가락 끌기·두 손가락 확대는 편집기가 직접 처리 — 넓은 태블릿·터치 노트북에서도 브라우저가 끌기를 가로채지 않게 */
 .ed .stage { touch-action: none; }
 /* 바뀌는 숫자는 고정폭 숫자로 (슬라이드 번호 · 용량 · 발표 번호 · 타이머가 흔들리지 않게) */

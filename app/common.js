@@ -1,4 +1,4 @@
-/* 발표 공통 모듈
+/* PRESENTATION 공통 모듈
    - 데이터 모델 / 테마 / 레이아웃 / 렌더러 / 저장 API
    - 편집기(editor.js), 발표기(present.js), 허브(hub.js)가 함께 사용 */
 'use strict';
@@ -8,7 +8,7 @@ const SLIDE_W = 1920, SLIDE_H = 1080;
 const FONT_SANS = "'Pretendard Variable', Pretendard, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
 const FONT_SERIF = "'Noto Serif KR', 'Nanum Myeongjo', '나눔명조', Batang, '바탕', serif";
 const FONT_MONO = "'Cascadia Code', 'D2Coding', Consolas, 'Courier New', monospace";
-/* 글꼴 목록 — 발표·문서 공용.
+/* 글꼴 목록 — PRESENTATION·DOCUMENT 공용.
    fam: CSS 글꼴 이름, gf: Google Fonts 이름 (실제로 쓰일 때만 불러옴, 한글은 쓰인 글자 묶음만 내려받음),
    face: 한글(hwpx) 문서에 저장할 글꼴 이름 (그 PC 에 같은 이름의 글꼴이 있으면 한글이 그대로 씀), cat: 분류 */
 const FONT_CATS = [['sans', '고딕'], ['serif', '명조'], ['display', '제목·강조'], ['hand', '손글씨'], ['mono', '고정폭']];
@@ -52,7 +52,7 @@ const FONTS = [
   { id: 'mono', name: '고정폭 (코드)', fam: 'Consolas', cat: 'mono', face: 'Consolas', css: FONT_MONO },
   _F('nanum-coding', '나눔고딕코딩', 'Nanum Gothic Coding', 'Nanum+Gothic+Coding:wght@400;700', 'mono', '나눔고딕코딩'),
 ];
-/* 문서에서 고를 수 있는 PC 글꼴 (설치된 PC 에서만 그 모양으로 보임 — 사무실 한글 문서에 흔한 글꼴) */
+/* DOCUMENT에서 고를 수 있는 PC 글꼴 (설치된 PC 에서만 그 모양으로 보임 — 사무실 한글 문서에 흔한 글꼴) */
 const PC_FONTS = ['함초롬바탕', '함초롬돋움', '맑은 고딕', '바탕', '바탕체', '돋움', '돋움체', '굴림', '굴림체', '궁서', '궁서체', '휴먼명조', '신명조', '견고딕', '중고딕', 'HY헤드라인M', 'HY견고딕', 'HY견명조', 'HY중고딕', 'HY신명조', '한컴 윤고딕 230', '한컴 윤고딕 240', 'Arial', 'Times New Roman', 'Calibri'];
 /* 글꼴 이름(한글 문서의 face 나 CSS 이름)으로 목록 항목 찾기 */
 function findFontByFace(face) { if (!face) return null; const k = String(face).replace(/\s+/g, '').toLowerCase(); return FONTS.find(f => [f.face, f.fam, f.name].some(n => n && n.replace(/\s+/g, '').toLowerCase() === k)) || null; }
@@ -1171,7 +1171,7 @@ const GH = {
     });
     return this._chain;
   },
-  /* 연결 창 (교안 허브·편집기·업무 공간 공통). 결과: true=연결됨, 'cleared'=해제, false=취소 */
+  /* 연결 창 (교안 허브·편집기·DPV 공통). 결과: true=연결됨, 'cleared'=해제, false=취소 */
   connect(opts) {
     opts = opts || {};
     return new Promise(done => {
@@ -1182,8 +1182,8 @@ const GH = {
       <h3>${linked ? 'GitHub 연결 — 연결되어 있습니다' : 'GitHub 저장소에 바로 저장'}</h3>
       ${linked ? `<div class="gh-state" id="ghState">이 기기는 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 에 연결되어 있습니다. <span id="ghStateMsg">연결 상태를 확인하는 중…</span></div>` : ''}
       ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ui-warn-fg)">${esc(opts.reason)}</p>` : ''}
-      ${opts.expired ? '' : linked ? `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">저장할 때마다 이 저장소에 커밋이 쌓입니다. 발표와 문서가 같은 연결을 씁니다. 토큰을 바꾸려면 아래에 새 토큰을 붙여넣고 [바꾸기], 그대로 두려면 [닫기].</p>` : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
-      그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 발표와 문서가 함께 씁니다.</p>`}
+      ${opts.expired ? '' : linked ? `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">저장할 때마다 이 저장소에 커밋이 쌓입니다. PRESENTATION과 DOCUMENT가 같은 연결을 씁니다. 토큰을 바꾸려면 아래에 새 토큰을 붙여넣고 [바꾸기], 그대로 두려면 [닫기].</p>` : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
+      그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 PRESENTATION과 DOCUMENT가 함께 씁니다.</p>`}
       <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1;min-width:0"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1;min-width:0"></div>
       <div class="row"><label style="width:70px" for="ghToken">토큰</label><input type="password" id="ghToken" placeholder="${linked ? '바꿀 때만: 새 토큰 붙여넣기' : 'github_pat_… 또는 ghp_… 붙여넣기'}" value="" style="flex:1;min-width:0" autocomplete="off"></div>
       <details class="gh-adv"><summary>고급 설정 (보통은 그대로 두세요)</summary>

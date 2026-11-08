@@ -400,7 +400,7 @@
       <section><h4>파일</h4><p><b>decks/</b> 교안 1개 = JSON 파일 1개</p><p><b>assets/</b> 이미지 파일 · 모두 Git 으로 관리됩니다.</p>
         <p>GitHub Pages 주소로 열면 어디서나 발표할 수 있고, 토큰을 연결하면 편집·저장도 됩니다.</p></section>
       <section><h4>편리한 기능</h4><p>편집기에서 이미지를 붙여넣기(<kbd>Ctrl+V</kbd>)하거나 끌어다 놓으면 바로 들어갑니다.</p>
-        <p>PowerPoint 파일(.pptx)을 이 화면에 끌어다 놓으면 교안으로 바뀝니다. 앱으로 설치했으면 탐색기에서 [연결 프로그램 → 업무 공간] 으로 열 수도 있습니다.</p></section>
+        <p>PowerPoint 파일(.pptx)을 이 화면에 끌어다 놓으면 교안으로 바뀝니다. 앱으로 설치했으면 탐색기에서 [연결 프로그램 → DPV] 으로 열 수도 있습니다.</p></section>
     </div><div class="actions"><a class="btn" href="shortcuts.html">단축키 설명서</a><button class="btn ink" data-ok autofocus>닫기</button></div>`;
     m.querySelector('[data-ok]').onclick = () => close(true);
   });
@@ -469,7 +469,7 @@
     if (!f) { toast('PowerPoint 파일(.pptx)이나 교안 파일(.json)을 놓아 주세요', 4000); return; }
     await importFile(f);
   });
-  // 앱으로 설치한 뒤 탐색기에서 .pptx 를 [연결 프로그램 → 업무 공간] 으로 열면 여기로 파일이 넘어옴
+  // 앱으로 설치한 뒤 탐색기에서 .pptx 를 [연결 프로그램 → DPV] 으로 열면 여기로 파일이 넘어옴
   if ('launchQueue' in window) window.launchQueue.setConsumer(async (p) => {
     if (!p.files || !p.files.length) return;
     try { await importFile(await p.files[0].getFile()); } catch (e) { tell('파일을 열 수 없습니다', e.message); }

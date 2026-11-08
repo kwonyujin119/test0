@@ -1,4 +1,4 @@
-/* 업무 공간 — 입장 모드 (게스트 · 관리자)
+/* DPV — 입장 모드 (게스트 · 관리자)
    첫 화면(index.html)에서 고른 모드를 이 기기(localStorage)에 기억한다.
    · 게스트: 보기만 — 교안 목록 · 발표 · 문서 열람. 편집 화면과 저장 단추를 감추고, 저장·업로드 API 호출을 막는다.
    · 관리자: 접속코드를 맞히면 편집 가능. 코드는 소금을 섞은 SHA-256 해시로만 비교한다 (코드 자체는 어디에도 쓰여 있지 않다).
@@ -89,7 +89,7 @@ const Access = {
     });
   },
 };
-/* 선 아이콘 추가 (common.js 의 ICONS 에 더함 — 문서·첫 화면에서 씀). 화살표는 common.js 의 back · arrowRight */
+/* 선 아이콘 추가 (common.js 의 ICONS 에 더함 — DOCUMENT·첫 화면에서 씀). 화살표는 common.js 의 back · arrowRight */
 if (typeof ICONS !== 'undefined') Object.assign(ICONS, {
   file: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/>',
   filePlus: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/><path d="M12 11v6"/><path d="M9 14h6"/>',
