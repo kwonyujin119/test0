@@ -1,4 +1,4 @@
-/* 한글 작업장 저장소
+/* 문서 저장소
    1) 내 PC 파일 — 열고, 같은 파일에 덮어쓰기(크롬·엣지) 또는 내려받기
    2) 임시 저장 — 이 브라우저(IndexedDB)에 자동 보관, 창이 닫혀도 복구
    3) 문서함 — GitHub 저장소 hwp/ 폴더에 "암호화해서" 보관 (저장소가 공개라도 내용·파일명은 암호 없이 볼 수 없음) */
@@ -115,9 +115,9 @@ const HwpStore = (() => {
       const k0 = await derive(pass, salt);
       if (await boxInfo()) return unlock1(pass, remember); // 그 사이 다른 기기·창에서 만들어졌으면 그것을 씀
       key = k0;
-      info = { v: 1, salt: b64(salt), check: b64(await seal(enc.encode('hwp-ws-ok'), DIR + '/box.json')), note: '한글 작업장 문서함 — 내용은 암호화되어 있습니다' };
+      info = { v: 1, salt: b64(salt), check: b64(await seal(enc.encode('hwp-ws-ok'), DIR + '/box.json')), note: '문서함 — 내용은 암호화되어 있습니다' };
       const idx = b64(await seal(enc.encode('[]'), DIR + '/index.bin'));
-      await GH.commit('한글 작업장 문서함 만들기', [{ path: DIR + '/box.json', content: JSON.stringify(info, null, 1) }, { path: DIR + '/index.bin', base64: idx }]);
+      await GH.commit('문서함 만들기', [{ path: DIR + '/box.json', content: JSON.stringify(info, null, 1) }, { path: DIR + '/index.bin', base64: idx }]);
     } else {
       const k = await derive(pass, unb64(info.salt));
       const ok = dec.decode(await open(unb64(info.check), DIR + '/box.json', k)); if (ok !== 'hwp-ws-ok') throw new Error('암호가 맞지 않습니다');
@@ -146,17 +146,17 @@ const HwpStore = (() => {
     const i = items.findIndex(x => x.id === id), rec = { id, name, size: data.length, modified: now, device: device || '' };
     if (preview != null) rec.preview = String(preview).slice(0, 400); // 첫 화면 카드의 종이 미리보기 글
     if (i >= 0) items[i] = Object.assign(items[i], rec); else items.push(Object.assign({ created: now }, rec));
-    await GH.commit('한글 작업장 문서함 갱신', [{ path: `${DIR}/${id}.bin`, base64: b64(await seal(data, `${DIR}/${id}.bin`)) }, { path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
+    await GH.commit('문서함 갱신', [{ path: `${DIR}/${id}.bin`, base64: b64(await seal(data, `${DIR}/${id}.bin`)) }, { path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
     return id;
   }
   async function remove(id) {
     const items = (await list()).filter(x => x.id !== id);
-    await GH.commit('한글 작업장 문서함 갱신', [{ path: `${DIR}/${id}.bin`, delete: true }, { path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
+    await GH.commit('문서함 갱신', [{ path: `${DIR}/${id}.bin`, delete: true }, { path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
   }
   async function rename(id, name) {
     const items = await list(); const it = items.find(x => x.id === id); if (!it) return;
     it.name = name;
-    await GH.commit('한글 작업장 문서함 갱신', [{ path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
+    await GH.commit('문서함 갱신', [{ path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
   }
 
   return {

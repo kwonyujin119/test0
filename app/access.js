@@ -89,7 +89,7 @@ const Access = {
     });
   },
 };
-/* 선 아이콘 추가 (common.js 의 ICONS 에 더함 — 한글 작업장·첫 화면에서 씀). 화살표는 common.js 의 back · arrowRight */
+/* 선 아이콘 추가 (common.js 의 ICONS 에 더함 — 문서·첫 화면에서 씀). 화살표는 common.js 의 back · arrowRight */
 if (typeof ICONS !== 'undefined') Object.assign(ICONS, {
   file: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/>',
   filePlus: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/><path d="M12 11v6"/><path d="M9 14h6"/>',

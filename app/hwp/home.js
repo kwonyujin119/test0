@@ -1,10 +1,10 @@
-/* 한글 작업장 — 첫 화면
-   교안 작업장(gyoan.html)과 같은 구조: 왼쪽 레일(분류 · 도구) · 위 도구 줄(검색 · 정렬 · 격자/목록) · 가운데 "이어서 작업"(가장 최근 문서의 큰 종이 미리보기)
+/* 문서 — 첫 화면
+   발표(gyoan.html)과 같은 구조: 왼쪽 레일(분류 · 도구) · 위 도구 줄(검색 · 정렬 · 격자/목록) · 가운데 "이어서 작업"(가장 최근 문서의 큰 종이 미리보기)
    · 아래 "다른 문서" 격자 · best 문서 격자.
    문서 목록은 문서함(GitHub 에 암호로 잠근 문서)과 이 기기 임시본(저장하지 않고 닫은 문서)을 한 줄로 합친 것이다.
    문서함 문서에 임시본이 남아 있으면 한 카드로 보이고 "저장 안 한 작업본" 표시가 붙는다(열면 임시본을 연다).
    카드의 종이에는 문서의 첫 문단 몇 개(preview)가 보인다 — 저장할 때 기록해 둔 글이라 파일을 다시 열지 않아도 된다.
-   편집 화면 위에 덮이는 층이라 문서를 열어 둔 채로도 드나들 수 있다 (머리 줄 [한글 작업장] ↔ [편집으로 돌아가기]).
+   편집 화면 위에 덮이는 층이라 문서를 열어 둔 채로도 드나들 수 있다 (머리 줄 [문서] ↔ [편집으로 돌아가기]).
    꾸밈은 app/ui.css 의 허브 클래스(.shell .rail .hub .menu .seg …)와 app/hwp/hwp.css 의 .hm-* .doc-* 를 쓴다.
    문서를 열고 저장하는 일은 ui.js 가 window.__hwp 로 내놓은 함수를 부른다. */
 'use strict';
@@ -74,7 +74,7 @@ const HwpHome = (() => {
     b.style.display = '';
     const on = !!(GH.cfg && GH.token);
     b.innerHTML = on ? `${icon('link', 17)}<span>GitHub</span><em>연결됨</em>` : `${icon('link', 17)}<span>GitHub 연결</span>`;
-    b.title = on ? `GitHub 저장소 ${GH.cfg.owner}/${GH.cfg.repo} 에 연결되어 있습니다 — 누르면 상태 확인 · 토큰 바꾸기` : 'GitHub 저장소에 문서함·best 문서를 올리도록 토큰 연결 (교안 작업장과 같은 연결)';
+    b.title = on ? `GitHub 저장소 ${GH.cfg.owner}/${GH.cfg.repo} 에 연결되어 있습니다 — 누르면 상태 확인 · 토큰 바꾸기` : 'GitHub 저장소에 문서함·best 문서를 올리도록 토큰 연결 (발표와 같은 연결)';
   }
 
   /* ---------- 도구 줄 아래 한 줄 알림: 지금 어디에 저장되는지 (문서 자리에 같은 안내 판이 보이면 줄임) ---------- */
@@ -234,7 +234,7 @@ const HwpHome = (() => {
     if (loading) { body.replaceChildren(ghosts(5)); return false; }
     if (q) { body.replaceChildren(empty(`<b>"${esc(kw)}" 이(가) 들어간 문서가 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`)); return false; }
     const boxPanel = () => {
-      if (box.state === 'noconn') return panel('link', '<b>문서함은 GitHub 연결이 있어야 씁니다.</b>', '토큰을 한 번 넣고 문서함 암호를 정하면, 문서가 암호로 잠겨 보관되고 집·사무실·휴대폰 어디서나 같은 문서를 엽니다 (교안 작업장과 같은 연결).', [['GitHub 연결', 'link', unlock]]);
+      if (box.state === 'noconn') return panel('link', '<b>문서함은 GitHub 연결이 있어야 씁니다.</b>', '토큰을 한 번 넣고 문서함 암호를 정하면, 문서가 암호로 잠겨 보관되고 집·사무실·휴대폰 어디서나 같은 문서를 엽니다 (발표와 같은 연결).', [['GitHub 연결', 'link', unlock]]);
       if (box.state === 'locked') return panel('lock', '<b>문서함이 잠겨 있습니다.</b>', '암호를 입력하면 문서가 여기에 바로 보입니다.', [['문서함 열기', 'unlock', unlock]]);
       if (box.state === 'err') return panel('info', '<b>문서함을 읽지 못했습니다.</b>', esc(box.err), [['다시 시도', 'redo', loadBox]]);
       return null;
@@ -325,7 +325,7 @@ const HwpHome = (() => {
 
   /* ---------- 사용 안내 ---------- */
   function guideDialog() {
-    U().dialog(icon('help', 16) + '한글 작업장 사용 안내', `<div class="hm-guide">
+    U().dialog(icon('help', 16) + '문서 사용 안내', `<div class="hm-guide">
       <section><h4>문서는 어디에 있나</h4><p><b>문서함</b> — GitHub 저장소에 암호로 잠가 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 열고 저장합니다.</p><p><b>저장 안 한 작업본</b> — 편집 중인 내용은 이 브라우저에 자동으로 임시 저장됩니다. 창을 닫아도 첫 화면에서 이어서 엽니다.</p><p><b>내 PC 파일</b> — .hwpx 파일을 열면 같은 파일에 바로 저장됩니다(크롬·엣지). 사무실 한글에서 그대로 열립니다.</p></section>
       <section><h4>best 문서</h4><p>잘 만든 hwpx 를 올려 두면 레퍼런스로 쌓입니다. <b>바탕으로 새 문서</b>로 그 서식 위에서 바로 시작하고, <b>구조</b>에서 스타일·글꼴·표 구성을 봅니다.</p><p>올릴 때 메모와 꼬리표(공문 · 보고서 …)를 달아 두면 검색이 편합니다.</p></section>
       <section><h4>편리한 기능</h4><p>이 화면에 .hwpx 파일을 끌어다 놓으면 바로 열립니다. <kbd>/</kbd> 로 검색, <kbd>Esc</kbd> 로 편집 화면으로 돌아갑니다.</p><p>한글과 같은 단축키를 씁니다 — <kbd>Alt</kbd>+<kbd>L</kbd> 글자 모양, <kbd>Alt</kbd>+<kbd>T</kbd> 문단 모양, <kbd>F7</kbd> 편집 용지, <kbd>F1</kbd> 전체 보기.</p><p><b>.hwp</b>(옛 형식)는 한글에서 <b>다른 이름으로 저장 → 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 여세요.</p></section>

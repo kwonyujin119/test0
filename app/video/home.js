@@ -1,4 +1,4 @@
-/* 영상 작업장 — 첫 화면 (교안 작업장과 같은 구성)
+/* 영상 — 첫 화면 (발표와 같은 구성)
    왼쪽: 새 영상 · 모든 영상 · 최근 7일 · 다른 기기에서 · 아직 안 올라감 / 파일 가져오기 · 녹화로 시작 · 다른 기기와 연결
    가운데: 가장 최근에 고친 영상 (이어서 작업) · 아래: 다른 영상
    프로젝트는 이 기기 브라우저(IndexedDB)에 있다. 연결을 켰으면 비공개 저장소의 목록도 함께 보여 준다.
@@ -141,7 +141,7 @@
     if (none) {
       empty.innerHTML = kw ? `<b>"${esc(kw)}" 이(가) 들어간 영상이 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`
         : filter === 'week' ? '<b>최근 7일 동안 고친 영상이 없습니다</b>'
-          : filter === 'remote' ? `<b>다른 기기에서 새로 올린 영상이 없습니다</b><span>${remoteErr ? esc(remoteErr) : '다른 기기에서 영상 작업장을 열면 남아 있던 영상이 저절로 올라옵니다.'}</span>`
+          : filter === 'remote' ? `<b>다른 기기에서 새로 올린 영상이 없습니다</b><span>${remoteErr ? esc(remoteErr) : '다른 기기에서 영상 화면을 열면 남아 있던 영상이 저절로 올라옵니다.'}</span>`
             : `<b>첫 영상을 만들어 보세요</b><span>영상 · 사진 · 소리 파일을 가져오거나 화면을 녹화해 시작합니다.</span><div class="vh-row"><button class="btn ink" data-empty="import">${icon('import')}파일 가져오기</button><button class="btn" data-empty="rec">${icon('record')}녹화로 시작</button></div>`;
       empty.querySelectorAll('[data-empty]').forEach(b => b.onclick = () => ({ import: () => $('fileImport').click(), rec: () => go('new=1&tab=rec') })[b.dataset.empty]());
     }

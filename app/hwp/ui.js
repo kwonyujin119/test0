@@ -1,4 +1,4 @@
-/* 한글 작업장 — 화면 · 단축키 · 대화상자 · 파일 */
+/* 문서 — 화면 · 단축키 · 대화상자 · 파일 */
 (() => {
   const doc = docEl();
   const H = () => W.doc.header;
@@ -99,7 +99,7 @@
   }
 
   /* ---------- 문서 열기/만들기 ---------- */
-  function setName(n) { W.name = n || '새 문서'; $id('docNameT').textContent = W.name; document.title = W.name + ' — 한글 작업장'; }
+  function setName(n) { W.name = n || '새 문서'; $id('docNameT').textContent = W.name; document.title = W.name + ' — 문서'; }
   function loadDoc(d, meta) {
     meta = meta || {};
     clearCells(true); hidePic();
@@ -248,7 +248,7 @@
       let done = false;
       const c = GH.cfg || GH.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main' };
       const linked = !!GH.token && !opts.expired; // 이미 연결됨 → 상태를 보여 주고, 토큰 칸은 바꿀 때만
-      dialog(linked ? '문서함 연결 (GitHub) — 연결되어 있습니다' : '문서함 연결 (GitHub)', `${linked ? `<div class="info" style="margin-bottom:10px"><b>이 기기는 GitHub 저장소 ${escH(c.owner)}/${escH(c.repo)} 에 연결되어 있습니다.</b> 교안 작업장과 같은 연결입니다. 토큰을 바꿀 때만 아래에 새 토큰을 넣고 [바꾸기], 그대로 두려면 [취소].</div>` : ''}${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 토큰은 <b>이 기기에만</b> 기억되고 교안 작업장과 함께 씁니다 (교안 작업장에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
+      dialog(linked ? '문서함 연결 (GitHub) — 연결되어 있습니다' : '문서함 연결 (GitHub)', `${linked ? `<div class="info" style="margin-bottom:10px"><b>이 기기는 GitHub 저장소 ${escH(c.owner)}/${escH(c.repo)} 에 연결되어 있습니다.</b> 발표와 같은 연결입니다. 토큰을 바꿀 때만 아래에 새 토큰을 넣고 [바꾸기], 그대로 두려면 [취소].</div>` : ''}${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 토큰은 <b>이 기기에만</b> 기억되고 발표와 함께 씁니다 (발표에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
         <div class="grid1" style="margin-top:12px"><label>저장소</label><div style="display:flex;gap:6px;align-items:center"><input id="g_o" value="${escH(c.owner)}" aria-label="사용자"><span>/</span><input id="g_r" value="${escH(c.repo)}" aria-label="저장소"></div>
         <label for="g_t">토큰</label><input id="g_t" type="password" placeholder="${linked ? '바꿀 때만: 새 토큰 붙여넣기' : 'github_pat_… 붙여넣기'}" autocomplete="off"></div>
         <details class="howto"${opts.expired || !GH.token ? ' open' : ''}><summary>토큰 만드는 법</summary><ol>
@@ -1138,7 +1138,7 @@
   function helpDialog() {
     const row = (k, d) => `<tr><td>${k.split(' / ').map(x => x.split('+').map(y => `<kbd>${y}</kbd>`).join('+')).join(' ')}</td><td>${d}</td></tr>`;
     const sec = (t, rows) => `<h4>${t}</h4><table class="kb">${rows.map(r => row(r[0], r[1])).join('')}</table>`;
-    dialog('한글 작업장 단축키', `<div class="kbcols"><div>
+    dialog('문서 단축키', `<div class="kbcols"><div>
       ${sec('파일', [['Alt+N', '새 문서'], ['Alt+O / Ctrl+O', '불러오기'], ['Alt+S / Ctrl+S', '저장하기 (열어 둔 파일 또는 문서함)'], ['Alt+V', '다른 이름으로 저장'], ['Alt+P / Ctrl+P', '인쇄 · PDF 저장']])}
       ${sec('편집', [['Ctrl+Z', '되돌리기'], ['Ctrl+Shift+Z', '다시 실행'], ['Ctrl+X / Ctrl+C / Ctrl+V', '오려 두기 · 복사 · 붙이기'], ['Ctrl+Y', '한 줄 지우기'], ['Alt+Y', '커서부터 줄 끝까지 지우기'], ['Ctrl+Enter', '쪽 나누기'], ['Shift+Enter', '줄 나누기 (문단 안에서)'], ['Tab', '탭'], ['Shift+Tab', '커서 위치까지 내어쓰기'], ['Ctrl+F', '찾기'], ['Ctrl+H / Ctrl+F2', '찾아 바꾸기'], ['Ctrl+L', '다시 찾기'], ['Ctrl+F10', '문자표'], ['Alt+C', '모양 복사 (한 번 누르면 복사, 블록 잡고 다시 누르면 붙이기)'], ['Ctrl+← / Ctrl+→', '고른 그림 줄이기 · 키우기 (손잡이를 끌지 않고)']])}
       ${sec('입력', [['Ctrl+N , T', '표 만들기'], ['Ctrl+N , I', '그림 넣기'], ['Ctrl+N , P', '쪽 번호 매기기'], ['Ctrl+N , H', '머리말/꼬리말'], ['Ctrl+Alt+N , 글자', '위와 같음 (브라우저 탭에서 Ctrl+N 대신)'], ['F7', '편집 용지']])}
