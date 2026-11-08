@@ -26,7 +26,7 @@ html.admin [data-guest] { display: none !important; }
 .ws-head .brand { display: flex; align-items: center; gap: 14px; min-width: 0; padding: 0; }
 .ws-mark { width: 44px; height: 44px; border-radius: 10px; background: var(--ui-ink); color: var(--ui-on-ink); display: grid; place-items: center; font-size: var(--fs-xl); font-weight: 800; letter-spacing: 0; flex: none; }
 .ws-head h1 { margin: 0; font-size: var(--fs-2xl); line-height: var(--lh-2xl); letter-spacing: -.02em; }
-.ws-head .sub { margin-top: 2px; color: var(--ui-muted); font-size: var(--fs-md); line-height: var(--lh-md); }
+.ws-head .sub { margin-top: 2px; color: var(--ui-muted); font-size: var(--fs-md); line-height: var(--lh-md); word-break: keep-all; overflow-wrap: anywhere; }
 .ws-head .tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
 /* 입장: 배너 두 개 — 카드 전체가 누르는 자리 (제목의 단추를 카드 크기로 늘림) */

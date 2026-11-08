@@ -112,7 +112,7 @@
     $('btnLeave').onclick = () => { Access.leave(); showGate(); };
     tools.querySelector('.ws-chip').onclick = (ev) => { ev.preventDefault(); showGate(); };
     renderAppBox(); renderFoot();
-    liveDecks(); liveHwp(); liveVideo();
+    gen++; liveDecks(); liveHwp(); liveVideo();
   }
   $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
   $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };
@@ -120,7 +120,15 @@
 
   /* ---------- 카드의 지금 상태: 각 작업장이 이미 쓰는 저장소를 읽기만 함 ---------- */
   const stat = (id, parts) => { $(id).innerHTML = parts.filter(Boolean).join('<span class="dv" aria-hidden="true">·</span>'); };
-  const placeholder = (id, text) => { $(id).querySelector('.rl-title').textContent = text; };
+  /* 빈 칸으로 되돌림: 모드를 바꿔 다시 그릴 때 앞 모드의 링크가 남지 않게 */
+  const placeholder = (id, text) => {
+    const a = $(id);
+    a.className = 'resume-link empty'; a.removeAttribute('href'); a.removeAttribute('title');
+    a.innerHTML = '<span class="rl-text"><span class="rl-title"></span></span>';
+    a.querySelector('.rl-title').textContent = text;
+  };
+  /* showSpace 를 다시 부르면 앞서 읽던 결과는 버림 (늦게 끝난 읽기가 새 모드의 칸을 덮지 않게) */
+  let gen = 0;
   function resume(id, href, label, title, ic) {
     const a = $(id);
     a.className = 'resume-link'; a.href = href;
@@ -136,26 +144,31 @@
     try { const c = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (c && Date.now() - c.at < 6e5) return c; } catch (e) { }
     const cs = await GH.api('GET', `/commits?path=decks&per_page=5&sha=${enc(GH.cfg.branch)}`);
     if (!Array.isArray(cs) || !cs.length) return {};
-    const titles = cs.map(c => (/^교안 저장: (.+)$/m.exec(c.commit.message) || [])[1]).filter(Boolean);
-    const d = titles.map(t => list.find(x => x.name === t || x.title === t)).find(Boolean);
-    const r = { at: Date.now(), t: Date.parse(cs[0].commit.committer.date) || 0, name: d ? d.name : '', title: d ? (d.title || d.name) : (titles[0] || '') };
+    /* 시각과 제목은 같은 '교안 저장:' 커밋에서 (병합 커밋은 저장이 아님). 목록의 파일 이름과 맞으면 그 교안으로 바로 감 */
+    const saves = cs.map(c => ({ c, title: (/^교안 저장: (.+)$/m.exec(c.commit.message) || [])[1] })).filter(x => x.title);
+    const hit = saves.map(x => ({ ...x, d: list.find(d => d.name === x.title || d.title === x.title) })).find(x => x.d);
+    const pick = hit || saves[0] || { c: cs[0], title: '' };
+    const r = { at: Date.now(), t: Date.parse(pick.c.commit.committer.date) || 0, name: hit ? hit.d.name : '', title: hit ? (hit.d.title || hit.d.name) : pick.title };
     try { sessionStorage.setItem(KEY, JSON.stringify(r)); } catch (e) { }
     return r;
   }
   async function liveDecks() {
+    const g0 = gen;
+    stat('deckStat', ['교안 목록을 읽는 중…']); placeholder('deckResume', '최근 교안을 찾는 중…');
     try {
       await API.init();
       const list = await API.list();
-      if (!Array.isArray(list)) return;
+      if (g0 !== gen || !Array.isArray(list)) return;
       let latest = null, t = 0;
-      if (list.some(d => d.partial)) { const g = await ghLatest(list).catch(() => ({})); t = g.t || 0; if (g.title) latest = { name: g.name, title: g.title }; }
+      if (list.some(d => d.partial)) { const g = await ghLatest(list).catch(() => ({})); if (g0 !== gen) return; t = g.t || 0; if (g.title) latest = { name: g.name, title: g.title }; }
       else for (const d of list) { const x = when(d.modified); if (x > t) { t = x; latest = d; } }
       const drafts = Access.isAdmin ? list.filter(d => Draft.has(d.name)).length : 0;
       stat('deckStat', [list.length ? `교안 ${list.length}개` : '아직 교안이 없습니다', t ? `마지막 저장 ${fmtAgo(t)}` : '', drafts ? `<span class="dot" aria-hidden="true"></span>저장 안 한 작업본 ${drafts}개` : '']);
       if (!latest) { placeholder('deckResume', list.length ? '최근에 저장한 교안을 찾지 못했습니다' : (Access.isAdmin ? '첫 교안을 만들어 보세요' : '관리자가 만든 교안이 여기에 보입니다')); return; }
-      if (Access.isGuest) resume('deckResume', latest.name ? 'present.html?deck=' + enc(latest.name) : 'gyoan.html', '바로 발표', latest.title, 'play');
-      else resume('deckResume', latest.name ? 'editor.html?deck=' + enc(latest.name) : 'gyoan.html', '이어서 편집', latest.title, 'edit');
-    } catch (e) { stat('deckStat', ['교안 목록을 읽지 못했습니다']); placeholder('deckResume', '작업장을 열면 다시 읽습니다'); }
+      if (!latest.name) resume('deckResume', 'gyoan.html', '교안 목록에서 열기', latest.title, 'list'); // 커밋 제목만 알고 파일은 못 찾음
+      else if (Access.isGuest) resume('deckResume', 'present.html?deck=' + enc(latest.name), '바로 발표', latest.title, 'play');
+      else resume('deckResume', 'editor.html?deck=' + enc(latest.name), '이어서 편집', latest.title, 'edit');
+    } catch (e) { if (g0 === gen) { stat('deckStat', ['교안 목록을 읽지 못했습니다']); placeholder('deckResume', '작업장을 열면 다시 읽습니다'); } }
   }
 
   /* 이 기기의 IndexedDB 를 읽기만 함. 없는 저장소는 만들지 않음 (만들어 버리면 작업장이 처음 열 때 칸을 못 만든다) */
@@ -175,16 +188,20 @@
     });
   }
   async function liveHwp() {
+    const g0 = gen;
     if (Access.isGuest) { stat('hwpStat', ['hwpx 열람 · 인쇄 · PDF 저장']); placeholder('hwpResume', 'PC 의 hwpx 파일을 열어 봅니다'); return; }
+    stat('hwpStat', ['문서함 · best 문서 · 내 PC 파일']); placeholder('hwpResume', '저장하지 않고 닫은 문서가 없습니다');
     const drafts = (await idbAll('hwp-ws', 'drafts')).filter(d => d && d.name).sort((a, b) => (b.time || 0) - (a.time || 0));
-    if (!drafts.length) return;
+    if (g0 !== gen || !drafts.length) return;
     stat('hwpStat', [`<span class="dot" aria-hidden="true"></span>저장 안 한 문서 ${drafts.length}개`, `마지막 ${fmtAgo(drafts[0].time)}`]);
-    resume('hwpResume', 'hangul.html', '이어서 편집', drafts[0].name, 'doc');
+    resume('hwpResume', 'hangul.html', '작업본 목록에서 열기', drafts[0].name, 'doc'); // hangul.html 은 주소로 문서를 바로 열지 않음: 첫 화면 목록으로
   }
   async function liveVideo() {
+    const g0 = gen;
     if (Access.isGuest) { stat('videoStat', ['관리자 전용']); placeholder('videoResume', '관리자로 입장하면 쓸 수 있습니다'); return; }
+    stat('videoStat', ['컷 편집 · 화면 녹화 · 자동 자막']); placeholder('videoResume', '이 기기에서 만든 영상이 없습니다');
     const ps = (await idbAll('ws-video', 'projects')).filter(p => p && p.id).sort((a, b) => (b.updated || 0) - (a.updated || 0));
-    if (!ps.length) return;
+    if (g0 !== gen || !ps.length) return;
     let sync = {}, sent = {}; try { sync = JSON.parse(localStorage.getItem('ve:sync') || '{}') || {}; sent = (JSON.parse(localStorage.getItem('ve:syncState') || '{}') || {}).p || {}; } catch (e) { }
     const unsent = sync.on ? ps.filter(p => ((sent[p.id] || {}).rev || 0) < (p.updated || 0) && ((p.media || []).length || (p.clips || []).length)).length : 0;
     stat('videoStat', [`영상 ${ps.length}개`, unsent ? `${unsent}개 아직 안 올라감` : '', `마지막 편집 ${fmtAgo(ps[0].updated)}`]);

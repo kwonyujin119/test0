@@ -75,7 +75,7 @@ i[data-ic] { display: inline-flex; font-style: normal; }
 
 .btn {
   display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--ui-border);
-  background: var(--ui-btn); color: var(--ui-fg); cursor: pointer; white-space: nowrap; font-size: var(--fs-md); line-height: 1.2; font-weight: 500; user-select: none;
+  background: var(--ui-btn); color: var(--ui-fg); cursor: pointer; white-space: nowrap; line-height: 1.2; font-weight: 500; user-select: none; /* 글자 크기는 둘레를 따름 (발표 끝 화면 22px 등) */
   transition: background .12s, border-color .12s, color .12s, transform .08s, box-shadow .12s;
 }
 .btn:hover { background: var(--ui-hover); border-color: var(--ui-border2); }
@@ -706,7 +706,7 @@ body.print-mode .print-page .step-hidden { visibility: visible; }
   #btnProps { order: -1; }
   .modal { min-width: 0; width: calc(100vw - 24px); padding: 16px; }
   .design-cols { grid-template-columns: minmax(0, 1fr); gap: 4px; }
-  .modal > .actions { position: sticky; bottom: 0; margin: 14px -16px -16px; padding: 10px 16px 14px; background: var(--ui-panel); border-top: 1px solid var(--ui-border); } /* 긴 창에서도 [연결]·[닫기] 가 늘 보이게 */
+  .modal > .actions { position: sticky; bottom: -16px; margin: 14px -16px -16px; padding: 10px 16px 14px; background: var(--ui-panel); border-top: 1px solid var(--ui-border); } /* 긴 창에서도 [연결]·[닫기] 가 늘 보이게 */
   .layout-menu { grid-template-columns: repeat(2, 1fr); left: 8px !important; right: 8px; }
   .hub { padding: 24px 14px 60px; }
   .hub-tools input[type=search] { width: 100%; }
