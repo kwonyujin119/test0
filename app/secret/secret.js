@@ -1471,7 +1471,59 @@
   /* =====================================================================
      전략 브리핑 — 증권사 데일리 시황 · 투자전략 리포트 (briefing 브랜치의 strategy/)
      ===================================================================== */
-  const sui = { mode: 'daily', dates: null, date: '' };
+
+  /* ---------- 전략 요약 (AI 없이): 여러 증권사 리포트에 공통으로 많이 나온 문장 · 낱말 · 기업을 규칙으로 고름 ---------- */
+  const SUM_STOP = new Set('있는 있다 있음 대한 위한 따른 통해 이후 이번 지난 전일 금일 오늘 내일 관련 가운데 기록 대비 수준 정도 경우 이상 이하 중심 주요 최근 현재 향후 모두 일부 하는 했다 한다 되는 된다 것으로 에서 으로 대해 위해 전반 시황 마감 리포트 증권 코멘트 데일리 Daily Weekly 주간 주차'.split(' '));
+  const sumWords = t => [...new Set((String(t).match(/[A-Za-z][A-Za-z0-9&]{1,}|[가-힣]{2,}/g) || []).map(w => /^[가-힣]/.test(w) && w.length > 2 ? w.replace(/(은|는|이|가|을|를|의|에|와|과|로|으로|도|만|에서|까지|부터)$/, '') : w).filter(w => w.length >= 2 && !SUM_STOP.has(w)))];
+  const RISK = /우려|리스크|위험|부담|경계|하락|급락|약세|매도|투매|불확실|변동성|조정/;
+  const ACT = /비중|매수|관심|추천|Top\s*Picks|대응|분할|선별|유망|주목|편입|매력|저가|트레이딩|포트폴리오/i;
+  const gram2 = t => { const s = String(t).replace(/[^가-힣A-Za-z0-9]/g, ''); const o = new Set(); for (let i = 0; i < s.length - 1; i++) o.add(s.slice(i, i + 2)); return o; };
+  const jac2 = (a, b) => { let n = 0; for (const x of a) if (b.has(x)) n++; return n / (a.size + b.size - n || 1); };
+  function keyPoints(list, n, filter) {
+    const df = new Map(); for (const x of list) for (const w of sumWords(x.title + ' ' + x.summary)) df.set(w, (df.get(w) || 0) + 1);
+    const cand = [];
+    for (const x of list) for (let t of String(x.summary || '').split(/\n|(?<=[.다])\s+(?=[가-힣A-Z])/)) {
+      t = t.replace(/^[\s\-·•:▶►◆■□○●*]+/, '').replace(/\s+/g, ' ').trim();
+      if (t.length < 14 || t.length > 170 || (filter && !filter.test(t))) continue;
+      const ws = sumWords(t); if (ws.length < 3) continue;
+      const score = ws.reduce((a, w) => a + Math.max(0, (df.get(w) || 0) - 1), 0) / Math.sqrt(ws.length) + (/\d/.test(t) ? 0.6 : 0);
+      cand.push({ t, x, score, g: gram2(t), w: new Set(ws) });
+    }
+    cand.sort((a, b) => b.score - a.score);
+    const out = [];
+    for (const c of cand) {
+      const same = out.find(o => jac2(o.g, c.g) >= 0.32 || jac2(o.w, c.w) >= 0.3); // 글자 조각이나 낱말이 많이 겹치면 같은 내용
+      if (same) { if (!same.who.some(w => w.broker === c.x.broker)) same.who.push(c.x); continue; }
+      if (out.length < n) out.push({ t: c.t, g: c.g, w: c.w, who: [c.x] });
+    }
+    /* 여러 증권사가 함께 짚은 내용을 앞으로 */
+    return out.sort((a, b) => b.who.length - a.who.length);
+  }
+  function renderStratSum(d) {
+    const daily = d.daily || [], weekly = d.weekly || [];
+    const dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
+    $('sLead').innerHTML = `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 리포트 <b>${daily.length}개</b>와 최근 7일 주간 리포트 <b>${weekly.length}개</b>에서, 여러 증권사가 공통으로 많이 쓴 문장 · 낱말 · 기업을 규칙으로 골랐습니다. AI 토큰은 쓰지 않습니다. 원문 요약은 [일간 전략] · [주간 전략] 에 그대로 있습니다.`;
+    $('sKw').innerHTML = (d.dailyKeywords || []).length ? '<span>오늘의 핵심 말</span>' + d.dailyKeywords.map(k => `<b>${esc(k.word)} <em>${k.count}</em></b>`).join('') : '';
+    const extra = coExtra(), coCount = new Map();
+    for (const x of daily.concat(weekly)) for (const c of new Set(secFindCompanies(x.title + '\n' + x.summary, extra).map(c => (window.SEC_ALIAS || {})[c] || c))) coCount.set(c, (coCount.get(c) || 0) + 1); // 리포트 하나에 한 번만 셈
+    const cos = [...coCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 14);
+    const pts = (arr, cls) => arr.length ? `<ol class="sc-pts">${arr.map((p, i) => `<li class="${cls || ''}"><i>${i + 1}</i><span>${esc(p.t)}</span><span class="who">${p.who.length > 1 ? `${p.who.length}곳이 함께 짚음 · ` : ''}${p.who.slice(0, 4).map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.broker)}</a>`).join(' · ')}</span></li>`).join('')}</ol>` : '<p class="sc-fine" style="text-align:left">고를 만한 문장이 없습니다.</p>';
+    const core = keyPoints(daily, 7), risk = keyPoints(daily, 4, RISK), act = keyPoints(daily.concat(weekly), 12, ACT).filter(p => !RISK.test(p.t)).slice(0, 5), wk = keyPoints(weekly, 5);
+    $('sList').innerHTML = `<div class="sc-sum2">
+      <section class="sc-card wide"><h2>오늘 증권사들이 공통으로 짚은 것</h2><p class="sub">여러 리포트에 겹쳐 나온 낱말이 많은 문장 순 · 같은 내용을 쓴 증권사를 함께 표시</p>${pts(core)}</section>
+      <section class="sc-card"><h2>위험 요인</h2><p class="sub">우려 · 부담 · 변동성 · 매도 같은 말이 든 문장</p>${pts(risk, 'risk')}</section>
+      <section class="sc-card"><h2>전략 · 대응</h2><p class="sub">비중 · 매수 · 관심 · 대응 같은 말이 든 문장 (일간 + 주간)</p>${pts(act)}</section>
+      <section class="sc-card"><h2>많이 언급된 기업</h2><p class="sub">리포트 제목 · 요약에 나온 횟수 · 누르면 그 기업 노트로</p>${cos.length ? `<div class="sc-cos">${cos.map(([c, n]) => `<button type="button" data-sco="${esc(c)}">${esc(c)} <em>${n}</em></button>`).join('')}</div>` : '<p class="sc-fine" style="text-align:left">없음</p>'}</section>
+      <section class="sc-card"><h2>이번 주 큰 흐름</h2><p class="sub">최근 7일 주간 전략 리포트에서 · 자주 나온 말: ${(d.weeklyKeywords || []).slice(0, 6).map(k => esc(k.word)).join(', ') || '없음'}</p>${pts(wk)}</section>
+      <div class="wide" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="sumNote">${icon('edit', 15)}이 요약을 노트에 남기기</button><button class="btn ghost" id="sumAsk">${icon('sparkle', 15)}이 요약으로 내 종목 점검 받기 (AI)</button></div>
+    </div>`;
+    $('sList').querySelectorAll('[data-sco]').forEach(b => b.onclick = () => { nui.co = b.dataset.sco; show('notes'); });
+    const plain = () => [`[전략 요약 ${d.dailyDate || ''}]`, '핵심: ' + core.slice(0, 5).map(p => '- ' + p.t).join('\n'), '위험: ' + risk.map(p => '- ' + p.t).join('\n'), '대응: ' + act.map(p => '- ' + p.t).join('\n'), '많이 언급: ' + cos.map(([c, n]) => `${c}(${n})`).join(', ')].join('\n');
+    $('sumNote').onclick = () => editNote(null, ymdLocal(new Date()), plain() + '\n');
+    $('sumAsk').onclick = () => { show('chat'); send('오늘 증권사 전략 리포트를 규칙으로 요약한 내용이야. 이것을 바탕으로 내 보유 · 관심 종목(get_portfolio)과 나의 원칙에 맞춰 오늘 대응을 짧게 정리해 줘.\n\n' + plain()); };
+  }
+
+  const sui = { mode: 'sum', dates: null, date: '' };
   $('sMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; sui.mode = b.dataset.v; $('sMode').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderStrat(); };
   $('sReload').onclick = () => renderStrat(true);
   $('sDate').onchange = e => { sui.date = e.target.value; renderStrat(); };
@@ -1485,6 +1537,7 @@
     $('sDate').innerHTML = sui.dates.map(d => { const x = new Date(d + 'T00:00'); return `<option value="${d}"${d === sui.date ? ' selected' : ''}>${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}</option>`; }).join('');
     let d; try { d = await getBrief('strategy/' + sui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
     if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 전략 브리핑 파일이 없습니다.</div>'; return; }
+    if (sui.mode === 'sum') { renderStratSum(d); return; }
     const list = sui.mode === 'weekly' ? d.weekly || [] : d.daily || [], kw = sui.mode === 'weekly' ? d.weeklyKeywords || [] : d.dailyKeywords || [];
     const t = d.generatedAt ? new Date(d.generatedAt) : null, dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
     $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. 매일 07:10 쯤 (08:30 보충).`;
