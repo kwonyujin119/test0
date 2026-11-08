@@ -33,7 +33,7 @@
     .doc table { font-size: 13px; }
     .doc th, .doc td { padding: 7px 6px; }
     .doc td:first-child { width: 30%; }
-    .doc td:nth-child(3), .doc th:nth-child(3) { display: none; } /* 휴대폰: PowerPoint 비교 칸은 빼고 두 칸만 */
+    .doc td:nth-child(3), .doc th:nth-child(3), .doc .pp-note { display: none; } /* 휴대폰: PowerPoint 비교 칸(과 그 ● 설명)은 빼고 두 칸만 */
   }
   @media print {
     body { background: #fff; color: #111; }
@@ -59,7 +59,7 @@
   </div>
   <h1>단축키 설명서</h1>
   <p class="lead">PowerPoint 와 같은 키 배치입니다. PowerPoint 에서 쓰던 손버릇 그대로 쓰시면 됩니다.
-  <span class="same">●</span> 표시는 PowerPoint 와 동일한 키, 나머지는 이 도구에서 추가로 쓸 수 있는 키입니다.
+  <span class="pp-note"><span class="same">●</span> 표시는 PowerPoint 와 동일한 키, 나머지는 이 도구에서 추가로 쓸 수 있는 키입니다.</span>
   발표 중에는 <kbd>F1</kbd> 또는 <kbd>?</kbd>, 편집 중에는 <kbd>F1</kbd> 을 누르면 화면 안에서 바로 볼 수 있습니다.</p>
   <div class="toc">
     <a href="#present">발표 (슬라이드 쇼)</a><a href="#remote">프레젠터 리모컨</a><a href="#notes">발표자 보기</a>

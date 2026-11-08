@@ -215,7 +215,7 @@
           <button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`}
         </div>
       </div>`;
-    const meta = () => { const m = resume.querySelector('[data-m]'), t = relTime(timeOf(d)); m.textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', t ? t + ' 저장' : ''].filter(Boolean).join(' · '); m.title = d.modified ? '마지막으로 저장한 때: ' + d.modified : ''; };
+    const meta = () => { const m = resume.querySelector('[data-m]'), t = relTime(timeOf(d)); m.textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', t ? t + ' 저장' : ''].filter(Boolean).join(' · '); m.title = fmtWhen(d.modified) ? '마지막으로 저장한 때: ' + fmtWhen(d.modified) : ''; };
     meta();
     const main = resume.querySelector('.resume-main');
     main.onclick = () => openEditor(d.name);
@@ -246,7 +246,7 @@
     c.appendChild(th);
     const body = document.createElement('div'); body.className = 'deck-body';
     /* 카드 아래 줄: 슬라이드 수 · 저장한 때 · (목록 보기에서) 파일 이름 · 이 기기에 저장 안 한 작업본 */
-    const meta = (state) => { const t = relTime(timeOf(d)); return `<span title="${d.modified ? '마지막으로 저장한 때: ' + esc(d.modified) : ''}">${state || (d.slides === '' ? '불러오는 중…' : `슬라이드 ${d.slides}장`)}${t && !state ? ' · ' + esc(t) : ''}</span><span class="deck-file">${esc(d.name)}.json</span>`
+    const meta = (state) => { const t = relTime(timeOf(d)); return `<span title="${fmtWhen(d.modified) ? '마지막으로 저장한 때: ' + esc(fmtWhen(d.modified)) : ''}">${state || (d.slides === '' ? '불러오는 중…' : `슬라이드 ${d.slides}장`)}${t && !state ? ' · ' + esc(t) : ''}</span><span class="deck-file">${esc(d.name)}.json</span>`
       + (!GUEST && Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : ''); };
     body.innerHTML = `<div class="deck-text"><div class="deck-title" title="${esc(d.title)}">${esc(d.title)}</div><div class="deck-meta">${meta()}</div></div>
       <div class="deck-actions"><button class="btn sm" data-a="present">${icon('play', 14)}발표</button>${GUEST ? '' : `<button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button>`}</div>
@@ -442,7 +442,7 @@
     try {
       toast('PPT 파일을 읽는 중…', 60000);
       await loadScript('app/pptsym.js'); await loadScript('app/pptin.js');
-      if (!(await freshList())) { const tt = document.getElementById('toast'); if (tt) tt.classList.remove('show'); return; } // 'PPT 파일을 읽는 중…' 이 1분 동안 남지 않게
+      if (!(await freshList())) return; // 실패 알림(toast)이 'PPT 파일을 읽는 중…' 을 바로 바꿔 씀
       const canVideo = API.mode === 'server' || (API.mode === 'github' && !!GH.token);
       const r = await PPTIN.toDeck(f, {
         stage: (blob, name) => API.stage(blob, name),

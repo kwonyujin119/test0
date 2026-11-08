@@ -57,7 +57,8 @@
     S.cur = clamp(at == null ? h.cur : at, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
     S.sel = S.sel.filter(id => elById(id)); S.editing = null; hideTextToolbar();
     renderAll();
-    if (S.savedSnap && !S.deletedElsewhere && snapOf(S.deck) === S.savedSnap) markClean(); else markDirty(); // 저장한 모습까지 되돌렸으면 다시 '저장됨'
+    // 저장한 모습까지 되돌렸으면 다시 '저장됨'. 저장하는 중에는 파일이 곧 바뀌므로 따지지 않음 (저장이 끝난 뒤 afterSaved 가 정함)
+    if (!saving && S.savedSnap && !S.deletedElsewhere && snapOf(S.deck) === S.savedSnap) markClean(); else markDirty();
   }
   /* 저장한 모습(저장 시각은 빼고) — 되돌리기로 그 모습에 닿았는지 알아보는 데 씀. 아주 큰 교안은 메모리를 아끼려고 건너뜀 */
   function snapOf(d) { const s = JSON.stringify(Object.assign({}, d, { modified: '' })); return s.length < 4e6 ? s : null; }
@@ -115,13 +116,15 @@
     if (!cur) return S.deletedElsewhere || confirm('저장소에 이 교안이 없습니다 — 다른 곳에서 지웠거나 이름을 바꾼 것 같습니다.\n저장하면 같은 이름으로 다시 만들어집니다.\n\n저장할까요?');
     return confirm(`이 교안이 다른 곳(다른 기기 · 다른 탭)에서 ${when(cur)}에 저장되었습니다.\n` + (S.base ? `지금 화면은 그 전(${when(S.base)}) 저장본에서 시작한 것입니다.\n` : '') + `\n지금 저장하면 그쪽에서 고친 내용을 덮어씁니다.\n\n확인: 내 것으로 덮어쓰기\n취소: 저장하지 않음 — 내 작업은 이 기기에 임시로 남고, 화면을 새로 고치면 어느 쪽으로 열지 고를 수 있습니다`);
   }
-  /* 교안 파일이 저장된 직후. r0 = 저장을 시작할 때의 S.rev (그 뒤로 더 고쳤으면 '저장 안 됨' 으로 남김) */
+  /* 교안 파일이 저장된 직후. r0 = 저장을 시작할 때의 S.rev (그 뒤로 더 고쳤으면 '저장 안 됨' 으로 남김)
+     저장하는 동안 고쳤으면 파일에 어느 모습이 들어갔는지 알 수 없으므로(GitHub 은 그림을 올린 뒤에 교안을 씀)
+     savedSnap 을 비움 — 되돌리기로 옛 모습에 닿아도 '저장됨' 이라고 잘못 알리지 않게 */
   function afterSaved(r0) {
     S.base = S.deck.modified || S.base;
     S.deletedElsewhere = false;
     if (hubBus) hubBus.postMessage({ type: 'saved', name: S.name, tab: TAB });
     if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); clearTimeout(saveTimer); Draft.clear(S.name); S.savedSnap = snapOf(S.deck); }
-    else draftPut(); // 저장하는 동안 더 고친 것: 임시 작업본의 출발점을 방금 저장본으로
+    else { S.savedSnap = null; draftPut(); } // 저장하는 동안 더 고친 것: 임시 작업본의 출발점을 방금 저장본으로
     showSaveState();
   }
   async function save1() {
