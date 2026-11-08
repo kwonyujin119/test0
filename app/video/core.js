@@ -370,5 +370,7 @@ const VE = window.VE = {};
     return r.els[slot] = e;
   };
   VE.download = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); };
+  /* 부품(영어)의 긴 오류문은 그대로 보이지 않게 쉬운 말로 */
+  VE.niceErr = e => { const m = String(e && e.message || e || ''); if (/[가-힣]/.test(m) && m.length < 160) return m; return '처리 부품에서 오류가 났습니다. 다시 해 보고, 계속되면 PC 의 크롬·엣지에서 해 주세요.'; };
   VE.safeName = s => String(s || '영상').replace(/[\\/:*?"<>|]+/g, ' ').trim() || '영상';
 })();

@@ -134,7 +134,7 @@
     try {
       for (let i = 0; i < mids.length; i++) await VE.transcribe(mids[i], { quality: textUi.quality, lang: textUi.lang || null, signal: ac.signal, onProg: p => { job.text.stage = p.stage + (mids.length > 1 ? ` (${i + 1}/${mids.length})` : ''); job.text.ratio = p.ratio; job.text.eta = p.eta; if (tab === 'text') updateProgress('text'); } });
       toast('자막을 만들었습니다', 2400);
-    } catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('자막을 만들지 못했습니다: ' + e.message, 5000); } }
+    } catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('자막을 만들지 못했습니다: ' + VE.niceErr(e), 5000); } }
     delete job.text; if (tab === 'text') renderTab();
   }
   /* 진행 막대만 고침 */
@@ -214,7 +214,7 @@
   async function runFace() {
     if (job.face) return; if (!VE.needFaceJobs().length) return; const ac = new AbortController(); job.face = { stage: '얼굴 위치 찾는 중', ratio: 0, abort: ac }; if (tab === 'face') renderTab();
     try { await VE.runFaceJobs(p => { job.face.ratio = p.ratio; job.face.eta = p.eta; if (tab === 'face') updateProgress('face'); VE.player.invalidate(); }, ac.signal); toast('얼굴 위치를 모두 찾았습니다', 2200); }
-    catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('얼굴을 찾지 못했습니다: ' + e.message, 5000); } }
+    catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('얼굴을 찾지 못했습니다: ' + VE.niceErr(e), 5000); } }
     delete job.face; if (tab === 'face') renderTab(); VE.player.invalidate();
   }
   VE.runFace = runFace;
@@ -301,14 +301,14 @@
     if (needLoad) { job.model = { stage: '목소리 모델 받는 중', ratio: 0 }; }
     renderTab();
     try { await VE.tts.preview(id, p => { if (job.model) { job.model.stage = p.stage; job.model.ratio = p.ratio; if (tab === 'voice') updateProgress('model'); } }); }
-    catch (e) { console.error(e); toast('목소리를 들려주지 못했습니다: ' + e.message, 5000); }
+    catch (e) { console.error(e); toast('목소리를 들려주지 못했습니다: ' + VE.niceErr(e), 5000); }
     delete job.model; if (voiceUi.playing === id) voiceUi.playing = ''; if (tab === 'voice') renderTab();
   }
   async function runDub() {
     if (job.dub) return; if (!await askModel()) return;
     const ac = new AbortController(); job.dub = { stage: '준비 중', ratio: 0, abort: ac }; renderTab();
     try { await VE.dub.run({ signal: ac.signal, onProg: p => { if (!job.dub) return; job.dub.stage = p.stage; job.dub.ratio = p.ratio; job.dub.eta = p.eta; if (tab === 'voice') updateProgress('dub'); } }); VE.player.invalidate(); toast('AI 목소리로 바꿨습니다. 재생해서 들어 보세요.', 2600); }
-    catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('AI 목소리를 만들지 못했습니다: ' + e.message, 5000); } else toast('멈췄습니다. 만든 문장까지는 남겨 두었습니다.', 2600); }
+    catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('AI 목소리를 만들지 못했습니다: ' + VE.niceErr(e), 5000); } else toast('멈췄습니다. 만든 문장까지는 남겨 두었습니다.', 2600); }
     delete job.dub; if (tab === 'voice') renderTab();
   }
   async function runNarr() {
@@ -317,7 +317,7 @@
     try {
       const clip = await VE.narrate(text, v.aiVoice || 'F1', { steps: v.aiSteps || 5, speed: +(1.05 * (v.aiSpeed || 1)).toFixed(3), at: VE.player.t, signal: ac.signal, onProg: p => { if (!job.narr) return; job.narr.stage = p.stage; job.narr.ratio = p.ratio; job.narr.eta = p.eta; if (tab === 'voice') updateProgress('narr'); } });
       VE.select({ type: 'music', id: clip.id }); toast(`${VE.fmtT(clip.out - clip.in)} 길이의 소리를 타임라인 아래 소리 줄에 넣었습니다`, 3000);
-    } catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('글을 읽지 못했습니다: ' + e.message, 5000); } }
+    } catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('글을 읽지 못했습니다: ' + VE.niceErr(e), 5000); } }
     delete job.narr; if (tab === 'voice') renderTab();
   }
   document.addEventListener('click', ev => { const b = ev.target.closest('[data-act]'); if (!b) return; if (b.dataset.act === 'stopDub' && job.dub) job.dub.abort.abort(); if (b.dataset.act === 'stopNarr' && job.narr) job.narr.abort.abort(); });

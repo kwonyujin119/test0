@@ -90,7 +90,7 @@
         fillIcons(bg); bg.querySelector('#xClose').onclick = () => { bg.remove(); if (resultUrl) URL.revokeObjectURL(resultUrl); };
       } catch (e) {
         if (e.name === 'AbortError' || /cancel/i.test(e.name || '')) { toast('내보내기를 그만뒀습니다', 2200); render(); return; }
-        console.error(e); bg.innerHTML = `<div class="modal ve-export"><h3>만들지 못했습니다</h3><div class="ve-note warn">${esc(e.message || String(e))}</div><div class="actions"><button class="btn" id="xBack">돌아가기</button></div></div>`; bg.querySelector('#xBack').onclick = render;
+        console.error(e); bg.innerHTML = `<div class="modal ve-export"><h3>만들지 못했습니다</h3><div class="ve-note warn">${esc(VE.niceErr(e))}</div><div class="actions"><button class="btn" id="xBack">돌아가기</button></div></div>`; bg.querySelector('#xBack').onclick = render;
       }
     };
     document.body.appendChild(bg); render();

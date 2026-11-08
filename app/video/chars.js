@@ -46,9 +46,9 @@
     });
     photoWait.push(o.p); return o.p;
   }
-  function photoChar(id, name, file, a) {
+  function photoChar(id, name, file, a, group) {
     return {
-      name, group: '가상 인물', cover: 1, photo: true, load: () => loadPhoto(id, file, a),
+      name, group: group || '가상 인물', cover: 1, photo: true, load: () => loadPhoto(id, file, a),
       draw(c, f) {
         const o = photos[id]; if (!o || !o.ready) { loadPhoto(id, file, a); return; }
         /* 단위 공간: 얼굴 너비 2 → 사진 얼굴을 조금 크게(0.92 × 2) 얹어 실제 얼굴을 덮음 */
@@ -67,7 +67,8 @@
     };
   }
   /* 내보내기 전에 사진이 다 읽혔는지 기다림 */
-  VE.charsReady = () => { for (const k in CHARS) if (CHARS[k].load) CHARS[k].load(); return Promise.all(photoWait); };
+  /* 내보내기 전에 이 영상에서 쓰는 사진 인물만 다 읽혔는지 기다림 */
+  VE.charsReady = () => { const used = new Set(); for (const c of VE.p.clips) { if (c.face && c.face.char) used.add(c.face.char); if (c.pip && c.pip.char) used.add(c.pip.char); } return Promise.all([...used].map(k => CHARS[k] && CHARS[k].load ? CHARS[k].load() : null)); };
 
   const CHARS = {
     cat: {
@@ -133,6 +134,26 @@
     leadF: photoChar('leadF', '팀장 (여)', 'app/video/people/lead-f.webp', { cx: 540.9, cy: 383.1, fw: 320.2, mx: 537.9, mw: 133.4, ly: 470.6, chin: 572.5 }),
     ceoM: photoChar('ceoM', '대표 (남)', 'app/video/people/ceo-m.webp', { cx: 507.4, cy: 362.4, fw: 302.3, mx: 508, mw: 124.2, ly: 440.2, chin: 536.3 }),
     ceoF: photoChar('ceoF', '대표 (여)', 'app/video/people/ceo-f.webp', { cx: 528.4, cy: 362.3, fw: 308.3, mx: 525.3, mw: 135.5, ly: 442.7, chin: 547.6 }),
+    repM1: photoChar('repM1', '대표 남 1', 'app/video/people/rep-m01.webp', { cx: 391.8, cy: 389.5, fw: 347.8, mx: 379.3, mw: 135.8, ly: 474, chin: 598.3 }, '대표 (남) 10명'),
+    repM2: photoChar('repM2', '대표 남 2', 'app/video/people/rep-m02.webp', { cx: 381.6, cy: 385.9, fw: 337.9, mx: 367.6, mw: 152.4, ly: 468.9, chin: 587.5 }, '대표 (남) 10명'),
+    repM3: photoChar('repM3', '대표 남 3', 'app/video/people/rep-m03.webp', { cx: 362.1, cy: 390.4, fw: 351.8, mx: 364.6, mw: 144.2, ly: 478.1, chin: 602 }, '대표 (남) 10명'),
+    repM4: photoChar('repM4', '대표 남 4', 'app/video/people/rep-m04.webp', { cx: 351.4, cy: 402.2, fw: 339, mx: 330, mw: 141.2, ly: 490.1, chin: 608.1 }, '대표 (남) 10명'),
+    repM5: photoChar('repM5', '대표 남 5', 'app/video/people/rep-m05.webp', { cx: 385.1, cy: 384.7, fw: 338.4, mx: 375.2, mw: 154.5, ly: 463.9, chin: 591.1 }, '대표 (남) 10명'),
+    repM6: photoChar('repM6', '대표 남 6', 'app/video/people/rep-m06.webp', { cx: 403.6, cy: 376.7, fw: 323.9, mx: 380.6, mw: 125.9, ly: 463.9, chin: 577.6 }, '대표 (남) 10명'),
+    repM7: photoChar('repM7', '대표 남 7', 'app/video/people/rep-m07.webp', { cx: 391.5, cy: 387.9, fw: 335.1, mx: 370.6, mw: 154.4, ly: 470.1, chin: 595.1 }, '대표 (남) 10명'),
+    repM8: photoChar('repM8', '대표 남 8', 'app/video/people/rep-m08.webp', { cx: 370.1, cy: 382.4, fw: 347.4, mx: 357.9, mw: 135.8, ly: 466.9, chin: 591.6 }, '대표 (남) 10명'),
+    repM9: photoChar('repM9', '대표 남 9', 'app/video/people/rep-m09.webp', { cx: 367.5, cy: 389.6, fw: 355.2, mx: 360.1, mw: 141.5, ly: 476.6, chin: 599.1 }, '대표 (남) 10명'),
+    repM10: photoChar('repM10', '대표 남 10', 'app/video/people/rep-m10.webp', { cx: 384.4, cy: 368.3, fw: 343, mx: 391.6, mw: 158.6, ly: 450.1, chin: 574.8 }, '대표 (남) 10명'),
+    repF1: photoChar('repF1', '대표 여 1', 'app/video/people/rep-f01.webp', { cx: 380.9, cy: 387.7, fw: 339.7, mx: 380.9, mw: 147.6, ly: 475.1, chin: 592.8 }, '대표 (여) 10명'),
+    repF2: photoChar('repF2', '대표 여 2', 'app/video/people/rep-f02.webp', { cx: 385.4, cy: 396.3, fw: 327.4, mx: 386.9, mw: 141, ly: 484.8, chin: 598 }, '대표 (여) 10명'),
+    repF3: photoChar('repF3', '대표 여 3', 'app/video/people/rep-f03.webp', { cx: 376.5, cy: 396.8, fw: 327.7, mx: 383.9, mw: 140.8, ly: 490.2, chin: 601 }, '대표 (여) 10명'),
+    repF4: photoChar('repF4', '대표 여 4', 'app/video/people/rep-f04.webp', { cx: 349.7, cy: 409.7, fw: 337, mx: 354.8, mw: 145.4, ly: 502.8, chin: 607.7 }, '대표 (여) 10명'),
+    repF5: photoChar('repF5', '대표 여 5', 'app/video/people/rep-f05.webp', { cx: 369.8, cy: 360.1, fw: 329.2, mx: 372.8, mw: 153.3, ly: 445.9, chin: 554.6 }, '대표 (여) 10명'),
+    repF6: photoChar('repF6', '대표 여 6', 'app/video/people/rep-f06.webp', { cx: 426.8, cy: 356.4, fw: 323, mx: 436.7, mw: 128.5, ly: 442.5, chin: 546.3 }, '대표 (여) 10명'),
+    repF7: photoChar('repF7', '대표 여 7', 'app/video/people/rep-f07.webp', { cx: 428.6, cy: 371.1, fw: 326.7, mx: 425.3, mw: 148.3, ly: 456.8, chin: 564.1 }, '대표 (여) 10명'),
+    repF8: photoChar('repF8', '대표 여 8', 'app/video/people/rep-f08.webp', { cx: 378.1, cy: 386, fw: 350, mx: 387.3, mw: 146.4, ly: 475.3, chin: 586.4 }, '대표 (여) 10명'),
+    repF9: photoChar('repF9', '대표 여 9', 'app/video/people/rep-f09.webp', { cx: 383.5, cy: 378.7, fw: 329, mx: 389.6, mw: 147.3, ly: 464.8, chin: 577.3 }, '대표 (여) 10명'),
+    repF10: photoChar('repF10', '대표 여 10', 'app/video/people/rep-f10.webp', { cx: 409.7, cy: 359.3, fw: 321.2, mx: 419.3, mw: 142.7, ly: 449.6, chin: 548.1 }, '대표 (여) 10명'),
     teacherA: {
       name: '가상 강사 1', group: '가상 인물', cover: 1.3, draw(c, f) {
         const fx = f.yaw * .14, fy = f.pitch * .09, skin = '#f6d3b6', shade = '#e8b995', hair = '#2f2a2a', ink = '#1f1b1b', lens = '#2f2a2a';
