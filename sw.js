@@ -2,7 +2,7 @@
    인터넷이 될 때는 늘 인터넷에서 받은 최신 화면을 그대로 씁니다 (받지 못할 때만 저장해 둔 사본).
    인터넷이 끊겼거나 먹통일 때는 저장해 둔 화면 파일(html·js·css)로 엽니다.
    교안·문서함·GitHub API 같은 데이터는 저장하지 않습니다. */
-const CACHE = 'ws-app-v20';
+const CACHE = 'ws-app-v21';
 const CORE = [
   './', 'index.html', 'gyoan.html', 'hangul.html', 'video.html', 'editor.html', 'present.html', 'shortcuts.html', 'manifest.webmanifest',
   'app/common.js', 'app/access.js', 'app/hub.css', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/pptx.js', 'app/pptsym.js', 'app/pptin.js', 'app/bgai.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js',

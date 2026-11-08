@@ -1,6 +1,6 @@
 /* DPV — 앱 설치·실행
-   1) 브라우저가 허락하면 단추 한 번으로 설치 (beforeinstallprompt)
-   2) 아니면 지금 쓰는 브라우저에 맞춘 설치 방법을 그림과 함께 보여 줌
+   1) [앱 설치] 를 누르면 설명 없이 바로 브라우저의 설치 창 (beforeinstallprompt). 신호가 아직 없으면 잠깐(최대 3초) 기다렸다가 띄움
+   2) 바로 설치가 안 되는 경우(이미 설치 · 아이폰 · 앱 안 브라우저 …)만 아래에 한 줄로 알림. 자세한 방법은 그 알림의 단추로
    3) Windows 는 '설치 파일'(바탕화면·시작 메뉴 아이콘을 만들어 앱 창으로 엶)도 제공 — 브라우저 사정과 무관하게 항상 됨 */
 (() => {
   const ok = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -21,7 +21,7 @@
   if (navigator.getInstalledRelatedApps) navigator.getInstalledRelatedApps().then(list => { if (list && list.length) { PWA.installed = true; fire(); pill(); refreshGuide(); } }).catch(() => { });
 
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); PWA.prompt = e; PWA.installed = false; fire(); pill(); refreshGuide(); });
-  window.addEventListener('appinstalled', () => { PWA.prompt = null; PWA.installed = true; fire(); pill(); showGuide('done'); });
+  window.addEventListener('appinstalled', () => { PWA.prompt = null; PWA.installed = true; fire(); pill(); note('설치했습니다. 바탕화면 · 홈 화면의 DPV 아이콘으로 여세요'); });
   async function install() {
     if (!PWA.prompt) return false;
     const p = PWA.prompt; PWA.prompt = null;
@@ -30,10 +30,32 @@
     fire(); pill();
     return r.outcome === 'accepted';
   }
-  /* '앱으로 설치' 단추: 바로 설치할 수 있으면 설치 창, 아니면 방법 안내 */
+  /* '앱 설치' 단추: 설명 없이 바로 설치 창. 안 되는 경우만 한 줄 알림 */
+  const note = (msg, act) => { if (typeof toast === 'function') toast(msg, act ? 7000 : 4500, act); else alert(msg); };
+  const canPrompt = () => os !== 'ios' && browser !== 'inapp' && browser !== 'firefox' && !standalone;
+  const waitPrompt = ms => new Promise(res => {
+    if (PWA.prompt) return res(true);
+    const on = () => { clearTimeout(t); res(true); };
+    const t = setTimeout(() => { window.removeEventListener('beforeinstallprompt', on); res(false); }, ms);
+    window.addEventListener('beforeinstallprompt', on, { once: true });
+  });
+  let starting = false;
   async function start() {
-    if (PWA.prompt) { const done = await install(); showGuide(done ? 'done' : 'help'); return; }
-    showGuide('help');
+    if (starting) return; starting = true;
+    try {
+      if (!PWA.prompt && canPrompt() && !PWA.installed) { note('설치 창을 여는 중…'); await waitPrompt(3000); }
+      if (PWA.prompt) {
+        const done = await install();
+        if (!done) note('설치를 취소했습니다. 다시 누르면 언제든 설치할 수 있습니다');
+        return; // 설치되면 appinstalled 가 알림
+      }
+      const more = { label: '다른 방법', run: () => showGuide('help') };
+      if (PWA.installed) return note('이미 설치되어 있습니다 — 바탕화면 · 홈 화면의 DPV 아이콘으로 여세요', more);
+      if (os === 'ios') return note('아래 공유 단추(□↑) → [홈 화면에 추가] 를 누르면 설치됩니다', more);
+      if (browser === 'inapp') return note('이 앱 안 브라우저에서는 설치할 수 없습니다 — 크롬이나 사파리로 열어 주세요', more);
+      if (browser === 'firefox') return note('파이어폭스는 바로 설치를 지원하지 않습니다 — 크롬이나 엣지로 열어 주세요', more);
+      note('이 브라우저가 지금은 바로 설치를 허락하지 않습니다. 이미 설치했다면 주소창 오른쪽의 앱 아이콘으로 여세요', more);
+    } finally { starting = false; }
   }
 
   /* ---------- 안내 창 (꾸밈은 ui.css 토큰 · 단추는 .btn) ---------- */
