@@ -17,6 +17,8 @@
   const os = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(ua) ? 'android' : /Windows/.test(ua) ? 'windows' : /Mac OS X/.test(ua) ? 'mac' : 'other';
   const browser = /KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\//i.test(ua) ? 'inapp' : /Edg\//.test(ua) ? 'edge' : /Whale\//.test(ua) ? 'whale' : /SamsungBrowser/.test(ua) ? 'samsung' : /Firefox\/|FxiOS/.test(ua) ? 'firefox' : /CriOS/.test(ua) ? 'chrome-ios' : /Chrome\//.test(ua) ? 'chrome' : /Safari\//.test(ua) ? 'safari' : 'other';
   const standalone = matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || navigator.standalone === true;
+  const loadedAt = Date.now();
+  const fromApp = /^android-app:/.test(document.referrer || ''); // 다른 앱이 크롬 커스텀 탭으로 연 화면이면 대개 이렇게 표시됨
   const PWA = window.PWA = { standalone, prompt: null, installed: false, browser, os, install, start };
   document.documentElement.classList.toggle('in-app', standalone);
   const fire = () => window.dispatchEvent(new Event('pwa-change'));
@@ -51,12 +53,19 @@
     css(); closeGuide();
     guide = document.createElement('div'); guide.id = 'pwaGuide'; guide.dataset.mode = 'sheet';
     guide.setAttribute('role', 'dialog'); guide.setAttribute('aria-modal', 'true'); guide.setAttribute('aria-label', o.title);
-    guide.innerHTML = `<div class="box"><h3>${o.title}</h3>${o.text ? `<p>${o.text}</p>` : ''}${o.label ? `<button class="btn ink big" data-go>${ic(o.icon || 'download')}${o.label}</button>` : ''}<div class="row"><button class="btn ghost" data-c>${o.label ? '나중에' : '닫기'}</button></div></div>`;
+    guide.innerHTML = `${o.point ? `<div class="pwa-point" aria-hidden="true"><b>↑</b><span>바로 위 ⋮ 메뉴 → ${o.point}</span></div>` : ''}<div class="box"><h3>${o.title}</h3>${o.text ? `<p>${o.text}</p>` : ''}${o.label ? `<button class="btn ink big" data-go>${ic(o.icon || 'download')}${o.label}</button>` : ''}<div class="row">${o.copy ? '<button class="btn ghost" data-cp>주소 복사</button>' : ''}<button class="btn ${o.label ? 'ghost' : 'ink'}" data-c>${o.label ? '나중에' : '확인'}</button></div></div>`;
     guide.addEventListener('mousedown', e => { if (e.target === guide) closeGuide(); });
     guide.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
     document.body.appendChild(guide);
     guide.querySelector('[data-c]').onclick = () => closeGuide();
+    const cp = guide.querySelector('[data-cp]'); if (cp) cp.onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(location.href) : Promise.reject()).then(() => { cp.textContent = '복사했습니다'; }).catch(() => { window.prompt('이 주소를 복사하세요', location.href); }); };
     const go = guide.querySelector('[data-go]'); if (go) { go.onclick = () => { closeGuide(); o.run(); }; go.focus(); }
+  }
+  function cctSheet() {
+    try { history.replaceState(null, '', here({ install: '1' }).href); } catch (e) { }
+    sheet(fromApp
+      ? { title: '크롬으로 한 번만 열어 주세요', point: 'Chrome에서 열기', copy: true, text: '지금 화면은 다른 앱 안에 열린 창이라, 안드로이드가 여기서는 앱 설치를 막아 둡니다. 오른쪽 위 <b>⋮</b> → <b>[Chrome에서 열기]</b> 를 누르면 열린 크롬 화면에 <b>[설치]</b> 단추가 바로 떠 있습니다.' }
+      : { title: '오른쪽 위 ⋮ 에서 한 번만 눌러 주세요', point: '앱 설치 · Chrome에서 열기', copy: true, text: '이 화면에서는 브라우저가 바로 설치 창을 허락하지 않았습니다. 오른쪽 위 <b>⋮</b> 메뉴의 <b>[앱 설치]</b>(또는 <b>[홈 화면에 추가]</b>)를 누르세요. 메뉴에 <b>[Chrome에서 열기]</b> 가 있으면 그것을 누르면, 열린 화면에 <b>[설치]</b> 단추가 바로 떠 있습니다. 이미 설치했다면 홈 화면의 <b>DPV</b> 아이콘으로 여세요.' });
   }
   const askInstall = () => sheet({ title: 'DPV 앱 설치', text: '아래 단추를 누르고, 뜨는 창에서 [설치] 를 누르면 끝납니다.', label: '설치', run: async () => { if (!(await install())) note('설치를 취소했습니다. 다시 누르면 언제든 설치할 수 있습니다'); } });
   let starting = false;
@@ -67,11 +76,11 @@
       if (/KAKAOTALK/i.test(ua)) { location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(here({ install: '1' }).href); return; }
       if (browser === 'inapp' && os === 'android') return toChrome();
       if (PWA.installed) return openApp();
-      if (!PWA.prompt && canPrompt()) { note('설치 창을 여는 중…'); await waitPrompt(2500); }
+      if (!PWA.prompt && canPrompt()) { const left = 3000 - (Date.now() - loadedAt); if (left > 200) { note('설치 창을 여는 중…'); await waitPrompt(left); } }
       if (PWA.prompt) { if (!(await install())) note('설치를 취소했습니다. 다시 누르면 언제든 설치할 수 있습니다'); return; } // 설치되면 appinstalled 가 알림
       if (PWA.installed) return openApp();
       /* 안드로이드인데 설치 창이 안 옴 = 다른 앱 안에서 연 화면(크롬 커스텀 탭 등)이거나 이미 설치됨 → 크롬 앱으로 이 화면을 열어 거기서 마무리 */
-      if (os === 'android') return toChrome();
+      if (os === 'android') return browser === 'chrome' ? cctSheet() : toChrome(); // 크롬 밖(삼성 인터넷 · 앱 안 화면 등)은 크롬 앱으로
       if (os === 'ios') {
         if (browser === 'inapp') return note('이 앱 안 화면에서는 설치할 수 없습니다 — 오른쪽 위 메뉴에서 [Safari 로 열기] 를 눌러 주세요');
         return note(browser === 'safari' ? '아래 가운데 공유 단추(□↑) → [홈 화면에 추가] 를 누르면 설치됩니다' : '주소창 오른쪽 공유 단추(□↑) → [홈 화면에 추가] 를 누르면 설치됩니다', { label: '그림으로 보기', run: () => showGuide('help') });
@@ -105,6 +114,11 @@
 #pwaGuide .big{width:100%;height:44px;margin-top:8px;justify-content:center;font-size:var(--fs-lg)}
 #pwaGuide .card{border:1px solid var(--ui-border);border-radius:12px;padding:12px 14px;margin-top:12px;background:var(--ui-panel2)}
 #pwaGuide small{color:var(--ui-muted);font-size:var(--fs-xs);line-height:1.6}
+#pwaGuide .pwa-point{position:fixed;top:6px;right:6px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;pointer-events:none;animation:pwaNudge 1s ease-in-out infinite}
+#pwaGuide .pwa-point b{width:44px;height:44px;margin-right:2px;border-radius:50%;display:grid;place-items:center;background:var(--ui-ink);color:var(--ui-on-ink);font-size:24px;line-height:1;box-shadow:var(--ui-shadow)}
+#pwaGuide .pwa-point span{padding:6px 12px;border-radius:999px;background:var(--ui-ink);color:var(--ui-on-ink);font-size:var(--fs-sm);font-weight:700;white-space:nowrap;box-shadow:var(--ui-shadow)}
+@keyframes pwaNudge{50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){#pwaGuide .pwa-point{animation:none}}
 #pwaPill{position:fixed;left:16px;bottom:40px;z-index:90;display:flex;align-items:center;background:var(--ui-ink);color:var(--ui-on-ink);border-radius:999px;box-shadow:var(--ui-shadow-sm);font-size:var(--fs-sm);font-weight:600;overflow:hidden}
 #pwaPill button{display:inline-flex;align-items:center;gap:6px;height:40px;background:none;border:0;color:inherit;font:inherit;padding:0 14px;cursor:pointer}
 #pwaPill [data-x]{padding:0 12px 0 4px}
@@ -183,7 +197,7 @@
     const arrive = async () => {
       if (PWA.prompt) return askInstall();
       if (await waitPrompt(6000)) return askInstall();
-      if (os === 'android') sheet({ title: '이 기기에 DPV 앱이 이미 있습니다', text: '설치된 DPV 앱으로 엽니다.', label: '앱 열기', icon: 'arrowRight', run: () => openApp() });
+      if (os === 'android') { if (PWA.installed) sheet({ title: '이 기기에 DPV 앱이 이미 있습니다', text: '설치된 DPV 앱으로 엽니다.', label: '앱 열기', icon: 'arrowRight', run: () => openApp() }); else cctSheet(); }
       else if (PWA.installed) note('이미 설치되어 있습니다 — 바탕화면 · 시작 메뉴의 DPV 아이콘으로 여세요');
     };
     if (document.body) arrive(); else document.addEventListener('DOMContentLoaded', arrive);
