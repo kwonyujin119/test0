@@ -21,7 +21,7 @@
 <body>
 <header id="top">
   <div class="bar1">
-    <a class="crumb" href="index.html" title="업무 공간으로"><i data-ic="back"></i><span class="mark">한</span><span class="crumb-t">한글 작업장</span></a>
+    <button class="crumb" data-act="home" title="첫 화면 — 문서함 · best 문서 · 임시본 (문서는 그대로 열려 있습니다)"><i data-ic="back"></i><span class="mark">한</span><span class="crumb-t">한글 작업장</span></button>
     <span class="vsep"></span>
     <button class="nm" id="docName" title="눌러서 문서 이름 바꾸기">문서</button>
     <span id="saveState" class="state"></span>
@@ -125,25 +125,57 @@
   <button class="ib sm" data-act="zoomIn" title="확대" aria-label="확대"><i data-ic="plus"></i></button>
 </footer>
 
-<div id="start" hidden>
-  <div class="card">
-    <div class="start-head">
-      <a class="back" href="index.html"><i data-ic="back"></i>업무 공간</a>
-      <span class="grow"></span>
-      <span id="roleChip2"></span>
-    </div>
-    <div class="start-title"><span class="mark lg">한</span><div><h1>한글 작업장</h1><p class="muted">한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다. 사무실의 한글에서 그대로 열립니다.</p></div></div>
-    <div class="big">
-      <button data-act="new" data-admin><i data-ic="filePlus"></i><b>새 문서</b><span>빈 A4 문서</span></button>
-      <button data-act="open"><i data-ic="folder"></i><b><i class="only-pc">내 PC 에서 열기</i><i class="only-mob">파일 열기</i></b><span>.hwpx 파일<i class="only-pc"> (끌어다 놓아도 됩니다)</i></span></button>
-      <button data-act="box" data-admin><i data-ic="lock"></i><b>문서함</b><span>집·사무실 어디서나 같은 문서</span></button>
-      <button data-act="best"><i data-ic="bookmark"></i><b>best 문서</b><span>레퍼런스로 쌓아 둔 문서</span></button>
-    </div>
-    <div id="draftList" data-admin></div>
-    <div id="bestList"></div>
-    <p class="note" data-admin>· 처음이면 <b>새 문서</b>로 시작하거나, 사무실에서 저장한 <b>.hwpx</b> 파일을 여세요. 다른 기기에서도 이어서 하려면 <b>문서함</b>에 저장합니다.<br>· <b>.hwp</b>(옛 형식) 파일은 한글에서 <b>파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 올려 주세요.<br>· 편집 중인 내용은 이 브라우저에 자동으로 임시 저장되어, 창을 닫아도 다시 열 수 있습니다.</p>
-    <p class="note" data-guest>· 게스트 모드에서는 <b>.hwpx</b> 파일을 열어 읽고 인쇄할 수 있습니다. 고치거나 저장하려면 첫 화면에서 <a href="index.html?mode=1">관리자로 입장</a>하세요.</p>
-  </div>
+<!-- 첫 화면: 문서함 · best 문서 · 이 기기 임시본이 한 화면에 (교안 작업장과 같은 레일 + 허브 구조). 문서를 열면 숨고, 머리 줄의 [한글 작업장] 으로 다시 옴 -->
+<div id="home" hidden>
+<div class="shell">
+  <aside class="rail" aria-label="한글 작업장 메뉴">
+    <a class="brand" href="hangul.html"><span class="mark">한</span><b>한글 작업장</b></a>
+    <div class="rail-role" id="roleChip2"></div>
+    <button class="btn ink wide" id="hmNew" data-admin title="빈 A4 문서 (Alt+N)"><i data-ic="plus"></i>새 문서</button>
+    <nav class="rail-nav" id="hmNav" aria-label="문서 분류">
+      <button class="rail-item on" data-sec="all" aria-current="page"><i data-ic="stack"></i><span>모두</span></button>
+      <button class="rail-item" data-sec="box" data-admin><i data-ic="lock"></i><span>문서함</span><em id="cBox"></em></button>
+      <button class="rail-item" data-sec="best"><i data-ic="bookmark"></i><span>best 문서</span><em id="cBest"></em></button>
+      <button class="rail-item" data-sec="draft" data-admin><i data-ic="clock"></i><span><i class="only-pc">이 기기 </i>임시본</span><em id="cDraft"></em></button>
+    </nav>
+    <div class="rail-grow"></div>
+    <nav class="rail-nav quiet" aria-label="도구">
+      <button class="rail-item" id="hmOpen" title="내 PC 의 .hwpx 파일 열기 (Ctrl+O) — 이 화면에 끌어다 놓아도 됩니다"><i data-ic="folder"></i><span><i class="only-pc">내 PC 파일 열기</i><i class="only-mob">파일 열기</i></span></button>
+      <button class="rail-item" id="hmGh" data-admin style="display:none" title="GitHub 저장소에 문서함·best 문서를 올리도록 토큰 연결"><i data-ic="link"></i><span>GitHub 연결</span></button>
+      <button class="rail-item" id="hmHelp" title="단축키 모음 (F1)"><i data-ic="help"></i><span>단축키 안내</span></button>
+      <a class="rail-item" href="index.html"><i data-ic="back"></i><span>업무 공간으로</span></a>
+    </nav>
+  </aside>
+
+  <main class="hub">
+    <header class="hub-bar">
+      <h1 id="hmTitle">한글 작업장</h1>
+      <span class="hub-count" id="hmSub"></span>
+      <div class="hub-tools">
+        <label class="searchbox"><i data-ic="search"></i><input type="search" id="hmQ" placeholder="문서 검색" aria-label="문서 검색"><kbd>/</kbd></label>
+        <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
+      </div>
+    </header>
+    <div class="hub-notice" id="hmNotice" hidden></div>
+    <div class="hm-editing" id="hmEditing" hidden><i data-ic="edit"></i><span class="t">지금 <b id="hmEditName"></b> 을(를) 편집하는 중입니다. 다른 문서를 열면 바꿔 엽니다.</span><button class="btn sm" id="hmBack">편집으로 돌아가기</button></div>
+    <section class="hm-resume" id="hmResume" hidden aria-label="이어서 작업"></section>
+    <section class="hm-sec" id="secBox" data-sec="box" data-admin>
+      <div class="hm-head"><h2><i data-ic="lock"></i>문서함</h2><span class="cnt" id="boxCnt"></span><div class="acts" id="boxActs"></div></div>
+      <div class="hm-body" id="boxBody"></div>
+    </section>
+    <section class="hm-sec" id="secBest" data-sec="best">
+      <div class="hm-head"><h2><i data-ic="bookmark"></i>best 문서</h2><span class="cnt" id="bestCnt"></span><div class="acts" id="bestActs"></div></div>
+      <div class="hm-body" id="bestBody"></div>
+    </section>
+    <section class="hm-sec" id="secDraft" data-sec="draft" data-admin>
+      <div class="hm-head"><h2><i data-ic="clock"></i>이 기기 임시본</h2><span class="cnt" id="draftCnt"></span><div class="acts"><span class="muted hm-hint">저장하지 않고 닫은 문서가 이 브라우저에 남아 있습니다</span></div></div>
+      <div class="hm-body" id="draftBody"></div>
+    </section>
+    <div class="hub-empty" id="hmEmpty" hidden></div>
+    <p class="hm-note" data-admin>· <b>.hwp</b>(옛 형식) 파일은 한글에서 <b>파일 → 다른 이름으로 저장 → 한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 여세요. · 편집 중인 내용은 이 브라우저에 자동으로 임시 저장되어 창을 닫아도 다시 열 수 있습니다. · 다른 기기에서도 이어서 하려면 <b>문서함</b>에 저장합니다.</p>
+    <p class="hm-note" data-guest>· 게스트 모드에서는 <b>.hwpx</b> 파일을 열어 읽고 인쇄할 수 있습니다. 고치거나 저장하려면 <a href="index.html?mode=1">관리자로 입장</a>하세요.</p>
+  </main>
+</div>
 </div>
 <div id="dropMask" hidden><div><i data-ic="import"></i><b>hwpx 문서는 열고, 그림은 커서 위치에 넣습니다</b></div></div>
 
@@ -155,6 +187,7 @@
 <script src="app/access.js"></script>
 <script src="app/hwp/edit.js"></script>
 <script src="app/hwp/ui.js"></script>
+<script src="app/hwp/home.js"></script>
 <script src="app/pwa.js"></script>
 </body>
 </html>

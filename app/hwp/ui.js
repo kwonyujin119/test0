@@ -45,6 +45,16 @@
     return { q, close, bg };
   }
   const num = (q, s, d) => { const v = parseFloat(q(s).value); return isNaN(v) ? d : v; };
+  /* 확인 · 글 입력 · 알림 — 브라우저 기본 창(confirm/prompt/alert) 대신 같은 모양의 창. desc 는 HTML */
+  function askConfirm(title, desc, okText, danger) {
+    return new Promise(res => { let v = false; dialog(escH(title), desc ? `<p class="dlg-desc">${desc}</p>` : '', { foot: `<button class="tb" data-x="cancel">취소</button><button class="tb ${danger ? 'danger solid' : 'primary'}" data-x="ok">${escH(okText || '확인')}</button>`, onOk: () => { v = true; }, onClose: () => res(v), noFocus: true, init: q => setTimeout(() => { const b = q('[data-x="ok"]'); if (b) b.focus(); }, 0) }); });
+  }
+  function askText(title, label, value, okText, desc) {
+    return new Promise(res => { let v = null; dialog(escH(title), `${desc ? `<p class="dlg-desc">${desc}</p>` : ''}<div class="grid1"><label>${escH(label)}</label><input id="ak_v" value="${escH(value || '')}"></div>`, { okText: okText || '확인', onOk: q => { const t = q('#ak_v').value.trim(); if (!t) { q('#ak_v').focus(); return false; } v = t; }, onClose: () => res(v) }); });
+  }
+  function tell(title, desc) {
+    return new Promise(res => dialog(escH(title), `<p class="dlg-desc">${escH(desc || '').replace(/\n/g, '<br>')}</p>`, { foot: `<button class="tb primary" data-x="ok">확인</button>`, onClose: () => res(true), noFocus: true, init: q => setTimeout(() => { const b = q('[data-x="ok"]'); if (b) b.focus(); }, 0) }));
+  }
 
   /* ---------- 문서 열기/만들기 ---------- */
   function setName(n) { W.name = n || '새 문서'; $id('docName').textContent = W.name; document.title = W.name + ' — 한글 작업장'; }
@@ -62,7 +72,7 @@
     setName(meta.name || d.title || '새 문서');
     W.dirty = !!meta.dirty; updateState();
     fillStyles(); fillFonts();
-    $id('start').hidden = true;
+    if (typeof HwpHome !== 'undefined') HwpHome.hide(); // home.js 의 const 는 window 에 붙지 않음
     document.body.classList.add('has-doc');
     viewOnly();
     setView(viewPref(), true);
@@ -81,22 +91,22 @@
     try {
       if (buf.byteLength > 300000) { toast('문서를 여는 중…', 60000); await new Promise(r => setTimeout(r, 30)); } // 큰 문서: 멈춘 것처럼 보이지 않게
       const d = await HwpxDoc.open(buf); loadDoc(d, meta); toast(`"${meta.name}" 을(를) 열었습니다`); return true; }
-    catch (e) { console.error(e); alert('문서를 열 수 없습니다.\n\n' + e.message); return false; }
+    catch (e) { console.error(e); tell('문서를 열 수 없습니다', e.message); return false; }
   }
   async function openFile(file, handle) {
     if (!file) return;
-    if (/\.hwp$/i.test(file.name)) { alert('.hwp(옛 형식) 파일은 바로 열 수 없습니다.\n\n한글에서 [파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)] 로 저장한 뒤 그 파일을 열어 주세요.'); return; }
+    if (/\.hwp$/i.test(file.name)) { tell('.hwp(옛 형식) 파일은 바로 열 수 없습니다', '한글에서 [파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)] 로 저장한 뒤 그 파일을 열어 주세요.'); return; }
     if (!(await confirmDiscard())) return;
     const buf = await file.arrayBuffer();
     await openBytes(buf, { name: file.name.replace(/\.hwpx$/i, ''), handle });
   }
   async function confirmDiscard() {
     if (!W.doc || !W.dirty) return true;
-    return confirm(`"${W.name}" 에 저장하지 않은 내용이 있습니다.\n그래도 다른 문서를 열까요? (임시 저장본은 시작 화면에서 다시 열 수 있습니다)`);
+    return askConfirm(`"${W.name}" 에 저장하지 않은 내용이 있습니다`, '그래도 다른 문서를 열까요? 지금 문서는 이 기기에 임시 저장되어, 첫 화면의 <b>이 기기 임시본</b>에서 다시 열 수 있습니다.', '다른 문서 열기');
   }
   async function newDoc() { if (!(await confirmDiscard())) return; loadDoc(HwpxDoc.blank(), { name: '새 문서' }); }
   async function openDialog() {
-    const p = await HwpStore.pickOpen().catch(e => { alert(e.message); return null; });
+    const p = await HwpStore.pickOpen().catch(e => { tell('파일을 열지 못했습니다', e.message); return null; });
     if (p) await openFile(p.file, p.handle);
   }
 
@@ -107,12 +117,14 @@
   async function build() { tidyAll(); Track.flush(); return W.doc.save(doc); }
   function tidyAll() { for (const b of doc.querySelectorAll('.hp')) { const brs = b.querySelectorAll(':scope > br:not([data-lb])'); if (brs.length > 1) brs.forEach((x, i) => { if (i < brs.length - 1 && !x.nextSibling) x.remove(); }); } }
   const fileName = () => (W.name || '문서').replace(/[\\/:*?"<>|]/g, '_') + '.hwpx';
+  /* 첫 화면 카드의 종이 미리보기에 쓸 글: 첫 문단 몇 개 */
+  function preview() { const out = []; let n = 0; for (const p of doc.querySelectorAll('.hsec > .hp')) { const t = p.textContent.replace(/[\u200b\ufeff]/g, '').replace(/\s+/g, ' ').trim(); if (!t) continue; out.push(t); n += t.length; if (out.length >= 12 || n > 400) break; } return out.join('\n').slice(0, 400); }
   async function save(as) {
     if (!W.doc || saving) return;
     saving = true; setState('저장 중…');
     const r0 = rev;
     try {
-      if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName())); done('문서함에 저장했습니다'); }
+      if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview())); done('문서함에 저장했습니다'); }
       else if (!as && W.handle) { const blob = await build(); await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
       else if (as === 'box') { await boxSaveCurrent(await build(), r0); }
       else {
@@ -123,7 +135,7 @@
         if (h) { await HwpStore.writeHandle(h, blob); W.handle = h; W.boxId = null; if (h.name) setName(h.name.replace(/\.hwpx$/i, '')); done('내 PC 에 저장했습니다'); }
         else { HwpStore.download(fileName(), blob); done('내려받기 폴더에 저장했습니다 (' + fileName() + ')'); }
       }
-    } catch (e) { console.error(e); setState(''); updateState(); alert('저장하지 못했습니다.\n\n' + e.message); }
+    } catch (e) { console.error(e); setState(''); updateState(); tell('저장하지 못했습니다', e.message); }
     finally { saving = false; }
     function done(msg) { savedAt(r0); toast(msg, 2600); }
   }
@@ -159,7 +171,7 @@
   async function saveDraft() {
     if (!W.doc || !W.dirty || saving) return;
     const key = W.draftId + ':' + rev;
-    try { const t = performance.now(); const blob = await build(); buildMs = performance.now() - t; await HwpStore.drafts.put(W.draftId, W.name, blob, { boxId: W.boxId }); drafted = key; } catch (e) { console.warn('임시 저장 실패', e); }
+    try { const t = performance.now(); const blob = await build(); buildMs = performance.now() - t; await HwpStore.drafts.put(W.draftId, W.name, blob, { boxId: W.boxId, preview: preview() }); drafted = key; } catch (e) { console.warn('임시 저장 실패', e); }
   }
   /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰은 닫기 전에 beforeunload 가 오지 않기도 함): 기다리지 않고 바로 임시 저장 시작 */
   function draftNow() {
@@ -175,7 +187,7 @@
   async function boxSaveCurrent(blob, r0) {
     if (!(await boxEnsure())) { setState(''); updateState(); return; }
     if (!blob) { r0 = rev; blob = await build(); }
-    W.boxId = await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName()));
+    W.boxId = await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview()));
     W.handle = null; savedAt(r0);
     toast('문서함에 저장했습니다 — 다른 PC 에서도 이 문서를 열 수 있습니다', 3000);
   }
@@ -198,11 +210,11 @@
         onOk: async (q) => {
           const cfg = { owner: q('#g_o').value.trim(), repo: q('#g_r').value.trim(), branch: c.branch || 'main', token: q('#g_t').value.trim() };
           if (linked && !cfg.token && cfg.owner === c.owner && cfg.repo === c.repo) { done = true; res(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
-          if (!cfg.owner || !cfg.repo || !cfg.token) { alert(linked ? '바꾸려면 새 토큰을 붙여넣어 주세요' : '저장소와 토큰을 입력하세요'); return false; }
+          if (!cfg.owner || !cfg.repo || !cfg.token) { toast(linked ? '바꾸려면 새 토큰을 붙여넣어 주세요' : '저장소와 토큰을 입력하세요', 2600); return false; }
           // 확인을 통과한 토큰만 이 기기에 기억 (틀린 토큰이 남아 '연결됨'으로 여겨지지 않게)
           const prev = GH.cfg; GH.cfg = cfg;
-          try { const r = await GH.check(); if (!r.push) { GH.cfg = prev; alert('이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요)'); return false; } }
-          catch (e) { GH.cfg = prev; alert(e.message); return false; }
+          try { const r = await GH.check(); if (!r.push) { GH.cfg = prev; tell('이 토큰으로는 저장소에 쓸 수 없습니다', 'Contents: Read and write 권한이 있는 토큰이 필요합니다.'); return false; } }
+          catch (e) { GH.cfg = prev; tell('연결하지 못했습니다', e.message); return false; }
           GH.save(cfg);
           done = true; res(true);
         }, onClose: () => res(done || (!opts.expired && !!(GH.cfg && GH.token))) });
@@ -230,7 +242,7 @@
   async function boxEnsure() {
     if (!HwpStore.box.ready()) { if (!(await connectDialog())) return false; }
     if (HwpStore.box.unlocked || await HwpStore.box.restoreKey()) return true;
-    let exists = false; try { exists = await gh401(() => HwpStore.box.exists()); } catch (e) { alert(e.message); return false; }
+    let exists = false; try { exists = await gh401(() => HwpStore.box.exists()); } catch (e) { tell('문서함을 확인하지 못했습니다', e.message); return false; }
     return new Promise(res => {
       dialog(exists ? '문서함 열기' : '문서함 만들기', `${exists ? '<p style="margin-top:0">문서함 암호를 입력하세요.</p>' : `<div class="warn">처음 한 번 문서함 암호를 정합니다. 문서는 이 암호로 <b>브라우저 안에서 암호화</b>된 뒤 올라가므로, 저장소가 공개여도 내용과 파일 이름은 보이지 않습니다.<br><b>암호를 잊으면 누구도(저도) 문서를 되살릴 수 없습니다.</b> 꼭 기억해 두세요.</div>`}
         <div class="grid1" style="margin-top:12px"><label>암호</label><input id="b_p" type="password" autocomplete="off">${exists ? '' : '<label>암호 확인</label><input id="b_p2" type="password" autocomplete="off">'}</div>
@@ -238,49 +250,13 @@
         okText: exists ? '열기' : '만들기',
         onOk: async (q) => {
           const p = q('#b_p').value;
-          if (p.length < 6) { alert('암호는 6자 이상으로 해 주세요'); return false; }
-          if (!exists && p !== q('#b_p2').value) { alert('두 암호가 다릅니다'); return false; }
-          try { await gh401(() => HwpStore.box.unlock(p, q('#b_rm').checked)); } catch (e) { alert(e.message); return false; }
+          if (p.length < 6) { toast('암호는 6자 이상으로 해 주세요', 2400); return false; }
+          if (!exists && p !== q('#b_p2').value) { toast('두 암호가 다릅니다', 2400); return false; }
+          try { await gh401(() => HwpStore.box.unlock(p, q('#b_rm').checked)); } catch (e) { toast(e.message, 3200); return false; }
           res(true);
         }, onClose: () => res(HwpStore.box.unlocked) });
     });
   }
-  async function boxDialog() {
-    if (!(await boxEnsure())) return;
-    const d = dialog(icon('lock', 16) + '문서함', '<div id="bx" class="muted">불러오는 중…</div>', {
-      width: 720,
-      foot: `<button class="tb" id="bx_lock" title="이 기기에 기억한 암호를 지웁니다">잠그기</button><span class="grow"></span><button class="tb" id="bx_up">PC 파일 올리기</button>${W.doc ? '<button class="tb" id="bx_cur">현재 문서 저장</button>' : ''}<button class="tb" data-x="cancel">닫기</button>`,
-      noEnter: true,
-    });
-    const q = d.q;
-    q('#bx_lock').onclick = () => { HwpStore.box.lock(); d.close(); toast('문서함을 잠갔습니다'); };
-    if (q('#bx_cur')) q('#bx_cur').onclick = () => { d.close(); save('box'); };
-    q('#bx_up').onclick = async () => {
-      const p = await HwpStore.pickOpen().catch(() => null); if (!p) return;
-      try { q('#bx').textContent = '올리는 중…'; await boxRun(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, deviceName())); toast('문서함에 올렸습니다'); render(); } catch (e) { alert(e.message); render(); }
-    };
-    async function render() {
-      let items;
-      try { items = await boxRun(() => HwpStore.box.list()); } catch (e) { q('#bx').textContent = e.message; return; }
-      if (!items.length) { q('#bx').innerHTML = '<p>문서함이 비어 있습니다. <b>현재 문서 저장</b> 또는 <b>PC 파일 올리기</b> 로 시작하세요.</p>'; return; }
-      q('#bx').innerHTML = `<table class="boxlist">${items.map(it => `<tr data-id="${escH(it.id)}"><td class="nm2">${escH(it.name)}${it.id === W.boxId ? ' <span class="muted">(지금 여는 중)</span>' : ''}</td><td class="muted">${new Date(it.modified).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}${it.device ? ' · ' + escH(it.device) : ''}</td><td class="muted">${Math.max(1, Math.round(it.size / 1024))} KB</td><td style="white-space:nowrap;text-align:right"><button class="tb" data-b="open">열기</button><button class="tb" data-b="dl" title="hwpx 로 내려받기">내려받기</button><button class="tb" data-b="ren">이름</button><button class="tb danger" data-b="del">삭제</button></td></tr>`).join('')}</table>`;
-      q('#bx').onclick = async e => {
-        const b = e.target.closest('[data-b]'); if (!b || b.disabled) return; const tr = b.closest('tr'); const id = tr.dataset.id; const it = items.find(x => x.id === id);
-        const btns = tr.querySelectorAll('button'), old = b.textContent;
-        const busy = (t) => { btns.forEach(x => x.disabled = true); b.textContent = t; }; // 일하는 동안 (GitHub 은 몇 초)
-        try {
-          if (b.dataset.b === 'open') { if (!(await confirmDiscard())) return; busy('여는 중…'); const u = await boxRun(() => HwpStore.box.load(id)); d.close(false); await openBytes(u.buffer, { name: it.name, boxId: id }); }
-          if (b.dataset.b === 'dl') { busy('받는 중…'); const u = await boxRun(() => HwpStore.box.load(id)); HwpStore.download(it.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); toast('내려받기 폴더에 저장했습니다', 2200); }
-          if (b.dataset.b === 'ren') { const n = prompt('새 이름', it.name); if (n && n.trim()) { busy('바꾸는 중…'); await boxRun(() => HwpStore.box.rename(id, n.trim())); if (id === W.boxId) setName(n.trim()); render(); } }
-          if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) 문서함에서 지울까요?\n(GitHub 기록에는 암호화된 상태로 남습니다)`)) { busy('지우는 중…'); await boxRun(() => HwpStore.box.remove(id)); if (id === W.boxId) { W.boxId = null; updateState(); } toast('문서함에서 지웠습니다', 2200); render(); } }
-        } catch (er) { alert(er.message); }
-        finally { btns.forEach(x => x.disabled = false); b.textContent = old; }
-      };
-    }
-    render();
-  }
-
-
   /* ---------- best 문서 (레퍼런스) ---------- */
   const fmtKB = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const fmtDay = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('ko-KR', { year: '2-digit', month: 'short', day: 'numeric' }); };
@@ -317,7 +293,7 @@
   }
   function bestEditDialog(it, after) {
     dialog('best 문서 정보', `<div class="grid1"><label>이름</label><input id="be_nm" value="${escH(it.name)}"><label>메모</label><input id="be_note" value="${escH(it.note || '')}" placeholder="어떤 점이 좋은 문서인지 (예: 공문 서식, 표 정리 깔끔)"><label>꼬리표</label><input id="be_tags" value="${escH((it.tags || []).join(', '))}" placeholder="쉼표로 구분 (예: 공문, 보고서)"></div>`, {
-      okText: '저장', onOk: async q => { try { await BestDocs.update(it.id, { name: q('#be_nm').value, note: q('#be_note').value, tags: q('#be_tags').value.split(/[,，]/) }); toast('고쳤습니다'); after(); } catch (e) { alert(e.message); return false; } } });
+      okText: '저장', onOk: async q => { try { await BestDocs.update(it.id, { name: q('#be_nm').value, note: q('#be_note').value, tags: q('#be_tags').value.split(/[,，]/) }); toast('고쳤습니다'); after(); } catch (e) { tell('고치지 못했습니다', e.message); return false; } } });
   }
   async function bestUpload(files, after) {
     files = Array.from(files || []).filter(f => /\.hwpx$/i.test(f.name));
@@ -332,77 +308,11 @@
     let n = 0;
     for (const f of files) {
       try { await BestDocs.add(f, { note: meta.note, tags: meta.tags, progress: m => toast(f.name + ' — ' + m, 20000) }); n++; }
-      catch (e) { console.error(e); alert(`"${f.name}" 을(를) 올리지 못했습니다.\n\n` + e.message); }
+      catch (e) { console.error(e); await tell(`"${f.name}" 을(를) 올리지 못했습니다`, e.message); }
     }
     if (n) toast(`best 문서 ${n}개를 올렸습니다`, 2600);
     after();
   }
-  const bestItemHtml = (it, full) => `<div class="best-item" data-id="${escH(it.id)}"><div class="bi-ico">${icon('bookmark')}</div>
-      <div class="bi-text"><div class="bi-name" title="${escH(it.name)}">${escH(it.name)}</div><div class="bi-meta"><span>${escH(bestMeta(it))}</span>${it.tags && it.tags.length ? `<span class="bi-tags">${it.tags.map(t => '<span class="tag">' + escH(t) + '</span>').join('')}</span>` : ''}</div>${it.note ? `<div class="bi-note">${escH(it.note)}</div>` : ''}</div>
-      <div class="bi-act"><button class="tb" data-b="open" title="이 문서를 엽니다">${icon('eye', 14)}열기</button>${GUEST ? '' : `<button class="tb" data-b="new" title="이 문서를 바탕으로 새 문서를 시작합니다 (원본은 그대로)">${icon('filePlus', 14)}바탕으로 새 문서</button>`}<button class="tb" data-b="struct" title="뽑아 둔 구조·본문 글 보기">${icon('list', 14)}구조</button>${full && !GUEST ? `<button class="tb" data-b="edit" title="이름·메모·꼬리표">${icon('edit', 14)}</button><button class="tb danger" data-b="del" title="레퍼런스에서 지우기">${icon('trash', 14)}</button>` : ''}</div></div>`;
-  async function bestAct(b, items, after, d) {
-    const id = b.closest('[data-id]').dataset.id; const it = items.find(x => x.id === id); if (!it) return;
-    const old = b.innerHTML; b.disabled = true;
-    try {
-      if (b.dataset.b === 'open') { b.textContent = '여는 중…'; if (d) d.close(false); await bestOpen(it, false); }
-      if (b.dataset.b === 'new') { b.textContent = '여는 중…'; if (d) d.close(false); await bestOpen(it, true); }
-      if (b.dataset.b === 'struct') { b.textContent = '읽는 중…'; bestStructDialog(await BestDocs.get(id)); }
-      if (b.dataset.b === 'edit') bestEditDialog(it, after);
-      if (b.dataset.b === 'del') { if (confirm(`"${it.name}" 을(를) best 문서에서 지울까요?`)) { b.textContent = '지우는 중…'; await BestDocs.remove(id); toast('지웠습니다'); after(); } }
-    } catch (e) { console.error(e); alert(e.message); }
-    finally { b.disabled = false; b.innerHTML = old; }
-  }
-  async function bestDialog() {
-    if (!(await bestReady())) { if (GUEST && BestDocs.mode() === 'github') toast('게스트 모드에서는 GitHub 의 best 문서를 열 수 없습니다 (암호로 잠겨 있음)', 3000); return; }
-    const d = dialog(icon('bookmark', 16) + 'best 문서 — 레퍼런스', '<div id="bl" class="muted">불러오는 중…</div>' + (GUEST ? '' : `<div class="best-drop" id="bl_drop"><b>여기에 .hwpx 파일을 끌어다 놓거나</b> 눌러서 고르세요<br>올린 문서는 누적되어 레퍼런스가 되고, 앞으로 그 레퍼런스를 바탕으로 문서를 만들 수 있습니다.</div>`), {
-      width: 780, noEnter: true, noFocus: true,
-      foot: `<span class="muted" style="font-size:12px">저장 위치: ${escH(BestDocs.MODE_NAMES[BestDocs.mode()])}</span><span class="grow"></span>${GUEST ? '' : `<button class="tb" id="bl_up">${icon('upload', 15)}hwpx 올리기</button>`}<button class="tb primary" data-x="cancel">닫기</button>`,
-    });
-    const q = d.q; let items = [];
-    const pick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.hwpx'; inp.multiple = true; inp.onchange = () => bestUpload(inp.files, render); inp.click(); };
-    if (q('#bl_up')) q('#bl_up').onclick = pick;
-    const drop = q('#bl_drop');
-    if (drop) {
-      drop.onclick = pick;
-      drop.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('over'); });
-      drop.addEventListener('dragleave', () => drop.classList.remove('over'));
-      drop.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('over'); $id('dropMask').hidden = true; dragDepth = 0; bestUpload(e.dataTransfer.files, render); });
-    }
-    async function render() {
-      try { items = await BestDocs.list(); } catch (e) { q('#bl').innerHTML = `<div class="best-empty">${escH(e.message)}</div>`; return; }
-      if (!items.length) { q('#bl').innerHTML = `<div class="best-empty"><b>아직 올린 best 문서가 없습니다</b><br>${GUEST ? '관리자가 올리면 여기에 보입니다.' : '잘 만든 hwpx 문서를 올려 두면 레퍼런스로 쌓입니다.'}</div>`; return; }
-      q('#bl').innerHTML = `<div class="best-list">${items.map(it => bestItemHtml(it, true)).join('')}</div>`;
-      q('#bl').onclick = e => { const b = e.target.closest('[data-b]'); if (b && !b.disabled) bestAct(b, items, render, d); };
-    }
-    render();
-  }
-  /* 시작 화면의 best 문서 줄 (최근 5개) */
-  async function renderBestList() {
-    const box = $id('bestList'); if (!box) return;
-    await BestDocs.init();
-    if (BestDocs.mode() === 'github' && !HwpStore.box.unlocked) { box.innerHTML = ''; return; } // 암호를 열기 전에는 목록을 읽을 수 없음 — [best 문서] 단추에서 연다
-    let items = []; try { items = await BestDocs.list(); } catch (e) { box.innerHTML = ''; return; }
-    if (!items.length) { box.innerHTML = ''; return; }
-    box.innerHTML = `<h4>best 문서 <span class="muted">— 레퍼런스 ${items.length}개 · ${escH(BestDocs.MODE_NAMES[BestDocs.mode()])}</span></h4>${items.slice(0, 5).map(it => `<div class="dl-item" data-id="${escH(it.id)}"><span class="nm2">${icon('bookmark', 15)}${escH(it.name)}</span><span class="bi-meta">${escH(bestMeta(it))}</span><button class="tb" data-b="open">열기</button>${GUEST ? '' : '<button class="tb" data-b="new">바탕으로 새 문서</button>'}</div>`).join('')}${items.length > 5 ? `<div class="dl-item"><span class="muted">그 밖에 ${items.length - 5}개 — [best 문서] 에서 모두 봅니다</span></div>` : ''}`;
-    box.onclick = e => { const b = e.target.closest('[data-b]'); if (b && !b.disabled) bestAct(b, items, renderBestList, null); };
-  }
-  /* ---------- 시작 화면 ---------- */
-  async function showStart() {
-    $id('start').hidden = false;
-    renderBestList();
-    const list = GUEST ? [] : await HwpStore.drafts.list();
-    const box = $id('draftList');
-    if (!list.length) { box.innerHTML = ''; return; }
-    box.innerHTML = `<h4>저장하지 않고 닫은 문서 <span class="muted">— 이 기기에 임시로 남아 있습니다</span></h4>${list.slice(0, 8).map(x => `<div class="dl-item" data-id="${escH(x.id)}"><span class="nm2">${icon('file', 15)}${escH(x.name)}${x.boxId ? ' <span class="muted">(문서함)</span>' : ''}</span><span class="muted">${new Date(x.time).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' })}</span><button class="tb primary" data-d="open">이어서 편집</button><button class="tb danger" data-d="del" title="이 임시본을 지웁니다">지우기</button></div>`).join('')}`;
-    box.onclick = async e => {
-      const b = e.target.closest('[data-d]'); if (!b) return; const id = b.closest('.dl-item').dataset.id;
-      if (b.dataset.d === 'del') { const nm = (list.find(x => x.id === id) || {}).name || ''; if (!confirm(`"${nm}" 임시본을 지울까요?\n지우면 되살릴 수 없습니다.`)) return; await HwpStore.drafts.del(id); showStart(); return; }
-      if (b.disabled) return; b.disabled = true; b.textContent = '여는 중…';
-      try { const x = await HwpStore.drafts.get(id); if (!x) return; await openBytes(await x.blob.arrayBuffer(), { name: x.name, draftId: id, boxId: x.boxId || null, dirty: true }); }
-      finally { b.disabled = false; b.textContent = '이어서 편집'; }
-    };
-  }
-
   /* ---------- 리본 상태 ---------- */
   function fillStyles() {
     const s = $id('selStyle'); const list = H().styles.filter(x => x.type !== 'CHAR');
@@ -485,7 +395,6 @@
   ribbon.addEventListener('mousedown', e => { if (e.target.closest('button,.clr')) { keepSel(); if (!e.target.closest('.clr')) e.preventDefault(); } });
   ribbon.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) act(b.dataset.act); });
   $id('status').addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) act(b.dataset.act); });
-  $id('start').addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) act(b.dataset.act); });
   for (const id of ['selStyle', 'inFont', 'inSize', 'selLs', 'selVa']) $id(id).addEventListener('focus', keepSel);
   $id('selStyle').addEventListener('change', e => { backSel(); applyStyle(e.target.value); });
   const fontApply = () => { const v = $id('inFont').value.trim(); if (!v) return; backSel(); applyCp({ face: v }); };
@@ -502,7 +411,7 @@
   $id('inShade').addEventListener('input', e => { e.target.parentElement.querySelector('span').style.setProperty('--sw', e.target.value); });
   $id('inCellFill').addEventListener('change', e => { backSel(); cellFill(curCells(), e.target.value.toUpperCase()); });
   $id('selZoom').addEventListener('change', e => setZoom(e.target.value));
-  $id('docName').addEventListener('click', () => { const n = prompt('문서 이름', W.name); if (n && n.trim() && n.trim() !== W.name) { setName(n.trim()); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '수정됨' 유지)
+  $id('docName').addEventListener('click', async () => { const n = await askText('문서 이름', '이름', W.name, '바꾸기'); if (n && n !== W.name) { setName(n); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '수정됨' 유지)
 
   function curCells() {
     if (W.cells && W.cells.size) return Array.from(W.cells);
@@ -512,13 +421,14 @@
 
   /* ---------- 명령 ---------- */
   const ALIGN = { alJ: 'JUSTIFY', alL: 'LEFT', alC: 'CENTER', alR: 'RIGHT', alD: 'DISTRIBUTE' };
-  const GUEST_OK = /^(open|help|best|print|find|replace|zoomIn|zoomOut)$/;
+  const GUEST_OK = /^(home|open|help|best|print|find|replace|zoomIn|zoomOut)$/;
   function act(a) {
     if (GUEST && !GUEST_OK.test(a)) { guestSay(); return; }
+    if (a === 'home') return HwpHome.show();
     if (a === 'new') return newDoc();
     if (a === 'open') return openDialog();
-    if (a === 'box') return boxDialog();
-    if (a === 'best') return bestDialog();
+    if (a === 'box') return HwpHome.show('box');
+    if (a === 'best') return HwpHome.show('best');
     if (a === 'help') return helpDialog();
     if (!needDoc()) return;
     if (ALIGN[a]) { backSel(); return applyPp({ align: ALIGN[a] }); }
@@ -566,7 +476,7 @@
       case 'eqH': return equalizeCells(cells, 'h');
       case 'cellFillNone': return cellFill(cells, null);
       case 'cellDlg': return cellDialog(cells);
-      case 'tableDel': if (confirm('이 표를 지울까요?')) deleteTable(td.closest('table.htb')); return;
+      case 'tableDel': askConfirm('이 표를 지울까요?', '표 안의 글도 함께 지워집니다.', '표 지우기', true).then(ok => { if (ok) deleteTable(td.closest('table.htb')); }); return;
     }
   }
   function toggleHeading(type) {
@@ -724,6 +634,7 @@
 
   /* ---------- 끌어다 놓기 ---------- */
   let dragDepth = 0;
+  const dropDone = () => { dragDepth = 0; $id('dropMask').hidden = true; };
   window.addEventListener('dragenter', e => { if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) { dragDepth++; $id('dropMask').hidden = false; } });
   window.addEventListener('dragleave', () => { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $id('dropMask').hidden = true; });
   window.addEventListener('dragover', e => { if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) e.preventDefault(); });
@@ -789,7 +700,7 @@
       return;
     }
     if (k === 'esc') { if (!$id('findBar').hidden) { closeFind(); e.preventDefault(); return; } if (W.cells) { const a = W.cellAnchor; clearCells(); if (a) caretToEnd(a.querySelector('.hp')); e.preventDefault(); return; } if (W.selPic) { hidePic(); return; } setChord(null); return; }
-    if (!W.doc) { if (MAP[k] && /^(ctrl\+o|alt\+o|alt\+n|f1)$/.test(k) && !(GUEST && k === 'alt+n')) { e.preventDefault(); MAP[k](); } return; }
+    if (!W.doc || (typeof HwpHome !== 'undefined' && HwpHome.visible)) { if (MAP[k] && /^(ctrl\+o|alt\+o|alt\+n|f1)$/.test(k) && !(GUEST && k === 'alt+n')) { e.preventDefault(); MAP[k](); } return; }
     if (GUEST) { if (/^(ctrl\+o|alt\+o|ctrl\+p|alt\+p|ctrl\+f|ctrl\+l|f1)$/.test(k)) { e.preventDefault(); MAP[k](); } else if (/^(ctrl|alt)\+[a-z0-9\[\]]$|^f\d$|^ctrl\+enter$/.test(k) && !/^ctrl\+(c|a)$/.test(k)) e.preventDefault(); return; }
     const inEditor = inDoc(e.target) || e.target === document.body || e.target === $id('canvas');
     if (!inEditor && !/^(ctrl|alt)\+|^f\d/.test(k)) return;
@@ -1118,7 +1029,7 @@
 
   /* ---------- 시작 ---------- */
   doc.addEventListener('keyup', () => window.onSelChange());
-  window.__hwp = { W, act, openBytes, loadDoc, save, build, dialog, boxEnsure };
+  window.__hwp = { W, GUEST, act, openBytes, openFile, openDialog, newDoc, loadDoc, save, build, dialog, askConfirm, askText, tell, boxEnsure, boxRun, connectDialog, confirmDiscard, updateState, dropDone, bestReady, bestOpen, bestUpload, bestStructDialog, bestEditDialog, helpDialog, setName, deviceName, fmtKB, fmtDay, bestMeta };
   (async () => {
     GH.load();
     $id('selZoom').value = '1';
@@ -1128,10 +1039,12 @@
     if ('launchQueue' in window) window.launchQueue.setConsumer(async p => {
       if (!p.files || !p.files.length) return;
       launched = true; const h = p.files[0];
-      try { await openFile(await h.getFile(), h); } catch (e) { alert('파일을 열 수 없습니다: ' + e.message); }
+      try { await openFile(await h.getFile(), h); } catch (e) { tell('파일을 열 수 없습니다', e.message); }
     });
     if (q.get('new') === '1' && !GUEST) { loadDoc(HwpxDoc.blank(), { name: '새 문서' }); return; }
+    // home.js 는 이 파일 뒤에 읽히므로 문서가 다 읽힌 뒤에 (타이머만으로는 home.js 보다 먼저 깨어날 수 있음)
+    if (document.readyState === 'loading') await new Promise(r => document.addEventListener('DOMContentLoaded', r, { once: true }));
     await new Promise(r => setTimeout(r, 0));
-    if (!launched && !W.doc) showStart();
+    if (!launched && !W.doc) HwpHome.show();
   })();
 })();
