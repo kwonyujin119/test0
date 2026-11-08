@@ -83,7 +83,7 @@
   function pText(box) {
     const mids = [...new Set(VE.p.clips.map(c => c.mid))].filter(id => { const m = VE.media(id); return m && m.hasAudio && m.kind !== 'image'; });
     const missing = mids.filter(id => !VE.media(id).words), caps = VE.captions(), running = job.text;
-    const cap = VE.p.cap;
+    const cap = VE.p.cap, gaps = caps.length ? findGaps(caps) : [], gapSum = gaps.reduce((a, g) => a + g.cut[1] - g.cut[0], 0);
     box.innerHTML = head('자막 · 글로 편집', '말을 글로 받아 적습니다. 글을 지우면 영상도 함께 잘립니다.') + `
       ${running ? progress('text', 'stopText') : ''}
       ${!running && missing.length ? `<div class="ve-sec"><div class="ve-lab">정확도</div>${seg('tQuality', textUi.quality, [['base', '빠르게<em>약 80MB</em>'], ['small', '더 정확하게<em>약 250MB</em>'], ['large', '가장 정확하게<em>약 760MB</em>']])}
@@ -94,20 +94,21 @@
         <button class="btn sm ghost" id="tSrt"><i data-ic="import"></i>자막 파일(SRT) 넣기</button></div>` : ''}
       ${!mids.length ? '<div class="ve-empty">타임라인에 소리가 있는 영상을 넣으면 자막을 만들 수 있습니다.</div>' : ''}
       ${caps.length ? `<div class="ve-sec ve-inline"><label class="ve-check tight"><input type="checkbox" id="tOn"${cap.on ? ' checked' : ''}><span><b>영상에 자막 넣기</b></span></label></div>
-        <div class="ve-sec"><div class="ve-lab">모양</div>${seg('tStyle', cap.style, [['outline', '테두리'], ['box', '상자'], ['word', '말하는 낱말 강조']])}
-        <div class="ve-lab" style="margin-top:10px">자리</div>${seg('tPos', cap.pos, [['top', '위'], ['middle', '가운데'], ['bottom', '아래']])}
-        <div class="ve-lab" style="margin-top:10px">한 번에 보일 글자</div>${seg('tLen', cap.len || 'mid', [['short', '짧게'], ['mid', '보통'], ['long', '길게']])}
-        <div style="margin-top:10px">${range('tSize', '크기', cap.size, .6, 1.8, .05, v => Math.round(v * 100) + '%')}</div></div>
-        <div class="ve-sec ve-rep"><div class="ve-lab">틀린 말 한 번에 고치기</div>
-          <div class="ve-reprow"><input type="text" id="tFrom" placeholder="틀린 말 (예: 화제)" value="${esc(textUi.from || '')}"><span aria-hidden="true">→</span><input type="text" id="tTo" placeholder="바른 말 (예: 화재)" value="${esc(textUi.to || '')}"><button class="btn sm ink" id="tRep" type="button">바꾸기</button></div>
+        <div class="ve-tools">${gaps.length ? `<button class="btn sm" id="tGaps" title="문장 사이의 말 없는 곳을 모두 잘라 냅니다 (말 앞뒤 ${GAP_PAD}초는 남김)"><i data-ic="scissors"></i>무음 모두 자르기 (${gaps.length}곳 · ${VE.fmtLen(gapSum)})</button>` : ''}<button class="btn sm" id="tFill"><i data-ic="search"></i>군말 찾기</button><button class="btn sm danger" id="tDel" disabled><i data-ic="trash"></i>고른 말 지우기</button><button class="btn sm ghost" id="tExp" title="자막 파일(SRT)로 저장"><i data-ic="download"></i>SRT</button></div>
+        <div class="ve-transcript" id="tDoc" tabindex="0" aria-label="받아 적은 글">${renderDoc(caps, gaps)}</div>
+        <p class="ve-hint">줄이나 낱말을 누르면 그 자리로 갑니다. 끌어서 고른 뒤 Del 을 누르면 그 부분이 잘립니다. 낱말을 두 번 누르면 글자를 고칩니다.</p>
+        <div class="ve-sec ve-rep"><div class="ve-lab">틀린 말 한 번에 고치기<em>예: 화제 → 화재</em></div>
+          <div class="ve-reprow"><input type="text" id="tFrom" placeholder="틀린 말" aria-label="틀린 말" value="${esc(textUi.from || '')}"><span aria-hidden="true">→</span><input type="text" id="tTo" placeholder="바른 말" aria-label="바른 말" value="${esc(textUi.to || '')}"><button class="btn sm" id="tRep" type="button">바꾸기</button></div>
           <label class="ve-check tight"><input type="checkbox" id="tKeep"${textUi.keep !== false ? ' checked' : ''}><span>다음에 만드는 자막에도 자동으로 고치기</span></label>
           ${VE.gloss.list().length ? `<div class="ve-gloss">${VE.gloss.list().map(([a, b]) => `<span class="ve-chip">${esc(a)} → ${esc(b)}<button type="button" data-gl="${esc(a)}" title="지우기" aria-label="${esc(a)} 지우기">×</button></span>`).join('')}</div>` : ''}</div>
-        <div class="ve-tools"><button class="btn sm" id="tFill"><i data-ic="search"></i>군말 찾기</button><button class="btn sm danger" id="tDel" disabled><i data-ic="scissors"></i>고른 말 지우기</button><button class="btn sm ghost" id="tExp" title="자막 파일로 저장"><i data-ic="download"></i>SRT</button></div>
-        <div class="ve-transcript" id="tDoc" tabindex="0">${renderDoc(caps)}</div>
-        <p class="ve-hint">낱말을 누르면 그 자리로 갑니다. 끌어서 고른 뒤 Del 을 누르면 그 부분이 잘립니다. 두 번 누르면 글자를 고칩니다.</p>` : ''}`;
+        <details class="ve-more" id="tLook"${textUi.look ? ' open' : ''}><summary>자막 모양 · 자리 · 크기</summary><div class="ve-lab">모양</div>${seg('tStyle', cap.style, [['outline', '테두리'], ['box', '상자'], ['word', '말하는 낱말 강조']])}
+        <div class="ve-lab" style="margin-top:10px">자리</div>${seg('tPos', cap.pos, [['top', '위'], ['middle', '가운데'], ['bottom', '아래']])}
+        <div class="ve-lab" style="margin-top:10px">한 번에 보일 글자</div>${seg('tLen', cap.len || 'mid', [['short', '짧게'], ['mid', '보통'], ['long', '길게']])}
+        <div style="margin-top:10px">${range('tSize', '크기', cap.size, .6, 1.8, .05, v => Math.round(v * 100) + '%')}</div></details>` : ''}`;
     onSeg(box, 'tQuality', v => { textUi.quality = v; renderTab(); }); onSeg(box, 'tLang', v => { textUi.lang = v; renderTab(); });
     const run = box.querySelector('#tRun'); if (run) run.onclick = () => { if (textUi.quality === 'large' && !(navigator.gpu && localStorage.getItem('ve:asrCpu') !== '1') && !confirm('이 기기는 그래픽 가속(WebGPU)을 쓸 수 없어, 가장 정확한 모델로는 1분 음성에도 십수 분이 걸릴 수 있습니다. 그래도 할까요? (“더 정확하게”를 권합니다)')) return; runTranscribe(missing); };
     const srt = box.querySelector('#tSrt'); if (srt) srt.onclick = () => VE.pickFiles(async files => { if (!files[0]) return; const n = VE.importSrt(await files[0].text(), mids[0]); toast(`자막 ${n}낱말을 넣었습니다`, 2400); renderTab(); }, '.srt');
+    const look = box.querySelector('#tLook'); if (look) look.ontoggle = () => { textUi.look = look.open; };
     onSeg(box, 'tStyle', v => { VE.edit(() => { VE.p.cap.style = v; }); renderTab(); }); onSeg(box, 'tPos', v => { VE.edit(() => { VE.p.cap.pos = v; }); renderTab(); });
     onRange(box, 'tSize', v => { VE.p.cap.size = v; VE.touch(true); }, v => Math.round(v * 100) + '%');
     onSeg(box, 'tLen', v => { VE.edit(() => { VE.p.cap.len = v; }); renderTab(); });
@@ -120,9 +121,33 @@
     const fill = box.querySelector('#tFill'); if (fill) fill.onclick = () => { const list = VE.findFillers(); if (!list.length) { toast('군말을 찾지 못했습니다. 음성 인식은 "음", "어" 를 적지 않을 때가 많습니다. [군더더기] 탭의 무음 자르기도 함께 쓰세요.', 5000); return; } if (confirm(`"음", "어" 같은 군말 ${list.length}개를 찾았습니다. 모두 잘라 낼까요? (되돌리기로 돌아올 수 있습니다)`)) { VE.cutWords(list); renderTab(); } };
     bindDoc(box);
   }
-  function renderDoc(caps) {
-    let html = '', prevEnd = -1, para = false; caps.forEach((c, ci) => { c.words.forEach((w, wi) => { if (prevEnd >= 0 && w.s - prevEnd > 1.4 && !para) { html += '</p><p>'; para = true; } html += `<span class="w" data-c="${ci}" data-w="${wi}">${esc(w.t)}</span> `; prevEnd = w.e; para = false; }); });
-    return `<p>${html}</p>`;
+  /* 문장 사이 · 앞 · 뒤의 말 없는 곳 (타임라인 시간). 말 앞뒤로 GAP_PAD 초는 남기고 자른다 */
+  const GAP_MIN = .8, GAP_PAD = .12;
+  /* 받아 적은 클립 안에서만 찾는다 (사진 · 받아 적지 않은 영상은 말이 없어도 자르지 않음) */
+  function findGaps(caps) {
+    const out = [], total = VE.total(), { starts } = VE.layout(), spans = [];
+    VE.p.clips.forEach((c, i) => { const m = VE.media(c.mid); if (m && m.words && m.words.length) spans.push([starts[i], starts[i] + VE.clipLen(c)]); });
+    const add = (after, a, b) => {
+      for (const [s, e] of spans) {
+        const x = Math.max(a, s), y = Math.min(b, e); if (y - x < GAP_MIN) continue;
+        /* 말과 맞닿은 쪽만 여유를 남김 */
+        const cut = [x === a && a > 0 ? x + GAP_PAD : x, y === b && b < total - .01 ? y - GAP_PAD : y];
+        if (cut[1] - cut[0] > .2) out.push({ after, len: y - x, cut });
+      }
+    };
+    add(-1, 0, caps[0].start);
+    caps.forEach((c, i) => add(i, c.end, i + 1 < caps.length ? caps[i + 1].start : total));
+    return out;
+  }
+  /* 글 칸: 한 줄 = 한 문장, 왼쪽에 시간. 문장 사이의 무음은 [무음 2.3초] 로 보이고 누르면 그곳만 잘린다 */
+  function renderDoc(caps, gaps) {
+    const chip = g => `<div class="ve-gaprow"><button type="button" class="ve-gap" data-gap="${gaps.indexOf(g)}" title="이 무음 잘라 내기">무음 ${g.len.toFixed(1)}초<i data-ic="x"></i></button></div>`;
+    let html = gaps.filter(g => g.after === -1).map(chip).join('');
+    caps.forEach((c, ci) => {
+      html += `<div class="ve-line" data-at="${c.start.toFixed(3)}"><span class="tc" aria-hidden="true">${VE.fmtT(c.start)}</span><p>${c.words.map((w, wi) => `<span class="w" data-c="${ci}" data-w="${wi}">${esc(w.t)}</span>`).join(' ')}</p></div>`;
+      html += gaps.filter(g => g.after === ci).map(chip).join('');
+    });
+    return html;
   }
   const wordFrom = el => { const c = VE.captions()[+el.dataset.c]; return c ? c.words[+el.dataset.w] : null; };
   function selectedWords() { const s = getSelection(), doc = $('tDoc'); if (!s || s.isCollapsed || !doc) return []; const out = []; doc.querySelectorAll('.w').forEach(n => { if (s.containsNode(n, true)) { const w = wordFrom(n); if (w) out.push(w); } }); return out; }
@@ -131,7 +156,13 @@
     const cutSel = () => { const w = selectedWords(); if (!w.length) return; VE.cutWords(w); getSelection().removeAllRanges(); renderTab(); toast(`${w.length}낱말을 잘랐습니다. Ctrl+Z 로 되돌립니다.`, 2400); };
     if (del) del.onclick = cutSel;
     document.onselectionchange = () => { const d = $('tDel'); if (!d) return; const has = selectedWords().length > 0; d.disabled = !has; };
-    doc.onclick = ev => { const n = ev.target.closest('.w'); if (!n) return; const s = getSelection(); if (s && !s.isCollapsed) return; const w = wordFrom(n); if (w) VE.player.seek(w.s + .001); };
+    doc.onclick = ev => {
+      const g = ev.target.closest('[data-gap]'); if (g) { const x = findGaps(VE.captions())[+g.dataset.gap]; if (x) { const cut = VE.removeRanges([x.cut]); toast(`무음 ${VE.fmtLen(cut)}을 잘라 냈습니다. Ctrl+Z 로 되돌립니다.`, 2400); renderTab(); } return; }
+      const s = getSelection(); if (s && !s.isCollapsed) return;
+      const n = ev.target.closest('.w'); if (n) { const w = wordFrom(n); if (w) VE.player.seek(w.s + .001); return; }
+      const line = ev.target.closest('.ve-line'); if (line) VE.player.seek(+line.dataset.at + .001);
+    };
+    const gapsBtn = box.querySelector('#tGaps'); if (gapsBtn) gapsBtn.onclick = () => { const list = findGaps(VE.captions()); if (!list.length) return; const cut = VE.removeRanges(list.map(g => g.cut)); toast(`${list.length}곳에서 무음 ${VE.fmtLen(cut)}을 잘라 냈습니다. Ctrl+Z 로 되돌립니다.`, 2800); if (VE.fitTimeline) VE.fitTimeline(); renderTab(); };
     doc.ondblclick = ev => {
       const n = ev.target.closest('.w'); if (!n) return; const w = wordFrom(n); if (!w) return; getSelection().removeAllRanges();
       const inp = document.createElement('input'); inp.type = 'text'; inp.value = w.t; inp.className = 've-wedit'; inp.style.width = Math.max(40, n.offsetWidth + 22) + 'px'; n.replaceWith(inp); inp.focus(); inp.select();
@@ -161,7 +192,7 @@
   /* ---------- 군더더기 자르기 ---------- */
   const cutUi = { sens: .3, minLen: .7, pad: .12 };
   let found = [];
-  const refreshSilence = () => { found = VE.findSilence(cutUi); VE.tl.overlay = found; VE.tl.request(); const n = $('cFound'); if (n) { const sum = found.reduce((s, r) => s + r[1] - r[0], 0); n.innerHTML = found.length ? `<b>${found.length}곳</b>에서 모두 <b>${VE.fmtLen(sum)}</b> 분량을 찾았습니다. 타임라인에 빨간 빗금으로 표시했습니다.` : '찾은 곳이 없습니다. 민감도를 올려 보세요.'; const a = $('cApply'); if (a) a.disabled = !found.length; } };
+  const refreshSilence = () => { found = VE.findSilence(cutUi); VE.tl.overlay = found; VE.tl.request(); const n = $('cFound'); if (n) { const sum = found.reduce((s, r) => s + r[1] - r[0], 0); n.innerHTML = found.length ? `<b>${found.length}곳</b>에서 모두 <b>${VE.fmtLen(sum)}</b> 분량을 찾았습니다. 타임라인에 빨간 빗금으로 표시했습니다.` : '찾은 곳이 없습니다. 민감도를 올려 보세요.'; const a = $('cApply'); if (a) { a.disabled = !found.length; a.innerHTML = icon('scissors') + (found.length ? `무음 모두 자르기 (${found.length}곳 · ${VE.fmtLen(sum)})` : '무음 모두 자르기'); } } };
   function pCut(box) {
     const anyAudio = VE.p.clips.some(c => { const m = VE.media(c.mid); return m && m.hasAudio; }), wait = VE.p.clips.some(c => { const r = VE.rt.get(c.mid), m = VE.media(c.mid); return m && m.hasAudio && r && !r.peaksDone; });
     box.innerHTML = head('군더더기 자르기', '말이 없는 곳을 찾아 한 번에 잘라 냅니다.') + `
@@ -171,7 +202,7 @@
       ${range('cMin', '이보다 긴 무음만', cutUi.minLen, .2, 3, .1, v => v.toFixed(1) + '초')}
       ${range('cPad', '말 앞뒤 여유', cutUi.pad, 0, .5, .02, v => v.toFixed(2) + '초')}</div>
       <div class="ve-result" id="cFound"></div>
-      <button class="btn ink ve-big" id="cApply"><i data-ic="scissors"></i>찾은 곳 모두 자르기</button>
+      <button class="btn ink ve-big" id="cApply"><i data-ic="scissors"></i>무음 모두 자르기</button>
       <p class="ve-hint">자른 뒤에도 Ctrl+Z 로 되돌릴 수 있습니다.</p>`}
       <div class="ve-sec" style="margin-top:6px"><div class="ve-lab">재생 위치에서 앞뒤 지우기</div><div class="ve-row"><button class="btn sm" id="cHead">앞부분 지우기 <kbd>Q</kbd></button><button class="btn sm" id="cTail">뒷부분 지우기 <kbd>W</kbd></button></div></div>`;
     if (anyAudio) {
@@ -235,11 +266,11 @@
   VE.runFace = runFace;
   function addCharDialog() {
     const bg = document.createElement('div'); bg.className = 'modal-bg'; const files = {};
-    bg.innerHTML = `<div class="modal" style="width:480px"><h3>내 캐릭터 그림 넣기</h3>
+    bg.innerHTML = `<div class="modal ve-narrow" role="dialog" aria-modal="true" aria-label="내 캐릭터 그림 넣기"><h3>내 캐릭터 그림 넣기</h3>
       <div class="ve-field"><span class="ve-lab">이름</span><input type="text" id="cName" value="내 캐릭터"></div>
       <div class="ve-slots">${[['base', '기본', '꼭 필요'], ['mouth', '입 벌림', '말할 때'], ['blink', '눈 감음', '깜빡일 때'], ['both', '입 벌림 + 눈 감음', '선택']].map(([k, t, d]) => `<label class="ve-slot" data-k="${k}"><input type="file" accept="image/png,image/svg+xml,image/webp" hidden><span class="pic"><i data-ic="image"></i></span><b>${t}</b><span class="muted">${d}</span></label>`).join('')}</div>
       <p class="ve-hint">투명 배경의 정면 그림을 권합니다. 크기는 모두 같게 맞춰 주세요. 기본 그림 하나만 넣어도 얼굴을 따라 움직입니다.</p>
-      <div class="actions"><button class="btn" id="cCancel">취소</button><button class="btn primary" id="cSave" disabled>넣기</button></div></div>`;
+      <div class="actions"><button class="btn" id="cCancel" data-dismiss>취소</button><button class="btn ink" id="cSave" disabled>넣기</button></div></div>`;
     document.body.appendChild(bg); fillIcons(bg);
     bg.querySelectorAll('.ve-slot').forEach(s => { const inp = s.querySelector('input'); inp.onchange = () => { const f = inp.files[0]; if (!f) return; files[s.dataset.k] = f; const url = URL.createObjectURL(f); s.querySelector('.pic').innerHTML = `<img src="${url}" alt="">`; bg.querySelector('#cSave').disabled = !files.base; }; });
     bg.querySelector('#cCancel').onclick = () => bg.remove();
@@ -371,15 +402,20 @@
         <div class="ve-sec"><div class="ve-lab">화면 비율</div><div class="ve-ratio" id="pAspect">${[['16:9', '가로', 'YouTube'], ['9:16', '세로', '쇼츠'], ['1:1', '정사각형', ''], ['4:5', '4:5', '피드']].map(([v, t, d]) => `<button type="button" data-v="${v}" class="${p.aspect === v ? 'on' : ''}"><span class="shape r${v.replace(':', '-')}"></span><b>${t}</b>${d ? `<em>${d}</em>` : ''}</button>`).join('')}</div></div>
         <div class="ve-sec"><div class="ve-lab">빈 자리 배경</div>${seg('pBg', p.bg, [['blur', '흐린 장면'], ['black', '검정'], ['white', '흰색']])}</div>
         <div class="ve-sec"><div class="ve-lab">초당 장면 수</div>${seg('pFps', p.fps, [[24, '24'], [30, '30'], [60, '60']])}</div>
+        ${VE.captions().length ? `<div class="ve-sec"><label class="ve-check tight"><input type="checkbox" id="pCap"${p.cap.on ? ' checked' : ''}><span><b>자막 넣기</b> 미리보기와 내보낸 영상에</span></label></div>` : ''}
+        ${p.clips.length ? `<div class="ve-sec ve-quick"><button class="btn sm" type="button" data-open="text"><i data-ic="captions"></i>${VE.captions().length ? '자막 고치기' : '자막 만들기'}</button><button class="btn sm" type="button" data-open="cut"><i data-ic="scissors"></i>무음 자르기</button></div>` : ''}
         <div class="ve-stat"><div><span>전체 길이</span><b>${VE.fmtT(total)}</b></div><div><span>클립</span><b>${p.clips.length}개</b></div></div>
-        <div class="ve-keys"><div class="ve-lab">자주 쓰는 키</div><ul><li><kbd>Space</kbd>재생 · 멈춤</li><li><kbd>S</kbd>재생 위치에서 자르기</li><li><kbd>Del</kbd>고른 것 지우기</li><li><kbd>Q</kbd><kbd>W</kbd>앞부분 · 뒷부분 지우기</li><li><kbd>←</kbd><kbd>→</kbd>한 장면씩 이동</li><li><kbd>Ctrl</kbd>+휠 타임라인 확대</li></ul></div>`;
+        <div class="ve-keys"><div class="ve-lab">자주 쓰는 키</div><ul><li><kbd>Space</kbd>재생 · 멈춤</li><li><kbd>S</kbd>재생 위치에서 나누기</li><li><kbd>Del</kbd>고른 것 지우기</li><li><kbd>Q</kbd><kbd>W</kbd>재생 위치 앞 · 뒤 지우기</li><li><kbd>,</kbd><kbd>.</kbd>고른 것을 앞 · 뒤로 옮기기</li><li><kbd>←</kbd><kbd>→</kbd>한 장면씩 이동 (Shift: 1초)</li><li><kbd>Ctrl</kbd>+<kbd>Z</kbd>되돌리기</li><li><kbd>Ctrl</kbd>+휠 타임라인 확대</li></ul></div>`;
       box.querySelector('#pAspect').onclick = ev => { const b = ev.target.closest('button'); if (b) { VE.edit(() => { p.aspect = b.dataset.v; }); renderProps(); } };
       onSeg(box, 'pBg', v => { VE.edit(() => { p.bg = v; }); renderProps(); }); onSeg(box, 'pFps', v => { VE.edit(() => { p.fps = +v; }); renderProps(); });
+      const pc = box.querySelector('#pCap'); if (pc) pc.onchange = () => VE.edit(() => { p.cap.on = pc.checked; });
+      box.querySelectorAll('[data-open]').forEach(b => b.onclick = () => { VE.openTab(b.dataset.open); document.body.classList.remove('ve-props-open'); });
       fillIcons(box); return;
     }
     if (s.type === 'clip') {
       const m = VE.media(o.mid), isV = m && m.kind === 'video', vids = p.media.filter(x => x.kind === 'video' && x.id !== o.mid);
       box.innerHTML = `<div class="ve-ph"><div><h2 title="${esc(m ? m.name : '')}">${esc(m ? m.name : '클립')}</h2><p>${VE.fmtLen(VE.clipLen(o))}${m && m.kind === 'video' ? ` · 원본 ${VE.fmtT(o.in)}~${VE.fmtT(o.out)}` : ''}</p></div><button class="btn icon ghost" id="pDel" title="이 클립 지우기 (Del)" aria-label="지우기"><i data-ic="trash"></i></button></div>
+        <div class="ve-sec"><div class="ve-lab">순서</div><div class="ve-row"><button class="btn sm" type="button" id="pPrev"${p.clips.indexOf(o) > 0 ? '' : ' disabled'} title="한 칸 앞으로 (,)"><i data-ic="stepB"></i>앞으로</button><button class="btn sm" type="button" id="pNext"${p.clips.indexOf(o) < p.clips.length - 1 ? '' : ' disabled'} title="한 칸 뒤로 (.)">뒤로<i data-ic="stepF"></i></button></div></div>
         ${m && m.kind === 'image' ? `<div class="ve-sec">${range('pLen', '보여 줄 시간', o.out - o.in, .5, 30, .5, v => v + '초')}</div>` : ''}
         ${isV ? `<div class="ve-sec"><div class="ve-lab">속도</div>${seg('pSpeed', o.speed || 1, [[.5, '0.5'], [1, '1'], [1.25, '1.25'], [1.5, '1.5'], [2, '2']])}</div>` : ''}
         ${m && m.hasAudio ? `<div class="ve-sec">${range('pVol', '소리 크기', o.vol, 0, 2, .05, v => Math.round(v * 100) + '%')}</div>` : ''}
@@ -396,6 +432,7 @@
             <div class="ve-lab" style="margin-top:8px">이 카메라 얼굴을 캐릭터로</div>
             <select id="pPipChar" style="width:100%"><option value="">바꾸지 않음</option>${Object.keys(VE.CHARS).concat([...VE.customChars.keys()]).map(id => `<option value="${esc(id)}"${o.pip.char === id ? ' selected' : ''}>${esc(VE.charName(id))}</option>`).join('')}</select>` : ''}</div>` : ''}`;
       box.querySelector('#pDel').onclick = () => VE.deleteSel();
+      box.querySelector('#pPrev').onclick = () => VE.moveSel(-1); box.querySelector('#pNext').onclick = () => VE.moveSel(1);
       const live = (k, after) => v => { o[k] = v; if (after) after(v); VE.touch(true); };
       onRange(box, 'pVol', live('vol'), v => Math.round(v * 100) + '%'); onRange(box, 'pFI', live('fadeIn'), v => v.toFixed(1) + '초'); onRange(box, 'pFO', live('fadeOut'), v => v.toFixed(1) + '초');
       onRange(box, 'pZoom', live('zoom'), v => Math.round(v * 100) + '%'); onRange(box, 'pLen', v => { o.out = o.in + v; VE.touch(true); }, v => v + '초');
@@ -410,13 +447,15 @@
     } else if (s.type === 'music') {
       const m = VE.media(o.mid);
       box.innerHTML = `<div class="ve-ph"><div><h2 title="${esc(m ? m.name : '')}">${esc(m ? m.name : '음악')}</h2><p>${VE.fmtLen(o.out - o.in)} · ${VE.fmtT(o.start)} 부터</p></div><button class="btn icon ghost" id="pDel" title="지우기 (Del)" aria-label="지우기"><i data-ic="trash"></i></button></div>
+        <div class="ve-sec"><div class="ve-lab">시작 위치<em>${VE.fmtT(o.start, true)}</em></div><div class="ve-row"><button class="btn sm" type="button" data-nudge="-1" title="0.1초 앞으로 (,) · Shift 는 1초"><i data-ic="stepB"></i>0.1초</button><button class="btn sm" type="button" data-nudge="1" title="0.1초 뒤로 (.) · Shift 는 1초">0.1초<i data-ic="stepF"></i></button><button class="btn sm" type="button" data-here title="재생 위치에서 시작하게">재생 위치로</button></div></div>
         <div class="ve-sec">${range('pVol', '소리 크기', o.vol, 0, 1.5, .05, v => Math.round(v * 100) + '%')}${range('pFI', '서서히 커지기', o.fadeIn, 0, 5, .1, v => v.toFixed(1) + '초')}${range('pFO', '서서히 작아지기', o.fadeOut, 0, 5, .1, v => v.toFixed(1) + '초')}</div>`;
       box.querySelector('#pDel').onclick = () => VE.deleteSel();
       const live = k => v => { o[k] = v; VE.touch(true); }; onRange(box, 'pVol', live('vol'), v => Math.round(v * 100) + '%'); onRange(box, 'pFI', live('fadeIn'), v => v.toFixed(1) + '초'); onRange(box, 'pFO', live('fadeOut'), v => v.toFixed(1) + '초');
     } else {
       box.innerHTML = `<div class="ve-ph"><div><h2>글자</h2><p>${VE.fmtT(o.start)} ~ ${VE.fmtT(o.end)}</p></div><button class="btn icon ghost" id="pDel" title="지우기 (Del)" aria-label="지우기"><i data-ic="trash"></i></button></div>
-        <div class="ve-sec"><textarea id="pText" rows="3" style="width:100%">${esc(o.text)}</textarea></div>
+        <div class="ve-sec"><textarea id="pText" class="ve-ta sm" rows="3" aria-label="글자 내용">${esc(o.text)}</textarea></div>
         <div class="ve-sec">${seg('pPreset', o.preset, [['title', '큰 제목'], ['lower', '이름표'], ['note', '설명 글']])}</div>
+        <div class="ve-sec"><div class="ve-lab">시작 위치<em>${VE.fmtT(o.start, true)}</em></div><div class="ve-row"><button class="btn sm" type="button" data-nudge="-1" title="0.1초 앞으로 (,) · Shift 는 1초"><i data-ic="stepB"></i>0.1초</button><button class="btn sm" type="button" data-nudge="1" title="0.1초 뒤로 (.) · Shift 는 1초">0.1초<i data-ic="stepF"></i></button><button class="btn sm" type="button" data-here title="재생 위치에서 시작하게">재생 위치로</button></div></div>
         <div class="ve-sec">${range('pSize', '크기', o.size || 1, .4, 2.5, .05, v => Math.round(v * 100) + '%')}${range('pDur', '보여 줄 시간', Math.min(30, o.end - o.start), .5, 30, .5, v => v + '초')}
           <label class="ve-field"><span class="ve-lab">색</span><input type="color" id="pColor" value="${esc(o.color || '#ffffff')}"></label></div>`;
       box.querySelector('#pDel').onclick = () => VE.deleteSel();
@@ -425,6 +464,8 @@
       onRange(box, 'pSize', v => { o.size = v; VE.touch(true); }, v => Math.round(v * 100) + '%'); onRange(box, 'pDur', v => { o.end = o.start + v; VE.touch(true); }, v => v + '초');
       const co = box.querySelector('#pColor'); co.oninput = () => { o.color = co.value; VE.touch(true); }; co.onchange = () => VE.saveSoon();
     }
+    box.querySelectorAll('[data-nudge]').forEach(b => b.onclick = ev => VE.moveSel(+b.dataset.nudge, ev.shiftKey ? 1 : .1));
+    const here = box.querySelector('[data-here]'); if (here) here.onclick = () => { const d = VE.player.t - o.start; if (Math.abs(d) >= .01) VE.moveSel(d > 0 ? 1 : -1, Math.abs(d)); };
     fillIcons(box);
   }
   VE.renderProps = renderProps;

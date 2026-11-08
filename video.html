@@ -25,18 +25,17 @@
 </div>
 <div class="ve-app" id="veApp">
   <header class="ve-top">
-    <a class="ve-crumb" href="videos.html" title="영상 목록으로"><i data-ic="back"></i><span class="mark" aria-hidden="true">영</span><span>영상 작업장</span></a>
+    <a class="ve-crumb" id="veHome" href="videos.html" title="영상 목록으로"><i data-ic="back"></i><span class="mark" aria-hidden="true">영</span><span>영상 목록</span></a>
     <span class="sep"></span>
     <input class="ve-name" id="veName" type="text" value="새 영상" aria-label="프로젝트 이름" spellcheck="false">
-    <span class="ve-save" id="veSave"></span>
+    <span class="ve-save" id="veSave" role="status" aria-live="polite"></span>
     <span class="ve-grow"></span>
     <span class="ve-rec-badge" id="veRecBadge" hidden>녹화 중</span>
     <button class="btn icon ghost" id="btnUndo" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기"><i data-ic="undo"></i></button>
     <button class="btn icon ghost" id="btnRedo" title="다시 하기 (Ctrl+Y)" aria-label="다시 하기"><i data-ic="redo"></i></button>
     <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
-    <button class="btn icon ghost" id="veBtnProps" title="속성 칸" aria-label="속성 칸"><i data-ic="sliders"></i></button>
+    <button class="btn icon ghost" id="veBtnProps" title="속성 칸 열고 닫기" aria-label="속성 칸 열고 닫기"><i data-ic="sliders"></i></button>
     <button class="btn ghost ve-syncbtn" id="btnSync" title="다른 기기와 연결"><i data-ic="cloud"></i><span>이 기기만</span></button>
-    <button class="btn ghost" id="btnProjects" title="영상 목록 (첫 화면)"><i data-ic="folder"></i><span>목록</span></button>
     <button class="btn ink" id="btnExport"><i data-ic="export"></i>내보내기</button>
   </header>
   <nav class="ve-rail" id="veRail" aria-label="작업 메뉴"></nav>
@@ -48,7 +47,7 @@
         <div class="pic"><i data-ic="film"></i></div>
         <h2>영상을 넣어 시작하세요</h2>
         <p>창 어디든 파일을 끌어다 놓아도 됩니다.<br>파일은 이 기기 안에서만 처리합니다.</p>
-        <div class="ve-row"><button class="btn ink" id="btnImportEmpty"><i data-ic="upload"></i>파일 넣기</button><button class="btn" id="btnRecEmpty"><i data-ic="record"></i>화면 녹화</button></div>
+        <div class="ve-row"><button class="btn ink" id="btnImportEmpty"><i data-ic="import"></i>파일 가져오기</button><button class="btn" id="btnRecEmpty"><i data-ic="record"></i>녹화로 시작</button></div>
       </div>
     </div>
     <div class="ve-transport">
@@ -68,19 +67,20 @@
     </div>
   </main>
   <aside class="ve-props" id="veProps"></aside>
-  <div class="ve-split" id="veSplit" title="끌어서 타임라인 높이 바꾸기"></div>
+  <div class="ve-split" id="veSplit" title="끌어서 타임라인 높이 바꾸기" aria-hidden="true"></div>
   <section class="ve-tl" id="veTimeline" aria-label="타임라인">
     <div class="ve-tlbar">
-      <button class="btn sm" id="tlSplit" title="재생 위치에서 자르기"><i data-ic="scissors"></i>자르기<kbd>S</kbd></button>
-      <button class="btn sm" id="tlDelete" title="고른 것 지우기"><i data-ic="trash"></i>지우기<kbd>Del</kbd></button>
+      <button class="btn sm" id="tlSplit" title="재생 위치에서 나누기 (S)"><i data-ic="scissors"></i>자르기<kbd>S</kbd></button>
+      <button class="btn sm" id="tlDelete" title="고른 것 지우기 (Del)"><i data-ic="trash"></i>지우기<kbd>Del</kbd></button>
       <span class="sep"></span>
-      <button class="btn sm" id="tlHead" title="재생 위치의 앞부분 지우기">앞 지우기<kbd>Q</kbd></button>
-      <button class="btn sm" id="tlTail" title="재생 위치의 뒷부분 지우기">뒤 지우기<kbd>W</kbd></button>
+      <button class="btn sm" id="tlHead" title="재생 위치 앞쪽을 지우기 (Q)">앞 지우기<kbd>Q</kbd></button>
+      <button class="btn sm" id="tlTail" title="재생 위치 뒤쪽을 지우기 (W)">뒤 지우기<kbd>W</kbd></button>
       <span class="sep"></span>
-      <button class="btn sm" id="tlSnap" title="클립 끝과 재생 위치에 달라붙기"><i data-ic="magnet"></i>달라붙기</button>
+      <button class="btn sm" id="tlSnap" title="끌 때 클립 끝과 재생 위치에 달라붙기" aria-pressed="true"><i data-ic="magnet"></i><span>달라붙기</span></button>
       <div class="ve-tlzoom">
-        <button class="btn sm ghost" id="tlFit" title="전체가 보이게"><i data-ic="fit"></i>전체 보기</button>
-        <input type="range" id="tlZoom" min="0" max="100" value="50" aria-label="타임라인 확대">
+        <button class="btn sm ghost" id="tlFit" title="전체가 보이게"><i data-ic="fit"></i><span>전체 보기</span></button>
+        <input type="range" id="tlZoom" min="0" max="100" value="50" aria-label="타임라인 확대" title="타임라인 확대 (+ / -)">
+        <button class="btn sm ghost icon" id="tlMin" type="button"></button>
       </div>
     </div>
     <canvas id="tlCanvas"></canvas>

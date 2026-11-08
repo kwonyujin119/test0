@@ -1,5 +1,5 @@
 /* 영상 작업장 — 첫 화면 (교안 작업장과 같은 구성)
-   왼쪽: 새 영상 · 모든 영상 · 최근 7일 · 다른 기기에서 · 아직 안 올라감 / 파일로 시작 · 녹화로 시작 · 다른 기기와 연결
+   왼쪽: 새 영상 · 모든 영상 · 최근 7일 · 다른 기기에서 · 아직 안 올라감 / 파일 가져오기 · 녹화로 시작 · 다른 기기와 연결
    가운데: 가장 최근에 고친 영상 (이어서 작업) · 아래: 다른 영상
    프로젝트는 이 기기 브라우저(IndexedDB)에 있다. 연결을 켰으면 비공개 저장소의 목록도 함께 보여 준다.
    그림(미리보기)은 편집기가 저장할 때 남긴 화면, 없으면 첫 클립의 한 장면을 뽑아 둔다. */
@@ -15,7 +15,10 @@
 
   /* ---------- 작은 도구 ---------- */
   const dur = p => (p.clips || []).reduce((s, c) => s + Math.max(0, (c.out - c.in) / (c.speed || 1)), 0);
-  const fmtDur = s => { s = Math.round(s || 0); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60; return h ? `${h}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}` : `${m}:${String(ss).padStart(2, '0')}`; };
+  /* 길이 표시는 편집기와 같은 셈(초 아래 버림)으로 — 첫 화면 0:11 · 편집기 0:10 처럼 어긋나지 않게 */
+  const fmtDur = s => VE.fmtT(s);
+  const sayDur = s => { s = Math.floor(s || 0); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60; return h ? `${h}시간 ${m}분` : m ? `${m}분${ss ? ` ${ss}초` : ''}` : `${ss}초`; };
+  const fullTime = t => t ? new Date(t).toLocaleString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' 저장' : '';
   function relTime(t) {
     if (!t) return '';
     const now = new Date(), d = new Date(t), mins = Math.floor((now - d) / 60000);
@@ -40,7 +43,7 @@
     });
   }
   const askText = (title, value, ok) => dialog((m, close) => {
-    m.innerHTML = `<h3>${esc(title)}</h3><input type="text" value="${esc(value || '')}" autofocus aria-label="${esc(title)}" style="width:100%;height:40px;font-size:15px"><div class="actions"><button class="btn" data-x>취소</button><button class="btn ink" data-ok>${esc(ok)}</button></div>`;
+    m.innerHTML = `<h3>${esc(title)}</h3><input type="text" class="vh-input" value="${esc(value || '')}" autofocus aria-label="${esc(title)}"><div class="actions"><button class="btn" data-x>취소</button><button class="btn ink" data-ok>${esc(ok)}</button></div>`;
     const inp = m.querySelector('input'); m.querySelector('[data-x]').onclick = () => close(null); m.querySelector('[data-ok]').onclick = () => close(inp.value.trim() || null);
     inp.onkeydown = ev => { if (ev.key === 'Enter' && !ev.isComposing) close(inp.value.trim() || null); };
   });
@@ -65,7 +68,9 @@
       const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto';
       const to = setTimeout(() => done(null), 8000);
       v.onloadedmetadata = () => { v.currentTime = Math.min(Math.max(0, t), Math.max(0, (v.duration || 1) - .05)); };
-      v.onseeked = () => { clearTimeout(to); try { done(v.videoWidth ? draw(v, v.videoWidth, v.videoHeight) : null); } catch (e) { done(null); } v.removeAttribute('src'); v.load(); };
+      /* 찾아간 직후에는 장면이 아직 풀리지 않았을 수 있어(검은 그림), 장면이 준비된 뒤에 그림 */
+      const shoot = () => { clearTimeout(to); try { done(v.videoWidth ? draw(v, v.videoWidth, v.videoHeight) : null); } catch (e) { done(null); } v.removeAttribute('src'); v.load(); };
+      v.onseeked = () => { if (v.readyState >= 2) shoot(); else v.oncanplay = shoot; };
       v.onerror = () => { clearTimeout(to); done(null); };
       v.src = url;
     }));
@@ -137,8 +142,8 @@
       empty.innerHTML = kw ? `<b>"${esc(kw)}" 이(가) 들어간 영상이 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`
         : filter === 'week' ? '<b>최근 7일 동안 고친 영상이 없습니다</b>'
           : filter === 'remote' ? `<b>다른 기기에서 새로 올린 영상이 없습니다</b><span>${remoteErr ? esc(remoteErr) : '다른 기기에서 영상 작업장을 열면 남아 있던 영상이 저절로 올라옵니다.'}</span>`
-            : `<b>첫 영상을 만들어 보세요</b><span>영상·사진·소리 파일로 시작하거나, 화면·카메라를 녹화해 시작합니다.</span><div class="vh-row"><button class="btn ink" data-empty="new">${icon('plus')}새 영상</button><button class="btn" data-empty="import">${icon('import')}파일로 시작</button><button class="btn" data-empty="rec">${icon('record')}녹화로 시작</button></div>`;
-      empty.querySelectorAll('[data-empty]').forEach(b => b.onclick = () => ({ new: newVideo, import: () => $('fileImport').click(), rec: () => go('new=1&tab=rec') })[b.dataset.empty]());
+            : `<b>첫 영상을 만들어 보세요</b><span>영상 · 사진 · 소리 파일을 가져오거나 화면을 녹화해 시작합니다.</span><div class="vh-row"><button class="btn ink" data-empty="import">${icon('import')}파일 가져오기</button><button class="btn" data-empty="rec">${icon('record')}녹화로 시작</button></div>`;
+      empty.querySelectorAll('[data-empty]').forEach(b => b.onclick = () => ({ import: () => $('fileImport').click(), rec: () => go('new=1&tab=rec') })[b.dataset.empty]());
     }
     const notice = $('notice');
     if (on && remoteErr) { notice.style.display = ''; notice.className = 'hub-notice warn'; notice.innerHTML = `${icon('cloud', 15)} 다른 기기 목록을 읽지 못했습니다: ${esc(remoteErr)} <a href="video.html?sync=1">연결 확인</a>`; }
@@ -146,14 +151,23 @@
     else notice.style.display = 'none';
   }
 
-  function metaText(it) { return [it.len ? fmtDur(it.len) : '', it.files ? `파일 ${it.files}개` : '', relTime(it.t)].filter(Boolean).join(' · '); }
+  /* 카드 아랫줄: '3분 12초 · 2일 전' (정확한 때는 마우스를 올리면) */
+  const metaParts = it => [it.len ? sayDur(it.len) : '', relTime(it.t)].filter(Boolean);
+  /* 다른 기기 연결 상태는 작은 선 아이콘 + 흐린 글로만 (주황은 '저장 안 됨' 에만 쓰므로 여기서는 쓰지 않음) */
+  function syncBadge(it) {
+    const dev = esc((it.newer && it.newer.device) || it.device || '다른 기기');
+    if (it.remote) return `<span class="vh-sync" title="${dev}에서 올린 영상입니다. 누르면 받아서 엽니다">${icon('cloud', 14)}${dev}에서</span>`;
+    if (it.newer) return `<span class="vh-sync" title="${dev}에서 이 기기보다 나중에 고쳤습니다. 누르면 받아서 엽니다">${icon('cloud', 14)}${dev}에서 더 최근에 고침</span>`;
+    if (unsent(it)) return `<span class="vh-sync" title="이 기기에는 저장됐고, 다른 기기로는 아직 올리지 않았습니다">${icon('upload', 14)}안 올라감</span>`;
+    return '';
+  }
   function renderResume(it) {
     const p = it.p, resume = $('resume');
     resume.innerHTML = `<div class="resume-main deck-thumb vh-thumb" tabindex="0" role="link" aria-label="${esc(it.name)} 이어서 편집">${it.len ? `<span class="vh-dur">${fmtDur(it.len)}</span>` : ''}</div>
       <div class="resume-side">
         <div class="eyebrow">이어서 작업</div>
         <h2 class="resume-title">${esc(it.name)}</h2>
-        <div class="resume-meta">${esc(metaText(it))}${p.aspect ? ` · ${ASPECT_NAME[p.aspect] || p.aspect}` : ''}${it.newer ? ` · <span class="vh-chip">${esc(it.newer.device || '다른 기기')}에서 더 최근에 고침</span>` : unsent(it) ? ' · <span class="vh-chip warn">아직 안 올라감</span>' : ''}</div>
+        <div class="resume-meta" title="${esc(fullTime(it.t))}">${[...metaParts(it), it.files ? `파일 ${it.files}개` : '', p.aspect ? ASPECT_NAME[p.aspect] || p.aspect : ''].filter(Boolean).map(s => `<span>${esc(s)}</span>`).join('')}${syncBadge(it)}</div>
         <div class="resume-film" data-film></div>
         <div class="resume-cta">
           <button class="btn ink lg" data-go="edit">${icon('edit')}이어서 편집</button>
@@ -184,9 +198,8 @@
     const open = () => (it.remote || it.newer ? pullP(it.id) : openP(it.id));
     th.onclick = ev => { if (!ev.target.closest('button')) open(); }; th.onkeydown = ev => { if (ev.key === 'Enter' && ev.target === th) open(); };
     c.appendChild(th);
-    const chip = it.remote ? `<span class="vh-chip">${esc(it.device || '다른 기기')}에서</span>` : it.newer ? `<span class="vh-chip">${esc(it.newer.device || '다른 기기')}에서 더 최근에 고침</span>` : unsent(it) ? '<span class="vh-chip warn">아직 안 올라감</span>' : '';
     const body = document.createElement('div'); body.className = 'deck-body';
-    body.innerHTML = `<div class="deck-text"><div class="deck-title" title="${esc(it.name)}">${esc(it.name)}</div><div class="deck-meta">${metaText(it).split(' · ').map(s => `<span>${esc(s)}</span>`).join('')}${chip}</div></div>
+    body.innerHTML = `<div class="deck-text"><div class="deck-title" title="${esc(it.name)}">${esc(it.name)}</div><div class="deck-meta" title="${esc(fullTime(it.t))}">${metaParts(it).map(s => `<span>${esc(s)}</span>`).join('')}${syncBadge(it)}</div></div>
       <div class="deck-actions">${it.remote || it.newer ? `<button class="btn sm" data-a="pull">${icon('cloud', 14)}받아서 열기</button>` : `<button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button>`}</div>
       ${it.remote ? '' : `<button class="btn icon ghost kebab" data-more title="더 보기" aria-label="${esc(it.name)} 더 보기">${icon('dots')}</button>`}`;
     c.appendChild(body);
@@ -248,7 +261,7 @@
   async function importFiles(files) {
     if (!files.length) return;
     try { await VE.idb.put('cache', 'pending:import', Array.from(files)); go('new=1&import=1'); }
-    catch (e) { toast('파일을 넘기지 못했습니다. 새 영상을 연 뒤 [파일 넣기] 로 넣어 주세요.', 4000); newVideo(); }
+    catch (e) { toast('파일을 넘기지 못했습니다. 새 영상을 연 뒤 [파일 가져오기] 로 넣어 주세요.', 4000); newVideo(); }
   }
   async function upload() { try { await S.pushAll(); } catch (e) { toast('올리지 못했습니다: ' + VE.niceErr(e), 4200); } all = await loadLocal(); render(); }
 
