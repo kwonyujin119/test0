@@ -1,4 +1,4 @@
-/* 영상 첫 화면 — 발표(ui.css 의 .rail · .hub · .resume · .deck-grid)을 그대로 쓰고, 영상에만 필요한 것만 더한다.
+/* VIDEO 첫 화면 — PRESENTATION(ui.css 의 .rail · .hub · .resume · .deck-grid)을 그대로 쓰고, 영상에만 필요한 것만 더한다.
    글자 크기는 ui.css 의 단계(--fs-*)를 따르고, 아직 없을 때를 위해 같은 값을 기본값으로 둔다. */
 /* 게스트 문: .shell 의 display:grid 가 hidden 을 이겨 목록이 문 아래에 함께 보이던 것을 막음 */
 #vhApp[hidden], #vhGate[hidden] { display: none; }

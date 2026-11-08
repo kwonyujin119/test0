@@ -1,7 +1,7 @@
 {
   "id": "/test0/",
-  "name": "업무 공간",
-  "short_name": "업무 공간",
+  "name": "DPV",
+  "short_name": "DPV",
   "description": "한글(hwpx) 문서 편집, 강의 교안 작업, 영상 편집을 하는 개인 업무 앱",
   "lang": "ko",
   "start_url": "./index.html",
@@ -16,9 +16,9 @@
     { "src": "app/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "문서", "short_name": "문서", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "발표", "short_name": "발표", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "영상", "short_name": "영상", "url": "./videos.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
+    { "name": "DOCUMENT", "short_name": "한글", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "PRESENTATION", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "VIDEO", "short_name": "영상", "url": "./videos.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
   ],
   "file_handlers": [
     { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } },

@@ -1,4 +1,4 @@
-/* 업무 공간 — 첫 화면(입장 · 작업장 고르기)과 작업장 머리 공통 꾸밈
+/* DPV — 첫 화면(입장 · 작업장 고르기)과 작업장 머리 공통 꾸밈
    ui.css 의 토큰(--ui-* · --fs-*)만 쓴다: 바탕은 중립색, 주 단추는 먹색, 강조색은 파랑 하나. 그라데이션·이모지 없음. */
 
 /* ---------- 공통: 모드 표식 · 게스트 모드에서 감추는 것 ---------- */
@@ -24,7 +24,7 @@ html.admin [data-guest] { display: none !important; }
 .ws { max-width: 1080px; margin: 0 auto; padding: 48px 24px 72px; }
 .ws-head { display: flex; align-items: center; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 32px; }
 .ws-head .brand { display: flex; align-items: center; gap: 14px; min-width: 0; padding: 0; }
-.ws-mark { width: 44px; height: 44px; border-radius: 10px; background: var(--ui-ink); color: var(--ui-on-ink); display: grid; place-items: center; font-size: var(--fs-xl); font-weight: 800; letter-spacing: 0; flex: none; }
+.ws-mark { width: 44px; height: 44px; border-radius: 10px; background: var(--ui-ink); color: var(--ui-on-ink); display: grid; place-items: center; font-size: 14px; font-weight: 800; letter-spacing: -.01em; flex: none; } /* 심벌 DPV */
 .ws-head h1 { margin: 0; font-size: var(--fs-2xl); line-height: var(--lh-2xl); letter-spacing: -.02em; }
 .ws-head .sub { margin-top: 2px; color: var(--ui-muted); font-size: var(--fs-md); line-height: var(--lh-md); word-break: keep-all; overflow-wrap: anywhere; }
 .ws-head .tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -112,7 +112,7 @@ html.in-app .ws-app { display: none; }
   .ws-head { margin-bottom: 20px; }
   .ws-head h1 { font-size: var(--fs-xl); line-height: var(--lh-xl); }
   .ws-head .sub { font-size: var(--fs-sm); line-height: var(--lh-sm); }
-  .ws-mark { width: 40px; height: 40px; font-size: var(--fs-lg); }
+  .ws-mark { width: 40px; height: 40px; font-size: 13px; }
   .ws-head { flex-wrap: wrap; align-items: flex-start; }
   .ws-head .brand { flex: 1 1 240px; }
   .ws-head .tools:has(.ws-chip) { width: 100%; }
@@ -132,3 +132,10 @@ html.in-app .ws-app { display: none; }
 }
 @media (pointer: coarse) { .ws-head .tools .btn { min-height: 40px; } }
 @media (prefers-reduced-motion: reduce) { .ws-banner:hover, .ws-card:hover .go .ico { transform: none; } }
+
+/* 첫 화면 카드: 영역 색 (토큰은 ui.css) */
+.ws-card[data-ws] .ws-ico { background: var(--ws-bg); color: var(--ws-fg); box-shadow: inset 0 0 0 1px var(--ws-line); }
+.ws-card[data-ws]:hover { border-color: var(--ws-line); }
+.ws-card[data-ws] .go, .ws-card[data-ws] .resume-link .rl-go { color: var(--ws-fg); }
+.ws-card[data-ws] .resume-link:not(.empty) { background: color-mix(in srgb, var(--ws-bg) 70%, var(--ui-panel)); }
+.ws-card[data-ws] .resume-link:not(.empty):hover { background: var(--ws-bg); }

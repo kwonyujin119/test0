@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-ws="video">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>영상</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2316171a'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>영</text></svg>">
+<title>VIDEO</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23f1ecfc'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='%235a40b0' font-family='sans-serif' font-weight='700'>V</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
@@ -17,15 +17,15 @@
 <body class="ve-panel-open">
 <div id="veGate" hidden>
   <div class="ve-gate">
-    <span class="mark" aria-hidden="true">영</span>
-    <h1>영상 편집은 관리자만 씁니다</h1>
+    <span class="mark" aria-hidden="true">V</span>
+    <h1>VIDEO는 관리자만 씁니다</h1>
     <p>게스트 모드는 보기 전용입니다. 영상을 편집하려면 접속코드를 입력해 주세요.</p>
-    <div class="ve-row"><a class="btn" href="index.html"><i data-ic="back"></i>업무 공간으로</a><button class="btn ink" id="gateIn"><i data-ic="key"></i>관리자로 입장</button></div>
+    <div class="ve-row"><a class="btn" href="index.html"><i data-ic="back"></i>DPV로</a><button class="btn ink" id="gateIn"><i data-ic="key"></i>관리자로 입장</button></div>
   </div>
 </div>
 <div class="ve-app" id="veApp">
   <header class="ve-top">
-    <a class="ve-crumb" id="veHome" href="videos.html" title="영상 목록으로"><i data-ic="back"></i><span class="mark" aria-hidden="true">영</span><span>영상 목록</span></a>
+    <a class="ve-crumb" id="veHome" href="videos.html" title="영상 목록으로"><i data-ic="back"></i><span class="mark" aria-hidden="true">V</span><span>영상 목록</span></a>
     <span class="sep"></span>
     <input class="ve-name" id="veName" type="text" value="새 영상" aria-label="프로젝트 이름" spellcheck="false">
     <span class="ve-save" id="veSave" role="status" aria-live="polite"></span>
