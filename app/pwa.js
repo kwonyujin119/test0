@@ -1,6 +1,9 @@
-/* DPV — 앱 설치·실행
-   1) [앱 설치] 를 누르면 설명 없이 바로 브라우저의 설치 창 (beforeinstallprompt). 신호가 아직 없으면 잠깐(최대 3초) 기다렸다가 띄움
-   2) 바로 설치가 안 되는 경우(이미 설치 · 아이폰 · 앱 안 브라우저 …)만 아래에 한 줄로 알림. 자세한 방법은 그 알림의 단추로
+/* DPV — 앱 설치·실행 (사용자가 따로 방법을 찾지 않게)
+   1) [앱 설치] → 브라우저가 허락하면 바로 설치 창
+   2) 다른 앱 안에서 연 화면(카톡 · 크롬 커스텀 탭 등)이라 설치가 안 되면 → 크롬 앱(카톡은 기본 브라우저)으로 이 화면을 바로 열고,
+      거기서 [설치] 단추 하나만 뜨게 함 (?install=1)
+   3) 이미 설치돼 있으면 → 설치된 DPV 앱으로 바로 엶 (안드로이드)
+   4) 아이폰은 Apple 이 코드로 설치를 허락하지 않아, 공유 단추 위치만 한 줄로 알림
    3) Windows 는 '설치 파일'(바탕화면·시작 메뉴 아이콘을 만들어 앱 창으로 엶)도 제공 — 브라우저 사정과 무관하게 항상 됨 */
 (() => {
   const ok = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -39,22 +42,42 @@
     const t = setTimeout(() => { window.removeEventListener('beforeinstallprompt', on); res(false); }, ms);
     window.addEventListener('beforeinstallprompt', on, { once: true });
   });
+  const here = extra => { const u = new URL(location.href); u.hash = ''; u.searchParams.delete('install'); if (extra) for (const k in extra) u.searchParams.set(k, extra[k]); return u; };
+  const intentFor = (u, pkg) => `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;${pkg ? `package=${pkg};` : ''}S.browser_fallback_url=${encodeURIComponent(u.href)};end`;
+  const toChrome = () => { location.href = intentFor(here({ install: '1' }), 'com.android.chrome'); };
+  const openApp = () => { if (os === 'android') location.href = intentFor(here()); else note('이미 설치되어 있습니다 — 바탕화면 · 시작 메뉴의 DPV 아이콘으로 여세요'); };
+  /* 단추 하나짜리 창 (설명 대신) */
+  function sheet(o) {
+    css(); closeGuide();
+    guide = document.createElement('div'); guide.id = 'pwaGuide'; guide.dataset.mode = 'sheet';
+    guide.setAttribute('role', 'dialog'); guide.setAttribute('aria-modal', 'true'); guide.setAttribute('aria-label', o.title);
+    guide.innerHTML = `<div class="box"><h3>${o.title}</h3>${o.text ? `<p>${o.text}</p>` : ''}${o.label ? `<button class="btn ink big" data-go>${ic(o.icon || 'download')}${o.label}</button>` : ''}<div class="row"><button class="btn ghost" data-c>${o.label ? '나중에' : '닫기'}</button></div></div>`;
+    guide.addEventListener('mousedown', e => { if (e.target === guide) closeGuide(); });
+    guide.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
+    document.body.appendChild(guide);
+    guide.querySelector('[data-c]').onclick = () => closeGuide();
+    const go = guide.querySelector('[data-go]'); if (go) { go.onclick = () => { closeGuide(); o.run(); }; go.focus(); }
+  }
+  const askInstall = () => sheet({ title: 'DPV 앱 설치', text: '아래 단추를 누르고, 뜨는 창에서 [설치] 를 누르면 끝납니다.', label: '설치', run: async () => { if (!(await install())) note('설치를 취소했습니다. 다시 누르면 언제든 설치할 수 있습니다'); } });
   let starting = false;
   async function start() {
     if (starting) return; starting = true;
     try {
-      if (!PWA.prompt && canPrompt() && !PWA.installed) { note('설치 창을 여는 중…'); await waitPrompt(3000); }
-      if (PWA.prompt) {
-        const done = await install();
-        if (!done) note('설치를 취소했습니다. 다시 누르면 언제든 설치할 수 있습니다');
-        return; // 설치되면 appinstalled 가 알림
+      /* 카카오톡 안: 기본 브라우저로 바로 (거기서 [설치] 하나) */
+      if (/KAKAOTALK/i.test(ua)) { location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(here({ install: '1' }).href); return; }
+      if (browser === 'inapp' && os === 'android') return toChrome();
+      if (PWA.installed) return openApp();
+      if (!PWA.prompt && canPrompt()) { note('설치 창을 여는 중…'); await waitPrompt(2500); }
+      if (PWA.prompt) { if (!(await install())) note('설치를 취소했습니다. 다시 누르면 언제든 설치할 수 있습니다'); return; } // 설치되면 appinstalled 가 알림
+      if (PWA.installed) return openApp();
+      /* 안드로이드인데 설치 창이 안 옴 = 다른 앱 안에서 연 화면(크롬 커스텀 탭 등)이거나 이미 설치됨 → 크롬 앱으로 이 화면을 열어 거기서 마무리 */
+      if (os === 'android') return toChrome();
+      if (os === 'ios') {
+        if (browser === 'inapp') return note('이 앱 안 화면에서는 설치할 수 없습니다 — 오른쪽 위 메뉴에서 [Safari 로 열기] 를 눌러 주세요');
+        return note(browser === 'safari' ? '아래 가운데 공유 단추(□↑) → [홈 화면에 추가] 를 누르면 설치됩니다' : '주소창 오른쪽 공유 단추(□↑) → [홈 화면에 추가] 를 누르면 설치됩니다', { label: '그림으로 보기', run: () => showGuide('help') });
       }
-      const more = { label: '다른 방법', run: () => showGuide('help') };
-      if (PWA.installed) return note('이미 설치되어 있습니다 — 바탕화면 · 홈 화면의 DPV 아이콘으로 여세요', more);
-      if (os === 'ios') return note('아래 공유 단추(□↑) → [홈 화면에 추가] 를 누르면 설치됩니다', more);
-      if (browser === 'inapp') return note('이 앱 안 브라우저에서는 설치할 수 없습니다 — 크롬이나 사파리로 열어 주세요', more);
-      if (browser === 'firefox') return note('파이어폭스는 바로 설치를 지원하지 않습니다 — 크롬이나 엣지로 열어 주세요', more);
-      note('이 브라우저가 지금은 바로 설치를 허락하지 않습니다. 이미 설치했다면 주소창 오른쪽의 앱 아이콘으로 여세요', more);
+      if (os === 'windows') return sheet({ title: 'DPV 앱 설치', text: '이 브라우저에서는 바로 설치가 되지 않아 설치 파일로 설치합니다. 받은 파일을 열면 바탕화면 · 시작 메뉴에 DPV 아이콘이 생깁니다. (이미 설치했다면 주소창 오른쪽의 앱 아이콘으로 여세요)', label: '설치 파일 받기', run: () => { const a = document.createElement('a'); a.href = 'install/setup.cmd'; a.download = 'DPV 설치.cmd'; document.body.appendChild(a); a.click(); a.remove(); } });
+      note('이 브라우저에서는 바로 설치가 되지 않습니다 — 크롬이나 엣지로 열어 주세요', { label: '다른 방법', run: () => showGuide('help') });
     } finally { starting = false; }
   }
 
@@ -116,7 +139,7 @@
     }
   }
   function refreshGuide() {
-    if (!guide) return;
+    if (!guide || guide.dataset.mode === 'sheet') return;
     const mode = guide.dataset.mode; let h = '';
     if (mode === 'done') {
       h = /ios|android/.test(os) ? `<h3>${ic('check', 20)}설치했습니다</h3><p>앞으로는 <b>홈 화면</b>의 <b>DPV</b> 아이콘으로 여세요. 주소창 없이 앱처럼 열립니다.</p><div class="row"><button class="btn ink" data-c>확인</button></div>`
@@ -155,5 +178,15 @@
     (document.body || document.documentElement).appendChild(el);
   }
   if (document.body) pill(); else document.addEventListener('DOMContentLoaded', pill);
+  if (/[?&]install=1(&|$)/.test(location.search) && !standalone) {
+    try { history.replaceState(null, '', here().href); } catch (e) { }
+    const arrive = async () => {
+      if (PWA.prompt) return askInstall();
+      if (await waitPrompt(6000)) return askInstall();
+      if (os === 'android') sheet({ title: '이 기기에 DPV 앱이 이미 있습니다', text: '설치된 DPV 앱으로 엽니다.', label: '앱 열기', icon: 'arrowRight', run: () => openApp() });
+      else if (PWA.installed) note('이미 설치되어 있습니다 — 바탕화면 · 시작 메뉴의 DPV 아이콘으로 여세요');
+    };
+    if (document.body) arrive(); else document.addEventListener('DOMContentLoaded', arrive);
+  }
   fire();
 })();
