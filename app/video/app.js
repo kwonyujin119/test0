@@ -107,18 +107,81 @@
     const all = (await VE.idb.all('projects').catch(() => [])).map(x => x.value).sort((a, b) => (b.updated || 0) - (a.updated || 0));
     const bg = document.createElement('div'); bg.className = 'modal-bg';
     bg.innerHTML = `<div class="modal" style="width:520px"><h3>내 영상 프로젝트</h3><div class="ve-plist">${all.map(p => `<div class="ve-pitem${p.id === VE.p.id ? ' on' : ''}" data-id="${esc(p.id)}"><div><b>${esc(p.name)}</b><span>${new Date(p.updated || 0).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · 파일 ${p.media.length}개</span></div>${p.id === VE.p.id ? '<em>지금 작업 중</em>' : `<button class="btn sm" data-open="${esc(p.id)}">열기</button>`}<button class="btn icon sm ghost" data-rm="${esc(p.id)}" title="지우기" aria-label="지우기"><i data-ic="trash"></i></button></div>`).join('') || '<div class="ve-empty">저장된 프로젝트가 없습니다.</div>'}</div>
-      <p class="ve-hint">프로젝트와 넣은 파일은 이 기기의 브라우저에만 있습니다. 다른 기기에서는 보이지 않습니다.</p><div class="actions"><button class="btn" id="pjClose">닫기</button><button class="btn ink" id="pjNew"><i data-ic="plus"></i>새 프로젝트</button></div></div>`;
+      <div id="pjRemote"></div>
+      <p class="ve-hint">${VE.sync.cfg().on ? '다른 기기와 연결되어 있습니다. 저장하면 비공개 저장소에 올라가고, 다른 기기의 목록에도 나타납니다.' : '프로젝트와 넣은 파일은 이 기기의 브라우저에만 있습니다. 휴대폰 · PC 에서 함께 보려면 위쪽 [다른 기기와 연결] 을 켜세요.'}</p><div class="actions"><button class="btn" id="pjClose">닫기</button><button class="btn ink" id="pjNew"><i data-ic="plus"></i>새 프로젝트</button></div></div>`;
     document.body.appendChild(bg); fillIcons(bg);
     bg.querySelector('#pjClose').onclick = () => bg.remove();
     /* 같은 이름이 쌓이지 않게 '새 영상 2', '새 영상 3' … */
     const freeName = () => { const used = new Set(all.map(p => p.name)); if (!used.has('새 영상')) return '새 영상'; for (let n = 2; ; n++) if (!used.has('새 영상 ' + n)) return '새 영상 ' + n; };
     bg.querySelector('#pjNew').onclick = async () => { await VE.saveNow(); await VE.loadProject(VE.newProject(freeName())); await VE.saveNow(); syncName(); bg.remove(); };
-    bg.querySelectorAll('[data-open]').forEach(b => b.onclick = async () => { await VE.saveNow(); const p = all.find(x => x.id === b.dataset.open); await VE.loadProject(p); syncName(); bg.remove(); try { localStorage.setItem('ve:last', p.id); } catch (e) { } });
+    bg.querySelectorAll('[data-open]').forEach(b => b.onclick = async () => { await VE.saveNow(); const p = all.find(x => x.id === b.dataset.open); await VE.loadProject(p); syncName(); bg.remove(); try { localStorage.setItem('ve:last', p.id); } catch (e) { } VE.sync.refreshOpen(); });
+    /* 다른 기기에서 만든 프로젝트 (이 기기에 없거나 더 최근에 고친 것) */
+    if (VE.sync.cfg().on) (async () => {
+      const box = bg.querySelector('#pjRemote'); box.innerHTML = '<p class="ve-hint">다른 기기의 프로젝트를 확인하는 중…</p>';
+      try {
+        const list = await VE.sync.list(), mine = new Map(all.map(p => [p.id, p]));
+        const rows = Object.entries(list).filter(([id, r]) => !mine.has(id) || (r.updated || 0) > (mine.get(id).updated || 0)).sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
+        box.innerHTML = rows.length ? `<div class="ve-lab" style="margin-top:12px">다른 기기에서</div><div class="ve-plist">${rows.map(([id, r]) => `<div class="ve-pitem"><div><b>${esc(r.name)}</b><span>${esc(r.device || '다른 기기')} · ${new Date(r.updated || 0).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · 파일 ${r.media || 0}개${mine.has(id) ? ' · 이 기기보다 최근' : ''}</span></div><button class="btn sm ink" data-pull="${esc(id)}">받아서 열기</button></div>`).join('')}</div>` : '';
+        box.querySelectorAll('[data-pull]').forEach(b => b.onclick = async () => {
+          const id = b.dataset.pull, here = mine.get(id);
+          if (here && id === VE.p.id && (VE.p.updated || 0) > ((JSON.parse(localStorage.getItem('ve:syncState') || '{}').p || {})[id] || {}).rev && !confirm('이 기기에서 고친 뒤 아직 올리지 않은 내용이 있습니다. 다른 기기 것으로 바꿀까요?')) return;
+          b.disabled = true; b.textContent = '받는 중…';
+          try { await VE.saveNow(); const p = await VE.sync.pull(id); await VE.loadProject(p); syncName(); bg.remove(); try { localStorage.setItem('ve:last', p.id); } catch (e) { } toast('편집 내용을 받았습니다. 영상 파일을 받는 중입니다', 2600); await VE.sync.fetchMissing(); toast('다 받았습니다', 1800); }
+          catch (e) { b.disabled = false; b.textContent = '받아서 열기'; toast('받지 못했습니다: ' + VE.niceErr(e), 4200); }
+        });
+      } catch (e) { box.innerHTML = `<p class="ve-hint" style="color:var(--ui-danger)">다른 기기의 목록을 읽지 못했습니다: ${esc(VE.niceErr(e))}</p>`; }
+    })();
     bg.querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
-      const p = all.find(x => x.id === b.dataset.rm); if (!confirm(`'${p.name}' 프로젝트와 안에 넣은 파일을 이 기기에서 지울까요? 되돌릴 수 없습니다.`)) return;
+      const p = all.find(x => x.id === b.dataset.rm); if (!confirm(`'${p.name}' 프로젝트와 안에 넣은 파일을 이 기기에서 지울까요?${VE.sync.cfg().on ? ' 다른 기기의 목록에서도 지웁니다.' : ''} 되돌릴 수 없습니다.`)) return;
+      if (VE.sync.cfg().on) VE.sync.remove(p.id).catch(e => toast('다른 기기 목록에서 지우지 못했습니다: ' + VE.niceErr(e), 4000));
       const others = all.filter(x => x.id !== p.id).flatMap(x => x.media.map(m => m.id)); for (const m of p.media) if (!others.includes(m.id)) { await VE.idb.del('blobs', m.id).catch(() => { }); await VE.idb.del('cache', m.id + ':peaks').catch(() => { }); await VE.idb.del('cache', m.id + ':track').catch(() => { }); if (m.dub) for (const s of m.dub.segs) await VE.idb.del('cache', s.k).catch(() => { }); }
       await VE.idb.del('projects', p.id); if (p.id === VE.p.id) { await VE.loadProject(VE.newProject()); syncName(); } bg.remove(); projectsDialog();
     });
+  }
+  /* ---------- 다른 기기와 연결 ---------- */
+  function syncLabel() {
+    const S = VE.sync, b = $('btnSync'); if (!b) return; const lab = b.querySelector('span');
+    const t = !S.cfg().on ? '이 기기만' : S.state === 'busy' ? (S.ratio != null ? `올리고 받는 중 ${Math.round(S.ratio * 100)}%` : '맞추는 중') : S.state === 'error' ? '연결 오류' : S.state === 'conflict' ? '확인 필요' : '연결됨';
+    if (lab) lab.textContent = t; b.title = (S.cfg().on ? S.msg || '다른 기기와 연결됨' : '다른 기기와 연결 (휴대폰 · PC 에서 같은 프로젝트)');
+    b.classList.toggle('on', S.cfg().on && S.state !== 'error' && S.state !== 'conflict'); b.classList.toggle('bad', S.state === 'error' || S.state === 'conflict');
+  }
+  function syncDialog() {
+    const S = VE.sync, c = S.cfg(), bg = document.createElement('div'); bg.className = 'modal-bg';
+    const repoUrl = `https://github.com/new?name=${encodeURIComponent(c.repo)}&visibility=private&description=${encodeURIComponent('영상 작업장 (비공개)')}`;
+    bg.innerHTML = `<div class="modal ve-sync" style="width:560px"><h3>다른 기기와 연결</h3>
+      <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">휴대폰과 PC 에서 같은 영상 프로젝트를 이어서 편집합니다. 편집 내용과 영상 파일을 <b>GitHub 비공개 저장소</b>에 올리고 받습니다. 얼굴이 나오는 영상이라 공개 저장소는 쓰지 않습니다.</p>
+      ${c.token ? '' : `<div class="ve-note warn">이 기기에 GitHub 토큰이 없습니다. <a href="index.html">업무 공간 첫 화면</a>의 [GitHub 연결] 에서 먼저 토큰을 넣어 주세요. (교안 저장에 쓰는 것과 같은 토큰)</div>`}
+      <details class="ve-steps"${c.on ? '' : ' open'}><summary>처음 한 번 준비 (약 3분)</summary><ol>
+        <li><a href="${repoUrl}" target="_blank" rel="noopener">비공개 저장소 만들기</a> — 이름 <b>${esc(c.repo)}</b>, <b>Private</b> 를 고르고 [Create repository].</li>
+        <li><a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 권한 더하기</a> — 쓰고 있는 토큰을 열어 Repository access 에 <b>${esc(c.repo)}</b> 를 더하고, Contents 권한을 <b>Read and write</b> 로. (클래식 토큰에 repo 권한이 있으면 이 단계는 필요 없음)</li>
+        <li>아래 [연결 확인] 을 누르고, 휴대폰에서도 같은 화면에서 연결을 켭니다.</li></ol></details>
+      <label class="ve-field"><span class="ve-lab">저장소 이름</span><input type="text" id="syRepo" value="${esc(c.repo)}" spellcheck="false" autocomplete="off"></label>
+      <div class="ve-note" id="syState">${c.on ? esc(S.msg || '연결됨') : '아직 이 기기만 씁니다.'}</div>
+      <div class="actions"><button class="btn" id="syClose">닫기</button>${c.on ? '<button class="btn" id="syOff">연결 끄기</button><button class="btn" id="syNow">지금 맞추기</button>' : ''}<button class="btn ink" id="syOn">${c.on ? '연결 확인' : '연결 확인하고 켜기'}</button></div></div>`;
+    document.body.appendChild(bg);
+    const state = (t, bad) => { const n = bg.querySelector('#syState'); n.textContent = t; n.classList.toggle('warn', !!bad); };
+    const repoIn = bg.querySelector('#syRepo'); repoIn.onkeydown = e => e.stopPropagation();
+    bg.querySelector('#syClose').onclick = () => bg.remove();
+    bg.querySelector('#syOn').onclick = async () => {
+      const repo = repoIn.value.trim().replace(/^.*\//, ''); if (!repo) { repoIn.focus(); return; }
+      S.setCfg({ repo }); S.ok = false; state('연결을 확인하는 중…');
+      try { const r = await S.check(); S.setCfg({ on: true }); state(`연결됐습니다. 비공개 저장소 · 사용량 ${VE.fmtSize(r.size)} (GitHub 은 몇 GB 이하를 권합니다). 지금 프로젝트를 올립니다.`); syncLabel(); await VE.saveNow(); S.push(VE.p).then(() => S.refreshOpen()).catch(() => { }); }
+      catch (e) { state(VE.niceErr(e), true); }
+    };
+    const off = bg.querySelector('#syOff'); if (off) off.onclick = () => { S.setCfg({ on: false }); S.init(); syncLabel(); bg.remove(); toast('연결을 껐습니다. 이제 이 기기에만 저장합니다', 2400); };
+    const now = bg.querySelector('#syNow'); if (now) now.onclick = async () => { state('맞추는 중…'); try { await VE.saveNow(); await S.push(VE.p); await S.refreshOpen(); state(S.msg || '맞췄습니다', S.state === 'error' || S.state === 'conflict'); } catch (e) { state(VE.niceErr(e), true); } };
+  }
+  /* 두 기기에서 같은 프로젝트를 고쳤을 때 */
+  let conflictOpen = false;
+  function conflictDialog({ p, remote }) {
+    if (conflictOpen) return; conflictOpen = true; const bg = document.createElement('div'); bg.className = 'modal-bg';
+    bg.innerHTML = `<div class="modal" style="width:480px"><h3>다른 기기에서도 고쳤습니다</h3>
+      <p style="font-size:13.5px;line-height:1.6;margin:0 0 12px">'${esc(p.name)}' 을(를) ${esc(remote.device || '다른 기기')}에서 ${new Date(remote.updated).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })} 에 고쳤고, 이 기기에서도 고쳤습니다. 어느 쪽을 남길까요? 남기지 않은 쪽의 고친 내용은 사라집니다.</p>
+      <div class="actions"><button class="btn" id="cfLater">나중에</button><button class="btn" id="cfMine">이 기기 것 남기기</button><button class="btn ink" id="cfTheirs">${esc(remote.device || '다른 기기')} 것 받기</button></div></div>`;
+    document.body.appendChild(bg); const close = () => { bg.remove(); conflictOpen = false; };
+    bg.querySelector('#cfLater').onclick = close;
+    bg.querySelector('#cfMine').onclick = async () => { close(); try { await VE.sync.push(VE.p, { force: true }); toast('이 기기 것을 올렸습니다', 2000); } catch (e) { toast(VE.niceErr(e), 4000); } };
+    bg.querySelector('#cfTheirs').onclick = async () => { close(); try { const q = await VE.sync.pull(p.id); await VE.loadProject(q); syncName(); await VE.sync.fetchMissing(); toast('다른 기기 것을 받았습니다', 2000); } catch (e) { toast(VE.niceErr(e), 4000); } };
   }
   function syncName() { $('veName').value = VE.p.name; document.title = VE.p.name + ' - 영상 작업장'; }
 
@@ -146,7 +209,8 @@
     $('btnStart').onclick = () => VE.player.seek(0); $('btnEnd').onclick = () => VE.player.seek(VE.total());
     $('btnPrev').onclick = () => { VE.player.pause(); VE.player.seek(VE.player.t - 1 / (VE.p.fps || 30)); }; $('btnNext').onclick = () => { VE.player.pause(); VE.player.seek(VE.player.t + 1 / (VE.p.fps || 30)); };
     $('btnUndo').onclick = VE.undo; $('btnRedo').onclick = VE.redo;
-    $('btnExport').onclick = exportDialog; $('btnProjects').onclick = projectsDialog;
+    $('btnExport').onclick = exportDialog; $('btnProjects').onclick = projectsDialog; $('btnSync').onclick = syncDialog;
+    VE.on('sync', syncLabel); VE.on('syncConflict', conflictDialog); VE.on('save', () => { if (VE.saveState === 'saved') VE.sync.soon(); });
     $('btnImportEmpty').onclick = () => VE.pickFiles(); $('btnRecEmpty').onclick = () => VE.openTab('rec');
     /* 속성 칸: 넓은 화면에서는 접어서 미리보기를 넓히고(기억함), 좁은 화면에서는 떠 있는 칸으로 */
     $('veBtnProps').onclick = () => {
@@ -193,6 +257,8 @@
     VE.mb().catch(e => toast(e.message, 5000));
     /* 지난 작업 이어서 */
     try { const id = localStorage.getItem('ve:last'); if (id) { const p = await VE.idb.get('projects', id); if (p) { await VE.loadProject(p); } } } catch (e) { console.warn(e); }
+    /* 다른 기기와 연결: 열린 프로젝트를 맞추고 이 기기에 없는 파일을 받음 */
+    VE.sync.init(); syncLabel(); if (VE.sync.cfg().on) VE.sync.refreshOpen();
     syncName(); updateEmpty();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
