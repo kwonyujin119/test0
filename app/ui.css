@@ -715,7 +715,6 @@ body.print-mode .print-page .step-hidden { visibility: visible; }
   /* 기기의 안전 영역(상태 표시줄·제스처 바·둥근 모서리) 안쪽으로 */
   .ed-top { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
   .ed-tools { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
-  .ed-side { padding-bottom: max(8px, env(safe-area-inset-bottom)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
   .stage-foot { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
   .ed-props { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
   .hub { padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); padding-bottom: max(60px, env(safe-area-inset-bottom)); }
@@ -723,7 +722,6 @@ body.print-mode .print-page .step-hidden { visibility: visible; }
 @media (min-width: 641px) and (max-width: 820px) {
   .ed-top { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
   .ed-tools { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
-  .ed-side { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
 }
 
 @media (pointer: coarse), (max-width: 640px) {
@@ -1025,7 +1023,7 @@ body.dragover .drop-veil { display: flex; }
   .ed-ctx .sep { flex-shrink: 0; }
   .ed-main, .ed-side, .ed-top, .ed-tools { grid-column: 1; } /* 정리 막대와 같은 칸에 겹침 (두 번째 열이 생기지 않게) */
   #btnEditText:not([hidden]) { display: inline-flex; }
-  .ed-side { padding: 6px 8px; }
+  .ed-side { padding: 6px max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); } /* 아래 시스템 바(작업 표시줄·제스처 바)에 가리지 않게 */
   .thumbs { padding: 2px; }
   .thumb { margin-left: 0; }
   .thumb .n { left: 3px; top: 3px; width: auto; padding: 0 5px; background: rgba(16,17,19,.72); color: #fff; border-radius: 3px; }
