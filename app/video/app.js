@@ -207,8 +207,8 @@
     $('btnPrev').onclick = () => { VE.player.pause(); VE.player.seek(VE.player.t - 1 / (VE.p.fps || 30)); }; $('btnNext').onclick = () => { VE.player.pause(); VE.player.seek(VE.player.t + 1 / (VE.p.fps || 30)); };
     $('btnUndo').onclick = VE.undo; $('btnRedo').onclick = VE.redo;
     $('btnExport').onclick = exportDialog; $('btnSync').onclick = syncDialog;
-    /* 영상 목록으로: 저장 · 미리보기 그림을 끝낸 뒤 옮김 (pagehide 의 저장은 끝나기 전에 끊길 수 있음) */
-    $('veHome').onclick = async ev => { if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return; ev.preventDefault(); await VE.saveNow(); await savePoster(true); location.href = 'videos.html'; };
+    /* 영상 목록으로: 고친 것이 있으면 저장하고 미리보기 그림을 남긴 뒤 옮김 (pagehide 의 저장은 끝나기 전에 끊길 수 있음). 고친 것이 없을 때 저장하면 고친 시각이 바뀌어 다시 올라감 */
+    $('veHome').onclick = async ev => { if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return; ev.preventDefault(); if (VE.saveState !== 'saved') await VE.saveNow(); await savePoster(true); location.href = 'videos.html'; };
     VE.on('sync', syncLabel); VE.on('syncConflict', conflictDialog); VE.on('save', () => { if (VE.saveState === 'saved') { VE.sync.soon(); savePoster(); } });
     $('btnImportEmpty').onclick = () => VE.pickFiles(); $('btnRecEmpty').onclick = () => VE.openTab('rec');
     /* 속성 칸: 넓은 화면에서는 접어서 미리보기를 넓히고(기억함), 좁은 화면에서는 떠 있는 칸으로 */
@@ -264,7 +264,7 @@
       if (q.get('pull')) {
         /* 이 기기에서 고친 뒤 아직 올리지 않은 것이 있으면 덮어쓰지 않고 이 기기 것을 연다 → 아래 refreshOpen 이 어느 쪽을 남길지 묻는다 */
         const mine = await VE.idb.get('projects', q.get('pull')).catch(() => null);
-        if (mine && !VE.sync.isSent(mine) && (mine.clips || []).length) { await VE.loadProject(mine); pulled = true; }
+        if (mine && !VE.sync.isSent(mine) && (VE.sync.hasContent(mine) || VE.sync.sentRev(mine.id))) { await VE.loadProject(mine); pulled = true; }
         else try { const p = await VE.sync.pull(q.get('pull')); await VE.loadProject(p); pulled = true; toast('편집 내용을 받았습니다. 영상 파일을 받는 중입니다…', 3000); }
         catch (e) { toast('다른 기기 것을 받지 못했습니다: ' + VE.niceErr(e), 5000); }
       }

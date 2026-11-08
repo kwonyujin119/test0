@@ -27,7 +27,7 @@
   function pMedia(box) {
     const list = VE.p.media;
     box.innerHTML = head('미디어', '영상 · 소리 · 그림을 넣습니다. 파일은 이 기기에만 보관합니다.') + `
-      <button class="ve-drop" id="mImport" type="button"><i data-ic="upload"></i><b>파일 넣기</b><span>여기를 누르거나 창 어디든 끌어다 놓으세요</span></button>
+      <button class="ve-drop" id="mImport" type="button"><i data-ic="upload"></i><b>파일 가져오기</b><span>여기를 누르거나 창 어디든 끌어다 놓으세요</span></button>
       <div class="ve-mlist">${list.map(m => `<div class="ve-mitem${m.offline ? ' off' : ''}" draggable="true" data-mid="${m.id}">
         <div class="ve-mth" data-th="${m.id}"><i data-ic="${m.kind === 'audio' ? 'music' : m.kind === 'image' ? 'image' : 'film'}"></i></div>
         <div class="ve-mi"><b title="${esc(m.name)}">${esc(m.name)}</b><span>${m.offline ? '원본이 없습니다' : (m.kind === 'image' ? `${m.w}×${m.h}` : VE.fmtT(m.dur) + (m.w ? ` · ${m.w}×${m.h}` : ''))} · ${VE.fmtSize(m.size || 0)}</span></div>
@@ -94,7 +94,7 @@
         <button class="btn sm ghost" id="tSrt"><i data-ic="import"></i>자막 파일(SRT) 넣기</button></div>` : ''}
       ${!mids.length ? '<div class="ve-empty">타임라인에 소리가 있는 영상을 넣으면 자막을 만들 수 있습니다.</div>' : ''}
       ${caps.length ? `<div class="ve-sec ve-inline"><label class="ve-check tight"><input type="checkbox" id="tOn"${cap.on ? ' checked' : ''}><span><b>영상에 자막 넣기</b></span></label></div>
-        <div class="ve-tools">${gaps.length ? `<button class="btn sm" id="tGaps" title="문장 사이의 말 없는 곳을 모두 잘라 냅니다 (말 앞뒤 ${GAP_PAD}초는 남김)"><i data-ic="scissors"></i>무음 모두 자르기 (${gaps.length}곳 · ${VE.fmtLen(gapSum)})</button>` : ''}<button class="btn sm" id="tFill"><i data-ic="search"></i>군말 찾기</button><button class="btn sm danger" id="tDel" disabled><i data-ic="trash"></i>고른 말 지우기</button><button class="btn sm ghost" id="tExp" title="자막 파일(SRT)로 저장"><i data-ic="download"></i>SRT</button></div>
+        <div class="ve-tools">${gaps.length ? `<button class="btn sm" id="tGaps" title="문장 사이의 말 없는 곳을 모두 잘라 냅니다 (말 앞뒤 ${GAP_PAD}초는 남김)"><i data-ic="scissors"></i>말 없는 곳 모두 자르기 (${gaps.length}곳 · ${VE.fmtLen(gapSum)})</button>` : ''}<button class="btn sm" id="tFill"><i data-ic="search"></i>군말 찾기</button><button class="btn sm danger" id="tDel" disabled><i data-ic="trash"></i>고른 말 지우기</button><button class="btn sm ghost" id="tExp" title="자막 파일(SRT)로 저장"><i data-ic="download"></i>SRT</button></div>
         <div class="ve-transcript" id="tDoc" tabindex="0" aria-label="받아 적은 글">${renderDoc(caps, gaps)}</div>
         <p class="ve-hint">줄이나 낱말을 누르면 그 자리로 갑니다. 끌어서 고른 뒤 Del 을 누르면 그 부분이 잘립니다. 낱말을 두 번 누르면 글자를 고칩니다.</p>
         <div class="ve-sec ve-rep"><div class="ve-lab">틀린 말 한 번에 고치기<em>예: 화제 → 화재</em></div>
@@ -132,16 +132,16 @@
         const x = Math.max(a, s), y = Math.min(b, e); if (y - x < GAP_MIN) continue;
         /* 말과 맞닿은 쪽만 여유를 남김 */
         const cut = [x === a && a > 0 ? x + GAP_PAD : x, y === b && b < total - .01 ? y - GAP_PAD : y];
-        if (cut[1] - cut[0] > .2) out.push({ after, len: y - x, cut });
+        if (cut[1] - cut[0] > .2) out.push({ after, cut });
       }
     };
     add(-1, 0, caps[0].start);
     caps.forEach((c, i) => add(i, c.end, i + 1 < caps.length ? caps[i + 1].start : total));
     return out;
   }
-  /* 글 칸: 한 줄 = 한 문장, 왼쪽에 시간. 문장 사이의 무음은 [무음 2.3초] 로 보이고 누르면 그곳만 잘린다 */
+  /* 글 칸: 한 줄 = 한 문장, 왼쪽에 시간. 문장 사이의 말 없는 곳은 [말 없음 2.3초] 로 보이고 누르면 그곳만 잘린다 */
   function renderDoc(caps, gaps) {
-    const chip = g => `<div class="ve-gaprow"><button type="button" class="ve-gap" data-gap="${gaps.indexOf(g)}" title="이 무음 잘라 내기">무음 ${g.len.toFixed(1)}초<i data-ic="x"></i></button></div>`;
+    const chip = g => `<div class="ve-gaprow"><button type="button" class="ve-gap" data-gap="${gaps.indexOf(g)}" title="말 없는 곳 ${(g.cut[1] - g.cut[0]).toFixed(1)}초 잘라 내기 (말 앞뒤 ${GAP_PAD}초는 남김)">말 없음 ${(g.cut[1] - g.cut[0]).toFixed(1)}초<i data-ic="x"></i></button></div>`;
     let html = gaps.filter(g => g.after === -1).map(chip).join('');
     caps.forEach((c, ci) => {
       html += `<div class="ve-line" data-at="${c.start.toFixed(3)}"><span class="tc" aria-hidden="true">${VE.fmtT(c.start)}</span><p>${c.words.map((w, wi) => `<span class="w" data-c="${ci}" data-w="${wi}">${esc(w.t)}</span>`).join(' ')}</p></div>`;
@@ -157,12 +157,12 @@
     if (del) del.onclick = cutSel;
     document.onselectionchange = () => { const d = $('tDel'); if (!d) return; const has = selectedWords().length > 0; d.disabled = !has; };
     doc.onclick = ev => {
-      const g = ev.target.closest('[data-gap]'); if (g) { const x = findGaps(VE.captions())[+g.dataset.gap]; if (x) { const cut = VE.removeRanges([x.cut]); toast(`무음 ${VE.fmtLen(cut)}을 잘라 냈습니다. Ctrl+Z 로 되돌립니다.`, 2400); renderTab(); } return; }
+      const g = ev.target.closest('[data-gap]'); if (g) { const x = findGaps(VE.captions())[+g.dataset.gap]; if (x) { const cut = VE.removeRanges([x.cut]); toast(`말 없는 곳 ${VE.fmtLen(cut)}을 잘라 냈습니다. Ctrl+Z 로 되돌립니다.`, 2400); renderTab(); } return; }
       const s = getSelection(); if (s && !s.isCollapsed) return;
       const n = ev.target.closest('.w'); if (n) { const w = wordFrom(n); if (w) VE.player.seek(w.s + .001); return; }
       const line = ev.target.closest('.ve-line'); if (line) VE.player.seek(+line.dataset.at + .001);
     };
-    const gapsBtn = box.querySelector('#tGaps'); if (gapsBtn) gapsBtn.onclick = () => { const list = findGaps(VE.captions()); if (!list.length) return; const cut = VE.removeRanges(list.map(g => g.cut)); toast(`${list.length}곳에서 무음 ${VE.fmtLen(cut)}을 잘라 냈습니다. Ctrl+Z 로 되돌립니다.`, 2800); if (VE.fitTimeline) VE.fitTimeline(); renderTab(); };
+    const gapsBtn = box.querySelector('#tGaps'); if (gapsBtn) gapsBtn.onclick = () => { const list = findGaps(VE.captions()); if (!list.length) return; const cut = VE.removeRanges(list.map(g => g.cut)); toast(`${list.length}곳에서 말 없는 곳 ${VE.fmtLen(cut)}을 잘라 냈습니다. Ctrl+Z 로 되돌립니다.`, 2800); if (VE.fitTimeline) VE.fitTimeline(); renderTab(); };
     doc.ondblclick = ev => {
       const n = ev.target.closest('.w'); if (!n) return; const w = wordFrom(n); if (!w) return; getSelection().removeAllRanges();
       const inp = document.createElement('input'); inp.type = 'text'; inp.value = w.t; inp.className = 've-wedit'; inp.style.width = Math.max(40, n.offsetWidth + 22) + 'px'; n.replaceWith(inp); inp.focus(); inp.select();

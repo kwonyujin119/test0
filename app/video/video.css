@@ -306,7 +306,7 @@ body.ve-full .ve-transport { background: var(--ui-panel); padding-bottom: calc(8
 @media (max-width: 820px) {
   :root { --tlh: 208px; --mstage: 44dvh; }
   .ve-app, body:not(.ve-panel-open) .ve-app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 46px minmax(0, 1fr) 5px var(--tlh) calc(56px + env(safe-area-inset-bottom)); grid-template-areas: "top" "stage" "split" "tl" "rail"; }
-  body.ve-tl-min .ve-app, body.ve-tl-min:not(.ve-panel-open) .ve-app { grid-template-rows: 46px minmax(0, 1fr) 0 43px calc(56px + env(safe-area-inset-bottom)); }
+  body.ve-tl-min:not(.ve-panel-open):not(.ve-props-open) .ve-app { grid-template-rows: 46px minmax(0, 1fr) 0 43px calc(56px + env(safe-area-inset-bottom)); }
   /* 작업 칸을 열어도 미리보기 · 재생 줄은 위에 그대로 (타임라인 자리에 작업 칸) */
   body.ve-panel-open .ve-app, body.ve-props-open .ve-app { grid-template-rows: 46px var(--mstage) 0 minmax(0, 1fr) calc(56px + env(safe-area-inset-bottom)); }
   body.ve-panel-open .ve-split, body.ve-panel-open .ve-tl, body.ve-props-open .ve-split, body.ve-props-open .ve-tl { display: none; }
@@ -334,6 +334,7 @@ body.ve-full .ve-transport { background: var(--ui-panel); padding-bottom: calc(8
   .ve-tbtns .hide-sm { display: none; }
   .ve-tlbar { padding: 3px 6px; min-height: 40px; }
   .ve-tlbar kbd, .ve-tlzoom input, #tlSnap span, #tlFit span { display: none; }
+  .ve-tlzoom { position: sticky; right: 0; z-index: 1; background: var(--ui-panel); padding-left: 4px; } /* 줄이 옆으로 넘쳐도 전체 보기 · 접기는 늘 보이게 */
   .ve-tlbar .btn, .ve-rail button, .ve-seg button { min-height: 36px; }
   .modal { min-width: 0; width: calc(100vw - 24px) !important; padding: 18px; }
   .modal input[type=text], .modal input[type=password], .ve-reprow input, .ve-ta, .ve-wedit { font-size: 16px; } /* iOS 가 입력 칸을 확대하지 않게 */
