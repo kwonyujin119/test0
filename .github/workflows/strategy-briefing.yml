@@ -1,0 +1,53 @@
+# SECRET 전략 브리핑 — 증권사 데일리 시황 · 투자전략 리포트로 일간 전략 · 주간 전략을 모아 briefing 브랜치의 strategy/ 에 저장한다.
+# AI(Claude 등) 토큰을 쓰지 않는다 (.github/scripts/strategy_briefing.py: 많이 읽힌 순 · 자주 나온 말은 규칙으로 셈).
+# 07:05 에 만들고, 아침에 늦게 올라오는 리포트를 위해 08:30 에 한 번 더 채운다.
+name: Strategy briefing
+
+on:
+  schedule:
+    - cron: '5 22 * * *'    # 07:05 한국 시간 (GitHub 예약 실행은 몇 분 늦을 수 있음)
+    - cron: '30 23 * * *'   # 08:30 한국 시간 (늦게 올라온 리포트 보충)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: briefing-branch     # 모닝 브리핑과 같은 브랜치에 쓰므로 한 번에 하나씩
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 스크립트만 가져오기
+        uses: actions/checkout@v4
+        with:
+          path: src
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: briefing 브랜치 가져오기 (없으면 새로 만듦)
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          if git ls-remote --exit-code --heads "$REPO_URL" briefing >/dev/null; then
+            git clone --depth 1 --branch briefing "$REPO_URL" pub
+          else
+            mkdir pub && cd pub && git init -b briefing && git remote add origin "$REPO_URL"
+          fi
+
+      - name: 일간 · 주간 전략 리포트 모으기
+        run: python3 src/.github/scripts/strategy_briefing.py --out pub -v
+
+      - name: 저장
+        run: |
+          cd pub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git commit -m "전략 브리핑 $(TZ=Asia/Seoul date '+%F %H:%M')"
+          for i in 1 2 3; do git push origin HEAD:briefing && exit 0; git pull --rebase origin briefing || true; sleep 5; done
+          exit 1

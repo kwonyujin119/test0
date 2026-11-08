@@ -19,6 +19,7 @@
     refresh: '<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 20v-4h-4"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/>',
     alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
+    cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 7.97Z"/>',
     calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/>',
   };
   for (const k in ICO) if (!ICONS[k]) ICONS[k] = ICO[k];
@@ -40,14 +41,26 @@
   };
   const K_CFG = 'sec:cfg', K_CHATS = 'sec:chats', K_WATCH = 'sec:watch', K_CALC = 'sec:calc';
   const cfg = Object.assign({ apis: [], ai: '', web: true, lock: null }, LS.get(K_CFG, {}));
-  let chats = LS.get(K_CHATS, []);
+  let chats = []; // 대화는 IndexedDB(ws-secret · chats) 에 모두 보관 — 개수 제한 없음 (아래에서 불러옴)
   let watch = LS.get(K_WATCH, { items: [], quotes: {} });
-  const saveCfg = () => LS.set(K_CFG, cfg);
+  const SYNCQ = { mark() { }, tomb() { } }; // 기기 동기화가 채움 (아래)
+  const saveCfg = () => { LS.set(K_CFG, cfg); SYNCQ.mark('cfg'); };
+  const IDB = {
+    db: null,
+    open() { return this.db || (this.db = new Promise((res, rej) => { const r = indexedDB.open('ws-secret', 1); r.onupgradeneeded = () => r.result.createObjectStore('chats', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); },
+    async tx(mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction('chats', mode); const q = fn(t.objectStore('chats')); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); },
+    all() { return this.tx('readonly', s => s.getAll()); },
+    put(c) { return this.tx('readwrite', s => s.put(c)).catch(e => console.warn('대화 저장 실패', e)); },
+    del(id) { return this.tx('readwrite', s => s.delete(id)).catch(() => { }); },
+  };
+  const savedAt = {};
   function saveChats() {
-    chats.sort((a, b) => b.updated - a.updated); chats = chats.slice(0, 40);
-    while (!LS.set(K_CHATS, chats) && chats.length > 1) chats.pop(); // 저장 공간이 모자라면 오래된 대화부터 뺀다
+    chats.sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    let any = false;
+    for (const c of chats) if (savedAt[c.id] !== c.updated) { savedAt[c.id] = c.updated; const o = Object.assign({}, c); delete o.live; IDB.put(o); any = true; }
+    if (any) SYNCQ.mark('chats');
   }
-  const saveWatch = () => LS.set(K_WATCH, watch);
+  const saveWatch = () => { LS.set(K_WATCH, watch); SYNCQ.mark('watch'); };
 
   /* ---------- API 종류 ---------- */
   const TYPES = {
@@ -91,9 +104,10 @@
     } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
   }
   async function keyOf(api) {
-    if (!cfg.lock) return api.key || '';
-    if (!(await unlock())) throw new Error('API 키 잠금을 풀지 않았습니다');
-    return keyMem[api.id] || '';
+    if (!cfg.lock) { if (api.key) return api.key; }
+    else { if (!(await unlock())) throw new Error('API 키 잠금을 풀지 않았습니다'); if (keyMem[api.id]) return keyMem[api.id]; }
+    if (cfg.lockRemote && (await adoptRemoteKeys())) return cfg.lock && keyMem ? keyMem[api.id] || '' : api.key || '';
+    return '';
   }
   async function setKey(api, key) {
     if (!cfg.lock) { api.key = key; return; }
@@ -549,13 +563,14 @@
     renderAiSel(); renderMsgs(); renderQuick();
   }
   function renderChatList() {
-    const box = $('chatList'); const list = chats.slice(0, 15);
-    box.innerHTML = list.length ? '<b>최근 대화</b>' + list.map(c => `<div class="sc-chat-i${cur && cur.id === c.id ? ' on' : ''}"><button class="t" data-c="${c.id}" title="${esc(c.title)}">${esc(c.title)}</button><button class="x" data-del="${c.id}" title="이 대화 지우기" aria-label="이 대화 지우기">${icon('x', 14)}</button></div>`).join('') : '';
+    const box = $('chatList'); const list = chats.slice(0, 12);
+    box.innerHTML = list.length ? '<b>최근 대화</b>' + list.map(c => `<div class="sc-chat-i${cur && cur.id === c.id ? ' on' : ''}"><button class="t" data-c="${c.id}" title="${esc(c.title)}">${esc(c.title)}</button><button class="x" data-del="${c.id}" title="이 대화 지우기" aria-label="이 대화 지우기">${icon('x', 14)}</button></div>`).join('') + `<button type="button" class="all" id="allChats">모든 대화 ${chats.length}개 보기</button>` : '';
+    const all = $('allChats'); if (all) all.onclick = () => show('history');
     box.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { show('chat'); openChat(b.dataset.c); });
     box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
       const c = chats.find(x => x.id === b.dataset.del); if (!c) return;
       if (!(await confirmBox('대화를 지울까요?', `"${c.title}" 대화를 이 기기에서 지웁니다. 되돌릴 수 없습니다.`, '지우기'))) return;
-      chats = chats.filter(x => x !== c); if (cur === c) cur = null; saveChats(); renderChat(); renderChatList();
+      chats = chats.filter(x => x !== c); if (cur === c) cur = null; IDB.del(c.id); SYNCQ.tomb('chats', c.id); renderChat(); renderChatList();
     });
   }
   function renderAiSel() {
@@ -642,7 +657,7 @@
   function renderCalc() {
     const v = id => $(id).value === '' ? null : +$(id).value;
     const acc = v('cAcc'), risk = v('cRisk'), entry = v('cEntry'), stop = v('cStop'), target = v('cTarget'), win = v('cWin');
-    LS.set(K_CALC, Object.fromEntries(calcIds.map(id => [id, $(id).value])));
+    LS.set(K_CALC, Object.fromEntries(calcIds.map(id => [id, $(id).value]))); SYNCQ.mark('calc');
     const out = $('calcOut');
     if (!(acc > 0 && risk > 0 && entry > 0 && stop > 0) || entry === stop) { out.innerHTML = '<p class="muted">계좌 금액 · 감수할 손실 % · 진입가 · 손절가를 넣으면 수량과 비중이 나옵니다. 목표가와 승률을 넣으면 손익비와 기대값도 계산합니다.</p>'; return; }
     const r = sizePlan({ account: acc, risk_percent: risk, entry, stop, target, win_rate: win });
@@ -831,9 +846,9 @@
   };
   const me = Object.assign(JSON.parse(JSON.stringify(ME0)), LS.get(K_ME, {}));
   me.profile = Object.assign({}, ME0.profile, me.profile); me.answer = Object.assign({}, ME0.answer, me.answer);
-  const saveMe = () => { LS.set(K_ME, me); $('cMe').textContent = me.notes.length ? '' : ''; };
+  const saveMe = () => { LS.set(K_ME, me); SYNCQ.mark('me'); };
   let journal = LS.get(K_JOURNAL, []);
-  const saveJournal = () => { LS.set(K_JOURNAL, journal); $('cJournal').textContent = journal.length || ''; };
+  const saveJournal = () => { LS.set(K_JOURNAL, journal); $('cJournal').textContent = journal.length || ''; SYNCQ.mark('journal'); };
 
   function meBlock() {
     const p = me.profile, a = me.answer, L = [];
@@ -944,6 +959,7 @@
     if (d.watch && Array.isArray(d.watch.items)) { watch = d.watch; watch.quotes = watch.quotes || {}; saveWatch(); }
     if (d.calc) LS.set(K_CALC, d.calc);
     if (Array.isArray(d.chats)) { for (const c of d.chats) if (c && c.id && !chats.some(x => x.id === c.id)) chats.push(c); saveChats(); renderChatList(); }
+    if (d.calc) SYNCQ.mark('calc'); SYNCQ.mark('watch');
     toast('가져왔습니다', 2200); renderMe(); $('cWatch').textContent = watch.items.length || '';
   };
 
@@ -993,7 +1009,7 @@
     const bc = st.byChecklist, a = bc['체크리스트 모두 지킴'], b = bc['일부만 지킴'];
     $('jNote').textContent = (st.closedTrades < 5 ? `끝난 매매가 ${st.closedTrades}건입니다. 5건 이상 쌓이면 통계가 의미 있어지고, 20건 이상이면 계산기의 승률로 쓸 만합니다. ` : '') + (a && b ? `체크리스트를 다 지켰을 때 승률 ${a.winRatePct}% (${a.trades}건) · 일부만 지켰을 때 ${b.winRatePct}% (${b.trades}건). ` : '') + 'R = (청산가 − 진입가) ÷ (진입가 − 손절가). 1R 은 처음 정한 손실 한 번만큼입니다.';
     $('jTable').querySelectorAll('[data-jed]').forEach(b => b.onclick = () => editTrade(+b.dataset.jed));
-    $('jTable').querySelectorAll('[data-jrm]').forEach(b => b.onclick = async () => { const t = journal[+b.dataset.jrm]; if (await confirmBox(`${t.symbol} 기록을 지울까요?`, '이 기기의 매매 일지에서 지웁니다.', '지우기')) { journal.splice(+b.dataset.jrm, 1); saveJournal(); renderJournal(); } });
+    $('jTable').querySelectorAll('[data-jrm]').forEach(b => b.onclick = async () => { const t = journal[+b.dataset.jrm]; if (await confirmBox(`${t.symbol} 기록을 지울까요?`, '매매 일지에서 지웁니다.', '지우기')) { journal.splice(+b.dataset.jrm, 1); if (t.id) SYNCQ.tomb('journal', t.id); saveJournal(); renderJournal(); } });
   }
   function editTrade(i) {
     const today = new Date().toISOString().slice(0, 10);
@@ -1021,7 +1037,7 @@
       if (!o.symbol || !(o.entry > 0)) { toast('종목과 진입가를 넣어 주세요', 2000); return; }
       if (o.exit && !o.closeDate) o.closeDate = today;
       o.checks = [...f.querySelectorAll('[name=ck]:checked')].map(x => x.value); o.checkTotal = me.checklist.length;
-      if (i == null) journal.push(o); else journal[i] = o; saveJournal(); d.close(); renderJournal();
+      o.updated = Date.now(); if (i == null) journal.push(o); else journal[i] = o; saveJournal(); d.close(); renderJournal();
       if (!o.stop) toast('손절가가 없으면 R(손익비) 을 계산할 수 없습니다', 2600);
     };
   }
@@ -1049,7 +1065,7 @@
      ===================================================================== */
   const K_NOTES = 'sec:notes';
   let notes = LS.get(K_NOTES, []);
-  const saveNotes = () => { LS.set(K_NOTES, notes); $('cNotes').textContent = notes.length || ''; };
+  const saveNotes = () => { LS.set(K_NOTES, notes); $('cNotes').textContent = notes.length || ''; SYNCQ.mark('notes'); };
   const ymdLocal = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const nui = { co: '', month: null, day: ymdLocal(new Date()) };
   /* 사전 + 관심 종목 · 매매 일지 · 노트에서 이미 쓴 이름 */
@@ -1093,7 +1109,7 @@
     $('nAddDay').onclick = () => editNote(null, nui.day);
     $('nDay').querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { nui.co = b.dataset.pick; renderNotes(); });
     $('nDay').querySelectorAll('[data-ned]').forEach(b => b.onclick = () => editNote(b.dataset.ned));
-    $('nDay').querySelectorAll('[data-nrm]').forEach(b => b.onclick = async () => { if (!(await confirmBox('노트를 지울까요?', '이 기기에서 지웁니다. 되돌릴 수 없습니다.', '지우기'))) return; notes = notes.filter(n => n.id !== b.dataset.nrm); saveNotes(); renderNotes(); });
+    $('nDay').querySelectorAll('[data-nrm]').forEach(b => b.onclick = async () => { if (!(await confirmBox('노트를 지울까요?', '지우면 되돌릴 수 없습니다.', '지우기'))) return; notes = notes.filter(n => n.id !== b.dataset.nrm); SYNCQ.tomb('notes', b.dataset.nrm); saveNotes(); renderNotes(); });
   }
   function editNote(id, day, preset) {
     const n = id ? notes.find(x => x.id === id) : { date: day || nui.day || ymdLocal(new Date()), text: preset || '', companies: [] };
@@ -1157,6 +1173,7 @@
     if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 브리핑 파일이 없습니다.</div>'; return; }
     const t = d.generatedAt ? new Date(d.generatedAt) : null;
     $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. 매일 아침 7시 전에 새로 만들어집니다.`;
+    if (bui.mode === 'feeds') { box.innerHTML = renderFeeds(d); $('bLead').innerHTML += ` · 피드별 중요도 순 5개씩 <b>${d.feedItems || 0}개</b>`; return; }
     const extra = coExtra();
     box.innerHTML = `<div class="sc-brief">${d.items.map(it => {
       const cos = secFindCompanies(it.title, extra), tm = it.time ? it.time.slice(11, 16) : '';
@@ -1177,13 +1194,265 @@
   $('bNext').onclick = () => { const i = bui.dates.indexOf(bui.date); if (i > 0) { bui.date = bui.dates[i - 1]; renderBrief(); } };
 
   /* =====================================================================
+     기기 사이 동기화 — 비공개 GitHub 저장소(영상과 같은 test0-video)의 secret/ 폴더
+     · state.json: 나의 원칙 · 노트 · 매매 일지 · 관심 종목 · 계산기 · API 목록(키 빼고) · 잠근 키 묶음(암호화된 것만) · 대화 목록
+     · chats/<id>.json: 대화 하나씩 (개수 제한 없음)
+     · 합치는 법: 노트 · 일지 · 대화는 하나씩 더 최근 것이 이김(지운 것은 '지움 표시'로 전달), 나머지는 고친 시각이 늦은 쪽이 이김
+     · API 키는 잠금 암호를 건 경우에만 암호화된 채로 옮겨지고, 다른 기기에서 같은 암호로 풉니다
+     ===================================================================== */
+  const K_SYNC = 'sec:sync';
+  const sy = Object.assign({ on: false, shaState: '', shaChat: {}, tomb: { notes: {}, journal: {}, chats: {} }, rev: {}, hash: {}, pushed: '', at: 0, err: '' }, LS.get(K_SYNC, {}));
+  sy.tomb = Object.assign({ notes: {}, journal: {}, chats: {} }, sy.tomb);
+  const saveSy = () => LS.set(K_SYNC, sy);
+  const SY = { busy: false, state: sy.on ? 'idle' : 'off', msg: '', timer: 0, again: false };
+  const deviceName = () => /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? '휴대폰' : 'PC';
+  const hashOf = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h); };
+  const sect = {
+    me: () => me, notes: () => notes, journal: () => journal, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
+    cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data } : null }),
+  };
+  /* 고칠 때마다 부름: 내용이 실제로 바뀌었으면 그 칸의 고친 시각을 기록하고 잠시 뒤 올림 */
+  SYNCQ.mark = k => {
+    if (sect[k]) { const h = hashOf(JSON.stringify(sect[k]())); if (sy.hash[k] === h) return; sy.hash[k] = h; sy.rev[k] = Date.now(); saveSy(); }
+    if (sy.on) { clearTimeout(SY.timer); SY.timer = setTimeout(() => syncNow(), 3000); }
+  };
+  SYNCQ.tomb = (k, id) => { sy.tomb[k][id] = Date.now(); saveSy(); SYNCQ.mark(k === 'chats' ? 'chats' : k); };
+  /* 아직 한 번도 고친 시각이 없는 칸: 내용이 있으면 1(오래된 것), 비어 있으면 0 — 처음 맞출 때 먼저 올라간 쪽을 따르게 */
+  const emptySect = { me: () => hashOf(JSON.stringify(me)) === hashOf(JSON.stringify(ME0)), watch: () => !watch.items.length, calc: () => !Object.keys(LS.get(K_CALC, {})).length, cfg: () => !cfg.apis.length, notes: () => !notes.length, journal: () => !journal.length };
+  for (const k in sect) { if (!sy.hash[k]) sy.hash[k] = hashOf(JSON.stringify(sect[k]())); if (sy.rev[k] == null) sy.rev[k] = emptySect[k]() ? 0 : 1; }
+  saveSy();
+
+  function ghCfg() {
+    const v = LS.get('ve:sync', {}); let g = null; try { g = GH.cfg || GH.load(); } catch (e) { }
+    return { owner: v.owner || (g && g.owner) || 'kwonyujin119', repo: v.repo || 'test0-video', token: v.token || (g && g.token) || '', from: v.token ? 'video' : (g && g.token) ? 'shared' : '' };
+  }
+  async function gh(method, path, body) {
+    const c = ghCfg();
+    if (!c.token) { const e = new Error('이 기기에 GitHub 토큰이 없습니다. 아래 칸에 토큰을 한 번 넣어 주세요.'); e.noToken = true; throw e; }
+    let r;
+    try { r = await fetch(`https://api.github.com/repos/${E(c.owner)}/${E(c.repo)}${path}`, { method, cache: 'no-store', headers: Object.assign({ Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', Authorization: 'Bearer ' + c.token }, body ? { 'Content-Type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined }); }
+    catch (e) { const er = new Error('인터넷에 연결되어 있지 않아 지금은 맞추지 못했습니다. 연결되면 다시 맞춥니다.'); er.offline = true; throw er; }
+    if (r.status === 404 && method === 'GET') return null;
+    if (!r.ok) {
+      let m = r.status + ' ' + r.statusText; try { const j = await r.json(); if (j.message) m = j.message; } catch (e) { }
+      if (r.status === 401) m = 'GitHub 토큰이 올바르지 않거나 만료되었습니다. 아래 칸에 새 토큰을 넣어 주세요.';
+      else if (r.status === 403 && /rate limit/i.test(m)) m = 'GitHub 요청 한도를 넘었습니다. 잠시 뒤에 다시 맞춥니다.';
+      else if (r.status === 403) m = `이 토큰에는 ${c.repo} 저장소에 쓸 권한이 없습니다. Contents: Read and write 권한이 있는 토큰을 넣어 주세요.`;
+      const e = new Error(m); e.status = r.status; throw e;
+    }
+    return r.status === 204 ? null : r.json();
+  }
+  const b64e = s => { const u = enc.encode(s); let o = ''; for (let i = 0; i < u.length; i += 0x8000) o += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(o); };
+  const b64d = s => dec.decode(Uint8Array.from(atob(String(s).replace(/\s/g, '')), c => c.charCodeAt(0)));
+  async function getFile(path) {
+    const j = await gh('GET', '/contents/' + path); if (!j) return null;
+    let text = j.content && j.encoding === 'base64' ? b64d(j.content) : null;
+    if (text == null) { const b = await gh('GET', '/git/blobs/' + j.sha); text = b64d(b.content); } // 1MB 가 넘는 파일
+    return { sha: j.sha, data: JSON.parse(text) };
+  }
+  async function putFile(path, data, sha, msg) {
+    const body = { message: msg, content: b64e(JSON.stringify(data)) }; if (sha) body.sha = sha;
+    try { return (await gh('PUT', '/contents/' + path, body)).content.sha; }
+    catch (e) { if (e.status === 409 || e.status === 422) { const cur = await gh('GET', '/contents/' + path); body.sha = cur ? cur.sha : undefined; if (!body.sha) delete body.sha; return (await gh('PUT', '/contents/' + path, body)).content.sha; } throw e; }
+  }
+  const chatPath = id => `secret/chats/${String(id).replace(/[^\w-]/g, '')}.json`;
+  const plainChat = c => { const o = Object.assign({}, c); delete o.live; return o; };
+
+  function setSy(state, msg) { SY.state = state; SY.msg = msg || ''; sy.err = state === 'bad' ? SY.msg : ''; paintSync(); }
+  function paintSync() {
+    const em = $('cSync'); if (!em) return;
+    em.className = SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : '';
+    em.textContent = !sy.on ? '꺼짐' : SY.state === 'busy' ? '맞추는 중' : SY.state === 'bad' ? '확인 필요' : sy.at ? '켜짐' : '';
+    if (!$('vApis').hidden) renderSyncBox();
+  }
+
+  /* 받은 것 합치기 */
+  async function mergeRemote(r) {
+    let changed = false;
+    for (const k of ['notes', 'journal', 'chats']) for (const [id, t] of Object.entries((r.tomb || {})[k] || {})) if ((sy.tomb[k][id] || 0) < t) { sy.tomb[k][id] = t; changed = true; }
+    const byId = (loc, rem, ts, kind) => {
+      const m = new Map(loc.map(x => [x.id, x]));
+      for (const x of rem || []) { const l = m.get(x.id); if (!l || (ts(x) || 0) > (ts(l) || 0)) { m.set(x.id, x); changed = true; } }
+      return [...m.values()].filter(x => { const dead = (sy.tomb[kind][x.id] || 0) >= (ts(x) || 0) && sy.tomb[kind][x.id]; if (dead) changed = true; return !dead; });
+    };
+    notes = byId(notes, r.notes, x => x.updated || x.created, 'notes'); LS.set(K_NOTES, notes);
+    journal = byId(journal, r.journal, x => x.updated || 0, 'journal'); LS.set(K_JOURNAL, journal);
+    const rr = r.rev || {};
+    const take = k => { const a = rr[k] || 0, b = sy.rev[k] || 0; return a > b || (a === b && a === 1); }; // 둘 다 처음이면 먼저 올라간 쪽
+    if (take('me') && r.me) { Object.keys(me).forEach(k => delete me[k]); Object.assign(me, JSON.parse(JSON.stringify(ME0)), r.me); me.profile = Object.assign({}, ME0.profile, me.profile); me.answer = Object.assign({}, ME0.answer, me.answer); LS.set(K_ME, me); sy.rev.me = Math.max(rr.me || 0, 2); changed = true; }
+    if (take('watch') && r.watch) { watch.items = r.watch.items || []; LS.set(K_WATCH, watch); sy.rev.watch = Math.max(rr.watch || 0, 2); changed = true; }
+    if (take('calc') && r.calc) { LS.set(K_CALC, r.calc); calcIds.forEach(id => { if (r.calc[id] != null) $(id).value = r.calc[id]; }); sy.rev.calc = Math.max(rr.calc || 0, 2); changed = true; }
+    if (take('cfg') && r.cfg) {
+      const keep = new Map(cfg.apis.map(a => [a.id, a]));
+      cfg.apis = (r.cfg.apis || []).map(a => Object.assign({}, a, { key: (keep.get(a.id) || {}).key || '', test: (keep.get(a.id) || {}).test || '' }));
+      cfg.ai = r.cfg.ai; cfg.web = r.cfg.web; cfg.auto = r.cfg.auto || 0; sy.rev.cfg = Math.max(rr.cfg || 0, 2); changed = true;
+    }
+    cfg.lockRemote = r.cfg && r.cfg.lock && r.cfg.lock.data ? r.cfg.lock : null;
+    LS.set(K_CFG, cfg);
+    for (const c of chats.slice()) if ((sy.tomb.chats[c.id] || 0) >= (c.updated || 0) && sy.tomb.chats[c.id]) { chats = chats.filter(x => x !== c); IDB.del(c.id); if (cur === c) cur = null; changed = true; }
+    for (const k in sect) sy.hash[k] = hashOf(JSON.stringify(sect[k]()));
+    return changed;
+  }
+  /* 대화: 다른 기기에서 더 최근에 고친 것만, 6개씩 나눠 받음 (받는 대로 목록에 보임) */
+  async function pullChats(r) {
+    const need = (r.chats || []).filter(rc => !((sy.tomb.chats[rc.id] || 0) >= rc.updated) && !((chats.find(c => c.id === rc.id) || {}).updated >= rc.updated));
+    let done = 0;
+    for (let i = 0; i < need.length; i += 6) {
+      setSy('busy', `다른 기기의 대화 받는 중 ${done}/${need.length}`);
+      await Promise.all(need.slice(i, i + 6).map(async rc => {
+        const f = await getFile(chatPath(rc.id)); done++; if (!f) return;
+        sy.shaChat[rc.id] = f.sha; const c = f.data, l = chats.find(x => x.id === c.id);
+        if (l) { if (l === cur && busy) return; Object.assign(l, c); } else chats.push(c);
+        savedAt[c.id] = c.updated; IDB.put(plainChat(c));
+      }));
+      chats.sort((a, b) => (b.updated || 0) - (a.updated || 0)); renderChatList(); if (!$('vHistory').hidden) renderHistory();
+    }
+    return need.length > 0;
+  }
+  function localState() {
+    const s = {}; for (const k in sect) s[k] = sect[k]();
+    return Object.assign(s, { v: 1, at: Date.now(), device: deviceName(), rev: sy.rev, tomb: sy.tomb, chats: chats.map(c => ({ id: c.id, title: c.title, updated: c.updated })) });
+  }
+  async function syncNow(opts) {
+    opts = opts || {};
+    if (!sy.on) return; if (SY.busy) { SY.again = true; return; }
+    if (busy && !opts.force) { clearTimeout(SY.timer); SY.timer = setTimeout(() => syncNow(), 4000); return; } // 답을 받는 중에는 미룸
+    SY.busy = true; setSy('busy', '다른 기기와 맞추는 중…');
+    try {
+      const rem = await getFile('secret/state.json');
+      let changed = false;
+      if (rem && rem.sha !== sy.shaState) { changed = await mergeRemote(rem.data); if (changed) refreshAfterSync(); if (await pullChats(rem.data)) { changed = true; if (cur) renderMsgs(); } }
+      const rIdx = new Map(((rem && rem.data.chats) || []).map(c => [c.id, c.updated]));
+      const up = chats.filter(c => !(c === cur && busy) && (!rIdx.has(c.id) || (c.updated || 0) > rIdx.get(c.id)));
+      for (let i = 0; i < up.length; i++) { // 같은 가지에 한꺼번에 올리면 서로 부딪치므로 하나씩
+        if (up.length > 3) setSy('busy', `대화 올리는 중 ${i}/${up.length}`);
+        sy.shaChat[up[i].id] = await putFile(chatPath(up[i].id), plainChat(up[i]), sy.shaChat[up[i].id], `SECRET 대화 저장 (${deviceName()})`);
+      }
+      for (const id of Object.keys(sy.tomb.chats)) if (rIdx.has(id) && !chats.some(c => c.id === id)) { try { const f = await gh('GET', '/contents/' + chatPath(id)); if (f) await gh('DELETE', '/contents/' + chatPath(id), { message: 'SECRET 대화 지움', sha: f.sha }); } catch (e) { } delete sy.shaChat[id]; }
+      const st = localState(), core = hashOf(JSON.stringify(Object.assign({}, st, { at: 0, device: '' })));
+      if (!rem || core !== sy.pushed || (rem && rem.sha !== sy.shaState)) {
+        sy.shaState = await putFile('secret/state.json', st, rem ? rem.sha : undefined, `SECRET 저장 (${deviceName()})`);
+        sy.pushed = core;
+      } else sy.shaState = rem.sha;
+      sy.at = Date.now(); saveSy(); setSy('ok', '');
+      if (changed) { chats.sort((a, b) => (b.updated || 0) - (a.updated || 0)); renderChatList(); }
+    } catch (e) {
+      setSy(e.offline ? 'idle' : 'bad', e.message); saveSy();
+    } finally {
+      SY.busy = false; if (SY.again) { SY.again = false; setTimeout(() => syncNow(), 500); }
+    }
+  }
+  function refreshAfterSync() {
+    $('cWatch').textContent = watch.items.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || ''; $('cApi').textContent = cfg.apis.length || '';
+    chats.sort((a, b) => (b.updated || 0) - (a.updated || 0)); renderChatList();
+    const a = document.activeElement; if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName) && a.closest('.sc-main') && a.id !== 'q') return; // 쓰는 중이면 화면을 다시 그리지 않음
+    const v = Object.keys(VIEWS).find(k => !$(VIEWS[k]).hidden); if (v) show(v);
+  }
+  async function enableSync() {
+    const c = ghCfg();
+    setSy('busy', '저장소를 확인하는 중…');
+    try {
+      const r = await fetch(`https://api.github.com/repos/${E(c.owner)}/${E(c.repo)}`, { headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + c.token }, cache: 'no-store' });
+      if (r.status === 404) throw new Error(`${c.owner}/${c.repo} 저장소를 찾지 못했습니다. 영상(VIDEO)의 [다른 기기와 연결] 에서 만든 비공개 저장소가 있어야 합니다.`);
+      if (r.status === 401) throw new Error('GitHub 토큰이 올바르지 않거나 만료되었습니다.');
+      const j = await r.json();
+      if (!j.private) throw new Error(`${c.repo} 가 공개 저장소입니다. SECRET 자료는 비공개 저장소에만 둡니다.`);
+      if (!(j.permissions && j.permissions.push)) throw new Error(`이 토큰에는 ${c.repo} 에 쓸 권한이 없습니다.`);
+      sy.on = true; saveSy(); await syncNow({ force: true }); toast('이제 모든 기기에서 SECRET 이 같게 보입니다', 2600);
+    } catch (e) { sy.on = false; saveSy(); setSy('bad', e.message); }
+  }
+  function renderSyncBox() {
+    const c = ghCfg(), box = $('syncBox'); if (!box) return;
+    const when = sy.at ? new Date(sy.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    box.innerHTML = `<span class="ico-wrap">${icon('cloud', 20)}</span><div class="tx"><b>모든 기기에서 같게 보기</b> — 대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 의 secret 폴더에 두고, 휴대폰 · PC 어디서 열어도 같게 맞춥니다. API 키는 잠금 암호를 건 경우에만 암호화된 채로 옮겨집니다.
+      <div class="st ${SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : ''}">${!sy.on ? '꺼져 있음 — 이 기기에만 저장 중' : SY.state === 'busy' ? '맞추는 중…' : SY.state === 'bad' ? esc(SY.msg || sy.err) : `켜짐 · 마지막으로 맞춘 때 ${esc(when)}`}</div>
+      ${!c.token ? `<div class="tok"><input type="password" id="syTok" placeholder="GitHub 토큰 (${esc(c.repo)} 저장소 Contents 읽기 · 쓰기)" autocomplete="off"><button class="btn" id="syTokOk">넣기</button></div><p class="sc-fine" style="text-align:left;margin:4px 0 0">영상(VIDEO) 동기화에 쓰는 것과 같은 토큰입니다. 이 기기에 한 번만 넣으면 됩니다.</p>` : ''}</div>
+      <div class="acts">${sy.on ? `<button class="btn" id="syNow">${icon('refresh', 15)}지금 맞추기</button><button class="btn ghost" id="syOff">끄기</button>` : `<button class="btn ink" id="syOn"${c.token ? '' : ' disabled'}>${icon('cloud', 15)}켜기</button>`}</div>`;
+    const on = $('syOn'), off = $('syOff'), now = $('syNow'), tk = $('syTokOk');
+    if (on) on.onclick = () => enableSync();
+    if (now) now.onclick = () => syncNow({ force: true });
+    if (off) off.onclick = async () => { if (await confirmBox('동기화를 끌까요?', '이 기기의 자료는 그대로 남고, 다른 기기와 더 이상 맞추지 않습니다.', '끄기')) { sy.on = false; saveSy(); setSy('off'); } };
+    if (tk) tk.onclick = () => { const v = $('syTok').value.trim(); if (!v) return; const o = LS.get('ve:sync', {}); o.token = v; LS.set('ve:sync', o); renderSyncBox(); toast('토큰을 넣었습니다. [켜기] 를 누르세요', 2200); };
+  }
+  /* 다른 기기에서 잠근 API 키 받기 (같은 암호로) */
+  async function adoptRemoteKeys() {
+    const L = cfg.lockRemote; if (!L) return false;
+    const pass = await askPass('다른 기기의 API 키 받기', '다른 기기에서 건 키 잠금 암호를 넣으면, 그 기기에 등록한 API 키를 이 기기에서도 씁니다.'); if (pass == null) return false;
+    try {
+      const k = await derive(pass, unb64(L.salt)); const got = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(L.iv) }, k, unb64(L.data))));
+      if (!cfg.lock) { cfg.lock = { salt: L.salt, iv: L.iv, data: L.data }; lockKey = k; keyMem = Object.assign({}, got); cfg.apis.forEach(a => { if (a.key && !keyMem[a.id]) keyMem[a.id] = a.key; a.key = ''; }); await sealKeys(); }
+      else { if (!(await unlock())) return false; for (const id in got) if (!keyMem[id]) keyMem[id] = got[id]; await sealKeys(); }
+      saveCfg(); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); return true;
+    } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
+  }
+
+  /* =====================================================================
+     모든 대화 (검색)
+     ===================================================================== */
+  function chatText(c) { return (c.view || []).map(m => m.text || '').join('\n'); }
+  function renderHistory() {
+    const q = $('hQ').value.trim().toLowerCase();
+    const list = chats.slice().sort((a, b) => (b.updated || 0) - (a.updated || 0)).filter(c => !q || (c.title || '').toLowerCase().includes(q) || chatText(c).toLowerCase().includes(q));
+    $('hLead').textContent = `대화 ${chats.length}개를 모두 보관합니다${sy.on ? ' · 다른 기기와 같게 맞춰집니다' : ' · 지금은 이 기기에만 저장 (기기 동기화를 켜면 모든 기기에서 같게)'}.${q ? ` 검색 결과 ${list.length}개.` : ''}`;
+    const mark = s => { const e = esc(s); if (!q) return e; const i = s.toLowerCase().indexOf(q); if (i < 0) return e; return esc(s.slice(0, i)) + '<mark>' + esc(s.slice(i, i + q.length)) + '</mark>' + esc(s.slice(i + q.length)); };
+    $('hList').innerHTML = list.length ? list.map(c => {
+      const t = chatText(c), i = q ? t.toLowerCase().indexOf(q) : -1, snip = i >= 0 ? t.slice(Math.max(0, i - 40), i + 120) : ((c.view || []).find(m => m.role === 'assistant') || {}).text || '';
+      const n = (c.view || []).filter(m => m.role === 'user').length;
+      return `<button type="button" class="sc-hi" data-hc="${c.id}"><b>${mark(c.title || '대화')}</b><span class="when">${c.updated ? new Date(c.updated).toLocaleString('ko-KR', { year: '2-digit', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''} · 질문 ${n}개</span><span class="snip">${mark(String(snip).replace(/\s+/g, ' ').slice(0, 220))}</span></button>`;
+    }).join('') : `<div class="sc-bmsg">${q ? '찾는 대화가 없습니다.' : '아직 대화가 없습니다.'}</div>`;
+    $('hList').querySelectorAll('[data-hc]').forEach(b => b.onclick = () => { show('chat'); openChat(b.dataset.hc); });
+  }
+  $('hQ').addEventListener('input', renderHistory);
+
+  /* ---------- 모닝 브리핑: 피드별 5개씩 ---------- */
+  bui.mode = 'top';
+  $('bMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; bui.mode = b.dataset.v; $('bMode').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderBrief(); };
+  function renderFeeds(d) {
+    const feeds = d.byFeed || [];
+    if (!feeds.length) return '<div class="sc-bmsg">이 날의 브리핑에는 피드별 목록이 없습니다 (내일 아침부터 생깁니다).</div>';
+    return `<div class="sc-feeds">${feeds.map(f => `<section class="sc-feed"><h3>${esc(f.name)}</h3>${f.items.length ? `<ol>${f.items.map(it => `<li><a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a><span>${esc(it.source)}${it.time ? ' · ' + it.time.slice(11, 16) : ''}${it.sources > 1 ? ` · ${it.sources}개 언론` : ''}${it.category ? ' · ' + esc(it.category) : ''}</span></li>`).join('')}</ol>` : '<p class="sc-fine" style="text-align:left">오늘은 이 피드에서 받은 기사가 없습니다.</p>'}</section>`).join('')}</div>`;
+  }
+
+  /* =====================================================================
+     전략 브리핑 — 증권사 데일리 시황 · 투자전략 리포트 (briefing 브랜치의 strategy/)
+     ===================================================================== */
+  const sui = { mode: 'daily', dates: null, date: '' };
+  $('sMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; sui.mode = b.dataset.v; $('sMode').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderStrat(); };
+  $('sReload').onclick = () => renderStrat(true);
+  $('sDate').onchange = e => { sui.date = e.target.value; renderStrat(); };
+  async function renderStrat(force) {
+    const box = $('sList'); if (force) { bui.cache = {}; sui.dates = null; }
+    box.innerHTML = '<div class="sc-bmsg">불러오는 중…</div>'; $('sKw').innerHTML = '';
+    const actions = `https://github.com/${briefRepo()}/actions/workflows/strategy-briefing.yml`;
+    let idx; try { idx = await getBrief('strategy/index.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    if (!idx || !(idx.dates || []).length) { box.innerHTML = `<div class="sc-bmsg"><b>아직 전략 브리핑이 없습니다.</b><br>매일 아침 7시 10분쯤 만들어집니다. 지금 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Strategy briefing</a> 에서 [Run workflow] 를 누르고 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`; $('sDate').innerHTML = ''; return; }
+    sui.dates = idx.dates; if (!sui.date || !sui.dates.includes(sui.date)) sui.date = sui.dates[0];
+    $('sDate').innerHTML = sui.dates.map(d => { const x = new Date(d + 'T00:00'); return `<option value="${d}"${d === sui.date ? ' selected' : ''}>${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}</option>`; }).join('');
+    let d; try { d = await getBrief('strategy/' + sui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 전략 브리핑 파일이 없습니다.</div>'; return; }
+    const list = sui.mode === 'weekly' ? d.weekly || [] : d.daily || [], kw = sui.mode === 'weekly' ? d.weeklyKeywords || [] : d.dailyKeywords || [];
+    const t = d.generatedAt ? new Date(d.generatedAt) : null, dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
+    $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. 매일 07:10 쯤 (08:30 보충).`;
+    $('sKw').innerHTML = kw.length ? '<span>자주 나온 말</span>' + kw.map(k => `<b>${esc(k.word)} <em>${k.count}</em></b>`).join('') : '';
+    box.innerHTML = list.length ? list.map(x => `<article class="sc-rp"><span class="rk">${x.rank}</span>
+      <a class="tt" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a>
+      <div class="mt"><span class="br">${esc(x.broker)}</span><span class="sc-tag">${esc(x.kindName)}</span><span>${esc(x.date)}</span><span>조회 ${num(x.reads, 0)}</span></div>
+      ${x.summary ? `<div class="sm" id="sm${x.nid}">${esc(x.summary)}</div>` : ''}
+      <div class="acts">${x.summary && x.summary.split('\n').length > 4 ? `<button class="btn sm ghost" data-more="${x.nid}">요약 더 보기</button>` : ''}<button class="btn sm" data-snote="${x.nid}">${icon('edit', 14)}노트에 남기기</button><button class="btn sm ghost" data-sask="${x.nid}">${icon('sparkle', 14)}내 종목에 주는 의미 묻기</button></div></article>`).join('') : `<div class="sc-bmsg">${sui.mode === 'weekly' ? '최근 7일 안에 주간 전략 리포트가 없습니다.' : '이 날 모은 데일리 리포트가 없습니다.'}</div>`;
+    const byId = id => list.find(x => x.nid === id);
+    box.querySelectorAll('[data-more]').forEach(b => b.onclick = () => { const el = $('sm' + b.dataset.more); el.classList.toggle('open'); b.textContent = el.classList.contains('open') ? '접기' : '요약 더 보기'; });
+    box.querySelectorAll('[data-snote]').forEach(b => b.onclick = () => { const x = byId(b.dataset.snote); editNote(null, ymdLocal(new Date()), `[${x.broker}] ${x.title}\n${x.link}\n`); });
+    box.querySelectorAll('[data-sask]').forEach(b => b.onclick = () => { const x = byId(b.dataset.sask); show('chat'); send(`${x.broker} 의 "${x.title}" (${x.date}) 리포트 요약이야. 이 전략이 내 보유 · 관심 종목(get_portfolio)과 나의 원칙에 주는 의미를 짧게 정리해 줘.\n\n${x.summary}`); });
+  }
+
+  /* =====================================================================
      화면 전환 (2)
      ===================================================================== */
-  const VIEWS = { chat: 'vChat', brief: 'vBrief', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { chat: 'vChat', history: 'vHistory', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'brief') renderBrief(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') renderApis(); if (v === 'chat') renderChat();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat();
     try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
@@ -1191,7 +1460,20 @@
   fillIcons(document);
   $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
-  renderChatList();
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'chat');
+  paintSync();
+  (async () => {
+    try { chats = (await IDB.all()) || []; } catch (e) { chats = []; }
+    const old = LS.get(K_CHATS, null); // 예전처럼 localStorage 에 있던 대화를 옮김
+    if (Array.isArray(old) && old.length) { for (const c of old) if (c && c.id && !chats.some(x => x.id === c.id)) { chats.push(c); await IDB.put(c); } try { localStorage.removeItem(K_CHATS); } catch (e) { } }
+    chats.forEach(c => { savedAt[c.id] = c.updated; }); chats.sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    renderChatList(); const v = Object.keys(VIEWS).find(k => !$(VIEWS[k]).hidden); if (v === 'chat' || v === 'history') show(v);
+    if (sy.on) {
+      syncNow();
+      setInterval(() => { if (document.visibilityState === 'visible') syncNow(); }, 60000);
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && sy.on) syncNow(); });
+    addEventListener('online', () => { if (sy.on) syncNow(); });
+  })();
   addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS[v]) show(v); });
 })();

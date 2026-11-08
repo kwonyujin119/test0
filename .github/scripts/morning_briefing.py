@@ -26,6 +26,10 @@ FEEDS = (['https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ko&gl
          + ['https://www.yna.co.kr/rss/economy.xml', 'https://www.yna.co.kr/rss/market.xml',
             'https://www.hankyung.com/feed/finance', 'https://www.hankyung.com/feed/economy',
             'https://www.mk.co.kr/rss/50200011/', 'https://www.mk.co.kr/rss/30100041/'])
+QUERY_LABELS = ['국내 증시', '미국 증시', '금리 · 연준', '환율', '원자재 · 금', '실적', '반도체', '관세 · 무역', '외국인 수급', '공시 · 배당', '가상자산', '공모주 · 상장']
+FEED_NAMES = (['구글 뉴스 · 경제 헤드라인'] + ['구글 뉴스 · ' + q for q in QUERY_LABELS]
+              + ['연합뉴스 · 경제', '연합뉴스 · 마켓+', '한국경제 · 증권', '한국경제 · 경제', '매일경제 · 증권', '매일경제 · 경제'])
+PER_FEED = 5
 HOST_NAME = {'yna.co.kr': '연합뉴스', 'hankyung.com': '한국경제', 'mk.co.kr': '매일경제'}
 
 KW = {'기준금리': 3, '금리': 3, '연준': 3, 'FOMC': 3, '파월': 2, 'CPI': 3, '물가': 2, '인플레': 2, '고용': 2, 'GDP': 2, '국채': 2, '침체': 2,
@@ -152,9 +156,10 @@ def category(text):
 def build(now=None, limit=15, verbose=False):
     now = now or dt.datetime.now(KST)
     raw_items, ok = [], 0
-    for url in FEEDS:
+    for fi, url in enumerate(FEEDS):
         try:
             got = items_from(url, fetch(url))
+            for g in got: g['feed'] = fi
             raw_items += got
             ok += 1
             if verbose:
@@ -162,16 +167,18 @@ def build(now=None, limit=15, verbose=False):
         except Exception as e:  # 피드 하나가 실패해도 나머지로 만든다
             if verbose:
                 print(f'  ERR  {url[:90]}  {e}', file=sys.stderr)
-    seen, items = set(), []
+    seen, items = {}, []
     for it in raw_items:
         if it['time'] and (now - it['time']).total_seconds() > 26 * 3600:
             continue
         if any(s in it['title'] for s in SPAM):
             continue
         key = norm(it['title'])
-        if key in seen or len(key) < 8:
+        if len(key) < 8:
             continue
-        seen.add(key)
+        if key in seen:  # 같은 기사가 여러 피드에 있으면 피드만 더함
+            seen[key]['feeds'].add(it['feed']); continue
+        seen[key] = it; it['feeds'] = {it['feed']}
         it['g'], it['f'] = grams(it['title']), figures(it['title'])
         items.append(it)
     items.sort(key=lambda x: x['time'] or now, reverse=True)
@@ -179,9 +186,9 @@ def build(now=None, limit=15, verbose=False):
     for it in items:
         best = next((c for c in clusters if any(same_story(it, m) for m in c['items'][:6])), None)
         if best is not None:
-            best['items'].append(it)
+            best['items'].append(it); it['c'] = best
         else:
-            clusters.append({'items': [it]})
+            c = {'items': [it]}; it['c'] = c; clusters.append(c)
     for c in clusters:
         text = ' '.join(m['title'] for m in c['items'])
         srcs = {m['source'] for m in c['items']}
@@ -214,8 +221,23 @@ def build(now=None, limit=15, verbose=False):
         out.append({'rank': i, 'title': r['title'], 'link': r['link'], 'source': r['source'], 'time': fmt(r['time']),
                     'category': c['cat'], 'sources': c['nsrc'], 'articles': len(c['items']), 'keywords': c['kw'], 'score': c['score'],
                     'related': [{'title': m['title'], 'source': m['source'], 'link': m['link']} for m in rel[:4]]})
+    # 피드마다 중요도 순 5개: 그 피드의 기사 중, 이슈 점수(여러 언론이 다룬 정도 + 핵심어 + 최신)가 높은 순 · 같은 이슈는 하나만
+    feeds = []
+    for fi, name in enumerate(FEED_NAMES):
+        cand = [it for it in items if fi in it['feeds']]
+        cand.sort(key=lambda it: (not it['c'].get('strong'), -it['c']['score'], -(it['time'] or now).timestamp()))
+        got, used = [], set()
+        for it in cand:
+            if id(it['c']) in used:
+                continue
+            used.add(id(it['c']))
+            c = it['c']
+            got.append({'rank': len(got) + 1, 'title': it['title'], 'link': it['link'], 'source': it['source'], 'time': fmt(it['time']), 'category': c['cat'], 'sources': c['nsrc'], 'score': c['score']})
+            if len(got) >= PER_FEED:
+                break
+        feeds.append({'name': name, 'items': got})
     return {'date': now.strftime('%Y-%m-%d'), 'generatedAt': now.isoformat(timespec='minutes'), 'feedsOk': ok, 'feeds': len(FEEDS),
-            'articles': len(items), 'issues': len(clusters), 'method': '여러 언론이 함께 다룬 정도 + 시장 핵심어 + 최신순 (AI 사용 안 함)', 'items': out}
+            'articles': len(items), 'issues': len(clusters), 'method': '여러 언론이 함께 다룬 정도 + 시장 핵심어 + 최신순 (AI 사용 안 함)', 'items': out, 'feedItems': sum(len(f['items']) for f in feeds), 'byFeed': feeds}
 
 
 def main():
