@@ -18,7 +18,7 @@
   "shortcuts": [
     { "name": "한글 작업장", "short_name": "한글", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
     { "name": "교안 작업장", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "영상 작업장", "short_name": "영상", "url": "./video.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
+    { "name": "영상 작업장", "short_name": "영상", "url": "./videos.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
   ],
   "file_handlers": [
     { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } },
