@@ -1,4 +1,4 @@
-/* 영상 작업장 — 시작, 윗줄, 재생 단추, 단축키, 내보내기 창, 프로젝트 목록 */
+/* 영상 작업장 — 시작, 윗줄, 재생 단추, 단축키, 내보내기 창, 첫 화면에서 온 요청 */
 'use strict';
 (() => {
   const $ = VE.$;
@@ -102,48 +102,6 @@
   }
   VE.exportDialog = exportDialog;
 
-  /* ---------- 프로젝트 목록 ---------- */
-  async function projectsDialog() {
-    const all = (await VE.idb.all('projects').catch(() => [])).map(x => x.value).sort((a, b) => (b.updated || 0) - (a.updated || 0));
-    const bg = document.createElement('div'); bg.className = 'modal-bg';
-    bg.innerHTML = `<div class="modal" style="width:520px"><h3>내 영상 프로젝트</h3><div class="ve-plist">${all.map(p => `<div class="ve-pitem${p.id === VE.p.id ? ' on' : ''}" data-id="${esc(p.id)}"><div><b>${esc(p.name)}</b><span>${new Date(p.updated || 0).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · 파일 ${p.media.length}개${VE.sync.cfg().on ? (VE.sync.isSent(p.id === VE.p.id ? VE.p : p) ? ' · <i class="ve-sent">올라감</i>' : ' · <i class="ve-unsent">아직 안 올라감</i>') : ''}</span></div>${p.id === VE.p.id ? '<em>지금 작업 중</em>' : `<button class="btn sm" data-open="${esc(p.id)}">열기</button>`}<button class="btn icon sm ghost" data-rm="${esc(p.id)}" title="지우기" aria-label="지우기"><i data-ic="trash"></i></button></div>`).join('') || '<div class="ve-empty">저장된 프로젝트가 없습니다.</div>'}</div>
-      <div id="pjUp"></div><div id="pjRemote"></div>
-      <p class="ve-hint">${VE.sync.cfg().on ? '다른 기기와 연결되어 있습니다. 저장하면 비공개 저장소에 올라가고, 다른 기기의 목록에도 나타납니다.' : '프로젝트와 넣은 파일은 이 기기의 브라우저에만 있습니다. 휴대폰 · PC 에서 함께 보려면 위쪽 [다른 기기와 연결] 을 켜세요.'}</p><div class="actions"><button class="btn" id="pjClose">닫기</button><button class="btn ink" id="pjNew"><i data-ic="plus"></i>새 프로젝트</button></div></div>`;
-    document.body.appendChild(bg); fillIcons(bg);
-    bg.querySelector('#pjClose').onclick = () => bg.remove();
-    /* 같은 이름이 쌓이지 않게 '새 영상 2', '새 영상 3' … */
-    const freeName = () => { const used = new Set(all.map(p => p.name)); if (!used.has('새 영상')) return '새 영상'; for (let n = 2; ; n++) if (!used.has('새 영상 ' + n)) return '새 영상 ' + n; };
-    bg.querySelector('#pjNew').onclick = async () => { await VE.saveNow(); await VE.loadProject(VE.newProject(freeName())); await VE.saveNow(); syncName(); bg.remove(); };
-    bg.querySelectorAll('[data-open]').forEach(b => b.onclick = async () => { await VE.saveNow(); const p = all.find(x => x.id === b.dataset.open); await VE.loadProject(p); syncName(); bg.remove(); try { localStorage.setItem('ve:last', p.id); } catch (e) { } VE.sync.refreshOpen(); });
-    /* 아직 올리지 않은 프로젝트가 있으면 바로 올리기 */
-    if (VE.sync.cfg().on) (async () => {
-      const up = bg.querySelector('#pjUp'), n = (await VE.sync.pending()).length; if (!n) return;
-      up.innerHTML = `<div class="ve-note warn" style="margin:10px 0 0;display:flex;align-items:center;gap:8px"><span style="flex:1">이 기기에서 고친 뒤 아직 올리지 않은 프로젝트가 ${n}개 있습니다. 올려야 다른 기기에서 보입니다.</span><button class="btn sm ink" id="pjUpAll">지금 올리기</button></div>`;
-      bg.querySelector('#pjUpAll').onclick = async ev => { const b = ev.currentTarget; b.disabled = true; b.textContent = '올리는 중…'; try { await VE.saveNow(); await VE.sync.pushAll(); const left = (await VE.sync.pending()).length; toast(left ? `${left}개는 올리지 못했습니다: ${VE.sync.msg}` : '모두 올렸습니다. 다른 기기의 [프로젝트] 에서 보입니다', 3200); bg.remove(); projectsDialog(); } catch (e) { b.disabled = false; b.textContent = '다시 올리기'; toast('올리지 못했습니다: ' + VE.niceErr(e), 4200); } };
-    })();
-    /* 다른 기기에서 만든 프로젝트 (이 기기에 없거나 더 최근에 고친 것) */
-    if (VE.sync.cfg().on) (async () => {
-      const box = bg.querySelector('#pjRemote'); box.innerHTML = '<p class="ve-hint">다른 기기의 프로젝트를 확인하는 중…</p>';
-      try {
-        const list = await VE.sync.list(), mine = new Map(all.map(p => [p.id, p]));
-        const rows = Object.entries(list).filter(([id, r]) => !mine.has(id) || (r.updated || 0) > (mine.get(id).updated || 0)).sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
-        box.innerHTML = rows.length ? `<div class="ve-lab" style="margin-top:12px">다른 기기에서</div><div class="ve-plist">${rows.map(([id, r]) => `<div class="ve-pitem"><div><b>${esc(r.name)}</b><span>${esc(r.device || '다른 기기')} · ${new Date(r.updated || 0).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })} · 파일 ${r.media || 0}개${mine.has(id) ? ' · 이 기기보다 최근' : ''}</span></div><button class="btn sm ink" data-pull="${esc(id)}">받아서 열기</button></div>`).join('')}</div>` : `<p class="ve-hint" style="margin-top:12px">다른 기기에서 새로 올린 프로젝트는 없습니다. 다른 기기에서 [프로젝트] 를 열어 '아직 안 올라감' 이 있는지 확인해 주세요.</p>`;
-        box.querySelectorAll('[data-pull]').forEach(b => b.onclick = async () => {
-          const id = b.dataset.pull, here = mine.get(id);
-          if (here && id === VE.p.id && (VE.p.updated || 0) > ((JSON.parse(localStorage.getItem('ve:syncState') || '{}').p || {})[id] || {}).rev && !confirm('이 기기에서 고친 뒤 아직 올리지 않은 내용이 있습니다. 다른 기기 것으로 바꿀까요?')) return;
-          b.disabled = true; b.textContent = '받는 중…';
-          try { await VE.saveNow(); const p = await VE.sync.pull(id); await VE.loadProject(p); syncName(); bg.remove(); try { localStorage.setItem('ve:last', p.id); } catch (e) { } toast('편집 내용을 받았습니다. 영상 파일을 받는 중입니다', 2600); await VE.sync.fetchMissing(); toast('다 받았습니다', 1800); }
-          catch (e) { b.disabled = false; b.textContent = '받아서 열기'; toast('받지 못했습니다: ' + VE.niceErr(e), 4200); }
-        });
-      } catch (e) { box.innerHTML = `<p class="ve-hint" style="color:var(--ui-danger)">다른 기기의 목록을 읽지 못했습니다: ${esc(VE.niceErr(e))}</p>`; }
-    })();
-    bg.querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
-      const p = all.find(x => x.id === b.dataset.rm); if (!confirm(`'${p.name}' 프로젝트와 안에 넣은 파일을 이 기기에서 지울까요?${VE.sync.cfg().on ? ' 다른 기기의 목록에서도 지웁니다.' : ''} 되돌릴 수 없습니다.`)) return;
-      if (VE.sync.cfg().on) VE.sync.remove(p.id).catch(e => toast('다른 기기 목록에서 지우지 못했습니다: ' + VE.niceErr(e), 4000));
-      const others = all.filter(x => x.id !== p.id).flatMap(x => x.media.map(m => m.id)); for (const m of p.media) if (!others.includes(m.id)) { await VE.idb.del('blobs', m.id).catch(() => { }); await VE.idb.del('cache', m.id + ':peaks').catch(() => { }); await VE.idb.del('cache', m.id + ':track').catch(() => { }); if (m.dub) for (const s of m.dub.segs) await VE.idb.del('cache', s.k).catch(() => { }); }
-      await VE.idb.del('projects', p.id); if (p.id === VE.p.id) { await VE.loadProject(VE.newProject()); syncName(); } bg.remove(); projectsDialog();
-    });
-  }
   /* ---------- 다른 기기와 연결 ---------- */
   function syncLabel() {
     const S = VE.sync, b = $('btnSync'); if (!b) return; const lab = b.querySelector('span');
@@ -201,6 +159,16 @@
     bg.querySelector('#cfMine').onclick = async () => { close(); try { await VE.sync.push(VE.p, { force: true }); toast('이 기기 것을 올렸습니다', 2000); } catch (e) { toast(VE.niceErr(e), 4000); } };
     bg.querySelector('#cfTheirs').onclick = async () => { close(); try { const q = await VE.sync.pull(p.id); await VE.loadProject(q); syncName(); await VE.sync.fetchMissing(); toast('다른 기기 것을 받았습니다', 2000); } catch (e) { toast(VE.niceErr(e), 4000); } };
   }
+  /* 첫 화면 카드에 쓸 그림: 저장할 때 지금 미리보기 화면을 작게 남김 (자주 하지 않게 20초에 한 번) */
+  let posterAt = 0;
+  async function savePoster(now) {
+    if (!VE.p.clips.length || (!now && Date.now() - posterAt < 20000)) return; posterAt = Date.now();
+    try {
+      const src = $('veCanvas'); if (!src || !src.width) return; const W = 480, H = Math.round(W * src.height / src.width), c = document.createElement('canvas'); c.width = W; c.height = H;
+      c.getContext('2d').drawImage(src, 0, 0, W, H); const b = await new Promise(r => c.toBlob(r, 'image/jpeg', .8)); if (b) await VE.idb.put('cache', 'poster:' + VE.p.id, b);
+    } catch (e) { }
+  }
+  addEventListener('pagehide', () => { savePoster(true); });
   function syncName() { $('veName').value = VE.p.name; document.title = VE.p.name + ' - 영상 작업장'; }
 
   /* ---------- 창 어디든 끌어다 놓기 ---------- */
@@ -227,8 +195,8 @@
     $('btnStart').onclick = () => VE.player.seek(0); $('btnEnd').onclick = () => VE.player.seek(VE.total());
     $('btnPrev').onclick = () => { VE.player.pause(); VE.player.seek(VE.player.t - 1 / (VE.p.fps || 30)); }; $('btnNext').onclick = () => { VE.player.pause(); VE.player.seek(VE.player.t + 1 / (VE.p.fps || 30)); };
     $('btnUndo').onclick = VE.undo; $('btnRedo').onclick = VE.redo;
-    $('btnExport').onclick = exportDialog; $('btnProjects').onclick = projectsDialog; $('btnSync').onclick = syncDialog;
-    VE.on('sync', syncLabel); VE.on('syncConflict', conflictDialog); VE.on('save', () => { if (VE.saveState === 'saved') VE.sync.soon(); });
+    $('btnExport').onclick = exportDialog; $('btnProjects').onclick = async () => { await VE.saveNow(); await savePoster(true); location.href = 'videos.html'; }; $('btnSync').onclick = syncDialog;
+    VE.on('sync', syncLabel); VE.on('syncConflict', conflictDialog); VE.on('save', () => { if (VE.saveState === 'saved') { VE.sync.soon(); savePoster(); } });
     $('btnImportEmpty').onclick = () => VE.pickFiles(); $('btnRecEmpty').onclick = () => VE.openTab('rec');
     /* 속성 칸: 넓은 화면에서는 접어서 미리보기를 넓히고(기억함), 좁은 화면에서는 떠 있는 칸으로 */
     $('veBtnProps').onclick = () => {
@@ -273,11 +241,31 @@
     updatePlay(); updateHistory(); updateSave(); updateTime(); updateEmpty(); VE.renderProps();
     VE.openTab(innerWidth > 820 ? 'media' : 'media'); if (innerWidth <= 820) VE.closePanel();
     VE.mb().catch(e => toast(e.message, 5000));
-    /* 지난 작업 이어서 */
-    try { const id = localStorage.getItem('ve:last'); if (id) { const p = await VE.idb.get('projects', id); if (p) { await VE.loadProject(p); } } } catch (e) { console.warn(e); }
-    /* 다른 기기와 연결: 열린 프로젝트를 맞추고 이 기기에 없는 파일을 받음 */
-    VE.sync.init(); syncLabel(); if (VE.sync.cfg().on) VE.sync.refreshOpen().then(() => VE.sync.soon(2500));
+    /* 첫 화면(videos.html)에서 온 요청: ?p=열기 · ?new=1 새 영상 · ?import=1 넘겨받은 파일 · ?tab=rec 녹화 · ?pull=다른 기기 것 받기 · ?sync=1 연결 창 · ?export=1 내보내기 · ?t=초 */
+    const q = new URLSearchParams(location.search); let pulled = false;
+    VE.sync.init(); syncLabel();
+    try {
+      if (q.get('pull')) {
+        try { const p = await VE.sync.pull(q.get('pull')); await VE.loadProject(p); pulled = true; toast('편집 내용을 받았습니다. 영상 파일을 받는 중입니다…', 3000); }
+        catch (e) { toast('다른 기기 것을 받지 못했습니다: ' + VE.niceErr(e), 5000); }
+      }
+      if (!pulled && q.get('new')) {
+        const used = new Set((await VE.idb.all('projects').catch(() => [])).map(x => x.value && x.value.name)); let name = '새 영상'; for (let n = 2; used.has(name); n++) name = '새 영상 ' + n;
+        await VE.loadProject(VE.newProject(name)); await VE.saveNow();
+      } else if (!pulled) {
+        const id = q.get('p') || localStorage.getItem('ve:last'); if (id) { const p = await VE.idb.get('projects', id); if (p) await VE.loadProject(p); else if (q.get('p')) toast('그 영상을 이 기기에서 찾지 못했습니다', 3000); }
+      }
+    } catch (e) { console.warn(e); }
+    try { history.replaceState(null, '', 'video.html?p=' + encodeURIComponent(VE.p.id)); localStorage.setItem('ve:last', VE.p.id); } catch (e) { }
     syncName(); updateEmpty();
+    if (q.get('import')) { const files = await VE.idb.get('cache', 'pending:import').catch(() => null); VE.idb.del('cache', 'pending:import').catch(() => { }); if (files && files.length) await VE.importFiles(files); }
+    if (q.get('tab')) VE.openTab(q.get('tab'));
+    if (q.get('t')) setTimeout(() => VE.player.seek(+q.get('t') || 0), 300);
+    if (q.get('sync')) syncDialog();
+    if (q.get('export') && VE.p.clips.length) exportDialog();
+    /* 다른 기기와 연결: 열린 프로젝트를 맞추고 이 기기에 없는 파일을 받음 */
+    if (VE.sync.cfg().on) VE.sync.refreshOpen().then(() => VE.sync.soon(2500));
+    updateEmpty();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

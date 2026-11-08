@@ -135,7 +135,7 @@
       /* AI 목소리 저장분 */
       const dubs = []; for (const m of p.media) if (m.dub && m.dub.segs) for (const sg of m.dub.segs) { if (s0.dub[sg.k]) continue; const v = await VE.idb.get('cache', sg.k).catch(() => null); if (v) { changes.push({ path: `dub/${sg.k}.bin`, sha: await putBlob(new Blob([v])) }); dubs.push(sg.k); } }
       set('busy', `'${p.name}' 올리는 중`, null);
-      const json = JSON.stringify(p), info = { name: p.name, updated: p.updated, device: S.device(), media: p.media.length };
+      const json = JSON.stringify(p), info = { name: p.name, updated: p.updated, device: S.device(), media: p.media.length, len: Math.round((p.clips || []).reduce((s, c) => s + (c.out - c.in) / (c.speed || 1), 0) * 10) / 10 };
       await commit(`영상 저장: ${p.name} (${S.device()})`, async head => { const idx = (await readJSON('projects/index.json', head)) || { projects: {} }; idx.projects[p.id] = info; return [...changes, { path: `projects/${p.id}.json`, content: json }, { path: 'projects/index.json', content: JSON.stringify(idx, null, 1) }]; });
       setSt(s => { s.p[p.id] = { rev: p.updated }; for (const [m] of todo) s.media[m.id] = { done: true }; for (const k of dubs) s.dub[k] = 1; });
       S.lastSent = Date.now(); set('ok', '다른 기기와 연결됨');
