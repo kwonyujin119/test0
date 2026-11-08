@@ -105,11 +105,13 @@
       <p class="ve-hint">프로젝트와 넣은 파일은 이 기기의 브라우저에만 있습니다. 다른 기기에서는 보이지 않습니다.</p><div class="actions"><button class="btn" id="pjClose">닫기</button><button class="btn ink" id="pjNew"><i data-ic="plus"></i>새 프로젝트</button></div></div>`;
     document.body.appendChild(bg); fillIcons(bg);
     bg.querySelector('#pjClose').onclick = () => bg.remove();
-    bg.querySelector('#pjNew').onclick = async () => { await VE.saveNow(); await VE.loadProject(VE.newProject()); syncName(); bg.remove(); };
+    /* 같은 이름이 쌓이지 않게 '새 영상 2', '새 영상 3' … */
+    const freeName = () => { const used = new Set(all.map(p => p.name)); if (!used.has('새 영상')) return '새 영상'; for (let n = 2; ; n++) if (!used.has('새 영상 ' + n)) return '새 영상 ' + n; };
+    bg.querySelector('#pjNew').onclick = async () => { await VE.saveNow(); await VE.loadProject(VE.newProject(freeName())); await VE.saveNow(); syncName(); bg.remove(); };
     bg.querySelectorAll('[data-open]').forEach(b => b.onclick = async () => { await VE.saveNow(); const p = all.find(x => x.id === b.dataset.open); await VE.loadProject(p); syncName(); bg.remove(); try { localStorage.setItem('ve:last', p.id); } catch (e) { } });
     bg.querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
       const p = all.find(x => x.id === b.dataset.rm); if (!confirm(`'${p.name}' 프로젝트와 안에 넣은 파일을 이 기기에서 지울까요? 되돌릴 수 없습니다.`)) return;
-      const others = all.filter(x => x.id !== p.id).flatMap(x => x.media.map(m => m.id)); for (const m of p.media) if (!others.includes(m.id)) { await VE.idb.del('blobs', m.id).catch(() => { }); await VE.idb.del('cache', m.id + ':peaks').catch(() => { }); await VE.idb.del('cache', m.id + ':track').catch(() => { }); }
+      const others = all.filter(x => x.id !== p.id).flatMap(x => x.media.map(m => m.id)); for (const m of p.media) if (!others.includes(m.id)) { await VE.idb.del('blobs', m.id).catch(() => { }); await VE.idb.del('cache', m.id + ':peaks').catch(() => { }); await VE.idb.del('cache', m.id + ':track').catch(() => { }); if (m.dub) for (const s of m.dub.segs) await VE.idb.del('cache', s.k).catch(() => { }); }
       await VE.idb.del('projects', p.id); if (p.id === VE.p.id) { await VE.loadProject(VE.newProject()); syncName(); } bg.remove(); projectsDialog();
     });
   }

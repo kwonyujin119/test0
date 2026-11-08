@@ -94,8 +94,13 @@
         if (room && talk / sp > room) sp = talk / room;
         sp = Math.max(.7, Math.min(1.9, sp));
       }
-      const dur = dur0 / sp;
       const emb = (await S.text_encoder.run({ text_ids: tid, style_ttl: st.ttl, text_mask: tm })).text_emb;
+      let r = await gen(sp);
+      /* 다 만든 말이 들어갈 자리를 넘으면 한 번 더 빠르게 (짧은 말은 길이 예측이 어긋나기 쉬움) */
+      if (room && r.pcm.length / SR > room + .02 && sp < 1.9) { sp = Math.min(1.9, sp * (r.pcm.length / SR) / room * 1.03); r = await gen(sp); }
+      return r;
+      async function gen(sp) {
+      const dur = dur0 / sp;
       const cs = cfg.ae.base_chunk_size * cfg.ttl.chunk_compress_factor, D = cfg.ttl.latent_dim * cfg.ttl.chunk_compress_factor, wl = Math.floor(dur * cfg.ae.sample_rate), LL = Math.max(1, Math.ceil(wl / cs));
       let x = new Float32Array(D * LL); for (let i = 0; i < x.length; i++) { const u1 = Math.max(1e-4, Math.random()), u2 = Math.random(); x[i] = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2); }
       const lm = new ort.Tensor('float32', new Float32Array(LL).fill(1), [1, 1, LL]), ts = new ort.Tensor('float32', new Float32Array([steps]), [1]);
@@ -105,6 +110,7 @@
       }
       const w = (await S.vocoder.run({ latent: new ort.Tensor('float32', x, [1, D, LL]) })).wav_tts.data;
       return { pcm: trim(w.subarray(0, Math.min(w.length, wl))), speed: sp };
+      }
     }
     self.onmessage = async e => {
       const d = e.data;
@@ -205,6 +211,8 @@
         cur.w.push(w); cur.text = clean(cur.text + ' ' + w.t); cur.e = Math.min(c.out, w.e);
       }
       if (cur) groups.push(cur);
+      /* 컷이나 길이 때문에 문장 중간에서 끊긴 묶음은 쉼표를 붙여 문장 끝 억양이 되지 않게 */
+      groups.forEach(g => { if (!/[.?!。…,]$/.test(g.text)) g.text += ','; });
       groups.forEach((g, i) => { const nx = groups[i + 1]; g.span = Math.max(.25, g.e - g.s); g.room = Math.max(g.span, (nx ? nx.s - .05 : c.out) - g.s); });
       for (const g of groups) { const key = g.mid + '|' + g.s.toFixed(2) + '|' + g.text; if (seen.has(key)) continue; seen.add(key); out.push(g); }
     }

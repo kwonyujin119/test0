@@ -136,7 +136,8 @@ const VE = window.VE = {};
   /* 재생 위치에서 자르기 */
   VE.splitAt = (t) => {
     const a = VE.at(t); if (!a) return false;
-    const cut = a.src; if (cut - a.clip.in < .02 || a.clip.out - cut < .02) return false;
+    /* 원본 프레임 경계에 맞춰 자름 (반 프레임 어긋남 방지) */
+    const fps = (VE.media(a.clip.mid) || {}).fps, cut = fps > 0 ? Math.round(a.src * fps) / fps : a.src; if (cut - a.clip.in < .02 || a.clip.out - cut < .02) return false;
     VE.edit(() => { const c = a.clip, d = JSON.parse(JSON.stringify(c)); d.id = uid(); d.in = cut; c.out = cut; d.fadeIn = 0; c.fadeOut = 0; VE.p.clips.splice(a.i + 1, 0, d); });
     return true;
   };
@@ -146,17 +147,21 @@ const VE = window.VE = {};
     const merged = []; for (const r of ranges) { const l = merged[merged.length - 1]; if (l && r[0] <= l[1] + .001) l[1] = Math.max(l[1], r[1]); else merged.push([r[0], r[1]]); }
     if (!merged.length) return 0;
     return VE.edit(() => {
-      const { starts } = VE.layout(), out = [];
+      const { starts } = VE.layout(), out = [], extra = [];
       VE.p.clips.forEach((c, i) => {
         const a = starts[i], b = a + VE.clipLen(c), sp = c.speed || 1, i0 = c.in; let cur = a, first = true; const segs = [];
         for (const r of merged) { if (r[1] <= a || r[0] >= b) continue; if (r[0] > cur) segs.push([cur, r[0]]); cur = Math.max(cur, r[1]); }
         if (cur < b) segs.push([cur, b]);
-        const keep = segs.filter(s => s[1] - s[0] > .02);
+        /* 잘리고 남은 0.12초 미만 부스러기는 순간 튀어 보이므로 함께 지운다 (손대지 않은 장면은 그대로) */
+        const whole = segs.length === 1 && segs[0][0] === a && segs[0][1] === b;
+        const keep = segs.filter(s => whole || s[1] - s[0] >= .12);
+        if (!whole) segs.forEach(s => { if (s[1] - s[0] < .12) extra.push(s); });
         keep.forEach((s, k) => {
           const d = first ? c : JSON.parse(JSON.stringify(c)); if (!first) d.id = uid(); first = false;
           d.in = i0 + (s[0] - a) * sp; d.out = i0 + (s[1] - a) * sp; if (k > 0) d.fadeIn = 0; if (k < keep.length - 1) d.fadeOut = 0; out.push(d);
         });
       });
+      if (extra.length) { merged.push(...extra); merged.sort((x, y) => x[0] - y[0]); }
       const shift = t => { let m = 0; for (const r of merged) { if (t >= r[1]) m += r[1] - r[0]; else if (t > r[0]) m += t - r[0]; } return t - m; };
       VE.p.titles = VE.p.titles.map(o => ({ ...o, start: shift(o.start), end: shift(o.end) })).filter(o => o.end - o.start > .05);
       VE.p.clips = out; if (VE.sel && !VE.selObj()) { VE.sel = null; VE.emit('select'); }
