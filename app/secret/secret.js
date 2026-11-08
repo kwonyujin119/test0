@@ -757,12 +757,7 @@
     fillIcons($('vApis'));
     const on = $('lkOn'), off = $('lkOff'), op = $('lkOpen');
     if (op) op.onclick = () => unlock();
-    if (on) on.onclick = async () => {
-      const p = await askPass('잠금 암호 걸기', '4자 이상. 이 암호는 어디에도 저장하지 않습니다.', true); if (!p) return;
-      const salt = crypto.getRandomValues(new Uint8Array(16)); lockKey = await derive(p, salt);
-      keyMem = Object.fromEntries(cfg.apis.map(a => [a.id, a.key || ''])); cfg.apis.forEach(a => { a.key = ''; });
-      cfg.lock = { salt: b64(salt) }; await sealKeys(); toast('키를 잠갔습니다', 2000); renderApis();
-    };
+    if (on) on.onclick = async () => { if (await lockFlow('잠금 암호 걸기', '4자 이상. 이 암호는 어디에도 저장하지 않습니다.')) { toast('키를 잠갔습니다', 2000); renderApis(); } };
     if (off) off.onclick = async () => {
       if (!(await unlock())) return;
       cfg.apis.forEach(a => { a.key = keyMem[a.id] || ''; }); cfg.lock = null; lockKey = null; keyMem = null; saveCfg(); toast('잠금을 껐습니다', 2000); renderApis();
@@ -1258,7 +1253,7 @@
   const chatPath = id => `secret/chats/${String(id).replace(/[^\w-]/g, '')}.json`;
   const plainChat = c => { const o = Object.assign({}, c); delete o.live; return o; };
 
-  function setSy(state, msg) { SY.state = state; SY.msg = msg || ''; sy.err = state === 'bad' ? SY.msg : ''; paintSync(); }
+  function setSy(state, msg) { SY.state = state; SY.msg = msg || ''; sy.err = state === 'bad' ? SY.msg : ''; paintSync(); renderBanner(); }
   function paintSync() {
     const em = $('cSync'); if (!em) return;
     em.className = SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : '';
@@ -1367,9 +1362,9 @@
     box.innerHTML = `<span class="ico-wrap">${icon('cloud', 20)}</span><div class="tx"><b>모든 기기에서 같게 보기</b> — 대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 의 secret 폴더에 두고, 휴대폰 · PC 어디서 열어도 같게 맞춥니다. API 키는 잠금 암호를 건 경우에만 암호화된 채로 옮겨집니다.
       <div class="st ${SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : ''}">${!sy.on ? '꺼져 있음 — 이 기기에만 저장 중' : SY.state === 'busy' ? '맞추는 중…' : SY.state === 'bad' ? esc(SY.msg || sy.err) : `켜짐 · 마지막으로 맞춘 때 ${esc(when)}`}</div>
       ${!c.token ? `<div class="tok"><input type="password" id="syTok" placeholder="GitHub 토큰 (${esc(c.repo)} 저장소 Contents 읽기 · 쓰기)" autocomplete="off"><button class="btn" id="syTokOk">넣기</button></div><p class="sc-fine" style="text-align:left;margin:4px 0 0">영상(VIDEO) 동기화에 쓰는 것과 같은 토큰입니다. 이 기기에 한 번만 넣으면 됩니다.</p>` : ''}</div>
-      <div class="acts">${sy.on ? `<button class="btn" id="syNow">${icon('refresh', 15)}지금 맞추기</button><button class="btn ghost" id="syOff">끄기</button>` : `<button class="btn ink" id="syOn"${c.token ? '' : ' disabled'}>${icon('cloud', 15)}켜기</button>`}</div>`;
+      <div class="acts">${sy.on ? `<button class="btn" id="syNow">${icon('refresh', 15)}지금 맞추기</button><button class="btn ghost" id="syOff">끄기</button>` : `<button class="btn ink" id="syOn">${icon('cloud', 15)}이 기기 연결</button>`}</div>`;
     const on = $('syOn'), off = $('syOff'), now = $('syNow'), tk = $('syTokOk');
-    if (on) on.onclick = () => enableSync();
+    if (on) on.onclick = () => connectDevice();
     if (now) now.onclick = () => syncNow({ force: true });
     if (off) off.onclick = async () => { if (await confirmBox('동기화를 끌까요?', '이 기기의 자료는 그대로 남고, 다른 기기와 더 이상 맞추지 않습니다.', '끄기')) { sy.on = false; saveSy(); setSy('off'); } };
     if (tk) tk.onclick = () => { const v = $('syTok').value.trim(); if (!v) return; const o = LS.get('ve:sync', {}); o.token = v; LS.set('ve:sync', o); renderSyncBox(); toast('토큰을 넣었습니다. [켜기] 를 누르세요', 2200); };
@@ -1382,8 +1377,68 @@
       const k = await derive(pass, unb64(L.salt)); const got = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(L.iv) }, k, unb64(L.data))));
       if (!cfg.lock) { cfg.lock = { salt: L.salt, iv: L.iv, data: L.data }; lockKey = k; keyMem = Object.assign({}, got); cfg.apis.forEach(a => { if (a.key && !keyMem[a.id]) keyMem[a.id] = a.key; a.key = ''; }); await sealKeys(); }
       else { if (!(await unlock())) return false; for (const id in got) if (!keyMem[id]) keyMem[id] = got[id]; await sealKeys(); }
-      saveCfg(); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); return true;
+      saveCfg(); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); renderBanner(); return true;
     } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
+  }
+
+  /* =====================================================================
+     이 기기 연결 — 단추 하나로: 토큰(없을 때만) → 동기화 켜기 → 자료 받기 → API 키 (다른 기기에서 잠근 것 받기 / 처음이면 옮길지 묻기)
+     ===================================================================== */
+  const hasKey = a => cfg.lock ? !!(keyMem && keyMem[a.id]) : !!a.key;
+  function askToken() {
+    return new Promise(res => {
+      const c = ghCfg();
+      const d = dialog(`<h3>GitHub 토큰 한 번만 넣기</h3>
+        <p class="modal-desc">SECRET 자료를 비공개 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 에 두고 모든 기기에서 같게 맞추려면, 이 기기에 토큰이 한 번 필요합니다. 영상(VIDEO) 동기화에 쓴 토큰이 있으면 그것을 붙여 넣으세요.</p>
+        <ol class="sc-steps1"><li>토큰이 없으면 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub 토큰 만들기</a> 를 엽니다.</li><li>Repository access 에서 <b>${esc(c.repo)}</b> 를 고르고, Permissions 의 <b>Contents</b> 를 <b>Read and write</b> 로 합니다.</li><li>만든 토큰을 아래에 붙여 넣습니다.</li></ol>
+        <form class="sc-form"><label>토큰<input type="password" name="tok" placeholder="github_pat_…" autocomplete="off" required></label>
+        <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">연결</button></div></form>`, 'sc-dlg');
+      const f = d.el.querySelector('form'); setTimeout(() => f.tok.focus(), 30);
+      let done = false; const fin = v => { if (done) return; done = true; d.close(); res(v); };
+      d.bg.addEventListener('closed', () => fin(null)); d.el.querySelector('[data-x]').onclick = () => fin(null);
+      f.onsubmit = e => { e.preventDefault(); const v = f.tok.value.trim(); if (v) fin(v); };
+    });
+  }
+  async function lockFlow(title, desc) {
+    const p = await askPass(title, desc, true); if (!p) return false;
+    const salt = crypto.getRandomValues(new Uint8Array(16)); lockKey = await derive(p, salt);
+    keyMem = Object.fromEntries(cfg.apis.map(a => [a.id, a.key || ''])); cfg.apis.forEach(a => { a.key = ''; });
+    cfg.lock = { salt: b64(salt) }; await sealKeys(); return true;
+  }
+  let connecting = false;
+  async function connectDevice() {
+    if (connecting) return; connecting = true; renderBanner();
+    try {
+      let c = ghCfg();
+      if (!c.token) {
+        const tok = await askToken(); if (!tok) return;
+        const o = LS.get('ve:sync', {}); o.token = tok; LS.set('ve:sync', o); c = ghCfg();
+      }
+      await enableSync();
+      if (!sy.on) return; // 실패 문구는 배너에
+      const ai = aiApis();
+      if (cfg.lockRemote && ai.some(a => !hasKey(a))) await adoptRemoteKeys();
+      else if (!cfg.lock && cfg.apis.some(a => a.key) && !sy.askedLock) {
+        sy.askedLock = true; saveSy();
+        if (await confirmBox('API 키도 다른 기기로 옮길까요?', '잠금 암호를 정하면 키를 암호화해 함께 옮깁니다. 다른 기기에서는 [이 기기 연결] 을 누르고 같은 암호만 넣으면 됩니다. 옮기지 않으면 기기마다 키를 따로 넣습니다.', '암호 정하기'))
+          if (await lockFlow('키 잠금 암호 정하기', '4자 이상. 다른 기기에서 같은 암호를 넣으면 키가 옮겨집니다. 이 암호는 어디에도 저장하지 않습니다.')) toast('API 키도 함께 옮겨집니다', 2400);
+      }
+      toast('이 기기 연결을 마쳤습니다. 이제 휴대폰 · PC 어디서나 같게 보입니다', 3000);
+    } finally { connecting = false; renderBanner(); }
+  }
+  function renderBanner() {
+    const b = $('syncBanner'); if (!b) return;
+    const needKey = sy.on && cfg.lockRemote && aiApis().some(a => !hasKey(a));
+    let html = '', bad = false;
+    if (connecting) html = `<span class="ico-b">${icon('cloud', 18)}</span><div class="tx"><b>이 기기를 연결하는 중…</b><span>${esc(SY.msg || '잠시만 기다려 주세요')}</span></div>`;
+    else if (!sy.on && !sy.dismiss) html = `<span class="ico-b">${icon('cloud', 18)}</span><div class="tx"><b>휴대폰 · PC 어디서나 같게 보려면 이 기기를 한 번 연결하세요</b><span>대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 저장소로 맞춥니다.</span></div><div class="acts"><button class="btn ink" id="bnConnect">${icon('cloud', 15)}이 기기 연결</button><button class="btn ghost" id="bnLater">이 기기만 쓰기</button></div>`;
+    else if (sy.on && SY.state === 'bad') { bad = true; html = `<span class="ico-b">${icon('alert', 18)}</span><div class="tx"><b>다른 기기와 맞추지 못했습니다</b><span>${esc(SY.msg || sy.err || '')}</span></div><div class="acts"><button class="btn" id="bnConnect">다시 연결</button></div>`; }
+    else if (needKey) html = `<span class="ico-b">${icon('key', 18)}</span><div class="tx"><b>다른 기기에서 등록한 API 키가 있습니다</b><span>그 기기에서 정한 키 잠금 암호를 넣으면 이 기기에서도 바로 씁니다.</span></div><div class="acts"><button class="btn ink" id="bnKeys">${icon('key', 15)}키 받기</button></div>`;
+    b.hidden = !html; b.classList.toggle('bad', bad); b.innerHTML = html;
+    const cn = $('bnConnect'), lt = $('bnLater'), ky = $('bnKeys');
+    if (cn) cn.onclick = () => connectDevice();
+    if (lt) lt.onclick = () => { sy.dismiss = true; saveSy(); renderBanner(); toast('왼쪽 [기기 동기화] 에서 언제든 연결할 수 있습니다', 2600); };
+    if (ky) ky.onclick = async () => { await adoptRemoteKeys(); renderBanner(); };
   }
 
   /* =====================================================================
@@ -1461,7 +1516,7 @@
   $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'chat');
-  paintSync();
+  paintSync(); renderBanner();
   (async () => {
     try { chats = (await IDB.all()) || []; } catch (e) { chats = []; }
     const old = LS.get(K_CHATS, null); // 예전처럼 localStorage 에 있던 대화를 옮김
