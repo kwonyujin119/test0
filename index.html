@@ -114,11 +114,11 @@
     renderAppBox(); renderFoot();
     gen++; liveDecks(); liveHwp(); liveVideo(); secretCard();
   }
-  /* SECRET: 관리자일 때만 카드를 만든다 (게스트 화면에는 아예 넣지 않음). 설명 없이 'SECRET 열기' 만 */
+  /* SECRET: 관리자일 때만 카드를 만든다 (게스트 화면에는 아예 넣지 않음). S 표시 · 제목 · [SECRET 열기] 만, 설명은 넣지 않음 */
   function secretCard() {
     const old = $('secretCard'); if (old) old.remove();
     if (!Access.isAdmin) return;
-    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card ws-secret" id="secretCard" data-ws="secret"><a class="card-link go" href="secret.html">SECRET 열기${icon('arrowRight')}</a></article>`);
+    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card" id="secretCard" data-ws="secret"><div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div><span class="go" aria-hidden="true">SECRET 열기${icon('arrowRight')}</span></article>`);
   }
   $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
   $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };
