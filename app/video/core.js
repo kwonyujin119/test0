@@ -26,6 +26,7 @@ const VE = window.VE = {};
     gap: '<path d="M6 4v16"/><path d="M18 4v16"/><path d="m10 9-3 3 3 3"/><path d="m14 9 3 3-3 3"/>',
     volume: '<path d="M4 10v4h3l5 4V6L7 10Z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/>',
     mute: '<path d="M4 10v4h3l5 4V6L7 10Z"/><path d="m16 9.5 5 5"/><path d="m21 9.5-5 5"/>',
+    cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.8 8.6 4.95 4.95 0 0 1 17.5 18.5Z"/>',
     shrink: '<path d="M9 4v5H4"/><path d="M15 4v5h5"/><path d="M9 20v-5H4"/><path d="M15 20v-5h5"/>',
     sparkle: '<path d="M12 4l1.8 5.2L19 11l-5.2 1.8L12 18l-1.8-5.2L5 11l5.2-1.8Z"/>',
     blur: '<rect x="4" y="4" width="4" height="4"/><rect x="10" y="4" width="4" height="4"/><rect x="16" y="4" width="4" height="4"/><rect x="4" y="10" width="4" height="4"/><rect x="10" y="10" width="4" height="4"/><rect x="16" y="10" width="4" height="4"/><rect x="4" y="16" width="4" height="4"/><rect x="10" y="16" width="4" height="4"/><rect x="16" y="16" width="4" height="4"/>',
