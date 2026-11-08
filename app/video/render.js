@@ -28,6 +28,17 @@
     if (a.length !== b.length) return a.map(x => x);
     return a.map((face, n) => { const q = b[n]; const o = new Array(FIELDS); for (let k = 0; k < FIELDS; k++) o[k] = lerp(face[k], q[k], f); return o; });
   };
+  /* 얼굴 기준점 468개 (0~1) — 앞뒤 기록 사이를 이어 그림. 잠깐 놓친 장면은 1.5초까지 직전 값을 씀 */
+  const meshBuf = new Float32Array(936);
+  VE.meshAt = (mid, src) => {
+    const r = VE.rt.get(mid), tr = r && r.track; if (!tr || !tr.mesh) return null;
+    const pos = src * tr.fps, i = Math.floor(pos), f = pos - i, M = tr.mesh, hold = Math.round(tr.fps * 1.5);
+    let a = M[i], b = M[i + 1];
+    if (!a) { for (let k = 1; k <= hold; k++) { if (M[i - k]) { a = M[i - k]; break; } } }
+    if (!b) b = a; if (!a) { if (b) a = b; else return null; }
+    for (let k = 0; k < 936; k++) meshBuf[k] = (a[k] + (b[k] - a[k]) * f) / 16000;
+    return meshBuf;
+  };
   const toParams = p => ({ roll: p[4], yaw: p[5], pitch: p[6], blinkL: p[7], blinkR: p[8], mouth: p[9], smile: p[10], brow: p[11] });
 
   /* ---------- 글자 ---------- */
@@ -105,7 +116,7 @@
   /* f = { t, clip, media, src, frame, fw, fh, pip:{frame,fw,fh,src}, noCaption } */
   VE.drawFrame = (c, W, H, f) => {
     c.save(); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
-    const clip = f.clip; let usesChar = false;
+    const clip = f.clip; let usesChar = false, swapped = false;
     if (clip && f.frame && f.fw && f.fh) {
       const r = VE.destRect(clip, W, H, f.fw, f.fh);
       const covers = r.x <= 0.5 && r.y <= 0.5 && r.x + r.w >= W - 0.5 && r.y + r.h >= H - 0.5;
@@ -131,6 +142,13 @@
             c.save(); c.beginPath(); c.ellipse(px, py, bw / 2, bh / 2, p[4], 0, Math.PI * 2); c.clip(); c.imageSmoothingEnabled = false; c.drawImage(mos, sx, sy, sw, sh); c.restore();
           } else if (n === 0 && VE.isChar(clip.face.char)) {
             usesChar = true; const pr = toParams(p);
+            /* 얼굴 덮기: 기준점 그물로 사진 얼굴을 영상 얼굴 모양에 맞춰 덮음 (실패하면 아래의 얹기 방식으로) */
+            if (clip.face.swap && VE.swap && VE.swap.can(clip.face.char)) {
+              const ms = VE.meshAt(clip.mid, f.src);
+              if (ms) { const pts = new Float32Array(936); for (let q = 0; q < 468; q++) { pts[q * 2] = r.x + ms[q * 2] * r.w; pts[q * 2 + 1] = r.y + ms[q * 2 + 1] * r.h; } if (VE.swap.draw(c, pts, clip.face.char, clip.id, f.src)) { swapped = true; return; } }
+            }
+            /* AI 목소리로 바꾼 장면은 그 소리 크기에 맞춰 입을 움직임 */
+            if (VE.dub && VE.dub.active(clip.mid)) pr.mouth = VE.dub.mouthAt(clip.mid, f.src);
             /* 얼굴 눈금은 이마까지만이라 머리카락까지 덮도록 조금 위로 */
             VE.drawChar(c, clip.face.char, px + (clip.face.dx || 0) * fwPx, py + ((clip.face.dy || 0) - .09) * fhPx, Math.max(fwPx, fhPx * .8), pr.roll, pr, clip.face.scale || 1.25);
           }
@@ -145,7 +163,8 @@
     for (const o of VE.p.titles) if (f.t >= o.start && f.t < o.end) drawTitle(c, W, H, o, f.t);
     if (!f.noCaption && VE.p.cap.on) { const cap = VE.capAt(f.t); if (cap) drawCaption(c, W, H, cap, f.t); }
     /* 캐릭터로 바꾼 영상이라는 표시 */
-    const usesVoice = !!(VE.dub && VE.dub.labelAt(f.t, clip)), showChar = usesChar && VE.p.aiLabel;
+    /* 얼굴 덮기는 실제 사람처럼 보이므로 표시를 끌 수 없다 */
+    const usesVoice = !!(VE.dub && VE.dub.labelAt(f.t, clip)), showChar = usesChar && (VE.p.aiLabel || swapped);
     if (showChar || usesVoice) {
       const u = Math.min(W, H) * .024, label = showChar && usesVoice ? 'AI 캐릭터 · AI 음성' : showChar ? 'AI 캐릭터' : 'AI 음성', m = Math.min(W, H) * .03; c.font = `600 ${u}px ${FONT}`; c.textBaseline = 'middle'; c.textAlign = 'left';
       const w = c.measureText(label).width + u * 1.2, h = u * 1.8; c.fillStyle = 'rgba(12,13,15,.62)'; c.beginPath(); c.roundRect(W - m - w, m, w, h, h / 2); c.fill(); c.fillStyle = '#fff'; c.fillText(label, W - m - w + u * .6, m + h / 2);

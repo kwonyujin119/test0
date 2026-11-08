@@ -51,6 +51,7 @@
       </div>
     </div>
     <div class="ve-transport">
+      <input type="range" class="ve-seek" id="veSeek" min="0" max="1000" step="1" value="0" aria-label="재생 위치">
       <div class="ve-tc"><b id="tcNow">0:00.0</b> <span>/ <span id="tcAll">0:00</span></span></div>
       <div class="ve-tbtns">
         <button class="btn hide-sm" id="btnStart" title="맨 앞으로 (Home)" aria-label="맨 앞으로"><i data-ic="skipB"></i></button>
@@ -59,7 +60,10 @@
         <button class="btn" id="btnNext" title="한 장면 뒤로 (→)" aria-label="한 장면 뒤로"><i data-ic="stepF"></i></button>
         <button class="btn hide-sm" id="btnEnd" title="맨 뒤로 (End)" aria-label="맨 뒤로"><i data-ic="skipF"></i></button>
       </div>
-      <div class="r"></div>
+      <div class="r">
+        <button class="btn icon ghost" id="btnMute" title="소리 끄기 (M)" aria-label="소리 끄기"><i data-ic="volume"></i></button>
+        <button class="btn icon ghost" id="btnFull" title="크게 보기 (F)" aria-label="크게 보기"><i data-ic="expand"></i></button>
+      </div>
     </div>
   </main>
   <aside class="ve-props" id="veProps"></aside>
@@ -91,6 +95,7 @@
 <script src="app/video/core.js"></script>
 <script src="app/video/chars.js"></script>
 <script src="app/video/render.js"></script>
+<script src="app/video/swap.js"></script>
 <script src="app/video/player.js"></script>
 <script src="app/video/timeline.js"></script>
 <script src="app/video/tools.js"></script>

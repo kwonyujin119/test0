@@ -211,7 +211,7 @@ body:not(.ve-panel-open) .ve-panel { display: none; }
 .ve-gate .mark { width: 48px; height: 48px; border-radius: 12px; background: var(--ui-ink); color: var(--ui-on-ink); display: inline-grid; place-items: center; font-weight: 800; font-size: 21px; }
 .ve-gate .ve-row { justify-content: center; }
 
-#veBtnProps { display: none; }
+#veBtnProps { display: inline-flex; }
 
 /* ---------- 좁은 화면 ---------- */
 @media (max-width: 1180px) {
@@ -271,3 +271,44 @@ body:not(.ve-panel-open) .ve-panel { display: none; }
 .ve-ta:focus { outline: none; border-color: var(--ui-accent); box-shadow: 0 0 0 3px var(--ui-accent-soft); }
 .ve-credit { margin: 12px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--ui-muted); word-break: keep-all; }
 .ve-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* 재생 막대 (미리보기 아래 전체 너비) */
+.ve-transport { row-gap: 2px; }
+.ve-seek { grid-column: 1 / -1; width: 100%; height: 18px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; --p: 0%; touch-action: none; }
+.ve-seek::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--ui-accent) var(--p), var(--ui-border2) var(--p)); }
+.ve-seek::-moz-range-track { height: 4px; border-radius: 2px; background: var(--ui-border2); }
+.ve-seek::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--ui-accent); }
+.ve-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: var(--ui-ink); border: 2px solid var(--ui-panel); box-shadow: 0 0 0 1px var(--ui-border2); }
+.ve-seek::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ui-ink); border: 2px solid var(--ui-panel); }
+.ve-seek:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 2px; border-radius: 4px; }
+.ve-stage canvas { cursor: pointer; }
+.ve-transport .r .btn.active { color: var(--ui-danger); }
+
+/* 넓은 화면: 속성 칸 접기 */
+@media (min-width: 1181px) {
+  body.ve-props-hidden .ve-app { grid-template-columns: 68px 312px minmax(0, 1fr) 0; }
+  body.ve-props-hidden:not(.ve-panel-open) .ve-app { grid-template-columns: 68px 0 minmax(0, 1fr) 0; }
+  body.ve-props-hidden .ve-props { display: none; }
+  body:not(.ve-props-hidden) #veBtnProps { color: var(--ui-accent-fg); background: var(--ui-accent-soft); }
+}
+
+/* 크게 보기: 미리보기와 재생 줄만 화면 가득 */
+body.ve-full .ve-stage-wrap { position: fixed; inset: 0; z-index: 1800; background: #000; }
+body.ve-full .ve-stage { margin: 0; }
+body.ve-full .ve-stage canvas { border-radius: 0; box-shadow: none; }
+body.ve-full .ve-transport { background: var(--ui-panel); padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+.ve-stage-wrap:fullscreen { background: #000; }
+
+/* 좁은 화면: 작업 칸을 열어도 미리보기 · 재생 줄은 위에 그대로 보이게 (타임라인 자리에 작업 칸) */
+@media (max-width: 820px) {
+  :root { --mstage: 44dvh; }
+  body.ve-panel-open .ve-app, body.ve-props-open .ve-app { grid-template-rows: 46px var(--mstage) 0 minmax(0, 1fr) calc(56px + env(safe-area-inset-bottom)); }
+  body.ve-panel-open .ve-split, body.ve-panel-open .ve-tl, body.ve-props-open .ve-split, body.ve-props-open .ve-tl { display: none; }
+  .ve-panel, .ve-props { top: calc(46px + var(--mstage)); box-shadow: 0 -1px 0 var(--ui-border2); border-radius: 0; }
+  .ve-transport { min-height: 0; padding: 0 8px 4px; }
+  .ve-chars { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 5px; }
+  .ve-char { padding: 4px 2px 5px; font-size: 11px; }
+  .ve-char [data-pic] canvas { width: 46px; height: 46px; }
+  .ve-ph { position: sticky; top: -14px; z-index: 2; background: var(--ui-panel); margin: -14px -14px 10px; padding: 12px 14px 8px; border-bottom: 1px solid var(--ui-border); }
+  .ve-ph p { display: none; }
+}

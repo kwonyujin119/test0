@@ -312,6 +312,16 @@
     }
   };
 
+  /* 원본 시간 src 에서 AI 목소리 크기 → 입 벌림(0~1). 캐릭터 입이 원래 입 대신 AI 목소리를 따라가게 */
+  dub.mouthAt = (mid, src) => {
+    const m = VE.media(mid), map = pcmOf(mid); if (!m || !m.dub || !map) return 0;
+    for (const s of m.dub.segs) {
+      const pcm = map.get(s.k); if (!pcm) continue; const p = Math.round((src - s.at) * SR); if (p < 0 || p >= pcm.length) continue;
+      const w = Math.round(SR * .035), a = Math.max(0, p - w), b = Math.min(pcm.length, p + w); let e = 0; for (let i = a; i < b; i += 4) e += pcm[i] * pcm[i];
+      const rms = Math.sqrt(e / Math.max(1, (b - a) / 4)); return Math.max(0, Math.min(1, (rms - .015) * 7));
+    }
+    return 0;
+  };
   /* 화면에 'AI 음성' 표시를 넣을 때인지 */
   dub.labelAt = (t, clip) => {
     if (VE.p.aiVoiceLabel === false) return false;

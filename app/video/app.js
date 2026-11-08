@@ -5,7 +5,10 @@
   /* 파일 고르기 */
   VE.pickFiles = (cb, accept) => { const i = document.createElement('input'); i.type = 'file'; i.multiple = !accept; i.accept = accept || 'video/*,audio/*,image/*,.mkv,.mov,.m4a,.flac'; i.onchange = () => { const f = Array.from(i.files || []); if (cb) cb(f); else if (f.length) VE.importFiles(f); }; i.click(); };
 
-  function updateTime() { const t = VE.player.t; $('tcNow').textContent = VE.fmtT(t, true); $('tcAll').textContent = VE.fmtT(VE.total()); }
+  function updateTime() {
+    const t = VE.player.t, all = VE.total(); $('tcNow').textContent = VE.fmtT(t, true); $('tcAll').textContent = VE.fmtT(all);
+    const sk = $('veSeek'); if (sk && document.activeElement !== sk) { const v = all > 0 ? Math.round(t / all * 1000) : 0; if (+sk.value !== v) sk.value = v; } if (sk) sk.style.setProperty('--p', (all > 0 ? t / all * 100 : 0) + '%');
+  }
   function updatePlay() { const b = $('btnPlay'); b.innerHTML = icon(VE.player.playing ? 'pause' : 'play', 20); b.title = (VE.player.playing ? '멈춤' : '재생') + ' (Space)'; b.setAttribute('aria-label', b.title); }
   function updateHistory() { $('btnUndo').disabled = !VE.canUndo(); $('btnRedo').disabled = !VE.canRedo(); }
   function updateSave() { const s = $('veSave'); s.textContent = VE.saveState === 'dirty' ? '저장 중…' : VE.saveState === 'error' ? '저장 실패' : '이 기기에 저장됨'; s.classList.toggle('bad', VE.saveState === 'error'); }
@@ -24,6 +27,8 @@
     switch (k) {
       case ' ': ev.preventDefault(); P.toggle(); break;
       case 'k': case 'K': P.pause(); break;
+      case 'm': case 'M': P.setMuted(!P.muted); break;
+      case 'f': case 'F': VE.toggleFull(); break;
       case 'l': case 'L': if (!P.playing) P.play(); break;
       case 'j': case 'J': P.pause(); P.seek(P.t - 5); break;
       case 's': case 'S': if (!VE.splitAt(P.t)) toast('클립의 맨 앞이나 맨 뒤에서는 자를 수 없습니다', 1800); break;
@@ -36,7 +41,7 @@
       case 'End': ev.preventDefault(); P.seek(VE.total()); break;
       case '+': case '=': VE.tl.setZoom(VE.tl.z * 1.3); break;
       case '-': VE.tl.setZoom(VE.tl.z / 1.3); break;
-      case 'Escape': VE.select(null); break;
+      case 'Escape': if (document.body.classList.contains('ve-full')) VE.toggleFull(); else VE.select(null); break;
     }
   }
 
@@ -143,7 +148,31 @@
     $('btnUndo').onclick = VE.undo; $('btnRedo').onclick = VE.redo;
     $('btnExport').onclick = exportDialog; $('btnProjects').onclick = projectsDialog;
     $('btnImportEmpty').onclick = () => VE.pickFiles(); $('btnRecEmpty').onclick = () => VE.openTab('rec');
-    $('veBtnProps').onclick = () => document.body.classList.toggle('ve-props-open');
+    /* 속성 칸: 넓은 화면에서는 접어서 미리보기를 넓히고(기억함), 좁은 화면에서는 떠 있는 칸으로 */
+    $('veBtnProps').onclick = () => {
+      if (innerWidth > 1180) { const h = document.body.classList.toggle('ve-props-hidden'); try { localStorage.setItem('ve:propsHidden', h ? '1' : '0'); } catch (e) { } requestAnimationFrame(() => VE.player.layoutStage()); setTimeout(() => VE.player.layoutStage(), 60); }
+      else document.body.classList.toggle('ve-props-open');
+    };
+    try { if (localStorage.getItem('ve:propsHidden') === '1') document.body.classList.add('ve-props-hidden'); } catch (e) { }
+    /* 재생 막대: 끄는 동안은 멈추고, 놓으면 하던 대로 */
+    const sk = $('veSeek'); let skWas = false, skOn = false;
+    const skDown = () => { if (skOn) return; skOn = true; skWas = VE.player.playing; if (skWas) VE.player.pause(); };
+    sk.addEventListener('pointerdown', skDown); sk.addEventListener('keydown', skDown);
+    sk.oninput = () => { skDown(); VE.player.seek(+sk.value / 1000 * VE.total()); };
+    sk.onchange = () => { if (skWas) VE.player.play(); skOn = false; skWas = false; };
+    /* 소리 끄기 · 크게 보기 */
+    const syncMute = () => { const b = $('btnMute'), m = VE.player.muted; b.innerHTML = icon(m ? 'mute' : 'volume', 18); b.title = (m ? '소리 켜기' : '소리 끄기') + ' (M)'; b.setAttribute('aria-label', b.title); b.classList.toggle('active', m); };
+    $('btnMute').onclick = () => VE.player.setMuted(!VE.player.muted); VE.on('mute', syncMute);
+    const wrap = document.querySelector('.ve-stage-wrap');
+    const syncFull = () => { const on = document.body.classList.contains('ve-full'), b = $('btnFull'); b.innerHTML = icon(on ? 'shrink' : 'expand', 18); b.title = (on ? '작게 보기' : '크게 보기') + ' (F)'; b.setAttribute('aria-label', b.title); setTimeout(() => VE.player.layoutStage(), 30); };
+    VE.toggleFull = () => {
+      const on = document.body.classList.contains('ve-full');
+      if (on) { document.body.classList.remove('ve-full'); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); }
+      else { document.body.classList.add('ve-full'); if (wrap.requestFullscreen) wrap.requestFullscreen().catch(() => { }); }
+      syncFull();
+    };
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('ve-full')) { document.body.classList.remove('ve-full'); } syncFull(); });
+    $('btnFull').onclick = () => VE.toggleFull();
     $('tlSplit').onclick = () => { if (!VE.splitAt(VE.player.t)) toast('클립의 맨 앞이나 맨 뒤에서는 자를 수 없습니다', 1800); };
     $('tlDelete').onclick = () => VE.deleteSel(); $('tlHead').onclick = () => VE.trimToPlayhead('head'); $('tlTail').onclick = () => VE.trimToPlayhead('tail');
     $('tlSnap').onclick = () => { VE.tl.snap = !VE.tl.snap; $('tlSnap').classList.toggle('active', VE.tl.snap); }; $('tlSnap').classList.add('active');

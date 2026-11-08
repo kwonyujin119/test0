@@ -66,9 +66,13 @@
       },
     };
   }
-  /* 내보내기 전에 사진이 다 읽혔는지 기다림 */
-  /* 내보내기 전에 이 영상에서 쓰는 사진 인물만 다 읽혔는지 기다림 */
-  VE.charsReady = () => { const used = new Set(); for (const c of VE.p.clips) { if (c.face && c.face.char) used.add(c.face.char); if (c.pip && c.pip.char) used.add(c.pip.char); } return Promise.all([...used].map(k => CHARS[k] && CHARS[k].load ? CHARS[k].load() : null)); };
+  /* 내보내기 전에 이 영상에서 쓰는 사진 인물만 다 읽혔는지(얼굴 덮기면 그물까지) 기다림 */
+  VE.charsReady = () => {
+    const used = new Set(), swap = new Set();
+    for (const c of VE.p.clips) { if (c.face && c.face.char) { used.add(c.face.char); if (c.face.swap) swap.add(c.face.char); } if (c.pip && c.pip.char) used.add(c.pip.char); }
+    return Promise.all([...[...used].map(k => CHARS[k] && CHARS[k].load ? CHARS[k].load() : null), ...[...swap].map(k => VE.swap ? VE.swap.prepare(k) : null)]);
+  };
+  VE.charPhoto = id => { const o = photos[id]; return o && o.ready ? o.img : null; };
 
   const CHARS = {
     cat: {

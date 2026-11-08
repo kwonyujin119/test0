@@ -189,12 +189,16 @@
       <div class="ve-sec"><div class="ve-lab">내 그림</div><div class="ve-chars">${customs.map(id => charCell(id, curMode === 'char' && curChar === id, true)).join('')}<button class="ve-char add" id="fAdd" type="button"><i data-ic="plus"></i><span>그림 넣기</span></button></div>
         <p class="ve-hint">정면을 보는 투명 배경 PNG 나 SVG 를 넣습니다. 입 벌린 그림, 눈 감은 그림을 함께 넣으면 말할 때 움직입니다. 실제 인물 사진은 넣지 마세요.</p></div>
       <div class="ve-sec"><div class="ve-lab">다른 효과</div><div class="ve-row"><button class="btn sm${curMode === 'mosaic' ? ' active' : ''}" id="fMosaic"><i data-ic="blur"></i>얼굴 모자이크</button><button class="btn sm" id="fOff"${curMode ? '' : ' disabled'}><i data-ic="x"></i>효과 끄기</button></div></div>
-      ${curMode === 'char' ? `<div class="ve-sec">${range('fScale', '크기', cur.scale || 1.25, .7, 2.2, .05, v => Math.round(v * 100) + '%')}${range('fDy', '위아래 위치', cur.dy || 0, -.6, .6, .02, v => (v > 0 ? '아래 ' : v < 0 ? '위 ' : '') + Math.abs(Math.round(v * 100)))}
+      ${curMode === 'char' && VE.swap && VE.swap.can(curChar) ? `<div class="ve-sec"><div class="ve-lab">씌우는 방법</div>${seg('fSwap', cur.swap ? 1 : 0, [[1, '얼굴만 자연스럽게'], [0, '사진 통째로 얹기']])}
+        <p class="ve-hint">${cur.swap ? '얼굴 기준점 468개에 맞춰 덮어, 눈 · 입 · 표정 · 고개가 원래 얼굴을 그대로 따라갑니다. 피부색과 밝기도 장면에 맞춥니다. 실제 사람처럼 보이므로 \'AI 캐릭터\' 표시는 끌 수 없습니다.' : '가상 인물 사진을 얼굴 자리에 통째로 얹고, 말할 때 입을 벌립니다. AI 목소리로 바꾼 장면은 그 소리에 맞춰 입이 움직입니다.'}</p></div>` : ''}
+      ${curMode === 'char' && cur.swap && VE.swap && VE.swap.can(curChar) ? `<div class="ve-sec"><label class="ve-check tight"><input type="checkbox" checked disabled><span><b>'AI 캐릭터' 표시</b> 얼굴만 덮을 때는 늘 넣습니다</span></label></div>` : ''}
+      ${curMode === 'char' && !(cur.swap && VE.swap && VE.swap.can(curChar)) ? `<div class="ve-sec">${range('fScale', '크기', cur.scale || 1.25, .7, 2.2, .05, v => Math.round(v * 100) + '%')}${range('fDy', '위아래 위치', cur.dy || 0, -.6, .6, .02, v => (v > 0 ? '아래 ' : v < 0 ? '위 ' : '') + Math.abs(Math.round(v * 100)))}
         <label class="ve-check tight"><input type="checkbox" id="fLabel"${p.aiLabel ? ' checked' : ''}><span><b>'AI 캐릭터' 표시</b> 영상 오른쪽 위에 작게 넣습니다</span></label></div>` : ''}
       </div>`;
     const ok = box.querySelector('#fOk'); if (ok) ok.onchange = () => { if (ok.checked) { p.faceOk = true; VE.saveSoon(); renderTab(); } };
     onSeg(box, 'fScope', v => { faceUi.scope = v; renderTab(); });
-    box.querySelectorAll('[data-char]').forEach(b => { const holder = b.querySelector('[data-pic]'); if (holder && !holder.firstChild) holder.appendChild(VE.charThumb(b.dataset.char, 112)); b.onclick = ev => { if (ev.target.closest('[data-del]')) return; applyFace({ mode: 'char', char: b.dataset.char, scale: cur && cur.scale || 1.25, dy: cur && cur.dy || 0 }); }; });
+    box.querySelectorAll('[data-char]').forEach(b => { const holder = b.querySelector('[data-pic]'); if (holder && !holder.firstChild) holder.appendChild(VE.charThumb(b.dataset.char, 112)); b.onclick = ev => { if (ev.target.closest('[data-del]')) return; const id = b.dataset.char, can = !!(VE.swap && VE.swap.can(id)); applyFace({ mode: 'char', char: id, scale: cur && cur.scale || 1.25, dy: cur && cur.dy || 0, swap: can && !(cur && cur.mode === 'char' && VE.swap.can(cur.char) && cur.swap === false) }); }; });
+    onSeg(box, 'fSwap', v => { const on = v === '1'; applyFace({ ...cur, swap: on }); });
     box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (confirm('이 그림을 지울까요?')) { await VE.removeCustomChar(b.dataset.del); renderTab(); } });
     box.querySelector('#fMosaic').onclick = () => applyFace({ mode: 'mosaic' });
     box.querySelector('#fOff').onclick = () => applyFace(null);

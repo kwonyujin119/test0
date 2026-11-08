@@ -11,7 +11,7 @@
     const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
     const c = new AC({ latencyHint: 'interactive' }); const bus = c.createGain(), master = c.createGain(), musicBus = c.createGain();
     audio = { ctx: c, bus, master, musicBus, node: null, wired: new WeakMap() };
-    bus.connect(master); musicBus.connect(master); master.connect(c.destination);
+    bus.connect(master); musicBus.connect(master); master.connect(c.destination); master.gain.value = P.muted ? 0 : 1;
     if (c.audioWorklet) {
       try { await c.audioWorklet.addModule('app/video/dsp.js'); const n = new AudioWorkletNode(c, 've-voice', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] }); audio.node = n; n.port.postMessage(VE.p.voice); bus.disconnect(); bus.connect(n); n.connect(master); }
       catch (e) { console.warn('음성 처리 부품 시작 실패', e); }
@@ -20,6 +20,8 @@
     return audio;
   }
   P._audio = () => audio; /* 점검용 */
+  P.muted = false;
+  P.setMuted = v => { P.muted = !!v; if (audio) audio.master.gain.value = P.muted ? 0 : 1; VE.emit('mute'); };
   P.voiceChanged = () => { if (audio && audio.node) audio.node.port.postMessage(VE.p.voice); };
   function wire(el, music) {
     if (!audio) return null; let g = audio.wired.get(el);
@@ -153,20 +155,30 @@
   function bindDrag() {
     let drag = null;
     const pos = ev => { const r = cv.getBoundingClientRect(); return { x: (ev.clientX - r.left) / r.width, y: (ev.clientY - r.top) / r.height }; };
+    /* 미리보기를 짧게 누르면 재생 · 멈춤, 글자나 확대한 영상은 끌어 옮김 (움직였을 때만 되돌리기 기록) */
     cv.addEventListener('pointerdown', ev => {
       const [W, H] = P.size(), p = pos(ev), x = p.x * W, y = p.y * H;
       const hit = VE.p.titles.filter(o => P.t >= o.start && P.t < o.end).reverse().find(o => { const b = VE.titleBox(ctx, W, H, o); return x >= b.x - 12 && x <= b.x + b.w + 12 && y >= b.y - 10 && y <= b.y + b.h + 10; });
-      if (hit) { VE.select({ type: 'title', id: hit.id }); VE.snap(); drag = { kind: 'title', o: hit, sx: p.x, sy: p.y, ox: hit.x, oy: hit.y }; }
-      else { const at = VE.at(P.t); if (!at) return; const c = at.clip; if (c.fit === 'fill' || (c.zoom || 1) > 1) { VE.select({ type: 'clip', id: c.id }); VE.snap(); drag = { kind: 'clip', o: c, sx: p.x, sy: p.y, ox: c.px || 0, oy: c.py || 0 }; } else { VE.select({ type: 'clip', id: c.id }); return; } }
+      const tap = { t0: performance.now(), cx: ev.clientX, cy: ev.clientY };
+      if (hit) { VE.select({ type: 'title', id: hit.id }); drag = { kind: 'title', o: hit, sx: p.x, sy: p.y, ox: hit.x, oy: hit.y, tap }; }
+      else { const at = VE.at(P.t); if (!at) return; const c = at.clip; VE.select({ type: 'clip', id: c.id }); drag = c.fit === 'fill' || (c.zoom || 1) > 1 ? { kind: 'clip', o: c, sx: p.x, sy: p.y, ox: c.px || 0, oy: c.py || 0, tap } : { kind: 'none', tap }; }
       cv.setPointerCapture(ev.pointerId); ev.preventDefault();
     });
     cv.addEventListener('pointermove', ev => {
-      if (!drag) return; const p = pos(ev), dx = p.x - drag.sx, dy = p.y - drag.sy;
+      if (!drag) return; if (Math.hypot(ev.clientX - drag.tap.cx, ev.clientY - drag.tap.cy) > 6) drag.moved = true;
+      if (drag.kind === 'none' || !drag.moved) return; if (!drag.snapped) { VE.snap(); drag.snapped = true; }
+      const p = pos(ev), dx = p.x - drag.sx, dy = p.y - drag.sy;
       if (drag.kind === 'title') { drag.o.x = clamp(drag.ox + dx, .02, .98); drag.o.y = clamp(drag.oy + dy, .03, .97); }
       else { drag.o.px = drag.ox + dx; drag.o.py = drag.oy + dy; }
       VE.touch(true);
     });
-    const up = () => { if (drag) { drag = null; VE.saveSoon(); VE.emit('select'); } }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    const up = (ev) => {
+      if (!drag) return; const d = drag; drag = null;
+      if (d.snapped) { VE.saveSoon(); VE.emit('select'); }
+      else if (ev.type === 'pointerup' && !d.moved && d.kind !== 'title' && performance.now() - d.tap.t0 < 400) P.toggle();
+    };
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('dblclick', ev => { ev.preventDefault(); if (VE.toggleFull) VE.toggleFull(); });
   }
 
   P.init = () => {
