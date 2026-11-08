@@ -28,17 +28,17 @@
     <span class="grow"></span>
     <span class="role" id="roleChip"></span>
     <button class="tb" data-act="new" data-admin title="새 문서 (Alt+N)" aria-label="새 문서"><i data-ic="filePlus"></i><span>새 문서</span></button>
-    <button class="tb keep" data-act="open" title="파일 가져오기 — 내 PC 의 .hwpx 열기 (Alt+O, Ctrl+O)"><i data-ic="folder"></i><span>열기</span></button>
-    <button class="tb keep" id="btnSave" data-act="save" data-admin title="저장하기 (Alt+S, Ctrl+S)"><i data-ic="save"></i><span>저장</span></button>
+    <button class="tb keep" data-act="open" title="파일 가져오기 — 내 PC 의 .hwpx 열기 (Alt+O, Ctrl+O)" aria-label="열기"><i data-ic="folder"></i><span>열기</span></button>
+    <button class="tb keep" id="btnSave" data-act="save" data-admin title="저장하기 (Alt+S, Ctrl+S)" aria-label="저장"><i data-ic="save"></i><span>저장</span></button>
     <button class="tb" data-act="saveAs" data-admin title="다른 이름으로 저장 (Alt+V)" aria-label="다른 이름으로 저장"><i data-ic="export"></i><span>다른 이름으로</span></button>
     <button class="tb" data-act="box" data-admin title="문서함 — 암호로 잠가 GitHub 에 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 엽니다" aria-label="문서함"><i data-ic="lock"></i><span>문서함</span></button>
     <button class="tb" data-act="best" title="best 문서 — 잘 만든 문서를 올려 두면 레퍼런스로 쌓입니다" aria-label="best 문서"><i data-ic="bookmark"></i><span>best 문서</span></button>
-    <button class="tb keep" data-act="print" title="인쇄 · PDF 저장 (Alt+P)"><i data-ic="print"></i><span>인쇄</span></button>
+    <button class="tb keep" data-act="print" title="인쇄 · PDF 저장 (Alt+P)" aria-label="인쇄"><i data-ic="print"></i><span>인쇄</span></button>
     <button class="tb icon pc" data-act="help" title="단축키 모음 (F1)" aria-label="단축키"><i data-ic="help"></i></button>
     <button class="tb icon pc" data-ui-theme title="화면을 어둡게"></button>
     <button class="tb icon mob" id="btnBar1More" title="더 보기" aria-label="더 보기" aria-haspopup="menu"><i data-ic="dots"></i></button>
   </div>
-  <!-- 리본: 자주 쓰는 순서로 묶음 [글꼴] [글자] [문단] [넣기] [쪽] [찾기]. 폭이 모자라면 뒤 묶음부터 [더 보기] 메뉴로 들어간다 (옆으로 밀지 않음) -->
+  <!-- 리본: 자주 쓰는 순서로 묶음 [글꼴] [글자] [문단] [넣기] [쪽] [찾기]. 폭이 모자라면 뒤 묶음부터 [더 보기] 메뉴로 들어가고, 남은 자리에 들어가는 묶음은 다시 꺼낸다 (옆으로 밀지 않음) -->
   <div class="bar2" id="ribbon" data-admin>
     <span class="grp" data-grp="font">
       <select id="selStyle" title="스타일 (F6) · Ctrl+1 바탕글, Ctrl+2 본문, Ctrl+3~9 개요 1~7" aria-label="스타일"></select>
@@ -84,7 +84,7 @@
     <button class="tb" id="btnRibMore" hidden title="나머지 도구" aria-haspopup="menu"><i data-ic="dots"></i><span>더 보기</span></button>
   </div>
   <div class="bar2 guest-bar" data-guest>
-    <span class="guest-note"><i data-ic="eye"></i>보기 전용 — 읽고 인쇄할 수 있습니다. 고치려면 <a href="index.html?mode=1">관리자로 입장</a>하세요.</span>
+    <span class="guest-note"><i data-ic="eye"></i><span>보기 전용 — 읽고 인쇄할 수 있습니다. 고치려면 <a href="index.html?mode=1">관리자로 입장</a>하세요.</span></span>
     <span class="grow"></span>
     <button class="tb" data-act="find" title="찾기 (Ctrl+F)"><i data-ic="search"></i><span>찾기</span></button>
   </div>
@@ -181,7 +181,7 @@
       <div class="hm-head"><h2><i data-ic="bookmark"></i>best 문서</h2><span class="cnt" id="bestCnt"></span><div class="acts" id="bestActs"></div></div>
       <div class="hm-body" id="bestBody"></div>
     </section>
-    <p class="hm-note">설치 없이 · 한글과 같은 단축키 · hwpx 그대로 저장 <span class="sep">|</span> <b>.hwp</b>(옛 형식)는 한글에서 <b>한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 여세요.</p>
+    <p class="hm-note"><span data-admin>설치 없이 · 한글과 같은 단축키 · hwpx 그대로 저장 <span class="sep">|</span> </span><b>.hwp</b>(옛 형식)는 한글에서 <b>한글 표준 문서(*.hwpx)</b> 로 한 번 저장한 뒤 여세요.</p>
   </main>
 </div>
 </div>

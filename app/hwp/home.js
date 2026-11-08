@@ -83,7 +83,7 @@ const HwpHome = (() => {
     const link = (id, label) => `<a href="#" id="${id}">${label}</a>`;
     if (GUEST) { n.className += ' guest'; n.innerHTML = `${icon('eye', 15)}<span>보기 전용입니다. hwpx 문서를 읽고 인쇄할 수 있습니다. <a href="index.html?mode=1">관리자로 입장</a></span>`; return; }
     if (panelShown) { n.hidden = true; return; }
-    if (box.state === 'noconn') n.innerHTML = `${icon('info', 15)}<span>지금은 이 기기에서만 저장됩니다. 집·사무실·휴대폰에서 같은 문서를 열려면 ${link('hmGhOn', 'GitHub 연결')}</span>`;
+    if (box.state === 'noconn') n.innerHTML = `${icon('info', 15)}<span>지금은 이 기기에서만 저장됩니다. 집·사무실·휴대폰에서 같은 문서를 열려면 ${link('hmGhOn', 'GitHub 에 연결')}하세요.</span>`;
     else if (box.state === 'locked') n.innerHTML = `${icon('lock', 15)}<span>문서함이 잠겨 있습니다. ${link('hmUnlock', '문서함 열기')}</span>`;
     else if (box.state === 'err') n.innerHTML = `${icon('info', 15)}<span>문서함을 읽지 못했습니다. ${esc(box.err)} ${link('hmRetry', '다시 시도')}</span>`;
     else if (box.state === 'ok' || box.state === 'loading') n.innerHTML = `${icon('link', 15)}<span>GitHub 저장소 <b>${esc(GH.cfg.owner)}/${esc(GH.cfg.repo)}</b> 에 암호로 잠가 보관합니다 · ${link('hmLock', '잠그기')} · ${link('hmGhOff', '연결 해제')}</span>`;
@@ -239,10 +239,10 @@ const HwpHome = (() => {
       if (box.state === 'err') return panel('info', '<b>문서함을 읽지 못했습니다.</b>', esc(box.err), [['다시 시도', 'redo', loadBox]]);
       return null;
     };
-    if (filter === 'box') { const bp = boxPanel(); body.replaceChildren(bp || panel('folder', '<b>문서함이 비어 있습니다.</b>', '편집 중인 문서를 문서함에 저장하거나 PC 의 hwpx 파일을 올리면, 다른 기기에서도 같은 문서를 엽니다.', [['파일 올리기', 'upload', boxUpload]])); return !!bp; }
+    if (filter === 'box') { const bp = boxPanel(); body.replaceChildren(bp || panel('folder', '<b>문서함이 비어 있습니다.</b>', '편집 중인 문서를 문서함에 저장하거나 위의 [파일 올리기] 로 PC 의 hwpx 파일을 올리면, 다른 기기에서도 같은 문서를 엽니다.')); return !!bp; }
     if (filter === 'all') {
       if (box.state === 'locked' || box.state === 'err') { body.replaceChildren(boxPanel()); return true; }
-      const e = empty(`${W.doc ? '<b>문서함과 이 기기에 남은 문서가 없습니다</b><span>지금 문서를 문서함에 저장하면 다른 기기에서도 여기에 보입니다.</span>' : '<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나 PC 의 .hwpx 파일을 이 화면에 끌어다 놓으세요.</span>'}<div class="hub-empty-cta"><button class="btn ink" id="emNew">${icon('plus')}새 문서</button><button class="btn ghost" id="emOpen">${icon('import')}파일 가져오기</button></div>`);
+      const e = empty(`${W.doc ? '<b>문서함과 이 기기에 남은 문서가 없습니다</b><span>지금 문서를 문서함에 저장하면 다른 기기에서도 여기에 보입니다.</span>' : '<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나 PC 의 .hwpx 파일을 이 화면에 끌어다 놓으세요.</span>'}<div class="hub-empty-cta"><button class="btn${$('hmNew').getClientRects().length ? '' : ' ink'}" id="emNew">${icon('plus')}새 문서</button><button class="btn ghost" id="emOpen">${icon('import')}파일 가져오기</button></div>`);
       body.replaceChildren(e);
       e.querySelector('#emNew').onclick = () => U().newDoc(); e.querySelector('#emOpen').onclick = () => U().openDialog();
       return false;

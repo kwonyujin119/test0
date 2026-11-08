@@ -193,14 +193,15 @@
       }, noEnter: true });
   }
   const deviceName = BestDocs.deviceName;
-  function setState(t) { const s = $id('saveState'); s.className = 'state'; s.textContent = t; }
+  function setState(t) { const s = $id('saveState'); s.className = 'state' + (t ? ' busy' : ''); s.textContent = t; delete s.dataset.v; } // 저장 중 알림 (휴대폰에서도 보임)
   /* 저장한 때: 오늘이면 '오후 3:12', 아니면 '11월 3일' */
   function savedClock(t) { const d = new Date(t), now = new Date(); return d.toDateString() === now.toDateString() ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : `${d.getMonth() + 1}월 ${d.getDate()}일`; }
   /* 머리 줄의 저장 상태: 깨끗하면 흐린 '저장됨 · 오후 3:12', 고친 뒤면 노란 점 + '저장 안 됨'. [저장] 단추는 고친 뒤에만 먹색(주 단추) */
   function updateState() {
     const s = $id('saveState'), where = W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '';
+    const v = W.dirty ? '<i class="mark-dot"></i>저장 안 됨' : W.savedTime ? '저장됨 · ' + escH(savedClock(W.savedTime)) : '';
     s.className = 'state' + (W.dirty ? ' dirty' : '');
-    s.innerHTML = W.dirty ? '<i class="mark-dot"></i>저장 안 됨' : W.savedTime ? '저장됨 · ' + escH(savedClock(W.savedTime)) : '';
+    if (s.dataset.v !== v) { s.dataset.v = v; s.innerHTML = v; } // 읽어 주는 칸(role=status): 글자마다 다시 쓰지 않음
     s.title = W.dirty ? '저장하지 않은 내용이 있습니다 (이 기기에는 자동으로 임시 저장됨) — 저장 또는 Ctrl+S' : W.savedTime ? `${where ? where + '에 ' : ''}${new Date(W.savedTime).toLocaleString('ko-KR')} 저장` : '';
     $id('btnSave').classList.toggle('primary', !!(W.doc && W.dirty));
     $id('stSaved').textContent = W.doc ? (GUEST ? '보기 전용' : '저장 위치: ' + (where || (W.savedTime ? '내려받은 파일' : '아직 저장 안 함'))) : '';
@@ -460,7 +461,7 @@
   $id('inShade').addEventListener('input', e => { e.target.parentElement.querySelector('span').style.setProperty('--sw', e.target.value); });
   $id('inCellFill').addEventListener('change', e => { backSel(); cellFill(curCells(), e.target.value.toUpperCase()); });
   $id('selZoom').addEventListener('change', e => setZoom(e.target.value));
-  $id('docName').addEventListener('click', async () => { const n = await askText('문서 이름', '이름', W.name, '바꾸기'); if (n && n !== W.name) { setName(n); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '수정됨' 유지)
+  $id('docName').addEventListener('click', async () => { const n = await askText('문서 이름', '이름', W.name, '바꾸기'); if (n && n !== W.name) { setName(n); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '저장 안 됨' 유지)
 
   /* ---------- 정렬 (펼침 단추 하나에 다섯 가지) ---------- */
   const dKey = () => (window.PWA && PWA.standalone ? 'Ctrl+Shift+T' : 'Ctrl+Alt+T');
@@ -493,7 +494,8 @@
     rib.classList.add('compact'); // 먼저 글자 이름을 빼 보고 (아이콘만, 이름은 가리키면 보임)
     if (!over()) return;
     ribMore.hidden = false;
-    for (let i = ribGroups.length - 1; i > 0 && rib.scrollWidth > rib.clientWidth + 1; i--) ribGroups[i].hidden = true; // 첫 묶음(스타일·글꼴·크기)은 늘 보임
+    for (let i = ribGroups.length - 1; i > 0 && over(); i--) ribGroups[i].hidden = true; // 첫 묶음(스타일·글꼴·크기)은 늘 보임
+    for (const g of ribGroups) if (g.hidden) { g.hidden = false; if (over()) g.hidden = true; } // 남은 자리에 들어가는 뒤 묶음(표·그림 · 찾기 …)은 다시 꺼냄
   }
   let fitRaf = 0; const fitSoon = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(ribbonFit); };
   window.addEventListener('resize', fitSoon);
