@@ -156,10 +156,20 @@
       const { FaceLandmarker, FilesetResolver } = await import(TASKS + '/vision_bundle.mjs');
       const fs = await FilesetResolver.forVisionTasks(TASKS + '/wasm');
       const mk = (delegate) => FaceLandmarker.createFromOptions(fs, { baseOptions: { modelAssetPath: FACE_MODEL, delegate }, runningMode: 'VIDEO', numFaces, outputFaceBlendshapes: true, outputFacialTransformationMatrixes: false, minFaceDetectionConfidence: .4, minFacePresenceConfidence: .4, minTrackingConfidence: .4 });
+      if (faceCpu()) return await mk('CPU');
       try { return await mk('GPU'); } catch (e) { console.warn('GPU 실패, CPU 로', e); return await mk('CPU'); }
     })();
     landP = { n: numFaces, p }; p.catch(() => { landP = null; }); return p;
   };
+  /* 일부 휴대폰의 그래픽 가속에서 얼굴 찾기가 한 장면에서 깨지면(norm_rect was not ok 등) 부품이 망가진 채로 남는다.
+     부품을 버리고 CPU 로 새로 만들어 이어 간다. 이 기기는 다음부터 CPU 로 */
+  const faceCpu = () => { try { return localStorage.getItem('ve:faceCpu') === '1'; } catch (e) { return false; } };
+  async function resetLandmarker(numFaces) {
+    try { localStorage.setItem('ve:faceCpu', '1'); } catch (e) { }
+    const old = landP; landP = null;
+    if (old) { try { (await old.p).close(); } catch (e) { } }
+    return VE.faceLandmarker(numFaces);
+  }
   /* 눈금 하나 → [cx cy w h roll yaw pitch blinkL blinkR mouth smile brow] (좌표는 0~1) */
   function poseOf(res, i, ar) {
     const L = res.faceLandmarks[i], bs = res.faceBlendshapes && res.faceBlendshapes[i] ? res.faceBlendshapes[i].categories : [];
@@ -191,14 +201,24 @@
     const fps = 12; if (!r.track || r.track.fps !== fps || (r.track.faces || 1) < (faces || 1)) { r.track = { fps, faces: faces || 1, frames: [] }; }
     const tr = r.track, want = []; (ranges || [[0, m.dur]]).forEach(([a, b]) => { for (let i = Math.floor(a * fps); i <= Math.ceil(b * fps); i++) if (tr.frames[i] === undefined && i / fps <= m.dur) want.push(i); });
     want.sort((x, y) => x - y); const uniq = want.filter((v, i) => v !== want[i - 1]); if (!uniq.length) return tr;
-    const lm = await VE.faceLandmarker(faces || 1); const w = Math.min(640, m.w), h = Math.round(w * m.h / m.w / 2) * 2;
+    let lm = await VE.faceLandmarker(faces || 1), fails = 0; const w = Math.min(640, m.w), h = Math.round(w * m.h / m.w / 2) * 2;
     const sink = new MB.CanvasSink(r.vTrack, { width: w, height: h, fit: 'fill', poolSize: 2 }); const ar = m.w / m.h, first = await r.vTrack.getFirstTimestamp().catch(() => 0);
     const stamps = uniq.map(i => Math.max(first, i / fps)); let n = 0, last = 0;
     const t0 = performance.now();
     for await (const got of sink.canvasesAtTimestamps(stamps)) {
       if (signal && signal.aborted) throw new DOMException('그만둠', 'AbortError');
       const i = uniq[n++]; let list = [];
-      if (got) { faceClock += 40; const res = lm.detectForVideo(got.canvas, faceClock); list = (res.faceLandmarks || []).map((_, k) => poseOf(res, k, ar)).sort((a, b) => b[2] - a[2]); }
+      if (got && got.canvas.width > 1 && got.canvas.height > 1) {
+        faceClock += 40; let res = null;
+        try { res = lm.detectForVideo(got.canvas, faceClock); }
+        catch (e) {
+          /* 이 장면은 얼굴 없음으로 두고, 부품을 새로 만들어 다음 장면부터 이어 감 */
+          console.warn('얼굴 찾기 한 장면 실패', e); fails++;
+          if (fails > 8) throw new Error('이 영상에서는 얼굴 위치를 찾다가 자꾸 멈춥니다. 영상을 다시 저장하거나 PC 의 크롬·엣지에서 해 보세요.');
+          lm = await resetLandmarker(faces || 1);
+        }
+        if (res) list = (res.faceLandmarks || []).map((_, k) => poseOf(res, k, ar)).sort((a, b) => b[2] - a[2]);
+      }
       tr.frames[i] = list;
       const now = performance.now(); if (now - last > 120) { last = now; const done = n / uniq.length, spent = (now - t0) / 1000; onProg && onProg({ ratio: done, eta: done > .02 ? spent / done * (1 - done) : null }); VE.emit('track', mid); await new Promise(z => setTimeout(z)); }
     }

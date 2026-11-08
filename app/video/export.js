@@ -17,21 +17,28 @@
     await VE.openInput(o.mid);
     const declick = Math.round(SR * .004), env = (n) => { const local = n / SR; let g = VE.mixFade(o, local, len); if (n < declick) g *= n / declick; if (need - n < declick) g *= (need - n) / declick; return g; };
     const pitchFix = speed !== 1 ? [new VoiceDSP.Shifter(SR), new VoiceDSP.Shifter(SR)] : null; if (pitchFix) pitchFix.forEach(s => { s.ratio = 1 / speed; });
-    let made = 0;
+    /* 음높이 보정기는 소리를 평균 반 창(약 40ms)만큼 늦게 내므로, 그만큼 더 만들고 앞부분(빈 소리)을 버려 화면과 맞춘다 */
+    const D = pitchFix ? pitchFix[0].size >> 1 : 0, needAll = need + D;
+    let made = 0, out = 0; /* made = 만든 표본(버릴 앞부분 포함), out = 내보낸 표본 */
     if (useDub || (r.aTrack && m.hasAudio)) {
-      const iter = useDub ? dubBuffers(o) : new MB.AudioBufferSink(r.aTrack).buffers(o.in, o.out + .05);
+      const iter = useDub ? dubBuffers(o) : new MB.AudioBufferSink(r.aTrack).buffers(o.in, o.out + D / SR * speed + .05);
       for await (const { buffer, timestamp } of iter) {
         const sr = buffer.sampleRate, a = buffer.getChannelData(0), b = buffer.numberOfChannels > 1 ? buffer.getChannelData(1) : a, end = timestamp + buffer.length / sr;
-        /* 이 버퍼가 덮는 출력 표본 수 */
-        let last = Math.ceil((end - o.in) / speed * SR); if (last > need) last = need; const cnt = last - made; if (cnt <= 0) continue;
+        /* 이 버퍼가 덮는 표본 수 */
+        let last = Math.ceil((end - o.in) / speed * SR); if (last > needAll) last = needAll; const cnt = last - made; if (cnt <= 0) continue;
         const L = new Float32Array(cnt), R = new Float32Array(cnt), ratio = sr * speed / SR, base = (o.in + made / SR * speed - timestamp) * sr;
         for (let i = 0; i < cnt; i++) {
-          const p = base + i * ratio; if (p < 0) continue; const k = Math.floor(p), f = p - k, g = env(made + i); if (k >= a.length) continue; const k2 = Math.min(a.length - 1, k + 1);
-          let x = a[k] * (1 - f) + a[k2] * f, y = b[k] * (1 - f) + b[k2] * f; if (pitchFix) { x = pitchFix[0].push(x); y = pitchFix[1].push(y); } L[i] = x * g; R[i] = y * g;
+          const p = base + i * ratio; let x = 0, y = 0;
+          if (p >= 0 && p < a.length) { const k = Math.floor(p), f = p - k, k2 = Math.min(a.length - 1, k + 1); x = a[k] * (1 - f) + a[k2] * f; y = b[k] * (1 - f) + b[k2] * f; }
+          if (pitchFix) { x = pitchFix[0].push(x); y = pitchFix[1].push(y); }
+          const n = made + i - D; if (n < 0) continue; const g = env(n); L[i] = x * g; R[i] = y * g;
         }
-        made += cnt; yield [L, R]; if (made >= need) break;
+        made += cnt; const drop = Math.max(0, Math.min(cnt, D - (made - cnt)));
+        if (drop < cnt) { yield drop ? [L.subarray(drop), R.subarray(drop)] : [L, R]; out += cnt - drop; }
+        if (made >= needAll) break;
       }
     }
+    made = out;
     /* 소리가 모자라면 무음으로 채움 (뒤 클립과 어긋나지 않게) */
     while (made < need) { const n = Math.min(need - made, SR); yield [new Float32Array(n), new Float32Array(n)]; made += n; }
   }
