@@ -64,6 +64,7 @@ html.admin [data-guest] { display: none !important; }
 
 /* 작업장 카드 (입장 뒤) — 늘 같은 순서 · 같은 높이 · [열기] 는 맨 아래 같은 줄 */
 .ws-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 18px; }
+html.admin .ws-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* 관리자는 카드 4장: 2 × 2 */
 .ws-card { position: relative; display: flex; flex-direction: column; gap: 14px; min-width: 0; padding: 22px 22px 18px; border-radius: 14px; background: var(--ui-panel); border: 1px solid var(--ui-border); color: var(--ui-fg); transition: border-color .15s, box-shadow .15s; }
 .ws-card:hover { border-color: var(--ui-border2); box-shadow: var(--ui-shadow-sm); }
 .ws-card:has(.card-link:focus-visible) { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
@@ -106,7 +107,7 @@ html.admin [data-guest] { display: none !important; }
 html.in-app .ws-app { display: none; }
 
 @media (min-width: 961px) { .ws-card .desc { min-height: 3.2em; } } /* 세 카드의 상태 줄을 같은 높이에 */
-@media (max-width: 960px) { .ws-grid { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; gap: 14px; } }
+@media (max-width: 960px) { .ws-grid, html.admin .ws-grid { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; gap: 14px; } }
 @media (max-width: 760px) {
   .ws { padding: 20px 16px 56px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
   .ws-head { margin-bottom: 20px; }

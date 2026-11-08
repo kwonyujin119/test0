@@ -16,9 +16,10 @@
     { "src": "app/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "DOCUMENT", "short_name": "한글", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "PRESENTATION", "short_name": "교안", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "VIDEO", "short_name": "영상", "url": "./videos.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
+    { "name": "DOCUMENT", "short_name": "DOCUMENT", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "PRESENTATION", "short_name": "PRESENTATION", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "VIDEO", "short_name": "VIDEO", "url": "./videos.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "SECRET", "short_name": "SECRET", "url": "./secret.html", "icons": [{ "src": "app/icons/secret-96.png", "sizes": "96x96", "type": "image/png" }] }
   ],
   "file_handlers": [
     { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } },

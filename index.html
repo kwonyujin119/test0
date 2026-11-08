@@ -82,6 +82,13 @@
         <a class="resume-link empty" id="videoResume"><span class="rl-text"><span class="rl-title">이 기기에서 만든 영상이 없습니다</span></span></a>
         <span class="go" aria-hidden="true">VIDEO 열기<i data-ic="arrowRight"></i></span>
       </article>
+      <article class="ws-card" data-ws="secret" data-admin>
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div>
+        <p class="desc">주식 투자 AI 어시스턴트. 시세 API 로 숫자를 확인하고 매매 계획을 함께 세웁니다.</p>
+        <div class="stat" id="secStat">AI 대화 · 관심 종목 · 매매 계획</div>
+        <a class="resume-link empty" id="secResume"><span class="rl-text"><span class="rl-title">아직 대화가 없습니다</span></span></a>
+        <span class="go" aria-hidden="true">SECRET 열기<i data-ic="arrowRight"></i></span>
+      </article>
     </div>
 
     <div class="ws-app" id="appBox" hidden></div>
@@ -112,7 +119,7 @@
     $('btnLeave').onclick = () => { Access.leave(); showGate(); };
     tools.querySelector('.ws-chip').onclick = (ev) => { ev.preventDefault(); showGate(); };
     renderAppBox(); renderFoot();
-    gen++; liveDecks(); liveHwp(); liveVideo();
+    gen++; liveDecks(); liveHwp(); liveVideo(); liveSecret();
   }
   $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
   $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };
@@ -206,6 +213,15 @@
     const unsent = sync.on ? ps.filter(p => ((sent[p.id] || {}).rev || 0) < (p.updated || 0) && ((p.media || []).length || (p.clips || []).length)).length : 0;
     stat('videoStat', [`영상 ${ps.length}개`, unsent ? `${unsent}개 아직 안 올라감` : '', `마지막 편집 ${fmtAgo(ps[0].updated)}`]);
     resume('videoResume', 'video.html?p=' + enc(ps[0].id), '이어서 편집', ps[0].name || '새 영상', 'play');
+  }
+
+  /* SECRET: 이 기기의 대화 · API 수만 (키는 읽지 않음) */
+  function liveSecret() {
+    if (Access.isGuest) return;
+    let chats = [], cfg = {}; try { chats = JSON.parse(localStorage.getItem('sec:chats') || '[]') || []; cfg = JSON.parse(localStorage.getItem('sec:cfg') || '{}') || {}; } catch (e) { }
+    const apis = (cfg.apis || []).length;
+    stat('secStat', [apis ? `API ${apis}개 연결` : 'API 를 + 로 등록해 시작', chats.length ? `대화 ${chats.length}개` : '', chats.length ? `마지막 ${fmtAgo(chats[0].updated)}` : '']);
+    if (chats.length) resume('secResume', 'secret.html', '최근 대화', chats[0].title || '대화', 'edit'); else placeholder('secResume', '아직 대화가 없습니다');
   }
 
   /* ---------- 앱 설치 안내: 닫으면 이 기기에서는 다시 보이지 않음 ---------- */
