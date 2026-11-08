@@ -141,3 +141,8 @@ html.in-app .ws-app { display: none; }
 .ws-card[data-ws] .resume-link:not(.empty) { background: color-mix(in srgb, var(--ws-bg) 70%, var(--ui-panel)); }
 .ws-card[data-ws] .resume-link:not(.empty):hover { background: var(--ws-bg); }
 
+
+/* 위쪽 [앱 설치] 단추 — 좁은 화면에서는 아이콘과 짧은 글자만 */
+#btnApp { gap: 6px; }
+#btnApp .ico { width: 16px; height: 16px; }
+@media (max-width: 420px) { #btnApp { padding: 0 10px; } }
