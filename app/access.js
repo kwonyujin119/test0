@@ -64,12 +64,12 @@ const Access = {
     opts = opts || {};
     return new Promise(done => {
       const bg = document.createElement('div'); bg.className = 'modal-bg';
-      bg.innerHTML = `<div class="modal ws-gate-modal" role="dialog" aria-labelledby="gateTitle">
+      bg.innerHTML = `<div class="modal ws-gate-modal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
         <h3 id="gateTitle">관리자로 입장</h3>
-        <p class="muted" style="margin:0 0 12px;font-size:13.5px;line-height:1.6">접속코드를 입력하면 이 기기에서 ${this.ADMIN_DAYS}일 동안 교안과 문서를 만들고 고칠 수 있습니다.</p>
-        <div class="row"><input type="password" id="gateCode" inputmode="numeric" autocomplete="off" placeholder="접속코드" aria-label="접속코드" style="flex:1;font-size:18px;letter-spacing:.2em;text-align:center"></div>
+        <p class="modal-desc">접속코드를 입력하면 이 기기에서 ${this.ADMIN_DAYS}일 동안 교안과 문서를 만들고 고칠 수 있습니다.</p>
+        <div class="row"><input type="password" id="gateCode" inputmode="numeric" autocomplete="off" placeholder="접속코드" aria-label="접속코드" style="flex:1;height:44px;font-size:18px;letter-spacing:.2em;text-align:center"></div>
         <div class="ws-gate-err" id="gateErr" hidden>접속코드가 맞지 않습니다</div>
-        <div class="actions"><button class="btn" id="gateCancel">취소</button><button class="btn primary" id="gateOk">입장</button></div></div>`;
+        <div class="actions"><button class="btn" id="gateCancel">취소</button><button class="btn ink" id="gateOk">입장</button></div></div>`;
       document.body.appendChild(bg);
       const $ = id => bg.querySelector('#' + id);
       const close = v => { bg.remove(); done(v); };
@@ -89,7 +89,7 @@ const Access = {
     });
   },
 };
-/* 선 아이콘 추가 (common.js 의 ICONS 에 더함 — 한글 작업장·첫 화면에서 씀) */
+/* 선 아이콘 추가 (common.js 의 ICONS 에 더함 — 한글 작업장·첫 화면에서 씀). 화살표는 common.js 의 back · arrowRight */
 if (typeof ICONS !== 'undefined') Object.assign(ICONS, {
   file: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/>',
   filePlus: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/><path d="M12 11v6"/><path d="M9 14h6"/>',
@@ -116,7 +116,6 @@ if (typeof ICONS !== 'undefined') Object.assign(ICONS, {
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8v.01"/>',
   type: '<path d="M4 7V4h16v3"/><path d="M12 4v16"/><path d="M8 20h8"/>',
   paragraph: '<path d="M13 4v16"/><path d="M17 4v16"/><path d="M19 4H9.5a4 4 0 0 0 0 8H13"/>',
-  arrowLeft: '<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
   presentation: '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4"/><path d="M8 20h8"/>',
   doc: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/>',
   shield: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6Z"/><path d="m9 12 2 2 4-4"/>',

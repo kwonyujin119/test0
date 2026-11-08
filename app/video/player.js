@@ -184,7 +184,7 @@
   P.init = () => {
     cv = VE.$('veCanvas'); ctx = cv.getContext('2d', { alpha: false }); bindDrag();
     const ro = new ResizeObserver(layoutStage); ro.observe(VE.$('veStage'));
-    VE.on('frame', () => { dirty = true; }); VE.on('thumb', () => { });
+    VE.on('frame', () => { dirty = true; });
     VE.on('change', () => {
       if (P.t > VE.total()) P.t = VE.total();
       if (active && !VE.clip(active.clip.id)) { const was = P.playing; if (active.el) active.el.pause(); active = null; next = null; if (was) P.seek(P.t); }

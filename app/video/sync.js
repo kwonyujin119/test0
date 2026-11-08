@@ -95,7 +95,7 @@
   /* 저장 뒤 잠시 기다렸다 올림 (여러 번 저장해도 한 번에) */
   S.soon = (ms) => { if (!S.cfg().on) return; clearTimeout(timer); timer = setTimeout(() => S.pushAll().catch(() => { }), ms == null ? 4000 : ms); };
   /* 이 기기에서 고친 뒤 아직 올리지 않은 프로젝트 (빈 새 프로젝트는 뺌) */
-  const hasContent = p => p && ((p.media || []).length || (p.clips || []).length || (p.titles || []).length);
+  const hasContent = S.hasContent = p => !!p && !!((p.media || []).length || (p.clips || []).length || (p.titles || []).length || (p.music || []).length);
   S.sentRev = id => ((st().p || {})[id] || {}).rev || 0;
   S.isSent = p => !!p && S.sentRev(p.id) >= (p.updated || 0);
   S.pending = async () => {

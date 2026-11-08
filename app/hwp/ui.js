@@ -7,6 +7,48 @@
   const viewOnly = () => { if (!GUEST) return; doc.contentEditable = 'false'; doc.querySelectorAll('[contenteditable]').forEach(n => n.setAttribute('contenteditable', 'false')); };
   for (const id of ['roleChip', 'roleChip2']) { const n = $id(id); if (n) n.innerHTML = Access.chip(); }
   const escH = s => esc(s);
+  /* 이 화면에서만 쓰는 선 아이콘 (common.js 에 이미 있으면 그것을 씀). 앞선 fillIcons 가 비워 둔 자리를 채움 */
+  for (const [k, v] of Object.entries({ chevronDown: '<path d="m6 9 6 6 6-6"/>', chevronUp: '<path d="m6 15 6-6 6 6"/>' })) if (!ICONS[k]) ICONS[k] = v;
+  document.querySelectorAll('[data-ic^="chevron"]').forEach(n => { n.innerHTML = icon(n.dataset.ic, 14); });
+
+  /* ---------- 펼침 메뉴 (리본 [더 보기] · 정렬 · 표 줄/칸 · 첫 화면 ⋯) ----------
+     items: [{ label, icon | glyph, kbd, danger, on, run } | null(구분선)]. 마우스로 열면 문서의 선택을 그대로 두고, 키보드로 열면 첫 항목에 초점 */
+  let pop = null;
+  function closePop(focusBack) {
+    if (!pop) return false;
+    const b = pop._btn; pop.remove(); pop = null; b.setAttribute('aria-expanded', 'false'); b.classList.remove('open');
+    if (focusBack) b.focus();
+    return true;
+  }
+  function popMenu(btn, items, opts) {
+    opts = opts || {};
+    const same = pop && pop._btn === btn; closePop(); if (same) return;
+    const m = document.createElement('div'); m.className = 'menu hw-menu'; m.setAttribute('role', 'menu'); m._btn = btn;
+    for (const it of items) {
+      if (!it) { m.appendChild(document.createElement('hr')); continue; }
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'mi' + (it.danger ? ' danger' : '') + (it.on ? ' on' : ''); b.setAttribute('role', 'menuitem');
+      b.innerHTML = `${it.glyph ? `<span class="mi-g" aria-hidden="true">${it.glyph}</span>` : icon(it.icon || 'dots', 16)}<span class="mi-t">${escH(it.label)}</span>${it.kbd ? `<kbd>${escH(it.kbd)}</kbd>` : ''}`;
+      b.addEventListener('mousedown', e => e.preventDefault()); // 문서의 선택을 잃지 않게
+      b.onclick = () => { closePop(); it.run(); };
+      m.appendChild(b);
+    }
+    m.addEventListener('keydown', e => {
+      const list = Array.from(m.querySelectorAll('.mi')), i = list.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const n = list.length; list[(i + (e.key === 'ArrowDown' ? 1 : n - 1) + (i < 0 && e.key === 'ArrowUp' ? 1 : 0)) % n].focus(); }
+      else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); list[e.key === 'Home' ? 0 : list.length - 1].focus(); }
+      else if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); e.stopPropagation(); closePop(true); }
+    });
+    document.body.appendChild(m); pop = m; btn.setAttribute('aria-expanded', 'true'); btn.classList.add('open');
+    const r = btn.getBoundingClientRect();
+    m.style.left = Math.max(8, Math.min(opts.alignRight ? r.right - m.offsetWidth : r.left, innerWidth - m.offsetWidth - 8)) + 'px';
+    m.style.top = (r.bottom + 4 + m.offsetHeight > innerHeight - 8 ? Math.max(8, r.top - 4 - m.offsetHeight) : r.bottom + 4) + 'px';
+    if (opts.focus || opts.keyboard) { const f = m.querySelector('.mi'); if (f) f.focus(); }
+  }
+  document.addEventListener('pointerdown', e => { if (pop && !pop.contains(e.target) && !pop._btn.contains(e.target)) closePop(); }, true);
+  window.addEventListener('resize', () => closePop());
+  /* 단추를 마우스로 눌렀는지(detail>0) 키보드로 눌렀는지 */
+  const viaKey = e => !!e && e.detail === 0;
+
   let savedRange = null;
   const keepSel = () => { const r = rng(); if (r && inDoc(r.startContainer)) savedRange = r.cloneRange(); };
   const backSel = () => { if (savedRange && savedRange.startContainer.isConnected) { const s = sel(); s.removeAllRanges(); s.addRange(savedRange); focusFor(savedRange.startContainer); } };
@@ -17,6 +59,7 @@
     keepSel();
     const bg = document.createElement('div'); bg.className = 'dlg-bg';
     bg.innerHTML = `<div class="dlg" role="dialog" style="${opts.width ? 'width:' + opts.width + 'px' : ''}"><h3>${title}</h3><div class="body">${body}</div><div class="foot">${opts.foot != null ? opts.foot : `<button class="tb" data-x="cancel">취소</button><button class="tb primary" data-x="ok">${opts.okText || '설정'}</button>`}</div></div>`;
+    bg.querySelectorAll('input:not([type])').forEach(x => { x.type = 'text'; }); // 글 칸은 모두 같은 모양(ui.css 의 input[type=text])으로
     document.body.appendChild(bg);
     const q = s => bg.querySelector(s);
     const close = (restore) => { bg.remove(); document.removeEventListener('keydown', onKey, true); if (restore !== false) backSel(); if (opts.onClose) opts.onClose(); };
@@ -57,7 +100,7 @@
   }
 
   /* ---------- 문서 열기/만들기 ---------- */
-  function setName(n) { W.name = n || '새 문서'; $id('docName').textContent = W.name; document.title = W.name + ' — 한글 작업장'; }
+  function setName(n) { W.name = n || '새 문서'; $id('docNameT').textContent = W.name; document.title = W.name + ' — 한글 작업장'; }
   function loadDoc(d, meta) {
     meta = meta || {};
     clearCells(true); hidePic();
@@ -70,7 +113,7 @@
     warm(d);
     UNDO.stack.length = 0; UNDO.redo.length = 0; UNDO.cur = null; UNDO.bytes = 0;
     setName(meta.name || d.title || '새 문서');
-    W.dirty = !!meta.dirty; updateState();
+    W.dirty = !!meta.dirty; W.savedTime = meta.savedTime || null; updateState();
     fillStyles(); fillFonts();
     if (typeof HwpHome !== 'undefined') HwpHome.hide(); // home.js 의 const 는 window 에 붙지 않음
     document.body.classList.add('has-doc');
@@ -98,11 +141,11 @@
     if (/\.hwp$/i.test(file.name)) { tell('.hwp(옛 형식) 파일은 바로 열 수 없습니다', '한글에서 [파일 → 다른 이름으로 저장 → 파일 형식: 한글 표준 문서(*.hwpx)] 로 저장한 뒤 그 파일을 열어 주세요.'); return; }
     if (!(await confirmDiscard())) return;
     const buf = await file.arrayBuffer();
-    await openBytes(buf, { name: file.name.replace(/\.hwpx$/i, ''), handle });
+    await openBytes(buf, { name: file.name.replace(/\.hwpx$/i, ''), handle, savedTime: handle ? file.lastModified : null });
   }
   async function confirmDiscard() {
     if (!W.doc || !W.dirty) return true;
-    return askConfirm(`"${W.name}" 에 저장하지 않은 내용이 있습니다`, '그래도 다른 문서를 열까요? 지금 문서는 이 기기에 임시 저장되어, 첫 화면의 <b>이 기기 임시본</b>에서 다시 열 수 있습니다.', '다른 문서 열기');
+    return askConfirm(`"${W.name}" 에 저장하지 않은 내용이 있습니다`, '그래도 다른 문서를 열까요? 지금 문서는 이 기기에 임시 저장되어, 첫 화면의 <b>저장 안 한 작업본</b>에서 다시 열 수 있습니다.', '다른 문서 열기');
   }
   async function newDoc() { if (!(await confirmDiscard())) return; loadDoc(HwpxDoc.blank(), { name: '새 문서' }); }
   async function openDialog() {
@@ -113,7 +156,7 @@
   /* ---------- 저장 ---------- */
   let saving = false;
   let rev = 0; // 고친 횟수 — 저장하는 동안(문서함은 몇 초 걸림) 더 고친 내용이 있으면 '저장됨'으로 바꾸지 않음
-  function savedAt(r0) { W.dirty = rev !== r0; updateState(); if (W.dirty) scheduleDraft(); else HwpStore.drafts.del(W.draftId); }
+  function savedAt(r0) { W.dirty = rev !== r0; W.savedTime = Date.now(); updateState(); if (W.dirty) scheduleDraft(); else HwpStore.drafts.del(W.draftId); }
   async function build() { tidyAll(); Track.flush(); return W.doc.save(doc); }
   function tidyAll() { for (const b of doc.querySelectorAll('.hp')) { const brs = b.querySelectorAll(':scope > br:not([data-lb])'); if (brs.length > 1) brs.forEach((x, i) => { if (i < brs.length - 1 && !x.nextSibling) x.remove(); }); } }
   const fileName = () => (W.name || '문서').replace(/[\\/:*?"<>|]/g, '_') + '.hwpx';
@@ -126,7 +169,7 @@
     try {
       if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview())); done('문서함에 저장했습니다'); }
       else if (!as && W.handle) { const blob = await build(); await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
-      else if (as === 'box') { await boxSaveCurrent(await build(), r0); }
+      else if (as === 'box' || as === 'boxNew') { await boxSaveCurrent(await build(), r0, as === 'boxNew'); }
       else {
         // 저장 창을 먼저 열고(클릭 직후여야 브라우저가 막지 않음) 문서는 그다음 만듦 — 큰 문서도 창이 안 뜨는 일이 없게
         const h = await HwpStore.pickSaveHandle(fileName());
@@ -146,18 +189,22 @@
       init: (q, close) => {
         const nm = () => { const v = q('#sa_nm').value.trim(); if (v) setName(v); };
         q('#sa_pc').onclick = () => { nm(); close(false); save('pc'); };
-        q('#sa_box').onclick = () => { nm(); close(false); save('box'); };
+        q('#sa_box').onclick = () => { nm(); close(false); save('boxNew'); }; // 다른 이름으로: 문서함에 새 문서로 (원래 문서는 그대로)
       }, noEnter: true });
   }
-  function deviceName() { const ua = navigator.userAgent; return /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : ''; }
-  function setState(t) { $id('saveState').textContent = t; }
+  const deviceName = BestDocs.deviceName;
+  function setState(t) { const s = $id('saveState'); s.className = 'state' + (t ? ' busy' : ''); s.textContent = t; delete s.dataset.v; } // 저장 중 알림 (휴대폰에서도 보임)
+  /* 저장한 때: 오늘이면 '오후 3:12', 아니면 '11월 3일' */
+  function savedClock(t) { const d = new Date(t), now = new Date(); return d.toDateString() === now.toDateString() ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : `${d.getMonth() + 1}월 ${d.getDate()}일`; }
+  /* 머리 줄의 저장 상태: 깨끗하면 흐린 '저장됨 · 오후 3:12', 고친 뒤면 노란 점 + '저장 안 됨'. [저장] 단추는 고친 뒤에만 먹색(주 단추) */
   function updateState() {
-    const s = $id('saveState'); s.classList.toggle('dirty', W.dirty);
-    const where = W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '저장 안 됨';
-    s.textContent = W.dirty ? '수정됨' : (W.boxId || W.handle ? '저장됨' : '');
-    s.classList.toggle('ok', !W.dirty && !!(W.boxId || W.handle));
-    s.title = W.dirty ? '저장하지 않은 내용이 있습니다 (이 기기에는 자동으로 임시 저장됨) — 저장 또는 Ctrl+S' : (W.boxId || W.handle ? where + '에 저장되어 있습니다' : '');
-    $id('stSaved').textContent = W.doc ? (GUEST ? '보기 전용' : '저장 위치: ' + (W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '아직 저장 안 함')) : '';
+    const s = $id('saveState'), where = W.boxId ? '문서함' : W.handle ? '내 PC 파일' : '';
+    const v = W.dirty ? '<i class="mark-dot"></i>저장 안 됨' : W.savedTime ? '저장됨 · ' + escH(savedClock(W.savedTime)) : '';
+    s.className = 'state' + (W.dirty ? ' dirty' : '');
+    if (s.dataset.v !== v) { s.dataset.v = v; s.innerHTML = v; } // 읽어 주는 칸(role=status): 글자마다 다시 쓰지 않음
+    s.title = W.dirty ? '저장하지 않은 내용이 있습니다 (이 기기에는 자동으로 임시 저장됨) — 저장 또는 Ctrl+S' : W.savedTime ? `${where ? where + '에 ' : ''}${new Date(W.savedTime).toLocaleString('ko-KR')} 저장` : '';
+    $id('btnSave').classList.toggle('primary', !!(W.doc && W.dirty));
+    $id('stSaved').textContent = W.doc ? (GUEST ? '보기 전용' : '저장 위치: ' + (where || (W.savedTime ? '내려받은 파일' : '아직 저장 안 함'))) : '';
   }
   window.onDocChanged = () => { rev++; if (!W.dirty) { W.dirty = true; } updateState(); scheduleDraft(); };
   let draftT = null, buildMs = 0;
@@ -170,8 +217,13 @@
   let drafted = '', draftP = null; // drafted: 마지막으로 임시 저장한 문서·수정 차례
   async function saveDraft() {
     if (!W.doc || !W.dirty || saving) return;
-    const key = W.draftId + ':' + rev;
-    try { const t = performance.now(); const blob = await build(); buildMs = performance.now() - t; await HwpStore.drafts.put(W.draftId, W.name, blob, { boxId: W.boxId, preview: preview() }); drafted = key; } catch (e) { console.warn('임시 저장 실패', e); }
+    const d = W.doc, id = W.draftId, key = id + ':' + rev;
+    try {
+      const t = performance.now(); const blob = await build(); buildMs = performance.now() - t;
+      // 만드는 사이에 저장을 마쳤거나(임시본을 지운 뒤 다시 남기지 않게) 다른 문서를 열었으면(그 문서 자리에 이 글을 쓰지 않게) 그만둠
+      if (W.doc !== d || W.draftId !== id || !W.dirty || saving) return;
+      await HwpStore.drafts.put(id, W.name, blob, { boxId: W.boxId, preview: preview() }); drafted = key;
+    } catch (e) { console.warn('임시 저장 실패', e); }
   }
   /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰은 닫기 전에 beforeunload 가 오지 않기도 함): 기다리지 않고 바로 임시 저장 시작 */
   function draftNow() {
@@ -184,10 +236,10 @@
   window.addEventListener('beforeunload', e => { if (W.doc && W.dirty) { draftNow(); e.preventDefault(); e.returnValue = ''; } });
 
   /* ---------- 문서함 ---------- */
-  async function boxSaveCurrent(blob, r0) {
+  async function boxSaveCurrent(blob, r0, asNew) {
     if (!(await boxEnsure())) { setState(''); updateState(); return; }
-    if (!blob) { r0 = rev; blob = await build(); }
-    W.boxId = await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview()));
+    const id = asNew ? null : W.boxId;
+    W.boxId = await boxRun(() => HwpStore.box.save(id, W.name, blob, deviceName(), preview()));
     W.handle = null; savedAt(r0);
     toast('문서함에 저장했습니다 — 다른 PC 에서도 이 문서를 열 수 있습니다', 3000);
   }
@@ -259,8 +311,6 @@
   }
   /* ---------- best 문서 (레퍼런스) ---------- */
   const fmtKB = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
-  const fmtDay = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('ko-KR', { year: '2-digit', month: 'short', day: 'numeric' }); };
-  const bestMeta = it => { const m = it.meta || {}; return [m.chars ? m.chars.toLocaleString() + '자' : '', m.tables ? '표 ' + m.tables : '', m.images ? '그림 ' + m.images : '', it.size ? fmtKB(it.size) : '', fmtDay(it.added), it.device || ''].filter(Boolean).join(' · '); };
   /* GitHub 모드: 문서함 암호를 먼저 연다 (같은 암호로 잠가 올리므로) */
   async function bestReady() {
     await BestDocs.init();
@@ -370,7 +420,7 @@
     if (document.activeElement !== $id('inSize')) $id('inSize').value = +(c.height / 100).toFixed(1);
     const on = (a, v) => { const b = document.querySelector(`#ribbon [data-act="${a}"]`); if (b) b.classList.toggle('on', !!v); };
     on('bold', c.bold); on('italic', c.italic); on('underline', c.underline); on('strike', c.strike); on('sup', c.sup); on('sub', c.sub);
-    on('alJ', p.align === 'JUSTIFY'); on('alL', p.align === 'LEFT'); on('alC', p.align === 'CENTER'); on('alR', p.align === 'RIGHT'); on('alD', /DISTRIBUTE/.test(p.align));
+    paintAlign(p.align);
     on('outline', p.heading === 'OUTLINE' || p.heading === 'NUMBER'); on('bullet', p.heading === 'BULLET');
     document.querySelector('.clr span').style.setProperty('--sw', hexColor(c.color) || '#000');
     const ls = $id('selLs'); if (p.lsType === 'PERCENT') { if (!LS_OPTS.includes(p.ls)) { if (!ls.querySelector(`option[value="${p.ls}"]`)) ls.insertAdjacentHTML('beforeend', `<option value="${p.ls}">${p.ls}%</option>`); } ls.value = p.ls; }
@@ -411,7 +461,73 @@
   $id('inShade').addEventListener('input', e => { e.target.parentElement.querySelector('span').style.setProperty('--sw', e.target.value); });
   $id('inCellFill').addEventListener('change', e => { backSel(); cellFill(curCells(), e.target.value.toUpperCase()); });
   $id('selZoom').addEventListener('change', e => setZoom(e.target.value));
-  $id('docName').addEventListener('click', async () => { const n = await askText('문서 이름', '이름', W.name, '바꾸기'); if (n && n !== W.name) { setName(n); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '수정됨' 유지)
+  $id('docName').addEventListener('click', async () => { const n = await askText('문서 이름', '이름', W.name, '바꾸기'); if (n && n !== W.name) { setName(n); if (W.doc) window.onDocChanged(); } }); // 이름 바꾸기도 고친 횟수에 넣음 (저장 중에 바꾸면 '저장 안 됨' 유지)
+
+  /* ---------- 정렬 (펼침 단추 하나에 다섯 가지) ---------- */
+  const dKey = () => (window.PWA && PWA.standalone ? 'Ctrl+Shift+T' : 'Ctrl+Alt+T');
+  const ALIGNS = [['alJ', '양쪽 정렬', 'textJ', 'Ctrl+Shift+M', 'JUSTIFY'], ['alL', '왼쪽 정렬', 'textL', 'Ctrl+Shift+L', 'LEFT'], ['alC', '가운데 정렬', 'textC', 'Ctrl+Shift+C', 'CENTER'], ['alR', '오른쪽 정렬', 'textR', 'Ctrl+Shift+R', 'RIGHT'], ['alD', '배분 정렬', 'textD', '', 'DISTRIBUTE']];
+  let curAlign = '';
+  function paintAlign(al) {
+    al = /DISTRIBUTE/.test(al || '') ? 'DISTRIBUTE' : (al || 'JUSTIFY'); if (al === curAlign) return; curAlign = al;
+    const x = ALIGNS.find(a => a[4] === al) || ALIGNS[0], b = $id('btnAlign');
+    b.firstElementChild.innerHTML = icon(x[2]); b.title = '문단 정렬 — ' + x[1];
+  }
+  const alignItems = () => ALIGNS.map(([a, label, ic, kbd, v]) => ({ label, icon: ic, kbd: kbd || dKey(), on: curAlign === v, run: () => act(a) }));
+  $id('btnAlign').addEventListener('click', e => popMenu(e.currentTarget, alignItems(), { keyboard: viaKey(e) }));
+
+  /* ---------- 리본이 모자랄 때: 뒤 묶음부터 [더 보기] 메뉴로 ---------- */
+  const gly = (t, label, kbd) => ({ glyph: t, label, kbd });
+  const GRP_MENU = {
+    char: [['bold', gly('<b>가</b>', '진하게', 'Ctrl+B')], ['italic', gly('<i>가</i>', '기울임', 'Ctrl+I')], ['underline', gly('<u>가</u>', '밑줄', 'Ctrl+U')], ['strike', gly('<s>가</s>', '취소선')], ['sup', gly('x²', '위 첨자')], ['sub', gly('x₂', '아래 첨자')], ['shadeNone', { icon: 'x', label: '형광펜 지우기' }], ['charDlg', { icon: 'type', label: '글자 모양 · 색 · 형광펜…', kbd: 'Alt+L' }]],
+    para: [['indentL', { icon: 'indentL', label: '왼쪽 여백 줄이기' }], ['indentR', { icon: 'indentR', label: '왼쪽 여백 늘리기' }], ['outline', { icon: 'listNum', label: '개요 번호' }], ['bullet', { icon: 'list', label: '글머리표' }], ['paraDlg', { icon: 'paragraph', label: '문단 모양 · 줄 간격…', kbd: 'Alt+T' }]],
+    insert: [['table', { icon: 'table', label: '표 만들기', kbd: 'Ctrl+N, T' }], ['image', { icon: 'image', label: '그림 넣기', kbd: 'Ctrl+N, I' }], ['pageBreak', { icon: 'pageBreak', label: '쪽 나누기', kbd: 'Ctrl+Enter' }], ['symbol', { icon: 'symbol', label: '문자표', kbd: 'Ctrl+F10' }]],
+    page: [['pageDlg', { icon: 'ruler', label: '편집 용지', kbd: 'F7' }], ['pageNum', { icon: 'hash', label: '쪽 번호 매기기', kbd: 'Ctrl+N, P' }], ['headFoot', { icon: 'layout', label: '머리말/꼬리말', kbd: 'Ctrl+N, H' }]],
+    find: [['find', { icon: 'search', label: '찾기', kbd: 'Ctrl+F' }], ['replace', { icon: 'search', label: '찾아 바꾸기', kbd: 'Ctrl+H' }]],
+  };
+  const rib = $id('ribbon'), ribMore = $id('btnRibMore'), ribGroups = Array.from(rib.querySelectorAll(':scope > .grp'));
+  function ribbonFit() {
+    if (!rib.offsetParent) return; // 게스트: 리본이 없음
+    closePop();
+    const over = () => rib.scrollWidth > rib.clientWidth + 1;
+    ribGroups.forEach(x => { x.hidden = false; }); ribMore.hidden = true; rib.classList.remove('compact');
+    if (!over()) return;
+    rib.classList.add('compact'); // 먼저 글자 이름을 빼 보고 (아이콘만, 이름은 가리키면 보임)
+    if (!over()) return;
+    ribMore.hidden = false;
+    for (let i = ribGroups.length - 1; i > 0 && over(); i--) ribGroups[i].hidden = true; // 첫 묶음(스타일·글꼴·크기)은 늘 보임
+    for (const g of ribGroups) if (g.hidden) { g.hidden = false; if (over()) g.hidden = true; } // 남은 자리에 들어가는 뒤 묶음(표·그림 · 찾기 …)은 다시 꺼냄
+  }
+  let fitRaf = 0; const fitSoon = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(ribbonFit); };
+  window.addEventListener('resize', fitSoon);
+  if (document.fonts) document.fonts.ready.then(fitSoon);
+  fitSoon();
+  ribMore.addEventListener('click', e => {
+    const items = [];
+    for (const grp of ribGroups) {
+      if (!grp.hidden) continue;
+      const k = grp.dataset.grp; if (items.length) items.push(null);
+      if (k === 'para') items.push(...alignItems());
+      for (const [a, it] of GRP_MENU[k] || []) { const b = rib.querySelector(`[data-act="${a}"]`); items.push(Object.assign({ on: !!(b && b.classList.contains('on')), run: () => act(a) }, it)); }
+    }
+    popMenu(e.currentTarget, items, { alignRight: true, keyboard: viaKey(e) });
+  });
+
+  /* ---------- 휴대폰 머리 줄: 열기 · 저장 · 인쇄만 두고 나머지는 ⋯ 메뉴 ---------- */
+  $id('btnBar1More').addEventListener('click', e => {
+    const dark = UiTheme.get() === 'dark';
+    const items = (GUEST ? [] : [{ icon: 'filePlus', label: '새 문서', kbd: 'Alt+N', run: () => act('new') }, { icon: 'export', label: '다른 이름으로 저장', kbd: 'Alt+V', run: () => act('saveAs') }, { icon: 'lock', label: '문서함', run: () => act('box') }])
+      .concat([{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null, { icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
+    popMenu(e.currentTarget, items, { alignRight: true, keyboard: viaKey(e) });
+  });
+
+  /* ---------- 표 줄: 줄·칸 추가 / 지우기 ---------- */
+  $id('btnTblAdd').addEventListener('click', e => popMenu(e.currentTarget, [
+    { icon: 'plus', label: '위에 줄 추가', run: () => act('rowAbove') }, { icon: 'plus', label: '아래에 줄 추가', kbd: 'Ctrl+Enter', run: () => act('rowBelow') },
+    { icon: 'plus', label: '왼쪽에 칸 추가', run: () => act('colLeft') }, { icon: 'plus', label: '오른쪽에 칸 추가', run: () => act('colRight') },
+    null, { icon: 'table', label: '여러 줄·칸 추가…', kbd: 'Alt+Insert', run: () => rowColDialog(true) }], { keyboard: viaKey(e) }));
+  $id('btnTblDel').addEventListener('click', e => popMenu(e.currentTarget, [
+    { icon: 'minus', label: '줄 지우기', kbd: 'Alt+Delete', danger: true, run: () => act('rowDel') }, { icon: 'minus', label: '칸 지우기', danger: true, run: () => act('colDel') },
+    null, { icon: 'trash', label: '표 지우기', danger: true, run: () => act('tableDel') }], { keyboard: viaKey(e) }));
 
   function curCells() {
     if (W.cells && W.cells.size) return Array.from(W.cells);
@@ -550,7 +666,6 @@
   doc.addEventListener('copy', e => onCopy(e, false));
   doc.addEventListener('cut', e => onCopy(e, true));
   doc.addEventListener('dragstart', e => { e.preventDefault(); });
-  doc.addEventListener('focusin', e => { if (!W.doc) return; });
 
   /* ---------- 마우스: 셀 블록 · 너비 조절 · 그림 ---------- */
   let drag = null;
@@ -624,6 +739,15 @@
     h.style.left = ((r.right - s.left) / W.zoom - 6) + 'px'; h.style.top = ((r.bottom - s.top) / W.zoom - 6) + 'px'; h.hidden = false;
   }
   $id('picHandle').addEventListener('mousedown', e => { if (!W.selPic) return; e.preventDefault(); e.stopPropagation(); const p = W.selPic; const w0 = p.getBoundingClientRect().width / W.zoom; drag = { kind: 'pic', pic: p, x: e.clientX, w0, ratio: (p.getBoundingClientRect().height / W.zoom) / w0 }; });
+  /* 고른 그림을 키보드로 키우고 줄임 (Ctrl+→ / Ctrl+←) — 그림이 새로 그려지므로 같은 자리의 그림을 다시 고름 */
+  function stepPic(f) {
+    const p = W.selPic; if (!p || GUEST) return;
+    const b = blockOf(p); if (!b) return;
+    const path = pathOf(b), i = Array.from(b.querySelectorAll('.isl.pic')).indexOf(p);
+    resizePic(p, p.getBoundingClientRect().width / W.zoom * f);
+    const nb = byPath(path), np = nb && nb.querySelectorAll('.isl.pic')[i];
+    if (np) selectPic(np); else hidePic();
+  }
   function deletePic() { const p = W.selPic; if (!p) return; const b = blockOf(p); hidePic(); edit(b, b, () => { const nx = p.nextSibling; p.remove(); ensureBr(b); if (nx && nx.isConnected) placeCaret(nx.parentNode, Array.prototype.indexOf.call(nx.parentNode.childNodes, nx)); else caretToEnd(b); }); }
   async function pickImage() {
     keepSel();
@@ -699,7 +823,7 @@
       }
       return;
     }
-    if (k === 'esc') { if (!$id('findBar').hidden) { closeFind(); e.preventDefault(); return; } if (W.cells) { const a = W.cellAnchor; clearCells(); if (a) caretToEnd(a.querySelector('.hp')); e.preventDefault(); return; } if (W.selPic) { hidePic(); return; } setChord(null); return; }
+    if (k === 'esc') { if (closePop()) { e.preventDefault(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); return; } if (!$id('findBar').hidden) { closeFind(); e.preventDefault(); return; } if (W.cells) { const a = W.cellAnchor; clearCells(); if (a) caretToEnd(a.querySelector('.hp')); e.preventDefault(); return; } if (W.selPic) { hidePic(); return; } setChord(null); return; }
     if (!W.doc || (typeof HwpHome !== 'undefined' && HwpHome.visible)) { if (MAP[k] && /^(ctrl\+o|alt\+o|alt\+n|f1)$/.test(k) && !(GUEST && k === 'alt+n')) { e.preventDefault(); MAP[k](); } return; }
     if (GUEST) { if (/^(ctrl\+o|alt\+o|ctrl\+p|alt\+p|ctrl\+f|ctrl\+l|f1)$/.test(k)) { e.preventDefault(); MAP[k](); } else if (/^(ctrl|alt)\+[a-z0-9\[\]]$|^f\d$|^ctrl\+enter$/.test(k) && !/^ctrl\+(c|a)$/.test(k)) e.preventDefault(); return; }
     const inEditor = inDoc(e.target) || e.target === document.body || e.target === $id('canvas');
@@ -714,6 +838,7 @@
     // 셀 블록
     if (W.cells && W.cells.size) { if (cellKeys(e, k)) { e.preventDefault(); return; } }
     if (W.selPic && (k === 'delete' || k === 'backspace')) { e.preventDefault(); deletePic(); return; }
+    if (W.selPic && (k === 'ctrl+right' || k === 'ctrl+left')) { e.preventDefault(); stepPic(k === 'ctrl+right' ? 1.1 : 1 / 1.1); return; } // 손잡이를 끌지 않고 그림 크기 바꾸기
     const r = rng(); const td = r && cellOf(r.startContainer);
     // 본문과 표 칸에 걸친 선택: 브라우저는 편집 영역이 달라 아무것도 하지 않으므로 직접 지움
     if (r && !r.collapsed && inDoc(r.startContainer)) {
@@ -783,7 +908,7 @@
   $id('fq').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); findAgain(e.shiftKey); $id('fq').focus(); } if (e.key === 'Escape') { e.preventDefault(); closeFind(); } });
   $id('fr').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); $id('fRep').click(); } if (e.key === 'Escape') { e.preventDefault(); closeFind(); } });
   $id('fNext').onclick = () => findAgain(false); $id('fPrev').onclick = () => findAgain(true); $id('fClose').onclick = closeFind;
-  $id('fRep').onclick = () => { backSel(); const q = $id('fq').value; if (!replaceSel(q, $id('fr').value)) { /* 선택이 없으면 먼저 찾기 */ } findAgain(false); };
+  $id('fRep').onclick = () => { backSel(); replaceSel($id('fq').value, $id('fr').value, $id('fCase').checked); findAgain(false); }; // 선택한 곳을 바꾸고(선택이 없으면 건너뜀) 다음을 찾음
   $id('fRepAll').onclick = () => { const n = replaceAll($id('fq').value, $id('fr').value, { case: $id('fCase').checked }); $id('fMsg').textContent = n + '개 바꿈'; toast(n ? `${n}개를 바꿨습니다` : '바꿀 내용을 찾지 못했습니다'); };
 
   /* ---------- 인쇄 ---------- */
@@ -929,10 +1054,9 @@
         const u = s => Math.round(num(q, s, 0) * MM);
         W.doc.setPage(sec, { w: u('#g_w'), h: u('#g_h'), land: q('input[name=g_o]:checked').value === 'l', top: u('#g_t'), bottom: u('#g_b'), left: u('#g_l'), right: u('#g_r'), header: u('#g_hd'), footer: u('#g_ft'), gutter: u('#g_g') });
         const sp = doc.querySelector(`.hsec[data-s="${sec}"] .isl[data-ctrl="secPr"]`); if (sp) sp.dataset.touch = Date.now(); // 구역 설정이 바뀐 문단은 새로 저장
-        markSecDirty(sec); W.dirty = true; updateState(); scheduleDraft(); Track.full = true; layout();
+        window.onDocChanged(); Track.full = true; layout(); // 구역 설정은 원본 XML 을 직접 고치므로 저장 때 그대로 반영됨
       } });
   }
-  function markSecDirty(si) { /* 구역 설정은 원본 XML 을 직접 고치므로 문단 비교와 무관 — 저장 때 그대로 반영됨 */ }
   /* ---------- 쪽 번호 ---------- */
   function firstBlockOfSec0() { return doc.querySelector('.hsec > .hp'); }
   function insertCtrlIsland(xmlInner, kind) {
@@ -1001,12 +1125,12 @@
     '문장 부호': '·‥…「」『』【】〈〉《》〔〕‘’“”〃～ˇ˘˝˚˙¸˛¡¿ː',
   };
   function symbolDialog() {
-    const tabs = Object.keys(SYMS); let cur = localStorage.getItem('hwp:symtab') || tabs[0]; if (!SYMS[cur]) cur = tabs[0];
+    const tabs = Object.keys(SYMS); let cur = tabs[0]; try { cur = localStorage.getItem('hwp:symtab') || cur; } catch (e) { } if (!SYMS[cur]) cur = tabs[0];
     dialog('문자표', `<div class="symtabs">${tabs.map(t => `<button class="tb ${t === cur ? 'on' : ''}" data-t="${t}">${t}</button>`).join('')}</div><div class="sym" id="sy"></div><p class="muted" style="font-size:12px;margin-bottom:0">글자를 누르면 커서 위치에 넣습니다.</p>`, {
       foot: '<button class="tb" data-x="cancel">닫기</button>', noEnter: true, width: 560,
       init: (q, close) => {
         const draw = () => { q('#sy').innerHTML = Array.from(new Set(Array.from(SYMS[cur]))).map(ch => `<button data-ch="${ch}">${ch}</button>`).join(''); q('.symtabs').querySelectorAll('[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === cur)); };
-        q('.symtabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; cur = b.dataset.t; localStorage.setItem('hwp:symtab', cur); draw(); });
+        q('.symtabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; cur = b.dataset.t; try { localStorage.setItem('hwp:symtab', cur); } catch (er) { } draw(); });
         q('#sy').addEventListener('click', e => { const b = e.target.closest('[data-ch]'); if (!b) return; close(); insertText(b.dataset.ch); });
         draw();
       } });
@@ -1017,7 +1141,7 @@
     const sec = (t, rows) => `<h4>${t}</h4><table class="kb">${rows.map(r => row(r[0], r[1])).join('')}</table>`;
     dialog('한글 작업장 단축키', `<div class="kbcols"><div>
       ${sec('파일', [['Alt+N', '새 문서'], ['Alt+O / Ctrl+O', '불러오기'], ['Alt+S / Ctrl+S', '저장하기 (열어 둔 파일 또는 문서함)'], ['Alt+V', '다른 이름으로 저장'], ['Alt+P / Ctrl+P', '인쇄 · PDF 저장']])}
-      ${sec('편집', [['Ctrl+Z', '되돌리기'], ['Ctrl+Shift+Z', '다시 실행'], ['Ctrl+X / Ctrl+C / Ctrl+V', '오려 두기 · 복사 · 붙이기'], ['Ctrl+Y', '한 줄 지우기'], ['Alt+Y', '커서부터 줄 끝까지 지우기'], ['Ctrl+Enter', '쪽 나누기'], ['Shift+Enter', '줄 나누기 (문단 안에서)'], ['Tab', '탭'], ['Shift+Tab', '커서 위치까지 내어쓰기'], ['Ctrl+F', '찾기'], ['Ctrl+H / Ctrl+F2', '찾아 바꾸기'], ['Ctrl+L', '다시 찾기'], ['Ctrl+F10', '문자표'], ['Alt+C', '모양 복사 (한 번 누르면 복사, 블록 잡고 다시 누르면 붙이기)']])}
+      ${sec('편집', [['Ctrl+Z', '되돌리기'], ['Ctrl+Shift+Z', '다시 실행'], ['Ctrl+X / Ctrl+C / Ctrl+V', '오려 두기 · 복사 · 붙이기'], ['Ctrl+Y', '한 줄 지우기'], ['Alt+Y', '커서부터 줄 끝까지 지우기'], ['Ctrl+Enter', '쪽 나누기'], ['Shift+Enter', '줄 나누기 (문단 안에서)'], ['Tab', '탭'], ['Shift+Tab', '커서 위치까지 내어쓰기'], ['Ctrl+F', '찾기'], ['Ctrl+H / Ctrl+F2', '찾아 바꾸기'], ['Ctrl+L', '다시 찾기'], ['Ctrl+F10', '문자표'], ['Alt+C', '모양 복사 (한 번 누르면 복사, 블록 잡고 다시 누르면 붙이기)'], ['Ctrl+← / Ctrl+→', '고른 그림 줄이기 · 키우기 (손잡이를 끌지 않고)']])}
       ${sec('입력', [['Ctrl+N , T', '표 만들기'], ['Ctrl+N , I', '그림 넣기'], ['Ctrl+N , P', '쪽 번호 매기기'], ['Ctrl+N , H', '머리말/꼬리말'], ['Ctrl+Alt+N , 글자', '위와 같음 (브라우저 탭에서 Ctrl+N 대신)'], ['F7', '편집 용지']])}
       ${window.PWA && PWA.standalone ? '<div class="kbnote ok">앱 창에서 열었으므로 <kbd>Ctrl</kbd>+<kbd>N</kbd> 다음 글자, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> 도 한글과 똑같이 됩니다.</div>' : `<div class="kbnote"><b>브라우저 탭에서 안 되는 키</b> — 크롬·엣지는 <kbd>Ctrl</kbd>+<kbd>N</kbd>(새 창)과 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>(닫은 탭 다시 열기)를 먼저 가져갑니다.<br>· 대신 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd> 다음 글자, 배분 정렬은 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> 를 누르세요.<br>· <b>앱으로 설치해 열면</b> 한글과 같은 키가 그대로 됩니다.</div>`}
     </div><div>
@@ -1029,7 +1153,7 @@
 
   /* ---------- 시작 ---------- */
   doc.addEventListener('keyup', () => window.onSelChange());
-  window.__hwp = { W, GUEST, act, openBytes, openFile, openDialog, newDoc, loadDoc, save, build, dialog, askConfirm, askText, tell, boxEnsure, boxRun, connectDialog, confirmDiscard, updateState, dropDone, bestReady, bestOpen, bestUpload, bestStructDialog, bestEditDialog, helpDialog, setName, deviceName, fmtKB, fmtDay, bestMeta };
+  window.__hwp = { W, GUEST, act, openBytes, openFile, openDialog, newDoc, loadDoc, save, build, dialog, askConfirm, askText, tell, boxEnsure, boxRun, connectDialog, confirmDiscard, updateState, dropDone, bestReady, bestOpen, bestUpload, bestStructDialog, bestEditDialog, helpDialog, setName, deviceName, fmtKB, popMenu, closePop };
   (async () => {
     GH.load();
     $id('selZoom').value = '1';
