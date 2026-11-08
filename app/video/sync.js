@@ -1,6 +1,6 @@
 /* 영상 작업장 — 기기 사이 연결 (GitHub 비공개 저장소)
    - 얼굴이 나오는 영상이라 공개 저장소에는 올리지 않는다. 비공개 저장소가 아니면 쓰지 않는다
-   - 토큰은 업무 공간의 [GitHub 연결] 에서 이 기기에 넣어 둔 것을 함께 쓴다 (사이트에 넣어 두지 않음)
+   - 토큰은 업무 공간의 [GitHub 연결] 에서 이 기기에 넣어 둔 것을 함께 쓰고, 그 토큰에 영상 저장소 권한이 없으면 연결 창에서 영상용 토큰을 따로 넣는다 (사이트에 넣어 두지 않음)
    - 저장소 안: projects/index.json(목록) · projects/<id>.json(편집 내용) · media/<id>.json + media/<id>/part-0000…(20MB 조각) · dub/<열쇠>.bin(AI 목소리)
    - 저장하면 잠시 뒤 올리고, 열 때 다른 기기에서 고친 것이 있으면 받는다. 두 기기에서 함께 고쳤으면 묻는다 */
 'use strict';
@@ -12,7 +12,28 @@
   const writeLS = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
   S.cfg = () => {
     const c = readLS(CFG, {}); let gh = null; try { gh = typeof GH !== 'undefined' ? (GH.cfg || GH.load()) : null; } catch (e) { }
-    return { on: !!c.on, owner: c.owner || (gh && gh.owner) || 'kwonyujin119', repo: c.repo || 'test0-video', token: (gh && gh.token) || '' };
+    /* 영상 저장소용 토큰을 따로 넣었으면 그것을, 아니면 업무 공간의 [GitHub 연결] 토큰을 쓴다 */
+    const own = c.token || '', shared = (gh && gh.token) || '';
+    return { on: !!c.on, owner: c.owner || (gh && gh.owner) || 'kwonyujin119', repo: c.repo || 'test0-video', token: own || shared, tokenFrom: own ? 'video' : shared ? 'shared' : '' };
+  };
+  /* 새 토큰 넣기: 영상 저장소에 쓸 수 있는지 먼저 확인. 이 기기에 교안용 토큰이 없고 새 토큰이 교안 저장소에도 쓰이면 그쪽에도 넣는다 (한 번만 넣게) */
+  S.useToken = async token => {
+    const prev = readLS(CFG, {});
+    S.setCfg({ token }); S.ok = false;
+    try { await S.check(); }
+    catch (e) { writeLS(CFG, prev); S.ok = false; if (e.status === 401) e.message = '붙여넣은 토큰이 올바르지 않거나 만료되었습니다. 다시 복사해 붙여넣어 주세요.'; throw e; }
+    let shared = false;
+    try {
+      if (typeof GH !== 'undefined') {
+        const g = GH.cfg || GH.load();
+        if (g && g.owner && g.repo && !g.token) {
+          const r = await fetch(`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}`, { headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + token }, cache: 'no-store' });
+          const j = r.ok ? await r.json() : null;
+          if (j && j.permissions && j.permissions.push) { GH.save({ ...g, token }); shared = true; }
+        }
+      }
+    } catch (e) { }
+    return { shared };
   };
   S.setCfg = o => writeLS(CFG, { ...readLS(CFG, {}), ...o });
   const st = () => readLS(ST, { p: {}, media: {}, dub: {} });
@@ -23,16 +44,16 @@
   /* ---------- GitHub API ---------- */
   async function api(method, path, body, raw) {
     const c = S.cfg();
-    if (!c.token) { const e = new Error('이 기기에 GitHub 토큰이 없습니다. 업무 공간 첫 화면의 [GitHub 연결] 에서 먼저 연결해 주세요.'); e.noToken = true; throw e; }
+    if (!c.token) { const e = new Error('이 기기에 GitHub 토큰이 없습니다. [다른 기기와 연결] 의 토큰 칸에 붙여넣어 주세요.'); e.noToken = true; throw e; }
     const h = { Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', Authorization: 'Bearer ' + c.token };
     if (body) h['Content-Type'] = 'application/json';
     const r = await fetch(`https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}${path}`, { method, headers: h, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
     if (r.status === 404 && method === 'GET') return null;
     if (!r.ok) {
       let msg = r.status + ' ' + r.statusText; try { const j = await r.json(); if (j.message) msg = j.message; } catch (e) { }
-      if (r.status === 401) msg = 'GitHub 토큰이 올바르지 않거나 만료되었습니다. 업무 공간 첫 화면의 [GitHub 연결] 에서 새 토큰을 넣어 주세요.';
+      if (r.status === 401) msg = 'GitHub 토큰이 올바르지 않거나 만료되었습니다. [다른 기기와 연결] 의 토큰 칸에 새 토큰을 붙여넣어 주세요.';
       else if (r.status === 403 && /rate limit/i.test(msg)) msg = 'GitHub 요청 한도를 넘었습니다. 잠시 뒤에 다시 해 주세요.';
-      else if (r.status === 403) msg = '토큰에 이 저장소에 쓸 권한이 없습니다 (Contents: Read and write).';
+      else if (r.status === 403) msg = '이 기기 토큰에 영상 저장소에 쓸 권한이 없습니다. 영상 저장소 권한(Contents: Read and write)이 있는 토큰을 토큰 칸에 붙여넣어 주세요.';
       const e = new Error(msg); e.status = r.status; throw e;
     }
     if (r.status === 204) return null;
@@ -57,9 +78,9 @@
   /* ---------- 연결 확인 ---------- */
   S.check = async () => {
     const repo = await api('GET', '');
-    if (!repo) { const e = new Error('저장소를 찾지 못했습니다. 저장소를 만들었는지, 토큰에 그 저장소 권한을 줬는지 확인해 주세요.'); e.noRepo = true; throw e; }
+    if (!repo) { const e = new Error(`${S.cfg().repo} 저장소를 찾지 못했습니다. 저장소를 아직 만들지 않았거나, 이 기기 토큰에 그 저장소 권한이 없습니다. 영상 저장소 권한이 있는 토큰을 토큰 칸에 붙여넣어 주세요.`); e.noRepo = true; throw e; }
     if (!repo.private) throw new Error('공개 저장소입니다. 얼굴이 나오는 영상이 누구에게나 보이므로 비공개 저장소만 씁니다.');
-    if (repo.permissions && !repo.permissions.push) throw new Error('토큰에 이 저장소에 쓸 권한이 없습니다 (Contents: Read and write).');
+    if (repo.permissions && !repo.permissions.push) { const e = new Error('이 기기 토큰은 영상 저장소를 읽기만 할 수 있습니다. Contents 권한이 Read and write 인 토큰을 토큰 칸에 붙여넣어 주세요.'); e.noRepo = true; throw e; }
     S.branch = repo.default_branch || 'main'; S.size = (repo.size || 0) * 1024;
     let ref = null; try { ref = await api('GET', `/git/ref/heads/${encodeURIComponent(S.branch)}`); } catch (e) { if (e.status !== 409) throw e; }
     if (!ref) await api('PUT', '/contents/README.md', { message: '영상 작업장 저장소 시작', content: btoa(unescape(encodeURIComponent('# 영상 작업장 (비공개)\n\n휴대폰과 PC 가 영상 프로젝트를 함께 쓰는 저장소입니다. 직접 고치지 마세요.\n'))) });

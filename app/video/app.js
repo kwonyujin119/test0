@@ -150,24 +150,35 @@
     const repoUrl = `https://github.com/new?name=${encodeURIComponent(c.repo)}&visibility=private&description=${encodeURIComponent('영상 작업장 (비공개)')}`;
     bg.innerHTML = `<div class="modal ve-sync" style="width:560px"><h3>다른 기기와 연결</h3>
       <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">휴대폰과 PC 에서 같은 영상 프로젝트를 이어서 편집합니다. 편집 내용과 영상 파일을 <b>GitHub 비공개 저장소</b>에 올리고 받습니다. 얼굴이 나오는 영상이라 공개 저장소는 쓰지 않습니다.</p>
-      ${c.token ? '' : `<div class="ve-note warn">이 기기에 GitHub 토큰이 없습니다. <a href="index.html">업무 공간 첫 화면</a>의 [GitHub 연결] 에서 먼저 토큰을 넣어 주세요. (교안 저장에 쓰는 것과 같은 토큰)</div>`}
       <details class="ve-steps"${c.on ? '' : ' open'}><summary>처음 한 번 준비 (약 3분)</summary><ol>
-        <li><a href="${repoUrl}" target="_blank" rel="noopener">비공개 저장소 만들기</a> — 이름 <b>${esc(c.repo)}</b>, <b>Private</b> 를 고르고 [Create repository].</li>
-        <li><a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 권한 더하기</a> — 쓰고 있는 토큰을 열어 Repository access 에 <b>${esc(c.repo)}</b> 를 더하고, Contents 권한을 <b>Read and write</b> 로. (클래식 토큰에 repo 권한이 있으면 이 단계는 필요 없음)</li>
-        <li>아래 [연결 확인] 을 누르고, 휴대폰에서도 같은 화면에서 연결을 켭니다.</li></ol></details>
-      <label class="ve-field"><span class="ve-lab">저장소 이름</span><input type="text" id="syRepo" value="${esc(c.repo)}" spellcheck="false" autocomplete="off"></label>
+        <li><a href="${repoUrl}" target="_blank" rel="noopener">비공개 저장소 만들기</a> — 이름 <b>${esc(c.repo)}</b>, <b>Private</b> 를 고르고 [Create repository]. (한 번만, 이미 있으면 건너뜀)</li>
+        <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">토큰 만들기</a> — Repository access 에서 <b>${esc(c.repo)}</b> 를 고르고 (교안 저장소도 함께 골라도 됨), Permissions 의 Contents 를 <b>Read and write</b> 로 바꾼 뒤 [Generate token]. 나온 문자열을 메모해 둡니다.</li>
+        <li>그 문자열을 아래 <b>토큰</b> 칸에 붙여넣고 [연결 확인하고 켜기]. 휴대폰에서도 같은 창에서 같은 문자열을 붙여넣으면 끝입니다.</li></ol></details>
+      <label class="ve-field"><span class="ve-lab">토큰 ${c.tokenFrom === 'video' ? '<span class="ve-ok">· 영상용 토큰이 들어 있음</span>' : c.tokenFrom === 'shared' ? '<span class="muted">· 지금은 교안 연결 토큰을 씀</span>' : '<span class="ve-warn">· 이 기기에 아직 없음</span>'}</span><input type="password" id="syToken" placeholder="${c.token ? '바꿀 때만 — 영상 저장소 권한이 있는 토큰 붙여넣기' : 'github_pat_… 붙여넣기'}" autocomplete="off" spellcheck="false"></label>
+      <details class="ve-adv"><summary>저장소 이름 (보통은 그대로)</summary><label class="ve-field"><input type="text" id="syRepo" value="${esc(c.repo)}" spellcheck="false" autocomplete="off"></label></details>
       <div class="ve-note" id="syState">${c.on ? esc(S.msg || '연결됨') : '아직 이 기기만 씁니다.'}</div>
       <div class="actions"><button class="btn" id="syClose">닫기</button>${c.on ? '<button class="btn" id="syOff">연결 끄기</button><button class="btn" id="syNow">지금 맞추기</button>' : ''}<button class="btn ink" id="syOn">${c.on ? '연결 확인' : '연결 확인하고 켜기'}</button></div></div>`;
     document.body.appendChild(bg);
     const state = (t, bad) => { const n = bg.querySelector('#syState'); n.textContent = t; n.classList.toggle('warn', !!bad); };
-    const repoIn = bg.querySelector('#syRepo'); repoIn.onkeydown = e => e.stopPropagation();
+    const repoIn = bg.querySelector('#syRepo'), tokIn = bg.querySelector('#syToken'), onBtn = bg.querySelector('#syOn');
+    repoIn.onkeydown = tokIn.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') onBtn.click(); };
     bg.querySelector('#syClose').onclick = () => bg.remove();
-    bg.querySelector('#syOn').onclick = async () => {
-      const repo = repoIn.value.trim().replace(/^.*\//, ''); if (!repo) { repoIn.focus(); return; }
-      S.setCfg({ repo }); S.ok = false; state('연결을 확인하는 중…');
-      try { const r = await S.check(); S.setCfg({ on: true }); state(`연결됐습니다. 비공개 저장소 · 사용량 ${VE.fmtSize(r.size)} (GitHub 은 몇 GB 이하를 권합니다). 지금 프로젝트를 올립니다.`); syncLabel(); await VE.saveNow(); S.push(VE.p).then(() => S.refreshOpen()).catch(() => { }); }
-      catch (e) { state(VE.niceErr(e), true); }
+    const askToken = () => { tokIn.placeholder = '영상 저장소 권한이 있는 토큰 붙여넣기'; tokIn.classList.add('bad'); tokIn.focus(); };
+    onBtn.onclick = async () => {
+      const repo = repoIn.value.trim().replace(/^.*\//, ''); if (!repo) { repoIn.closest('details').open = true; repoIn.focus(); return; }
+      const token = tokIn.value.trim().replace(/\s+/g, '');
+      if (!token && !S.cfg().token) { state('위 토큰 칸에 토큰을 붙여넣어 주세요. 만드는 법은 [처음 한 번 준비] 2번에 있습니다.', true); askToken(); return; }
+      S.setCfg({ repo }); S.ok = false; onBtn.disabled = true; state('연결을 확인하는 중…');
+      try {
+        let shared = false;
+        if (token) { shared = (await S.useToken(token)).shared; tokIn.value = ''; tokIn.classList.remove('bad'); }
+        const r = await S.check(); S.setCfg({ on: true });
+        state(`연결됐습니다${token ? ' — 이 기기에서는 토큰을 다시 넣지 않아도 됩니다' : ''}${shared ? ' (교안 저장에도 이 토큰을 씁니다)' : ''}. 비공개 저장소 · 사용량 ${VE.fmtSize(r.size)}. 지금 프로젝트를 올립니다.`);
+        syncLabel(); await VE.saveNow(); S.push(VE.p).then(() => S.refreshOpen()).catch(() => { });
+      } catch (e) { state(VE.niceErr(e), true); if (e.noRepo || e.noToken || e.status === 401 || e.status === 403) askToken(); }
+      finally { onBtn.disabled = false; }
     };
+    setTimeout(() => { if (!c.on && !c.token) tokIn.focus(); }, 50);
     const off = bg.querySelector('#syOff'); if (off) off.onclick = () => { S.setCfg({ on: false }); S.init(); syncLabel(); bg.remove(); toast('연결을 껐습니다. 이제 이 기기에만 저장합니다', 2400); };
     const now = bg.querySelector('#syNow'); if (now) now.onclick = async () => { state('맞추는 중…'); try { await VE.saveNow(); await S.push(VE.p); await S.refreshOpen(); state(S.msg || '맞췄습니다', S.state === 'error' || S.state === 'conflict'); } catch (e) { state(VE.niceErr(e), true); } };
   }
