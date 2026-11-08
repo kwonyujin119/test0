@@ -1,5 +1,10 @@
 /* 교안 편집기 */
 'use strict';
+/* 편집기에서 쓰는 선 아이콘 중 공통 묶음(common.js ICONS)에 아직 없는 것 — 공통 묶음에 들어오면 아무 일도 하지 않음 */
+{
+  const more = { chevronDown: '<path d="m6 9 6 6 6-6"/>', arrowUp: '<path d="M12 19V5"/><path d="m6 11 6-6 6 6"/>', arrowDown: '<path d="M12 5v14"/><path d="m6 13 6 6 6-6"/>' };
+  for (const k in more) if (!ICONS[k]) { ICONS[k] = more[k]; document.querySelectorAll(`[data-ic="${k}"]`).forEach(n => { n.innerHTML = icon(k); }); }
+}
 (async function () {
   const $ = (id) => document.getElementById(id);
   const S = { name: '', deck: null, cur: 0, sel: [], ssel: [], focus: 'stage', editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, rev: 0, clip: null, slideClip: null };
@@ -51,8 +56,11 @@
     S.deck = JSON.parse(h.deck); if (S.base) S.deck.modified = S.base; // 저장 시각은 되돌리지 않음 (내용만)
     S.cur = clamp(at == null ? h.cur : at, 0, S.deck.slides.length - 1); S.ssel = [S.deck.slides[S.cur].id];
     S.sel = S.sel.filter(id => elById(id)); S.editing = null; hideTextToolbar();
-    renderAll(); markDirty();
+    renderAll();
+    if (S.savedSnap && !S.deletedElsewhere && snapOf(S.deck) === S.savedSnap) markClean(); else markDirty(); // 저장한 모습까지 되돌렸으면 다시 '저장됨'
   }
+  /* 저장한 모습(저장 시각은 빼고) — 되돌리기로 그 모습에 닿았는지 알아보는 데 씀. 아주 큰 교안은 메모리를 아끼려고 건너뜀 */
+  function snapOf(d) { const s = JSON.stringify(Object.assign({}, d, { modified: '' })); return s.length < 4e6 ? s : null; }
   function undo() { if (S.editing) return; flushNudge(); if (S.hi > 0) { const at = S.history[S.hi].cur; S.hi--; restore(S.history[S.hi], at); } }
   function redo() { if (S.editing) return; flushNudge(); if (S.hi < S.history.length - 1) { S.hi++; restore(S.history[S.hi]); } }
   function updateUndoButtons() { $('btnUndo').disabled = S.hi <= 0; $('btnRedo').disabled = S.hi >= S.history.length - 1; }
@@ -76,6 +84,9 @@
     let short = ''; try { short = !d || isNaN(d) ? '' : today ? d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }); } catch (e) { }
     el.textContent = S.dirty ? '저장 안 됨' : short ? '저장됨 · ' + short : '';
     el.title = S.dirty ? '저장하지 않은 변경이 있습니다 — [저장] 또는 Ctrl+S' + (t ? ` (마지막 저장: ${t})` : '') : t ? `마지막 저장: ${t} · ${WHERE[API.mode] || ''}` : '';
+  }
+  function markClean() {
+    S.dirty = false; S.rev++; $('top').classList.remove('is-dirty'); clearTimeout(saveTimer); Draft.clear(S.name); showSaveState(); sizeLater();
   }
   function markDirty() {
     const was = S.dirty;
@@ -109,7 +120,7 @@
     S.base = S.deck.modified || S.base;
     S.deletedElsewhere = false;
     if (hubBus) hubBus.postMessage({ type: 'saved', name: S.name, tab: TAB });
-    if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); clearTimeout(saveTimer); Draft.clear(S.name); }
+    if (S.rev === r0) { S.dirty = false; $('top').classList.remove('is-dirty'); clearTimeout(saveTimer); Draft.clear(S.name); S.savedSnap = snapOf(S.deck); }
     else draftPut(); // 저장하는 동안 더 고친 것: 임시 작업본의 출발점을 방금 저장본으로
     showSaveState();
   }
@@ -172,6 +183,7 @@
   /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰): 0.8초 기다리지 않고 바로 임시 작업본을 남김 — 쓰는 중인 글도 함께 (글 편집은 그대로 둠).
      저장하지 않은 내용이 있으면 true */
   function draftNow() {
+    if (S.deck) flushNudge(); // 방향키로 옮긴 직후(0.4초 안)에 닫아도 그 이동까지 남김
     if (!S.deck || (!S.dirty && !S.editing)) return false;
     let deck = S.deck;
     const id = S.editing, e = id && elById(id), node = id && nodeOf(id);
@@ -494,8 +506,9 @@
   }
   function moveSlide(d) {
     const j = S.cur + d; if (j < 0 || j >= S.deck.slides.length) return;
-    const [s] = S.deck.slides.splice(S.cur, 1); S.deck.slides.splice(j, 0, s); S.cur = j;
-    commit({ all: true }); renderStage(); updateTop();
+    const [s] = S.deck.slides.splice(S.cur, 1); S.deck.slides.splice(j, 0, s); S.cur = j; S.ssel = [s.id];
+    commit({ all: true }); renderStage(); renderProps(); updateTop(); // 속성 창의 "슬라이드 N" 번호도 새 자리로
+    thumbsEl.children[S.cur]?.scrollIntoView({ block: 'nearest' });
   }
   function applyLayout(layout) {
     const s = curSlide();
@@ -512,8 +525,8 @@
       { label: curSlide().hidden ? '숨기기 해제' : '슬라이드 숨기기', fn: toggleHideSlide },
       { label: '레이아웃 적용…', fn: () => showLayoutMenu(null, applyLayout) },
       { sep: true },
-      { label: '위로 이동', fn: () => moveSlide(-1) },
-      { label: '아래로 이동', fn: () => moveSlide(1) },
+      { label: '위로 이동', kbd: 'Ctrl+Shift+↑', fn: () => moveSlide(-1) },
+      { label: '아래로 이동', kbd: 'Ctrl+Shift+↓', fn: () => moveSlide(1) },
       { sep: true },
       { label: selSlides().length > 1 ? `슬라이드 ${selSlides().length}장 삭제` : '슬라이드 삭제', kbd: 'Delete', danger: true, fn: deleteSlide },
     ];
@@ -889,7 +902,7 @@
     const bg = document.createElement('div'); bg.className = 'modal-bg ppt-videos';
     bg.innerHTML = `<div class="modal" style="width:720px;max-width:94vw"><h3>PPT 의 동영상 <span class="muted" style="font-weight:400;font-size:13px">${esc(P.name)} · ${P.vids.length}개</span></h3>
       <p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.6">${esc(note || '넣을 영상을 누르세요. 상자를 하나 잡아 두었으면 그 상자 자리에 들어갑니다.')}${only ? '' : '<br>이 PPT 를 열어 둔 동안에는 <b>PowerPoint 에서 영상을 복사(Ctrl+C)해서 여기에 붙여넣어도(Ctrl+V)</b> 영상으로 들어갑니다.'}</p>
-      <div class="ppt-grid">${list.map((v) => `<div class="pv" data-i="${P.vids.indexOf(v)}" title="${esc(v.name)}"><div class="ph"><i>▶</i></div><b>${v.slide}번 슬라이드</b><span>${esc(v.name)}</span><small>${v.url ? '인터넷 영상 (주소로 넣음)' : v.linked ? '⚠ PPT 안에 없음 (PC 파일에 연결)' : esc(v.ext.toUpperCase()) + ' · ' + fmt(v.size)}</small></div>`).join('')}</div>
+      <div class="ppt-grid">${list.map((v) => `<div class="pv" data-i="${P.vids.indexOf(v)}" title="${esc(v.name)}"><div class="ph"><i>${icon('play', 16)}</i></div><b>${v.slide}번 슬라이드</b><span>${esc(v.name)}</span><small>${v.url ? '인터넷 영상 (주소로 넣음)' : v.linked ? '⚠ PPT 안에 없음 (PC 파일에 연결)' : esc(v.ext.toUpperCase()) + ' · ' + fmt(v.size)}</small></div>`).join('')}</div>
       <div class="actions"><button class="btn ghost" data-other>다른 PPT 열기…</button>${P.syms && P.syms.items.length ? `<button class="btn ghost" data-syms title="이 PPT 안의 그림·도형을 심벌로 꺼내 씁니다">그림·도형 ${P.syms.items.length}개</button>` : ''}<span style="flex:1"></span><button class="btn" data-close>닫기</button></div></div>`;
     const close = () => { bg.remove(); urls.forEach(u => URL.revokeObjectURL(u)); };
     bg.onclick = (ev) => {
@@ -1144,7 +1157,7 @@
     const p = parseEmbed(e.url); if (p.kind === 'none') return;
     node.innerHTML = ''; node.classList.add('playing');
     node.appendChild(embedPlayer(e, p, true));
-    const x = document.createElement('button'); x.className = 'embed-stop'; x.type = 'button'; x.textContent = '✕ 닫기'; x.title = '재생 멈추고 편집으로';
+    const x = document.createElement('button'); x.className = 'embed-stop'; x.type = 'button'; x.innerHTML = icon('x', 18) + '닫기'; x.title = '재생 멈추고 편집으로';
     x.onpointerdown = (ev) => { ev.stopPropagation(); };
     x.onclick = (ev) => { ev.stopPropagation(); rerenderEl(id); };
     node.appendChild(x);
@@ -1185,8 +1198,10 @@
     let last = null, raf = 0, pid = null;
     const mine = (e) => { if (e.pointerType !== 'touch') return true; if (pid == null) pid = e.pointerId; return e.pointerId === pid; };
     const mv = (e) => { if (!mine(e)) return; last = e; if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (last) onMove(last); }); };
-    const up = (e) => { if (!mine(e)) return; window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); if (raf) { cancelAnimationFrame(raf); raf = 0; if (last) onMove(last); } onUp(e); };
-    window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+    const up = (e) => { if (!mine(e)) return; window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', cancel); if (raf) { cancelAnimationFrame(raf); raf = 0; if (last) onMove(last); } onUp(e); };
+    // 브라우저가 손가락 끌기를 가로채면(화면 밀기·확대) pointerup 대신 pointercancel 이 옴: 마지막 위치에서 끝냄 (안 그러면 끌기가 풀리지 않고 되돌리기에도 남지 않음)
+    const cancel = (e) => { if (mine(e)) up(last || e); };
+    window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', cancel);
   }
   function startDrag(ev) {
     const dup = ev.ctrlKey || ev.metaKey;
@@ -1760,8 +1775,8 @@
       <div class="grid2">
         <button class="btn sm" data-act="dupSlide" title="Ctrl+Shift+D">복제</button>
         <button class="btn sm" data-act="layout">레이아웃 적용…</button>
-        <button class="btn sm" data-act="moveUp">▲ 위로</button>
-        <button class="btn sm" data-act="moveDown">▼ 아래로</button>
+        <button class="btn sm" data-act="moveUp" title="이 슬라이드를 한 칸 앞으로 (Ctrl+Shift+↑)">${icon('arrowUp', 15)}위로</button>
+        <button class="btn sm" data-act="moveDown" title="이 슬라이드를 한 칸 뒤로 (Ctrl+Shift+↓)">${icon('arrowDown', 15)}아래로</button>
         <button class="btn sm" data-act="outline">개요로 만들기…</button>
         <button class="btn sm" data-act="album">사진 앨범…</button>
         <button class="btn sm danger" data-act="delSlide" style="grid-column:1/-1">슬라이드 삭제</button>
@@ -1774,7 +1789,7 @@
       <div class="muted" style="font-size:12px;margin-top:6px">슬라이드 ${S.deck.slides.length}장${S.deck.slides.some(x => x.hidden) ? ` (숨김 ${S.deck.slides.filter(x => x.hidden).length})` : ''} · 파일: decks/${esc(S.name)}.json</div>
     </section>`;
   }
-  const ALIGN_BTNS = (what) => `<div class="grid4 align6" style="flex:1">${[['left', '⇤', '왼쪽'], ['hcenter', '↔', '가로 가운데'], ['right', '⇥', '오른쪽'], ['top', '⤒', '위'], ['vcenter', '↕', '세로 가운데'], ['bottom', '⤓', '아래']].map(([a, s, n]) => `<button class="btn sm icon" data-align="${a}" title="${what} ${n}에 맞춤">${s}</button>`).join('')}</div>`;
+  const ALIGN_BTNS = (what) => `<div class="grid4 align6" style="flex:1">${[['left', 'alignL', '왼쪽'], ['hcenter', 'alignH', '가로 가운데'], ['right', 'alignR', '오른쪽'], ['top', 'alignT', '위'], ['vcenter', 'alignV', '세로 가운데'], ['bottom', 'alignB', '아래']].map(([a, ic, n]) => `<button class="btn sm icon" data-align="${a}" title="${what} ${n}에 맞춤" aria-label="${what} ${n}에 맞춤">${icon(ic, 16)}</button>`).join('')}</div>`;
   const unitBtns = () => UNITS.map(([u, n, t]) => `<button class="btn sm ${sizeUnit === u ? 'active' : ''}" data-act="unit" data-v="${u}" title="${t}">${n}</button>`).join('');
   const widthBtns = () => [['1', '꽉', '슬라이드 너비 전체'], ['0.5', '½', '슬라이드 너비의 ½'], ['0.3333', '⅓', '슬라이드 너비의 ⅓'], ['0.25', '¼', '슬라이드 너비의 ¼']].map(([f, n, t]) => `<button class="btn sm" data-act="sizeW" data-v="${f}" title="${t} (비율 고정이 켜져 있으면 높이도 따라감)">${n}</button>`).join('');
   function posSection(e) {
@@ -1811,8 +1826,8 @@
       ${row('색', colorIn('style.color', st.color) + '<div style="flex:3">' + swatches('style.color') + '</div>')}
       ${row('스타일', tog('style.bold', st.bold, '<b>B</b>', '굵게 (Ctrl+B)') + tog('style.italic', st.italic, '<i>I</i>', '기울임 (Ctrl+I)') + tog('style.underline', st.underline, '<u>U</u>', '밑줄') + tog('style.tshadow', st.tshadow, '그림자', '글자 그림자 (사진 위 글자에 좋음)') + (e.type === 'text' || e.type === 'shape' ? tog('style.vertical', st.vertical, '세로', '세로 쓰기') : ''))}
       ${row('외곽선', num('style.outline', st.outline || 0, 0.5, 0, 10, '글자 테두리 두께 (0 = 없음)') + colorIn('style.outlineColor', st.outlineColor || '#000000'))}
-      ${row('가로 정렬', choice('style.align', st.align || 'left', [['left', '⇤', '왼쪽'], ['center', '↔', '가운데'], ['right', '⇥', '오른쪽']]))}
-      ${o.valign === false ? '' : row('세로 정렬', choice('style.valign', st.valign || 'top', [['top', '⤒', '위'], ['middle', '↕', '가운데'], ['bottom', '⤓', '아래']]))}`;
+      ${row('가로 정렬', choice('style.align', st.align || 'left', [['left', icon('alignL', 16), '왼쪽'], ['center', icon('alignH', 16), '가운데'], ['right', icon('alignR', 16), '오른쪽']]))}
+      ${o.valign === false ? '' : row('세로 정렬', choice('style.valign', st.valign || 'top', [['top', icon('alignT', 16), '위'], ['middle', icon('alignV', 16), '가운데'], ['bottom', icon('alignB', 16), '아래']]))}`;
   }
   function animSection(e) {
     return `<section><h4>애니메이션 (클릭 단계)</h4>
@@ -1935,8 +1950,8 @@
         ${row('', `<button class="btn sm" data-act="mathDialog">수식 편집기 (예제 포함)…</button>`)}
         ${row('크기', num('style.fontSize', st.fontSize, 4, 16, 300))}
         ${row('색', colorIn('style.color', st.color) + '<div style="flex:3">' + swatches('style.color') + '</div>')}
-        ${row('가로 정렬', choice('style.align', st.align || 'center', [['left', '⇤', '왼쪽'], ['center', '↔', '가운데'], ['right', '⇥', '오른쪽']]))}
-        ${row('세로 정렬', choice('style.valign', st.valign || 'middle', [['top', '⤒', '위'], ['middle', '↕', '가운데'], ['bottom', '⤓', '아래']]))}
+        ${row('가로 정렬', choice('style.align', st.align || 'center', [['left', icon('alignL', 16), '왼쪽'], ['center', icon('alignH', 16), '가운데'], ['right', icon('alignR', 16), '오른쪽']]))}
+        ${row('세로 정렬', choice('style.valign', st.valign || 'middle', [['top', icon('alignT', 16), '위'], ['middle', icon('alignV', 16), '가운데'], ['bottom', icon('alignB', 16), '아래']]))}
       </section>`;
     } else if (e.type === 'embed') {
       const p = parseEmbed(e.url);
@@ -2103,7 +2118,6 @@
     if (t.type === 'number' || t.type === 'range') { const v = parseFloat(t.value); return isNaN(v) ? 0 : v; }
     return t.value;
   }
-  function getPath(o, path) { return path.split('.').reduce((a, k) => a == null ? a : a[k], o); }
   function setPath(o, path, v) { const ks = path.split('.'); let a = o; for (let i = 0; i < ks.length - 1; i++) { if (a[ks[i]] == null || typeof a[ks[i]] !== 'object') a[ks[i]] = {}; a = a[ks[i]]; } a[ks[ks.length - 1]] = v; }
   function setProp(k, v, doCommit) {
     if (k === 'deck.theme') { S.deck.theme = v; delete S.deck.colors; delete S.deck.titleFont; delete S.deck.bodyFont; delete S.deck.decor; $('theme').value = v; commit({ all: true }); renderStage(); renderProps(); return; }
@@ -2215,23 +2229,34 @@
   function closeMenus() { if (openMenu) { openMenu.remove(); openMenu = null; } }
   function showMenu(x, y, items) {
     closeMenus();
-    const m = document.createElement('div'); m.className = 'menu';
+    const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu');
     for (const it of items) {
       if (it.sep) { m.appendChild(document.createElement('hr')); continue; }
-      const d = document.createElement('div'); d.className = 'mi' + (it.danger ? ' danger' : ''); d.innerHTML = `<span>${it.label}</span>${it.kbd ? `<kbd>${it.kbd}</kbd>` : ''}`;
-      if (it.danger) d.style.color = 'var(--ui-danger)';
+      const d = document.createElement('div'); d.className = 'mi' + (it.danger ? ' danger' : ''); d.setAttribute('role', 'menuitem'); d.tabIndex = -1; d.innerHTML = `<span>${it.label}</span>${it.kbd ? `<kbd>${it.kbd}</kbd>` : ''}`;
       d.onclick = () => { closeMenus(); it.fn(); }; m.appendChild(d);
     }
+    /* 자판으로도 고르기: ↑↓ Home End 로 옮기고 Enter, Esc 는 닫고 메뉴를 연 단추로 돌아감 (메뉴 안의 키는 슬라이드를 건드리지 않음) */
+    const mis = Array.from(m.querySelectorAll('.mi'));
+    m.addEventListener('keydown', (ev) => {
+      const i = mis.indexOf(document.activeElement), go = (j) => mis[(j + mis.length) % mis.length].focus();
+      if (ev.key === 'ArrowDown') go(i + 1); else if (ev.key === 'ArrowUp') go(i < 0 ? -1 : i - 1);
+      else if (ev.key === 'Home') go(0); else if (ev.key === 'End') go(-1);
+      else if (ev.key === 'Enter' || ev.key === ' ') { if (i >= 0) mis[i].click(); }
+      else if (ev.key === 'Escape' || ev.key === 'Tab') { const b = m._btn; closeMenus(); if (b && b.focus) b.focus(); }
+      else return;
+      ev.preventDefault(); ev.stopPropagation();
+    });
     document.body.appendChild(m); openMenu = m;
     const w = m.offsetWidth, h = m.offsetHeight;
     m.style.left = Math.min(x, innerWidth - w - 8) + 'px'; m.style.top = Math.min(y, innerHeight - h - 8) + 'px';
+    if (mis.length) mis[0].focus({ preventScroll: true });
   }
   function showLayoutMenu(anchor, onPick) {
     closeMenus();
-    const m = document.createElement('div'); m.className = 'layout-menu';
+    const m = document.createElement('div'); m.className = 'layout-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', onPick ? '레이아웃 적용' : '새 슬라이드 모양');
     const list = onPick ? LAYOUTS : LAYOUTS.filter(l => l.id === 'blank').concat(LAYOUTS.filter(l => l.id !== 'blank')); // 새로 넣을 때는 '빈 슬라이드'를 맨 앞에
     for (const L of list) {
-      const it = document.createElement('div'); it.className = 'layout-item';
+      const it = document.createElement('div'); it.className = 'layout-item'; it.setAttribute('role', 'menuitem'); it.tabIndex = -1;
       const pv = document.createElement('div'); pv.className = 'pv';
       const sl = renderSlide({ id: 'x', elements: layoutElements(L.id), bg: null, notes: '' }, S.deck, { mode: 'thumb' });
       pv.appendChild(sl); it.appendChild(pv);
@@ -2240,13 +2265,24 @@
       m.appendChild(it);
       requestAnimationFrame(() => fitSlide(pv, sl));
     }
+    /* 자판: 화살표로 옮기고 Enter · Esc 는 닫고 단추로 돌아감 */
+    const its = Array.from(m.children), opener = anchor || $('btnAddSlide');
+    m.addEventListener('keydown', (ev) => {
+      const i = its.indexOf(document.activeElement), go = (j) => its[(j + its.length) % its.length].focus();
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') go(i + 1); else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') go(i < 0 ? -1 : i - 1);
+      else if (ev.key === 'Enter' || ev.key === ' ') { if (i >= 0) its[i].click(); }
+      else if (ev.key === 'Escape' || ev.key === 'Tab') { closeMenus(); opener.focus(); }
+      else return;
+      ev.preventDefault(); ev.stopPropagation();
+    });
     document.body.appendChild(m); openMenu = m;
-    const a = (anchor || $('btnAddSlide')).getBoundingClientRect();
+    const a = opener.getBoundingClientRect();
     // 단추 아래에 자리가 없으면(화면 맨 아래 단추) 위로 펼침 — 화면 밖으로 나가 안 보이던 문제
     const h = m.offsetHeight; let top = a.bottom + 6;
     if (top + h > innerHeight - 8) top = a.top - 6 - h;
     if (top < 8) top = Math.max(8, Math.min(a.bottom + 6, innerHeight - h - 8));
     m.style.left = Math.max(8, Math.min(a.left, innerWidth - m.offsetWidth - 8)) + 'px'; m.style.top = top + 'px';
+    if (its.length) its[0].focus({ preventScroll: true });
   }
   function btnMenu(btn, items) {
     if (openMenu && openMenu._btn === btn) { closeMenus(); return; } // 같은 단추를 다시 누르면 닫힘
@@ -2257,7 +2293,7 @@
 
   /* ---------- 툴바 이벤트 ---------- */
   $('btnAddSlide').onclick = (ev) => { ev.stopPropagation(); showLayoutMenu(); };
-  $('btnAddSlide2').onclick = (ev) => { ev.stopPropagation(); closeMenus(); addSlide('blank'); toast('빈 슬라이드를 넣었습니다 · 다른 모양은 옆의 ▾'); }; // 누르면 바로 빈 슬라이드
+  $('btnAddSlide2').onclick = (ev) => { ev.stopPropagation(); closeMenus(); addSlide('blank'); toast('빈 슬라이드를 넣었습니다 · 다른 모양은 옆의 화살표 단추로'); }; // 누르면 바로 빈 슬라이드
   $('btnAddSlide3').onclick = (ev) => { ev.stopPropagation(); showLayoutMenu($('btnAddSlide3')); };
   $('btnAddText').onclick = (ev) => { ev.stopPropagation(); btnMenu(ev.currentTarget, Object.entries(ROLE_NAMES).map(([id, n]) => ({ label: n, fn: () => addText(id) }))); };
   $('btnAddShape').onclick = (ev) => { ev.stopPropagation(); btnMenu(ev.currentTarget, SHAPES.map(s => ({ label: s.name, fn: () => addShape(s.id) }))); };
@@ -2308,7 +2344,7 @@
   themeSel.onchange = () => { setProp('deck.theme', themeSel.value, true); themeSel.blur(); };
   $('zoom').onchange = (ev) => { S.zoomMode = ev.target.value; layoutStage(); ev.target.blur(); };
   $('btnPresent').onclick = () => present(false);
-  $('btnPreview').onclick = () => { if (S.editing) endEdit(); const d = S.dirty && draftPut(); window.open(`present.html?deck=${encodeURIComponent(S.name)}${d ? '&draft=1' : ''}&start=${S.cur}`, '_blank'); };
+  $('btnPreview').onclick = () => { if (S.editing) endEdit(); flushNudge(); const d = S.dirty && draftPut(); window.open(`present.html?deck=${encodeURIComponent(S.name)}${d ? '&draft=1' : ''}&start=${S.cur}`, '_blank'); };
   $('btnExport').onclick = (ev) => {
     ev.stopPropagation();
     const oldDraft = Draft.old(S.name); // [저장된 교안으로 열기] 를 골랐을 때 남겨 둔 작업본
@@ -2575,7 +2611,13 @@
       if (ctrl && shift && low === 'h') { stop(); exec('hiliteColor', '#fde68a'); return; }
       return; // 나머지(Ctrl+B/I/U, Ctrl+Z 등)는 브라우저 기본 동작
     }
-    if (isTyping()) { if (key === 'Escape') document.activeElement.blur(); return; }
+    if (isTyping()) {
+      const a = document.activeElement;
+      if (key === 'Escape') a.blur();
+      // 글을 쓰지 않는 칸(목록 고르기·색·밀대)에 초점이 남아 있어도 Ctrl+Z / Ctrl+Y 는 교안을 되돌림 (테마를 고른 직후 등)
+      else if (ctrl && (low === 'z' || low === 'y') && (a.tagName === 'SELECT' || /^(range|color|checkbox|radio)$/.test(a.type))) { stop(); a.blur(); if (low === 'y' || shift) redo(); else undo(); }
+      return;
+    }
 
     /* --- 편집 (슬라이드/요소) --- */
     if (ctrl && low === 'z') { stop(); shift ? redo() : undo(); return; }
@@ -2648,7 +2690,7 @@
   }
   $('btnHelp').onclick = showShortcutHelp;
   window.addEventListener('resize', layoutStage);
-  // 휴대폰: 속성 창은 아래에서 올라오는 판으로 (⚙ 속성 단추로 열고 닫음)
+  // 휴대폰: 속성 창은 아래에서 올라오는 판으로 ([속성] 단추로 열고 닫음)
   const toggleProps = (on) => { const ed = document.querySelector('.ed'); ed.classList.toggle('props-open', on); $('btnProps').classList.toggle('active', ed.classList.contains('props-open')); };
   if ($('btnProps')) { $('btnProps').onclick = () => toggleProps(); $('propsClose').onclick = () => toggleProps(false); }
   new ResizeObserver(layoutStage).observe(stage);
@@ -2892,7 +2934,7 @@
     const head = (n ? `${n}개` : none) + ' · ';
     switch (symSt.state) {
       case 'sync': return head + '다른 기기와 맞추는 중…';
-      case 'ok': return head + '모든 기기에서 함께 씀 ✓';
+      case 'ok': return head + '모든 기기에서 함께 씀';
       case 'readonly': return head + '저장소에서 불러옴 · 여기서 더한 것도 나누려면 <a href="#" data-myconnect>GitHub 연결</a>';
       case 'needToken': return head + '아직 이 기기에만 있음 — <a href="#" data-myconnect>GitHub 연결</a>을 하면 모든 기기에서 씀';
       case 'fail': return head + '다른 기기와 맞추지 못했습니다 (인터넷 확인) · <a href="#" data-mysync>다시 시도</a>';
@@ -3325,7 +3367,7 @@
     if (S.editing) endEdit();
     findEl = document.createElement('div'); findEl.className = 'findbar' + (withReplace ? ' rep' : '');
     findEl.innerHTML = `<input id="fq" type="search" placeholder="찾을 내용 (모든 슬라이드)"><span class="muted" id="fcount" style="min-width:52px;text-align:right;font-size:12px"></span>
-      <button class="btn sm" id="fprev" title="이전 (Shift+Enter)">▲</button><button class="btn sm" id="fnext" title="다음 (Enter)">▼</button><button class="btn sm" id="ftog">바꾸기</button><button class="btn sm ghost" id="fclose" title="닫기 (Esc)">✕</button>
+      <button class="btn sm icon" id="fprev" title="이전 (Shift+Enter)" aria-label="이전 찾기">${icon('arrowUp', 16)}</button><button class="btn sm icon" id="fnext" title="다음 (Enter)" aria-label="다음 찾기">${icon('arrowDown', 16)}</button><button class="btn sm" id="ftog">바꾸기</button><button class="btn sm icon ghost" id="fclose" title="닫기 (Esc)" aria-label="찾기 닫기">${icon('x', 16)}</button>
       <div class="frow"><input id="fr" type="text" placeholder="바꿀 내용"><button class="btn sm" id="fone">바꾸기</button><button class="btn sm" id="fall">모두 바꾸기</button></div>`;
     main.appendChild(findEl);
     const q = findEl.querySelector('#fq'), r = findEl.querySelector('#fr'), cnt = findEl.querySelector('#fcount');
@@ -3402,7 +3444,7 @@
       p.addEventListener('dragend', () => { dragId = null; p.querySelectorAll('.dragover').forEach(x => x.classList.remove('dragover')); });
     }
     const els = curSlide().elements.slice().reverse();
-    p.innerHTML = `<div class="lh"><b>개체 목록</b><span class="muted">위쪽 = 앞쪽 · 끌어서 순서 바꾸기</span><button class="btn sm ghost" data-lclose title="닫기 (Alt+F10)">✕</button></div>` +
+    p.innerHTML = `<div class="lh"><b>개체 목록</b><span class="muted">위쪽 = 앞쪽 · 끌어서 순서 바꾸기</span><button class="btn sm icon ghost" data-lclose title="닫기 (Alt+F10)" aria-label="개체 목록 닫기">${icon('x', 16)}</button></div>` +
       (els.map(e => `<div class="li ${S.sel.includes(e.id) ? 'on' : ''} ${e.hide ? 'off' : ''}" draggable="true" data-id="${e.id}"><span class="ti">${TYPE_ICON[e.type] || '?'}</span><span class="nm" title="더블클릭: 이름 바꾸기">${esc(elLabel(e))}</span>${e.group ? '<span class="gp" title="묶음">' + icon('link', 13) + '</span>' : ''}${e.step ? `<span class="st" title="${e.step}번째 클릭에 나타남">${e.step}</span>` : ''}<button class="ib" data-lhide title="${e.hide ? '보이기' : '숨기기'}">${icon(e.hide ? 'eyeOff' : 'eye', 15)}</button><button class="ib" data-llock title="잠금">${icon(e.locked ? 'lock' : 'unlock', 15)}</button></div>`).join('') || '<div class="muted" style="padding:12px">이 슬라이드에 요소가 없습니다</div>');
   }
 
@@ -3564,7 +3606,7 @@
 
   /* ---------- 시작 ---------- */
   window.__gyoan = { S, renderStage, gotoSlide }; // 개발용: 콘솔에서 상태 확인
-  pushHistory();
+  pushHistory(); S.savedSnap = snapOf(S.deck); // 처음 연 저장본
   renderAll();
   showSaveState();
   if (hubBus) hubBus.postMessage({ type: 'editing', name: S.name, tab: TAB }); // 같은 교안을 연 다른 탭이 있으면 서로 알림
@@ -3605,12 +3647,12 @@
           ${card('saved', icon('save', 16), '저장된 교안', esc(WHERE[API.mode] || ''), '저장한 때', when(S.base), b.length, '저장된 교안으로 열기', savedNewer, savedNewer)}
         </div>
         <p class="dr-diff">${diffText}</p>
-        ${foreign ? `<p class="dr-warn">⚠ 이 작업본을 만든 <b>뒤에</b> 저장된 교안이 다른 곳(다른 기기 · 다른 탭)에서 바뀌었${info.base !== undefined ? '습니다' : '을 수 있습니다'}.<br>작업본을 이어서 하고 저장하면 <b>그쪽에서 고친 내용이 사라집니다.</b> 잘 모르겠으면 [저장된 교안으로 열기] 를 고르세요.</p>` : ''}
-        <p class="dr-foot">고르지 않은 작업본은 <b>내보내기 ▾ → 임시 작업본 되살리기</b> 에 30일 동안 남습니다. · 작업본을 불러온 뒤에도 되돌리기(Ctrl+Z)로 저장된 교안으로 돌아올 수 있습니다.</p></div>`;
+        ${foreign ? `<p class="dr-warn">이 작업본을 만든 <b>뒤에</b> 저장된 교안이 다른 곳(다른 기기 · 다른 탭)에서 바뀌었${info.base !== undefined ? '습니다' : '을 수 있습니다'}.<br>작업본을 이어서 하고 저장하면 <b>그쪽에서 고친 내용이 사라집니다.</b> 잘 모르겠으면 [저장된 교안으로 열기] 를 고르세요.</p>` : ''}
+        <p class="dr-foot">고르지 않은 작업본은 <b>[내보내기] 메뉴의 [임시 작업본 되살리기]</b> 에 30일 동안 남습니다. · 작업본을 불러온 뒤에도 되돌리기(Ctrl+Z)로 저장된 교안으로 돌아올 수 있습니다.</p></div>`;
       const pick = (which) => {
         bg.remove();
         if (which === 'draft') loadDraftDeck(dr, '저장하지 않은 작업본을 불러왔습니다 — 아직 저장되지 않았습니다. 확인한 뒤 [저장] 을 눌러 주세요 · 저장된 교안으로 돌아가려면 되돌리기(Ctrl+Z)');
-        else if (Draft.keep(S.name)) toast('저장된 교안으로 열었습니다 · 저장하지 않은 작업본은 [내보내기 ▾ → 임시 작업본 되살리기] 에 남겨 두었습니다', 8000);
+        else if (Draft.keep(S.name)) toast('저장된 교안으로 열었습니다 · 저장하지 않은 작업본은 [내보내기] 메뉴의 [임시 작업본 되살리기] 에 남겨 두었습니다', 8000);
         else toast('저장된 교안으로 열었습니다 · 저장하지 않은 작업본은 아직 남아 있지만, 이 교안을 고치기 시작하면 새 작업본으로 바뀝니다', 8000);
         done();
       };

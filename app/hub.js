@@ -206,7 +206,7 @@
       <div class="resume-side">
         <div class="eyebrow">${GUEST ? '최근 교안' : '이어서 작업'}</div>
         <h2 class="resume-title">${esc(d.title)}</h2>
-        <div class="resume-meta"><span data-m></span></div>
+        <div class="resume-meta"><span data-m></span>${!GUEST && Draft.has(d.name) ? ' <span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [이어서 편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : ''}</div>
         <div class="resume-film" data-film></div>
         <div class="resume-cta">
           ${GUEST ? `<button class="btn ink lg" data-go="present">${icon('play')}발표</button>` : `<button class="btn ink lg" data-go="edit">${icon('edit')}이어서 편집</button>
@@ -215,7 +215,7 @@
           <button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`}
         </div>
       </div>`;
-    const meta = () => { resume.querySelector('[data-m]').textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', relTime(timeOf(d))].filter(Boolean).join(' · '); };
+    const meta = () => { const m = resume.querySelector('[data-m]'), t = relTime(timeOf(d)); m.textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', t ? t + ' 저장' : ''].filter(Boolean).join(' · '); m.title = d.modified ? '마지막으로 저장한 때: ' + d.modified : ''; };
     meta();
     const main = resume.querySelector('.resume-main');
     main.onclick = () => openEditor(d.name);
@@ -230,8 +230,8 @@
       drawSlide(main, deck.slides[0], deck);
       const film = resume.querySelector('[data-film]');
       deck.slides.slice(1, 5).forEach((s, i) => {
-        const t = document.createElement('button'); t.className = 'film-t'; t.title = `${i + 2}번 슬라이드 편집`; t.setAttribute('aria-label', t.title);
-        t.onclick = () => { if (GUEST) openPresent(d.name); else location.href = 'editor.html?deck=' + encodeURIComponent(d.name) + '&slide=' + (i + 1); };
+        const t = document.createElement('button'); t.className = 'film-t'; t.title = `${i + 2}번 슬라이드${GUEST ? '부터 발표' : ' 편집'}`; t.setAttribute('aria-label', t.title);
+        t.onclick = () => { if (GUEST) openPresent(d.name, i + 1); else location.href = 'editor.html?deck=' + encodeURIComponent(d.name) + '&slide=' + (i + 1); };
         film.appendChild(t); drawSlide(t, s, deck);
       });
     }).catch(() => { main.classList.remove('loading'); });
@@ -246,8 +246,8 @@
     c.appendChild(th);
     const body = document.createElement('div'); body.className = 'deck-body';
     /* 카드 아래 줄: 슬라이드 수 · 저장한 때 · (목록 보기에서) 파일 이름 · 이 기기에 저장 안 한 작업본 */
-    const meta = (state) => `<span>${state || (d.slides === '' ? '불러오는 중…' : `${d.slides}장`)}</span><span title="마지막으로 저장한 때: ${esc(d.modified || '')}">${esc(relTime(timeOf(d)))}</span><span class="deck-file">${esc(d.name)}.json</span>`
-      + (!GUEST && Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : '');
+    const meta = (state) => { const t = relTime(timeOf(d)); return `<span title="${d.modified ? '마지막으로 저장한 때: ' + esc(d.modified) : ''}">${state || (d.slides === '' ? '불러오는 중…' : `슬라이드 ${d.slides}장`)}${t && !state ? ' · ' + esc(t) : ''}</span><span class="deck-file">${esc(d.name)}.json</span>`
+      + (!GUEST && Draft.has(d.name) ? '<span class="draft-chip" title="이 기기에 저장하지 않은 작업본이 남아 있습니다. [편집] 을 누르면 어느 쪽으로 열지 물어봅니다.">저장 안 한 작업본</span>' : ''); };
     body.innerHTML = `<div class="deck-text"><div class="deck-title" title="${esc(d.title)}">${esc(d.title)}</div><div class="deck-meta">${meta()}</div></div>
       <div class="deck-actions"><button class="btn sm" data-a="present">${icon('play', 14)}발표</button>${GUEST ? '' : `<button class="btn sm" data-a="edit">${icon('edit', 14)}편집</button>`}</div>
       ${GUEST ? '' : `<button class="btn icon ghost kebab" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`}`;
@@ -285,6 +285,15 @@
       m.appendChild(b);
     }
     document.body.appendChild(m); openMenu = m;
+    /* 자판으로도: ↑↓ 로 고르고 Enter, Esc 는 닫고 ⋯ 단추로 돌아감 */
+    const mis = Array.from(m.querySelectorAll('.mi'));
+    m.addEventListener('keydown', (ev) => {
+      const i = mis.indexOf(document.activeElement);
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); mis[(i + (ev.key === 'ArrowDown' ? 1 : -1) + mis.length) % mis.length].focus(); }
+      else if (ev.key === 'Escape') { ev.stopPropagation(); closeMenu(); btn.focus(); }
+      else if (ev.key === 'Tab') closeMenu();
+    });
+    mis[0].focus({ preventScroll: true });
     const r = btn.getBoundingClientRect();
     m.style.position = 'fixed';
     m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + 'px';
@@ -332,7 +341,7 @@
     }
   }
 
-  function openPresent(name) { window.open('present.html?deck=' + encodeURIComponent(name), '_blank'); }
+  function openPresent(name, start) { window.open('present.html?deck=' + encodeURIComponent(name) + (start ? '&start=' + start : ''), '_blank'); }
   function openEditor(name) { if (GUEST) { openPresent(name); return; } location.href = 'editor.html?deck=' + encodeURIComponent(name); }
   function sanitize(n) { return n.replace(/[\\/:*?"<>|]/g, '_').trim(); }
   function uniqueName(base) { let n = sanitize(base), i = 2; while (decks.some(d => d.name === n)) n = sanitize(base) + ' ' + (i++); return n; }
@@ -433,7 +442,7 @@
     try {
       toast('PPT 파일을 읽는 중…', 60000);
       await loadScript('app/pptsym.js'); await loadScript('app/pptin.js');
-      if (!(await freshList())) return;
+      if (!(await freshList())) { const tt = document.getElementById('toast'); if (tt) tt.classList.remove('show'); return; } // 'PPT 파일을 읽는 중…' 이 1분 동안 남지 않게
       const canVideo = API.mode === 'server' || (API.mode === 'github' && !!GH.token);
       const r = await PPTIN.toDeck(f, {
         stage: (blob, name) => API.stage(blob, name),
