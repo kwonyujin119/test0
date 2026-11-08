@@ -101,6 +101,7 @@ const BestDocs = (() => {
   };
 
   /* ---------- GitHub (문서함 암호로 잠금) ---------- */
+  const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
   const G = {
     box() { if (!HwpStore.box.unlocked) { const e = new Error('best 문서를 GitHub 에 올리려면 먼저 문서함 암호를 열어야 합니다'); e.needBox = true; throw e; } return HwpStore.box; },
     async readJson(path) { const u = await this.box().read(path); if (!u) return null; return JSON.parse(dec.decode(await this.box().open(u, path))); },
@@ -108,7 +109,6 @@ const BestDocs = (() => {
     async get(id) { const r = await this.readJson(`${DIR}/${id}.json.bin`); if (!r) throw new Error('best 문서를 찾지 못했습니다'); return r; },
     async file(id) { const u = await this.box().read(`${DIR}/${id}.bin`); if (!u) throw new Error('원본 hwpx 파일을 찾지 못했습니다'); return this.box().open(u, `${DIR}/${id}.bin`); },
     async put(rec, bytes) {
-      const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
       const items = await this.list(); // 목록을 못 읽으면 저장도 멈춤 (다른 문서를 덮어쓰지 않게)
       const i = items.findIndex(x => x.id === rec.id); if (i >= 0) items[i] = indexOf(rec); else items.push(indexOf(rec));
       const ch = [
@@ -119,7 +119,6 @@ const BestDocs = (() => {
       await GH.commit('best 문서 ' + (bytes ? '추가' : '갱신') + ': ' + rec.id, ch);
     },
     async remove(id) {
-      const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
       const items = (await this.list()).filter(x => x.id !== id);
       await GH.commit('best 문서 삭제: ' + id, [{ path: `${DIR}/${id}.bin`, delete: true }, { path: `${DIR}/${id}.json.bin`, delete: true }, { path: DIR + '/index.bin', base64: b64(await this.box().seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
     },
@@ -180,5 +179,5 @@ const BestDocs = (() => {
   /* 레퍼런스 전체를 한 덩어리로 (앞으로 자동 문서 만들기에 넘길 재료) */
   async function exportAll() { const items = await list(); const out = []; for (const it of items) out.push(await get(it.id)); return out; }
 
-  return { mode, init, MODE_NAMES, extract, list, get, file, add, update, remove, exportAll, safeName };
+  return { mode, init, MODE_NAMES, extract, list, get, file, add, update, remove, exportAll, safeName, deviceName };
 })();

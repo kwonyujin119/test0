@@ -36,36 +36,42 @@
     showGuide('help');
   }
 
-  /* ---------- 안내 창 ---------- */
+  /* ---------- 안내 창 (꾸밈은 ui.css 토큰 · 단추는 .btn) ---------- */
+  const ic = (n, z) => (typeof icon === 'function' ? icon(n, z || 18) : '');
   let guide = null;
   function css() {
     if (document.getElementById('pwaCss')) return;
     const s = document.createElement('style'); s.id = 'pwaCss';
     s.textContent = `
-#pwaGuide{position:fixed;inset:0;z-index:200;background:rgba(10,14,22,.55);display:grid;place-items:center;padding:16px;font-family:"Pretendard Variable","Malgun Gothic",sans-serif;overflow:auto}
-#pwaGuide .box{background:#fff;color:#1f2430;border-radius:16px;width:min(560px,100%);padding:22px 24px 18px;box-shadow:0 30px 80px rgba(0,0,0,.35);max-height:calc(100vh - 32px);overflow:auto}
-#pwaGuide h3{margin:0 0 4px;font-size:19px}
-#pwaGuide h4{margin:2px 0 6px;font-size:14px;color:#1f7a5a}
-#pwaGuide p{margin:6px 0;line-height:1.65;font-size:14px;color:#3b4252}
-#pwaGuide ol{margin:6px 0 0;padding-left:20px;line-height:1.85;font-size:14px;color:#2b3140}
-#pwaGuide kbd{display:inline-block;border:1px solid #cfd5df;border-bottom-width:2px;border-radius:6px;padding:0 6px;background:#f7f8fa;font:600 12.5px "Malgun Gothic",sans-serif;color:#1f2430}
-#pwaGuide .bar{margin:8px 0 4px;display:flex;align-items:center;gap:8px;background:#f1f3f6;border:1px solid #dde1e7;border-radius:999px;padding:6px 8px 6px 14px;font-size:12.5px;color:#666}
+#pwaGuide{position:fixed;inset:0;z-index:1000;background:var(--ui-overlay);display:grid;place-items:center;padding:16px;overflow:auto}
+#pwaGuide .box{background:var(--ui-panel);color:var(--ui-fg);border-radius:16px;width:min(560px,100%);padding:24px;box-shadow:var(--ui-shadow);max-height:calc(100vh - 32px);overflow:auto;word-break:keep-all;overflow-wrap:anywhere}
+#pwaGuide h3{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:var(--fs-lg);line-height:var(--lh-lg)}
+#pwaGuide h3 .ico{color:var(--ui-ok)}
+#pwaGuide h4{margin:0 0 6px;font-size:var(--fs-md);font-weight:600}
+#pwaGuide p{margin:6px 0;line-height:1.65;color:var(--ui-muted)}
+#pwaGuide p b,#pwaGuide li b{color:var(--ui-fg)}
+#pwaGuide ol{margin:6px 0 0;padding-left:20px;line-height:1.85}
+#pwaGuide .bar{margin:8px 0 4px;display:flex;align-items:center;gap:8px;background:var(--ui-panel);border:1px solid var(--ui-border);border-radius:999px;padding:6px 8px 6px 14px;font-size:var(--fs-xs);color:var(--ui-muted)}
 #pwaGuide .bar .url{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#pwaGuide .bar .ico{width:28px;height:24px;border-radius:6px;display:grid;place-items:center;border:2px solid #1f7a5a;color:#1f7a5a;font-size:13px;animation:pwaBlink 1.2s infinite}
-#pwaGuide .bar .dots{width:24px;text-align:center;color:#555;font-weight:800}
-@keyframes pwaBlink{50%{background:#d9ece4;transform:scale(1.12)}}
-#pwaGuide .row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
-#pwaGuide button,#pwaGuide a.btn{border:1px solid #d5d9e0;background:#fff;color:#1f2430;border-radius:10px;padding:10px 16px;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-#pwaGuide .go{background:#1f7a5a!important;border-color:#1f7a5a!important;color:#fff!important}
-#pwaGuide .big{width:100%;font-size:16px!important;padding:13px!important;margin-top:8px}
-#pwaGuide .card{border:1px solid #e5e8ee;border-radius:12px;padding:12px 14px;margin-top:10px;background:#fbfcfd}
-#pwaGuide small{color:#6b7384;font-size:12.5px;line-height:1.6}`;
+#pwaGuide .bar .pin{width:28px;height:24px;border-radius:6px;display:grid;place-items:center;border:2px solid var(--ui-accent);color:var(--ui-accent);font-size:var(--fs-sm);animation:pwaBlink 1.2s infinite}
+#pwaGuide .bar .dots{width:24px;text-align:center;font-weight:800}
+@keyframes pwaBlink{50%{background:var(--ui-accent-soft)}}
+#pwaGuide .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+#pwaGuide .big{width:100%;height:44px;margin-top:8px;justify-content:center;font-size:var(--fs-lg)}
+#pwaGuide .card{border:1px solid var(--ui-border);border-radius:12px;padding:12px 14px;margin-top:12px;background:var(--ui-panel2)}
+#pwaGuide small{color:var(--ui-muted);font-size:var(--fs-xs);line-height:1.6}
+#pwaPill{position:fixed;left:16px;bottom:40px;z-index:90;display:flex;align-items:center;background:var(--ui-ink);color:var(--ui-on-ink);border-radius:999px;box-shadow:var(--ui-shadow-sm);font-size:var(--fs-sm);font-weight:600;overflow:hidden}
+#pwaPill button{display:inline-flex;align-items:center;gap:6px;height:40px;background:none;border:0;color:inherit;font:inherit;padding:0 14px;cursor:pointer}
+#pwaPill [data-x]{padding:0 12px 0 4px}
+#pwaPill .ico{width:16px;height:16px}`;
     document.head.appendChild(s);
   }
   function showGuide(mode) {
     css(); closeGuide();
     guide = document.createElement('div'); guide.id = 'pwaGuide'; guide.dataset.mode = mode || 'help';
+    guide.setAttribute('role', 'dialog'); guide.setAttribute('aria-modal', 'true'); guide.setAttribute('aria-label', '업무 공간 앱 설치');
     guide.addEventListener('mousedown', e => { if (e.target === guide) closeGuide(); });
+    guide.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
     document.body.appendChild(guide);
     refreshGuide();
   }
@@ -76,9 +82,9 @@
     switch (browser) {
       case 'chrome':
         if (os === 'android') return `<h4>휴대폰 크롬에서 설치하기</h4>${bar('<span class="dots">⋮</span>')}<ol><li>오른쪽 위 <kbd>⋮</kbd> → <kbd>홈 화면에 추가</kbd> (또는 <kbd>앱 설치</kbd>) → <kbd>설치</kbd></li><li>홈 화면에 생긴 <b>업무 공간</b> 아이콘으로 엽니다.</li></ol>`;
-        return `<h4>크롬에서 설치하기</h4>${bar('<span class="ico" title="설치 아이콘">⇩</span><span class="dots">⋮</span>')}<ol><li>주소창 <b>오른쪽 끝</b>의 <b>설치 아이콘</b>(모니터에 ↓ 모양)을 누르고 <kbd>설치</kbd></li><li>아이콘이 안 보이면: 오른쪽 위 <kbd>⋮</kbd> → <kbd>전송, 저장, 공유</kbd> → <kbd>페이지를 앱으로 설치…</kbd> (또는 <kbd>업무 공간 설치…</kbd>) → <kbd>설치</kbd></li></ol>`;
-      case 'edge': return `<h4>엣지에서 설치하기</h4>${bar('<span class="ico" title="앱 설치 아이콘">⊞</span><span class="dots">⋯</span>')}<ol><li>오른쪽 위 <kbd>⋯</kbd> → <kbd>앱</kbd> → <kbd>이 사이트를 앱으로 설치</kbd> → <kbd>설치</kbd></li><li>또는 주소창 오른쪽의 <b>앱 설치 아이콘</b>을 누르고 <kbd>설치</kbd></li></ol>`;
-      case 'whale': return `<h4>웨일에서 설치하기</h4>${bar('<span class="ico" title="설치 아이콘">⇩</span><span class="dots">≡</span>')}<ol><li>주소창 오른쪽의 <b>설치 아이콘</b>을 누르고 <kbd>설치</kbd></li><li>안 보이면 크롬이나 엣지로 이 주소를 열어 설치하는 것이 가장 확실합니다.</li></ol>`;
+        return `<h4>크롬에서 설치하기</h4>${bar('<span class="pin" title="설치 아이콘">⇩</span><span class="dots">⋮</span>')}<ol><li>주소창 <b>오른쪽 끝</b>의 <b>설치 아이콘</b>(모니터에 ↓ 모양)을 누르고 <kbd>설치</kbd></li><li>아이콘이 안 보이면: 오른쪽 위 <kbd>⋮</kbd> → <kbd>전송, 저장, 공유</kbd> → <kbd>페이지를 앱으로 설치…</kbd> (또는 <kbd>업무 공간 설치…</kbd>) → <kbd>설치</kbd></li></ol>`;
+      case 'edge': return `<h4>엣지에서 설치하기</h4>${bar('<span class="pin" title="앱 설치 아이콘">⊞</span><span class="dots">⋯</span>')}<ol><li>오른쪽 위 <kbd>⋯</kbd> → <kbd>앱</kbd> → <kbd>이 사이트를 앱으로 설치</kbd> → <kbd>설치</kbd></li><li>또는 주소창 오른쪽의 <b>앱 설치 아이콘</b>을 누르고 <kbd>설치</kbd></li></ol>`;
+      case 'whale': return `<h4>웨일에서 설치하기</h4>${bar('<span class="pin" title="설치 아이콘">⇩</span><span class="dots">≡</span>')}<ol><li>주소창 오른쪽의 <b>설치 아이콘</b>을 누르고 <kbd>설치</kbd></li><li>안 보이면 크롬이나 엣지로 이 주소를 열어 설치하는 것이 가장 확실합니다.</li></ol>`;
       case 'samsung': return `<h4>삼성 인터넷에서 설치하기</h4><ol><li>아래 메뉴 <kbd>≡</kbd> → <kbd>현재 페이지 추가</kbd> → <kbd>홈 화면</kbd></li></ol>`;
       case 'chrome-ios': case 'safari':
         if (os === 'ios') return `<h4>아이폰·아이패드에서 설치하기</h4><ol><li>${browser === 'safari' ? '아래쪽' : '주소창 오른쪽'} <b>공유 단추</b>(□↑) 누르기</li><li><kbd>홈 화면에 추가</kbd> → <kbd>추가</kbd></li></ol>`;
@@ -91,22 +97,22 @@
     if (!guide) return;
     const mode = guide.dataset.mode; let h = '';
     if (mode === 'done') {
-      h = /ios|android/.test(os) ? `<h3>✅ 설치했습니다</h3><p>앞으로는 <b>홈 화면</b>의 <b>업무 공간</b> 아이콘으로 여세요. 주소창 없이 앱처럼 열립니다.</p><div class="row"><button class="go" data-c>확인</button></div>`
-        : `<h3>✅ 설치했습니다</h3><p>업무 공간 앱 창이 열렸을 거예요. 앞으로는 <b>바탕화면</b>·<b>시작 메뉴</b>의 <b>업무 공간</b> 아이콘으로 여세요.</p><p><small>작업 표시줄에 고정: 앱 창의 작업 표시줄 아이콘을 오른쪽 클릭 → <b>작업 표시줄에 고정</b></small></p><div class="row"><button class="go" data-c>확인</button></div>`;
+      h = /ios|android/.test(os) ? `<h3>${ic('check', 20)}설치했습니다</h3><p>앞으로는 <b>홈 화면</b>의 <b>업무 공간</b> 아이콘으로 여세요. 주소창 없이 앱처럼 열립니다.</p><div class="row"><button class="btn ink" data-c>확인</button></div>`
+        : `<h3>${ic('check', 20)}설치했습니다</h3><p>업무 공간 앱 창이 열렸을 거예요. 앞으로는 <b>바탕화면</b>·<b>시작 메뉴</b>의 <b>업무 공간</b> 아이콘으로 여세요.</p><p><small>작업 표시줄에 고정: 앱 창의 작업 표시줄 아이콘을 오른쪽 클릭 → <b>작업 표시줄에 고정</b></small></p><div class="row"><button class="btn ink" data-c>확인</button></div>`;
     } else {
       h = `<h3>업무 공간 앱 설치</h3>`;
-      if (PWA.prompt) h += `<p>지금 바로 설치할 수 있습니다. 아래 단추를 누르고 뜨는 창에서 <b>설치</b>를 누르세요.</p><button class="go big" data-go>⬇ 지금 설치</button>`;
+      if (PWA.prompt) h += `<p>지금 바로 설치할 수 있습니다. 아래 단추를 누르고 뜨는 창에서 <b>설치</b>를 누르세요.</p><button class="btn ink big" data-go>${ic('download')}지금 설치</button>`;
       else if (PWA.installed) h += `<div class="card"><b>이미 설치되어 있습니다.</b><br><small>${/ios|android/.test(os) ? '홈 화면' : '바탕화면·시작 메뉴'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 창에서는 주소창 오른쪽의 <b>앱에서 열기</b> 아이콘을 눌러도 앱으로 열립니다.</small></div>`;
       else h += `<p>아래 방법 중 편한 것을 쓰세요. 한 번만 하면 됩니다.</p>`;
       h += `<div class="card">${steps()}</div>`;
-      if (os === 'windows') h += `<div class="card"><h4>안 되면 — Windows 설치 파일 (항상 됩니다)</h4><p><small>내려받은 <b>업무 공간 설치.cmd</b> 를 열면 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생기고, 주소창 없는 앱 창으로 열립니다 (크롬 또는 엣지 사용).<br>열 때 <b>"Windows의 PC 보호"</b> 창이 뜨면 <b>추가 정보 → 실행</b>, 브라우저가 파일을 막으면 <b>유지</b>를 누르세요.</small></p><a class="btn go big" href="install/setup.cmd" download="업무 공간 설치.cmd">⬇ Windows 설치 파일 내려받기</a></div>`;
-      h += `<div class="row">${!['chrome', 'edge', 'whale', 'samsung'].includes(browser) || os === 'ios' ? '<button data-copy>주소 복사</button>' : ''}<button data-c>닫기</button></div>`;
+      if (os === 'windows') h += `<div class="card"><h4>안 되면 — Windows 설치 파일 (항상 됩니다)</h4><p><small>내려받은 <b>업무 공간 설치.cmd</b> 를 열면 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생기고, 주소창 없는 앱 창으로 열립니다 (크롬 또는 엣지 사용).<br>열 때 <b>"Windows의 PC 보호"</b> 창이 뜨면 <b>추가 정보 → 실행</b>, 브라우저가 파일을 막으면 <b>유지</b>를 누르세요.</small></p><a class="btn big" href="install/setup.cmd" download="업무 공간 설치.cmd">${ic('download')}Windows 설치 파일 내려받기</a></div>`;
+      h += `<div class="row">${!['chrome', 'edge', 'whale', 'samsung'].includes(browser) || os === 'ios' ? '<button class="btn" data-copy>주소 복사</button>' : ''}<button class="btn" data-c>닫기</button></div>`;
     }
     if (guide.dataset.h === h) return;
     guide.dataset.h = h;
     guide.innerHTML = `<div class="box">${h}</div>`;
     const q = s => guide.querySelector(s);
-    if (q('[data-c]')) q('[data-c]').onclick = () => closeGuide();
+    if (q('[data-c]')) { q('[data-c]').onclick = () => closeGuide(); q('[data-c]').focus(); }
     if (q('[data-go]')) q('[data-go]').onclick = async () => { const done = await install(); if (!guide) return; guide.dataset.mode = done ? 'done' : 'help'; refreshGuide(); }; // 취소했으면 설치 단추 대신 방법 안내
     if (q('[data-copy]')) q('[data-copy]').onclick = e => { (navigator.clipboard ? navigator.clipboard.writeText(URL0()) : Promise.reject()).then(() => { e.target.textContent = '복사했습니다'; }).catch(() => { prompt('이 주소를 복사하세요', URL0()); }); };
   }
@@ -119,11 +125,9 @@
     const want = !standalone && !PWA.installed && /^(gyoan\.html|hangul\.html)$/.test(PAGE) && !hide;
     if (!want) { if (el) el.remove(); return; }
     if (el) return;
+    css();
     el = document.createElement('div'); el.id = 'pwaPill';
-    el.innerHTML = '<button type="button" data-i>앱으로 설치</button><button type="button" data-x title="닫기">✕</button>';
-    el.style.cssText = 'position:fixed;left:16px;bottom:40px;z-index:90;display:flex;align-items:center;background:#2d2f31;color:#fff;border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,.25);font:600 13px/1 "Pretendard Variable","Malgun Gothic",sans-serif;overflow:hidden';
-    el.querySelectorAll('button').forEach(b => { b.style.cssText = 'background:none;border:0;color:#fff;font:inherit;padding:10px 14px;cursor:pointer'; });
-    el.querySelector('[data-x]').style.padding = '10px 12px 10px 4px';
+    el.innerHTML = `<button type="button" data-i>${ic('download', 16)}앱으로 설치</button><button type="button" data-x title="닫기" aria-label="설치 안내 닫기">${ic('x', 16)}</button>`;
     el.querySelector('[data-i]').onclick = () => start();
     el.querySelector('[data-x]').onclick = () => { try { sessionStorage.setItem('pwa:hide', '1'); } catch (e) { } el.remove(); };
     (document.body || document.documentElement).appendChild(el);

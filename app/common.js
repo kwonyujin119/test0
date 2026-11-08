@@ -140,6 +140,11 @@ function stripHtml(html) { const d = document.createElement('div'); d.innerHTML 
    HTML 의 <i data-ic="save"></i> 는 fillIcons() 가 채운다 */
 const ICONS = {
   back: '<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
+  arrowRight: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+  chevronDown: '<path d="m6 9 6 6 6-6"/>',
+  chevronUp: '<path d="m6 15 6-6 6 6"/>',
+  arrowUp: '<path d="M12 19V5"/><path d="m6 11 6-6 6 6"/>',
+  arrowDown: '<path d="M12 5v14"/><path d="m6 13 6 6 6-6"/>',
   palette: '<path d="M12 3a9 9 0 0 0 0 18c1.2 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.3-4-7.7-9-7.7Z"/><path d="M7.5 12v.01"/><path d="M9.5 7.8v.01"/><path d="M14.5 7.5v.01"/>',
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
@@ -1580,6 +1585,17 @@ const Draft = {
     for (const k of ['key', 'infoKey', 'oldKey']) { let v = null; try { v = localStorage.getItem(this[k](from)); } catch (e) { } if (v != null) { this._write(this[k](to), v); this._del(this[k](from)); } }
   },
 };
+/* 지난 때(ms 또는 ISO) → "방금" · "5분 전" · "3시간 전" · "어제" · "11월 3일" — 목록·첫 화면의 짧은 시각 (정확한 때는 fmtWhen) */
+function fmtAgo(t) {
+  t = typeof t === 'string' ? Date.parse(t) : +t; if (!t) return '';
+  const now = new Date(), d = new Date(t), mins = Math.floor((now - d) / 60000);
+  if (mins < 1) return '방금';
+  if (mins < 60) return mins + '분 전';
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (d >= today) return Math.floor(mins / 60) + '시간 전';
+  if (d >= new Date(today - 864e5)) return '어제';
+  return d.getFullYear() === now.getFullYear() ? `${d.getMonth() + 1}월 ${d.getDate()}일` : `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+}
 /* 저장 시각(ISO) → "11월 6일 오후 3:02" (이 기기의 시간대로) */
 function fmtWhen(iso) {
   const d = new Date(iso); if (!iso || isNaN(d)) return '';
@@ -1587,9 +1603,17 @@ function fmtWhen(iso) {
 }
 
 function qs(k) { return new URLSearchParams(location.search).get(k); }
-function toast(msg, ms) {
+/* 화면 아래 짧은 알림 (화면 읽기 프로그램도 읽어 줌). act = { label: '되돌리기', run() {} } 를 주면 글자 단추 하나가 붙는다 */
+function toast(msg, ms, act) {
   let t = document.getElementById('toast');
-  if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), ms || 1800);
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.setAttribute('role', 'status'); t.setAttribute('aria-live', 'polite'); document.body.appendChild(t); }
+  t.textContent = msg;
+  const has = !!(act && act.label && act.run);
+  if (has) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'toast-act'; b.textContent = act.label;
+    b.onclick = () => { t.classList.remove('show'); act.run(); };
+    t.appendChild(b);
+  }
+  t.classList.toggle('has-act', has); t.classList.add('show');
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), ms || (has ? 5000 : 1800));
 }

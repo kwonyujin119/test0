@@ -6,9 +6,12 @@
 (() => {
   const TL = VE.tl = { z: 40, sx: 0, snap: true, overlay: null };
   const GUT = 54, RULER = 26, HANDLE = 11, MIN_LEN = .1;
-  let cv, c, W = 0, H = 0, dpr = 1, dirty = true, col = {}, lanes = [], drag = null, hover = null, snapLine = null, dropAt = null, tip = null;
+  let cv, c, W = 0, H = 0, dpr = 1, dirty = true, col = {}, lanes = [], drag = null, snapLine = null, dropAt = null, tip = null;
+  /* 캔버스 글꼴에는 CSS 변수(var(--ui-font))를 쓸 수 없어 실제 글꼴 이름을 읽어 둔다 */
+  let FF = 'sans-serif';
+  const font = (w, px) => `${w} ${px}px ${FF}`;
 
-  const readTokens = () => { const s = getComputedStyle(document.documentElement), v = k => s.getPropertyValue(k).trim(); col = { bg: v('--ui-panel'), lane: v('--ui-bg'), line: v('--ui-border'), line2: v('--ui-border2'), fg: v('--ui-fg'), muted: v('--ui-muted'), accent: v('--ui-accent'), soft: v('--ui-accent-soft'), panel2: v('--ui-panel2'), ink: v('--ui-ink'), onInk: v('--ui-on-ink'), danger: v('--ui-danger'), dark: document.documentElement.dataset.theme === 'dark' }; dirty = true; };
+  const readTokens = () => { const s = getComputedStyle(document.documentElement), v = k => s.getPropertyValue(k).trim(); FF = v('--ui-font') || 'sans-serif'; col = { bg: v('--ui-panel'), lane: v('--ui-bg'), line: v('--ui-border'), line2: v('--ui-border2'), fg: v('--ui-fg'), muted: v('--ui-muted'), accent: v('--ui-accent'), soft: v('--ui-accent-soft'), panel2: v('--ui-panel2'), ink: v('--ui-ink'), onInk: v('--ui-on-ink'), mark: v('--ui-mark'), dark: document.documentElement.dataset.theme === 'dark' }; dirty = true; };
   const xOf = t => GUT + t * TL.z - TL.sx, tOf = x => (x - GUT + TL.sx) / TL.z;
   const maxT = () => Math.max(VE.total(), ...VE.p.music.map(m => m.start + m.out - m.in), ...VE.p.titles.map(o => o.end), 0);
   const contentW = () => (maxT() + 3) * TL.z;
@@ -25,7 +28,7 @@
     const hasCap = VE.captions().length > 0 && VE.p.cap.on; let y = RULER + 4; lanes = [];
     const push = (k, label, h) => { lanes.push({ k, label, y, h }); y += h + 4; };
     push('title', '글자', 24); if (hasCap) push('cap', '자막', 20);
-    const main = clamp(H - y - 4 - 38 - 12, 44, 104); push('main', '영상', main); push('music', '음악', 34);
+    const main = clamp(H - y - 4 - 38 - 12, 44, 104); push('main', '영상', main); push('music', '소리', 34);
   };
   const lane = k => { if (!lanes.length) { W = cv.clientWidth; H = cv.clientHeight; layoutLanes(); } return lanes.find(l => l.k === k); };
 
@@ -34,7 +37,7 @@
   function ruler() {
     const steps = [.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 1200, 1800, 3600]; let major = steps[steps.length - 1]; for (const s of steps) if (s * TL.z >= 72) { major = s; break; }
     const minor = major / (major === 2 || major === 10 || major === 60 || major === 600 ? 2 : 5), t0 = Math.floor(tOf(GUT) / minor) * minor, t1 = tOf(W);
-    c.font = '11px var(--ui-font), sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.muted;
+    c.font = font(500, 11); c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.muted;
     for (let t = Math.max(0, t0); t <= t1; t += minor) {
       const x = xOf(t), isMajor = Math.abs(t / major - Math.round(t / major)) < 1e-6;
       if (isMajor) { const label = t < 60 ? Math.round(t * 10) / 10 + '초' : VE.fmtT(t); c.fillText(t === 0 ? '0' : label, x + 3, 12); c.fillRect(x, 3, 1, RULER - 8); }
@@ -68,12 +71,12 @@
         if (cl.fadeOut > 0) { const fw = cl.fadeOut * TL.z; c.beginPath(); c.moveTo(x + w, y); c.lineTo(x + w - fw, y); c.lineTo(x + w, y + h); c.fill(); }
         /* 이름 · 표시 */
         if (w > 44) {
-          c.font = '600 11px var(--ui-font), sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left';
+          c.font = font(500, 12); c.textBaseline = 'middle'; c.textAlign = 'left';
           let tag = ''; if (sel === cl.id) tag = VE.fmtLen(VE.clipLen(cl)); else if (w > 120 && m) tag = m.name;
           if (sp !== 1) tag = sp + '배 ' + tag; if (cl.face && cl.face.mode) tag = (cl.face.mode === 'mosaic' ? '모자이크 ' : '캐릭터 ') + tag; if (cl.pip) tag = '화면 속 화면 ' + tag;
-          tag = tag.trim(); if (tag) { let t = tag; const maxW = w - 16; while (t.length > 2 && c.measureText(t).width > maxW - 8) t = t.slice(0, -1); const tw = c.measureText(t).width + 10; c.fillStyle = 'rgba(10,11,13,.68)'; rr(x + 4, y + 4, tw, 17, 4); c.fill(); c.fillStyle = '#fff'; c.fillText(t, x + 9, y + 13); }
+          tag = tag.trim(); if (tag) { let t = tag; const maxW = w - 16; if (c.measureText(t).width > maxW - 8) { while (t.length > 2 && c.measureText(t + '…').width > maxW - 8) t = t.slice(0, -1); t += '…'; } const tw = c.measureText(t).width + 10; c.fillStyle = 'rgba(10,11,13,.68)'; rr(x + 4, y + 4, tw, 19, 4); c.fill(); c.fillStyle = '#fff'; c.fillText(t, x + 9, y + 14); }
         }
-        if (m.offline) { c.fillStyle = 'rgba(217,45,32,.35)'; c.fillRect(x, y, w, h); }
+        if (m.offline) { c.globalAlpha = .4; c.fillStyle = col.mark; c.fillRect(x, y, w, h); c.globalAlpha = 1; } /* 원본이 없음: 경고(주황) */
       }
       c.restore();
     });
@@ -101,7 +104,7 @@
       const x = xOf(o.start), w = (o.out - o.in) * TL.z; if (x + w < GUT || x > W) continue;
       c.save(); rr(x + .5, L.y, Math.max(2, w - 1), L.h, 5); c.fillStyle = col.panel2; c.fill(); c.strokeStyle = col.line2; c.lineWidth = 1; c.stroke(); c.clip();
       drawWave(o.mid, x, L.y + 2, w, L.h - 4, o.in, 1 / TL.z, col.muted, GUT, W);
-      if (w > 50) { const m = VE.media(o.mid); c.font = '600 11px var(--ui-font), sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.fg; c.fillText(sel === o.id ? VE.fmtLen(o.out - o.in) : (m ? m.name : ''), x + 8, L.y + 10); }
+      if (w > 50) { const m = VE.media(o.mid); c.font = font(500, 12); c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.fg; c.fillText(sel === o.id ? VE.fmtLen(o.out - o.in) : (m ? m.name : ''), x + 8, L.y + 10); }
       c.restore();
       if (sel === o.id) frameSel(x, L.y, w, L.h);
     }
@@ -111,12 +114,12 @@
     for (const o of VE.p.titles) {
       const x = xOf(o.start), w = (o.end - o.start) * TL.z; if (x + w < GUT || x > W) continue;
       c.save(); rr(x + .5, L.y, Math.max(2, w - 1), L.h, 5); c.fillStyle = col.ink; c.fill(); c.clip();
-      c.font = '600 11.5px var(--ui-font), sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.onInk; c.fillText(String(o.text).split('\n')[0], x + 8, L.y + L.h / 2 + .5); c.restore();
+      c.font = font(500, 12); c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.onInk; c.fillText(String(o.text).split('\n')[0], x + 8, L.y + L.h / 2 + .5); c.restore();
       if (sel === o.id) frameSel(x, L.y, w, L.h);
     }
   }
   function capLane() {
-    const L = lane('cap'); if (!L) return; c.font = '11px var(--ui-font), sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left';
+    const L = lane('cap'); if (!L) return; c.font = font(500, 11); c.textBaseline = 'middle'; c.textAlign = 'left';
     const t0 = tOf(GUT), t1 = tOf(W);
     for (const o of VE.captions()) {
       if (o.showEnd < t0 || o.start > t1) continue; const x = xOf(o.start), w = (o.showEnd - o.start) * TL.z;
@@ -132,7 +135,7 @@
     ruler();
     for (const L of lanes) { c.fillStyle = col.lane; c.fillRect(GUT, L.y, W - GUT, L.h); }
     /* 빈 상태 */
-    if (!VE.p.clips.length) { const L = lane('main'); c.font = '13px var(--ui-font), sans-serif'; c.fillStyle = col.muted; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText('영상 파일을 여기로 끌어다 놓으세요', GUT + 14, L.y + L.h / 2); }
+    if (!VE.p.clips.length) { const L = lane('main'); c.font = font(400, 13); c.fillStyle = col.muted; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText('영상 파일을 여기로 끌어다 놓으세요', GUT + 14, L.y + L.h / 2); }
     capLane(); titleLane(); musicLane(); mainClips();
     if (drag && drag.kind === 'reorder' && drag.moved) reorderGhost();
     if (dropAt != null) { const L = lane('main'), x = xOf(dropAt); c.fillStyle = col.accent; c.fillRect(x - 1.5, L.y - 3, 3, L.h + 6); }
@@ -143,23 +146,23 @@
     if (tip) drawTip();
   }
   function reorderGhost() {
-    const L = lane('main'), d = drag, w = Math.min(160, VE.clipLen(d.clip) * TL.z); c.save(); c.globalAlpha = .85; rr(d.px - w / 2, L.y - 3, w, L.h + 6, 6); c.fillStyle = col.accent; c.fill(); c.globalAlpha = 1; c.fillStyle = '#fff'; c.font = '600 11.5px var(--ui-font), sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(VE.fmtLen(VE.clipLen(d.clip)), d.px, L.y + L.h / 2); c.restore();
+    const L = lane('main'), d = drag, w = Math.min(160, VE.clipLen(d.clip) * TL.z); c.save(); c.globalAlpha = .85; rr(d.px - w / 2, L.y - 3, w, L.h + 6, 6); c.fillStyle = col.accent; c.fill(); c.globalAlpha = 1; c.fillStyle = '#fff'; c.font = font(600, 12); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(VE.fmtLen(VE.clipLen(d.clip)), d.px, L.y + L.h / 2); c.restore();
     const { starts, total } = VE.layout(), t = d.insert >= VE.p.clips.length ? total : starts[d.insert]; const x = xOf(t); c.fillStyle = col.accent; c.fillRect(x - 1.5, L.y - 5, 3, L.h + 10);
   }
   function playhead() {
     const x = xOf(VE.player.t); if (x < GUT - 8 || x > W + 8) return;
-    c.fillStyle = col.fg; c.fillRect(x - .75, 6, 1.5, H - 6); c.beginPath(); c.moveTo(x - 6, 2); c.lineTo(x + 6, 2); c.lineTo(x + 6, 10); c.lineTo(x, 16); c.lineTo(x - 6, 10); c.closePath(); c.fill();
+    c.fillStyle = col.accent; c.fillRect(x - .75, 6, 1.5, H - 6); c.beginPath(); c.moveTo(x - 6, 2); c.lineTo(x + 6, 2); c.lineTo(x + 6, 10); c.lineTo(x, 16); c.lineTo(x - 6, 10); c.closePath(); c.fill();
   }
   function gutter() {
     c.fillStyle = col.bg; c.fillRect(0, 0, GUT, H); c.fillStyle = col.line; c.fillRect(GUT - 1, 0, 1, H);
-    c.font = '600 11.5px var(--ui-font), sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.muted;
+    c.font = font(500, 12); c.textBaseline = 'middle'; c.textAlign = 'left'; c.fillStyle = col.muted;
     for (const L of lanes) c.fillText(L.label, 12, L.y + L.h / 2 + .5);
   }
   function scrollbar() {
     const total = contentW(), vis = W - GUT; if (total <= vis + 2) return; const y = H - 8, w = Math.max(40, vis * vis / total), x = GUT + (TL.sx / (total - vis)) * (vis - w);
     c.fillStyle = col.line2; rr(x, y, w, 5, 2.5); c.fill();
   }
-  function drawTip() { const f = '600 12px var(--ui-font), sans-serif'; c.font = f; const w = c.measureText(tip.text).width + 16, x = clamp(tip.x - w / 2, 4, W - w - 4), y = Math.max(2, tip.y - 28); c.fillStyle = col.ink; rr(x, y, w, 22, 5); c.fill(); c.fillStyle = col.onInk; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText(tip.text, x + 8, y + 11.5); }
+  function drawTip() { c.font = font(600, 12); const w = c.measureText(tip.text).width + 16, x = clamp(tip.x - w / 2, 4, W - w - 4), y = Math.max(2, tip.y - 28); c.fillStyle = col.ink; rr(x, y, w, 22, 5); c.fill(); c.fillStyle = col.onInk; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText(tip.text, x + 8, y + 11.5); }
 
   /* ---------- 고르기 판단 ---------- */
   function hit(x, y) {
@@ -304,8 +307,7 @@
     cv.addEventListener('pointerdown', down); cv.addEventListener('pointermove', move); cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
     cv.addEventListener('wheel', wheel, { passive: false }); cv.addEventListener('dragover', dragOver); cv.addEventListener('dragleave', () => { dropAt = null; dirty = true; }); cv.addEventListener('drop', drop);
     for (const k of ['change', 'select', 'time', 'thumb', 'peaks', 'track']) VE.on(k, () => { dirty = true; });
+    if (document.fonts) document.fonts.ready.then(() => { dirty = true; });
     W = cv.clientWidth; H = cv.clientHeight; requestAnimationFrame(loop);
   };
-  /* 시험용 */
-  TL._xOf = xOf; TL._lane = lane;
 })();

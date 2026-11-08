@@ -997,9 +997,10 @@ function selectTextRange(b, a, z) {
   const rect = r.getBoundingClientRect(); const cv = $id('canvas'); const cr = cv.getBoundingClientRect();
   if (rect.top < cr.top + 40 || rect.bottom > cr.bottom - 40) cv.scrollTop += rect.top - cr.top - cr.height / 3;
 }
-function replaceSel(q, rep) {
+function replaceSel(q, rep, cs) { // cs: 대소문자 구분 (찾기 창의 [대소문자] 와 같게)
   const r = rng(); if (!r || r.collapsed) return false;
-  if (r.toString().toLowerCase() !== q.toLowerCase()) return false;
+  const s = r.toString().replace(/[​﻿]/g, '');
+  if (cs ? s !== q : s.toLowerCase() !== q.toLowerCase()) return false;
   insertText(rep); return true;
 }
 function replaceAll(q, rep, opts) {

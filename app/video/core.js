@@ -177,6 +177,17 @@ const VE = window.VE = {};
     VE.p.clips.forEach((c, i) => { if (c.mid !== mid) return; const s = Math.max(a, c.in), e = Math.min(b, c.out); if (e > s) out.push([starts[i] + (s - c.in) / (c.speed || 1), starts[i] + (e - c.in) / (c.speed || 1)]); });
     return out;
   };
+  /* 끌지 않고 옮기기 (단추 · 키보드): 클립은 한 칸 앞뒤로, 글자 · 소리는 dt 초만큼 */
+  VE.moveSel = (dir, dt) => {
+    const s = VE.sel, o = VE.selObj(); if (!o) return false;
+    if (s.type === 'clip') {
+      const i = VE.p.clips.indexOf(o), j = i + (dir < 0 ? -1 : 1); if (j < 0 || j >= VE.p.clips.length) return false;
+      VE.edit(() => { VE.p.clips.splice(i, 1); VE.p.clips.splice(j, 0, o); }); return true;
+    }
+    const d = (dir < 0 ? -1 : 1) * (dt || .1), len = s.type === 'music' ? 0 : o.end - o.start, start = Math.max(0, Math.round((o.start + d) * 100) / 100);
+    if (start === o.start) return false;
+    VE.edit(() => { o.start = start; if (s.type === 'title') o.end = start + len; }); return true;
+  };
   VE.deleteSel = () => {
     const s = VE.sel, o = VE.selObj(); if (!o) return;
     VE.edit(() => { if (s.type === 'clip') VE.p.clips = VE.p.clips.filter(c => c !== o); else if (s.type === 'music') VE.p.music = VE.p.music.filter(c => c !== o); else VE.p.titles = VE.p.titles.filter(c => c !== o); VE.sel = null; VE.emit('select'); });
@@ -386,6 +397,13 @@ const VE = window.VE = {};
     const pool = $('vePool'); if (pool) pool.appendChild(e);
     return r.els[slot] = e;
   };
+  /* 창 닫기: Esc 와 바깥 누르기로 닫히는 창 (닫을 수 없는 동안은 data-dismiss 단추를 두지 않음) */
+  addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape') return; const bgs = document.querySelectorAll('.modal-bg'), top = bgs[bgs.length - 1]; if (!top) return;
+    const x = top.querySelector('[data-dismiss]'); if (x) { ev.preventDefault(); ev.stopPropagation(); x.click(); }
+  }, true);
+  /* 바깥 누르기는 입력 칸이 없는 창만 (붙여넣은 토큰 · 이름을 실수로 잃지 않게) */
+  document.addEventListener('pointerdown', ev => { const bg = ev.target; if (!bg.classList || !bg.classList.contains('modal-bg') || bg.querySelector('input:not([type=checkbox]), textarea')) return; const x = bg.querySelector('[data-dismiss]'); if (x) x.click(); });
   VE.download = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); };
   /* 부품(영어)의 긴 오류문은 그대로 보이지 않게 쉬운 말로 */
   VE.niceErr = e => { const m = String(e && e.message || e || ''); if (/[가-힣]/.test(m) && m.length < 160) return m; return '처리 부품에서 오류가 났습니다. 다시 해 보고, 계속되면 PC 의 크롬·엣지에서 해 주세요.'; };

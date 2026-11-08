@@ -3,6 +3,7 @@
    - 발표자 보기(노트·타이머·다음 슬라이드) 창과 BroadcastChannel 로 동기화
    - 단독 HTML(EMBEDDED_DECK) / 인쇄(PDF) 모드 지원 */
 'use strict';
+if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'; // 공통 묶음(common.js)에 들어오면 아무 일도 하지 않음
 (async function () {
   const name = qs('deck') || 'deck';
   const role = qs('role') || 'main';
@@ -14,7 +15,7 @@
       if (qs('draft')) deck = Draft.get(name); // 편집 화면의 [미리보기]: 아직 저장하지 않은 작업본
       if (deck && role === 'main' && !qs('print')) setTimeout(() => toast('아직 저장하지 않은 작업본을 보여 줍니다 (미리보기)', 3500), 800);
       if (!deck) deck = await API.load(name);
-    } catch (e) { document.body.innerHTML = `<div style="color:#fff;padding:40px;font-family:sans-serif">${esc(e.message)}<br><br><a href="gyoan.html" style="color:#8cf">← 목록으로</a></div>`; return; }
+    } catch (e) { document.body.innerHTML = `<div class="pend show"><div class="pend-t">교안을 열 수 없습니다</div><div style="color:#c9cbd1;max-width:560px;padding:0 20px;text-align:center;font-size:15px;line-height:1.65;word-break:keep-all">${esc(e.message)}</div><div class="pend-a"><a class="btn ink" href="gyoan.html">교안 목록으로</a></div></div>`; return; }
   }
   normalizeDeck(deck);
   if (!deck.slides.length) deck.slides = [newSlide('blank')];
@@ -47,7 +48,7 @@
     <div class="pgoto" id="pgoto"></div>
     <div class="poverview" id="poverview"><div class="grid" id="ogrid"></div></div>
     <div class="phelp" id="phelp"><div class="box">
-      <h3>발표 단축키 <span class="muted" style="font-weight:400;font-size:13px">PowerPoint 슬라이드 쇼와 같음 · 리모컨의 ▶/◀ = PageDown/PageUp</span></h3>
+      <h3>발표 단축키 <span class="muted" style="font-weight:400;font-size:13px">PowerPoint 슬라이드 쇼와 같음 · 리모컨의 다음/이전 단추 = PageDown/PageUp</span></h3>
       <div class="cols">
         <div><span>다음</span><span><kbd>→</kbd> <kbd>↓</kbd> <kbd>PgDn</kbd> <kbd>Space</kbd> <kbd>Enter</kbd> <kbd>N</kbd> 클릭</span></div>
         <div><span>이전</span><span><kbd>←</kbd> <kbd>↑</kbd> <kbd>PgUp</kbd> <kbd>Backspace</kbd> <kbd>P</kbd> 우클릭</span></div>
@@ -69,7 +70,7 @@
         <div><span>편집기로</span><span><kbd>Ctrl+E</kbd></span></div>
         <div><span>발표 종료</span><span><kbd>Esc</kbd> (전체화면이면 한 번 더)</span></div>
       </div>
-      <div style="margin-top:12px;font-size:13px;line-height:1.6"><b>휴대폰 · 태블릿</b> — 화면을 누르면 다음 슬라이드, 옆으로 밀면 앞·뒤로 넘어갑니다. 누를 때마다 오른쪽 위에 메뉴(목록 · 전체화면 · ✕ 종료)가 잠깐 나타납니다.</div>
+      <div style="margin-top:12px;font-size:13px;line-height:1.6"><b>휴대폰 · 태블릿</b> — 화면을 누르면 다음 슬라이드, 옆으로 밀면 앞·뒤로 넘어갑니다. 누를 때마다 오른쪽 위에 메뉴(목록 · 전체화면 · 종료)가 잠깐 나타납니다.</div>
       <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 누르거나 화면을 눌러 닫기 · 전체 설명서: <a href="shortcuts.html" target="_blank" onclick="event.stopPropagation()">shortcuts.html</a></div>
     </div></div>
     <div class="pmenu peek" id="pmenu">
@@ -439,7 +440,7 @@
         <span class="sep"></span>
         <div id="pos" style="font-size:18px;font-weight:600"></div>
         <div class="grow"></div>
-        <button class="btn" id="bPrev">◀ 이전</button><button class="btn primary" id="bNext">다음 ▶</button>
+        <button class="btn" id="bPrev">${icon('back', 16)}이전</button><button class="btn ink" id="bNext">다음${icon('arrowRight', 16)}</button>
         <span class="sep"></span>
         <button class="btn sm" id="bBig" title="노트 글자 크게">가+</button>
         <div class="clock" id="clock"></div>
@@ -454,7 +455,7 @@
     function render() {
       if (!deck.slides[s.idx]) return; // 발표 창과 교안 사본이 다른 경우
       const cur = $('cur'), nx = $('next'); cur.innerHTML = ''; nx.innerHTML = '';
-      const a = renderSlide(deck.slides[s.idx], deck, { mode: 'present', step: s.idx === s.idx ? s.step : Infinity }); cur.appendChild(a); fitSlide(cur, a);
+      const a = renderSlide(deck.slides[s.idx], deck, { mode: 'present', step: s.step }); cur.appendChild(a); fitSlide(cur, a);
       const ms = maxStep(deck.slides[s.idx]);
       let nextLabel = '';
       if (s.step < ms) { const b = renderSlide(deck.slides[s.idx], deck, { mode: 'present', step: s.step + 1 }); nx.appendChild(b); fitSlide(nx, b); nextLabel = `다음 클릭: 단계 ${s.step + 1}/${ms}`; }
@@ -470,6 +471,7 @@
     }
     setInterval(tick, 1000); tick();
     const send = (m) => channel && channel.postMessage(Object.assign({ type: 'nav' }, m));
+    const edge = (d) => { let j = d > 0 ? 0 : N - 1; while (j >= 0 && j < N && deck.slides[j].hidden) j += d; return j >= 0 && j < N ? j : (d > 0 ? 0 : N - 1); }; // 숨긴 슬라이드를 건너뛴 처음 · 끝
     if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'bye') { window.close(); return; } if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, ended: m.ended }; render(); tick(); } };
     $('bNext').onclick = () => send({ cmd: 'next' }); $('bPrev').onclick = () => send({ cmd: 'prev' });
     $('tReset').onclick = () => send({ cmd: 'timer', value: Date.now() });
@@ -478,7 +480,7 @@
       switch (ev.key) {
         case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': ev.preventDefault(); send({ cmd: 'next' }); break;
         case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': case 'p': ev.preventDefault(); send({ cmd: 'prev' }); break;
-        case 'Home': send({ cmd: 'goto', idx: 0 }); break; case 'End': send({ cmd: 'goto', idx: N - 1 }); break;
+        case 'Home': ev.preventDefault(); send({ cmd: 'goto', idx: edge(1) }); break; case 'End': ev.preventDefault(); send({ cmd: 'goto', idx: edge(-1) }); break;
         case 'Escape': window.close(); break;
         case 'F1': case '?': ev.preventDefault(); window.open('shortcuts.html', '_blank'); break;
       }
@@ -491,7 +493,7 @@
   /* ======================= 인쇄(PDF) 모드 ======================= */
   function renderPrint() {
     document.body.className = 'print-mode';
-    document.body.innerHTML = `<div class="print-bar"><b>${esc(deck.title)}</b><span class="muted">슬라이드 ${N}장 · 인쇄 대화상자에서 "PDF로 저장"을 선택하세요 (여백 없음, 가로 방향)</span><span style="flex:1"></span><button class="btn primary" onclick="window.print()">🖨 인쇄 / PDF 저장</button><a class="btn" href="gyoan.html">목록</a></div>`;
+    document.body.innerHTML = `<div class="print-bar"><b>${esc(deck.title)}</b><span class="muted">슬라이드 ${N}장 · 인쇄 대화상자에서 "PDF로 저장"을 선택하세요 (여백 없음, 가로 방향)</span><span style="flex:1"></span><button class="btn ink" onclick="window.print()">인쇄 · PDF 저장</button><a class="btn" href="gyoan.html">교안 목록</a></div>`;
     for (const s of deck.slides) {
       if (s.hidden) continue;
       const page = document.createElement('div'); page.className = 'print-page';
