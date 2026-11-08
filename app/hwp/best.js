@@ -80,6 +80,7 @@ const BestDocs = (() => {
       page: { w: pg.w, h: pg.h, land: pg.land, top: pg.top, bottom: pg.bottom, left: pg.left, right: pg.right },
       pages: Math.max(1, Math.round(chars / 1100)), // 어림(한 쪽 1100자) — 화면에 띄우지 않고 뽑으므로 정확한 쪽 수는 모른다
       title: d.title || '',
+      preview: textParts.slice(0, 12).join('\n').slice(0, 400), // 첫 화면 카드의 종이 미리보기 글
     };
     let text = textParts.join('\n'); if (text.length > MAX_TEXT) text = text.slice(0, MAX_TEXT) + '\n…(이하 생략)';
     return { meta, outline, struct, text };

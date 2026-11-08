@@ -138,12 +138,13 @@ const HwpStore = (() => {
     return JSON.parse(dec.decode(await open(u, DIR + '/index.bin'))).sort((a, b) => (b.modified || '').localeCompare(a.modified || ''));
   }
   async function load(id) { const u = await ghBin(`${DIR}/${id}.bin`); if (!u) throw new Error('문서함에서 문서를 찾지 못했습니다'); return open(u, `${DIR}/${id}.bin`); }
-  async function save(id, name, blob, device) {
+  async function save(id, name, blob, device, preview) {
     const data = new Uint8Array(await blob.arrayBuffer());
     const items = await list(); // 목록을 못 읽으면 저장도 멈춤 (다른 문서 목록을 덮어쓰지 않도록)
     id = id || (Date.now().toString(36) + crypto.getRandomValues(new Uint32Array(1))[0].toString(36));
     const now = new Date().toISOString();
     const i = items.findIndex(x => x.id === id), rec = { id, name, size: data.length, modified: now, device: device || '' };
+    if (preview != null) rec.preview = String(preview).slice(0, 400); // 첫 화면 카드의 종이 미리보기 글
     if (i >= 0) items[i] = Object.assign(items[i], rec); else items.push(Object.assign({ created: now }, rec));
     await GH.commit('한글 작업장 문서함 갱신', [{ path: `${DIR}/${id}.bin`, base64: b64(await seal(data, `${DIR}/${id}.bin`)) }, { path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
     return id;

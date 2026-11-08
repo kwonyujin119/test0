@@ -4,7 +4,7 @@
    3) Windows 는 '설치 파일'(바탕화면·시작 메뉴 아이콘을 만들어 앱 창으로 엶)도 제공 — 브라우저 사정과 무관하게 항상 됨 */
 (() => {
   const ok = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  if ('serviceWorker' in navigator && ok) navigator.serviceWorker.register('sw.js?v=5', { updateViaCache: 'none' }).then(reg => {
+  if ('serviceWorker' in navigator && ok) navigator.serviceWorker.register('sw.js?v=6', { updateViaCache: 'none' }).then(reg => {
     // 하루 한 번, 인터넷이 끊겼을 때 쓸 화면 파일 사본을 새로 받아 둠
     let last = 0; try { last = +localStorage.getItem('pwa:refreshed') || 0; } catch (e) { }
     if (Date.now() - last > 864e5 && reg.active) { reg.active.postMessage('refresh'); try { localStorage.setItem('pwa:refreshed', Date.now()); } catch (e) { } }
