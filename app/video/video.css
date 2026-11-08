@@ -312,3 +312,12 @@ body.ve-full .ve-transport { background: var(--ui-panel); padding-bottom: calc(8
   .ve-ph { position: sticky; top: -14px; z-index: 2; background: var(--ui-panel); margin: -14px -14px 10px; padding: 12px 14px 8px; border-bottom: 1px solid var(--ui-border); }
   .ve-ph p { display: none; }
 }
+
+/* 자막: 틀린 말 한 번에 고치기 */
+.ve-reprow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto; gap: 6px; align-items: center; margin-bottom: 4px; }
+.ve-reprow input { min-width: 0; width: 100%; }
+.ve-reprow span { color: var(--ui-muted); }
+.ve-gloss { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.ve-chip { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px 2px 8px; border-radius: 999px; background: var(--ui-panel2); font-size: 12px; }
+.ve-chip button { border: 0; background: transparent; color: var(--ui-muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px; border-radius: 50%; }
+.ve-chip button:hover { color: var(--ui-fg); background: var(--ui-hover); }

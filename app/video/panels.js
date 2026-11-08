@@ -78,7 +78,7 @@
   VE.on('rec', () => { if (VE.rec.state === 'idle') previewStream = null; if (tab === 'rec') { const t = document.querySelector('.ve-rec-time'); if (t && (VE.rec.state === 'recording')) { t.innerHTML = `<span class="dot"></span>${VE.fmtT(VE.rec.elapsed)}`; if (!document.getElementById('recPause') || document.getElementById('recPause').textContent.includes('이어서')) renderTab(); return; } renderTab(); } const b = $('veRecBadge'); if (b) { b.hidden = !(VE.rec.state === 'recording' || VE.rec.state === 'paused'); } });
 
   /* ---------- 자막 · 글로 편집 ---------- */
-  const textUi = { quality: 'base', lang: 'korean', sel: null };
+  const textUi = { quality: 'small', lang: 'korean', sel: null };
   let lastCapKey = '';
   function pText(box) {
     const mids = [...new Set(VE.p.clips.map(c => c.mid))].filter(id => { const m = VE.media(id); return m && m.hasAudio && m.kind !== 'image'; });
@@ -86,7 +86,8 @@
     const cap = VE.p.cap;
     box.innerHTML = head('자막 · 글로 편집', '말을 글로 받아 적습니다. 글을 지우면 영상도 함께 잘립니다.') + `
       ${running ? progress('text', 'stopText') : ''}
-      ${!running && missing.length ? `<div class="ve-sec"><div class="ve-lab">정확도</div>${seg('tQuality', textUi.quality, [['base', '빠르게 (약 80MB)'], ['small', '더 정확하게 (약 250MB)']])}
+      ${!running && missing.length ? `<div class="ve-sec"><div class="ve-lab">정확도</div>${seg('tQuality', textUi.quality, [['base', '빠르게<em>약 80MB</em>'], ['small', '더 정확하게<em>약 250MB</em>'], ['large', '가장 정확하게<em>약 760MB</em>']])}
+        ${textUi.quality === 'large' ? '<p class="ve-hint">한국어를 가장 정확하게 받아 적습니다(Whisper large-v3-turbo). PC 에서 권하며, 처음 한 번 받는 데 시간이 걸리고 받아쓰기도 느립니다.</p>' : ''}
         <div class="ve-lab" style="margin-top:10px">말하는 언어</div>${seg('tLang', textUi.lang, [['korean', '한국어'], ['english', '영어'], ['', '자동']])}
         <button class="btn ink ve-big" id="tRun" style="margin-top:12px"><i data-ic="sparkle"></i>자막 만들기</button>
         <p class="ve-hint">처음 한 번만 모델을 내려받습니다. 소리는 밖으로 보내지 않습니다.</p>
@@ -95,15 +96,25 @@
       ${caps.length ? `<div class="ve-sec ve-inline"><label class="ve-check tight"><input type="checkbox" id="tOn"${cap.on ? ' checked' : ''}><span><b>영상에 자막 넣기</b></span></label></div>
         <div class="ve-sec"><div class="ve-lab">모양</div>${seg('tStyle', cap.style, [['outline', '테두리'], ['box', '상자'], ['word', '말하는 낱말 강조']])}
         <div class="ve-lab" style="margin-top:10px">자리</div>${seg('tPos', cap.pos, [['top', '위'], ['middle', '가운데'], ['bottom', '아래']])}
+        <div class="ve-lab" style="margin-top:10px">한 번에 보일 글자</div>${seg('tLen', cap.len || 'mid', [['short', '짧게'], ['mid', '보통'], ['long', '길게']])}
         <div style="margin-top:10px">${range('tSize', '크기', cap.size, .6, 1.8, .05, v => Math.round(v * 100) + '%')}</div></div>
+        <div class="ve-sec ve-rep"><div class="ve-lab">틀린 말 한 번에 고치기</div>
+          <div class="ve-reprow"><input type="text" id="tFrom" placeholder="틀린 말 (예: 화제)" value="${esc(textUi.from || '')}"><span aria-hidden="true">→</span><input type="text" id="tTo" placeholder="바른 말 (예: 화재)" value="${esc(textUi.to || '')}"><button class="btn sm ink" id="tRep" type="button">바꾸기</button></div>
+          <label class="ve-check tight"><input type="checkbox" id="tKeep"${textUi.keep !== false ? ' checked' : ''}><span>다음에 만드는 자막에도 자동으로 고치기</span></label>
+          ${VE.gloss.list().length ? `<div class="ve-gloss">${VE.gloss.list().map(([a, b]) => `<span class="ve-chip">${esc(a)} → ${esc(b)}<button type="button" data-gl="${esc(a)}" title="지우기" aria-label="${esc(a)} 지우기">×</button></span>`).join('')}</div>` : ''}</div>
         <div class="ve-tools"><button class="btn sm" id="tFill"><i data-ic="search"></i>군말 찾기</button><button class="btn sm danger" id="tDel" disabled><i data-ic="scissors"></i>고른 말 지우기</button><button class="btn sm ghost" id="tExp" title="자막 파일로 저장"><i data-ic="download"></i>SRT</button></div>
         <div class="ve-transcript" id="tDoc" tabindex="0">${renderDoc(caps)}</div>
         <p class="ve-hint">낱말을 누르면 그 자리로 갑니다. 끌어서 고른 뒤 Del 을 누르면 그 부분이 잘립니다. 두 번 누르면 글자를 고칩니다.</p>` : ''}`;
     onSeg(box, 'tQuality', v => { textUi.quality = v; renderTab(); }); onSeg(box, 'tLang', v => { textUi.lang = v; renderTab(); });
-    const run = box.querySelector('#tRun'); if (run) run.onclick = () => runTranscribe(missing);
+    const run = box.querySelector('#tRun'); if (run) run.onclick = () => { if (textUi.quality === 'large' && !(navigator.gpu && localStorage.getItem('ve:asrCpu') !== '1') && !confirm('이 기기는 그래픽 가속(WebGPU)을 쓸 수 없어, 가장 정확한 모델로는 1분 음성에도 십수 분이 걸릴 수 있습니다. 그래도 할까요? (“더 정확하게”를 권합니다)')) return; runTranscribe(missing); };
     const srt = box.querySelector('#tSrt'); if (srt) srt.onclick = () => VE.pickFiles(async files => { if (!files[0]) return; const n = VE.importSrt(await files[0].text(), mids[0]); toast(`자막 ${n}낱말을 넣었습니다`, 2400); renderTab(); }, '.srt');
     onSeg(box, 'tStyle', v => { VE.edit(() => { VE.p.cap.style = v; }); renderTab(); }); onSeg(box, 'tPos', v => { VE.edit(() => { VE.p.cap.pos = v; }); renderTab(); });
     onRange(box, 'tSize', v => { VE.p.cap.size = v; VE.touch(true); }, v => Math.round(v * 100) + '%');
+    onSeg(box, 'tLen', v => { VE.edit(() => { VE.p.cap.len = v; }); renderTab(); });
+    const fr = box.querySelector('#tFrom'), to = box.querySelector('#tTo'), rep = box.querySelector('#tRep'), keep = box.querySelector('#tKeep');
+    if (fr) { const stop = e => { e.stopPropagation(); if (e.key === 'Enter') rep.click(); }; fr.onkeydown = stop; to.onkeydown = stop; fr.oninput = () => { textUi.from = fr.value; }; to.oninput = () => { textUi.to = to.value; }; keep.onchange = () => { textUi.keep = keep.checked; };
+      rep.onclick = () => { const a = fr.value.trim(), b = to.value.trim(); if (!a) { fr.focus(); return; } const n = VE.replaceWords(a, b); if (keep.checked && b) VE.gloss.add(a, b); textUi.from = textUi.to = ''; toast(n ? `${n}곳을 고쳤습니다${keep.checked && b ? '. 다음 자막에도 자동으로 고칩니다' : ''}` : `'${a}' 를 찾지 못했습니다${keep.checked && b ? '. 다음 자막부터 자동으로 고칩니다' : ''}`, 2800); renderTab(); }; }
+    box.querySelectorAll('[data-gl]').forEach(b => b.onclick = () => { VE.gloss.remove(b.dataset.gl); renderTab(); });
     const on = box.querySelector('#tOn'); if (on) on.onchange = () => VE.edit(() => { VE.p.cap.on = on.checked; });
     const exp = box.querySelector('#tExp'); if (exp) exp.onclick = () => VE.download(new Blob(['﻿' + VE.toSrt()], { type: 'text/plain;charset=utf-8' }), VE.safeName(VE.p.name) + '.srt');
     const fill = box.querySelector('#tFill'); if (fill) fill.onclick = () => { const list = VE.findFillers(); if (!list.length) { toast('군말을 찾지 못했습니다. 음성 인식은 "음", "어" 를 적지 않을 때가 많습니다. [군더더기] 탭의 무음 자르기도 함께 쓰세요.', 5000); return; } if (confirm(`"음", "어" 같은 군말 ${list.length}개를 찾았습니다. 모두 잘라 낼까요? (되돌리기로 돌아올 수 있습니다)`)) { VE.cutWords(list); renderTab(); } };

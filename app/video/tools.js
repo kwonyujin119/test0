@@ -26,7 +26,41 @@
 
   /* ---------- 자동 자막 ---------- */
   const HF_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js';
-  VE.WHISPER = { base: { id: 'onnx-community/whisper-base_timestamped', mb: 80, name: '빠르게' }, small: { id: 'onnx-community/whisper-small_timestamped', mb: 250, name: '더 정확하게' } };
+  VE.WHISPER = {
+    base: { id: 'onnx-community/whisper-base_timestamped', mb: 80, name: '빠르게' },
+    small: { id: 'onnx-community/whisper-small_timestamped', mb: 250, name: '더 정확하게' },
+    /* 한국어 정확도가 가장 높음. 4비트로 줄인 판 (인코더 425MB + 디코더 334MB) */
+    large: { id: 'onnx-community/whisper-large-v3-turbo_timestamped', mb: 760, name: '가장 정확하게', dtype: { encoder_model: 'q4', decoder_model_merged: 'q4' } },
+  };
+  /* 받아쓰기에서 자주 틀리는 말 → 바른 말 (이 기기에 기억, 다음 자막에도 자동 적용) */
+  VE.gloss = {
+    list: () => { try { return JSON.parse(localStorage.getItem('ve:gloss') || '[]'); } catch (e) { return []; } },
+    save: l => { try { localStorage.setItem('ve:gloss', JSON.stringify(l.slice(-200))); } catch (e) { } },
+    add: (a, b) => { const l = VE.gloss.list().filter(x => x[0] !== a); l.push([a, b]); VE.gloss.save(l); },
+    remove: a => VE.gloss.save(VE.gloss.list().filter(x => x[0] !== a)),
+  };
+  /* 받아 적은 낱말 전체에서 바꾸기 (낱말 안의 일부도 바꿈) → 바꾼 낱말 수 */
+  /* 낱말 여러 개에 걸친 말도 찾음 (예: "소화 전" → "소화전"): 걸친 낱말들을 하나로 합쳐 바꿈 */
+  const replaceIn = (ws, from, to) => {
+    let n = 0;
+    for (let guard = 0; guard < 2000; guard++) {
+      const starts = []; let S = ''; ws.forEach((w, i) => { starts.push(S.length); S += (i ? ' ' : '') + w.t; if (i) starts[i]++; });
+      let at = -1, from0 = 0; for (; ;) { at = S.indexOf(from, from0); if (at < 0) break; /* 이미 바꾼 결과 안의 일치는 건너뜀 */ if (to.includes(from) && S.slice(at - to.indexOf(from), at - to.indexOf(from) + to.length) === to) { from0 = at + 1; continue; } break; }
+      if (at < 0) break;
+      const end = at + from.length; let a = 0, b = 0; ws.forEach((w, i) => { if (starts[i] <= at) a = i; if (starts[i] < end) b = i; });
+      const span = ws.slice(a, b + 1), text = span.map(w => w.t).join(' '), off = at - starts[a];
+      /* 바꾼 말에 띄어쓰기가 있으면 낱말로 다시 나누고 시간을 글자 수대로 나눔 (낱말 강조 자막이 어긋나지 않게) */
+      const parts = (text.slice(0, off) + to + text.slice(off + from.length)).trim().split(/\s+/).filter(Boolean), s0 = ws[a].s, e0 = ws[b].e, tot = parts.reduce((x, p) => x + p.length, 0) || 1; let cur = s0;
+      const made = parts.map(p => { const d = (e0 - s0) * p.length / tot, w = { s: Math.round(cur * 1000) / 1000, e: Math.round((cur + d) * 1000) / 1000, t: p }; cur += d; return w; });
+      ws.splice(a, b - a + 1, ...made); n++;
+    }
+    return n;
+  };
+  VE.replaceWords = (from, to, mids) => {
+    from = String(from || '').trim(); to = String(to || '').trim(); if (!from || from === to) return 0; let n = 0;
+    for (const m of VE.p.media) { if (!m.words || (mids && !mids.includes(m.id))) continue; n += replaceIn(m.words, from, to); }
+    if (n) { VE.capDirty(); VE.saveSoon(); VE.emit('words'); } return n;
+  };
   const workerSrc = `
     import { pipeline, env } from '${HF_URL}';
     env.allowLocalModels = false;
@@ -72,7 +106,7 @@
   /* onProg({stage, ratio}) */
   VE.transcribe = async (mid, { quality, lang, onProg, signal }) => {
     const model = VE.WHISPER[quality] || VE.WHISPER.base; let gpu = !cpuOnly() && await hasGpu();
-    const modelCfg = () => ({ device: gpu ? 'webgpu' : 'wasm', dtype: gpu ? { encoder_model: 'fp32', decoder_model_merged: 'q8' } : { encoder_model: 'q8', decoder_model_merged: 'q8' } });
+    const modelCfg = () => ({ device: gpu ? 'webgpu' : 'wasm', dtype: model.dtype || (gpu ? { encoder_model: 'fp32', decoder_model_merged: 'q8' } : { encoder_model: 'q8', decoder_model_merged: 'q8' }) });
     const call = (msg, transfer, limit) => new Promise((res, rej) => {
       const w = getWorker(); let timer = 0;
       const fin = () => { clearTimeout(timer); w.removeEventListener('message', on); w.removeEventListener('error', onErr); };
@@ -107,7 +141,7 @@
       }
       m.words = words.slice(); VE.capDirty();
     }
-    m.words = tighten(mid, dedupe(words)); m.lang = lang; VE.capDirty(); VE.emit('words');
+    m.words = glossApply(tighten(mid, dropGhosts(mid, dedupe(words)))); m.lang = lang; VE.capDirty(); VE.emit('words');
     return m.words;
   };
   /* 음성 인식은 문장 첫 낱말에 앞쪽 무음을 포함하곤 한다. 소리 크기를 보고 낱말의 시작과 끝을 실제 말소리에 맞춤 */
@@ -122,12 +156,36 @@
       return e - s > .05 ? { s: Math.round(s * 1000) / 1000, e: Math.round(e * 1000) / 1000, t: w.t } : w;
     });
   }
-  /* 말이 없는 곳의 잘 알려진 헛글자와 연속 반복 제거 */
+  /* 같은 낱말 · 같은 구절(4낱말까지)이 세 번 넘게 잇달아 나오면 받아쓰기 헛돎으로 보고 두 번까지만 남김 */
   function dedupe(ws) {
-    const out = []; let run = 0;
+    let out = []; let run = 0;
     for (const w of ws) { const last = out[out.length - 1]; if (last && last.t === w.t) { run++; if (run >= 2) continue; } else run = 0; out.push(w); }
+    for (let n = 2; n <= 4; n++) {
+      const res = []; let i = 0;
+      while (i < out.length) {
+        const key = k => out.slice(k, k + n).map(x => x.t).join(' ');
+        let rep = 1; const k0 = key(i); while (i + (rep + 1) * n <= out.length && key(i + rep * n) === k0) rep++;
+        if (rep > 2) { res.push(...out.slice(i, i + 2 * n)); i += rep * n; } else { res.push(out[i]); i++; }
+      }
+      out = res;
+    }
     return out;
   }
+  /* 헛말 걸러내기: 말소리가 거의 없는 곳의 낱말, 그리고 Whisper 가 조용한 끝부분에 잘 지어내는 인사말 */
+  const GHOST = /(시청해\s*주셔서\s*감사합니다|구독과\s*좋아요|좋아요와\s*구독|구독\s*부탁|알림\s*설정|MBC\s*뉴스|KBS\s*뉴스|SBS\s*뉴스|자막\s*(제공|제작|by)|Amara|다음\s*(영상|시간)에\s*(만나요|뵙겠습니다))/;
+  function dropGhosts(mid, ws) {
+    const pk = VE.rt.get(mid) && VE.rt.get(mid).peaks, hz = VE.PEAK_HZ; if (!pk || !ws.length) return ws;
+    const sample = []; for (let i = 0; i < pk.length; i += Math.max(1, Math.floor(pk.length / 4000))) sample.push(pk[i]); sample.sort((a, b) => a - b);
+    const floor = sample[Math.floor(sample.length * .15)] || 0, loud = sample[Math.floor(sample.length * .95)] || 0; if (loud <= 0) return ws;
+    const level = w => { const a = Math.floor(w.s * hz), b = Math.min(pk.length - 1, Math.ceil(w.e * hz)); let mx = 0; for (let i = a; i <= b; i++) if (pk[i] > mx) mx = pk[i]; return mx; };
+    /* 인사말 헛말: 문장 단위로 찾아서 소리가 약하면 지움 */
+    const text = ws.map(w => w.t).join(' '), drop = new Set();
+    let pos = 0; const starts = ws.map(w => { const s = pos; pos += w.t.length + 1; return s; });
+    for (const mt of text.matchAll(new RegExp(GHOST.source, 'g'))) { const a = mt.index, b = a + mt[0].length; const idx = ws.map((w, i) => i).filter(i => starts[i] < b && starts[i] + ws[i].t.length > a); const lv = Math.max(...idx.map(i => level(ws[i]))); if (lv < loud * .35) idx.forEach(i => drop.add(i)); }
+    return ws.filter((w, i) => !drop.has(i) && !(level(w) < Math.max(floor * 1.6, loud * .05)));
+  }
+  /* 자주 틀리는 말 자동 고치기 */
+  function glossApply(ws) { for (const [a, b] of VE.gloss.list()) if (a && a !== b) replaceIn(ws, a, b || ''); return ws; }
   VE.FILLER = /^(음+|으+음*|어+|아+|에+|흠+|음\.*|어\.*|아\.*)[.,…]*$/;
   VE.findFillers = () => { const out = []; for (const c of VE.captions()) for (const w of c.words) if (VE.FILLER.test(w.t)) out.push(w); return out; };
   /* 낱말 목록 지우기: 원본 구간 → 타임라인 구간 → 잘라 내기 */
@@ -205,8 +263,8 @@
   const Q = 16000; /* 기준점 저장 배율 (Int16) */
   const trackOne = async (mid, { ranges, faces, mesh, onProg, signal }) => {
     const MB = await VE.mb(), r = VE.rt.get(mid), m = VE.media(mid); await VE.openInput(mid); if (!r.vTrack) throw new Error('영상이 없는 파일입니다');
-    /* 얼굴 덮기는 입 모양까지 따라가야 해서 기준점 468개를 초당 15장 기록 */
-    const fps = mesh ? 15 : (r.track && r.track.mesh ? r.track.fps : 12);
+    /* 얼굴 덮기는 입 모양 · 빠른 움직임까지 따라가야 해서 기준점 468개를 초당 30장 기록 */
+    const fps = mesh ? 30 : (r.track && r.track.mesh ? r.track.fps : 12);
     if (!r.track || r.track.fps !== fps || (r.track.faces || 1) < (faces || 1) || (mesh && !r.track.mesh)) { r.track = { fps, faces: faces || 1, frames: [], mesh: mesh ? [] : undefined }; }
     const tr = r.track, want = []; (ranges || [[0, m.dur]]).forEach(([a, b]) => { for (let i = Math.floor(a * fps); i <= Math.ceil(b * fps); i++) if (tr.frames[i] === undefined && i / fps <= m.dur) want.push(i); });
     want.sort((x, y) => x - y); const uniq = want.filter((v, i) => v !== want[i - 1]); if (!uniq.length) return tr;

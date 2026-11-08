@@ -185,7 +185,12 @@ const VE = window.VE = {};
   const lowerWord = (ws, t) => { let lo = 0, hi = ws.length; while (lo < hi) { const m = (lo + hi) >> 1; if (ws[m].e < t) lo = m + 1; else hi = m; } return lo; };
   VE.captions = () => {
     if (capCache) return capCache;
-    const out = [], { starts } = VE.layout(), max = VE.p.cap.maxChars || 26; let cur = null;
+    /* 한 자막 글자 수: 설정값, 세로 화면은 줄을 짧게 */
+    const [ax, ay] = VE.ASPECTS[VE.p.aspect] || [16, 9], vertical = ay > ax, len0 = VE.p.cap.len || 'mid';
+    const max = ({ short: vertical ? 12 : 18, mid: vertical ? 16 : 26, long: vertical ? 24 : 38 })[len0] || 26;
+    const out = [], { starts } = VE.layout(); let cur = null;
+    /* 말을 나누기 좋은 곳: 문장 끝, 쉼표, 이어 주는 말끝(…고 · …서 · …며 · …는데 · …지만 …) */
+    const SOFT = /(,|고|서|며|면|데|지만|니까|으니|는데|은데|도록|면서|거나)$/;
     const flush = () => { if (cur && cur.words.length) { cur.text = cur.words.map(w => w.t).join(' '); cur.end = cur.words[cur.words.length - 1].e; out.push(cur); } cur = null; };
     VE.p.clips.forEach((c, i) => {
       const m = VE.media(c.mid); if (!m || !m.words || !m.words.length) { flush(); return; }
@@ -194,7 +199,16 @@ const VE = window.VE = {};
         const w = ws[k]; if ((w.s + w.e) / 2 < c.in || (w.s + w.e) / 2 > c.out) continue;
         const s = starts[i] + (Math.max(w.s, c.in) - c.in) / sp, e = starts[i] + (Math.min(w.e, c.out) - c.in) / sp;
         const item = { s, e, t: w.t, mid: c.mid, ws: w.s, we: w.e, ref: w, clip: c.id };
-        if (cur) { const last = cur.words[cur.words.length - 1]; const len = cur.words.reduce((a, x) => a + x.t.length + 1, 0) + w.t.length; if (s - last.e > .6 || len > max || /[.?!。]$/.test(last.t)) flush(); }
+        if (cur) {
+          const last = cur.words[cur.words.length - 1], have = cur.words.reduce((a, x) => a + x.t.length + 1, 0), len = have + w.t.length, lt = String(last.t).trim();
+          if (len > max && !(s - last.e > .45 || /[.?!。]$/.test(lt))) {
+            /* 길이가 넘치면 가장 가까운 말 덩어리 경계(…면 · …고 · 쉼표)로 물러나 나눔 → "호스를 / 연결하고" 대신 "…발생하면 / 소방차가 …" */
+            let j = -1, acc = 0; cur.words.forEach((x, q) => { acc += x.t.length + 1; if (q < cur.words.length - 1 && (SOFT.test(String(x.t).trim()) || /[,.?!]$/.test(String(x.t).trim())) && acc >= max * .3) j = q; });
+            if (j >= 0) { const rest = cur.words.splice(j + 1); flush(); cur = { start: rest[0].s, end: rest[rest.length - 1].e, words: rest }; }
+            else flush();
+          } else if (s - last.e > .45 || /[.?!。]$/.test(lt) || (SOFT.test(lt) && have >= max * .55) || (s - last.e > .25 && have >= max * .4)) flush();
+          if (cur && cur.words.reduce((a, x) => a + x.t.length + 1, 0) + w.t.length > max * 1.15) flush();
+        }
         if (!cur) cur = { start: s, end: e, words: [] };
         cur.words.push(item);
       }
