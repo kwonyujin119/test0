@@ -1173,6 +1173,7 @@
     if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 브리핑 파일이 없습니다.</div>'; return; }
     const t = d.generatedAt ? new Date(d.generatedAt) : null;
     $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. 매일 아침 7시 전에 새로 만들어집니다.`;
+    if (bui.mode === 'feeds') { box.innerHTML = renderFeeds(d); $('bLead').innerHTML += ` · 피드별 중요도 순 5개씩 <b>${d.feedItems || 0}개</b>`; return; }
     const extra = coExtra();
     box.innerHTML = `<div class="sc-brief">${d.items.map(it => {
       const cos = secFindCompanies(it.title, extra), tm = it.time ? it.time.slice(11, 16) : '';
@@ -1403,14 +1404,55 @@
   }
   $('hQ').addEventListener('input', renderHistory);
 
+  /* ---------- 모닝 브리핑: 피드별 5개씩 ---------- */
+  bui.mode = 'top';
+  $('bMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; bui.mode = b.dataset.v; $('bMode').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderBrief(); };
+  function renderFeeds(d) {
+    const feeds = d.byFeed || [];
+    if (!feeds.length) return '<div class="sc-bmsg">이 날의 브리핑에는 피드별 목록이 없습니다 (내일 아침부터 생깁니다).</div>';
+    return `<div class="sc-feeds">${feeds.map(f => `<section class="sc-feed"><h3>${esc(f.name)}</h3>${f.items.length ? `<ol>${f.items.map(it => `<li><a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a><span>${esc(it.source)}${it.time ? ' · ' + it.time.slice(11, 16) : ''}${it.sources > 1 ? ` · ${it.sources}개 언론` : ''}${it.category ? ' · ' + esc(it.category) : ''}</span></li>`).join('')}</ol>` : '<p class="sc-fine" style="text-align:left">오늘은 이 피드에서 받은 기사가 없습니다.</p>'}</section>`).join('')}</div>`;
+  }
+
+  /* =====================================================================
+     전략 브리핑 — 증권사 데일리 시황 · 투자전략 리포트 (briefing 브랜치의 strategy/)
+     ===================================================================== */
+  const sui = { mode: 'daily', dates: null, date: '' };
+  $('sMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; sui.mode = b.dataset.v; $('sMode').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderStrat(); };
+  $('sReload').onclick = () => renderStrat(true);
+  $('sDate').onchange = e => { sui.date = e.target.value; renderStrat(); };
+  async function renderStrat(force) {
+    const box = $('sList'); if (force) { bui.cache = {}; sui.dates = null; }
+    box.innerHTML = '<div class="sc-bmsg">불러오는 중…</div>'; $('sKw').innerHTML = '';
+    const actions = `https://github.com/${briefRepo()}/actions/workflows/strategy-briefing.yml`;
+    let idx; try { idx = await getBrief('strategy/index.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    if (!idx || !(idx.dates || []).length) { box.innerHTML = `<div class="sc-bmsg"><b>아직 전략 브리핑이 없습니다.</b><br>매일 아침 7시 10분쯤 만들어집니다. 지금 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Strategy briefing</a> 에서 [Run workflow] 를 누르고 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`; $('sDate').innerHTML = ''; return; }
+    sui.dates = idx.dates; if (!sui.date || !sui.dates.includes(sui.date)) sui.date = sui.dates[0];
+    $('sDate').innerHTML = sui.dates.map(d => { const x = new Date(d + 'T00:00'); return `<option value="${d}"${d === sui.date ? ' selected' : ''}>${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}</option>`; }).join('');
+    let d; try { d = await getBrief('strategy/' + sui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 전략 브리핑 파일이 없습니다.</div>'; return; }
+    const list = sui.mode === 'weekly' ? d.weekly || [] : d.daily || [], kw = sui.mode === 'weekly' ? d.weeklyKeywords || [] : d.dailyKeywords || [];
+    const t = d.generatedAt ? new Date(d.generatedAt) : null, dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
+    $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. 매일 07:10 쯤 (08:30 보충).`;
+    $('sKw').innerHTML = kw.length ? '<span>자주 나온 말</span>' + kw.map(k => `<b>${esc(k.word)} <em>${k.count}</em></b>`).join('') : '';
+    box.innerHTML = list.length ? list.map(x => `<article class="sc-rp"><span class="rk">${x.rank}</span>
+      <a class="tt" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a>
+      <div class="mt"><span class="br">${esc(x.broker)}</span><span class="sc-tag">${esc(x.kindName)}</span><span>${esc(x.date)}</span><span>조회 ${num(x.reads, 0)}</span></div>
+      ${x.summary ? `<div class="sm" id="sm${x.nid}">${esc(x.summary)}</div>` : ''}
+      <div class="acts">${x.summary && x.summary.split('\n').length > 4 ? `<button class="btn sm ghost" data-more="${x.nid}">요약 더 보기</button>` : ''}<button class="btn sm" data-snote="${x.nid}">${icon('edit', 14)}노트에 남기기</button><button class="btn sm ghost" data-sask="${x.nid}">${icon('sparkle', 14)}내 종목에 주는 의미 묻기</button></div></article>`).join('') : `<div class="sc-bmsg">${sui.mode === 'weekly' ? '최근 7일 안에 주간 전략 리포트가 없습니다.' : '이 날 모은 데일리 리포트가 없습니다.'}</div>`;
+    const byId = id => list.find(x => x.nid === id);
+    box.querySelectorAll('[data-more]').forEach(b => b.onclick = () => { const el = $('sm' + b.dataset.more); el.classList.toggle('open'); b.textContent = el.classList.contains('open') ? '접기' : '요약 더 보기'; });
+    box.querySelectorAll('[data-snote]').forEach(b => b.onclick = () => { const x = byId(b.dataset.snote); editNote(null, ymdLocal(new Date()), `[${x.broker}] ${x.title}\n${x.link}\n`); });
+    box.querySelectorAll('[data-sask]').forEach(b => b.onclick = () => { const x = byId(b.dataset.sask); show('chat'); send(`${x.broker} 의 "${x.title}" (${x.date}) 리포트 요약이야. 이 전략이 내 보유 · 관심 종목(get_portfolio)과 나의 원칙에 주는 의미를 짧게 정리해 줘.\n\n${x.summary}`); });
+  }
+
   /* =====================================================================
      화면 전환 (2)
      ===================================================================== */
-  const VIEWS = { chat: 'vChat', history: 'vHistory', brief: 'vBrief', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { chat: 'vChat', history: 'vHistory', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'brief') renderBrief(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat();
     try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));

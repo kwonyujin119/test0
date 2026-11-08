@@ -1,4 +1,4 @@
-# SECRET 모닝 브리핑 — 매일 아침 7시(한국) 전에 주식 관련 큰 뉴스 15개를 모아 briefing 브랜치에 저장한다.
+# SECRET 모닝 브리핑 — 매일 아침 7시(한국) 전에 뉴스 피드 19곳에서 중요도 순 5개씩(약 95개)과 전체 큰 이슈 15개를 모아 briefing 브랜치에 저장한다.
 # AI(Claude 등) 토큰을 쓰지 않는다: 뉴스 피드를 모아 "여러 언론이 함께 다룬 정도 + 시장 핵심어"로 고른다 (.github/scripts/morning_briefing.py).
 # 결과는 main 이 아니라 briefing 브랜치에 쌓이므로 사이트 배포 · 교안 저장과 섞이지 않는다.
 # SECRET 화면은 https://raw.githubusercontent.com/<저장소>/briefing/latest.json 을 읽는다.
@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: morning-briefing
+  group: briefing-branch     # 전략 브리핑과 같은 브랜치에 쓰므로 한 번에 하나씩
   cancel-in-progress: false
 
 jobs:
@@ -49,4 +49,5 @@ jobs:
           git add -A
           if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
           git commit -m "모닝 브리핑 $(TZ=Asia/Seoul date +%F)"
-          git push origin HEAD:briefing
+          for i in 1 2 3; do git push origin HEAD:briefing && exit 0; git pull --rebase origin briefing || true; sleep 5; done
+          exit 1
