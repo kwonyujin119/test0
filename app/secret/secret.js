@@ -19,6 +19,7 @@
     refresh: '<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 20v-4h-4"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/>',
     alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
+    calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/>',
   };
   for (const k in ICO) if (!ICONS[k]) ICONS[k] = ICO[k];
   document.querySelectorAll('[data-ic]').forEach(n => { if (ICO[n.dataset.ic]) n.innerHTML = icon(n.dataset.ic); }); // 앞서 빈 칸으로 채워진 자리를 다시 그림
@@ -252,11 +253,12 @@
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
     T.push({ name: 'get_portfolio', description: '사용자가 이 앱에 적어 둔 관심 종목 · 보유 수량 · 평균 단가 · 목표가 · 손절가 · 메모와 마지막으로 불러온 시세를 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'get_journal', description: '사용자의 매매 일지: 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 승률)와 최근 매매 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · 교훈)을 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
+    T.push({ name: 'get_notes', description: '사용자가 노트 탭에 날짜별로 적은 메모를 돌려준다. company 를 주면 그 기업이 들어간 노트만 (최근 60개).', input_schema: { type: 'object', properties: { company: { type: 'string', description: '기업 이름 (선택, 예: 삼성전자)' } }, additionalProperties: false } });
     T.push({ name: 'save_memory', description: '앞으로의 답에 계속 필요한 사용자 정보 · 선호를 한 문장으로 기억한다. 사용자가 "기억해" 라고 했거나 투자 성향 · 제약을 새로 알았을 때만 쓴다. 시세처럼 금방 바뀌는 정보나 이미 프로필에 있는 내용은 저장하지 않는다. 사용자는 나의 원칙 화면에서 보고 지울 수 있다.', input_schema: { type: 'object', properties: { text: { type: 'string', description: '기억할 한 문장' } }, required: ['text'], additionalProperties: false } });
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_portfolio: '내 종목', get_journal: '매매 일지', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -272,6 +274,7 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'get_notes': { const c = String(input.company || '').trim(); const list = notes.filter(n => !c || (n.companies || []).includes(c) || String(n.text).includes(c)).sort((a, b) => a.date.localeCompare(b.date)).slice(-60); return { company: c || null, count: list.length, notes: list.map(n => ({ date: n.date, companies: n.companies, text: n.text })) }; }
       case 'get_journal': return { stats: jStats(), checklist: me.checklist, trades: journal.slice(-40) };
       case 'save_memory': { const t = String(input.text).trim().slice(0, 200); if (!me.notes.some(n => n.text === t)) { me.notes.push({ t: Date.now(), text: t, by: 'AI' }); me.notes = me.notes.slice(-50); saveMe(); } return { saved: t, total: me.notes.length }; }
       case 'get_portfolio': return { items: watch.items, quotes: watch.quotes, note: '수량 · 평균 단가가 0 이면 관심만 있는 종목' };
@@ -291,7 +294,7 @@
 - 쓸 수 있는 도구: ${tools.join(', ') || '없음'}. ${dataFor('quote') ? '' : '시세 API 가 등록되어 있지 않으니, 가격을 말할 때는 웹 검색 결과나 사용자가 준 숫자만 쓰고 그 사실을 밝힙니다. '}
 - 가격 · 등락률 · 지표 · 날짜는 도구 결과나 검색 결과에 있는 것만 말하고, 언제 기준인지 적습니다. 모르는 숫자는 지어내지 말고 "확인 필요"라고 씁니다.
 - 지표 계산(수익률 · 이동평균 · RSI · 변동성)은 get_price_history 결과를, 비중 · 수량은 position_size 결과를 씁니다.
-- 사용자의 보유 · 관심 종목이 관련되면 get_portfolio 로, 과거 매매 · 습관이 관련되면 get_journal 로 먼저 확인합니다.
+- 사용자의 보유 · 관심 종목이 관련되면 get_portfolio 로, 과거 매매 · 습관이 관련되면 get_journal 로, 특정 기업에 대해 사용자가 적어 둔 생각이 관련되면 get_notes 로 먼저 확인합니다.
 - 사용자가 "기억해" 라고 하거나 앞으로 계속 필요한 사용자 정보(성향 · 제약 · 선호)를 새로 알게 되면 save_memory 로 한 문장만 저장하고, 저장했다고 짧게 말합니다.
 
 종목 · 매매 판단을 물으면 이 순서로 짧게:
@@ -986,7 +989,7 @@
         <td class="why">${t.reason ? `<b>이유</b> ${esc(t.reason)}` : ''}${t.lesson ? `<br><b>교훈</b> ${esc(t.lesson)}` : ''}</td>
         <td><span class="acts"><button class="btn ghost" data-jed="${i}" title="고치기 · 청산 적기" aria-label="${esc(t.symbol)} 고치기">${icon('edit', 15)}</button><button class="btn ghost" data-jrm="${i}" title="지우기" aria-label="${esc(t.symbol)} 지우기">${icon('trash', 15)}</button></span></td></tr>`;
     }).join('');
-    $('jTable').innerHTML = `<thead><tr><th>날짜</th><th>종목</th><th>진입가</th><th>수량</th><th>손절</th><th>목표</th><th>청산 · 현재가</th><th>결과</th><th>손익</th><th>그때 감정</th><th>체크</th><th>이유 · 교훈</th><th></th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="13">아직 기록이 없습니다. 살 때 [매매 기록] 으로 이유 · 손절가 · 감정을 적고, 팔 때 같은 줄을 열어 청산가와 교훈을 적으세요.</td></tr>'}</tbody>`;
+    $('jTable').innerHTML = `<thead><tr><th>날짜</th><th class="sym">종목</th><th>진입가</th><th>수량</th><th>손절</th><th>목표</th><th>청산 · 현재가</th><th>결과</th><th>손익</th><th>그때 감정</th><th>체크</th><th>이유 · 교훈</th><th></th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="13">아직 기록이 없습니다. 살 때 [매매 기록] 으로 이유 · 손절가 · 감정을 적고, 팔 때 같은 줄을 열어 청산가와 교훈을 적으세요.</td></tr>'}</tbody>`;
     const bc = st.byChecklist, a = bc['체크리스트 모두 지킴'], b = bc['일부만 지킴'];
     $('jNote').textContent = (st.closedTrades < 5 ? `끝난 매매가 ${st.closedTrades}건입니다. 5건 이상 쌓이면 통계가 의미 있어지고, 20건 이상이면 계산기의 승률로 쓸 만합니다. ` : '') + (a && b ? `체크리스트를 다 지켰을 때 승률 ${a.winRatePct}% (${a.trades}건) · 일부만 지켰을 때 ${b.winRatePct}% (${b.trades}건). ` : '') + 'R = (청산가 − 진입가) ÷ (진입가 − 손절가). 1R 은 처음 정한 손실 한 번만큼입니다.';
     $('jTable').querySelectorAll('[data-jed]').forEach(b => b.onclick = () => editTrade(+b.dataset.jed));
@@ -1042,19 +1045,151 @@
   $('wAuto').onchange = e => { cfg.auto = +e.target.value; saveCfg(); setAuto(); toast(cfg.auto ? `${cfg.auto}분마다 시세를 다시 불러옵니다 (이 화면을 열어 둔 동안)` : '자동 새로 고침을 껐습니다', 2400); };
 
   /* =====================================================================
+     노트 — 날짜별 메모 · 기업 탭 · 달력
+     ===================================================================== */
+  const K_NOTES = 'sec:notes';
+  let notes = LS.get(K_NOTES, []);
+  const saveNotes = () => { LS.set(K_NOTES, notes); $('cNotes').textContent = notes.length || ''; };
+  const ymdLocal = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const nui = { co: '', month: null, day: ymdLocal(new Date()) };
+  /* 사전 + 관심 종목 · 매매 일지 · 노트에서 이미 쓴 이름 */
+  const coExtra = () => [...watch.items.flatMap(it => [it.name, it.symbol]), ...journal.map(t => t.symbol), ...notes.flatMap(n => n.companies || [])].filter(Boolean);
+  function coCounts() { const m = new Map(); for (const n of notes) for (const c of n.companies || []) m.set(c, (m.get(c) || 0) + 1); return [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])); }
+  const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  function renderNotes() {
+    $('cNotes').textContent = notes.length || '';
+    if (!nui.month) { const d = new Date(nui.day); nui.month = new Date(d.getFullYear(), d.getMonth(), 1); }
+    const counts = coCounts(); if (nui.co && !counts.some(([c]) => c === nui.co)) nui.co = '';
+    $('nTabs').innerHTML = `<button type="button" role="tab" data-co="" class="${nui.co ? '' : 'on'}" aria-selected="${!nui.co}">전체 <em>${notes.length}</em></button>` + counts.map(([c, n]) => `<button type="button" role="tab" data-co="${esc(c)}" class="${nui.co === c ? 'on' : ''}" aria-selected="${nui.co === c}">${esc(c)} <em>${n}</em></button>`).join('');
+    $('nTabs').querySelectorAll('[data-co]').forEach(b => b.onclick = () => { nui.co = b.dataset.co; const ds = notes.filter(n => (n.companies || []).includes(nui.co)).map(n => n.date).sort(); if (nui.co && ds.length) { nui.day = ds[ds.length - 1]; const d = new Date(nui.day); nui.month = new Date(d.getFullYear(), d.getMonth(), 1); } renderNotes(); });
+    /* 고른 기업의 노트 날짜 (다른 달로 바로 가기) */
+    if (nui.co) {
+      const ds = [...new Set(notes.filter(n => (n.companies || []).includes(nui.co)).map(n => n.date))].sort().reverse();
+      $('nDates').innerHTML = `<span>${esc(nui.co)} 노트한 날</span>` + ds.map(d => `<button type="button" data-go="${d}" class="${d === nui.day ? 'on' : ''}">${d.slice(2).replace(/-/g, '.')}</button>`).join('');
+      $('nDates').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { nui.day = b.dataset.go; const d = new Date(nui.day); nui.month = new Date(d.getFullYear(), d.getMonth(), 1); renderNotes(); });
+    } else $('nDates').innerHTML = '';
+    /* 달력 */
+    const m = nui.month, first = new Date(m.getFullYear(), m.getMonth(), 1), start = new Date(first); start.setDate(1 - first.getDay());
+    $('nMonth').textContent = `${m.getFullYear()}년 ${m.getMonth() + 1}월`;
+    const byDay = {}; for (const n of notes) (byDay[n.date] = byDay[n.date] || []).push(n);
+    const today = ymdLocal(new Date());
+    let html = ['일', '월', '화', '수', '목', '금', '토'].map((w, i) => `<div class="wd${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${w}</div>`).join('');
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(start); d.setDate(start.getDate() + i); const k = ymdLocal(d), list = byDay[k] || [];
+      if (i >= 35 && d.getMonth() !== m.getMonth()) break;
+      const hit = nui.co && list.some(n => (n.companies || []).includes(nui.co));
+      const shown = nui.co && hit ? list.filter(n => (n.companies || []).includes(nui.co)) : list;
+      const label = n => (n.companies && n.companies.length ? n.companies.slice(0, 2).join(' · ') + ' — ' : '') + String(n.text || '').split('\n')[0];
+      html += `<button type="button" class="sc-d${d.getMonth() !== m.getMonth() ? ' out' : ''}${k === today ? ' today' : ''}${k === nui.day ? ' sel' : ''}${list.length ? ' has' : ''}${hit ? ' hit' : ''}" data-day="${k}" aria-label="${k} 노트 ${list.length}개"><span class="dn">${d.getDate()}</span><span class="lines">${shown.slice(0, 2).map(n => `<span>${esc(label(n))}</span>`).join('')}</span>${shown.length > 2 ? `<span class="more">+${shown.length - 2}</span>` : ''}</button>`;
+    }
+    $('nGrid').innerHTML = html; $('nGrid').closest('.sc-cal').classList.toggle('filter', !!nui.co);
+    $('nGrid').querySelectorAll('[data-day]').forEach(b => { b.onclick = () => { nui.day = b.dataset.day; renderNotes(); }; b.ondblclick = () => editNote(null, b.dataset.day); });
+    /* 고른 날의 노트 */
+    const list = (byDay[nui.day] || []).slice().sort((a, b) => (a.created || 0) - (b.created || 0));
+    const dd = new Date(nui.day + 'T00:00'); const wd = ['일', '월', '화', '수', '목', '금', '토'][dd.getDay()];
+    $('nDay').innerHTML = `<h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 (${wd})</h2><p class="sub">${list.length ? `노트 ${list.length}개${nui.co ? ` · ${esc(nui.co)} 관련 ${list.filter(n => (n.companies || []).includes(nui.co)).length}개` : ''}` : '이 날 노트가 없습니다. 달력의 날짜를 두 번 누르거나 아래 단추로 적으세요.'}</p>
+      ${list.map(n => { const rel = !nui.co || (n.companies || []).includes(nui.co); return `<div class="sc-nitem${rel ? '' : ' dim'}"><div class="cos">${(n.companies || []).map(c => `<button type="button" class="sc-co" data-pick="${esc(c)}">${esc(c)}</button>`).join('')}</div><div class="txt">${linkify(n.text)}</div><div class="ft"><span>${n.updated ? new Date(n.updated).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}</span><span class="grow"></span><button class="sc-x" data-ned="${n.id}" title="고치기" aria-label="고치기">${icon('edit', 14)}</button><button class="sc-x" data-nrm="${n.id}" title="지우기" aria-label="지우기">${icon('trash', 14)}</button></div></div>`; }).join('')}
+      <button class="btn" id="nAddDay" style="margin-top:4px">${icon('plus', 15)}이 날에 노트 추가</button>`;
+    $('nAddDay').onclick = () => editNote(null, nui.day);
+    $('nDay').querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { nui.co = b.dataset.pick; renderNotes(); });
+    $('nDay').querySelectorAll('[data-ned]').forEach(b => b.onclick = () => editNote(b.dataset.ned));
+    $('nDay').querySelectorAll('[data-nrm]').forEach(b => b.onclick = async () => { if (!(await confirmBox('노트를 지울까요?', '이 기기에서 지웁니다. 되돌릴 수 없습니다.', '지우기'))) return; notes = notes.filter(n => n.id !== b.dataset.nrm); saveNotes(); renderNotes(); });
+  }
+  function editNote(id, day, preset) {
+    const n = id ? notes.find(x => x.id === id) : { date: day || nui.day || ymdLocal(new Date()), text: preset || '', companies: [] };
+    let cos = (n.companies || []).slice(), removed = new Set();
+    const d = dialog(`<h3>${id ? '노트 고치기' : '노트 추가'}</h3><form class="sc-form">
+      <label>날짜<input type="date" name="date" value="${esc(n.date)}" required></label>
+      <label>내용<textarea name="text" rows="7" placeholder="예) 삼성전자 HBM 납품 기사 — 다음 주 실적 발표 전에 비중 점검. 링크도 붙여 넣을 수 있습니다.">${esc(n.text)}</textarea></label>
+      <div><div class="hint" style="margin:0 0 4px">기업 (글에서 저절로 찾음 · 누르면 뺌)</div><div class="sc-cochips" id="neCos"></div></div>
+      <div class="sc-add-row" style="margin-top:0"><input type="text" id="neCoNew" placeholder="기업 직접 더하기 (Enter)"><button type="button" class="btn" id="neCoAdd">${icon('plus', 15)}더하기</button></div>
+      <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">저장</button></div></form>`, 'sc-dlg wide');
+    const f = d.el.querySelector('form');
+    /* 직접 더한 기업(글에 없는 것)은 그대로 두고, 나머지는 글에서 다시 찾음 */
+    const manual = new Set((n.companies || []).filter(c => !secFindCompanies(n.text, coExtra()).includes(c)));
+    const detect = () => { const auto = secFindCompanies(f.text.value, coExtra()); cos = [...new Set([...auto, ...manual])].filter(c => !removed.has(c)); draw(); };
+    const draw = () => { const box = d.el.querySelector('#neCos'); box.innerHTML = cos.length ? cos.map(c => `<button type="button" class="sc-co" data-rm="${esc(c)}" title="빼기">${esc(c)}${icon('x', 11)}</button>`).join('') : '<span class="none">아직 없습니다 — 내용에 기업 이름을 쓰면 여기에 생깁니다</span>'; box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { removed.add(b.dataset.rm); manual.delete(b.dataset.rm); cos = cos.filter(c => c !== b.dataset.rm); draw(); }); };
+    const addCo = () => { const v = d.el.querySelector('#neCoNew').value.trim(); if (!v) return; removed.delete(v); manual.add(v); if (!cos.includes(v)) cos.push(v); d.el.querySelector('#neCoNew').value = ''; draw(); };
+    d.el.querySelector('#neCoAdd').onclick = addCo; d.el.querySelector('#neCoNew').onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addCo(); } };
+    f.text.addEventListener('input', detect); detect(); setTimeout(() => f.text.focus(), 30);
+    d.el.querySelector('[data-x]').onclick = d.close;
+    f.onsubmit = e => {
+      e.preventDefault(); const text = f.text.value.trim(); if (!text) { toast('내용을 적어 주세요', 1800); return; }
+      const o = id ? n : { id: uid(), created: Date.now() };
+      o.date = f.date.value || ymdLocal(new Date()); o.text = text; o.companies = cos.slice(); o.updated = Date.now();
+      if (!id) notes.push(o); saveNotes(); d.close(); nui.day = o.date; const dd = new Date(o.date + 'T00:00'); nui.month = new Date(dd.getFullYear(), dd.getMonth(), 1);
+      if (!$('vNotes').hidden) renderNotes(); else toast(`노트에 남겼습니다${o.companies.length ? ' (' + o.companies.join(', ') + ')' : ''}`, 2400);
+    };
+  }
+  $('nAdd').onclick = () => editNote(null, nui.day);
+  $('nPrev').onclick = () => { nui.month = new Date(nui.month.getFullYear(), nui.month.getMonth() - 1, 1); renderNotes(); };
+  $('nNext').onclick = () => { nui.month = new Date(nui.month.getFullYear(), nui.month.getMonth() + 1, 1); renderNotes(); };
+  $('nToday').onclick = () => { nui.day = ymdLocal(new Date()); nui.month = null; renderNotes(); };
+
+  /* =====================================================================
+     모닝 브리핑 — GitHub Actions 가 매일 아침 briefing 브랜치에 저장한 큰 이슈 15개 (AI 토큰 안 씀)
+     ===================================================================== */
+  const briefRepo = () => { let c = null; try { c = typeof GH !== 'undefined' && GH.load ? GH.load() : null; } catch (e) { } return `${(c && c.owner) || 'kwonyujin119'}/${(c && c.repo) || 'test0'}`; };
+  const briefUrl = f => `https://raw.githubusercontent.com/${briefRepo()}/briefing/${f}?v=${Math.floor(Date.now() / 300000)}`;
+  const bui = { dates: null, date: '', cache: {} };
+  async function getBrief(f) {
+    if (bui.cache[f]) return bui.cache[f];
+    const r = await fetch(briefUrl(f), { cache: 'no-store' });
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error('브리핑을 불러오지 못했습니다 (' + r.status + ')');
+    const j = await r.json(); bui.cache[f] = j; return j;
+  }
+  async function renderBrief(force) {
+    const box = $('bList');
+    if (force) { bui.cache = {}; bui.dates = null; }
+    box.innerHTML = '<div class="sc-bmsg">불러오는 중…</div>';
+    const actions = `https://github.com/${briefRepo()}/actions/workflows/morning-briefing.yml`;
+    let idx;
+    try { idx = await getBrief('index.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}. 인터넷 연결을 확인하고 [다시 불러오기] 를 눌러 주세요.</div>`; return; }
+    if (!idx || !(idx.dates || []).length) {
+      box.innerHTML = `<div class="sc-bmsg"><b>아직 브리핑이 없습니다.</b><br>매일 아침 6시 30분쯤 GitHub 이 뉴스를 모아 7시 전에 여기에 올립니다. 지금 바로 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Morning briefing</a> 에서 [Run workflow] 를 누르고, 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`;
+      $('bDate').innerHTML = ''; return;
+    }
+    bui.dates = idx.dates; if (!bui.date || !bui.dates.includes(bui.date)) bui.date = bui.dates[0];
+    $('bDate').innerHTML = bui.dates.map(d => { const x = new Date(d + 'T00:00'); return `<option value="${d}"${d === bui.date ? ' selected' : ''}>${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}</option>`; }).join('');
+    const i = bui.dates.indexOf(bui.date); $('bPrev').disabled = i >= bui.dates.length - 1; $('bNext').disabled = i <= 0;
+    let d; try { d = await getBrief(bui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 브리핑 파일이 없습니다.</div>'; return; }
+    const t = d.generatedAt ? new Date(d.generatedAt) : null;
+    $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. 매일 아침 7시 전에 새로 만들어집니다.`;
+    const extra = coExtra();
+    box.innerHTML = `<div class="sc-brief">${d.items.map(it => {
+      const cos = secFindCompanies(it.title, extra), tm = it.time ? it.time.slice(11, 16) : '';
+      return `<article class="sc-bi"><span class="rk">${it.rank}</span>
+        <a class="tt" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>
+        <div class="mt"><span class="sc-tag">${esc(it.category)}</span><span>${esc(it.source)}${tm ? ' · ' + tm : ''}</span><span>${it.sources > 1 ? `${it.sources}개 언론` : '단독 보도'}</span>${cos.map(c => `<button type="button" class="sc-co" data-bco="${esc(c)}" title="${esc(c)} 노트 보기">${esc(c)}</button>`).join('')}</div>
+        <div>${(it.related || []).length ? `<details><summary class="sc-fine" style="text-align:left;margin:0;cursor:pointer">같은 이슈 다른 기사 ${it.related.length}건</summary><ul class="rel">${it.related.map(r => `<li><a href="${esc(r.link)}" target="_blank" rel="noopener">${esc(r.title)}</a> · ${esc(r.source)}</li>`).join('')}</ul></details>` : ''}
+          <div class="acts"><button class="btn sm" data-bnote="${it.rank}">${icon('edit', 14)}노트에 남기기</button><button class="btn sm ghost" data-bask="${it.rank}">${icon('sparkle', 14)}AI 에게 영향 묻기</button></div></div></article>`;
+    }).join('')}</div><p class="sc-fine" style="text-align:left;margin-top:12px">제목을 누르면 원문이 열립니다. [AI 에게 영향 묻기] 를 누를 때만 등록한 AI 토큰을 씁니다.</p>`;
+    const byRank = r => d.items.find(x => x.rank === +r);
+    box.querySelectorAll('[data-bnote]').forEach(b => b.onclick = () => { const it = byRank(b.dataset.bnote); editNote(null, ymdLocal(new Date()), `${it.title}\n${it.link}\n`); });
+    box.querySelectorAll('[data-bask]').forEach(b => b.onclick = () => { const it = byRank(b.dataset.bask); show('chat'); send(`오늘 모닝 브리핑의 이 뉴스가 시장과 내 종목(get_portfolio)에 주는 영향을 짧게 정리해 줘. 필요하면 웹 검색으로 원문 내용을 확인해 줘.\n"${it.title}" (${it.source})\n${it.link}`); });
+    box.querySelectorAll('[data-bco]').forEach(b => b.onclick = () => { nui.co = b.dataset.bco; show('notes'); });
+  }
+  $('bReload').onclick = () => renderBrief(true);
+  $('bDate').onchange = e => { bui.date = e.target.value; renderBrief(); };
+  $('bPrev').onclick = () => { const i = bui.dates.indexOf(bui.date); if (i < bui.dates.length - 1) { bui.date = bui.dates[i + 1]; renderBrief(); } };
+  $('bNext').onclick = () => { const i = bui.dates.indexOf(bui.date); if (i > 0) { bui.date = bui.dates[i - 1]; renderBrief(); } };
+
+  /* =====================================================================
      화면 전환 (2)
      ===================================================================== */
-  const VIEWS = { chat: 'vChat', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { chat: 'vChat', brief: 'vBrief', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'journal') renderJournal(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') renderApis(); if (v === 'chat') renderChat();
+    if (v === 'watch') renderWatch(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'brief') renderBrief(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') renderApis(); if (v === 'chat') renderChat();
     try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
 
   fillIcons(document);
-  $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || '';
+  $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
   renderChatList();
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'chat');

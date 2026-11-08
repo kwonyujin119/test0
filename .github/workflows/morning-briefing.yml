@@ -1,0 +1,52 @@
+# SECRET 모닝 브리핑 — 매일 아침 7시(한국) 전에 주식 관련 큰 뉴스 15개를 모아 briefing 브랜치에 저장한다.
+# AI(Claude 등) 토큰을 쓰지 않는다: 뉴스 피드를 모아 "여러 언론이 함께 다룬 정도 + 시장 핵심어"로 고른다 (.github/scripts/morning_briefing.py).
+# 결과는 main 이 아니라 briefing 브랜치에 쌓이므로 사이트 배포 · 교안 저장과 섞이지 않는다.
+# SECRET 화면은 https://raw.githubusercontent.com/<저장소>/briefing/latest.json 을 읽는다.
+name: Morning briefing
+
+on:
+  schedule:
+    - cron: '30 21 * * *'   # 06:30 한국 시간 (GitHub 예약 실행은 몇 분~수십 분 늦을 수 있어 7시 전에 여유를 둠)
+  workflow_dispatch:         # Actions 화면에서 [Run workflow] 로 바로 실행
+
+permissions:
+  contents: write
+
+concurrency:
+  group: morning-briefing
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 스크립트만 가져오기
+        uses: actions/checkout@v4
+        with:
+          path: src
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: briefing 브랜치 가져오기 (없으면 새로 만듦)
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          if git ls-remote --exit-code --heads "$REPO_URL" briefing >/dev/null; then
+            git clone --depth 1 --branch briefing "$REPO_URL" pub
+          else
+            mkdir pub && cd pub && git init -b briefing && git remote add origin "$REPO_URL"
+          fi
+
+      - name: 뉴스 모아 15개 고르기
+        run: python3 src/.github/scripts/morning_briefing.py --out pub -v
+
+      - name: 저장
+        run: |
+          cd pub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git commit -m "모닝 브리핑 $(TZ=Asia/Seoul date +%F)"
+          git push origin HEAD:briefing
