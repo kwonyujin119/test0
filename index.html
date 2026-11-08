@@ -234,8 +234,8 @@
     const b = $('btnApp'); if (!b) return;
     const P = window.PWA; b.hidden = !P || P.standalone;
     if (!P) return;
-    b.querySelector('span').textContent = P.installed ? '앱 열기 안내' : '앱 설치';
-    b.title = P.installed ? '이미 설치했습니다 — 바탕화면 · 홈 화면의 DPV 아이콘으로 여는 법' : 'DPV 를 앱으로 설치합니다 (바탕화면 · 홈 화면 아이콘, 주소창 없는 창)';
+    b.querySelector('span').textContent = P.installed ? '앱 열기' : '앱 설치';
+    b.title = P.installed ? '설치된 DPV 앱으로 엽니다' : 'DPV 를 앱으로 설치합니다 (바탕화면 · 홈 화면 아이콘, 주소창 없는 창)';
   }
   $('btnApp').onclick = () => { if (window.PWA) PWA.start(); };
   window.addEventListener('load', appBtn);
