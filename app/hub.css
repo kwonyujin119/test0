@@ -13,8 +13,8 @@ html.admin [data-guest] { display: none !important; }
 .ws-gate-err { margin-top: 8px; color: var(--ui-danger); font-size: var(--fs-sm); }
 .ws-gate-modal.shake { animation: ws-shake .3s; }
 @keyframes ws-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
-.hub-notice.guest { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; background: var(--ui-panel2); border-color: var(--ui-border); color: var(--ui-fg); }
-.hub-notice.guest .ico { color: var(--ui-muted); }
+.hub-notice.guest { background: var(--ui-panel2); color: var(--ui-fg); }
+.hub-notice.guest .ico { color: var(--ui-muted); vertical-align: -3px; margin-right: 2px; }
 .hub-notice.guest a { color: var(--ui-accent-fg); font-weight: 600; }
 .rail-role { padding: 0 2px; }
 .rail-role:empty { display: none; }

@@ -63,7 +63,8 @@
 #pwaPill{position:fixed;left:16px;bottom:40px;z-index:90;display:flex;align-items:center;background:var(--ui-ink);color:var(--ui-on-ink);border-radius:999px;box-shadow:var(--ui-shadow-sm);font-size:var(--fs-sm);font-weight:600;overflow:hidden}
 #pwaPill button{display:inline-flex;align-items:center;gap:6px;height:40px;background:none;border:0;color:inherit;font:inherit;padding:0 14px;cursor:pointer}
 #pwaPill [data-x]{padding:0 12px 0 4px}
-#pwaPill .ico{width:16px;height:16px}`;
+#pwaPill .ico{width:16px;height:16px}
+body.has-doc #pwaPill{display:none}`;
     document.head.appendChild(s);
   }
   function showGuide(mode) {
