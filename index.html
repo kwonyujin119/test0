@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>업무 공간</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%231f2328'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>업</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2316171a'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>업</text></svg>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="ws">
-  <div class="ws-head">
+  <header class="ws-head">
     <div class="brand">
       <div class="ws-mark" aria-hidden="true">업</div>
       <div>
@@ -24,96 +24,84 @@
       </div>
     </div>
     <div class="tools" id="headTools"><button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button></div>
-  </div>
+  </header>
 
   <!-- 입장: 게스트 / 관리자 -->
-  <div id="gate" hidden>
+  <main id="gate" hidden>
     <div class="ws-gate">
-      <button type="button" class="ws-banner guest" id="bnGuest">
-        <div class="bn-ico"><i data-ic="eye"></i></div>
-        <div class="bn-kicker">GUEST</div>
-        <h2>게스트로 입장</h2>
-        <p>바로 들어가서 보기만 합니다. 고치거나 저장하는 일은 할 수 없습니다.</p>
+      <section class="ws-banner guest">
+        <div class="bn-top"><span class="bn-ico" aria-hidden="true"><i data-ic="eye"></i></span><span class="bn-kicker">보기 전용</span></div>
+        <h2><button type="button" class="bn-hit" id="bnGuest">게스트로 입장</button></h2>
+        <p>교안을 보고 발표하거나, 한글 문서를 열어 인쇄합니다. 고치거나 저장하지는 않습니다.</p>
         <ul>
-          <li><i data-ic="list"></i>교안 목록 보기</li>
-          <li><i data-ic="play"></i>발표 화면 열기 (리모컨 · 전체 화면)</li>
+          <li><i data-ic="list"></i>교안 목록 · 발표 (리모컨 · 전체 화면)</li>
           <li><i data-ic="doc"></i>한글(hwpx) 문서 열람 · 인쇄</li>
         </ul>
-        <span class="bn-go">바로 입장 <i data-ic="arrowLeft" style="transform:scaleX(-1)"></i></span>
-      </button>
-      <button type="button" class="ws-banner admin" id="bnAdmin">
-        <div class="bn-ico"><i data-ic="lock"></i></div>
-        <div class="bn-kicker">ADMIN</div>
-        <h2>관리자로 입장</h2>
-        <p>접속코드를 입력하면 교안과 문서를 만들고, 고치고, 저장할 수 있습니다.</p>
+        <span class="bn-go" aria-hidden="true">바로 입장<i data-ic="arrowRight"></i></span>
+      </section>
+      <section class="ws-banner admin">
+        <div class="bn-top"><span class="bn-ico" aria-hidden="true"><i data-ic="lock"></i></span><span class="bn-kicker">편집 가능</span></div>
+        <h2><button type="button" class="bn-hit" id="bnAdmin">관리자로 입장</button></h2>
+        <p>접속코드를 넣으면 교안 · 한글 문서 · 영상을 만들고 고쳐 저장합니다.</p>
         <ul>
-          <li><i data-ic="edit"></i>교안 편집 · 새 교안 · PPT 가져오기</li>
-          <li><i data-ic="save"></i>한글 문서 편집 · 저장 · 문서함</li>
-          <li><i data-ic="bookmark"></i>best 문서 올리기 (레퍼런스 쌓기)</li>
+          <li><i data-ic="edit"></i>교안 편집 · 새 교안 · PowerPoint 가져오기</li>
+          <li><i data-ic="save"></i>한글 문서 편집 · 저장 · 문서함 · best 문서</li>
           <li><i data-ic="play"></i>영상 편집 · 화면 녹화 · 자동 자막</li>
         </ul>
-        <span class="bn-go"><i data-ic="key"></i>접속코드 입력</span>
-      </button>
+        <span class="bn-go" aria-hidden="true"><i data-ic="key"></i>접속코드 입력</span>
+      </section>
     </div>
-    <div class="ws-gate-note">접속코드는 <b>실수로 고치는 것을 막는 문</b>입니다. 브라우저 안에서만 확인하므로 진짜 보안 장치는 아닙니다. 실제로 저장할 수 있는 권한은 GitHub 토큰을 넣어 둔 <b>관리자 기기</b>와 <b>내 PC 서버</b>에만 있습니다. 공용 PC 에서는 게스트로 들어가세요.</div>
-  </div>
+    <details class="ws-gate-note">
+      <summary><i data-ic="info"></i>접속코드는 무엇인가요?<i class="chev" data-ic="chevronDown"></i></summary>
+      <p>접속코드는 <b>실수로 고치는 것을 막는 문</b>입니다. 브라우저 안에서만 확인하므로 진짜 보안 장치는 아닙니다. 실제로 저장할 수 있는 권한은 GitHub 토큰을 넣어 둔 <b>관리자 기기</b>와 <b>내 PC 서버</b>에만 있습니다. 공용 PC 에서는 게스트로 들어가세요.</p>
+    </details>
+  </main>
 
-  <!-- 입장 뒤: 작업장 고르기 -->
-  <div id="space" hidden>
+  <!-- 입장 뒤: 작업장 고르기 (순서는 늘 같게) -->
+  <main id="space" hidden>
     <div class="ws-grid">
-      <a class="ws-card" href="hangul.html">
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">한</div><div><h2>한글 작업장</h2><div class="stat" id="hwpStat">hwpx 문서 열기 · 편집 · 저장</div></div></div>
-        <p>한글(hwpx) 문서를 열어 이어서 편집하고, 다시 hwpx 로 저장합니다. 사무실 한글에서 그대로 열립니다.</p>
-        <ul>
-          <li><i data-ic="folder"></i>hwpx 파일 열기<span data-admin> → 편집 → 같은 파일에 저장</span></li>
-          <li data-admin><i data-ic="type"></i>한글과 같은 단축키 (Alt+L 글자 모양, Alt+T 문단 모양 … F1 전체 보기)</li>
-          <li data-admin><i data-ic="lock"></i>암호로 잠근 문서함 — 집·사무실·휴대폰에서 같은 문서</li>
-          <li data-admin><i data-ic="bookmark"></i>best 문서를 올려 두면 레퍼런스로 쌓입니다</li>
-          <li data-guest><i data-ic="print"></i>문서 열람 · 인쇄 · PDF 저장</li>
-        </ul>
-        <span class="go">한글 작업장 열기 <i data-ic="arrowLeft" style="transform:scaleX(-1)"></i></span>
-      </a>
-      <a class="ws-card" href="gyoan.html">
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">교</div><div><h2>교안 작업장</h2><div class="stat" id="deckCount">저장된 교안을 모두 그대로 이어서 씁니다</div></div></div>
-        <p>강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
-        <ul>
-          <li><i data-ic="play"></i>발표 · 프레젠터 리모컨 · 발표자 노트</li>
-          <li data-admin><i data-ic="edit"></i>슬라이드 편집 · 테마 · 표 · 차트 · 수식 · 동영상</li>
-          <li data-admin><i data-ic="upload"></i>PowerPoint 파일(.pptx) 가져오기</li>
-          <li data-guest><i data-ic="list"></i>교안 목록 보기 (편집은 관리자만)</li>
-        </ul>
-        <span class="go">교안 작업장 열기 <i data-ic="arrowLeft" style="transform:scaleX(-1)"></i></span>
-      </a>
-      <a class="ws-card" href="videos.html" id="cardVideo">
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">영</div><div><h2>영상 작업장</h2><div class="stat" id="videoStat">영상 편집 · 화면 녹화 · 자동 자막</div></div></div>
-        <p>강의 영상을 자르고 다듬어 파일로 만듭니다. 파일은 이 기기 안에서만 처리합니다.</p>
-        <ul>
-          <li><i data-ic="edit"></i>타임라인 컷 편집 · 무음 한 번에 자르기</li>
-          <li><i data-ic="doc"></i>자동 자막 · 글을 지우면 영상도 잘림</li>
-          <li><i data-ic="presentation"></i>화면 · 카메라 녹화</li>
-          <li><i data-ic="smile"></i>얼굴을 캐릭터로 · 목소리 정리와 바꾸기</li>
-          <li data-guest><i data-ic="lock"></i>관리자만 쓸 수 있습니다</li>
-        </ul>
-        <span class="go">영상 작업장 열기 <i data-ic="arrowLeft" style="transform:scaleX(-1)"></i></span>
-      </a>
+      <article class="ws-card">
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">한</div><h2><a class="card-link" href="hangul.html">한글 작업장</a></h2></div>
+        <p class="desc" data-admin>설치 없이 · 한글과 같은 단축키 · hwpx 그대로 저장</p>
+        <p class="desc" data-guest>hwpx 문서를 열어 보고 인쇄합니다.</p>
+        <div class="stat" id="hwpStat">문서함 · best 문서 · 내 PC 파일</div>
+        <a class="resume-link empty" id="hwpResume"><span class="rl-text"><span class="rl-title">저장하지 않고 닫은 문서가 없습니다</span></span></a>
+        <span class="go" aria-hidden="true">한글 작업장 열기<i data-ic="arrowRight"></i></span>
+      </article>
+      <article class="ws-card">
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">교</div><h2><a class="card-link" href="gyoan.html">교안 작업장</a></h2></div>
+        <p class="desc">강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
+        <div class="stat" id="deckStat">교안 목록을 읽는 중…</div>
+        <a class="resume-link empty" id="deckResume"><span class="rl-text"><span class="rl-title">최근 교안을 찾는 중…</span></span></a>
+        <span class="go" aria-hidden="true">교안 작업장 열기<i data-ic="arrowRight"></i></span>
+      </article>
+      <article class="ws-card">
+        <div class="card-top"><div class="ws-ico" aria-hidden="true">영</div><h2><a class="card-link" href="videos.html">영상 작업장</a></h2></div>
+        <p class="desc">강의 영상을 자르고 자막을 넣습니다. 파일은 이 기기에서만 처리합니다.</p>
+        <div class="stat" id="videoStat">컷 편집 · 화면 녹화 · 자동 자막</div>
+        <a class="resume-link empty" id="videoResume"><span class="rl-text"><span class="rl-title">이 기기에서 만든 영상이 없습니다</span></span></a>
+        <span class="go" aria-hidden="true">영상 작업장 열기<i data-ic="arrowRight"></i></span>
+      </article>
     </div>
 
-    <div class="ws-app" id="appBox"></div>
+    <div class="ws-app" id="appBox" hidden></div>
     <div class="ws-foot" id="foot"></div>
-  </div>
+  </main>
 </div>
 <script src="app/common.js"></script>
 <script src="app/access.js"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const wantMode = new URLSearchParams(location.search).has('mode'); // 작업장 머리의 모드 표식을 눌러 왔을 때: 다시 고르기
-  const next = new URLSearchParams(location.search).get('next') || '';
+  const params = new URLSearchParams(location.search);
+  const wantMode = params.has('mode'); // 작업장 머리의 모드 표식을 눌러 왔을 때: 다시 고르기
+  const next = params.get('next') || '';
+  const enc = encodeURIComponent;
+
   function showGate() {
     $('gate').hidden = false; $('space').hidden = true;
     $('headSub').textContent = '어떻게 들어올지 고르세요. 보기만 하려면 게스트, 고치려면 관리자입니다.';
     $('headTools').querySelectorAll('.ws-chip, #btnLeave').forEach(n => n.remove());
-    fillIcons($('gate'));
   }
   function showSpace() {
     $('gate').hidden = true; $('space').hidden = false;
@@ -123,42 +111,111 @@
     tools.insertAdjacentHTML('afterbegin', Access.chip() + `<button class="btn ghost" id="btnLeave" title="입장 모드를 다시 고릅니다">${icon('logout', 16)}나가기</button>`);
     $('btnLeave').onclick = () => { Access.leave(); showGate(); };
     tools.querySelector('.ws-chip').onclick = (ev) => { ev.preventDefault(); showGate(); };
-    $('hwpStat').textContent = Access.isAdmin ? 'hwpx 문서 열기 · 편집 · 저장 · best 문서' : 'hwpx 문서 열람 · 인쇄';
-    $('videoStat').textContent = Access.isAdmin ? '영상 편집 · 화면 녹화 · 자동 자막' : '관리자 전용';
-    fillIcons($('space'));
-    renderAppBox(); renderFoot(); countDecks();
+    renderAppBox(); renderFoot();
+    liveDecks(); liveHwp(); liveVideo();
   }
   $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
   $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };
   function go() { if (next && /^[\w.-]+\.html(\?[^\s#]*)?$/.test(next)) { location.href = next; return; } showSpace(); }
 
-  function renderAppBox() {
-    const box = $('appBox'); if (!window.PWA || PWA.standalone) return;
-    if (PWA.installed) {
-      box.innerHTML = `<div class="t"><b>앱을 설치했습니다</b><div>이제 ${/ios|android/.test(PWA.os) ? '홈 화면' : '바탕화면·시작 메뉴·작업 표시줄'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 브라우저 탭은 닫아도 됩니다.</div></div>`;
-      return;
-    }
-    const label = PWA.prompt ? '앱으로 설치 (클릭 한 번)' : '앱으로 설치';
-    box.innerHTML = `<div class="t"><b>업무 공간을 앱으로 설치하세요</b><div>${/ios|android/.test(PWA.os) ? '단추를 누르면 <b>홈 화면</b>에 <b>업무 공간</b> 아이콘이 생기고, 앱처럼 전체 화면으로 열립니다.' : '단추를 누르면 바로 설치되고, 바탕화면·시작 메뉴에 <b>업무 공간</b> 아이콘이 생깁니다. 주소창 없는 전용 창으로 열리고, hwpx 파일도 바로 열 수 있습니다.'}</div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:stretch"><button type="button" class="btn ink" id="btnInstall">${label}</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="업무 공간 설치.cmd" style="text-align:center;font-size:12.5px">안 되면: Windows 설치 파일 받기</a>' : ''}</div>`;
-    $('btnInstall').onclick = () => PWA.start();
+  /* ---------- 카드의 지금 상태: 각 작업장이 이미 쓰는 저장소를 읽기만 함 ---------- */
+  const stat = (id, parts) => { $(id).innerHTML = parts.filter(Boolean).join('<span class="dv" aria-hidden="true">·</span>'); };
+  const placeholder = (id, text) => { $(id).querySelector('.rl-title').textContent = text; };
+  function resume(id, href, label, title, ic) {
+    const a = $(id);
+    a.className = 'resume-link'; a.href = href;
+    a.title = `${label}: ${title}`;
+    a.innerHTML = `${icon(ic || 'clock', 16)}<span class="rl-text"><span class="rl-lbl">${esc(label)}</span><span class="rl-title">${esc(title)}</span></span><span class="rl-go">${icon('arrowRight', 16)}</span>`;
   }
-  window.addEventListener('pwa-change', () => { if (!$('space').hidden) renderAppBox(); });
-  function renderFoot() {
-    const foot = $('foot'); foot.innerHTML = '';
-    if (Access.isGuest) { foot.innerHTML = '게스트 모드에서는 GitHub 연결이나 저장을 하지 않습니다. 고치려면 <a href="#" id="toAdmin">관리자로 입장</a>하세요.'; $('toAdmin').onclick = async (ev) => { ev.preventDefault(); if (await Access.prompt()) showSpace(); }; return; }
-    const cfg = GH.load();
-    if (cfg && GH.token) foot.innerHTML = `GitHub 저장소 <b>${esc(cfg.owner)}/${esc(cfg.repo)}</b> 에 연결되어 있습니다. 두 작업장이 같은 연결을 씁니다.`;
-    else if (cfg) {
-      foot.innerHTML = `이 기기에는 아직 GitHub 연결이 없습니다 (보기 · 발표 · 내 PC 파일 작업은 그대로 됩니다). 저장소에 저장하려면 <a href="#" id="ghOn">GitHub 연결</a> 을 눌러 토큰을 한 번 넣으세요.`;
-      $('ghOn').onclick = async (ev) => { ev.preventDefault(); if (await GH.connect()) renderFoot(); };
-    }
+  /* 저장 시각: 내 PC 서버는 "2026-11-08 18:03", 브라우저 보관은 ISO */
+  const when = s => { const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(s || ''); return !m ? 0 : /T.*(Z|[+-]\d\d:?\d\d)$/.test(s) ? Date.parse(s) || 0 : new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]).getTime(); };
+
+  /* GitHub 저장소: 목록에 날짜가 없으므로 decks/ 를 마지막으로 바꾼 커밋 하나만 봄 (10분 동안 이 탭에 기억 — 요청 한도 아낌) */
+  async function ghLatest(list) {
+    const KEY = 'ws:hubDeckLatest';
+    try { const c = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (c && Date.now() - c.at < 6e5) return c; } catch (e) { }
+    const cs = await GH.api('GET', `/commits?path=decks&per_page=5&sha=${enc(GH.cfg.branch)}`);
+    if (!Array.isArray(cs) || !cs.length) return {};
+    const titles = cs.map(c => (/^교안 저장: (.+)$/m.exec(c.commit.message) || [])[1]).filter(Boolean);
+    const d = titles.map(t => list.find(x => x.name === t || x.title === t)).find(Boolean);
+    const r = { at: Date.now(), t: Date.parse(cs[0].commit.committer.date) || 0, name: d ? d.name : '', title: d ? (d.title || d.name) : (titles[0] || '') };
+    try { sessionStorage.setItem(KEY, JSON.stringify(r)); } catch (e) { }
+    return r;
   }
-  async function countDecks() {
+  async function liveDecks() {
     try {
       await API.init();
       const list = await API.list();
-      if (Array.isArray(list) && list.length) $('deckCount').textContent = `교안 ${list.length}개가 저장되어 있습니다`;
-    } catch (e) { }
+      if (!Array.isArray(list)) return;
+      let latest = null, t = 0;
+      if (list.some(d => d.partial)) { const g = await ghLatest(list).catch(() => ({})); t = g.t || 0; if (g.title) latest = { name: g.name, title: g.title }; }
+      else for (const d of list) { const x = when(d.modified); if (x > t) { t = x; latest = d; } }
+      const drafts = Access.isAdmin ? list.filter(d => Draft.has(d.name)).length : 0;
+      stat('deckStat', [list.length ? `교안 ${list.length}개` : '아직 교안이 없습니다', t ? `마지막 저장 ${fmtAgo(t)}` : '', drafts ? `<span class="dot" aria-hidden="true"></span>저장 안 한 작업본 ${drafts}개` : '']);
+      if (!latest) { placeholder('deckResume', list.length ? '최근에 저장한 교안을 찾지 못했습니다' : (Access.isAdmin ? '첫 교안을 만들어 보세요' : '관리자가 만든 교안이 여기에 보입니다')); return; }
+      if (Access.isGuest) resume('deckResume', latest.name ? 'present.html?deck=' + enc(latest.name) : 'gyoan.html', '바로 발표', latest.title, 'play');
+      else resume('deckResume', latest.name ? 'editor.html?deck=' + enc(latest.name) : 'gyoan.html', '이어서 편집', latest.title, 'edit');
+    } catch (e) { stat('deckStat', ['교안 목록을 읽지 못했습니다']); placeholder('deckResume', '작업장을 열면 다시 읽습니다'); }
+  }
+
+  /* 이 기기의 IndexedDB 를 읽기만 함. 없는 저장소는 만들지 않음 (만들어 버리면 작업장이 처음 열 때 칸을 못 만든다) */
+  async function idbAll(name, store) {
+    try { if (!indexedDB.databases || !(await indexedDB.databases()).some(d => d.name === name)) return []; } catch (e) { return []; }
+    return new Promise(res => {
+      const r = indexedDB.open(name);
+      r.onupgradeneeded = () => r.transaction.abort();
+      r.onerror = () => res([]);
+      r.onsuccess = () => {
+        const db = r.result, out = [];
+        if (!db.objectStoreNames.contains(store)) { db.close(); res(out); return; }
+        const q = db.transaction(store).objectStore(store).openCursor();
+        q.onsuccess = () => { const c = q.result; if (c) { out.push(c.value); c.continue(); } else { db.close(); res(out); } };
+        q.onerror = () => { db.close(); res(out); };
+      };
+    });
+  }
+  async function liveHwp() {
+    if (Access.isGuest) { stat('hwpStat', ['hwpx 열람 · 인쇄 · PDF 저장']); placeholder('hwpResume', 'PC 의 hwpx 파일을 열어 봅니다'); return; }
+    const drafts = (await idbAll('hwp-ws', 'drafts')).filter(d => d && d.name).sort((a, b) => (b.time || 0) - (a.time || 0));
+    if (!drafts.length) return;
+    stat('hwpStat', [`<span class="dot" aria-hidden="true"></span>저장 안 한 문서 ${drafts.length}개`, `마지막 ${fmtAgo(drafts[0].time)}`]);
+    resume('hwpResume', 'hangul.html', '이어서 편집', drafts[0].name, 'doc');
+  }
+  async function liveVideo() {
+    if (Access.isGuest) { stat('videoStat', ['관리자 전용']); placeholder('videoResume', '관리자로 입장하면 쓸 수 있습니다'); return; }
+    const ps = (await idbAll('ws-video', 'projects')).filter(p => p && p.id).sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    if (!ps.length) return;
+    let sync = {}, sent = {}; try { sync = JSON.parse(localStorage.getItem('ve:sync') || '{}') || {}; sent = (JSON.parse(localStorage.getItem('ve:syncState') || '{}') || {}).p || {}; } catch (e) { }
+    const unsent = sync.on ? ps.filter(p => ((sent[p.id] || {}).rev || 0) < (p.updated || 0) && ((p.media || []).length || (p.clips || []).length)).length : 0;
+    stat('videoStat', [`영상 ${ps.length}개`, unsent ? `${unsent}개 아직 안 올라감` : '', `마지막 편집 ${fmtAgo(ps[0].updated)}`]);
+    resume('videoResume', 'video.html?p=' + enc(ps[0].id), '이어서 편집', ps[0].name || '새 영상', 'play');
+  }
+
+  /* ---------- 앱 설치 안내: 닫으면 이 기기에서는 다시 보이지 않음 ---------- */
+  const HINT = 'ws:installHint';
+  function renderAppBox() {
+    const box = $('appBox');
+    let off = false; try { off = localStorage.getItem(HINT) === 'off'; } catch (e) { }
+    if (!window.PWA || PWA.standalone || off) { box.hidden = true; return; }
+    const mobile = /ios|android/.test(PWA.os);
+    const close = `<button type="button" class="btn icon ghost sm app-x" title="닫기" aria-label="설치 안내 닫기">${icon('x', 16)}</button>`;
+    if (PWA.installed) box.innerHTML = `${icon('check', 20)}<div class="t"><b>앱을 설치했습니다</b><p>${mobile ? '홈 화면' : '바탕화면 · 시작 메뉴'}의 <b>업무 공간</b> 아이콘으로 여세요. 이 탭은 닫아도 됩니다.</p></div>${close}`;
+    else box.innerHTML = `${icon('download', 20)}<div class="t"><b>업무 공간을 앱으로 설치</b><p>${mobile ? '홈 화면에 아이콘이 생기고 앱처럼 전체 화면으로 열립니다.' : '바탕화면 · 시작 메뉴에 아이콘이 생기고, 주소창 없는 창으로 열립니다. hwpx 파일도 바로 열립니다.'}</p></div><div class="acts"><button type="button" class="btn" id="btnInstall">앱으로 설치</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="업무 공간 설치.cmd">안 되면: Windows 설치 파일</a>' : ''}</div>${close}`;
+    box.hidden = false;
+    const b = $('btnInstall'); if (b) b.onclick = () => PWA.start();
+    box.querySelector('.app-x').onclick = () => { try { localStorage.setItem(HINT, 'off'); } catch (e) { } box.hidden = true; };
+  }
+  window.addEventListener('pwa-change', () => { if (!$('space').hidden) renderAppBox(); });
+
+  function renderFoot() {
+    const foot = $('foot'); foot.innerHTML = '';
+    if (Access.isGuest) { foot.innerHTML = '게스트 모드에서는 GitHub 에 연결하거나 저장하지 않습니다. 고치려면 <a href="#" id="toAdmin">관리자로 입장</a>하세요.'; $('toAdmin').onclick = async (ev) => { ev.preventDefault(); if (await Access.prompt()) showSpace(); }; return; }
+    const cfg = GH.load();
+    if (cfg && GH.token) foot.innerHTML = `GitHub 저장소 <b>${esc(cfg.owner)}/${esc(cfg.repo)}</b> 에 연결되어 있습니다. 세 작업장이 같은 연결을 씁니다.`;
+    else if (cfg) {
+      foot.innerHTML = `이 기기에는 아직 GitHub 연결이 없습니다. 보기 · 발표 · 내 PC 파일 작업은 그대로 됩니다. 저장소에 저장하려면 <a href="#" id="ghOn">GitHub 연결</a>을 눌러 토큰을 한 번 넣으세요.`;
+      $('ghOn').onclick = async (ev) => { ev.preventDefault(); if (await GH.connect()) renderFoot(); };
+    }
   }
   if (Access.chosen && !wantMode) showSpace(); else showGate();
 })();
