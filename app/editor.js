@@ -1,10 +1,5 @@
 /* 교안 편집기 */
 'use strict';
-/* 편집기에서 쓰는 선 아이콘 중 공통 묶음(common.js ICONS)에 아직 없는 것 — 공통 묶음에 들어오면 아무 일도 하지 않음 */
-{
-  const more = { chevronDown: '<path d="m6 9 6 6 6-6"/>', arrowUp: '<path d="M12 19V5"/><path d="m6 11 6-6 6 6"/>', arrowDown: '<path d="M12 5v14"/><path d="m6 13 6 6 6-6"/>' };
-  for (const k in more) if (!ICONS[k]) { ICONS[k] = more[k]; document.querySelectorAll(`[data-ic="${k}"]`).forEach(n => { n.innerHTML = icon(k); }); }
-}
 (async function () {
   const $ = (id) => document.getElementById(id);
   const S = { name: '', deck: null, cur: 0, sel: [], ssel: [], focus: 'stage', editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, rev: 0, clip: null, slideClip: null };

@@ -291,7 +291,7 @@
       const i = mis.indexOf(document.activeElement);
       if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); mis[(i + (ev.key === 'ArrowDown' ? 1 : -1) + mis.length) % mis.length].focus(); }
       else if (ev.key === 'Escape') { ev.stopPropagation(); closeMenu(); btn.focus(); }
-      else if (ev.key === 'Tab') closeMenu();
+      else if (ev.key === 'Tab') { btn.focus(); closeMenu(); }
     });
     mis[0].focus({ preventScroll: true });
     const r = btn.getBoundingClientRect();

@@ -14,7 +14,7 @@ html.admin [data-guest] { display: none !important; }
 .ws-gate-modal.shake { animation: ws-shake .3s; }
 @keyframes ws-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 .hub-notice.guest { background: var(--ui-panel2); color: var(--ui-fg); }
-.hub-notice.guest .ico { color: var(--ui-muted); vertical-align: -3px; margin-right: 2px; }
+.hub-notice.guest .ico { display: inline-block; color: var(--ui-muted); vertical-align: -3px; margin-right: 4px; }
 .hub-notice.guest a { color: var(--ui-accent-fg); font-weight: 600; }
 .rail-role { padding: 0 2px; }
 .rail-role:empty { display: none; }

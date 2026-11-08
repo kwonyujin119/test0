@@ -2,7 +2,7 @@
    글자 크기는 ui.css 의 단계(--fs-*)를 따르고, 아직 없을 때를 위해 같은 값을 기본값으로 둔다. */
 /* 게스트 문: .shell 의 display:grid 가 hidden 을 이겨 목록이 문 아래에 함께 보이던 것을 막음 */
 #vhApp[hidden], #vhGate[hidden] { display: none; }
-.vh-gate { max-width: 460px; margin: 12vh auto 0; padding: 32px; background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 16px; text-align: center; }
+.vh-gate { max-width: 460px; width: calc(100% - 32px); box-sizing: border-box; margin: 12vh auto 0; padding: 32px; background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 16px; text-align: center; }
 .vh-gate h1 { margin: 12px 0 8px; font-size: var(--fs-xl, 20px); line-height: 1.4; letter-spacing: -.015em; text-wrap: balance; word-break: keep-all; }
 .vh-gate p { color: var(--ui-muted); line-height: 1.65; margin: 0 0 18px; word-break: keep-all; overflow-wrap: anywhere; text-wrap: pretty; }
 .vh-gate .mark { width: 48px; height: 48px; border-radius: 12px; background: var(--ui-ink); color: var(--ui-on-ink); display: inline-grid; place-items: center; font-weight: 800; font-size: 21px; }

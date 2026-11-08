@@ -7,8 +7,7 @@
   const viewOnly = () => { if (!GUEST) return; doc.contentEditable = 'false'; doc.querySelectorAll('[contenteditable]').forEach(n => n.setAttribute('contenteditable', 'false')); };
   for (const id of ['roleChip', 'roleChip2']) { const n = $id(id); if (n) n.innerHTML = Access.chip(); }
   const escH = s => esc(s);
-  /* 이 화면에서만 쓰는 선 아이콘 (common.js 에 이미 있으면 그것을 씀). 앞선 fillIcons 가 비워 둔 자리를 채움 */
-  for (const [k, v] of Object.entries({ chevronDown: '<path d="m6 9 6 6 6-6"/>', chevronUp: '<path d="m6 15 6-6 6 6"/>' })) if (!ICONS[k]) ICONS[k] = v;
+  /* 펼침 화살표는 14px 로 */
   document.querySelectorAll('[data-ic^="chevron"]').forEach(n => { n.innerHTML = icon(n.dataset.ic, 14); });
 
   /* ---------- 펼침 메뉴 (리본 [더 보기] · 정렬 · 표 줄/칸 · 첫 화면 ⋯) ----------

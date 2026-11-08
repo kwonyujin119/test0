@@ -1062,6 +1062,7 @@ body.dragover .drop-veil { display: flex; }
   .deck-grid.list .deck-thumb { width: 88px; }
   .deck-grid.list .deck-meta .deck-file { display: none; }
   .deck-grid.list .deck-actions .btn { width: 40px; padding: 0; justify-content: center; gap: 0; font-size: 0; }
+  .deck-grid.list .deck-actions [data-a="edit"] { display: none; }
 }
 /* 터치 화면(손가락 노트북·태블릿 포함): 마우스를 올릴 수 없으니 단추를 늘 보이게 · 누르는 자리 40px */
 @media (hover: none), (pointer: coarse) {
