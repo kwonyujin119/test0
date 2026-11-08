@@ -1,4 +1,4 @@
-/* 영상 작업장 — 왼쪽 작업 칸(미디어 · 녹화 · 글 · 군더더기 자르기 · 얼굴 · 목소리 · 글자)과 오른쪽 속성 칸 */
+/* 영상 — 왼쪽 작업 칸(미디어 · 녹화 · 글 · 군더더기 자르기 · 얼굴 · 목소리 · 글자)과 오른쪽 속성 칸 */
 'use strict';
 (() => {
   const $ = VE.$; let tab = 'media';
@@ -279,18 +279,22 @@
   VE.on('chars', () => { if (tab === 'face') renderTab(); });
 
   /* ---------- 목소리 ---------- */
-  const voiceUi = { sub: 'ai', narr: '', playing: '' };
+  const voiceUi = { sub: 'change', how: 'ai', narr: '', playing: '' }; /* sub: 바꾸기 · 읽어 주기 · 다듬기 / how: 바꾸기를 AI 목소리로 할지 효과로 할지 */
   const secPerChar = steps => .06 + .017 * steps; /* 이 PC(CPU) 에서 잰 값. 기기마다 다름 */
   const aboutMin = s => s < 60 ? `약 ${Math.max(1, Math.round(s))}초` : `약 ${Math.round(s / 60)}분`;
   /* 모델을 처음 받을 때는 먼저 묻는다 */
   async function askModel() { if (VE.tts.ready || await VE.tts.cached()) return true; return confirm(`공개 AI 목소리 모델(${VE.TTS_INFO.name}, 약 ${VE.TTS_INFO.mb}MB)을 처음 한 번 내려받습니다. 받은 뒤에는 이 기기에 보관해 다시 받지 않습니다. 받을까요?`); }
   function pVoice(box) {
     const v = VE.p.voice;
-    box.innerHTML = head('목소리', '공개 AI 목소리로 바꾸거나 읽히고, 내 목소리를 다듬습니다.') +
-      `<div class="ve-sec">${seg('vSub', voiceUi.sub, [['ai', 'AI 목소리'], ['narr', '글 읽어 주기'], ['fx', '다듬기 · 효과']])}</div><div id="vBody"></div>`;
+    box.innerHTML = head('목소리', '목소리를 AI 목소리나 효과로 바꾸고, 글을 읽히고, 잡음을 다듬습니다.') +
+      `<div class="ve-sec">${seg('vSub', voiceUi.sub, [['change', '목소리 바꾸기'], ['narr', '글 읽어 주기'], ['fx', '다듬기']])}</div><div id="vBody"></div>`;
     onSeg(box, 'vSub', x => { voiceUi.sub = x; VE.tts.stopPreview(); voiceUi.playing = ''; renderTab(); });
     const body = box.querySelector('#vBody');
-    if (voiceUi.sub === 'fx') return pVoiceFx(body);
+    if (voiceUi.sub === 'fx') return pVoiceClean(body);
+    /* 목소리 바꾸기: AI 목소리(받아 적은 글을 고른 AI 목소리로 다시 읽음) 또는 효과(음높이 · 음색) */
+    const how = `<div class="ve-sec"><div class="ve-lab">어떻게 바꿀까요</div>${seg('vHow', voiceUi.how, [['ai', 'AI 목소리'], ['fx', '효과 (음높이 · 음색)']])}</div>`;
+    const bindHow = () => onSeg(body, 'vHow', x => { voiceUi.how = x; VE.tts.stopPreview(); voiceUi.playing = ''; renderTab(); });
+    if (voiceUi.sub === 'change' && voiceUi.how === 'fx') { pVoiceFx(body, how); bindHow(); return; }
     const cur = v.aiVoice || 'F1', steps = v.aiSteps || 5;
     const list = `<div class="ve-voices" role="radiogroup" aria-label="목소리 고르기">${VE.VOICES.map(o => `<div class="ve-voice${o.id === cur ? ' on' : ''}" role="radio" aria-checked="${o.id === cur}" tabindex="0" data-voice="${o.id}">
         <button class="play" type="button" data-hear="${o.id}" title="들어 보기" aria-label="${o.name} 들어 보기"><i data-ic="${voiceUi.playing === o.id ? 'stop' : 'play'}"></i></button>
@@ -322,7 +326,8 @@
           ${st.todo ? `<p class="ve-hint">${st.todo}문장 · 만드는 데 ${est} 예상 (기기 속도에 따라 다름). 만드는 동안 다른 편집을 해도 됩니다.</p>` : ''}
           ${has ? `<label class="ve-check" style="margin-top:6px"><input type="checkbox" id="vAiOn"${on ? ' checked' : ''}><span><b>원래 목소리 대신 AI 목소리</b> 끄면 원래 목소리로 돌아갑니다</span></label><button class="btn sm ghost" id="vDubClear"><i data-ic="trash"></i>만든 AI 목소리 지우기</button>` : ''}`;
       }
-      body.innerHTML = `${job.model ? progress('model') : ''}<div class="ve-sec"><div class="ve-lab">목소리 고르기</div>${list}${opts}</div><div class="ve-sec">${main}</div>${label}${credit}`;
+      body.innerHTML = `${how}${job.model ? progress('model') : ''}<div class="ve-sec"><div class="ve-lab">AI 목소리 고르기</div>${list}${opts}</div><div class="ve-sec">${main}</div>${label}${credit}`;
+      bindHow();
       const tt = body.querySelector('#vToText'); if (tt) tt.onclick = () => VE.openTab('text');
       const go = body.querySelector('#vDub'); if (go) go.onclick = () => runDub();
       const ao = body.querySelector('#vAiOn'); if (ao) ao.onchange = () => { VE.edit(() => { v.ai = ao.checked; }); VE.player.invalidate(); };
@@ -368,20 +373,25 @@
   }
   document.addEventListener('click', ev => { const b = ev.target.closest('[data-act]'); if (!b) return; if (b.dataset.act === 'stopDub' && job.dub) job.dub.abort.abort(); if (b.dataset.act === 'stopNarr' && job.narr) job.narr.abort.abort(); });
   VE.on('dub', () => { if (tab === 'voice' && !job.dub) renderTab(); });
-  function pVoiceFx(box) {
+  const voiceChanged = () => { VE.player.voiceChanged(); VE.saveSoon(); };
+  function pVoiceFx(box, how) {
     const v = VE.p.voice, P = VoiceDSP.PRESETS;
+    box.innerHTML = `${how}
+      <div class="ve-sec"><div class="ve-lab">효과 고르기</div><div class="ve-grid2">${Object.keys(P).map(k => `<button class="ve-opt${v.preset === k ? ' on' : ''}" data-preset="${k}" type="button">${P[k].name}</button>`).join('')}</div>
+        <div style="margin-top:10px">${range('vPitch', '음높이 조금 더', v.pitch, -6, 6, 1, x => (x > 0 ? '+' : '') + x)}</div>
+        <p class="ve-hint">재생하면서 바로 들어 볼 수 있고, 내보낸 영상에도 그대로 들어갑니다. 말투까지 다른 사람 목소리로 바꾸려면 위에서 [AI 목소리] 를 고르세요. 특정 인물의 목소리를 흉내 내는 기능은 넣지 않았습니다.</p></div>`;
+    onRange(box, 'vPitch', x => { v.pitch = x; voiceChanged(); }, x => (x > 0 ? '+' : '') + x);
+    box.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => { VE.edit(() => { v.preset = b.dataset.preset; }); voiceChanged(); renderTab(); });
+  }
+  function pVoiceClean(box) {
+    const v = VE.p.voice;
     box.innerHTML = `
       <div class="ve-sec"><label class="ve-check tight"><input type="checkbox" id="vClean"${v.clean ? ' checked' : ''}><span><b>음성 정리</b> 저음 웅웅거림과 일정한 잡음을 줄입니다</span></label>
-        <div class="${v.clean ? '' : 've-locked'}" style="margin-top:8px">${range('vDen', '잡음 줄이는 정도', v.denoise, 0, 1, .05, x => Math.round(x * 100) + '%')}
-        <label class="ve-check tight"><input type="checkbox" id="vLevel"${v.level ? ' checked' : ''}><span><b>음량 맞추기</b> 작은 말은 키우고 큰 소리는 눌러 고르게 합니다</span></label></div></div>
-      <div class="ve-sec"><div class="ve-lab">목소리 바꾸기</div><div class="ve-grid2">${Object.keys(P).map(k => `<button class="ve-opt${v.preset === k ? ' on' : ''}" data-preset="${k}" type="button">${P[k].name}</button>`).join('')}</div>
-        <div style="margin-top:10px">${range('vPitch', '음높이 조금 더', v.pitch, -6, 6, 1, x => (x > 0 ? '+' : '') + x)}</div>
-        <p class="ve-hint">재생하면서 바로 들어 볼 수 있고, 내보낸 영상에도 그대로 들어갑니다. 특정 인물의 목소리를 흉내 내는 기능은 넣지 않았습니다.</p></div>`;
-    const changed = () => { VE.player.voiceChanged(); VE.saveSoon(); };
-    box.querySelector('#vClean').onchange = e => { VE.edit(() => { v.clean = e.target.checked; }); changed(); renderTab(); };
-    box.querySelector('#vLevel').onchange = e => { VE.edit(() => { v.level = e.target.checked; }); changed(); };
-    onRange(box, 'vDen', x => { v.denoise = x; changed(); }, x => Math.round(x * 100) + '%'); onRange(box, 'vPitch', x => { v.pitch = x; changed(); }, x => (x > 0 ? '+' : '') + x);
-    box.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => { VE.edit(() => { v.preset = b.dataset.preset; }); changed(); renderTab(); });
+        <div class="${v.clean ? '' : 've-locked'}" style="margin-top:8px">${range('vDen', '잡음 줄이는 정도', v.denoise, 0, 1, .05, x => Math.round(x * 100) + '%')}</div></div>
+      <div class="ve-sec"><label class="ve-check tight"><input type="checkbox" id="vLevel"${v.level ? ' checked' : ''}><span><b>음량 맞추기</b> 작은 말은 키우고 큰 소리는 눌러 고르게 합니다</span></label></div>`;
+    box.querySelector('#vClean').onchange = e => { VE.edit(() => { v.clean = e.target.checked; }); voiceChanged(); renderTab(); };
+    box.querySelector('#vLevel').onchange = e => { VE.edit(() => { v.level = e.target.checked; }); voiceChanged(); };
+    onRange(box, 'vDen', x => { v.denoise = x; voiceChanged(); }, x => Math.round(x * 100) + '%');
   }
 
   /* ---------- 글자 ---------- */

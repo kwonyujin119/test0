@@ -1,4 +1,4 @@
-/* 영상 작업장 — 기기 사이 연결 (GitHub 비공개 저장소)
+/* 영상 — 기기 사이 연결 (GitHub 비공개 저장소)
    - 얼굴이 나오는 영상이라 공개 저장소에는 올리지 않는다. 비공개 저장소가 아니면 쓰지 않는다
    - 토큰은 업무 공간의 [GitHub 연결] 에서 이 기기에 넣어 둔 것을 함께 쓰고, 그 토큰에 영상 저장소 권한이 없으면 연결 창에서 영상용 토큰을 따로 넣는다 (사이트에 넣어 두지 않음)
    - 저장소 안: projects/index.json(목록) · projects/<id>.json(편집 내용) · media/<id>.json + media/<id>/part-0000…(20MB 조각) · dub/<열쇠>.bin(AI 목소리)
@@ -83,7 +83,7 @@
     if (repo.permissions && !repo.permissions.push) { const e = new Error('이 기기 토큰은 영상 저장소를 읽기만 할 수 있습니다. Contents 권한이 Read and write 인 토큰을 토큰 칸에 붙여넣어 주세요.'); e.noRepo = true; throw e; }
     S.branch = repo.default_branch || 'main'; S.size = (repo.size || 0) * 1024;
     let ref = null; try { ref = await api('GET', `/git/ref/heads/${encodeURIComponent(S.branch)}`); } catch (e) { if (e.status !== 409) throw e; }
-    if (!ref) await api('PUT', '/contents/README.md', { message: '영상 작업장 저장소 시작', content: btoa(unescape(encodeURIComponent('# 영상 작업장 (비공개)\n\n휴대폰과 PC 가 영상 프로젝트를 함께 쓰는 저장소입니다. 직접 고치지 마세요.\n'))) });
+    if (!ref) await api('PUT', '/contents/README.md', { message: '영상 저장소 시작', content: btoa(unescape(encodeURIComponent('# 영상 (비공개)\n\n휴대폰과 PC 가 영상 프로젝트를 함께 쓰는 저장소입니다. 직접 고치지 마세요.\n'))) });
     S.ok = true; return { private: true, size: S.size, branch: S.branch };
   };
   S.ready = async () => { if (!S.cfg().on) return false; if (!S.ok) await S.check(); return true; };
