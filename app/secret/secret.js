@@ -251,10 +251,12 @@
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
     T.push({ name: 'get_portfolio', description: '사용자가 이 앱에 적어 둔 관심 종목 · 보유 수량 · 평균 단가 · 목표가 · 손절가 · 메모와 마지막으로 불러온 시세를 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
+    T.push({ name: 'get_journal', description: '사용자의 매매 일지: 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 승률)와 최근 매매 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · 교훈)을 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
+    T.push({ name: 'save_memory', description: '앞으로의 답에 계속 필요한 사용자 정보 · 선호를 한 문장으로 기억한다. 사용자가 "기억해" 라고 했거나 투자 성향 · 제약을 새로 알았을 때만 쓴다. 시세처럼 금방 바뀌는 정보나 이미 프로필에 있는 내용은 저장하지 않는다. 사용자는 나의 원칙 화면에서 보고 지울 수 있다.', input_schema: { type: 'object', properties: { text: { type: 'string', description: '기억할 한 문장' } }, required: ['text'], additionalProperties: false } });
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_portfolio: '내 종목', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_portfolio: '내 종목', get_journal: '매매 일지', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -270,6 +272,8 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'get_journal': return { stats: jStats(), checklist: me.checklist, trades: journal.slice(-40) };
+      case 'save_memory': { const t = String(input.text).trim().slice(0, 200); if (!me.notes.some(n => n.text === t)) { me.notes.push({ t: Date.now(), text: t, by: 'AI' }); me.notes = me.notes.slice(-50); saveMe(); } return { saved: t, total: me.notes.length }; }
       case 'get_portfolio': return { items: watch.items, quotes: watch.quotes, note: '수량 · 평균 단가가 0 이면 관심만 있는 종목' };
       case 'position_size': return sizePlan({ account: +input.account, risk_percent: +input.risk_percent, entry: +input.entry, stop: +input.stop, target: input.target ? +input.target : 0, win_rate: input.win_rate ? +input.win_rate : 0 });
     }
@@ -287,7 +291,8 @@
 - 쓸 수 있는 도구: ${tools.join(', ') || '없음'}. ${dataFor('quote') ? '' : '시세 API 가 등록되어 있지 않으니, 가격을 말할 때는 웹 검색 결과나 사용자가 준 숫자만 쓰고 그 사실을 밝힙니다. '}
 - 가격 · 등락률 · 지표 · 날짜는 도구 결과나 검색 결과에 있는 것만 말하고, 언제 기준인지 적습니다. 모르는 숫자는 지어내지 말고 "확인 필요"라고 씁니다.
 - 지표 계산(수익률 · 이동평균 · RSI · 변동성)은 get_price_history 결과를, 비중 · 수량은 position_size 결과를 씁니다.
-- 사용자의 보유 · 관심 종목이 관련되면 get_portfolio 로 먼저 확인합니다.
+- 사용자의 보유 · 관심 종목이 관련되면 get_portfolio 로, 과거 매매 · 습관이 관련되면 get_journal 로 먼저 확인합니다.
+- 사용자가 "기억해" 라고 하거나 앞으로 계속 필요한 사용자 정보(성향 · 제약 · 선호)를 새로 알게 되면 save_memory 로 한 문장만 저장하고, 저장했다고 짧게 말합니다.
 
 종목 · 매매 판단을 물으면 이 순서로 짧게:
 1. 한 줄 결론 (관망 · 분할 매수 검토 · 비중 축소 검토 같은 행동 단위, 확신 정도 낮음/보통/높음)
@@ -298,7 +303,7 @@
 6. 다음에 확인할 것 (실적 발표일 · 공시 · 지표 발표 등)
 
 습관 원칙: 잦은 매매 · 몰빵 · 물타기 · 손절 미루기 · 뉴스 추격 매수의 위험을 필요할 때 짚습니다. 레버리지 · 신용 · 단기 급등주는 위험을 분명히 말합니다. 세금 · 수수료도 고려합니다.
-이것은 정보 제공이며 투자 판단과 책임은 사용자에게 있다는 점을 첫 답에서 한 번만 짧게 밝힙니다. 표는 짧게, 문단은 짧게 씁니다.`;
+이것은 정보 제공이며 투자 판단과 책임은 사용자에게 있다는 점을 첫 답에서 한 번만 짧게 밝힙니다. 표는 짧게, 문단은 짧게 씁니다.` + meBlock();
   }
 
   /* =====================================================================
@@ -516,7 +521,9 @@
       box.innerHTML = `<div class="sc-empty">
         <h2>무엇을 살펴볼까요?</h2><p>시세 API 로 숫자를 확인하고, 결론 · 근거 · 반대 근거 · 실행 계획으로 답합니다.</p>
         ${api ? '' : `<div class="sc-setup">${icon('key', 16)} <b>AI API 가 아직 없습니다.</b> 왼쪽 아래 <b>API 연결</b>에서 Claude 등 AI 키를 + 로 등록하세요. 시세 API(Finnhub · Twelve Data · Alpha Vantage)를 함께 등록하면 AI 가 실제 숫자를 불러 씁니다.</div>`}
+        ${me.prompts.length ? `<div class="sc-mine"><span>내 질문</span>${me.prompts.map((q, i) => `<button type="button" data-mq="${i}" title="${esc(q.text)}">${esc(q.title)}</button>`).join('')}</div>` : ''}
         <div class="sc-prompts">${PROMPTS.map((p, i) => `<button class="sc-prompt" data-p="${i}"><b>${p[0]}</b><span>${p[1]}</span></button>`).join('')}</div></div>`;
+      box.querySelectorAll('[data-mq]').forEach(b => b.onclick = () => usePrompt(me.prompts[+b.dataset.mq].text));
       box.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { const p = PROMPTS[+b.dataset.p][2]; const q = $('q'); q.value = p; grow(); q.focus(); q.setSelectionRange(p.length, p.length); if (!/ $|- $/.test(p)) send(p).then(() => { q.value = ''; grow(); }); });
       return;
     }
@@ -536,7 +543,7 @@
   }
   function renderChat() {
     $('chatTitle').textContent = cur ? cur.title : 'AI 어시스턴트';
-    renderAiSel(); renderMsgs();
+    renderAiSel(); renderMsgs(); renderQuick();
   }
   function renderChatList() {
     const box = $('chatList'); const list = chats.slice(0, 15);
@@ -573,7 +580,8 @@
       const pl = p && qty && avg ? (p - avg) * qty : null, plp = p && avg ? (p / avg - 1) * 100 : null;
       if (qty && avg && p) { cost += qty * avg; value += qty * p; priced++; }
       const toStop = p && it.stop ? (it.stop / p - 1) * 100 : null;
-      return `<tr><td class="sym"><b>${esc(it.symbol)}</b><span>${esc(it.name || '')}</span></td>
+      const hit = p && ((it.alertHi && p >= +it.alertHi) || (it.alertLo && p <= +it.alertLo));
+      return `<tr><td class="sym"><b>${esc(it.symbol)}</b><span>${esc(it.name || '')}</span>${hit ? `<span class="sc-alert" title="알림 가격: ${it.alertHi ? num(+it.alertHi) + ' 이상 ' : ''}${it.alertLo ? num(+it.alertLo) + ' 이하' : ''}">알림 가격 도달</span>` : ''}</td>
         <td>${num(p)}</td><td class="${cls(q.changePct)}">${pct(q.changePct)}</td>
         <td>${qty ? num(qty, 4) : '–'}</td><td>${avg ? num(avg) : '–'}</td>
         <td class="${cls(pl)}">${pl == null ? '–' : num(pl, 0)}</td><td class="${cls(plp)}">${pct(plp)}</td>
@@ -590,30 +598,37 @@
     $('wTable').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => { const it = items[+b.dataset.rm]; if (await confirmBox(`${it.symbol} 을(를) 뺄까요?`, '목록에서만 빠집니다.', '빼기')) { items.splice(+b.dataset.rm, 1); saveWatch(); renderWatch(); } });
   }
   function editItem(i) {
-    const it = i == null ? { symbol: '', name: '', qty: '', avg: '', stop: '', target: '', memo: '' } : Object.assign({}, watch.items[i]);
+    const it = i == null ? { symbol: '', name: '', qty: '', avg: '', stop: '', target: '', alertHi: '', alertLo: '', memo: '' } : Object.assign({}, watch.items[i]);
     const f = (k, l, t, ph) => `<label>${l}<input ${t === 'n' ? 'type="number" step="any" min="0"' : 'type="text"'} name="${k}" value="${esc(it[k] == null ? '' : it[k])}" placeholder="${ph || ''}"></label>`;
     const d = dialog(`<h3>${i == null ? '종목 추가' : esc(it.symbol) + ' 고치기'}</h3><form class="sc-form">
       ${f('symbol', '종목 코드 (시세 API 형식)', 't', '예: AAPL, 005930.KS')}<p class="hint">시세 API 마다 한국 종목 표기가 다릅니다 (예: Twelve Data 005930:KRX · Alpha Vantage 005930.KS). 확인은 [시험] 으로.</p>
       ${f('name', '이름 (선택)', 't', '예: 삼성전자')}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${f('qty', '보유 수량 (관심만 있으면 비움)', 'n')}${f('avg', '평균 단가', 'n')}${f('stop', '손절가', 'n')}${f('target', '목표가', 'n')}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${f('qty', '보유 수량 (관심만 있으면 비움)', 'n')}${f('avg', '평균 단가', 'n')}${f('stop', '손절가', 'n')}${f('target', '목표가', 'n')}${f('alertHi', '알림: 이 가격 이상', 'n')}${f('alertLo', '알림: 이 가격 이하', 'n')}</div>
       <label>메모 · 매수 이유<textarea name="memo" rows="3" placeholder="왜 샀는지 · 무엇이 틀리면 팔지">${esc(it.memo || '')}</textarea></label>
       <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">저장</button></div></form>`);
     const form = d.el.querySelector('form'); setTimeout(() => form.symbol.focus(), 30);
     d.el.querySelector('[data-x]').onclick = d.close;
     form.onsubmit = e => {
-      e.preventDefault(); const o = {}; for (const k of ['symbol', 'name', 'qty', 'avg', 'stop', 'target', 'memo']) o[k] = form[k].value.trim();
+      e.preventDefault(); const o = {}; for (const k of ['symbol', 'name', 'qty', 'avg', 'stop', 'target', 'alertHi', 'alertLo', 'memo']) o[k] = form[k].value.trim();
       o.symbol = o.symbol.toUpperCase(); if (!o.symbol) { toast('종목 코드를 넣어 주세요', 1800); return; }
-      for (const k of ['qty', 'avg', 'stop', 'target']) o[k] = o[k] === '' ? '' : +o[k];
+      for (const k of ['qty', 'avg', 'stop', 'target', 'alertHi', 'alertLo']) o[k] = o[k] === '' ? '' : +o[k];
       if (i == null) watch.items.push(o); else watch.items[i] = o; saveWatch(); d.close(); renderWatch();
     };
   }
   $('wAdd').onclick = () => editItem(null);
-  $('wRefresh').onclick = async () => {
-    if (!dataFor('quote')) { toast('시세 API 를 먼저 등록해 주세요', 2400); show('apis'); return; }
-    const b = $('wRefresh'); b.disabled = true; let ok = 0, fail = [];
-    for (const it of watch.items) { try { await runTool('get_quote', { symbol: it.symbol }); ok++; } catch (e) { fail.push(it.symbol); } }
-    b.disabled = false; renderWatch(); toast(fail.length ? `${ok}개 불러옴 · 실패: ${fail.join(', ')}` : `${ok}개 시세를 불러왔습니다`, 3000);
-  };
+  let refreshing = false;
+  async function refreshQuotes(silent) {
+    if (refreshing) return; if (!dataFor('quote')) { if (!silent) { toast('시세 API 를 먼저 등록해 주세요', 2400); show('apis'); } return; }
+    refreshing = true; const b = $('wRefresh'); b.disabled = true; let ok = 0; const fail = [];
+    try { for (const it of watch.items) { try { await runTool('get_quote', { symbol: it.symbol }); ok++; } catch (e) { fail.push(it.symbol); } } }
+    finally { refreshing = false; b.disabled = false; }
+    if (!$('vWatch').hidden) renderWatch();
+    const hits = alertsHit();
+    if (hits.length) { toast('가격 알림: ' + hits.map(h => `${h.symbol} ${num(h.price)} (${num(h.level)} ${h.kind})`).join(' · '), 6000); document.title = '● 가격 알림 · SECRET'; }
+    else if (!silent) toast(fail.length ? `${ok}개 불러옴 · 실패: ${fail.join(', ')}` : `${ok}개 시세를 불러왔습니다`, 3000);
+  }
+  $('wRefresh').onclick = () => refreshQuotes(false);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && document.title !== 'SECRET') setTimeout(() => { document.title = 'SECRET'; }, 4000); });
   $('wAsk').onclick = () => { show('chat'); send(PROMPTS[1][2]); };
 
   /* =====================================================================
@@ -798,17 +813,249 @@
   /* =====================================================================
      화면 전환
      ===================================================================== */
-  const VIEWS = { chat: 'vChat', watch: 'vWatch', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+
+  /* =====================================================================
+     나의 원칙 — AI 가 모든 답에 반영하는 내 기준 (이 기기에 저장)
+     ===================================================================== */
+  const K_ME = 'sec:me', K_JOURNAL = 'sec:journal';
+  const ME0 = {
+    profile: { goal: '', horizon: '', style: '', markets: '', riskTrade: 1, maxDD: 20, maxPos: 20, account: '', taxAcct: '' },
+    rules: '', never: '',
+    checklist: ['매수 이유를 한 문장으로 쓸 수 있다', '손절가와 그 근거를 정했다', '1회 손실이 정한 % 이하다', '손익비가 2 이상이다', '실적 발표 · 큰 일정이 코앞이 아니다', '뉴스를 보고 급하게 사는 것이 아니다 (조급함 아님)'],
+    answer: { length: '보통', level: '중급', tone: '존댓말', format: '틀' },
+    notes: [],
+    prompts: [{ title: '아침 브리핑', text: 'get_portfolio 로 내 종목을 보고, 오늘 시장과 내 종목에 영향을 줄 뉴스 · 일정을 종목마다 3줄 이내로 요약해 줘. 내 규칙을 어기고 있는 종목(손절가 근처 · 비중 초과)이 있으면 맨 위에 알려 줘.' }],
+  };
+  const me = Object.assign(JSON.parse(JSON.stringify(ME0)), LS.get(K_ME, {}));
+  me.profile = Object.assign({}, ME0.profile, me.profile); me.answer = Object.assign({}, ME0.answer, me.answer);
+  const saveMe = () => { LS.set(K_ME, me); $('cMe').textContent = me.notes.length ? '' : ''; };
+  let journal = LS.get(K_JOURNAL, []);
+  const saveJournal = () => { LS.set(K_JOURNAL, journal); $('cJournal').textContent = journal.length || ''; };
+
+  function meBlock() {
+    const p = me.profile, a = me.answer, L = [];
+    const line = (k, v) => { if (v !== '' && v != null) L.push(`- ${k}: ${v}`); };
+    line('투자 목표', p.goal); line('투자 기간', p.horizon); line('스타일', p.style); line('주로 보는 시장', p.markets);
+    line('1회 매매에서 감수할 손실', p.riskTrade ? p.riskTrade + '%' : ''); line('계좌 전체 최대 하락 허용', p.maxDD ? p.maxDD + '%' : ''); line('한 종목 최대 비중', p.maxPos ? p.maxPos + '%' : '');
+    line('계좌 규모', p.account); line('절세 계좌', p.taxAcct);
+    let s = L.length ? `\n\n사용자 프로필 (사용자가 직접 적은 기준 — 모든 답에 반영)\n${L.join('\n')}` : '';
+    if (me.rules.trim()) s += `\n\n사용자의 규칙:\n${me.rules.trim()}`;
+    if (me.never.trim()) s += `\n\n사용자가 절대 하지 않는 것:\n${me.never.trim()}`;
+    if (me.checklist.length) s += `\n\n사용자의 매수 전 체크리스트:\n${me.checklist.map((c, i) => `${i + 1}. ${c}`).join('\n')}`;
+    if (me.notes.length) s += `\n\n기억해 둔 사용자 정보 (이전 대화에서):\n${me.notes.map(n => '- ' + n.text).join('\n')}`;
+    s += '\n\n이 기준을 쓰는 법: 매수 · 매도 · 비중 판단을 말할 때는 사용자의 규칙과 체크리스트 항목마다 충족 / 미충족 / 확인 필요를 짧게 표시하고, 어긋나는 것이 있으면 결론보다 먼저 경고합니다. 수량 · 비중은 사용자의 감수 손실 % 와 한 종목 최대 비중을 기준으로 position_size 로 계산합니다. 사용자의 기간 · 스타일과 맞지 않는 매매는 권하지 않고, 맞지 않는다고 말합니다.';
+    const len = { '짧게': '핵심만 짧게 (8줄 안팎)', '보통': '필요한 만큼 간결하게', '자세히': '근거와 계산을 충분히 자세하게' }[a.length] || '';
+    const lvl = { '입문': '전문 용어는 쉬운 말로 풀어 설명', '중급': '흔한 용어는 그대로 씀', '전문가': '용어 설명 없이 수치 중심' }[a.level] || '';
+    s += `\n\n답변 방식: ${len}, ${lvl}, ${a.tone === '편하게' ? '반말로 편하게' : '존댓말'}.${a.format === '자유' ? ' 위의 정해진 순서 대신 질문에 맞는 형식으로 답하되, 위험과 반대 근거는 빠뜨리지 않습니다.' : ''}`;
+    return s;
+  }
+
+  function renderMe() {
+    const p = me.profile, a = me.answer;
+    const sel = (k, opts, ph) => `<select data-p="${k}"><option value="">${ph || '고르기'}</option>${opts.map(o => `<option${p[k.split('.')[1]] === o ? ' selected' : ''}>${o}</option>`).join('')}</select>`;
+    const inp = (k, t, ph, extra) => `<input type="${t}" data-p="${k}" value="${esc(p[k.split('.')[1]] == null ? '' : p[k.split('.')[1]])}" placeholder="${esc(ph || '')}" ${extra || ''}>`;
+    const seg = (k, opts) => `<div class="sc-seg" data-seg="${k}">${opts.map(o => `<button type="button" data-v="${o}" class="${a[k] === o ? 'on' : ''}">${o}</button>`).join('')}</div>`;
+    $('meBox').innerHTML = `
+      <div class="sc-card"><h2>나에 대한 것</h2><p class="sub">AI 가 수량 · 비중 · 추천 범위를 정할 때 쓰는 기준입니다.</p>
+        <div class="sc-form">
+          <label>투자 목표${inp('profile.goal', 'text', '예: 5년 안에 노후 자금 1억 · 연 10% 안정 수익')}</label>
+          <div class="sc-grid2">
+            <label>투자 기간${sel('profile.horizon', ['단타 (당일)', '스윙 (며칠~몇 주)', '중기 (몇 달)', '장기 (1년 이상)'])}</label>
+            <label>스타일${sel('profile.style', ['가치', '성장', '배당', '모멘텀 · 추세', '지수 중심', '섞어서'])}</label>
+            <label>주로 보는 시장${sel('profile.markets', ['한국', '미국', '한국 · 미국'])}</label>
+            <label>계좌 규모 (선택)${inp('profile.account', 'text', '예: 3000만 원')}</label>
+            <label>1회 감수 손실 (%)${inp('profile.riskTrade', 'number', '1', 'min="0.1" max="10" step="0.1"')}</label>
+            <label>한 종목 최대 비중 (%)${inp('profile.maxPos', 'number', '20', 'min="1" max="100" step="1"')}</label>
+            <label>계좌 최대 하락 허용 (%)${inp('profile.maxDD', 'number', '20', 'min="1" max="100" step="1"')}</label>
+            <label>절세 계좌${inp('profile.taxAcct', 'text', '예: ISA · 연금저축')}</label>
+          </div>
+        </div></div>
+      <div class="sc-card"><h2>나의 규칙</h2><p class="sub">한 줄에 하나씩. AI 가 답할 때마다 이 규칙에 맞는지 따집니다.</p>
+        <div class="sc-form">
+          <label>지키는 규칙<textarea data-m="rules" rows="5" placeholder="예) 한 번에 다 사지 않고 3번에 나눠 산다&#10;손절가에 닿으면 다음 날 시가에 판다&#10;한 달에 매매는 4번까지">${esc(me.rules)}</textarea></label>
+          <label>절대 하지 않는 것<textarea data-m="never" rows="3" placeholder="예) 신용 · 미수 · 레버리지 ETF&#10;물타기 (손절가를 내리면서 더 사기)&#10;급등주 추격 매수">${esc(me.never)}</textarea></label>
+        </div></div>
+      <div class="sc-card"><h2>매수 전 체크리스트</h2><p class="sub">매매 일지에 기록할 때 체크하고, AI 는 매수 판단마다 항목별로 점검합니다. 일지에서 "다 지켰을 때"와 "아닐 때"의 승률을 비교해 줍니다.</p>
+        <div class="sc-list" id="meChecks">${me.checklist.map((c, i) => `<div class="sc-li"><span class="n">${i + 1}</span><input type="text" data-ci="${i}" value="${esc(c)}" aria-label="체크리스트 ${i + 1}"><button type="button" class="sc-x" data-cdel="${i}" title="빼기" aria-label="빼기">${icon('x', 14)}</button></div>`).join('')}</div>
+        <div class="sc-add-row"><input type="text" id="meCheckNew" placeholder="항목 추가 (Enter)"><button type="button" class="btn" id="meCheckAdd">${icon('plus', 15)}추가</button></div></div>
+      <div class="sc-card"><h2>AI 답변 방식</h2><p class="sub">내 수준과 취향에 맞춰 답하게 합니다.</p>
+        <div class="sc-opt"><span>길이</span>${seg('length', ['짧게', '보통', '자세히'])}</div>
+        <div class="sc-opt"><span>수준</span>${seg('level', ['입문', '중급', '전문가'])}</div>
+        <div class="sc-opt"><span>말투</span>${seg('tone', ['존댓말', '편하게'])}</div>
+        <div class="sc-opt"><span>형식</span>${seg('format', ['틀', '자유'])}</div>
+        <p class="sub" style="margin:4px 0 0">틀: 결론 → 근거 → 반대 근거 → 시나리오 → 실행 계획 → 확인할 것. 자유: 질문에 맞게 (위험은 늘 짚음).</p></div>
+      <div class="sc-card"><h2>AI 가 기억하는 것</h2><p class="sub">대화 중 "기억해" 라고 하거나 AI 가 내 성향 · 제약을 새로 알면 여기에 한 줄씩 남깁니다. 모든 대화에서 씁니다. 틀린 것은 지우세요.</p>
+        <div class="sc-list">${me.notes.length ? me.notes.map((n, i) => `<div class="sc-note"><span>${n.by === 'AI' ? '<em>AI</em>' : ''}${esc(n.text)}</span><button type="button" class="sc-x" data-ndel="${i}" title="지우기" aria-label="지우기">${icon('x', 14)}</button></div>`).join('') : '<div class="sc-empty-s">아직 없습니다.</div>'}</div>
+        <div class="sc-add-row"><input type="text" id="meNoteNew" placeholder="직접 적기 (예: 반도체 업종 비중이 이미 높음)"><button type="button" class="btn" id="meNoteAdd">${icon('plus', 15)}추가</button></div></div>
+      <div class="sc-card"><h2>내 질문 단추</h2><p class="sub">자주 하는 질문을 단추로 만들어 대화 화면에서 한 번에 보냅니다. 끝을 띄어 쓰면 보내지 않고 입력 칸에 채워 이어서 쓸 수 있습니다.</p>
+        <div class="sc-list">${me.prompts.length ? me.prompts.map((q, i) => `<div class="sc-pr"><div><b>${esc(q.title)}</b><span>${esc(q.text)}</span></div><button type="button" class="sc-x" data-pedit="${i}" title="고치기" aria-label="고치기">${icon('edit', 14)}</button><button type="button" class="sc-x" data-pdel="${i}" title="지우기" aria-label="지우기">${icon('x', 14)}</button></div>`).join('') : '<div class="sc-empty-s">아직 없습니다.</div>'}</div>
+        <div class="sc-add-row"><button type="button" class="btn" id="mePromptAdd">${icon('plus', 15)}질문 단추 만들기</button></div></div>`;
+    const box = $('meBox');
+    box.querySelectorAll('[data-p]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { const k = el.dataset.p.split('.')[1]; me.profile[k] = el.type === 'number' ? (el.value === '' ? '' : +el.value) : el.value.trim(); saveMe(); }));
+    box.querySelectorAll('[data-m]').forEach(el => el.addEventListener('input', () => { me[el.dataset.m] = el.value; saveMe(); }));
+    box.querySelectorAll('[data-seg]').forEach(g => g.onclick = e => { const b = e.target.closest('button'); if (!b) return; me.answer[g.dataset.seg] = b.dataset.v; saveMe(); g.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); });
+    box.querySelectorAll('[data-ci]').forEach(el => el.addEventListener('input', () => { me.checklist[+el.dataset.ci] = el.value.trim(); saveMe(); }));
+    box.querySelectorAll('[data-ci]').forEach(el => el.addEventListener('change', () => { me.checklist = me.checklist.filter(Boolean); saveMe(); renderMe(); }));
+    box.querySelectorAll('[data-cdel]').forEach(b => b.onclick = () => { me.checklist.splice(+b.dataset.cdel, 1); saveMe(); renderMe(); });
+    const addCheck = () => { const v = $('meCheckNew').value.trim(); if (!v) return; me.checklist.push(v); saveMe(); renderMe(); $('meCheckNew').focus(); };
+    $('meCheckAdd').onclick = addCheck; $('meCheckNew').onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addCheck(); } };
+    box.querySelectorAll('[data-ndel]').forEach(b => b.onclick = () => { me.notes.splice(+b.dataset.ndel, 1); saveMe(); renderMe(); });
+    const addNote = () => { const v = $('meNoteNew').value.trim(); if (!v) return; me.notes.push({ t: Date.now(), text: v, by: 'me' }); saveMe(); renderMe(); };
+    $('meNoteAdd').onclick = addNote; $('meNoteNew').onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addNote(); } };
+    box.querySelectorAll('[data-pdel]').forEach(b => b.onclick = () => { me.prompts.splice(+b.dataset.pdel, 1); saveMe(); renderMe(); renderQuick(); });
+    box.querySelectorAll('[data-pedit]').forEach(b => b.onclick = () => editPrompt(+b.dataset.pedit));
+    $('mePromptAdd').onclick = () => editPrompt(null);
+  }
+  function editPrompt(i) {
+    const q = i == null ? { title: '', text: '' } : me.prompts[i];
+    const d = dialog(`<h3>${i == null ? '질문 단추 만들기' : '질문 단추 고치기'}</h3><form class="sc-form">
+      <label>단추 이름<input type="text" name="title" value="${esc(q.title)}" placeholder="예: 아침 브리핑" maxlength="20"></label>
+      <label>보낼 질문<textarea name="text" rows="5" placeholder="예: 내 종목 중 손절가 5% 안쪽인 것만 골라 대응 계획을 세워 줘">${esc(q.text)}</textarea></label>
+      <p class="hint">끝을 한 칸 띄우면 보내지 않고 입력 칸에 채웁니다 (예: "매수 전 점검. 종목은 ").</p>
+      <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">저장</button></div></form>`);
+    const f = d.el.querySelector('form'); setTimeout(() => f.title.focus(), 30); d.el.querySelector('[data-x]').onclick = d.close;
+    f.onsubmit = e => { e.preventDefault(); const o = { title: f.title.value.trim(), text: f.text.value.replace(/^\s+/, '') }; if (!o.title || !o.text.trim()) { toast('이름과 질문을 넣어 주세요', 1800); return; } if (i == null) me.prompts.push(o); else me.prompts[i] = o; saveMe(); d.close(); renderMe(); renderQuick(); };
+  }
+  function usePrompt(text) { const q = $('q'); if (/ $/.test(text)) { show('chat'); q.value = text; grow(); q.focus(); q.setSelectionRange(text.length, text.length); return; } show('chat'); send(text); }
+  function renderQuick() {
+    const box = $('quick'); const on = cur && cur.view.length;
+    box.innerHTML = on ? me.prompts.map((q, i) => `<button type="button" data-qi="${i}" title="${esc(q.text)}">${esc(q.title)}</button>`).join('') : '';
+    box.querySelectorAll('[data-qi]').forEach(b => b.onclick = () => usePrompt(me.prompts[+b.dataset.qi].text));
+  }
+
+  /* 백업: API 키는 빼고 (키는 기기마다 따로 넣음) */
+  $('meExport').onclick = () => {
+    const data = { app: 'DPV-SECRET', v: 1, at: new Date().toISOString(), me, journal, watch, chats, calc: LS.get(K_CALC, {}) };
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
+    a.download = `secret-backup-${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('내보냈습니다 (API 키는 들어 있지 않습니다)', 2600);
+  };
+  $('meImport').onclick = () => $('meFile').click();
+  $('meFile').onchange = async e => {
+    const file = e.target.files[0]; e.target.value = ''; if (!file) return;
+    let d; try { d = JSON.parse(await file.text()); } catch (err) { toast('읽을 수 없는 파일입니다', 2200); return; }
+    if (!d || d.app !== 'DPV-SECRET') { toast('SECRET 백업 파일이 아닙니다', 2200); return; }
+    if (!(await confirmBox('백업을 가져올까요?', `${String(d.at || '').slice(0, 10)} 백업의 나의 원칙 · 매매 일지 · 관심 종목 · 계산기를 지금 것과 바꿉니다. 대화는 없는 것만 더합니다. API 연결은 그대로 둡니다.`, '가져오기'))) return;
+    if (d.me) { Object.keys(me).forEach(k => delete me[k]); Object.assign(me, JSON.parse(JSON.stringify(ME0)), d.me); me.profile = Object.assign({}, ME0.profile, me.profile); me.answer = Object.assign({}, ME0.answer, me.answer); saveMe(); }
+    if (Array.isArray(d.journal)) { journal = d.journal; saveJournal(); }
+    if (d.watch && Array.isArray(d.watch.items)) { watch = d.watch; watch.quotes = watch.quotes || {}; saveWatch(); }
+    if (d.calc) LS.set(K_CALC, d.calc);
+    if (Array.isArray(d.chats)) { for (const c of d.chats) if (c && c.id && !chats.some(x => x.id === c.id)) chats.push(c); saveChats(); renderChatList(); }
+    toast('가져왔습니다', 2200); renderMe(); $('cWatch').textContent = watch.items.length || '';
+  };
+
+  /* =====================================================================
+     매매 일지 — 내 실제 승률 · 손익비 · 습관
+     ===================================================================== */
+  const isClosed = t => t.exit !== '' && t.exit != null && +t.exit > 0;
+  const jR = t => { const risk = Math.abs(+t.entry - +t.stop); return risk > 0 && isClosed(t) ? (+t.exit - +t.entry) / risk : null; };
+  function jStats() {
+    const closed = journal.filter(isClosed), n = closed.length;
+    const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null, r2 = v => v == null ? null : Math.round(v * 100) / 100;
+    const win = t => +t.exit > +t.entry;
+    const wins = closed.filter(win), losses = closed.filter(t => !win(t));
+    const days = closed.map(t => t.openDate && t.closeDate ? (new Date(t.closeDate) - new Date(t.openDate)) / 864e5 : null).filter(v => v != null && v >= 0);
+    const by = key => { const o = {}; for (const t of closed) { const k = key(t) || '미기록'; o[k] = o[k] || { trades: 0, wins: 0 }; o[k].trades++; if (win(t)) o[k].wins++; } for (const k in o) o[k].winRatePct = Math.round(o[k].wins / o[k].trades * 100); return o; };
+    return {
+      closedTrades: n, openTrades: journal.length - n, winRatePct: n ? r2(wins.length / n * 100) : null,
+      avgWinR: r2(avg(wins.map(jR).filter(v => v != null))), avgLossR: r2(avg(losses.map(jR).filter(v => v != null))),
+      expectancyR: r2(avg(closed.map(jR).filter(v => v != null))), avgReturnPct: r2(avg(closed.map(t => (+t.exit / +t.entry - 1) * 100))),
+      totalPnl: Math.round(closed.reduce((a, t) => a + (+t.exit - +t.entry) * (+t.qty || 0), 0)), avgHoldDays: r2(avg(days)),
+      byEmotion: by(t => t.emotion), byExitReason: by(t => t.exitReason),
+      byChecklist: by(t => t.checkTotal ? ((t.checks || []).length >= t.checkTotal ? '체크리스트 모두 지킴' : '일부만 지킴') : ''),
+    };
+  }
+  const EMO = ['계획대로 차분히', '확신', '불안', '조급함 (놓칠까 봐)', '만회하려고', '지루해서'];
+  const EXITR = ['목표가 도달', '손절가 도달', '계획을 바꿈 (근거 있음)', '감정적으로 (불안 · 조급)', '기타'];
+  function renderJournal() {
+    const st = jStats(); $('cJournal').textContent = journal.length || '';
+    const R = v => v == null ? '–' : (v > 0 ? '+' : '') + v + 'R';
+    $('jSum').innerHTML = `<div><span>끝난 매매 · 보유 중</span><b>${st.closedTrades} · ${st.openTrades}</b></div><div><span>승률</span><b>${st.winRatePct == null ? '–' : st.winRatePct + '%'}</b></div><div><span>평균 이익 · 평균 손실</span><b>${R(st.avgWinR)} · ${R(st.avgLossR)}</b></div><div><span>1회 기대값</span><b class="${cls(st.expectancyR)}">${R(st.expectancyR)}</b></div><div><span>손익 합계</span><b class="${cls(st.totalPnl)}">${st.closedTrades ? num(st.totalPnl, 0) : '–'}</b></div><div><span>평균 보유</span><b>${st.avgHoldDays == null ? '–' : st.avgHoldDays + '일'}</b></div>`;
+    const list = journal.map((t, i) => [t, i]).sort((a, b) => (isClosed(a[0]) - isClosed(b[0])) || String(b[0].openDate || '').localeCompare(String(a[0].openDate || '')));
+    const rows = list.map(([t, i]) => {
+      const closed = isClosed(t), q = (watch.quotes[String(t.symbol || '').toUpperCase()] || {}).price;
+      const px = closed ? +t.exit : q, risk = Math.abs(+t.entry - +t.stop);
+      const r = px && risk > 0 ? (px - +t.entry) / risk : null, ret = px ? (px / +t.entry - 1) * 100 : null, pnl = px && t.qty ? (px - +t.entry) * +t.qty : null;
+      return `<tr><td>${esc(t.openDate || '')}${closed && t.closeDate ? `<br><span style="font-size:var(--fs-xs);color:var(--ui-muted)">→ ${esc(t.closeDate)}</span>` : ''}</td>
+        <td class="sym"><b>${esc(t.symbol)}</b>${closed ? `<span class="sc-tag">${esc(t.exitReason || '청산')}</span>` : '<span class="sc-tag open">보유 중</span>'}</td>
+        <td>${num(+t.entry)}</td><td>${t.qty ? num(+t.qty, 4) : '–'}</td><td>${t.stop ? num(+t.stop) : '–'}</td><td>${t.target ? num(+t.target) : '–'}</td>
+        <td>${closed ? num(+t.exit) : q ? `<span title="현재가">${num(q)}</span>` : '–'}</td>
+        <td class="${cls(r)}">${r == null ? '–' : (r > 0 ? '+' : '') + r.toFixed(2) + 'R'}<br><span style="font-size:var(--fs-xs)">${pct(ret, 1)}</span></td>
+        <td class="${cls(pnl)}">${pnl == null ? '–' : num(pnl, 0)}</td>
+        <td>${esc(t.emotion || '–')}</td><td>${t.checkTotal ? `${(t.checks || []).length}/${t.checkTotal}` : '–'}</td>
+        <td class="why">${t.reason ? `<b>이유</b> ${esc(t.reason)}` : ''}${t.lesson ? `<br><b>교훈</b> ${esc(t.lesson)}` : ''}</td>
+        <td><span class="acts"><button class="btn ghost" data-jed="${i}" title="고치기 · 청산 적기" aria-label="${esc(t.symbol)} 고치기">${icon('edit', 15)}</button><button class="btn ghost" data-jrm="${i}" title="지우기" aria-label="${esc(t.symbol)} 지우기">${icon('trash', 15)}</button></span></td></tr>`;
+    }).join('');
+    $('jTable').innerHTML = `<thead><tr><th>날짜</th><th>종목</th><th>진입가</th><th>수량</th><th>손절</th><th>목표</th><th>청산 · 현재가</th><th>결과</th><th>손익</th><th>그때 감정</th><th>체크</th><th>이유 · 교훈</th><th></th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="13">아직 기록이 없습니다. 살 때 [매매 기록] 으로 이유 · 손절가 · 감정을 적고, 팔 때 같은 줄을 열어 청산가와 교훈을 적으세요.</td></tr>'}</tbody>`;
+    const bc = st.byChecklist, a = bc['체크리스트 모두 지킴'], b = bc['일부만 지킴'];
+    $('jNote').textContent = (st.closedTrades < 5 ? `끝난 매매가 ${st.closedTrades}건입니다. 5건 이상 쌓이면 통계가 의미 있어지고, 20건 이상이면 계산기의 승률로 쓸 만합니다. ` : '') + (a && b ? `체크리스트를 다 지켰을 때 승률 ${a.winRatePct}% (${a.trades}건) · 일부만 지켰을 때 ${b.winRatePct}% (${b.trades}건). ` : '') + 'R = (청산가 − 진입가) ÷ (진입가 − 손절가). 1R 은 처음 정한 손실 한 번만큼입니다.';
+    $('jTable').querySelectorAll('[data-jed]').forEach(b => b.onclick = () => editTrade(+b.dataset.jed));
+    $('jTable').querySelectorAll('[data-jrm]').forEach(b => b.onclick = async () => { const t = journal[+b.dataset.jrm]; if (await confirmBox(`${t.symbol} 기록을 지울까요?`, '이 기기의 매매 일지에서 지웁니다.', '지우기')) { journal.splice(+b.dataset.jrm, 1); saveJournal(); renderJournal(); } });
+  }
+  function editTrade(i) {
+    const today = new Date().toISOString().slice(0, 10);
+    const t = i == null ? { openDate: today, symbol: '', entry: '', qty: '', stop: '', target: '', reason: '', emotion: '', checks: [], closeDate: '', exit: '', exitReason: '', lesson: '' } : Object.assign({}, journal[i]);
+    const v = k => esc(t[k] == null ? '' : t[k]);
+    const n = (k, l) => `<label>${l}<input type="number" step="any" min="0" name="${k}" value="${v(k)}"></label>`;
+    const checks = me.checklist.map((c, j) => `<label><input type="checkbox" name="ck" value="${esc(c)}"${(t.checks || []).includes(c) ? ' checked' : ''}><span>${esc(c)}</span></label>`).join('');
+    const d = dialog(`<h3>${i == null ? '매매 기록' : esc(t.symbol) + ' 기록'}</h3><form class="sc-form">
+      <div class="grid3"><label>산 날<input type="date" name="openDate" value="${v('openDate')}"></label><label>종목<input type="text" name="symbol" value="${v('symbol')}" placeholder="예: AAPL"></label>${n('entry', '진입가')}${n('qty', '수량')}${n('stop', '손절가')}${n('target', '목표가')}</div>
+      <label>산 이유 (한두 문장)<textarea name="reason" rows="2" placeholder="예: 실적 서프라이즈 뒤 20일선 지지 확인">${v('reason')}</textarea></label>
+      <label>그때 감정<select name="emotion"><option value="">고르기</option>${EMO.map(o => `<option${t.emotion === o ? ' selected' : ''}>${o}</option>`).join('')}</select></label>
+      ${me.checklist.length ? `<fieldset><legend>매수 전 체크리스트 (지킨 것)</legend><div class="sc-checks">${checks}</div></fieldset>` : ''}
+      <fieldset><legend>판 뒤에 적기 (보유 중이면 비워 둠)</legend>
+        <div class="grid3"><label>판 날<input type="date" name="closeDate" value="${v('closeDate')}"></label>${n('exit', '청산가')}<label>판 이유<select name="exitReason"><option value="">고르기</option>${EXITR.map(o => `<option${t.exitReason === o ? ' selected' : ''}>${o}</option>`).join('')}</select></label></div>
+        <label>배운 것<textarea name="lesson" rows="2" placeholder="예: 손절가를 미뤄서 손실이 2배가 됐다">${v('lesson')}</textarea></label>
+      </fieldset>
+      <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">저장</button></div></form>`, 'sc-dlg wide');
+    const f = d.el.querySelector('form'); setTimeout(() => (i == null ? f.symbol : f.exit).focus(), 30); d.el.querySelector('[data-x]').onclick = d.close;
+    f.onsubmit = e => {
+      e.preventDefault();
+      const o = { id: t.id || uid() };
+      for (const k of ['openDate', 'symbol', 'reason', 'emotion', 'closeDate', 'exitReason', 'lesson']) o[k] = f[k].value.trim();
+      for (const k of ['entry', 'qty', 'stop', 'target', 'exit']) o[k] = f[k].value === '' ? '' : +f[k].value;
+      o.symbol = o.symbol.toUpperCase();
+      if (!o.symbol || !(o.entry > 0)) { toast('종목과 진입가를 넣어 주세요', 2000); return; }
+      if (o.exit && !o.closeDate) o.closeDate = today;
+      o.checks = [...f.querySelectorAll('[name=ck]:checked')].map(x => x.value); o.checkTotal = me.checklist.length;
+      if (i == null) journal.push(o); else journal[i] = o; saveJournal(); d.close(); renderJournal();
+      if (!o.stop) toast('손절가가 없으면 R(손익비) 을 계산할 수 없습니다', 2600);
+    };
+  }
+  $('jAdd').onclick = () => editTrade(null);
+  $('jAsk').onclick = () => { show('chat'); send('get_journal 로 내 매매 일지를 보고 회고해 줘: 승률 · 평균 이익과 손실(R) · 기대값, 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 결과 차이, 반복되는 실수 3가지, 그리고 내 규칙에 더하면 좋을 규칙 3가지. 기록이 적으면 그 한계도 말해 줘.'); };
+  $('cWinJ').onclick = () => { const st = jStats(); if (st.closedTrades < 3) { toast(`끝난 매매가 ${st.closedTrades}건이라 아직 승률로 쓰기 어렵습니다`, 2600); return; } $('cWin').value = Math.round(st.winRatePct); renderCalc(); toast(`매매 일지 ${st.closedTrades}건의 승률 ${st.winRatePct}% 를 넣었습니다`, 2400); };
+
+  /* =====================================================================
+     가격 알림 · 자동 새로 고침 (이 화면을 열어 둔 동안만)
+     ===================================================================== */
+  function alertsHit() {
+    const out = [];
+    for (const it of watch.items) { const p = (watch.quotes[it.symbol] || {}).price; if (!p) continue; if (it.alertHi && p >= +it.alertHi) out.push({ symbol: it.symbol, kind: '이상', level: +it.alertHi, price: p }); if (it.alertLo && p <= +it.alertLo) out.push({ symbol: it.symbol, kind: '이하', level: +it.alertLo, price: p }); }
+    return out;
+  }
+  let autoTm = 0;
+  function setAuto() {
+    clearInterval(autoTm); const m = +(cfg.auto || 0); $('wAuto').value = String(m);
+    if (m > 0) autoTm = setInterval(() => { if (document.visibilityState === 'visible' && dataFor('quote') && watch.items.length) refreshQuotes(true); }, m * 60000);
+  }
+  $('wAuto').onchange = e => { cfg.auto = +e.target.value; saveCfg(); setAuto(); toast(cfg.auto ? `${cfg.auto}분마다 시세를 다시 불러옵니다 (이 화면을 열어 둔 동안)` : '자동 새로 고침을 껐습니다', 2400); };
+
+  /* =====================================================================
+     화면 전환 (2)
+     ===================================================================== */
+  const VIEWS = { chat: 'vChat', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') renderApis(); if (v === 'chat') renderChat();
+    if (v === 'watch') renderWatch(); if (v === 'journal') renderJournal(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') renderApis(); if (v === 'chat') renderChat();
     try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
 
   fillIcons(document);
-  $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || '';
+  $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || '';
+  setAuto();
   renderChatList();
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'chat');
   addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS[v]) show(v); });

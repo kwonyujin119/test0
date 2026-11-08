@@ -141,6 +141,3 @@ html.in-app .ws-app { display: none; }
 .ws-card[data-ws] .resume-link:not(.empty) { background: color-mix(in srgb, var(--ws-bg) 70%, var(--ui-panel)); }
 .ws-card[data-ws] .resume-link:not(.empty):hover { background: var(--ws-bg); }
 
-/* SECRET 카드: 설명 없이 [SECRET 열기] 만 */
-.ws-card.ws-secret { justify-content: flex-end; }
-.ws-card.ws-secret .go { margin-top: 0; padding-top: 0; }
