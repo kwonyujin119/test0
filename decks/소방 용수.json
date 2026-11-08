@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-08T01:32:15.608Z",
+ "modified": "2026-11-08T01:33:55.946Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -5902,6 +5902,35 @@
      "cropX": 50,
      "cropY": 55,
      "mk": "yetgu2115"
+    },
+    {
+     "id": "jylr402fu",
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "shape": "rect",
+     "x": 1070,
+     "y": 456,
+     "w": 136,
+     "h": 32,
+     "fill": "rgba(14,17,22,.62)",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 16,
+     "shadow": false,
+     "html": "AI 생성",
+     "style": {
+      "padding": 0,
+      "lineHeight": 1.2,
+      "valign": "middle",
+      "fontSize": 17,
+      "bold": true,
+      "color": "#FFFFFF",
+      "align": "center"
+     },
+     "mk": "703kxh354"
     }
    ],
    "hidden": false
