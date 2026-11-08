@@ -7,7 +7,7 @@ const CORE = [
   './', 'index.html', 'gyoan.html', 'hangul.html', 'video.html', 'editor.html', 'present.html', 'shortcuts.html', 'manifest.webmanifest',
   'app/common.js', 'app/access.js', 'app/hub.css', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/pptx.js', 'app/pptsym.js', 'app/pptin.js', 'app/bgai.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js',
   'app/hwp/zip.js', 'app/hwp/hwpx.js', 'app/hwp/store.js', 'app/hwp/best.js', 'app/hwp/edit.js', 'app/hwp/ui.js', 'app/hwp/hwp.css',
-  'app/video/core.js', 'app/video/dsp.js', 'app/video/chars.js', 'app/video/render.js', 'app/video/player.js', 'app/video/timeline.js', 'app/video/tools.js', 'app/video/voices.js', 'app/video/export.js', 'app/video/rec.js', 'app/video/panels.js', 'app/video/app.js', 'app/video/video.css',
+  'app/video/core.js', 'app/video/dsp.js', 'app/video/chars.js', 'app/video/render.js', 'app/video/swap.js', 'app/video/player.js', 'app/video/timeline.js', 'app/video/tools.js', 'app/video/voices.js', 'app/video/export.js', 'app/video/rec.js', 'app/video/panels.js', 'app/video/app.js', 'app/video/video.css',
   'app/icons/icon-192.png', 'app/icons/icon-512.png', 'app/icons/icon-maskable-512.png', 'app/icons/hangul-96.png', 'app/icons/gyoan-96.png', 'app/icons/video-96.png',
 ];
 function refresh() { // 화면 파일 사본을 새로 받아 둠 (실패한 파일은 예전 사본 유지)

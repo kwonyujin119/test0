@@ -196,9 +196,18 @@
   /* 얼굴 찾기는 시간이 앞으로만 가야 하므로 한 번에 하나씩 차례로 */
   let faceLock = Promise.resolve(), faceClock = 1;
   VE.trackFaces = (mid, o) => { const p = faceLock.then(() => trackOne(mid, o)); faceLock = p.catch(() => { }); return p; };
-  const trackOne = async (mid, { ranges, faces, onProg, signal }) => {
+  /* 사진 한 장의 얼굴 기준점 468개 (0~1, x·y 차례) — 얼굴 덮기용 */
+  VE.imageLandmarks = (img) => { const p = faceLock.then(async () => {
+    const W = img.naturalWidth || img.width, H = img.naturalHeight || img.height, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d'); c.fillStyle = '#c8ccd0'; c.fillRect(0, 0, W, H); c.drawImage(img, 0, 0);
+    const lm = await VE.faceLandmarker(1); let L = null; for (let k = 0; k < 3 && !L; k++) { faceClock += 2000; L = lm.detectForVideo(cv, faceClock).faceLandmarks[0]; }
+    if (!L) return null; const out = new Float32Array(468 * 2); for (let i = 0; i < 468; i++) { out[i * 2] = L[i].x; out[i * 2 + 1] = L[i].y; } return out;
+  }); faceLock = p.catch(() => { }); return p; };
+  const Q = 16000; /* 기준점 저장 배율 (Int16) */
+  const trackOne = async (mid, { ranges, faces, mesh, onProg, signal }) => {
     const MB = await VE.mb(), r = VE.rt.get(mid), m = VE.media(mid); await VE.openInput(mid); if (!r.vTrack) throw new Error('영상이 없는 파일입니다');
-    const fps = 12; if (!r.track || r.track.fps !== fps || (r.track.faces || 1) < (faces || 1)) { r.track = { fps, faces: faces || 1, frames: [] }; }
+    /* 얼굴 덮기는 입 모양까지 따라가야 해서 기준점 468개를 초당 15장 기록 */
+    const fps = mesh ? 15 : (r.track && r.track.mesh ? r.track.fps : 12);
+    if (!r.track || r.track.fps !== fps || (r.track.faces || 1) < (faces || 1) || (mesh && !r.track.mesh)) { r.track = { fps, faces: faces || 1, frames: [], mesh: mesh ? [] : undefined }; }
     const tr = r.track, want = []; (ranges || [[0, m.dur]]).forEach(([a, b]) => { for (let i = Math.floor(a * fps); i <= Math.ceil(b * fps); i++) if (tr.frames[i] === undefined && i / fps <= m.dur) want.push(i); });
     want.sort((x, y) => x - y); const uniq = want.filter((v, i) => v !== want[i - 1]); if (!uniq.length) return tr;
     let lm = await VE.faceLandmarker(faces || 1), fails = 0; const w = Math.min(640, m.w), h = Math.round(w * m.h / m.w / 2) * 2;
@@ -217,28 +226,35 @@
           if (fails > 8) throw new Error('이 영상에서는 얼굴 위치를 찾다가 자꾸 멈춥니다. 영상을 다시 저장하거나 PC 의 크롬·엣지에서 해 보세요.');
           lm = await resetLandmarker(faces || 1);
         }
-        if (res) list = (res.faceLandmarks || []).map((_, k) => poseOf(res, k, ar)).sort((a, b) => b[2] - a[2]);
+        if (res) {
+          const order = (res.faceLandmarks || []).map((_, k) => [k, poseOf(res, k, ar)]).sort((a, b) => b[1][2] - a[1][2]); list = order.map(o => o[1]);
+          if (tr.mesh && order.length) { const L = res.faceLandmarks[order[0][0]], a = new Int16Array(936); for (let q = 0; q < 468; q++) { a[q * 2] = Math.round(L[q].x * Q); a[q * 2 + 1] = Math.round(L[q].y * Q); } tr.mesh[i] = a; }
+        }
       }
-      tr.frames[i] = list;
+      tr.frames[i] = list; if (tr.mesh && !list.length) tr.mesh[i] = null;
       const now = performance.now(); if (now - last > 120) { last = now; const done = n / uniq.length, spent = (now - t0) / 1000; onProg && onProg({ ratio: done, eta: done > .02 ? spent / done * (1 - done) : null }); VE.emit('track', mid); await new Promise(z => setTimeout(z)); }
     }
     smooth(tr, uniq[0], uniq[uniq.length - 1]);
+    if (tr.mesh) { /* 떨림 줄이기: 앞뒤 장면과 1:2:1 로 섞음 */
+      const M = tr.mesh, a0 = uniq[0], a1 = uniq[uniq.length - 1], copy = []; for (let i = a0 - 1; i <= a1 + 1; i++) copy[i] = M[i];
+      for (let i = a0; i <= a1; i++) { const c = copy[i], p = copy[i - 1], q = copy[i + 1]; if (!c || !p || !q) continue; const o = new Int16Array(936); for (let k = 0; k < 936; k++) o[k] = Math.round((p[k] + 2 * c[k] + q[k]) / 4); M[i] = o; }
+    }
     VE.idb.put('cache', mid + ':track', tr).catch(() => { }); VE.emit('track', mid); return tr;
   };
   /* 프로젝트 전체에서 얼굴 분석이 필요한 곳을 모아 처리 */
   VE.needFaceJobs = () => {
-    const jobs = new Map(); const add = (mid, a, b, faces) => { const j = jobs.get(mid) || { mid, ranges: [], faces: 1 }; j.ranges.push([a, b]); j.faces = Math.max(j.faces, faces); jobs.set(mid, j); };
+    const jobs = new Map(); const add = (mid, a, b, faces, mesh) => { const j = jobs.get(mid) || { mid, ranges: [], faces: 1, mesh: false }; j.ranges.push([a, b]); j.faces = Math.max(j.faces, faces); j.mesh = j.mesh || !!mesh; jobs.set(mid, j); };
     for (const c of VE.p.clips) {
-      if (c.face && c.face.mode) add(c.mid, c.in, c.out, c.face.mode === 'mosaic' ? 4 : 1);
+      if (c.face && c.face.mode) add(c.mid, c.in, c.out, c.face.mode === 'mosaic' ? 4 : 1, c.face.mode === 'char' && c.face.swap && VE.swap && VE.swap.can(c.face.char));
       if (c.pip && c.pip.char) { const off = c.pip.off || 0; add(c.pip.mid, Math.max(0, c.in + off), Math.max(0, c.out + off), 1); }
     }
     const out = [];
-    jobs.forEach(j => { const r = VE.rt.get(j.mid), tr = r && r.track; let missing = !tr || (tr.faces || 1) < j.faces; if (!missing) { for (const [a, b] of j.ranges) { for (let i = Math.floor(a * tr.fps); i <= Math.ceil(b * tr.fps); i += 3) if (tr.frames[i] === undefined && i / tr.fps <= VE.media(j.mid).dur) { missing = true; break; } if (missing) break; } } if (missing) out.push(j); });
+    jobs.forEach(j => { const r = VE.rt.get(j.mid), tr = r && r.track; let missing = !tr || (tr.faces || 1) < j.faces || (j.mesh && !tr.mesh); if (!missing) { for (const [a, b] of j.ranges) { for (let i = Math.floor(a * tr.fps); i <= Math.ceil(b * tr.fps); i += 3) if (tr.frames[i] === undefined && i / tr.fps <= VE.media(j.mid).dur) { missing = true; break; } if (missing) break; } } if (missing) out.push(j); });
     return out;
   };
   VE.runFaceJobs = async (onProg, signal) => {
     const jobs = VE.needFaceJobs();
-    for (let i = 0; i < jobs.length; i++) await VE.trackFaces(jobs[i].mid, { ranges: jobs[i].ranges, faces: jobs[i].faces, signal, onProg: p => onProg && onProg({ ratio: (i + p.ratio) / jobs.length, eta: p.eta }) });
+    for (let i = 0; i < jobs.length; i++) await VE.trackFaces(jobs[i].mid, { ranges: jobs[i].ranges, faces: jobs[i].faces, mesh: jobs[i].mesh, signal, onProg: p => onProg && onProg({ ratio: (i + p.ratio) / jobs.length, eta: p.eta }) });
     return jobs.length;
   };
 })();
