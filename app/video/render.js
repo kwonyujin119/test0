@@ -4,6 +4,14 @@
   const small = document.createElement('canvas'); small.width = 64; small.height = 36;
   const smallC = small.getContext('2d', { willReadFrequently: true });
   const mos = document.createElement('canvas'); const mosC = mos.getContext('2d');
+  /* 얼굴 자리를 아주 작게 줄였다 키워 흐림 (기준점 둘레를 넉넉히) */
+  const coverFace = (c, W, H, pts, grow) => {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let q = 0; q < 468; q++) { const x = pts[q * 2], y = pts[q * 2 + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    const w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = w * .75 * (grow || 1), ry = h * .75 * (grow || 1);
+    const sx = clamp(cx - rx, 0, W - 1), sy = clamp(cy - ry, 0, H - 1), sw = Math.min(W - sx, rx * 2), sh = Math.min(H - sy, ry * 2); if (sw < 4 || sh < 4) return;
+    mos.width = 6; mos.height = Math.max(2, Math.round(6 * sh / sw)); mosC.imageSmoothingEnabled = true; mosC.drawImage(c.canvas, sx, sy, sw, sh, 0, 0, mos.width, mos.height);
+    c.save(); c.beginPath(); c.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); c.clip(); c.imageSmoothingEnabled = true; c.drawImage(mos, sx, sy, sw, sh); c.restore();
+  };
 
   const paint = (c, frame, x, y, w, h) => { if (frame && frame.draw && !frame.nodeType) frame.draw(c, x, y, w, h); else if (frame) c.drawImage(frame, x, y, w, h); };
 
@@ -32,10 +40,16 @@
   const meshBuf = new Float32Array(936);
   VE.meshAt = (mid, src) => {
     const r = VE.rt.get(mid), tr = r && r.track; if (!tr || !tr.mesh) return null;
-    const pos = src * tr.fps, i = Math.floor(pos), f = pos - i, M = tr.mesh, hold = Math.round(tr.fps * 1.5);
-    let a = M[i], b = M[i + 1];
-    if (!a) { for (let k = 1; k <= hold; k++) { if (M[i - k]) { a = M[i - k]; break; } } }
-    if (!b) b = a; if (!a) { if (b) a = b; else return null; }
+    /* 이 장면에서 얼굴을 놓쳤으면 앞뒤 3초 안에서 가장 가까운 장면을 씀 (VE.meshGap = 떨어진 초) */
+    const pos = src * tr.fps, i = Math.floor(pos), f = pos - i, M = tr.mesh, hold = Math.round(tr.fps * 3);
+    let a = M[i], b = M[i + 1]; VE.meshGap = 0; VE.meshNear = null;
+    if (!a || !b) {
+      /* 놓친 구간: 앞뒤로 가장 가까운 기록을 찾아 시간 비율로 이어 위치를 추정 (한쪽만 있으면 그것을) */
+      let p = -1, n = -1; for (let k = 0; k <= hold; k++) { if (p < 0 && M[i - k]) p = i - k; if (n < 0 && M[i + 1 + k]) n = i + 1 + k; if (p >= 0 && n >= 0) break; }
+      if (p < 0 && n < 0) return null;
+      if (p >= 0 && n >= 0) { a = M[p]; b = M[n]; const ff = (pos - p) / (n - p); for (let k = 0; k < 936; k++) meshBuf[k] = (a[k] + (b[k] - a[k]) * ff) / 16000; VE.meshGap = Math.min(pos - p, n - pos) / tr.fps; VE.meshNear = n - p > 1 ? [a, b] : null; return meshBuf; }
+      a = b = M[p >= 0 ? p : n]; VE.meshGap = Math.abs(pos - (p >= 0 ? p : n)) / tr.fps; VE.meshNear = [a];
+    }
     for (let k = 0; k < 936; k++) meshBuf[k] = (a[k] + (b[k] - a[k]) * f) / 16000;
     return meshBuf;
   };
@@ -52,7 +66,9 @@
   const drawCaption = (c, W, H, cap, t) => {
     const st = VE.p.cap, unit = Math.min(W, H) * .052 * (st.size || 1);
     c.save(); c.font = `700 ${unit}px ${FONT}`; c.textBaseline = 'middle'; c.lineJoin = 'round';
-    const lines = wrap(c, cap.text, W * .86), lh = unit * 1.36;
+    let lines = wrap(c, cap.text, W * .86); const lh = unit * 1.36;
+    /* 두 줄이면 위아래 길이를 고르게 (한 낱말만 아랫줄에 남지 않게) */
+    if (lines.length === 2) { const ws = cap.text.split(' '); let best = null; for (let k = 1; k < ws.length; k++) { const a = ws.slice(0, k).join(' '), b = ws.slice(k).join(' '), wa = c.measureText(a).width, wb = c.measureText(b).width; if (wa > W * .86 || wb > W * .86) continue; const sc = Math.max(wa, wb); if (!best || sc < best[0]) best = [sc, a, b]; } if (best) lines = [best[1], best[2]]; }
     const y0 = st.pos === 'top' ? H * .08 + lh / 2 : st.pos === 'middle' ? H / 2 - (lines.length - 1) * lh / 2 : H * .92 - (lines.length - 1) * lh - lh / 2;
     let wi = 0;
     lines.forEach((ln, i) => {
@@ -145,7 +161,15 @@
             /* 얼굴 덮기: 기준점 그물로 사진 얼굴을 영상 얼굴 모양에 맞춰 덮음 (실패하면 아래의 얹기 방식으로) */
             if (clip.face.swap && VE.swap && VE.swap.can(clip.face.char)) {
               const ms = VE.meshAt(clip.mid, f.src);
-              if (ms) { const pts = new Float32Array(936); for (let q = 0; q < 468; q++) { pts[q * 2] = r.x + ms[q * 2] * r.w; pts[q * 2 + 1] = r.y + ms[q * 2 + 1] * r.h; } if (VE.swap.draw(c, pts, clip.face.char, clip.id, f.src)) { swapped = true; return; } }
+              if (ms) {
+                const pts = new Float32Array(936); for (let q = 0; q < 468; q++) { pts[q * 2] = r.x + ms[q * 2] * r.w; pts[q * 2 + 1] = r.y + ms[q * 2 + 1] * r.h; }
+                /* 이 장면의 얼굴 위치가 아니라 가까운 장면 것을 빌려 쓸 때는, 어긋나도 원래 얼굴이 보이지 않게 그 자리를 먼저 흐림 */
+                if (VE.meshGap > .07) {
+                  const grow = 1 + Math.min(1, VE.meshGap) * .6; coverFace(c, W, H, pts, grow);
+                  if (VE.meshNear) for (const nm of VE.meshNear) { const q2 = new Float32Array(936); for (let q = 0; q < 468; q++) { q2[q * 2] = r.x + nm[q * 2] / 16000 * r.w; q2[q * 2 + 1] = r.y + nm[q * 2 + 1] / 16000 * r.h; } coverFace(c, W, H, q2, 1); }
+                }
+                if (VE.swap.draw(c, pts, clip.face.char, clip.id, f.src)) { swapped = true; return; }
+              }
             }
             /* AI 목소리로 바꾼 장면은 그 소리 크기에 맞춰 입을 움직임 */
             if (VE.dub && VE.dub.active(clip.mid)) pr.mouth = VE.dub.mouthAt(clip.mid, f.src);
