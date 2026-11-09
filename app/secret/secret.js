@@ -73,6 +73,7 @@
     twelvedata: { kind: 'data', name: 'Twelve Data', caps: ['quote', 'history'], keyUrl: 'https://twelvedata.com/account/api-keys', note: '현재가 · 일봉 (무료: 하루 800회). 한국 종목은 요금제에 따라 다릅니다.' },
     alphavantage: { kind: 'data', name: 'Alpha Vantage', caps: ['quote', 'history', 'news'], keyUrl: 'https://www.alphavantage.co/support/#api-key', note: '현재가 · 일봉 · 뉴스 감성 (무료: 하루 25회).' },
     datagokr: { kind: 'data', name: '공공데이터포털 주식시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A3%BC%EC%8B%9D%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '국내 상장 종목의 하루 단위 시세 · 일봉 (무료). 마지막 영업일 종가 기준이라 장중 실시간은 아닙니다. 마이페이지의 일반 인증키를 Encoding · Decoding 어느 쪽이든 그대로 붙여 넣으세요. 종목은 6자리 코드(005930)나 종목명(삼성전자).' },
+    kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
   };
   const isAI = a => TYPES[a.type] && TYPES[a.type].kind === 'ai';
@@ -237,6 +238,37 @@
         return (await this._get(k, s, days)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
       },
     },
+    /* 한국투자증권 KIS — 내 Cloudflare 중계(app/secret/kis-relay.worker.js)를 거쳐서. 키는 중계에만 있고 여기서는 중계 암호만 */
+    kisrelay: {
+      async _call(k, api, path, q) {
+        const base = String(api.base || '').trim().replace(/\/+$/, '');
+        if (!/^https:\/\/[^/]+/.test(base)) throw new Error('KIS 중계 주소를 넣어 주세요 (https://….workers.dev)');
+        const tk = 'sec:kisTok:' + api.id; let sealed = ''; try { sealed = localStorage.getItem(tk) || ''; } catch (e) { }
+        let r; try { r = await fetch(base + path + '?' + new URLSearchParams(q), { headers: Object.assign({ 'x-relay-key': String(k || '').trim() }, sealed ? { 'x-kis-token': sealed } : {}) }); }
+        catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 주소를 확인하고, 중계 코드를 최신으로 붙여 넣었는지 확인하세요'); }
+        const nt = r.headers.get('x-kis-token'); if (nt) try { localStorage.setItem(tk, nt); } catch (e) { } // 토큰 봉투 (중계만 열 수 있음)
+        const j = await r.json().catch(() => null);
+        if (!r.ok || !j || !j.ok) throw new Error('KIS 중계: ' + ((j && j.error) || ('HTTP ' + r.status)));
+        return j;
+      },
+      _code(s) {
+        const q = String(s || '').trim().replace(/\.(KS|KQ)$/i, '').replace(/:KRX$/i, '');
+        const m = q.match(/^A?([0-9A-Z]{6})$/i); if (m) return m[1].toUpperCase();
+        throw new Error(`${s}: KIS 는 6자리 종목 코드로 찾습니다 (예: 삼성전자 005930)`);
+      },
+      async quote(k, s, api) {
+        const code = this._code(s), o = (await this._call(k, api, '/quote', { code })).output || {}, n = v => (v === '' || v == null ? null : +v);
+        if (!n(o.stck_prpr)) throw new Error(`${s}: 시세가 없습니다 (종목 코드를 확인하세요)`);
+        return { symbol: code, currency: 'KRW', price: n(o.stck_prpr), change: n(o.prdy_vrss), changePct: n(o.prdy_ctrt), open: n(o.stck_oprc), high: n(o.stck_hgpr), low: n(o.stck_lwpr), prevClose: n(o.stck_sdpr), volume: n(o.acml_vol),
+          per: n(o.per), pbr: n(o.pbr), eps: n(o.eps), week52: o.w52_hgpr ? { high: n(o.w52_hgpr), low: n(o.w52_lwpr) } : undefined, marketCapEok: n(o.hts_avls), sector: o.bstp_kor_isnm || undefined,
+          time: new Date().toISOString(), source: '한국투자증권 KIS (실시간)' };
+      },
+      async history(k, s, days, api) {
+        const code = this._code(s), j = await this._call(k, api, '/daily', { code, days });
+        const d8 = x => `${x.slice(0, 4)}-${x.slice(4, 6)}-${x.slice(6)}`;
+        return (j.rows || []).map(x => ({ t: d8(x.stck_bsop_date), o: +x.stck_oprc, h: +x.stck_hgpr, l: +x.stck_lwpr, c: +x.stck_clpr, v: +x.acml_vol })).filter(b => b.c).reverse();
+      },
+    },
     custom: {
       async custom(k, s, api) {
         const url = String(api.base || '').replace(/\{symbol\}/g, E(s)).replace(/\{key\}/g, E(k));
@@ -248,8 +280,13 @@
   };
   const isKR = s => /^A?\d{6}(\.(KS|KQ))?$|:KRX$|[가-힣]/i.test(String(s || '').trim());
   async function callData(cap, ...args) {
-    const kr = (cap === 'quote' || cap === 'history') && isKR(args[0]) && dataApis().find(a => a.type === 'datagokr');
-    const api = kr || dataFor(cap); if (!api) throw new Error(`'${cap}' 를 주는 시세 API 가 등록되어 있지 않습니다`);
+    const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr'].map(t => dataApis().find(a => a.type === t)).filter(Boolean) : [];
+    if (krs.length) {
+      let last = null;
+      for (const a of krs) { try { return await DATA[a.type][cap](await keyOf(a), ...args, a); } catch (e) { last = e; } }
+      throw last;
+    }
+    const api = dataFor(cap); if (!api) throw new Error(`'${cap}' 를 주는 시세 API 가 등록되어 있지 않습니다`);
     const k = await keyOf(api);
     return DATA[api.type][cap](k, ...args, api);
   }
@@ -297,7 +334,7 @@
      ===================================================================== */
   function toolDefs() {
     const T = [];
-    const sym = { type: 'string', description: '종목 코드. 미국은 AAPL, 한국은 6자리 코드(005930) 또는 종목명(삼성전자) — 공공데이터포털이 등록돼 있으면 한국 종목은 그쪽으로 조회됨(전 영업일 종가 기준)' };
+    const sym = { type: 'string', description: '종목 코드. 미국은 AAPL, 한국은 6자리 코드(005930)를 먼저 쓴다(종목명도 공공데이터포털에서는 됨). 한국 종목은 KIS 중계(실시간)가 있으면 그쪽, 없거나 실패하면 공공데이터포털(전 영업일 종가)로 조회됨 — 결과의 source 로 실시간인지 확인' };
     if (dataFor('quote')) T.push({ name: 'get_quote', description: '종목의 현재가(또는 최근 종가) · 등락률 · 고가 · 저가를 등록된 시세 API 로 조회한다. 가격을 말하기 전에 반드시 이 도구로 확인한다.', input_schema: { type: 'object', properties: { symbol: sym }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
@@ -812,8 +849,8 @@
         const r = await fetch(base + '/models', { headers: { Authorization: 'Bearer ' + k } });
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
-        const T = TYPES[a.type]; const s = a.type === 'datagokr' ? '005930' : 'AAPL';
-        if (T.caps.includes('quote')) await DATA[a.type].quote(k, s); else await DATA.custom.custom(k, s, a);
+        const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
+        if (T.caps.includes('quote')) await DATA[a.type].quote(k, s, a); else await DATA.custom.custom(k, s, a);
       }
       a.test = 'ok'; toast(`${a.name}: 연결됐습니다`, 2000);
     } catch (e) {
@@ -821,12 +858,33 @@
       toast(`${a.name}: ${a.test}`, 4000);
     } finally { saveCfg(); if (btn) btn.disabled = false; renderApis(); }
   }
+  function kisGuide() {
+    const d = dialog(`<h3>KIS 중계 만드는 법 (한 번만, 약 5분)</h3>
+      <p class="modal-desc">한국투자증권 API 는 웹페이지에서 직접 부르는 것을 막아 두어서, 내 계정의 작은 중계(Cloudflare Worker, 무료)를 거칩니다. 앱키 · 앱시크릿은 그 중계에만 들어가고, 중계는 <b>시세 조회만</b> 하며 주문 기능이 없습니다.</p>
+      <ol class="sc-steps">
+        <li><a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">Cloudflare</a> 에 무료로 가입하고 로그인합니다.</li>
+        <li>왼쪽 메뉴 <b>Workers &amp; Pages</b>(또는 Compute) → <b>Create</b> → <b>Hello World</b> 로 시작 → 이름을 <b>dpv-kis</b> 로 → <b>Deploy</b>.</li>
+        <li><b>Edit code</b> → 원래 코드를 모두 지우고, 아래 <b>[중계 코드 복사]</b> 한 것을 붙여 넣기 → <b>Deploy</b>.</li>
+        <li>그 Worker 의 <b>Settings → Variables and Secrets → Add</b> 에서 종류를 <b>Secret</b> 으로 세 개를 넣습니다.<br><code>KIS_APPKEY</code> = 앱키 · <code>KIS_APPSECRET</code> = 앱시크릿 · <code>RELAY_KEY</code> = [중계 암호 만들기] 로 만든 값<br><small>모의투자 앱키라면 <code>KIS_MOCK</code> = <code>1</code> 도 넣습니다.</small></li>
+        <li>Worker 화면 위쪽의 주소(<code>https://dpv-kis.○○○.workers.dev</code>)를 복사해 이 창의 <b>주소</b> 칸에 넣고 [추가하고 시험].</li>
+      </ol>
+      <p class="hint">처음 시험할 때 KIS 가 접근 토큰 발급 알림(카카오톡)을 보낼 수 있습니다. 토큰은 하루 동안 다시 써서 알림이 자주 오지 않습니다.</p>
+      <div class="actions"><a class="btn" href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare 열기</a><button class="btn ink" data-cp>${icon('copy', 16)}중계 코드 복사</button></div>`, 'sc-dlg');
+    d.el.querySelector('[data-cp]').onclick = async ev => {
+      const b = ev.currentTarget;
+      try {
+        const code = await fetch('app/secret/kis-relay.worker.js', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error(); return r.text(); });
+        await navigator.clipboard.writeText(code); b.textContent = '복사했습니다 — Cloudflare 편집기에 붙여 넣으세요';
+      } catch (e) { window.open('app/secret/kis-relay.worker.js', '_blank'); toast('코드 파일을 열었습니다 — 모두 선택해 복사하세요', 3000); }
+    };
+  }
   function openAdd(type, edit) {
     const a = edit || { type: type || 'claude', name: '', model: '', base: '' };
     const opts = (kind, label) => `<optgroup label="${label}">${Object.entries(TYPES).filter(([, t]) => t.kind === kind).map(([id, t]) => `<option value="${id}"${a.type === id ? ' selected' : ''}>${t.name}</option>`).join('')}</optgroup>`;
     const d = dialog(`<h3>${edit ? 'API 고치기' : 'API 추가'}</h3><form class="sc-form" autocomplete="off">
       <label>종류<select name="type"${edit ? ' disabled' : ''}>${opts('ai', 'AI (대화)')}${opts('data', '시세 · 데이터')}</select></label>
       <p class="hint" id="tNote"></p>
+      <div class="sc-kis" id="kisHelp" hidden><button type="button" class="btn sm" id="kisGuide">${icon('help', 14)}중계 만드는 법</button><button type="button" class="btn sm" id="kisGen">${icon('lock', 14)}중계 암호 만들기</button></div>
       <label>이름<input type="text" name="name" value="${esc(a.name)}" placeholder="예: 내 Claude"></label>
       <label>API 키<input type="password" name="key" placeholder="${edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요'}" autocomplete="off"></label>
       <label id="fModel">모델<input type="text" name="model" value="${esc(a.model || '')}"></label>
@@ -837,18 +895,26 @@
       const T = TYPES[f.type.value]; const ai = T.kind === 'ai';
       $('tNote').innerHTML = esc(T.note || '') + (T.keyUrl ? ` <a href="${T.keyUrl}" target="_blank" rel="noopener">키 발급 페이지</a>` : '');
       $('fModel').hidden = !ai; f.model.placeholder = f.type.value === 'claude' ? 'claude-opus-5-5 (비우면 기본)' : '예: 해당 회사의 모델 이름';
-      $('fBase').hidden = !(f.type.value === 'compat' || f.type.value === 'custom' || (ai && f.type.value !== 'claude' && edit));
-      f.base.placeholder = f.type.value === 'custom' ? 'https://…?symbol={symbol}&apikey={key}' : (T.base || 'https://…/v1');
+      const kis = f.type.value === 'kisrelay'; $('kisHelp').hidden = !kis;
+      $('fBase').hidden = !(kis || f.type.value === 'compat' || f.type.value === 'custom' || (ai && f.type.value !== 'claude' && edit));
+      f.base.placeholder = kis ? 'https://dpv-kis.○○○.workers.dev' : f.type.value === 'custom' ? 'https://…?symbol={symbol}&apikey={key}' : (T.base || 'https://…/v1');
+      f.key.placeholder = kis ? '중계 암호 ([중계 암호 만들기] 로 만든 값)' : (edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요');
       if (!f.name.value || f.name.dataset.auto) { f.name.value = T.name; f.name.dataset.auto = '1'; }
     };
     f.name.oninput = () => { delete f.name.dataset.auto; };
+    $('kisGuide').onclick = () => kisGuide();
+    $('kisGen').onclick = async () => { // 긴 무작위 암호 — 이 칸과 Cloudflare 의 RELAY_KEY 에 같은 값
+      const v = Array.from(crypto.getRandomValues(new Uint8Array(24)), b => b.toString(16).padStart(2, '0')).join('');
+      f.key.type = 'text'; f.key.value = v;
+      try { await navigator.clipboard.writeText(v); toast('중계 암호를 만들어 복사했습니다 — Cloudflare 의 RELAY_KEY 에 붙여 넣으세요', 4200); } catch (e) { f.key.select(); toast('중계 암호를 만들었습니다 — 칸의 값을 복사해 Cloudflare 의 RELAY_KEY 에 넣으세요', 4200); }
+    };
     f.type.onchange = sync; sync(); setTimeout(() => (edit ? f.name : f.key).focus(), 30);
     d.el.querySelector('[data-x]').onclick = d.close;
     f.onsubmit = async e => {
       e.preventDefault();
       const t = f.type.value, T = TYPES[t], key = f.key.value.trim();
       if (!edit && !key && t !== 'custom') { toast('API 키를 넣어 주세요', 1800); return; }
-      if ((t === 'compat' || t === 'custom') && !f.base.value.trim()) { toast('주소를 넣어 주세요', 1800); return; }
+      if ((t === 'compat' || t === 'custom' || t === 'kisrelay') && !f.base.value.trim()) { toast(t === 'kisrelay' ? '중계 주소를 넣어 주세요 ([중계 만드는 법] 5번)' : '주소를 넣어 주세요', 2200); return; }
       if (T.kind === 'ai' && t !== 'claude' && !f.model.value.trim()) { toast('모델 이름을 넣어 주세요', 1800); return; }
       const o = edit || { id: uid(), type: t, on: true };
       o.name = f.name.value.trim() || T.name; o.model = T.kind === 'ai' ? f.model.value.trim() : ''; o.base = f.base.value.trim() || '';
