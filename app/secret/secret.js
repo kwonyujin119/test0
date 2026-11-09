@@ -1459,11 +1459,20 @@
      모닝 브리핑 — GitHub Actions 가 매일 아침 briefing 브랜치에 저장한 큰 이슈 15개 (AI 토큰 안 씀)
      ===================================================================== */
   const briefRepo = () => { let c = null; try { c = typeof GH !== 'undefined' && GH.load ? GH.load() : null; } catch (e) { } return `${(c && c.owner) || 'kwonyujin119'}/${(c && c.repo) || 'test0'}`; };
-  const briefUrl = f => `https://raw.githubusercontent.com/${briefRepo()}/briefing/${f}?v=${Math.floor(Date.now() / 300000)}`;
+  const briefUrl = (f, ref) => `https://raw.githubusercontent.com/${briefRepo()}/${ref || 'briefing'}/${f}${ref ? '' : `?v=${Math.floor(Date.now() / 300000)}`}`;
+  /* 방금 올라온 판이 바로 보이게: briefing 브랜치의 최신 커밋 번호로 읽음 (raw 서버는 브랜치 주소를 5분쯤 예전 것으로 보여 줌). 실패하면 브랜치 주소로 */
+  let briefRef = { sha: '', at: 0 };
+  async function latestRef() {
+    if (briefRef.sha && Date.now() - briefRef.at < 60000) return briefRef.sha;
+    try { const r = await fetch(`https://api.github.com/repos/${briefRepo()}/commits/briefing`, { headers: { accept: 'application/vnd.github.sha' }, cache: 'no-store' }); if (r.ok) { const t = (await r.text()).trim(); if (/^[0-9a-f]{40}$/.test(t)) briefRef = { sha: t, at: Date.now() }; } } catch (e) { }
+    return briefRef.sha;
+  }
   const bui = { dates: null, date: '', cache: {} };
   async function getBrief(f) {
     if (bui.cache[f]) return bui.cache[f];
-    const r = await fetch(briefUrl(f), { cache: 'no-store' });
+    const ref = await latestRef();
+    let r = await fetch(briefUrl(f, ref), { cache: 'no-store' });
+    if (ref && !r.ok && r.status !== 404) r = await fetch(briefUrl(f), { cache: 'no-store' });
     if (r.status === 404) return null;
     if (!r.ok) throw new Error('브리핑을 불러오지 못했습니다 (' + r.status + ')');
     const j = await r.json(); bui.cache[f] = j; return j;
