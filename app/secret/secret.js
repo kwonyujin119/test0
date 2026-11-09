@@ -207,7 +207,8 @@
     /* 공공데이터포털 · 금융위원회_주식시세정보 (브라우저에서 바로 불러올 수 있음) */
     datagokr: {
       async _get(k, s, days) {
-        const key = /%[0-9A-F]{2}/i.test(k) ? decodeURIComponent(k) : k; // Encoding 키를 넣어도 두 번 바뀌지 않게
+        const k0 = String(k || '').replace(/\s+/g, ''); // 붙여 넣을 때 딸려 온 빈칸 · 줄바꿈 제거
+        const key = /%[0-9A-F]{2}/i.test(k0) ? decodeURIComponent(k0) : k0; // Encoding 키를 넣어도 두 번 바뀌지 않게
         const q = String(s).trim().replace(/\.(KS|KQ|KRX)$/i, '').replace(/:KRX$/i, '');
         const code = (q.match(/^A?(\d{6})$/i) || [])[1];
         const ymd8 = d => d.toISOString().slice(0, 10).replace(/-/g, '');
@@ -218,7 +219,7 @@
         let r; try { r = await fetch(url); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
         const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch (e) { }
         const bad = j && j.OpenAPI_ServiceResponse && j.OpenAPI_ServiceResponse.cmmMsgHeader;
-        if (bad) throw new Error('공공데이터포털: ' + (bad.returnAuthMsg || bad.errMsg) + (/NOT_REGISTERED/.test(bad.errMsg || '') ? ' — 키를 다시 복사하거나, 승인 직후라면 1~2시간 뒤 다시 해 보세요' : ''));
+        if (bad) throw new Error('공공데이터포털: ' + (bad.returnAuthMsg || bad.errMsg) + (/NOT_REGISTERED/.test(bad.errMsg || '') ? ' — ① 활용신청한 서비스가 정확히 「금융위원회_주식시세정보」 인지 (주식발행정보 · KRX상장종목정보 등은 다른 서비스) ② 승인 직후면 1~2시간 뒤 ③ 마이페이지의 일반 인증키를 다시 복사' : ''));
         if (!j || !j.response) throw new Error(`공공데이터포털 오류 ${r.status}: ${t.slice(0, 160)}`);
         if (j.response.header && j.response.header.resultCode !== '00') throw new Error('공공데이터포털: ' + j.response.header.resultMsg);
         let it = j.response.body && j.response.body.items && j.response.body.items.item; it = Array.isArray(it) ? it : it ? [it] : [];
