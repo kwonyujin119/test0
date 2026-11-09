@@ -327,7 +327,7 @@
       },
     },
   };
-  const isKR = s => /^A?\d{6}(\.(KS|KQ))?$|:KRX$|[가-힣]/i.test(String(s || '').trim());
+  const isKR = s => /^A?\d[0-9A-Z]{5}(\.(KS|KQ))?$|:KRX$|[가-힣]/i.test(String(s || '').trim()); // 0190G0 같은 새 영문 섞인 코드(ETF 등)도
   const KSD_OPS = {
     getStkIsinByShortIsinN1: { d: '단축코드로 종목 기본정보', p: 'shortIsin*=6자리 코드', f: { secnKacdNm: '주식종류', engSecnNm: '영문 종목명', isin: '표준코드', issuDt: '발행일', issucoCustno: '발행회사번호', korSecnNm: '종목명', eltscYn: '전자증권 여부', shotnIsin: '단축코드' } },
     getStkIsinByNmN1: { d: '회사명으로 종목 기본정보', p: 'secnNm*=발행회사명', f: { shotnIsin: '단축코드', engSecnNm: '영문 종목명', isin: '표준코드', issuDt: '발행일', issucoCustno: '발행회사번호', korSecnNm: '종목명', secnKacdNm: '주식종류', eltscYn: '전자증권 여부' } },
