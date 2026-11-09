@@ -1163,3 +1163,34 @@ body.notes-view { background: var(--ui-bg); }
 :root[data-ws] .rail-item.on { background: color-mix(in srgb, var(--ws-line) 65%, transparent); color: var(--ws-fg); }
 :root[data-ws] .rail-item.on .ico, :root[data-ws] .rail-item.on em { color: var(--ws-fg); }
 :root[data-ws] .ed-top, :root[data-ws] #top, :root[data-ws] .ve-top { box-shadow: inset 0 2px 0 var(--ws-dot); }
+
+/* ---------- 앱처럼: 작업장 바꾸기 탭 (app/appnav.js) ---------- */
+html { -webkit-tap-highlight-color: transparent; }
+.app-nav { display: flex; gap: 4px; }
+.app-tab { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border-radius: 9px; color: var(--ui-muted); text-decoration: none; font-size: 10px; font-weight: 600; letter-spacing: .02em; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; transition: background .12s, color .12s; }
+.app-tab span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app-tile { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; font-size: 13px; font-weight: 800; background: var(--ws-bg, var(--ui-panel2)); color: var(--ws-fg, var(--ui-fg)); box-shadow: inset 0 0 0 1px var(--ws-line, var(--ui-border)); }
+.app-tile.home { background: var(--ui-ink); color: var(--ui-on-ink); box-shadow: none; font-size: 8px; letter-spacing: -.02em; }
+.app-tab:hover { background: var(--ui-hover); color: var(--ui-fg); }
+.app-tab.on { color: var(--ui-fg); }
+.app-tab.on .app-tile { box-shadow: inset 0 0 0 1px var(--ws-line, transparent), 0 0 0 2px var(--ui-bg), 0 0 0 3.5px var(--ws-dot, var(--ui-fg)); }
+.app-tab:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
+html:not(.admin) .app-tab[data-admin-tab] { display: none; }
+html.has-app-nav .rail a.rail-item[href="index.html"] { display: none; } /* 탭에 DPV 가 있으니 겹치는 'DPV로' 는 숨김 */
+/* PC: 왼쪽 메뉴 맨 아래 작은 줄 · 첫 화면(index)에는 카드가 있으니 숨김 */
+.rail > .app-nav { padding-top: 10px; border-top: 1px solid var(--ui-border); }
+.rail > .app-nav { gap: 0; } .rail > .app-nav .app-tab { padding: 6px 0; letter-spacing: 0; }
+body > .app-nav { display: none; }
+/* 휴대폰 · 세로 태블릿: 화면 맨 아래 고정 탭바 */
+@media (max-width: 820px) {
+  .app-nav, .rail > .app-nav, html.role-chosen body > .app-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; display: flex; gap: 0; margin: 0; padding: 4px max(6px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left)); background: color-mix(in srgb, var(--ui-bg) 92%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-top: 1px solid var(--ui-border); }
+  .app-tab { padding: 5px 2px 4px; min-height: 52px; justify-content: center; }
+  .app-tab:hover { background: transparent; }
+  html.has-app-nav .shell { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  html.has-app-nav.role-chosen .ws { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  html.has-app-nav .sc-compose { bottom: calc(60px + env(safe-area-inset-bottom)); }
+  html.has-app-nav #pwaPill { display: none !important; } /* 앱 설치는 첫 화면 [앱 설치] 단추로 — 떠 있는 알약이 탭바를 가리지 않게 */
+  html.has-app-nav #toast, html.has-app-nav .toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+/* 설치한 앱 창에서는 브라우저처럼 당겨서 튕기지 않게 */
+@media (display-mode: standalone) { body { overscroll-behavior-y: none; } }
