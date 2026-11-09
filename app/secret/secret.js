@@ -73,6 +73,7 @@
     twelvedata: { kind: 'data', name: 'Twelve Data', caps: ['quote', 'history'], keyUrl: 'https://twelvedata.com/account/api-keys', note: '현재가 · 일봉 (무료: 하루 800회). 한국 종목은 요금제에 따라 다릅니다.' },
     alphavantage: { kind: 'data', name: 'Alpha Vantage', caps: ['quote', 'history', 'news'], keyUrl: 'https://www.alphavantage.co/support/#api-key', note: '현재가 · 일봉 · 뉴스 감성 (무료: 하루 25회).' },
     datagokr: { kind: 'data', name: '공공데이터포털 주식시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A3%BC%EC%8B%9D%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '국내 상장 종목의 하루 단위 시세 · 일봉 (무료). 마지막 영업일 종가 기준이라 장중 실시간은 아닙니다. 마이페이지의 일반 인증키를 Encoding · Decoding 어느 쪽이든 그대로 붙여 넣으세요. 종목은 6자리 코드(005930)나 종목명(삼성전자).' },
+    ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
     kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
   };
@@ -246,6 +247,46 @@
         return (await this._get(k, s, days)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
       },
     },
+    /* 공공데이터포털 · 한국예탁결제원_주식정보서비스_GW (XML) */
+    ksd: {
+      async call(k, op, params) {
+        if (!KSD_OPS[op]) throw new Error('예탁결제원: 없는 기능 ' + op);
+        const k0 = String(k || '').replace(/\s+/g, ''), key = /%[0-9A-F]{2}/i.test(k0) ? decodeURIComponent(k0) : k0;
+        const q = new URLSearchParams(Object.assign({ pageNo: '1', numOfRows: '100' }, params || {}));
+        let r; try { r = await fetch(`https://apis.data.go.kr/B552481/StockSvc/${op}?serviceKey=${E(key)}&${q}`); } catch (e) { throw new Error('공공데이터포털(예탁결제원)에 연결하지 못했습니다 (네트워크)'); }
+        const t = await r.text(), x = new DOMParser().parseFromString(t, 'text/xml');
+        const g = (el, n) => { const e = el.getElementsByTagName(n)[0]; return e ? e.textContent.trim() : ''; };
+        if (x.getElementsByTagName('OpenAPI_ServiceResponse').length) {
+          const m = g(x, 'returnAuthMsg') || g(x, 'errMsg');
+          throw new Error('예탁결제원: ' + m + (/NOT_REGISTERED/.test(g(x, 'errMsg')) ? ' — 공공데이터포털에서 「한국예탁결제원_주식정보서비스_GW」 가 승인돼 있는지, 승인 직후면 1~2시간 뒤 다시' : ''));
+        }
+        const code = g(x, 'resultCode'); if (code && code !== '00') throw new Error('예탁결제원: ' + (g(x, 'resultMsg') || code));
+        if (!x.getElementsByTagName('response').length && !x.getElementsByTagName('body').length) throw new Error(`예탁결제원 오류 ${r.status}: ${t.slice(0, 160)}`);
+        const F = KSD_OPS[op].f || {};
+        const items = Array.from(x.getElementsByTagName('item')).map(it => { const o = {}; for (const c of it.children) { const v = c.textContent.trim(); if (v !== '') o[F[c.tagName] ? `${F[c.tagName]} [${c.tagName}]` : c.tagName] = v; } return o; });
+        return { op, title: KSD_OPS[op].d, total: +g(x, 'totalCount') || items.length, items };
+      },
+      /* 종목 하나: 기본정보 → 상장정보 → (있으면) 작년 배당 순위 */
+      async stock(k, s, year) {
+        const q = String(s || '').trim().replace(/\.(KS|KQ)$/i, ''), code = (q.match(/^A?(\d{6})$/i) || [])[1];
+        const base = code ? await this.call(k, 'getStkIsinByShortIsinN1', { shortIsin: code }) : await this.call(k, 'getStkIsinByNmN1', { secnNm: q });
+        if (!base.items.length) throw new Error(`${s}: 예탁결제원에 없는 종목입니다 (6자리 코드나 정확한 회사명으로)`);
+        const pick = it => Object.fromEntries(Object.entries(it).map(([kk, v]) => [kk.replace(/^.*\[(\w+)\]$/, '$1'), v]));
+        const b = pick(base.items.find(it => /보통/.test(JSON.stringify(it))) || base.items[0]);
+        const out = { 기본정보: base.items.slice(0, 5) };
+        if (b.isin) try { out.상장정보 = (await this.call(k, 'getStkListInfoN1', { isin: b.isin })).items; } catch (e) { out.상장정보 = '불러오지 못함: ' + e.message; }
+        const sc = b.shotnIsin || code;
+        if (sc) {
+          const y = +year || new Date().getFullYear() - 1;
+          try {
+            const d = await this.call(k, 'getDividendRankN1', { rankTpcd: '1', year: String(y), numOfRows: '3000' });
+            const mine = d.items.filter(it => Object.entries(it).some(([kk, v]) => /\[shotnIsin\]$/.test(kk) && v === sc));
+            out[`배당(${y}년, 시가배당률 순위 · 전체 ${d.total}종목 중)`] = mine.length ? mine : '이 해 배당 순위에 없음 (무배당이거나 자료 없음)';
+          } catch (e) { out.배당 = '불러오지 못함: ' + e.message; }
+        }
+        return out;
+      },
+    },
     /* 한국투자증권 KIS — 내 Cloudflare 중계(app/secret/kis-relay.worker.js)를 거쳐서. 키는 중계에만 있고 여기서는 중계 암호만 */
     kisrelay: {
       async _call(k, api, path, q) {
@@ -287,6 +328,25 @@
     },
   };
   const isKR = s => /^A?\d{6}(\.(KS|KQ))?$|:KRX$|[가-힣]/i.test(String(s || '').trim());
+  const KSD_OPS = {
+    getStkIsinByShortIsinN1: { d: '단축코드로 종목 기본정보', p: 'shortIsin*=6자리 코드', f: { secnKacdNm: '주식종류', engSecnNm: '영문 종목명', isin: '표준코드', issuDt: '발행일', issucoCustno: '발행회사번호', korSecnNm: '종목명', eltscYn: '전자증권 여부', shotnIsin: '단축코드' } },
+    getStkIsinByNmN1: { d: '회사명으로 종목 기본정보', p: 'secnNm*=발행회사명', f: { shotnIsin: '단축코드', engSecnNm: '영문 종목명', isin: '표준코드', issuDt: '발행일', issucoCustno: '발행회사번호', korSecnNm: '종목명', secnKacdNm: '주식종류', eltscYn: '전자증권 여부' } },
+    getStkListInfoN1: { d: '주식 상장정보', p: 'isin*=표준코드(KR…)', f: { xpitDt: '만료일자', apliDt: '상장일자', dlistDt: '상장폐지일자', isin: '표준코드', korSecnNm: '종목명', listTpcd: '상장구분코드', issucoCustno: '발행회사번호' } },
+    getDividendRankN1: { d: '배당 순위', p: 'rankTpcd*=1 시가배당률 · 2 액면가배당률, year*=YYYY, stkTpcd=1 보통주 · 2 우선주, listTpcd=11 유가 · 12 코스닥 · 13 K-OTC · 14 코넥스', f: { shotnIsin: '단축코드', caltotMartTpcd: '시장', divAmtPerStk: '주당배당금', divRateCpri: '시가배당률(%)', divRatePval: '액면가배당률(%)', issucoCustno: '발행회사번호', korSecnNm: '종목명', num: '배당 순위', pval: '액면가', secnKacd: '주식종류', setaccMm: '결산월', setaccMmdd: '결산월일' } },
+    getVctfDivRankInfo: { d: '유가증권시장 배당 순위', p: 'schStdYy*=YYYY', f: { shotnIsin: '단축코드', exerPrcp: '종목명', persDivamt: '주당배당금', pvalDivrate: '액면가배당률', rank: '순위' } },
+    getSafeDpDutyDepoStatusN1: { d: '의무보호예수 전체 현황', p: 'stdDt*=YYYYMMDD, listTpcd=11 유가 · 12 코스닥 …', f: { stkDepoQty: '의무보유예탁 주식수', cocnt: '기업수', issuStkKindTpnm: '주식종류', issuStkqty: '총발행주식수', safedpRatioValue: '보호예수비율(%)', secncnt: '종목수', stdDt: '기준일' } },
+    getSafeDpDutyDepoRgtStatusN1: { d: '의무보호예수 사유별 현황', p: 'listTpcd*=11 유가 · 12 코스닥 …, stdDt*=YYYYMMDD', f: { safedpStkDepoQty: '의무보유예탁주식수', codevalueNm: '사유', dutyDepoCocnt: '의무보호예수기업수', dutyDepoSecncnt: '의무보호예수종목수', dutyDepoStkDepoQty: '의무보호예수주식수', safedpCocnt: '의무보유예탁기업수', safedpSecncnt: '의무보유예탁종목수' } },
+    getNewDepoSecnListN1: { d: '신규 예탁지정 종목', p: 'yyyymm*=YYYYMM, searchType=1 지정 · 2 취소', f: { totIssuQty: '총발행규모', apliDt: '예탁지정(취소)일자', indtpNm: '산업분류', isin: '표준코드', korSecnNm: '종목명', pval: '액면가', secnKacdNm: '주식종류', setaccMm: '결산월', eltscYn: '전자증권 여부' } },
+    getTotIssuStkQty: { d: '시장별 총발행주식수', p: 'schStdDt*=YYYYMMDD', f: { vctfMart: '유가증권시장', konexMart: '코넥스시장', kosdaqMart: '코스닥시장', schStdDt: '기준일' } },
+    getListStatN1: { d: '상장구분별 현황', p: 'stdDt*=YYYYMMDD', f: { payinCapsAmt: '납입자본금', secncnt: '종목수', caltotMartTpcd: '시장코드', cocnt: '회사수', issuStkqty: '발행주식수', martpTotamt: '시가총액' } },
+    getSecSetlCostStatN1: { d: '월별 주식결제대금', p: 'schBeginDt*=YYYYMMDD, schExpryDt*=YYYYMMDD', f: { stdYymm: '기준년월', martsetlTrCost: '시장결제 거래대금', martsetlSetlCost: '시장결제 결제대금', stkisetlTrCost: '기관결제 거래대금', stkisetlSetlCost: '기관결제 결제대금', kotcTrCost: 'K-OTC 거래대금', kotcSetlCost: 'K-OTC 결제대금' } },
+    getShotnByMartN1: { d: '시장별 단축코드 전체', p: 'martTpcd*=11 유가 · 12 코스닥 · 13 K-OTC · 14 코넥스', f: { shotnIsin: '단축코드', korSecnNm: '종목명' } },
+    getXrcStkStatInfoN1: { d: '주식관련사채(CB · BW) 정보', p: 'bondIsin*=채권 표준코드', f: { xrcStkIsinNm: '행사주식종목명', korSecnNm: '채권 종목명', xrcPrice: '행사가격', xrcRatio: '행사비율(%)', xrcStkIsin: '행사주식종목번호', wrtbIsinNm: '신주인수권증권 종목명' } },
+    getXrcStkOptionXrcInfoN1: { d: '주식관련사채 행사조건', p: 'bondIsin*=채권 표준코드', f: { korSecnNm: '채권 종목명', xrcPossBeginDt: '행사 시작일', xrcPossExpryDt: '행사 종료일', wrtIssuQty: '신주인수권 발행수량', xrcRatioChgPossYn: '행사비율 변동 가능' } },
+    getDocInfoN1: { d: '신주인수권증서 정보', p: 'martTpcd*=11 유가 · 12 코스닥 …', f: { persFixIssuprcNm: '신주발행가격', docIssuTermBeginDt: '증서발행 시작일', docIssuTermExpryDt: '증서발행 종료일', isin: '표준코드', korSecnNm: '종목명', listDt: '상장일', paidStdDt: '유상기준일' } },
+    getWrtInfoN1: { d: '신주인수권증권 정보', p: 'stdDt*=YYYYMMDD', f: { korSecnNm: '종목명', bondIsin: '채권 표준코드', deliDt: '교부일', isin: '표준코드', issuDt: '발행일', issuNtimes: '발행횟수' } },
+    getKDRSecnInfo: { d: '시장별 KDR 종목', p: 'caltotMartTpcd*=11 유가 · 12 코스닥 · 13 코넥스', f: { kdrIsin: 'KDR 표준코드', korSecnNm: '종목명', listDt: '상장일', ovsListStkmkCd: '해외상장시장' } },
+  };
   async function callData(cap, ...args) {
     const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr'].map(t => dataApis().find(a => a.type === t)).filter(Boolean) : [];
     if (krs.length) {
@@ -347,6 +407,12 @@
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
+    if (dataFor('ksd')) {
+      T.push({ name: 'get_ksd_stock_info', description: '한국예탁결제원 공식 자료로 한국 종목 하나의 기본정보(표준코드 · 영문명 · 발행일 · 주식종류) · 상장정보(상장일 · 상장폐지일) · 작년 배당(시가배당률 · 주당배당금 · 순위)을 돌려준다. 시세는 없다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 정확한 회사명(삼성전자)' }, year: { type: 'integer', description: '배당 기준연도 (선택, 기본 작년)' } }, required: ['symbol'], additionalProperties: false } });
+      T.push({ name: 'query_ksd', description: '한국예탁결제원 주식정보의 다른 기능을 직접 부른다. 의무보호예수(풀릴 물량 → 수급 부담) · 신규 예탁지정 · 시장별 발행주식수 · 배당 순위 상위 · CB/BW 행사조건 등. op 와 params(필수는 *) — '
+        + Object.entries(KSD_OPS).map(([k, v]) => `${k}: ${v.d} (${v.p})`).join(' / '),
+        input_schema: { type: 'object', properties: { op: { type: 'string', enum: Object.keys(KSD_OPS) }, params: { type: 'object', description: '요청 값 (예: {"stdDt":"20261106"})', additionalProperties: { type: 'string' } } }, required: ['op'], additionalProperties: false } });
+    }
     T.push({ name: 'get_portfolio', description: '사용자가 이 앱에 적어 둔 관심 종목 · 보유 수량 · 평균 단가 · 목표가 · 손절가 · 메모와 마지막으로 불러온 시세를 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'get_journal', description: '사용자의 매매 일지: 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 승률)와 최근 매매 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · 교훈)을 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'get_notes', description: '사용자가 노트 탭에 날짜별로 적은 메모를 돌려준다. company 를 주면 그 기업이 들어간 노트만 (최근 60개).', input_schema: { type: 'object', properties: { company: { type: 'string', description: '기업 이름 (선택, 예: 삼성전자)' } }, additionalProperties: false } });
@@ -354,7 +420,7 @@
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -370,6 +436,8 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'get_ksd_stock_info': { const a = dataFor('ksd'); const r = await DATA.ksd.stock(await keyOf(a), String(input.symbol).trim(), input.year); return Object.assign({ symbol: s, source: '한국예탁결제원 (공공데이터포털)' }, r); }
+      case 'query_ksd': { const a = dataFor('ksd'); const r = await DATA.ksd.call(await keyOf(a), String(input.op), Object.fromEntries(Object.entries(input.params || {}).map(([k2, v]) => [k2, String(v)]))); if (r.items.length > 200) { r.note = `${r.items.length}건 중 앞 200건만`; r.items = r.items.slice(0, 200); } return r; }
       case 'get_notes': { const c = String(input.company || '').trim(); const list = notes.filter(n => !c || (n.companies || []).includes(c) || String(n.text).includes(c)).sort((a, b) => a.date.localeCompare(b.date)).slice(-60); return { company: c || null, count: list.length, notes: list.map(n => ({ date: n.date, companies: n.companies, text: n.text })) }; }
       case 'get_journal': return { stats: jStats(), checklist: me.checklist, trades: journal.slice(-40) };
       case 'save_memory': { const t = String(input.text).trim().slice(0, 200); if (!me.notes.some(n => n.text === t)) { me.notes.push({ t: Date.now(), text: t, by: 'AI' }); me.notes = me.notes.slice(-50); saveMe(); } return { saved: t, total: me.notes.length }; }
@@ -818,7 +886,7 @@
       const T = TYPES[a.type] || {}; const ai = T.kind === 'ai';
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${esc(mask(k))}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${esc(mask(k))}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
         <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
@@ -858,7 +926,8 @@
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
         const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
-        if (T.caps.includes('quote')) await DATA[a.type].quote(k, s, a); else await DATA.custom.custom(k, s, a);
+        if (a.type === 'ksd') { const r = await DATA.ksd.call(k, 'getStkIsinByShortIsinN1', { shortIsin: '005930' }); if (!r.items.length) throw new Error('예탁결제원: 시험 종목(005930)을 찾지 못했습니다'); }
+        else if (T.caps.includes('quote')) await DATA[a.type].quote(k, s, a); else await DATA.custom.custom(k, s, a);
       }
       a.test = 'ok'; toast(`${a.name}: 연결됐습니다`, 2000);
     } catch (e) {
@@ -890,7 +959,7 @@
     const a = edit || { type: type || 'claude', name: '', model: '', base: '' };
     const opts = (kind, label) => `<optgroup label="${label}">${Object.entries(TYPES).filter(([, t]) => t.kind === kind).map(([id, t]) => `<option value="${id}"${a.type === id ? ' selected' : ''}>${t.name}</option>`).join('')}</optgroup>`;
     const d = dialog(`<h3>${edit ? 'API 고치기' : 'API 추가'}</h3><form class="sc-form" autocomplete="off">
-      <label>종류<select name="type"${edit ? ' disabled' : ''}>${opts('ai', 'AI (대화)')}${opts('data', '시세 · 데이터')}</select></label>
+      <label>종류<select name="type"${edit && isAI(edit) ? ' disabled' : ''}>${edit && !isAI(edit) ? '' : opts('ai', 'AI (대화)')}${opts('data', '시세 · 데이터')}</select></label>
       <p class="hint" id="tNote"></p>
       <div class="sc-kis" id="kisHelp" hidden><button type="button" class="btn sm" id="kisGuide">${icon('help', 14)}중계 만드는 법</button><button type="button" class="btn sm" id="kisGen">${icon('lock', 14)}중계 암호 만들기</button></div>
       <label>이름<input type="text" name="name" value="${esc(a.name)}" placeholder="예: 내 Claude"></label>
@@ -907,7 +976,7 @@
       $('fBase').hidden = !(kis || f.type.value === 'compat' || f.type.value === 'custom' || (ai && f.type.value !== 'claude' && edit));
       f.base.placeholder = kis ? 'https://dpv-kis.○○○.workers.dev' : f.type.value === 'custom' ? 'https://…?symbol={symbol}&apikey={key}' : (T.base || 'https://…/v1');
       f.key.placeholder = kis ? '중계 암호 ([중계 암호 만들기] 로 만든 값)' : (edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요');
-      if (!f.name.value || f.name.dataset.auto) { f.name.value = T.name; f.name.dataset.auto = '1'; }
+      if (!f.name.value || f.name.dataset.auto || Object.values(TYPES).some(x => x.name === f.name.value)) { f.name.value = T.name; f.name.dataset.auto = '1'; }
     };
     f.name.oninput = () => { delete f.name.dataset.auto; };
     $('kisGuide').onclick = () => kisGuide();
@@ -925,6 +994,7 @@
       if ((t === 'compat' || t === 'custom' || t === 'kisrelay') && !f.base.value.trim()) { toast(t === 'kisrelay' ? '중계 주소를 넣어 주세요 ([중계 만드는 법] 5번)' : '주소를 넣어 주세요', 2200); return; }
       if (T.kind === 'ai' && t !== 'claude' && !f.model.value.trim()) { toast('모델 이름을 넣어 주세요', 1800); return; }
       const o = edit || { id: uid(), type: t, on: true };
+      if (edit && !isAI(edit) && T.kind === 'data' && o.type !== t) { if (o.name === TYPES[o.type].name) o.name = ''; o.type = t; } // 종류 바꾸기 (키는 그대로)
       o.name = f.name.value.trim() || T.name; o.model = T.kind === 'ai' ? f.model.value.trim() : ''; o.base = f.base.value.trim() || '';
       try { if (key || !edit) await setKey(o, key); } catch (err) { toast(err.message, 2600); return; }
       if (!edit) { cfg.apis.push(o); if (T.kind === 'ai' && !activeAI()) cfg.ai = o.id; }
