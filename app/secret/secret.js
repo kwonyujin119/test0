@@ -2191,7 +2191,7 @@
   const lastBizDays = n => { const out = []; const d = new Date(Date.now() + 9 * 36e5); while (out.length < n) { d.setUTCDate(d.getUTCDate() - 1); const w = d.getUTCDay(); if (w && w !== 6) out.push(d.toISOString().slice(0, 10).replace(/-/g, '')); } return out; };
   async function ksdLatest(op, base, ttl) { // 최근 영업일부터 거슬러 올라가며 자료가 있는 날
     const a = dataFor('ksd'), key = await keyOf(a);
-    return ksdCached(op + ':' + JSON.stringify(base) + ':' + lastBizDays(1)[0], ttl, async () => {
+    return ksdCached('v2:' + op + ':' + JSON.stringify(base) + ':' + lastBizDays(1)[0], ttl, async () => {
       const monthEnd = back => { const d = new Date(Date.now() + 9 * 36e5); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() - back + 1); d.setUTCDate(0); while (!(d.getUTCDay() % 6)) d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10).replace(/-/g, ''); };
       const days = lastBizDays(3).concat([monthEnd(1), monthEnd(2)]).filter((x, i, a) => a.indexOf(x) === i), tried = [];
       let lastErr = null, raw = null;
@@ -2199,7 +2199,7 @@
         tried.push(d);
         try {
           const r = await DATA.ksd.call(key, op, Object.assign({}, base, { stdDt: d }));
-          const items = r.items.map(pick).filter(x => Object.keys(x).length >= 2); // 값이 빈 항목은 '자료 없음'
+          const items = r.items.map(pick).filter(x => Object.entries(x).some(([kk, v]) => !/dt$/i.test(kk) && /^-?[\d,.]+$/.test(String(v).trim()))); // 숫자가 없는 줄(기준일 · '전체' 만)은 자료 없음
           if (items.length) return { d, items, tried };
           raw = raw || r.items[0] || null;
         } catch (e) { lastErr = e; if (!/PARAMETER|NODATA|NO_DATA/i.test(e.message)) throw e; }
@@ -2240,8 +2240,10 @@
         + '<p class="sc-mute">비율이 오르면 묶인 물량이 늘어난 것, 크게 줄면 그만큼 풀린 것입니다. 개별 종목의 해제일은 공시(DART)에서 확인하세요.</p>';
     }).catch(e => fail('mkLock', e));
     ksdLatest('getListStatN1', {}, 24).then(r => {
-      const rows = r.items.filter(x => MK[x.caltotMartTpcd] && +x.martpTotamt);
-      $('mkSize').innerHTML = rows.length ? `<div class="sc-tablewrap"><table class="sc-table"><thead><tr><th>시장</th><th>회사</th><th>종목</th><th>시가총액</th></tr></thead><tbody>${rows.map(x => `<tr><td>${MK[x.caltotMartTpcd]}</td><td>${num(+x.cocnt, 0)}</td><td>${num(+x.secncnt, 0)}</td><td>${num(+x.martpTotamt / 1e12, 1)}조</td></tr>`).join('')}</tbody></table></div><p class="sc-mute">기준 ${esc(r.d.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3'))}</p>` : '<p class="sc-mute">자료가 없습니다.</p>';
+      const g = {};
+      for (const x of r.items) { const m = MK[x.caltotMartTpcd]; if (!m) continue; const o = g[m] = g[m] || { n: 0, co: 0, sc: 0, cap: 0 }; o.n++; o.co += numOf(x.cocnt) || 0; o.sc += numOf(x.secncnt) || 0; o.cap += numOf(x.martpTotamt) || 0; }
+      const rows = Object.entries(g).filter(([, o]) => o.cap > 0);
+      $('mkSize').innerHTML = rows.length ? `<div class="sc-tablewrap"><table class="sc-table"><thead><tr><th>시장</th><th>회사</th><th>종목</th><th>시가총액</th></tr></thead><tbody>${rows.map(([m, o]) => `<tr><td class="sym"><b>${m}</b>${o.n > 1 ? `<span>주권 · 외국주권 · 리츠 등 ${o.n}개 구분 합계</span>` : ''}</td><td>${num(o.co, 0)}</td><td>${num(o.sc, 0)}</td><td>${num(o.cap / 1e12, 1)}조</td></tr>`).join('')}</tbody></table></div><p class="sc-mute">기준 ${esc(r.d.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3'))}</p>` : '<p class="sc-mute">자료가 없습니다.</p>';
     }).catch(e => fail('mkSize', e));
     ksdCached('new:' + ym, 12, async () => (await DATA.ksd.call(await keyOf(dataFor('ksd')), 'getNewDepoSecnListN1', { yyyymm: ym, searchType: '1' })).items.map(pick)).then(items => {
       $('mkNew').innerHTML = items.length ? `<ul class="mk-new">${items.slice(0, 15).map(x => `<li><b>${esc(x.korSecnNm || '')}</b><span>${esc(x.indtpNm || '')} · ${esc(x.secnKacdNm || '')} · ${esc((x.apliDt || '').replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3'))}</span></li>`).join('')}</ul>` : '<p class="sc-mute">이번 달은 아직 없습니다.</p>';
