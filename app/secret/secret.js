@@ -1892,36 +1892,40 @@
   const pick = it => Object.fromEntries(Object.entries(it || {}).map(([k, v]) => [k.replace(/^.*\[(\w+)\]$/, '$1'), v]));
   const numOf = v => { const t = String(v == null ? '' : v).replace(/[,%\s]/g, ''); if (t === '') return NaN; const n = +t; return isFinite(n) ? n : NaN; };
   const fld = (x, re) => { for (const k in x) if (re.test(k) && x[k] !== '') return x[k]; return ''; };
-  const rawBox = (e, it) => it ? `<details class="sc-raw"><summary>받은 원문 보기</summary><pre>${esc(JSON.stringify(it, null, 1))}</pre></details>` : '';
+  const rawBox = (e, it) => (it || (e && e.tried)) ? `<details class="sc-raw" open><summary>받은 원문 · 시도한 값</summary><pre>${e && e.tried ? esc('시도: ' + e.tried.join(' → ')) + '\n' : ''}${it ? esc(JSON.stringify(it, null, 1)) : '(원문 없음 — 서버가 오류만 보냄)'}</pre></details>` : '';
   /* 작년 배당 순위 전체를 한 번만 받아 코드 → 배당 으로 (하루 1회) */
   function ksdDividends(year) {
     const a = dataFor('ksd'); if (!a) return Promise.resolve(null);
+    const fk = 'divfail:' + year, f = ksdCache[fk];
+    if (f && Date.now() - f.t < 6 * 36e5) return Promise.reject(Object.assign(new Error(f.v.msg), { raw: f.v.raw, tried: f.v.tried })); // 실패도 6시간 기억 (하루 100회 아끼기 · [다시 받기] 로 즉시)
     return ksdCached('div:' + year, 24 * 7, async () => {
-      const key = await keyOf(a), y = String(year);
-      const pages = async (base, max) => { // 1000건씩 나눠 받기
-        let all = [], total = 0;
-        for (let pg = 1; pg <= max; pg++) {
-          const r = await DATA.ksd.call(key, 'getDividendRankN1', Object.assign({}, base, { pageNo: String(pg), numOfRows: '1000' }));
-          total = r.total || total; all = all.concat(r.items);
-          if (!r.items.length || all.length >= total) break;
-        }
-        return { total: total || all.length, items: all };
-      };
+      const key = await keyOf(a);
+      /* 시장별로 순위 상위 100건씩 (한 번에 1000건은 거절됨) — 유가증권 · 코스닥 2번이면 끝 */
+      const byMarket = async (extra) => { const out = { total: 0, items: [] }; for (const lt of ['11', '12']) { const r = await DATA.ksd.call(key, 'getDividendRankN1', Object.assign({ rankTpcd: '1', listTpcd: lt, pageNo: '1', numOfRows: '100' }, extra)); out.total += r.total; out.items = out.items.concat(r.items); } return out; };
       const tries = [
-        () => pages({ rankTpcd: '1', year: y }, 4),
-        () => pages({ rankTpcd: '1', year: y, stkTpcd: '1' }, 4),
-        async () => { const out = { total: 0, items: [] }; for (const lt of ['11', '12']) { const r = await pages({ rankTpcd: '1', year: y, stkTpcd: '1', listTpcd: lt }, 3); out.total += r.total; out.items = out.items.concat(r.items); } return out; },
+        ['시장별 100건', () => byMarket({ year: String(year) })],
+        ['시장별 · 보통주', () => byMarket({ year: String(year), stkTpcd: '1' })],
+        ['전체 100건', async () => DATA.ksd.call(key, 'getDividendRankN1', { rankTpcd: '1', year: String(year), pageNo: '1', numOfRows: '100' })],
+        [`${year - 1}년`, () => byMarket({ year: String(year - 1) })],
       ];
-      let r = null, err = null;
-      for (const t of tries) { try { r = await t(); break; } catch (e) { err = e; if (!/PARAMETER/i.test(e.message)) throw e; } }
-      if (!r) throw err;
+      let r = null, err = null, used = year; const tried = [];
+      for (const [name, t] of tries) {
+        tried.push(name);
+        try { const x = await t(); if (x.items.length) { r = x; if (name.endsWith('년')) used = year - 1; break; } }
+        catch (e) { err = e; if (!/PARAMETER|NODATA|NO_DATA/i.test(e.message)) break; }
+      }
+      if (!r) {
+        const e = err || new Error('배당 자료가 비어 있습니다'); e.tried = tried;
+        ksdCache[fk] = { t: Date.now(), v: { msg: e.message, raw: e.raw || null, tried } }; LS.set(K_KSDC, ksdCache);
+        throw e;
+      }
       const m = {};
       for (const it of r.items) {
         const x = pick(it), code = x.shotnIsin || fld(x, /shotn|short|srtn/i);
         if (code) m[code] = [+fld(x, /^num$|rank/i) || 0, x.korSecnNm || fld(x, /nm$/i) || '', x.caltotMartTpcd || fld(x, /mart/i) || '', numOf(x.divAmtPerStk || fld(x, /amt/i)), numOf(x.divRateCpri || fld(x, /cpri|rate/i)), x.secnKacd || fld(x, /kacd|kind/i) || ''];
       }
       if (!Object.keys(m).length && r.items.length) { const e = new Error('배당 자료의 항목 이름이 예상과 다릅니다'); e.raw = r.items[0]; throw e; }
-      return { total: r.total, m };
+      return { total: r.total, m, year: used, top: true }; // top: 시장별 상위 100 까지만
     });
   }
   /* 이름 → 코드 (예탁결제원 → 금융위 순서) */
@@ -1959,7 +1963,7 @@
         return { base: x, list: l };
       }).then(v => { stock.ksd = v; if (v.base.korSecnNm && !stock.name) stock.name = v.base.korSecnNm.replace(/보통주$/, ''); }).catch(e => { stock.err.ksd = e.message; }).then(done));
       const y = new Date().getFullYear() - 1;
-      jobs.push(ksdDividends(y).then(d => { stock.div = d ? { year: y, total: d.total, row: d.m[stock.code] || null } : null; }).catch(e => { stock.err.div = e.message; }).then(done));
+      jobs.push(ksdDividends(y).then(d => { stock.div = d ? { year: d.year || y, total: d.total, top: d.top, row: d.m[stock.code] || null } : null; }).catch(e => { stock.err.div = e.message; }).then(done));
     }
     await Promise.all(jobs); if (my === stockSeq) { stock.loading = false; renderStock(); }
   }
@@ -2081,7 +2085,7 @@
           ${!dataFor('ksd') ? apiNeed('ksd', '한국예탁결제원 주식정보를 연결하면 표준코드 · 상장일 · 배당이 보입니다')
             : !/^\d[0-9A-Z]{5}$/.test(s.code || '') ? '<p class="sc-mute">한국 종목에서만 볼 수 있습니다.</p>'
             : s.err.ksd ? errBox(s.err.ksd) : !s.ksd ? loading('예탁결제원') : kv([['표준코드', esc(k.isin)], ['주식 종류', esc(k.secnKacdNm)], ['발행일', d8(k.issuDt)], ['상장일', l ? d8(l.apliDt) : null], ['상장폐지일', l && l.dlistDt ? d8(l.dlistDt) : null], ['전자증권', k.eltscYn === 'Y' ? '예' : k.eltscYn === 'N' ? '아니오' : null]])}
-          ${dataFor('ksd') && /^\d[0-9A-Z]{5}$/.test(s.code || '') ? `<h4>${s.div ? s.div.year + '년 배당' : '배당'}</h4>${s.err.div ? errBox(s.err.div) : !s.div ? loading('배당') : dv ? kv([['주당 배당금', num(dv[3], 0) + '원'], ['시가배당률', num(dv[4], 2) + '%'], ['배당 순위', `${num(dv[0], 0)}위 / ${num(s.div.total, 0)}`], ['시장', esc(dv[2])]]) : '<p class="sc-mute">이 해 배당 기록이 없습니다 (무배당이거나 ETF 등).</p>'}` : ''}
+          ${dataFor('ksd') && /^\d[0-9A-Z]{5}$/.test(s.code || '') ? `<h4>${s.div ? s.div.year + '년 배당' : '배당'}</h4>${s.err.div ? errBox(s.err.div) : !s.div ? loading('배당') : dv ? kv([['주당 배당금', num(dv[3], 0) + '원'], ['시가배당률', num(dv[4], 2) + '%'], ['배당 순위', `${esc(dv[2] || '')} ${num(dv[0], 0)}위`], ['시장', esc(dv[2])]]) : `<p class="sc-mute">${s.div && s.div.top ? '시가배당률 시장별 상위 100위 안에 없습니다 (배당이 적거나 없음).' : '이 해 배당 기록이 없습니다 (무배당이거나 ETF 등).'}</p>`}` : ''}
         </section>
         ${mine ? (() => { const qty = +mine.qty || 0, avg = +mine.avg || 0, pl = price && qty && avg ? (price - avg) * qty : null, plp = price && avg ? (price / avg - 1) * 100 : null, toStop = price && mine.stop ? (mine.stop / price - 1) * 100 : null, toT = price && mine.target ? (mine.target / price - 1) * 100 : null;
           return `<section class="sc-card"><h3>내 보유 · 계획</h3>${kv([['수량', qty ? num(qty, 4) : '관심만'], ['평균 단가', avg ? num(avg) : null], ['평가 손익', pl != null ? num(pl, 0) : null, cls(pl)], ['수익률', plp != null ? pct(plp) : null, cls(plp)], ['손절가까지', toStop != null ? `${num(+mine.stop)} (${pct(toStop, 1)})` : '정하지 않음'], ['목표가까지', toT != null ? `${num(+mine.target)} (${pct(toT, 1)})` : null]])}${mine.memo ? `<p class="st-memo">${esc(mine.memo)}</p>` : ''}${!mine.stop ? '<p class="sc-mute">손절가가 없습니다. 들어가기 전에 "어디서 틀렸다고 인정할지"를 정해 두세요.</p>' : ''}</section>`; })() : ''}
@@ -2112,8 +2116,19 @@
   async function ksdLatest(op, base, ttl) { // 최근 영업일부터 거슬러 올라가며 자료가 있는 날
     const a = dataFor('ksd'), key = await keyOf(a);
     return ksdCached(op + ':' + JSON.stringify(base) + ':' + lastBizDays(1)[0], ttl, async () => {
-      for (const d of lastBizDays(5)) { const r = await DATA.ksd.call(key, op, Object.assign({}, base, { stdDt: d })); if (r.items.length) return { d, items: r.items.map(pick) }; }
-      return { d: '', items: [] };
+      const monthEnd = back => { const d = new Date(Date.now() + 9 * 36e5); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() - back + 1); d.setUTCDate(0); while (!(d.getUTCDay() % 6)) d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10).replace(/-/g, ''); };
+      const days = lastBizDays(3).concat([monthEnd(1), monthEnd(2)]).filter((x, i, a) => a.indexOf(x) === i), tried = [];
+      let lastErr = null, raw = null;
+      for (const d of days) {
+        tried.push(d);
+        try {
+          const r = await DATA.ksd.call(key, op, Object.assign({}, base, { stdDt: d }));
+          const items = r.items.map(pick).filter(x => Object.keys(x).length >= 2); // 값이 빈 항목은 '자료 없음'
+          if (items.length) return { d, items, tried };
+          raw = raw || r.items[0] || null;
+        } catch (e) { lastErr = e; if (!/PARAMETER|NODATA|NO_DATA/i.test(e.message)) throw e; }
+      }
+      return { d: '', items: [], tried, raw, err: lastErr && lastErr.message };
     });
   }
   async function renderMarket() {
@@ -2130,6 +2145,7 @@
     const fail = (id, e) => { $(id).innerHTML = `<div class="sc-err">${icon('alert', 15)}<span>${esc(e.message || e)}</span></div>${rawBox(e, e && e.raw)}`; };
     const MK = { 11: '유가증권', 12: '코스닥', 13: 'K-OTC', 14: '코넥스', 50: '기타' };
     ksdDividends(y).then(d => {
+      if (d && d.year && d.year !== y) { const h = box.querySelector('.mk-div h3'); if (h && h.firstChild) h.firstChild.textContent = `${d.year}년 배당 상위 `; }
       const rows = Object.entries(d.m).map(([code, r]) => ({ code, rank: r[0], name: r[1], mart: r[2], amt: r[3], rate: r[4], kind: r[5] }))
         .filter(r => r.rate > 0 && (mkMart === 'all' || (r.mart || '').includes(mkMart))).sort((a, b) => b.rate - a.rate).slice(0, 20);
       $('mkDiv').innerHTML = rows.length ? `<div class="sc-tablewrap"><table class="sc-table mk-t"><thead><tr><th>#</th><th>종목</th><th>시가배당률</th><th>주당 배당금</th></tr></thead><tbody>${rows.map((r, i) => `<tr data-open="${esc(r.code)}"><td>${i + 1}</td><td class="sym"><b>${esc(r.name)}</b><span>${esc(r.code)} · ${esc(r.mart)}${/우/.test(r.kind) ? ' · 우선주' : ''}</span></td><td class="up">${num(r.rate, 2)}%</td><td>${num(r.amt, 0)}원</td></tr>`).join('')}</tbody></table></div><p class="sc-mute">배당률이 지나치게 높으면 주가가 크게 떨어진 탓일 수 있습니다. 꾸준함은 종목 분석에서 함께 보세요.</p>` : '<p class="sc-mute">자료가 없습니다.</p>';
@@ -2142,7 +2158,7 @@
         const kind = x => x.issuStkKindTpnm || fld(x, /kind.*nm|tpnm/i);
         const rows = r.items.map(x => ({ x, v: val(x) })).filter(o => isFinite(o.v.ratio) || isFinite(o.v.q));
         const pickRow = rows.find(o => /합계|전체|^계$/.test(kind(o.x))) || rows.find(o => /보통/.test(kind(o.x))) || rows[0];
-        if (!pickRow) return `<p class="sc-mute">${MK[t]}: 숫자를 읽지 못했습니다</p>${rawBox(null, r.items[0])}`;
+        if (!pickRow) return `<p class="sc-mute">${MK[t]}: ${r.items.length ? '숫자를 읽지 못했습니다' : '최근 자료가 없습니다'}${r.err ? ' — ' + esc(r.err) : ''} <small>(조회한 기준일: ${esc((r.tried || []).join(', '))})</small></p>${rawBox(null, r.items[0] || r.raw)}`;
         const it = pickRow.x, v = pickRow.v;
         return `<div class="mk-lock"><b>${MK[t]}</b><span class="big">${isFinite(v.ratio) ? num(v.ratio, 2) + '%' : '–'}</span><div class="bar"><i style="width:${isFinite(v.ratio) ? Math.min(100, v.ratio * 5) : 0}%"></i></div><small>${isFinite(v.q) ? num(v.q / 1e6, 1) + '백만 주' : ''}${isFinite(v.co) ? ` · ${num(v.co, 0)}개 회사` : ''}${kind(it) ? ` · ${esc(kind(it))}` : ''} · 기준 ${esc(r.d.slice(0, 4) + '.' + r.d.slice(4, 6) + '.' + r.d.slice(6))}</small></div>`; }).join('')
         + '<p class="sc-mute">비율이 오르면 묶인 물량이 늘어난 것, 크게 줄면 그만큼 풀린 것입니다. 개별 종목의 해제일은 공시(DART)에서 확인하세요.</p>';
