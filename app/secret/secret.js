@@ -100,7 +100,7 @@
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, lockKey, enc.encode(JSON.stringify(keyMem)));
     const was = LS.get(K_REMEMBER, null);
-    cfg.lock.iv = b64(iv); cfg.lock.data = b64(data); saveCfg();
+    cfg.lock.iv = b64(iv); cfg.lock.data = b64(data); cfg.lock.ids = Object.keys(keyMem).filter(id => keyMem[id]); saveCfg();
     if (was && was.exp > Date.now()) LS.set(K_REMEMBER, { exp: was.exp, data: cfg.lock.data, keys: keyMem });
   }
   /* 이 기기에서 기억 (30일): 잠금 암호를 매번 묻지 않게. 내 기기의 저장소에만 두고, 동기화(GitHub)에는 올리지 않음 */
@@ -114,6 +114,8 @@
     if (on && cfg.lock && keyMem) LS.set(K_REMEMBER, { exp: Date.now() + REMEMBER_DAYS * 864e5, data: cfg.lock.data, keys: keyMem });
     else if (!on) { try { localStorage.removeItem(K_REMEMBER); } catch (e) { } }
   }
+  const fillIds = () => { if (cfg.lock && keyMem && !cfg.lock.ids) { cfg.lock.ids = Object.keys(keyMem).filter(id => keyMem[id]); saveCfg(); } }; // 예전 잠금에도 키 목록을
+  { const r0 = remembered(); if (r0) { keyMem = Object.assign({}, r0); setTimeout(fillIds, 0); } } // 이 기기에서 기억 중이면 처음부터 풀린 채로
   let unlocking = null; // 여러 시세를 한꺼번에 불러도 암호 창은 하나만
   function unlock(force) {
     if (!cfg.lock || (keyMem && (!force || lockKey))) return Promise.resolve(true);
@@ -125,7 +127,7 @@
       try {
         const k = await derive(pass, unb64(cfg.lock.salt));
         const raw = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(cfg.lock.iv) }, k, unb64(cfg.lock.data));
-        lockKey = k; keyMem = JSON.parse(dec.decode(raw)); remember(askPass.remember); renderApis(); return true;
+        lockKey = k; keyMem = JSON.parse(dec.decode(raw)); fillIds(); remember(askPass.remember); renderApis(); return true;
       } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
     })();
     return unlocking.finally(() => { unlocking = null; });
@@ -134,7 +136,7 @@
   async function keyOf(api) {
     if (!cfg.lock) { if (api.key) return api.key; }
     else { if (!(await unlock())) throw new Error('API 키 잠금을 풀지 않았습니다'); if (keyMem[api.id]) return keyMem[api.id]; }
-    if (cfg.lockRemote && !adoptTried) { adoptTried = true; if (await adoptRemoteKeys()) return cfg.lock && keyMem ? keyMem[api.id] || '' : api.key || ''; }
+    if (remoteHas(api.id) && !adoptTried) { adoptTried = true; if (await adoptRemoteKeys()) return cfg.lock && keyMem ? keyMem[api.id] || '' : api.key || ''; }
     return '';
   }
   async function setKey(api, key) {
@@ -915,8 +917,9 @@
     $('apiGrid').innerHTML = cfg.apis.map(a => {
       const T = TYPES[a.type] || {}; const ai = T.kind === 'ai';
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
+      const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${esc(mask(k))}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
         <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
@@ -932,11 +935,13 @@
       cfg.apis = cfg.apis.filter(x => x !== a); if (keyMem) { delete keyMem[a.id]; if (lockKey) await sealKeys(); } if (cfg.ai === a.id) cfg.ai = ''; saveCfg(); renderApis(); renderAiSel();
     });
     $('lockBox').innerHTML = cfg.lock
-      ? `<div><b>키 잠금 켜짐</b> — 키를 암호로 감싸 두었습니다. ${keyMem ? '지금은 풀려 있습니다 (이 화면을 닫으면 다시 잠깁니다).' : 'AI 를 처음 부를 때 암호를 묻습니다.'}</div>${keyMem ? '' : '<button class="btn" id="lkOpen">풀기</button>'}<button class="btn ghost" id="lkOff">잠금 끄기</button>`
-      : `<div><b>키 잠금 꺼짐</b> — 잠금 암호를 걸면 키를 AES-GCM 으로 감싸 저장합니다. 암호를 잊으면 키를 다시 등록해야 합니다.</div><button class="btn" id="lkOn">${icon('lock', 15)}잠금 암호 걸기</button>`;
+      ? `<div><b>키 잠금 켜짐</b> — 키를 암호로 감싸 두었습니다. ${(() => { const r = LS.get(K_REMEMBER, null), ok = remembered(); return ok ? `<b>이 기기에서 기억 중</b> (${Math.max(1, Math.ceil((r.exp - Date.now()) / 864e5))}일 남음) — 암호를 묻지 않습니다.` : keyMem ? '지금은 풀려 있습니다 (이 화면을 닫으면 다시 잠깁니다).' : '키가 필요할 때 암호를 한 번 묻습니다.'; })()}</div>${keyMem ? '' : '<button class="btn" id="lkOpen">풀기</button>'}${remembered() ? '<button class="btn ghost" id="lkForget">기억 지우기</button>' : ''}${remoteMissing() ? `<button class="btn" id="lkGet">${icon('key', 15)}다른 기기 키 받기</button>` : ''}<button class="btn ghost" id="lkOff">잠금 끄기</button>`
+      : `<div><b>키 잠금 꺼짐</b> — 잠금 암호를 걸면 키를 AES-GCM 으로 감싸 저장합니다. 암호를 잊으면 키를 다시 등록해야 합니다.</div><button class="btn" id="lkOn">${icon('lock', 15)}잠금 암호 걸기</button>${remoteMissing() ? `<button class="btn" id="lkGet">${icon('key', 15)}다른 기기 키 받기</button>` : ''}`;
     fillIcons($('vApis'));
     const on = $('lkOn'), off = $('lkOff'), op = $('lkOpen');
-    if (op) op.onclick = () => unlock();
+    if (op) op.onclick = async () => { if (await unlock()) { toast('키 잠금을 풀었습니다', 1800); renderApis(); renderBanner(); } };
+    const fg = $('lkForget'); if (fg) fg.onclick = () => { remember(false); keyMem = null; lockKey = null; toast('이 기기의 기억을 지웠습니다 — 다음에 키가 필요할 때 암호를 묻습니다', 3000); renderApis(); };
+    const gt = $('lkGet'); if (gt) gt.onclick = async () => { adoptTried = false; sy.keysSeen = ''; await adoptRemoteKeys(); renderApis(); renderBanner(); };
     if (on) on.onclick = async () => { if (await lockFlow('잠금 암호 걸기', '4자 이상. 이 암호는 어디에도 저장하지 않습니다.')) { toast('키를 잠갔습니다', 2000); renderApis(); } };
     if (off) off.onclick = async () => {
       if (!(await unlock())) return;
@@ -1415,7 +1420,7 @@
   const hashOf = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h); };
   const sect = {
     me: () => me, notes: () => notes, journal: () => journal, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
-    cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data } : null }),
+    cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data, ids: cfg.lock.ids || undefined } : null }), // ids: 어느 API 에 키가 있는지만 (키 값 아님)
   };
   /* 고칠 때마다 부름: 내용이 실제로 바뀌었으면 그 칸의 고친 시각을 기록하고 잠시 뒤 올림 */
   SYNCQ.mark = k => {
@@ -1589,16 +1594,33 @@
     const keep = askPass.remember;
     try {
       const k = await derive(pass, unb64(L.salt)); const got = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(L.iv) }, k, unb64(L.data))));
+      const before = new Set(cfg.apis.filter(a => hasKey(a)).map(a => a.id));
       if (!cfg.lock) { cfg.lock = { salt: L.salt, iv: L.iv, data: L.data }; lockKey = k; keyMem = Object.assign({}, got); cfg.apis.forEach(a => { if (a.key && !keyMem[a.id]) keyMem[a.id] = a.key; a.key = ''; }); await sealKeys(); }
-      else { if (!(await unlock())) return false; for (const id in got) if (!keyMem[id]) keyMem[id] = got[id]; await sealKeys(); }
-      saveCfg(); remember(keep); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); renderBanner(); return true;
+      else { if (!(await unlock())) return false; for (const id in got) if (got[id] && !keyMem[id]) keyMem[id] = got[id]; if (lockKey) await sealKeys(); }
+      sy.keysSeen = L.data; saveSy(); saveCfg(); remember(keep);
+      const added = cfg.apis.filter(a => !before.has(a.id) && keyMem && keyMem[a.id]);
+      const still = cfg.apis.filter(a => !hasKey(a) && a.type !== 'custom');
+      toast(added.length ? `키 ${added.length}개를 받았습니다: ${added.map(a => a.name).join(' · ')}${still.length ? ` · 아직 키가 없는 것: ${still.map(a => a.name).join(' · ')}` : ''}` : still.length ? `그 기기에도 ${still.map(a => a.name).join(' · ')} 의 키는 없습니다 — 이 기기에서 [고치기] 로 넣어 주세요` : '받을 새 키가 없습니다 — 이 기기에 이미 모두 있습니다', 5200);
+      renderApis(); renderBanner(); return true;
     } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
   }
 
   /* =====================================================================
      이 기기 연결 — 단추 하나로: 토큰(없을 때만) → 동기화 켜기 → 자료 받기 → API 키 (다른 기기에서 잠근 것 받기 / 처음이면 옮길지 묻기)
      ===================================================================== */
-  const hasKey = a => cfg.lock ? !!(keyMem && keyMem[a.id]) : !!a.key;
+  /* 키가 이 기기에 있는지: 풀려 있으면 그대로, 잠겨 있으면 잠근 키 목록으로 (예전 잠금은 목록이 없어 '있다고' 봄) */
+  const hasKey = a => cfg.lock ? (keyMem ? !!keyMem[a.id] : (cfg.lock.ids ? cfg.lock.ids.includes(a.id) : true)) : !!a.key;
+  /* 다른 기기에서 받을 키가 있는지: 그쪽 잠금이 이 기기 것과 다르고, 이미 확인한 것이 아니고, 이 기기에 없는 키가 그쪽에 있을 때만 */
+  function remoteHas(id) {
+    const L = cfg.lockRemote; if (!L || !L.data) return false;
+    if (cfg.lock && cfg.lock.data === L.data) return false;
+    if (sy.keysSeen === L.data) return false;
+    if (hasKey({ id, key: (cfg.apis.find(a => a.id === id) || {}).key })) return false;
+    return L.ids ? L.ids.includes(id) : true;
+  }
+  const keysToGet = () => cfg.apis.filter(a => remoteHas(a.id));
+  /* [다른 기기 키 받기] 단추: 그쪽에만 있는 키가 남아 있을 때 ('나중에' 와 상관없이) */
+  function remoteMissing() { const L = cfg.lockRemote; if (!L || !L.data || (cfg.lock && cfg.lock.data === L.data)) return false; return cfg.apis.some(a => a.type !== 'custom' && !hasKey(a) && (!L.ids || L.ids.includes(a.id))); }
   function askToken() {
     return new Promise(res => {
       const c = ghCfg();
@@ -1642,17 +1664,18 @@
   }
   function renderBanner() {
     const b = $('syncBanner'); if (!b) return;
-    const needKey = sy.on && cfg.lockRemote && aiApis().some(a => !hasKey(a));
+    const wait = sy.on ? keysToGet() : [], needKey = wait.length > 0;
     let html = '', bad = false;
     if (connecting) html = `<span class="ico-b">${icon('cloud', 18)}</span><div class="tx"><b>이 기기를 연결하는 중…</b><span>${esc(SY.msg || '잠시만 기다려 주세요')}</span></div>`;
     else if (!sy.on && !sy.dismiss) html = `<span class="ico-b">${icon('cloud', 18)}</span><div class="tx"><b>휴대폰 · PC 어디서나 같게 보려면 이 기기를 한 번 연결하세요</b><span>대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 저장소로 맞춥니다.</span></div><div class="acts"><button class="btn ink" id="bnConnect">${icon('cloud', 15)}이 기기 연결</button><button class="btn ghost" id="bnLater">이 기기만 쓰기</button></div>`;
     else if (sy.on && SY.state === 'bad') { bad = true; html = `<span class="ico-b">${icon('alert', 18)}</span><div class="tx"><b>다른 기기와 맞추지 못했습니다</b><span>${esc(SY.msg || sy.err || '')}</span></div><div class="acts"><button class="btn" id="bnConnect">다시 연결</button></div>`; }
-    else if (needKey) html = `<span class="ico-b">${icon('key', 18)}</span><div class="tx"><b>다른 기기에서 등록한 API 키가 있습니다</b><span>그 기기에서 정한 키 잠금 암호를 넣으면 이 기기에서도 바로 씁니다.</span></div><div class="acts"><button class="btn ink" id="bnKeys">${icon('key', 15)}키 받기</button></div>`;
+    else if (needKey) html = `<span class="ico-b">${icon('key', 18)}</span><div class="tx"><b>다른 기기에서 등록한 API 키 ${wait.length}개를 받을 수 있습니다</b><span>${esc(wait.map(a => a.name).join(' · '))} — 그 기기에서 정한 키 잠금 암호를 한 번 넣으면 이 기기에서도 씁니다.</span></div><div class="acts"><button class="btn ink" id="bnKeys">${icon('key', 15)}키 받기</button><button class="btn ghost" id="bnKeysNo">나중에</button></div>`;
     b.hidden = !html; b.classList.toggle('bad', bad); b.innerHTML = html;
     const cn = $('bnConnect'), lt = $('bnLater'), ky = $('bnKeys');
     if (cn) cn.onclick = () => connectDevice();
     if (lt) lt.onclick = () => { sy.dismiss = true; saveSy(); renderBanner(); toast('왼쪽 [기기 동기화] 에서 언제든 연결할 수 있습니다', 2600); };
     if (ky) ky.onclick = async () => { await adoptRemoteKeys(); renderBanner(); };
+    const kn = $('bnKeysNo'); if (kn) kn.onclick = () => { sy.keysSeen = cfg.lockRemote && cfg.lockRemote.data; saveSy(); renderBanner(); toast('API 연결 화면의 [다른 기기 키 받기] 로 언제든 받을 수 있습니다', 2800); };
   }
 
   /* =====================================================================
