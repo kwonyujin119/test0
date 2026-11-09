@@ -48,19 +48,22 @@ export default {
         return out(200, { ok: true, code, output: j.output }, keep);
       }
       if (url.pathname === '/daily') {
-        const days = Math.max(5, Math.min(400, +url.searchParams.get('days') || 120));
+        /* period: D 일봉 · W 주봉 · M 월봉 (한 번에 100개씩 거슬러 올라감, 최대 6번) */
+        const period = /^[DWM]$/.test(url.searchParams.get('period') || '') ? url.searchParams.get('period') : 'D';
+        const cap = { D: 400, W: 600, M: 300 }[period], span = { D: 140, W: 700, M: 3050 }[period];
+        const days = Math.max(5, Math.min(cap, +url.searchParams.get('days') || 120));
         const rows = []; let name = '', end = new Date(Date.now() + 9 * 36e5); // 한국 시간
-        for (let i = 0; i < 4 && rows.length < days; i++) {
-          const start = new Date(end.getTime() - 140 * 864e5);
+        for (let i = 0; i < 6 && rows.length < days; i++) {
+          const start = new Date(end.getTime() - span * 864e5);
           const j = await kis(env, tok, '/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice', 'FHKST03010100',
-            { FID_COND_MRKT_DIV_CODE: 'J', FID_INPUT_ISCD: code, FID_INPUT_DATE_1: ymd(start), FID_INPUT_DATE_2: ymd(end), FID_PERIOD_DIV_CODE: 'D', FID_ORG_ADJ_PRC: '0' });
+            { FID_COND_MRKT_DIV_CODE: 'J', FID_INPUT_ISCD: code, FID_INPUT_DATE_1: ymd(start), FID_INPUT_DATE_2: ymd(end), FID_PERIOD_DIV_CODE: period, FID_ORG_ADJ_PRC: '0' });
           name = name || (j.output1 && j.output1.hts_kor_isnm) || '';
           const got = (j.output2 || []).filter(r => r && r.stck_bsop_date);
           if (!got.length) break;
           rows.push(...got);
           end = new Date(Date.UTC(+got[got.length - 1].stck_bsop_date.slice(0, 4), +got[got.length - 1].stck_bsop_date.slice(4, 6) - 1, +got[got.length - 1].stck_bsop_date.slice(6)) - 864e5);
         }
-        return out(200, { ok: true, code, name, rows: rows.slice(0, days) }, keep);
+        return out(200, { ok: true, code, name, period, rows: rows.slice(0, days) }, keep);
       }
       return out(404, { error: '없는 기능입니다 (/quote · /daily 만)' });
     } catch (e) {

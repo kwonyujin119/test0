@@ -269,6 +269,24 @@
         const d = `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`;
         return { symbol: x.srtnCd, name: x.itmsNm, exchange: x.mrktCtg, currency: 'KRW', price: n(x.clpr), change: n(x.vs), changePct: n(x.fltRt), open: n(x.mkp), high: n(x.hipr), low: n(x.lopr), prevClose: n(x.clpr) - n(x.vs), volume: n(x.trqu), marketCap: n(x.mrktTotAmt), time: d, source: `공공데이터포털 (${d} 종가 · 실시간 아님)` };
       },
+      /* 긴 기간: beginBasDt 부터 1000개씩 (최대 6번 ≈ 24년) */
+      async range(k, s, years) {
+        const k0 = String(k || '').replace(/\s+/g, ''), key = /%[0-9A-F]{2}/i.test(k0) ? decodeURIComponent(k0) : k0;
+        const code = String(s).replace(/\.(KS|KQ)$/i, ''), begin = new Date(Date.now() - years * 365.25 * 864e5).toISOString().slice(0, 10).replace(/-/g, '');
+        const n = v => +String(v).replace(/,/g, ''), all = [];
+        for (let pg = 1; pg <= 6; pg++) {
+          const u = `https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2?resultType=json&numOfRows=1000&pageNo=${pg}&beginBasDt=${begin}&likeSrtnCd=${code}&serviceKey=${E(key)}`;
+          let r; try { r = await fetch(u); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
+          const j = await r.json().catch(() => null), body = j && j.response && j.response.body;
+          if (!body) { if (pg === 1) throw new Error('공공데이터포털: 긴 기간 자료를 받지 못했습니다'); break; }
+          let it = body.items && body.items.item; it = Array.isArray(it) ? it : it ? [it] : [];
+          all.push(...it.filter(x => x.srtnCd === code));
+          if (it.length < 1000 || all.length >= (+body.totalCount || 0)) break;
+        }
+        const seen = new Set();
+        return all.filter(x => !seen.has(x.basDt) && seen.add(x.basDt)).sort((a, b) => a.basDt.localeCompare(b.basDt))
+          .map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).filter(b => b.c);
+      },
       async history(k, s, days) {
         const n = v => +String(v).replace(/,/g, '');
         return (await this._get(k, s, days)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
@@ -1968,52 +1986,98 @@
     await Promise.all(jobs); if (my === stockSeq) { stock.loading = false; renderStock(); }
   }
 
-  /* 일봉 차트 (SVG) — 종가 선 · 20/60일 이동평균 · 손으로 짚으면 그날 값 */
-  function chartSvg(bars, mine, W, H) {
+  /* 가격 차트 (SVG) — 선 또는 봉(캔들) · 20/60 이동평균 · 거래량 · 내 평균 단가/손절/목표 선 · 짚으면 그 봉의 값
+     o.kind: 'line' | 'candle', o.per: 'D' | 'W' | 'M', o.ma20/o.ma60: 전체 기간으로 미리 계산한 이동평균(보이는 구간만큼) */
+  function chartSvg(bars, mine, W, H, o) {
     if (!bars || bars.length < 2) return '';
-    W = W || 760; H = H || 260; const P = { l: 8, r: 64, t: 14, b: 26 };
-    const c = bars.map(b => b.c), ma = k => c.map((_, i) => i + 1 >= k ? c.slice(i + 1 - k, i + 1).reduce((a, b) => a + b, 0) / k : null);
-    const m20 = ma(20), m60 = ma(60);
-    const lv = [mine && +mine.avg, mine && +mine.stop, mine && +mine.target].filter(v => v > 0);
-    let lo = Math.min(...bars.map(b => b.l || b.c)), hi = Math.max(...bars.map(b => b.h || b.c));
-    lv.forEach(v => { if (v > lo * .85 && v < hi * 1.15) { lo = Math.min(lo, v); hi = Math.max(hi, v); } });
-    const pad = (hi - lo) * .06 || hi * .02; lo -= pad; hi += pad;
-    const X = i => P.l + (W - P.l - P.r) * i / (bars.length - 1), Y = v => P.t + (H - P.t - P.b) * (1 - (v - lo) / (hi - lo));
+    o = o || {}; W = W || 760; H = H || 260;
+    const candle = o.kind === 'candle', volH = candle ? Math.round(H * .18) : 0;
+    const P = { l: 8, r: 64, t: 14, b: 26 + volH };
+    const n = bars.length, c = bars.map(b => b.c);
+    const m20 = o.ma20 || c.map((_, i) => i + 1 >= 20 ? c.slice(i - 19, i + 1).reduce((a, b) => a + b, 0) / 20 : null);
+    const m60 = o.ma60 || c.map((_, i) => i + 1 >= 60 ? c.slice(i - 59, i + 1).reduce((a, b) => a + b, 0) / 60 : null);
+    let lo = Math.min(...bars.map(b => candle ? (b.l || b.c) : b.c)), hi = Math.max(...bars.map(b => candle ? (b.h || b.c) : b.c));
+    if (!candle) { lo = Math.min(lo, ...bars.map(b => b.l || b.c)); hi = Math.max(hi, ...bars.map(b => b.h || b.c)); }
+    [mine && +mine.avg, mine && +mine.stop, mine && +mine.target].filter(v => v > 0).forEach(v => { if (v > lo * .85 && v < hi * 1.15) { lo = Math.min(lo, v); hi = Math.max(hi, v); } });
+    const pad = (hi - lo) * .06 || hi * .02; lo = Math.max(0, lo - pad); hi += pad; // 가격은 0 아래로 그리지 않음
+    const pw = W - P.l - P.r, step = pw / n, X = i => P.l + step * (i + .5), Y = v => P.t + (H - P.t - P.b) * (1 - (v - lo) / (hi - lo));
     const path = arr => arr.map((v, i) => v == null ? '' : `${arr[i - 1] == null ? 'M' : 'L'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join('');
-    const up = c[c.length - 1] >= c[0], col = up ? 'var(--sc-up)' : 'var(--sc-down)';
+    const up = c[n - 1] >= c[0], col = up ? 'var(--sc-up)' : 'var(--sc-down)';
     const ticks = [0, .25, .5, .75, 1].map(f => lo + (hi - lo) * f);
     const fmt = v => v >= 1000 ? Math.round(v).toLocaleString('ko-KR') : v.toFixed(v >= 100 ? 1 : 2);
-    const dates = W < 480 ? [0, bars.length - 1] : [0, Math.floor(bars.length / 2), bars.length - 1];
+    const dl = t => o.per === 'M' ? t.slice(0, 7) : t.slice(2);
+    const dates = W < 480 ? [0, n - 1] : [0, Math.floor(n / 2), n - 1];
     const lines = [[mine && +mine.avg, '평균 단가'], [mine && +mine.stop, '손절'], [mine && +mine.target, '목표']].filter(([v]) => v > 0 && v > lo && v < hi);
-    return `<svg class="sc-chart" data-lo="${lo}" data-hi="${hi}" data-h="${H}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="최근 ${bars.length}거래일 종가 차트">
+    let body = '';
+    if (candle) {
+      const bw = Math.max(1, Math.min(14, step * .68)), vmax = Math.max(1, ...bars.map(b => b.v || 0)), vy = H - 26;
+      body = bars.map((b, i) => {
+        const oo = b.o || b.c, upc = b.c >= oo, cl = upc ? 'cu' : 'cd', x = X(i), y1 = Y(Math.max(oo, b.c)), y2 = Y(Math.min(oo, b.c));
+        const v = b.v ? `<rect class="vb ${cl}" x="${(x - bw / 2).toFixed(1)}" y="${(vy - (volH - 6) * b.v / vmax).toFixed(1)}" width="${bw.toFixed(1)}" height="${((volH - 6) * b.v / vmax).toFixed(1)}"/>` : '';
+        return `<line class="wk ${cl}" x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${Y(b.h || Math.max(oo, b.c)).toFixed(1)}" y2="${Y(b.l || Math.min(oo, b.c)).toFixed(1)}"/><rect class="bd ${cl}" x="${(x - bw / 2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(1, y2 - y1).toFixed(1)}"/>${v}`;
+      }).join('');
+    } else {
+      body = `<path d="${path(c)}L${X(n - 1)},${H - P.b}L${X(0)},${H - P.b}Z" fill="${col}" opacity=".07"/><path d="${path(c)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="${X(n - 1)}" cy="${Y(c[n - 1])}" r="3.5" fill="${col}"/>`;
+    }
+    return `<svg class="sc-chart${candle ? ' candle' : ''}" data-lo="${lo}" data-hi="${hi}" data-h="${H}" data-pb="${P.b}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${n}개 봉 ${candle ? '봉' : '선'} 차트">
       ${ticks.map(v => `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${W - P.r + 6}" y="${Y(v) + 4}" class="ax">${fmt(v)}</text>`).join('')}
-      ${dates.map(i => `<text x="${X(i)}" y="${H - 6}" class="ax" text-anchor="${i === 0 ? 'start' : i === bars.length - 1 ? 'end' : 'middle'}">${bars[i].t.slice(2)}</text>`).join('')}
-      <path d="${path(c)}L${X(c.length - 1)},${H - P.b}L${X(0)},${H - P.b}Z" fill="${col}" opacity=".07"/>
+      ${candle ? `<line x1="${P.l}" x2="${W - P.r}" y1="${H - 26}" y2="${H - 26}" class="g"/>` : ''}
+      ${dates.map(i => `<text x="${X(i)}" y="${H - 6}" class="ax" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${dl(bars[i].t)}</text>`).join('')}
+      ${body}
       <path d="${path(m60)}" class="ma60"/><path d="${path(m20)}" class="ma20"/>
-      <path d="${path(c)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round"/>
-      ${lines.map(([v, n]) => `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}" class="lv"/><text x="${P.l + 4}" y="${Y(v) - 4}" class="lvt">${n} ${fmt(v)}</text>`).join('')}
-      <circle cx="${X(c.length - 1)}" cy="${Y(c[c.length - 1])}" r="3.5" fill="${col}"/>
-      <g class="hv" style="display:none"><line class="hl" y1="${P.t}" y2="${H - P.b}"/><circle r="4" class="hc"/></g>
-      <rect class="hit" x="${P.l}" y="0" width="${W - P.l - P.r}" height="${H}" fill="transparent" data-l="${P.l}" data-w="${W - P.l - P.r}" data-vw="${W}"/>
+      ${lines.map(([v, nm]) => `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}" class="lv"/><text x="${P.l + 4}" y="${Y(v) - 4}" class="lvt">${nm} ${fmt(v)}</text>`).join('')}
+      <g class="hv" style="display:none"><line class="hl" y1="${P.t}" y2="${H - 26}"/><circle r="4" class="hc"/></g>
+      <rect class="hit" x="${P.l}" y="0" width="${pw}" height="${H}" fill="transparent" data-l="${P.l}" data-w="${pw}" data-vw="${W}"/>
     </svg>`;
   }
-  function wireChart(box, bars) {
+  function wireChart(box, bars, per) {
     const svg = box.querySelector('.sc-chart'); if (!svg) return;
     const hit = svg.querySelector('.hit'), hv = svg.querySelector('.hv'), tip = box.querySelector('.sc-tip');
-    const H = +svg.dataset.h || 260, P = { t: 14, b: 26 };
+    const H = +svg.dataset.h || 260, P = { t: 14, b: +svg.dataset.pb || 26 }, n = bars.length;
     const L = +svg.dataset.lo, Hh = +svg.dataset.hi; // 차트와 같은 세로 범위
+    const unit = per === 'M' ? '월' : per === 'W' ? '주' : '일';
     const move = e => {
-      const r = svg.getBoundingClientRect(), vx = (e.clientX - r.left) / r.width * +hit.dataset.vw;
-      const i = Math.max(0, Math.min(bars.length - 1, Math.round((vx - +hit.dataset.l) / +hit.dataset.w * (bars.length - 1))));
-      const x = +hit.dataset.l + +hit.dataset.w * i / (bars.length - 1);
+      const r = svg.getBoundingClientRect(), vx = (e.clientX - r.left) / r.width * +hit.dataset.vw, step = +hit.dataset.w / n;
+      const i = Math.max(0, Math.min(n - 1, Math.floor((vx - +hit.dataset.l) / step)));
+      const x = +hit.dataset.l + step * (i + .5);
       hv.style.display = ''; hv.querySelector('.hl').setAttribute('x1', x); hv.querySelector('.hl').setAttribute('x2', x);
       const b = bars[i], prev = bars[i - 1];
       hv.querySelector('.hc').setAttribute('cx', x); hv.querySelector('.hc').setAttribute('cy', P.t + (H - P.t - P.b) * (1 - (b.c - L) / (Hh - L)));
       const ch = prev ? (b.c / prev.c - 1) * 100 : null;
-      tip.innerHTML = `<b>${esc(b.t)}</b> 종가 <b>${num(b.c)}</b> <span class="${cls(ch)}">${pct(ch)}</span>${b.v ? ` · 거래량 ${num(b.v, 0)}` : ''}`;
+      tip.innerHTML = `<b>${esc(per === 'M' ? b.t.slice(0, 7) : b.t)}</b>${per === 'W' ? ' 주' : ''} ${b.o ? `시 ${num(b.o)} · 고 ${num(b.h)} · 저 ${num(b.l)} · ` : ''}종 <b>${num(b.c)}</b> <span class="${cls(ch)}">${prev ? `전${unit} 대비 ` : ''}${pct(ch)}</span>${b.v ? ` · 거래량 ${num(b.v, 0)}` : ''}`;
     };
     hit.addEventListener('pointermove', move); hit.addEventListener('pointerdown', move);
     hit.addEventListener('pointerleave', () => { hv.style.display = 'none'; tip.innerHTML = tip.dataset.def || ''; });
+  }
+  /* 긴 기간: 일봉을 주봉 · 월봉으로 묶음 */
+  function aggBars(bars, per) {
+    if (per === 'D') return bars;
+    const key = t => { if (per === 'M') return t.slice(0, 7); const d = new Date(t + 'T00:00:00Z'), w = (d.getUTCDay() + 6) % 7; d.setUTCDate(d.getUTCDate() - w); return d.toISOString().slice(0, 10); };
+    const out = []; let g = null, gk = '';
+    for (const b of bars) { const k = key(b.t); if (k !== gk) { if (g) out.push(g); gk = k; g = { t: b.t, o: b.o || b.c, h: b.h || b.c, l: b.l || b.c, c: b.c, v: b.v || 0 }; } else { g.t = b.t; g.h = Math.max(g.h, b.h || b.c); g.l = Math.min(g.l, b.l || b.c); g.c = b.c; g.v += b.v || 0; } }
+    if (g) out.push(g); return out;
+  }
+  /* 긴 기간 자료: KIS 중계(주봉 · 월봉을 직접) → 공공데이터포털(일봉을 1000개씩 받아 묶음) */
+  const RANGES = [[20, '1개월'], [60, '3개월'], [120, '6개월'], [250, '1년'], ['3y', '3년'], ['5y', '5년'], ['10y', '10년'], ['20y', '20년']];
+  const perOf = r => typeof r === 'number' ? 'D' : parseInt(r) <= 5 ? 'W' : 'M';
+  async function loadLong(code, yrs, per) {
+    const kis = dataApis().find(a => a.type === 'kisrelay');
+    if (kis) {
+      try {
+        const j = await DATA.kisrelay._call(await keyOf(kis), kis, '/daily', { code, period: per, days: per === 'W' ? yrs * 53 : yrs * 12 + 2 });
+        if (j.period === per && (j.rows || []).length) { const d8 = x => `${x.slice(0, 4)}-${x.slice(4, 6)}-${x.slice(6)}`; return { src: '한국투자증권', bars: j.rows.map(x => ({ t: d8(x.stck_bsop_date), o: +x.stck_oprc, h: +x.stck_hgpr, l: +x.stck_lwpr, c: +x.stck_clpr, v: +x.acml_vol })).filter(b => b.c).reverse() }; }
+      } catch (e) { /* 아래 공공데이터포털로 */ }
+    }
+    const d = dataApis().find(a => a.type === 'datagokr');
+    if (!d) throw new Error('긴 기간 차트는 공공데이터포털 주식시세나 KIS 중계가 있어야 합니다');
+    const daily = await DATA.datagokr.range(await keyOf(d), code, yrs);
+    return { src: '공공데이터포털', bars: aggBars(daily, per) };
+  }
+  function wantLong(r) {
+    const s = stock; if (!s || typeof r === 'number' || !/^\d[0-9A-Z]{5}$/.test(s.code)) return;
+    s.long = s.long || {}; if (s.long[r]) return;
+    s.long[r] = { loading: true }; const my = stockSeq;
+    loadLong(s.code, parseInt(r), perOf(r)).then(v => { s.long[r] = v; }).catch(e => { s.long[r] = { err: e.message }; }).then(() => { if (my === stockSeq) renderStock(); });
   }
 
   function apiNeed(t, label) { return `<div class="sc-need">${icon('key', 16)}<span>${label}</span><button class="btn sm" data-goapi="${t}">연결하기</button></div>`; }
@@ -2036,8 +2100,14 @@
     const mine = watch.items.find(it => normSym(it.symbol) === s.code);
     const price = q ? q.price : b && b.length ? b[b.length - 1].c : null;
     const chg = q ? q.changePct : null;
-    const rng = stockPref.range || 120, shown = b ? b.slice(-rng) : null;
-    const per = n => shown && shown.length > n ? (shown[shown.length - 1].c / shown[0].c - 1) * 100 : null;
+    const rng = RANGES.some(([n]) => n === stockPref.range) ? stockPref.range : 120, per = perOf(rng), kind = stockPref.kind === 'candle' ? 'candle' : 'line';
+    if (typeof rng !== 'number') wantLong(rng);
+    const LG = typeof rng === 'number' ? null : (s.long || {})[rng];
+    const full = typeof rng === 'number' ? b : LG && LG.bars, from = full ? (typeof rng === 'number' ? Math.max(0, full.length - rng) : 0) : 0;
+    const shown = full ? full.slice(from) : null;
+    const maOf = k => { if (!full) return null; const cc = full.map(x => x.c); return cc.map((_, i) => i + 1 >= k ? cc.slice(i + 1 - k, i + 1).reduce((x, y) => x + y, 0) / k : null).slice(from); };
+    const unitN = per === 'M' ? '개월' : per === 'W' ? '주' : '일', perName = per === 'M' ? '월봉' : per === 'W' ? '주봉' : '일봉';
+    const chgOf = () => shown && shown.length > 1 ? (shown[shown.length - 1].c / shown[0].c - 1) * 100 : null;
     const loading = t => `<div class="sc-skel">${esc(t)} 불러오는 중…</div>`;
     const chartW = Math.max(280, Math.min(1400, Math.round((box.clientWidth || 760) - 38))); // 화면 폭에 맞춰 (글자가 눌리지 않게)
     const errBox = m => `<div class="sc-err">${icon('alert', 15)}<span>${esc(m)}</span></div>`;
@@ -2062,10 +2132,15 @@
       ${s.err.code ? errBox(s.err.code) : ''}
       <div class="st-grid">
         <section class="sc-card st-chart">
-          <div class="st-ch-head"><h3>가격 흐름</h3>
-            <div class="sc-seg" id="stRange">${[[20, '1개월'], [60, '3개월'], [120, '6개월'], [250, '1년']].map(([n, t]) => `<button type="button" data-n="${n}" class="${rng === n ? 'on' : ''}">${t}</button>`).join('')}</div></div>
-          ${shown ? `<p class="sc-tip" data-def="${esc(`${shown[0].t} → ${shown[shown.length - 1].t} · 이 기간 ${pct(per(1))} · 굵은 선 종가, 옅은 선 20일 · 점선 60일 이동평균`)}">${esc(`${shown[0].t} → ${shown[shown.length - 1].t} · 이 기간 ${pct(per(1))} · 굵은 선 종가, 옅은 선 20일 · 점선 60일 이동평균`)}</p>${chartSvg(shown, mine, chartW, chartW < 480 ? 210 : 260)}`
-            : s.err.bars ? errBox(s.err.bars) : dataFor('history') ? loading('일봉') : apiNeed('datagokr', '일봉 API 가 없습니다 (공공데이터포털 주식시세 · KIS)')}
+          <div class="st-ch-head"><h3>가격 흐름 <small>${perName}</small></h3>
+            <div class="st-ch-ctl"><div class="sc-seg" id="stKind" role="group" aria-label="차트 모양"><button type="button" data-k="line" class="${kind === 'line' ? 'on' : ''}" aria-pressed="${kind === 'line'}">선</button><button type="button" data-k="candle" class="${kind === 'candle' ? 'on' : ''}" aria-pressed="${kind === 'candle'}">봉</button></div>
+            <div class="sc-seg st-range" id="stRange" role="group" aria-label="기간">${RANGES.map(([n, t]) => `<button type="button" data-n="${n}" class="${rng === n ? 'on' : ''}">${t}</button>`).join('')}</div></div></div>
+          ${(() => {
+            if (!shown || shown.length < 2) return LG && LG.err ? errBox(LG.err) : LG && LG.loading ? loading(`${perName} (${parseInt(rng)}년)`) : s.err.bars ? errBox(s.err.bars) : dataFor('history') ? loading('일봉') : apiNeed('datagokr', '일봉 API 가 없습니다 (공공데이터포털 주식시세 · KIS)');
+            const short = typeof rng !== 'number' && shown.length && (new Date(shown[shown.length - 1].t) - new Date(shown[0].t)) / 3.156e10 < parseInt(rng) - .6;
+            const def = `${shown[0].t} → ${shown[shown.length - 1].t} · 이 기간 ${pct(chgOf())} · ${kind === 'candle' ? '봉(빨강 오름 · 파랑 내림) · 아래 거래량' : '굵은 선 종가'} · 옅은 선 20${unitN} · 점선 60${unitN} 이동평균${LG && LG.src ? ' · ' + LG.src : ''}${short ? ` · 받을 수 있는 자료가 ${shown[0].t.slice(0, 4)}년부터입니다` : ''}`;
+            return `<p class="sc-tip" data-def="${esc(def)}">${esc(def)}</p>${chartSvg(shown, mine, chartW, chartW < 480 ? 220 : 280, { kind, per, ma20: maOf(20), ma60: maOf(60) })}`;
+          })()}
         </section>
         <section class="sc-card">
           <h3>지금 상태 <small>일봉으로 이 앱이 직접 계산</small></h3>
@@ -2092,8 +2167,9 @@
       </div>
       <p class="sc-fine">숫자는 연결한 API 에서 그대로 가져오고, 지표는 이 앱이 일봉으로 계산합니다. 투자 판단과 책임은 본인에게 있습니다.</p>`;
     fillIcons(box); wireGoApi(box);
-    if (shown) wireChart(box.querySelector('.st-chart'), shown);
-    const rg = $('stRange'); if (rg) rg.querySelectorAll('button').forEach(x => x.onclick = () => { stockPref.range = +x.dataset.n; LS.set(K_STOCK, stockPref); renderStock(); });
+    if (shown && shown.length > 1) wireChart(box.querySelector('.st-chart'), shown, per);
+    const rg = $('stRange'); if (rg) rg.querySelectorAll('button').forEach(x => x.onclick = () => { stockPref.range = /y$/.test(x.dataset.n) ? x.dataset.n : +x.dataset.n; LS.set(K_STOCK, stockPref); renderStock(); });
+    const kd = $('stKind'); if (kd) kd.querySelectorAll('button').forEach(x => x.onclick = () => { stockPref.kind = x.dataset.k; LS.set(K_STOCK, stockPref); renderStock(); });
     box.querySelectorAll('[data-st]').forEach(x => x.onclick = () => stockAct(x.dataset.st));
   }
   let stW = 0, stWt = 0; addEventListener('resize', () => { clearTimeout(stWt); stWt = setTimeout(() => { const b = $('stBody'); if (b && !$('vStock').hidden && stock && Math.abs(b.clientWidth - stW) > 24) { stW = b.clientWidth; renderStock(); } }, 200); });
