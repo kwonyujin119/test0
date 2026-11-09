@@ -214,12 +214,20 @@
         const code = (q.match(/^A?(\d{6})$/i) || [])[1];
         const ymd8 = d => d.toISOString().slice(0, 10).replace(/-/g, '');
         const from = new Date(Date.now() - Math.ceil(days * 1.5 + 10) * 864e5);
-        const url = 'https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?resultType=json&pageNo=1'
+        const qs = '?resultType=json&pageNo=1'
           + `&numOfRows=${Math.min(Math.ceil(days * 1.5) + 20, 1000)}&beginBasDt=${ymd8(from)}&serviceKey=${E(key)}`
           + (code ? `&likeSrtnCd=${code}` : `&itmsNm=${E(q)}`);
-        let r; try { r = await fetch(url); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
-        const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch (e) { }
-        const bad = j && j.OpenAPI_ServiceResponse && j.OpenAPI_ServiceResponse.cmmMsgHeader;
+        /* 새 주소(V2)를 먼저, 키가 옛 주소에만 등록돼 있으면 옛 주소로 */
+        const URLS = ['https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2', 'https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo'];
+        let r, t, j, bad, first = null;
+        for (const u of URLS) {
+          try { r = await fetch(u + qs); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
+          t = await r.text(); j = null; try { j = JSON.parse(t); } catch (e) { }
+          bad = j && j.OpenAPI_ServiceResponse && j.OpenAPI_ServiceResponse.cmmMsgHeader;
+          if (!bad) break;
+          first = first || bad;
+        }
+        if (bad) bad = first; // 두 곳 다 안 되면 새 주소의 오류로 알림
         if (bad) throw new Error('공공데이터포털: ' + (bad.returnAuthMsg || bad.errMsg) + (/NOT_REGISTERED/.test(bad.errMsg || '') ? ' — ① 활용신청한 서비스가 정확히 「금융위원회_주식시세정보」 인지 (주식발행정보 · KRX상장종목정보 등은 다른 서비스) ② 승인 직후면 1~2시간 뒤 ③ 마이페이지의 일반 인증키를 다시 복사' : ''));
         if (!j || !j.response) throw new Error(`공공데이터포털 오류 ${r.status}: ${t.slice(0, 160)}`);
         if (j.response.header && j.response.header.resultCode !== '00') throw new Error('공공데이터포털: ' + j.response.header.resultMsg);
