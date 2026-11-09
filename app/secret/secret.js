@@ -1485,7 +1485,7 @@
     let d; try { d = await getBrief(bui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
     if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 브리핑 파일이 없습니다.</div>'; return; }
     const t = d.generatedAt ? new Date(d.generatedAt) : null;
-    $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. ${morningNote()}`;
+    $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. ${morningNote(bui.dates[0])}`;
     if (bui.mode === 'feeds') { box.innerHTML = renderFeeds(d); $('bLead').innerHTML += ` · 피드별 중요도 순 5개씩 <b>${d.feedItems || 0}개</b>`; return; }
     const extra = coExtra();
     box.innerHTML = `<div class="sc-brief">${d.items.map(it => {
@@ -1504,10 +1504,13 @@
   $('bReload').onclick = () => renderBrief(true);
   /* 아침 6~8시(한국): '보강 중', 8시가 지나면 '오늘 판 완성'. 열어 둔 동안 15분마다 새로 받아 옴 */
   const kstNow = () => new Date(Date.now() + 9 * 36e5);
-  function morningNote() { const h = kstNow().getUTCHours(), m = kstNow().getUTCMinutes(); return h >= 6 && (h < 8) ? `<b>지금 보강 중</b> — 8시 전까지 15분마다 새로 받아 옵니다.` : h >= 8 ? '오늘 아침 판 (6시~7시 45분 여러 번 보강해 8시 전에 완성).' : '오늘 아침 6시부터 보강을 시작해 8시 전에 완성합니다.'; }
+  function morningNote(latest) {
+    const k = kstNow(), today = k.toISOString().slice(0, 10), h = k.getUTCHours();
+    if (latest && latest !== today && h >= 8) return `<span class="sc-late">오늘(${k.getUTCMonth() + 1}월 ${k.getUTCDate()}일) 판이 아직 올라오지 않아 ${latest.slice(5).replace('-', '월 ')}일 판을 보여 줍니다 — GitHub 예약 실행이 늦어지고 있습니다. 올라오는 대로 이 화면이 저절로 바꿉니다.</span>`;
+    const m = k.getUTCMinutes(); return h >= 6 && (h < 8) ? `<b>지금 보강 중</b> — 8시 전까지 15분마다 새로 받아 옵니다.` : h >= 8 ? '오늘 아침 판 (6시~7시 45분 여러 번 보강해 8시 전에 완성).' : '오늘 아침 6시부터 보강을 시작해 8시 전에 완성합니다.'; }
   setInterval(() => {
     const h = kstNow().getUTCHours(), m = kstNow().getUTCMinutes();
-    if (document.visibilityState !== 'visible' || !(h >= 6 && (h < 8 || (h === 8 && m < 15)))) return;
+    if (document.visibilityState !== 'visible' || !(h >= 5 && h < 11)) return; // 아침 5~11시: 늦은 판도 저절로 받아 옴
     if (!$('vBrief').hidden) renderBrief(true); else if (!$('vStrat').hidden) renderStrat(true); else if (!$('vSum').hidden) renderSum(true);
   }, 15 * 60000);
   $('bDate').onchange = e => { bui.date = e.target.value; renderBrief(); };
@@ -1887,7 +1890,7 @@
     if (sui.mode === 'sum') { renderStratSum(d); return; }
     const list = sui.mode === 'weekly' ? d.weekly || [] : d.daily || [], kw = sui.mode === 'weekly' ? d.weeklyKeywords || [] : d.dailyKeywords || [];
     const t = d.generatedAt ? new Date(d.generatedAt) : null, dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
-    $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. ${morningNote()}`;
+    $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. ${morningNote(sui.dates && sui.dates[0])}`;
     $('sKw').innerHTML = kw.length ? '<span>자주 나온 말</span>' + kw.map(k => `<b>${esc(k.word)} <em>${k.count}</em></b>`).join('') : '';
     box.innerHTML = list.length ? list.map(x => `<article class="sc-rp"><span class="rk">${x.rank}</span>
       <a class="tt" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a>
