@@ -1476,7 +1476,7 @@
     let idx;
     try { idx = await getBrief('index.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}. 인터넷 연결을 확인하고 [다시 불러오기] 를 눌러 주세요.</div>`; return; }
     if (!idx || !(idx.dates || []).length) {
-      box.innerHTML = `<div class="sc-bmsg"><b>아직 브리핑이 없습니다.</b><br>매일 아침 6시 30분쯤 GitHub 이 뉴스를 모아 7시 전에 여기에 올립니다. 지금 바로 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Morning briefing</a> 에서 [Run workflow] 를 누르고, 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`;
+      box.innerHTML = `<div class="sc-bmsg"><b>아직 브리핑이 없습니다.</b><br>매일 아침 6시부터 GitHub 이 뉴스를 모아 8시 전까지 여러 번 보강해 여기에 올립니다. 지금 바로 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Morning briefing</a> 에서 [Run workflow] 를 누르고, 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`;
       $('bDate').innerHTML = ''; return;
     }
     bui.dates = idx.dates; if (!bui.date || !bui.dates.includes(bui.date)) bui.date = bui.dates[0];
@@ -1485,7 +1485,7 @@
     let d; try { d = await getBrief(bui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
     if (!d) { box.innerHTML = '<div class="sc-bmsg">이 날의 브리핑 파일이 없습니다.</div>'; return; }
     const t = d.generatedAt ? new Date(d.generatedAt) : null;
-    $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. 매일 아침 7시 전에 새로 만들어집니다.`;
+    $('bLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 만듦 · ` : ''}뉴스 피드 ${d.feedsOk}/${d.feeds}곳 · 기사 ${num(d.articles, 0)}건 → 이슈 ${num(d.issues, 0)}개 중 <b>여러 언론이 함께 다룬 주식 관련 큰 이슈 ${d.items.length}개</b>. AI 토큰은 쓰지 않습니다. ${morningNote()}`;
     if (bui.mode === 'feeds') { box.innerHTML = renderFeeds(d); $('bLead').innerHTML += ` · 피드별 중요도 순 5개씩 <b>${d.feedItems || 0}개</b>`; return; }
     const extra = coExtra();
     box.innerHTML = `<div class="sc-brief">${d.items.map(it => {
@@ -1502,6 +1502,14 @@
     box.querySelectorAll('[data-bco]').forEach(b => b.onclick = () => { nui.co = b.dataset.bco; show('notes'); });
   }
   $('bReload').onclick = () => renderBrief(true);
+  /* 아침 6~8시(한국): '보강 중', 8시가 지나면 '오늘 판 완성'. 열어 둔 동안 15분마다 새로 받아 옴 */
+  const kstNow = () => new Date(Date.now() + 9 * 36e5);
+  function morningNote() { const h = kstNow().getUTCHours(), m = kstNow().getUTCMinutes(); return h >= 6 && (h < 8) ? `<b>지금 보강 중</b> — 8시 전까지 15분마다 새로 받아 옵니다.` : h >= 8 ? '오늘 아침 판 (6시~7시 45분 여러 번 보강해 8시 전에 완성).' : '오늘 아침 6시부터 보강을 시작해 8시 전에 완성합니다.'; }
+  setInterval(() => {
+    const h = kstNow().getUTCHours(), m = kstNow().getUTCMinutes();
+    if (document.visibilityState !== 'visible' || !(h >= 6 && (h < 8 || (h === 8 && m < 15)))) return;
+    if (!$('vBrief').hidden) renderBrief(true); else if (!$('vStrat').hidden) renderStrat(true); else if (!$('vSum').hidden) renderSum(true);
+  }, 15 * 60000);
   $('bDate').onchange = e => { bui.date = e.target.value; renderBrief(); };
   $('bPrev').onclick = () => { const i = bui.dates.indexOf(bui.date); if (i < bui.dates.length - 1) { bui.date = bui.dates[i + 1]; renderBrief(); } };
   $('bNext').onclick = () => { const i = bui.dates.indexOf(bui.date); if (i > 0) { bui.date = bui.dates[i - 1]; renderBrief(); } };
@@ -1871,7 +1879,7 @@
     box.innerHTML = '<div class="sc-bmsg">불러오는 중…</div>'; $('sKw').innerHTML = '';
     const actions = `https://github.com/${briefRepo()}/actions/workflows/strategy-briefing.yml`;
     let idx; try { idx = await getBrief('strategy/index.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
-    if (!idx || !(idx.dates || []).length) { box.innerHTML = `<div class="sc-bmsg"><b>아직 전략 브리핑이 없습니다.</b><br>매일 아침 7시 10분쯤 만들어집니다. 지금 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Strategy briefing</a> 에서 [Run workflow] 를 누르고 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`; $('sDate').innerHTML = ''; return; }
+    if (!idx || !(idx.dates || []).length) { box.innerHTML = `<div class="sc-bmsg"><b>아직 전략 브리핑이 없습니다.</b><br>매일 아침 7시 전후로 여러 번 보강해 8시 전에 만들어집니다. 지금 받으려면 <a href="${actions}" target="_blank" rel="noopener">GitHub Actions 의 Strategy briefing</a> 에서 [Run workflow] 를 누르고 1~2분 뒤 [다시 불러오기] 를 누르세요.</div>`; $('sDate').innerHTML = ''; return; }
     sui.dates = idx.dates; if (!sui.date || !sui.dates.includes(sui.date)) sui.date = sui.dates[0];
     $('sDate').innerHTML = sui.dates.map(d => { const x = new Date(d + 'T00:00'); return `<option value="${d}"${d === sui.date ? ' selected' : ''}>${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}</option>`; }).join('');
     let d; try { d = await getBrief('strategy/' + sui.date + '.json'); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
@@ -1879,7 +1887,7 @@
     if (sui.mode === 'sum') { renderStratSum(d); return; }
     const list = sui.mode === 'weekly' ? d.weekly || [] : d.daily || [], kw = sui.mode === 'weekly' ? d.weeklyKeywords || [] : d.dailyKeywords || [];
     const t = d.generatedAt ? new Date(d.generatedAt) : null, dd = d.dailyDate ? new Date(d.dailyDate + 'T00:00') : null;
-    $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. 매일 07:10 쯤 (08:30 보충).`;
+    $('sLead').innerHTML = `${t ? `${t.getMonth() + 1}월 ${t.getDate()}일 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 에 모음 · ` : ''}${sui.mode === 'weekly' ? `최근 7일 주간 전략 리포트 <b>${list.length}개</b>` : `${dd ? `${dd.getMonth() + 1}월 ${dd.getDate()}일 발행 ` : ''}증권사 데일리 · 투자전략 리포트 <b>${list.length}개</b>`}, 많이 읽힌 순. AI 토큰은 쓰지 않습니다. ${morningNote()}`;
     $('sKw').innerHTML = kw.length ? '<span>자주 나온 말</span>' + kw.map(k => `<b>${esc(k.word)} <em>${k.count}</em></b>`).join('') : '';
     box.innerHTML = list.length ? list.map(x => `<article class="sc-rp"><span class="rk">${x.rank}</span>
       <a class="tt" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a>
@@ -1909,7 +1917,7 @@
     try { [mi, si] = await Promise.all([getBrief('index.json'), getBrief('strategy/index.json')]); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
     const md = mi && (mi.dates || [])[0] ? await getBrief(mi.dates[0] + '.json').catch(() => null) : null;
     const sd = si && (si.dates || [])[0] ? await getBrief('strategy/' + si.dates[0] + '.json').catch(() => null) : null;
-    if (!md && !sd) { box.innerHTML = '<div class="sc-bmsg">아직 모닝 브리핑 · 전략 브리핑이 없습니다. 내일 아침 7시 이후에 다시 열어 보세요.</div>'; return; }
+    if (!md && !sd) { box.innerHTML = '<div class="sc-bmsg">아직 모닝 브리핑 · 전략 브리핑이 없습니다. 내일 아침 8시 이후에 다시 열어 보세요.</div>'; return; }
     const news = [], seen = new Set();
     for (const it of ((md && md.items) || []).concat(...((md && md.byFeed) || []).map(f => f.items || []))) { const k = it.link || it.title; if (seen.has(k)) continue; seen.add(k); news.push(it); }
     const daily = (sd && sd.daily) || [], weekly = (sd && sd.weekly) || [], reps = daily.concat(weekly);
