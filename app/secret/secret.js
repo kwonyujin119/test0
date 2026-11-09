@@ -72,6 +72,7 @@
     finnhub: { kind: 'data', name: 'Finnhub', caps: ['quote', 'news'], keyUrl: 'https://finnhub.io/dashboard', note: '현재가 · 회사 뉴스 (무료: 분당 60회, 주로 미국 종목).' },
     twelvedata: { kind: 'data', name: 'Twelve Data', caps: ['quote', 'history'], keyUrl: 'https://twelvedata.com/account/api-keys', note: '현재가 · 일봉 (무료: 하루 800회). 한국 종목은 요금제에 따라 다릅니다.' },
     alphavantage: { kind: 'data', name: 'Alpha Vantage', caps: ['quote', 'history', 'news'], keyUrl: 'https://www.alphavantage.co/support/#api-key', note: '현재가 · 일봉 · 뉴스 감성 (무료: 하루 25회).' },
+    datagokr: { kind: 'data', name: '공공데이터포털 주식시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A3%BC%EC%8B%9D%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '국내 상장 종목의 하루 단위 시세 · 일봉 (무료). 마지막 영업일 종가 기준이라 장중 실시간은 아닙니다. 마이페이지의 일반 인증키를 Encoding · Decoding 어느 쪽이든 그대로 붙여 넣으세요. 종목은 6자리 코드(005930)나 종목명(삼성전자).' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
   };
   const isAI = a => TYPES[a.type] && TYPES[a.type].kind === 'ai';
@@ -203,6 +204,38 @@
         return (j.feed || []).slice(0, 12).map(n => ({ title: n.title, source: n.source, url: n.url, time: n.time_published, sentiment: n.overall_sentiment_label, summary: String(n.summary || '').slice(0, 280) }));
       },
     },
+    /* 공공데이터포털 · 금융위원회_주식시세정보 (브라우저에서 바로 불러올 수 있음) */
+    datagokr: {
+      async _get(k, s, days) {
+        const key = /%[0-9A-F]{2}/i.test(k) ? decodeURIComponent(k) : k; // Encoding 키를 넣어도 두 번 바뀌지 않게
+        const q = String(s).trim().replace(/\.(KS|KQ|KRX)$/i, '').replace(/:KRX$/i, '');
+        const code = (q.match(/^A?(\d{6})$/i) || [])[1];
+        const ymd8 = d => d.toISOString().slice(0, 10).replace(/-/g, '');
+        const from = new Date(Date.now() - Math.ceil(days * 1.5 + 10) * 864e5);
+        const url = 'https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo?resultType=json&pageNo=1'
+          + `&numOfRows=${Math.min(Math.ceil(days * 1.5) + 20, 1000)}&beginBasDt=${ymd8(from)}&serviceKey=${E(key)}`
+          + (code ? `&likeSrtnCd=${code}` : `&itmsNm=${E(q)}`);
+        let r; try { r = await fetch(url); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
+        const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch (e) { }
+        const bad = j && j.OpenAPI_ServiceResponse && j.OpenAPI_ServiceResponse.cmmMsgHeader;
+        if (bad) throw new Error('공공데이터포털: ' + (bad.returnAuthMsg || bad.errMsg) + (/NOT_REGISTERED/.test(bad.errMsg || '') ? ' — 키를 다시 복사하거나, 승인 직후라면 1~2시간 뒤 다시 해 보세요' : ''));
+        if (!j || !j.response) throw new Error(`공공데이터포털 오류 ${r.status}: ${t.slice(0, 160)}`);
+        if (j.response.header && j.response.header.resultCode !== '00') throw new Error('공공데이터포털: ' + j.response.header.resultMsg);
+        let it = j.response.body && j.response.body.items && j.response.body.items.item; it = Array.isArray(it) ? it : it ? [it] : [];
+        if (code) it = it.filter(x => x.srtnCd === code);
+        if (!it.length) throw new Error(`${s}: 시세가 없습니다 — 6자리 종목 코드(005930)나 정확한 종목명(삼성전자)으로 찾아 주세요`);
+        return it.sort((a, b) => a.basDt.localeCompare(b.basDt));
+      },
+      async quote(k, s) {
+        const a = await this._get(k, s, 7), x = a[a.length - 1], n = v => +String(v).replace(/,/g, '');
+        const d = `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`;
+        return { symbol: x.srtnCd, name: x.itmsNm, exchange: x.mrktCtg, currency: 'KRW', price: n(x.clpr), change: n(x.vs), changePct: n(x.fltRt), open: n(x.mkp), high: n(x.hipr), low: n(x.lopr), prevClose: n(x.clpr) - n(x.vs), volume: n(x.trqu), marketCap: n(x.mrktTotAmt), time: d, source: `공공데이터포털 (${d} 종가 · 실시간 아님)` };
+      },
+      async history(k, s, days) {
+        const n = v => +String(v).replace(/,/g, '');
+        return (await this._get(k, s, days)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
+      },
+    },
     custom: {
       async custom(k, s, api) {
         const url = String(api.base || '').replace(/\{symbol\}/g, E(s)).replace(/\{key\}/g, E(k));
@@ -212,8 +245,10 @@
       },
     },
   };
+  const isKR = s => /^A?\d{6}(\.(KS|KQ))?$|:KRX$|[가-힣]/i.test(String(s || '').trim());
   async function callData(cap, ...args) {
-    const api = dataFor(cap); if (!api) throw new Error(`'${cap}' 를 주는 시세 API 가 등록되어 있지 않습니다`);
+    const kr = (cap === 'quote' || cap === 'history') && isKR(args[0]) && dataApis().find(a => a.type === 'datagokr');
+    const api = kr || dataFor(cap); if (!api) throw new Error(`'${cap}' 를 주는 시세 API 가 등록되어 있지 않습니다`);
     const k = await keyOf(api);
     return DATA[api.type][cap](k, ...args, api);
   }
@@ -261,7 +296,7 @@
      ===================================================================== */
   function toolDefs() {
     const T = [];
-    const sym = { type: 'string', description: '시세 API 형식의 종목 코드. 미국은 AAPL, 한국은 등록한 API 의 형식(예: 005930.KS, 005930:KRX 등)' };
+    const sym = { type: 'string', description: '종목 코드. 미국은 AAPL, 한국은 6자리 코드(005930) 또는 종목명(삼성전자) — 공공데이터포털이 등록돼 있으면 한국 종목은 그쪽으로 조회됨(전 영업일 종가 기준)' };
     if (dataFor('quote')) T.push({ name: 'get_quote', description: '종목의 현재가(또는 최근 종가) · 등락률 · 고가 · 저가를 등록된 시세 API 로 조회한다. 가격을 말하기 전에 반드시 이 도구로 확인한다.', input_schema: { type: 'object', properties: { symbol: sym }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
@@ -776,7 +811,7 @@
         const r = await fetch(base + '/models', { headers: { Authorization: 'Bearer ' + k } });
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
-        const T = TYPES[a.type]; const s = 'AAPL';
+        const T = TYPES[a.type]; const s = a.type === 'datagokr' ? '005930' : 'AAPL';
         if (T.caps.includes('quote')) await DATA[a.type].quote(k, s); else await DATA.custom.custom(k, s, a);
       }
       a.test = 'ok'; toast(`${a.name}: 연결됐습니다`, 2000);
