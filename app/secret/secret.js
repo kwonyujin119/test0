@@ -77,6 +77,8 @@
     twelvedata: { kind: 'data', name: 'Twelve Data', caps: ['quote', 'history'], keyUrl: 'https://twelvedata.com/account/api-keys', note: '현재가 · 일봉 (무료: 하루 800회). 한국 종목은 요금제에 따라 다릅니다.' },
     alphavantage: { kind: 'data', name: 'Alpha Vantage', caps: ['quote', 'history', 'news'], keyUrl: 'https://www.alphavantage.co/support/#api-key', note: '현재가 · 일봉 · 뉴스 감성 (무료: 하루 25회).' },
     datagokr: { kind: 'data', name: '공공데이터포털 주식시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A3%BC%EC%8B%9D%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '국내 상장 종목의 하루 단위 시세 · 일봉 (무료). 마지막 영업일 종가 기준이라 장중 실시간은 아닙니다. 마이페이지의 일반 인증키를 Encoding · Decoding 어느 쪽이든 그대로 붙여 넣으세요. 종목은 6자리 코드(005930)나 종목명(삼성전자).' },
+    etf: { kind: 'data', name: '공공데이터포털 ETF 시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/data/15094806/openapi.do', note: 'ETF 의 하루 단위 시세 · 일봉 · 순자산가치(NAV) · 기초지수. 금융위원회 주식시세와 같은 공공데이터포털 키를 그대로 넣으세요 (공공데이터포털에서 「금융위원회_증권상품시세정보」 활용신청 필요).' },
+    ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
     kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
@@ -235,18 +237,18 @@
     },
     /* 공공데이터포털 · 금융위원회_주식시세정보 (브라우저에서 바로 불러올 수 있음) */
     datagokr: {
-      async _get(k, s, days) {
+      async _get(k, s, days, urls) {
         const k0 = String(k || '').replace(/\s+/g, ''); // 붙여 넣을 때 딸려 온 빈칸 · 줄바꿈 제거
         const key = /%[0-9A-F]{2}/i.test(k0) ? decodeURIComponent(k0) : k0; // Encoding 키를 넣어도 두 번 바뀌지 않게
         const q = String(s).trim().replace(/\.(KS|KQ|KRX)$/i, '').replace(/:KRX$/i, '');
-        const code = (q.match(/^A?(\d{6})$/i) || [])[1];
+        const code = ((q.match(/^A?(\d[0-9A-Z]{5})$/i) || [])[1] || '').toUpperCase();
         const ymd8 = d => d.toISOString().slice(0, 10).replace(/-/g, '');
         const from = new Date(Date.now() - Math.ceil(days * 1.5 + 10) * 864e5);
         const qs = '?resultType=json&pageNo=1'
           + `&numOfRows=${Math.min(Math.ceil(days * 1.5) + 20, 1000)}&beginBasDt=${ymd8(from)}&serviceKey=${E(key)}`
           + (code ? `&likeSrtnCd=${code}` : `&itmsNm=${E(q)}`);
         /* 새 주소(V2)를 먼저, 키가 옛 주소에만 등록돼 있으면 옛 주소로 */
-        const URLS = ['https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2', 'https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo'];
+        const URLS = urls || ['https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2/getStockPriceInfo_V2', 'https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo'];
         let r, t, j, bad, first = null;
         for (const u of URLS) {
           try { r = await fetch(u + qs); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
@@ -290,6 +292,56 @@
       async history(k, s, days) {
         const n = v => +String(v).replace(/,/g, '');
         return (await this._get(k, s, days)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
+      },
+    },
+    /* 공공데이터포털 · 금융위원회_증권상품시세정보 (ETF) — 주식시세와 같은 모양 · 같은 키 */
+    etf: {
+      URLS: ['https://apis.data.go.kr/1160100/GetSecuritiesProductInfoService_V2/getETFPriceInfo_V2', 'https://apis.data.go.kr/1160100/service/GetSecuritiesProductInfoService/getETFPriceInfo'],
+      async quote(k, s) {
+        const a = await DATA.datagokr._get(k, s, 7, this.URLS), x = a[a.length - 1], n = v => (v === '' || v == null ? null : +String(v).replace(/,/g, ''));
+        const d = `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`;
+        return { symbol: x.srtnCd, name: x.itmsNm, exchange: 'ETF', currency: 'KRW', price: n(x.clpr), change: n(x.vs), changePct: n(x.fltRt), open: n(x.mkp), high: n(x.hipr), low: n(x.lopr), prevClose: n(x.clpr) - n(x.vs), volume: n(x.trqu),
+          nav: n(x.nav), navGapPct: n(x.nav) ? (n(x.clpr) / n(x.nav) - 1) * 100 : null, netAssets: n(x.nPptTotAmt), marketCap: n(x.mrktTotAmt), index: x.bssIdxIdxNm || undefined, indexClose: n(x.bssIdxClpr), time: d, source: `공공데이터포털 ETF (${d} 종가 · 실시간 아님)` };
+      },
+      async history(k, s, days) {
+        const n = v => +String(v).replace(/,/g, '');
+        return (await DATA.datagokr._get(k, s, days, this.URLS)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
+      },
+    },
+    /* 한국은행 ECOS — KIS 중계의 /ecos 를 거쳐 (ECOS 키는 여기 SECRET 에, 중계에는 지나가기만) */
+    ecos: {
+      SERIES: [
+        { id: 'base', name: '한국은행 기준금리', stat: '722Y001', item: '0101000', cycles: ['D', 'M'], unit: '%' },
+        { id: 'ktb3', name: '국고채 3년', stat: '817Y002', item: '010200000', cycles: ['D'], unit: '%' },
+        { id: 'ktb10', name: '국고채 10년', stat: '817Y002', item: '010210000', cycles: ['D'], unit: '%' },
+        { id: 'usd', name: '원/달러 환율', stat: '731Y001', item: '0000001', cycles: ['D'], unit: '원' },
+      ],
+      async _one(k, ser, relay) {
+        const base = String(relay.base || '').trim().replace(/\/+$/, ''), rk = await keyOf(relay);
+        const ymd = (d, c) => c === 'M' ? d.toISOString().slice(0, 7).replace('-', '') : d.toISOString().slice(0, 10).replace(/-/g, '');
+        let last = null;
+        for (const c of ser.cycles) {
+          const from = new Date(Date.now() - (c === 'M' ? 800 : 120) * 864e5), to = new Date(Date.now() + 9 * 36e5);
+          let r; try { r = await fetch(`${base}/ecos?` + new URLSearchParams({ stat: ser.stat, cycle: c, from: ymd(from, c), to: ymd(to, c), item: ser.item }), { headers: { 'x-relay-key': String(rk || '').trim(), 'x-api-key': String(k || '').trim() } }); }
+          catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 코드를 최신으로 붙여 넣었는지 확인하세요'); }
+          const j = await r.json().catch(() => null);
+          if (r.status === 404) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+          if (j && j.ok && (j.rows || []).length) {
+            const rows = j.rows.map(x => ({ t: x.TIME, v: +x.DATA_VALUE })).filter(x => isFinite(x.v));
+            const lv = rows[rows.length - 1], back = rows[Math.max(0, rows.length - (c === 'M' ? 2 : 21))];
+            return { id: ser.id, name: ser.name, unit: ser.unit, date: lv.t, value: lv.v, change1m: back ? Math.round((lv.v - back.v) * 1000) / 1000 : null, recent: rows.slice(-10) };
+          }
+          last = (j && j.error) || ('HTTP ' + r.status);
+        }
+        throw new Error(`${ser.name}: ${last}`);
+      },
+      async macro(k) {
+        const relay = dataApis().find(a => a.type === 'kisrelay');
+        if (!relay) throw new Error('한국은행 ECOS 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요');
+        const out = [], errs = [];
+        for (const ser of this.SERIES) { try { out.push(await this._one(k, ser, relay)); } catch (e) { errs.push(e.message); } }
+        if (!out.length) throw new Error(errs[0] || '한국은행 자료를 받지 못했습니다');
+        return { source: '한국은행 ECOS', series: out, errors: errs.length ? errs : undefined };
       },
     },
     /* 공공데이터포털 · 한국예탁결제원_주식정보서비스_GW (XML) */
@@ -393,7 +445,7 @@
     getKDRSecnInfo: { d: '시장별 KDR 종목', p: 'caltotMartTpcd*=11 유가 · 12 코스닥 · 13 코넥스', f: { kdrIsin: 'KDR 표준코드', korSecnNm: '종목명', listDt: '상장일', ovsListStkmkCd: '해외상장시장' } },
   };
   async function callData(cap, ...args) {
-    const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr'].map(t => dataApis().find(a => a.type === t)).filter(Boolean) : [];
+    const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr', 'etf'].map(t => dataApis().find(a => a.type === t)).filter(Boolean) : [];
     if (krs.length) {
       let last = null;
       for (const a of krs) { try { return await DATA[a.type][cap](await keyOf(a), ...args, a); } catch (e) { last = e; } }
@@ -452,6 +504,7 @@
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
+    if (dataFor('macro')) T.push({ name: 'get_macro', description: '한국은행 ECOS 공식 자료로 기준금리 · 국고채 3년/10년 금리 · 원/달러 환율의 최근 값과 한 달 변화, 최근 10개 값을 돌려준다. 금리 · 환율을 말하기 전에 이 도구로 확인한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('ksd')) {
       T.push({ name: 'get_ksd_stock_info', description: '한국예탁결제원 공식 자료로 한국 종목 하나의 기본정보(표준코드 · 영문명 · 발행일 · 주식종류) · 상장정보(상장일 · 상장폐지일) · 작년 배당(시가배당률 · 주당배당금 · 순위)을 돌려준다. 시세는 없다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 정확한 회사명(삼성전자)' }, year: { type: 'integer', description: '배당 기준연도 (선택, 기본 작년)' } }, required: ['symbol'], additionalProperties: false } });
       T.push({ name: 'query_ksd', description: '한국예탁결제원 주식정보의 다른 기능을 직접 부른다. 의무보호예수(풀릴 물량 → 수급 부담) · 신규 예탁지정 · 시장별 발행주식수 · 배당 순위 상위 · CB/BW 행사조건 등. op 와 params(필수는 *) — '
@@ -465,7 +518,7 @@
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -481,6 +534,7 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'get_macro': { const a = dataFor('macro'); return await DATA.ecos.macro(await keyOf(a)); }
       case 'get_ksd_stock_info': { const a = dataFor('ksd'); const r = await DATA.ksd.stock(await keyOf(a), String(input.symbol).trim(), input.year); return Object.assign({ symbol: s, source: '한국예탁결제원 (공공데이터포털)' }, r); }
       case 'query_ksd': { const a = dataFor('ksd'); const r = await DATA.ksd.call(await keyOf(a), String(input.op), Object.fromEntries(Object.entries(input.params || {}).map(([k2, v]) => [k2, String(v)]))); if (r.items.length > 200) { r.note = `${r.items.length}건 중 앞 200건만`; r.items = r.items.slice(0, 200); } return r; }
       case 'get_notes': { const c = String(input.company || '').trim(); const list = notes.filter(n => !c || (n.companies || []).includes(c) || String(n.text).includes(c)).sort((a, b) => a.date.localeCompare(b.date)).slice(-60); return { company: c || null, count: list.length, notes: list.map(n => ({ date: n.date, companies: n.companies, text: n.text })) }; }
@@ -730,6 +784,7 @@
   function paint() { if (paint._r) return; paint._r = requestAnimationFrame(() => { paint._r = 0; renderMsgs(); }); }
   function renderMsgs() {
     const box = $('msgs'); const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+    if (cur && !Array.isArray(cur.view)) cur.view = []; // 깨진 대화가 있어도 화면이 멈추지 않게
     if (!cur || !cur.view.length) {
       const api = activeAI();
       box.innerHTML = `<div class="sc-empty">
@@ -798,13 +853,13 @@
       if (qty && avg && p) { cost += qty * avg; value += qty * p; priced++; }
       const toStop = p && it.stop ? (it.stop / p - 1) * 100 : null;
       const hit = p && ((it.alertHi && p >= +it.alertHi) || (it.alertLo && p <= +it.alertLo));
-      return `<tr><td class="sym"><button type="button" class="st-link" data-open="${esc(normSym(it.symbol))}" title="종목 분석 열기"><b>${esc(it.symbol)}</b></button><span>${esc(it.name || '')}</span>${hit ? `<span class="sc-alert" title="알림 가격: ${it.alertHi ? num(+it.alertHi) + ' 이상 ' : ''}${it.alertLo ? num(+it.alertLo) + ' 이하' : ''}">알림 가격 도달</span>` : ''}</td>
-        <td>${num(p)}</td><td class="${cls(q.changePct)}">${pct(q.changePct)}</td>
-        <td>${qty ? num(qty, 4) : '–'}</td><td>${avg ? num(avg) : '–'}</td>
-        <td class="${cls(pl)}">${pl == null ? '–' : num(pl, 0)}</td><td class="${cls(plp)}">${pct(plp)}</td>
-        <td>${it.stop ? num(it.stop) : '–'}${toStop != null ? `<br><span class="${toStop > -3 ? 'up' : ''}" style="font-size:var(--fs-xs)">${pct(toStop, 1)}</span>` : ''}</td><td>${it.target ? num(it.target) : '–'}</td>
+      return `<tr><td class="sym"><button type="button" class="st-link" data-open="${esc(normSym(it.symbol))}" title="종목 분석 열기"><b>${esc(it.name || it.symbol)}</b><span>${it.name ? esc(it.symbol) : ''}</span></button>${hit ? `<span class="sc-alert" title="알림 가격: ${it.alertHi ? num(+it.alertHi) + ' 이상 ' : ''}${it.alertLo ? num(+it.alertLo) + ' 이하' : ''}">알림 가격 도달</span>` : ''}</td>
+        <td data-l="현재가" class="px">${num(p)}</td><td data-l="등락" class="chg ${cls(q.changePct)}">${pct(q.changePct)}</td>
+        <td data-l="수량">${qty ? num(qty, 4) : '–'}</td><td data-l="평균 단가">${avg ? num(avg) : '–'}</td>
+        <td data-l="평가 손익" class="${cls(pl)}">${pl == null ? '–' : num(pl, 0)}</td><td data-l="수익률" class="${cls(plp)}">${pct(plp)}</td>
+        <td data-l="손절가">${it.stop ? num(it.stop) : '–'}${toStop != null ? `<br><span class="${toStop > -3 ? 'up' : ''}" style="font-size:var(--fs-xs)">${pct(toStop, 1)}</span>` : ''}</td><td data-l="목표가">${it.target ? num(it.target) : '–'}</td>
         <td class="memo">${esc(it.memo || '')}</td>
-        <td><span class="acts"><button class="btn ghost" data-ed="${i}" title="고치기" aria-label="${esc(it.symbol)} 고치기">${icon('edit', 15)}</button><button class="btn ghost" data-rm="${i}" title="빼기" aria-label="${esc(it.symbol)} 빼기">${icon('trash', 15)}</button></span></td></tr>`;
+        <td class="ac"><span class="acts"><button class="btn ghost" data-ed="${i}" title="고치기" aria-label="${esc(it.symbol)} 고치기">${icon('edit', 15)}</button><button class="btn ghost" data-rm="${i}" title="빼기" aria-label="${esc(it.symbol)} 빼기">${icon('trash', 15)}</button></span></td></tr>`;
     }).join('');
     $('wTable').innerHTML = `<thead><tr><th>종목</th><th>현재가</th><th>등락</th><th>수량</th><th>평균 단가</th><th>평가 손익</th><th>수익률</th><th>손절가</th><th>목표가</th><th>메모 · 매수 이유</th><th></th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="11">아직 종목이 없습니다. [종목 추가] 로 관심 종목이나 보유 종목을 적어 두세요. 매수 이유와 손절가를 함께 적어 두면 AI 점검이 훨씬 정확해집니다.</td></tr>'}</tbody>`;
     const tot = value - cost;
@@ -928,8 +983,35 @@
      API 연결
      ===================================================================== */
   const mask = k => !k ? (cfg.lock ? '잠금됨' : '없음') : '••••' + k.slice(-4);
+  /* 추천 API — 무엇이 좋아지는지 · 어디서 키를 받는지 · [키 넣기] 한 번 (API 추가 카드는 그대로) */
+  const RECO = [
+    { type: 'claude', why: 'AI 두뇌 — 대화 · 분석 · 웹 검색', how: 'Anthropic Console 에서 키 만들기' },
+    { type: 'datagokr', why: '국내 주식 시세 · 일봉 · 20년 차트', how: '공공데이터포털 「금융위원회_주식시세정보」 활용신청' },
+    { type: 'etf', why: 'ETF 시세 · NAV · 기초지수 (0190G0 같은 ETF)', how: '같은 공공데이터포털 키 · 「금융위원회_증권상품시세정보」 활용신청' },
+    { type: 'ksd', why: '종목 공식 기록 · 배당 순위 · 의무보호예수', how: '같은 공공데이터포털 키 · 「한국예탁결제원_주식정보서비스」' },
+    { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
+    { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
+    { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
+    { soon: true, name: 'OpenDART (금융감독원 공시)', why: '공시 목록 · 재무제표 · 주요 사항', how: 'OpenDART 인증키 신청', keyUrl: 'https://opendart.fss.or.kr/', note: '연결 준비 중 — 키를 미리 받아 두세요' },
+  ];
+  function renderReco() {
+    const box = $('apiReco'); if (!box) return;
+    box.innerHTML = `<div class="sc-reco-h"><h2>추천 API</h2><p>키만 받아 오면 [키 넣기] 한 번으로 연결됩니다. 위에서부터 효과가 큰 순서입니다.</p></div>
+      <div class="sc-reco">${RECO.map(r => {
+        const T = r.type ? TYPES[r.type] : null, have = r.type && cfg.apis.find(a => a.type === r.type), ok = have && (hasKey(have) || r.type === 'custom');
+        const name = r.name || T.name, url = r.keyUrl || (T && T.keyUrl) || '';
+        return `<div class="sc-reco-i${ok ? ' on' : ''}${r.soon ? ' soon' : ''}">
+          <div class="t"><b>${esc(name)}</b>${ok ? `<span class="ks ok">${icon('check', 13)}연결됨</span>` : have ? '<span class="ks warn">키 없음</span>' : r.soon ? '<span class="ks">준비 중</span>' : ''}</div>
+          <p class="why">${esc(r.why)}</p><p class="how">${esc(r.how)}</p>
+          <div class="row">${url ? `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${icon('link', 14)}키 받으러 가기</a>` : ''}${r.soon ? `<span class="soon-n">${esc(r.note)}</span>` : ok ? `<button class="btn sm" data-reco-test="${have.id}">시험</button>` : `<button class="btn sm ink" data-reco="${r.type}">${icon('key', 14)}${have ? '키 넣기' : '키 넣기'}</button>`}</div>
+        </div>`;
+      }).join('')}</div>`;
+    fillIcons(box);
+    box.querySelectorAll('[data-reco]').forEach(b => b.onclick = () => { const have = cfg.apis.find(a => a.type === b.dataset.reco); openAdd(b.dataset.reco, have || undefined); });
+    box.querySelectorAll('[data-reco-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(x => x.id === b.dataset.recoTest), b));
+  }
   function renderApis() {
-    $('cApi').textContent = cfg.apis.length || '';
+    $('cApi').textContent = cfg.apis.length || ''; renderReco();
     $('apiNote').innerHTML = `${icon('shield', 15)}<span>키는 <b>이 기기의 이 브라우저에만</b> 저장되고 GitHub · 다른 기기로 가지 않습니다. 같은 주소(github.io)의 다른 페이지도 브라우저 저장소를 읽을 수 있으니 <b>잠금 암호</b>를 걸어 두기를 권합니다. 주문(매수 · 매도) 기능은 없습니다.</span>`;
     const cur = activeAI();
     $('apiGrid').innerHTML = cfg.apis.map(a => {
@@ -937,7 +1019,7 @@
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
       const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
         <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
@@ -979,7 +1061,9 @@
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
         const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
-        if (a.type === 'ksd') { const r = await DATA.ksd.call(k, 'getStkIsinByShortIsinN1', { shortIsin: '005930' }); if (!r.items.length) throw new Error('예탁결제원: 시험 종목(005930)을 찾지 못했습니다'); }
+        if (a.type === 'ecos') { await DATA.ecos.macro(k); }
+        else if (a.type === 'etf') { await DATA.etf.quote(k, '069500'); } // KODEX 200
+        else if (a.type === 'ksd') { const r = await DATA.ksd.call(k, 'getStkIsinByShortIsinN1', { shortIsin: '005930' }); if (!r.items.length) throw new Error('예탁결제원: 시험 종목(005930)을 찾지 못했습니다'); }
         else if (T.caps.includes('quote')) await DATA[a.type].quote(k, s, a); else await DATA.custom.custom(k, s, a);
       }
       a.test = 'ok'; toast(`${a.name}: 연결됐습니다`, 2000);
@@ -2214,6 +2298,7 @@
     box.innerHTML = `<div class="mk-grid">
       <section class="sc-card mk-div"><div class="st-ch-head"><h3>${y}년 배당 상위 <small>시가배당률 · 누르면 종목 분석</small></h3><div class="sc-seg" id="mkMart">${[['all', '전체'], ['유가', '유가증권'], ['코스닥', '코스닥']].map(([v, t]) => `<button type="button" data-v="${v}" class="${mkMart === v ? 'on' : ''}">${t}</button>`).join('')}</div></div><div id="mkDiv"><div class="sc-skel">불러오는 중…</div></div></section>
       <section class="sc-card"><h3>의무보호예수 <small>최대주주 · 공모 등으로 묶인 물량 — 풀리면 매물 부담</small></h3><div id="mkLock"><div class="sc-skel">불러오는 중…</div></div></section>
+      ${dataFor('macro') ? '<section class="sc-card"><h3>금리 · 환율 <small>한국은행 ECOS · 한 달 변화</small></h3><div id="mkMacro"><div class="sc-skel">불러오는 중…</div></div></section>' : ''}
       <section class="sc-card"><h3>시장 규모 <small>상장 회사 · 시가총액</small></h3><div id="mkSize"><div class="sc-skel">불러오는 중…</div></div></section>
       <section class="sc-card"><h3>이번 달 신규 예탁지정 <small>곧 거래될 수 있는 새 종목 후보</small></h3><div id="mkNew"><div class="sc-skel">불러오는 중…</div></div></section>
     </div><p class="sc-fine">한국예탁결제원 공공데이터를 하루 한 번 받아 이 기기에 둡니다 (개발 계정은 하루 100회 제한). 출처: 한국예탁결제원 · 공공데이터포털.</p>`;
@@ -2239,6 +2324,9 @@
         return `<div class="mk-lock"><b>${MK[t]}</b><span class="big">${isFinite(v.ratio) ? num(v.ratio, 2) + '%' : '–'}</span><div class="bar"><i style="width:${isFinite(v.ratio) ? Math.min(100, v.ratio * 5) : 0}%"></i></div><small>${isFinite(v.q) ? num(v.q / 1e6, 1) + '백만 주' : ''}${isFinite(v.co) ? ` · ${num(v.co, 0)}개 회사` : ''}${kind(it) ? ` · ${esc(kind(it))}` : ''} · 기준 ${esc(r.d.slice(0, 4) + '.' + r.d.slice(4, 6) + '.' + r.d.slice(6))}</small></div>`; }).join('')
         + '<p class="sc-mute">비율이 오르면 묶인 물량이 늘어난 것, 크게 줄면 그만큼 풀린 것입니다. 개별 종목의 해제일은 공시(DART)에서 확인하세요.</p>';
     }).catch(e => fail('mkLock', e));
+    if (dataFor('macro')) (async () => { const a = dataFor('macro'); return ksdCached('ecos:' + lastBizDays(1)[0], 12, async () => DATA.ecos.macro(await keyOf(a))); })().then(m => {
+      $('mkMacro').innerHTML = `<dl class="sc-kv mk-macro">${m.series.map(x => `<dt>${esc(x.name)}<small>${esc(String(x.date).replace(/(\d{4})(\d{2})(\d{2})?/, (a0, y, mo, d) => d ? `${y}.${mo}.${d}` : `${y}.${mo}`))}</small></dt><dd>${num(x.value, x.unit === '원' ? 1 : 2)}${x.unit === '원' ? '원' : '%'}${x.change1m != null ? ` <span class="${cls(x.change1m)}">${x.change1m > 0 ? '+' : ''}${num(x.change1m, x.unit === '원' ? 1 : 2)}${x.unit === '원' ? '' : '%p'}</span>` : ''}</dd>`).join('')}</dl>${m.errors ? `<p class="sc-mute">${esc(m.errors.join(' · '))}</p>` : ''}`;
+    }).catch(e => fail('mkMacro', e));
     ksdLatest('getListStatN1', {}, 24).then(r => {
       const g = {};
       for (const x of r.items) { const m = MK[x.caltotMartTpcd]; if (!m) continue; const o = g[m] = g[m] || { n: 0, co: 0, sc: 0, cap: 0 }; o.n++; o.co += numOf(x.cocnt) || 0; o.sc += numOf(x.secncnt) || 0; o.cap += numOf(x.martpTotamt) || 0; }

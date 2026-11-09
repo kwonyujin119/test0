@@ -24,7 +24,7 @@ export default {
     const cors = {
       'access-control-allow-origin': ORIGINS.includes(origin) ? origin : ORIGINS[0],
       'access-control-allow-methods': 'GET, OPTIONS',
-      'access-control-allow-headers': 'x-relay-key, x-kis-token',
+      'access-control-allow-headers': 'x-relay-key, x-kis-token, x-api-key',
       'access-control-expose-headers': 'x-kis-token',
       'access-control-max-age': '86400',
       vary: 'origin',
@@ -38,6 +38,20 @@ export default {
     const url = new URL(req.url);
     const code = String(url.searchParams.get('code') || '').toUpperCase();
     if (url.pathname === '/ping') return out(200, { ok: true, mock: env.KIS_MOCK === '1' });
+    /* 한국은행 ECOS 금리 · 환율 (SECRET 이 x-api-key 로 ECOS 키를 보냄 · 통계 조회만) */
+    if (url.pathname === '/ecos') {
+      const q = url.searchParams, k = req.headers.get('x-api-key') || env.ECOS_KEY || '';
+      const stat = q.get('stat') || '', cyc = q.get('cycle') || '', from = q.get('from') || '', to = q.get('to') || '', item = q.get('item') || '';
+      if (!k) return out(400, { error: 'ECOS 키가 없습니다' });
+      if (!/^[0-9A-Z]{6,8}$/.test(stat) || !/^[DMQA]$/.test(cyc) || !/^\d{4,8}$/.test(from) || !/^\d{4,8}$/.test(to) || !/^[0-9A-Za-z]{0,12}$/.test(item)) return out(400, { error: '요청 값이 맞지 않습니다' });
+      try {
+        const r = await fetch(`https://ecos.bok.or.kr/api/StatisticSearch/${encodeURIComponent(k)}/json/kr/1/400/${stat}/${cyc}/${from}/${to}/${item}`);
+        const j = await r.json().catch(() => null);
+        if (!j) return out(502, { error: 'ECOS 응답을 읽지 못했습니다' });
+        if (j.RESULT) return out(400, { error: 'ECOS: ' + (j.RESULT.MESSAGE || j.RESULT.CODE) });
+        return out(200, { ok: true, rows: (j.StatisticSearch && j.StatisticSearch.row) || [] });
+      } catch (e) { return out(502, { error: 'ECOS: ' + String(e.message || e) }); }
+    }
     if (!/^[0-9A-Z]{6}$/.test(code)) return out(400, { error: '종목은 6자리 코드로 (예: 005930)' });
 
     try {
@@ -65,7 +79,7 @@ export default {
         }
         return out(200, { ok: true, code, name, period, rows: rows.slice(0, days) }, keep);
       }
-      return out(404, { error: '없는 기능입니다 (/quote · /daily 만)' });
+      return out(404, { error: '없는 기능입니다 (/quote · /daily · /ecos 만)' });
     } catch (e) {
       return out(502, { error: String(e.message || e) });
     }
