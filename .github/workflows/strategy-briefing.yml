@@ -5,10 +5,17 @@ name: Strategy briefing
 
 on:
   schedule:
-    - cron: '55 21 * * *'   # 06:55 한국 시간 — 첫 판
-    - cron: '25 22 * * *'   # 07:25 보강 (늦게 올라온 리포트)
-    - cron: '45 22 * * *'   # 07:45 마지막 판 — 8시 전에 그날 것 완성 (GitHub 예약 실행은 몇 분 늦을 수 있음)
+    # 증권사 리포트는 7시 전후로 올라옴. GitHub 예약 실행이 밀릴 수 있어 정각 · 30분을 피해 여러 번
+    - cron: '41 21 * * *'   # 06:41 한국 시간
+    - cron: '3 22 * * *'    # 07:03
+    - cron: '23 22 * * *'   # 07:23
+    - cron: '43 22 * * *'   # 07:43 — 8시 전 마지막 보강
+    - cron: '29 23 * * *'   # 08:29 — 늦게 올라온 리포트 · 늦은 실행 보충
+    - cron: '13 1 * * *'    # 10:13 — 보충
   workflow_dispatch:
+  push:                      # .github/briefing-run.txt 를 바꿔 main 에 올리면 바로 실행
+    branches: [main]
+    paths: ['.github/briefing-run.txt']
 
 permissions:
   contents: write

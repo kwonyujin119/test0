@@ -8,11 +8,18 @@ name: Morning briefing
 
 on:
   schedule:
-    - cron: '0 21 * * *'    # 06:00 한국 시간 — 첫 판
-    - cron: '40 21 * * *'   # 06:40 보강
-    - cron: '15 22 * * *'   # 07:15 보강
-    - cron: '40 22 * * *'   # 07:40 마지막 판 (GitHub 예약 실행은 몇 분~수십 분 늦을 수 있어 8시 전에 여유를 둠)
+    # GitHub 예약 실행은 몰리는 시간에 몇 시간씩 밀릴 수 있어(11/9: 06:30 예정 → 10:08), 정각 · 30분을 피해 일찍부터 여러 번 돌림
+    - cron: '7 20 * * *'    # 05:07 한국 시간
+    - cron: '53 20 * * *'   # 05:53
+    - cron: '31 21 * * *'   # 06:31
+    - cron: '9 22 * * *'    # 07:09
+    - cron: '37 22 * * *'   # 07:37 — 8시 전 마지막 보강
+    - cron: '23 23 * * *'   # 08:23 — 그날 것이 늦었을 때 보충
+    - cron: '47 0 * * *'    # 09:47 — 보충
   workflow_dispatch:         # Actions 화면에서 [Run workflow] 로 바로 실행
+  push:                      # .github/briefing-run.txt 를 바꿔 main 에 올리면 바로 실행
+    branches: [main]
+    paths: ['.github/briefing-run.txt']         # Actions 화면에서 [Run workflow] 로 바로 실행
 
 permissions:
   contents: write
