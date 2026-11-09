@@ -21,6 +21,10 @@
     alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
     cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 7.97Z"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>',
+    key: '<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2"/><path d="m16 7 3 3"/><path d="m13.5 9.5 2 2"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.4-3.4 4.3-5 7.5-5s6.1 1.6 7.5 5"/>',
+    check: '<path d="m5 12.5 4.5 4.5L19 7"/>',
+    pie: '<path d="M12 3v9h9"/><path d="M20.4 15.5A9 9 0 1 1 8.5 3.7"/>',
     calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/>',
   };
   for (const k in ICO) if (!ICONS[k]) ICONS[k] = ICO[k];
@@ -744,12 +748,12 @@
     const items = watch.items; $('cWatch').textContent = items.length || '';
     let cost = 0, value = 0, priced = 0;
     const rows = items.map((it, i) => {
-      const q = watch.quotes[it.symbol] || {}, p = q.price, qty = +it.qty || 0, avg = +it.avg || 0;
+      const q = watch.quotes[normSym(it.symbol)] || watch.quotes[it.symbol] || {}, p = q.price, qty = +it.qty || 0, avg = +it.avg || 0;
       const pl = p && qty && avg ? (p - avg) * qty : null, plp = p && avg ? (p / avg - 1) * 100 : null;
       if (qty && avg && p) { cost += qty * avg; value += qty * p; priced++; }
       const toStop = p && it.stop ? (it.stop / p - 1) * 100 : null;
       const hit = p && ((it.alertHi && p >= +it.alertHi) || (it.alertLo && p <= +it.alertLo));
-      return `<tr><td class="sym"><b>${esc(it.symbol)}</b><span>${esc(it.name || '')}</span>${hit ? `<span class="sc-alert" title="알림 가격: ${it.alertHi ? num(+it.alertHi) + ' 이상 ' : ''}${it.alertLo ? num(+it.alertLo) + ' 이하' : ''}">알림 가격 도달</span>` : ''}</td>
+      return `<tr><td class="sym"><button type="button" class="st-link" data-open="${esc(normSym(it.symbol))}" title="종목 분석 열기"><b>${esc(it.symbol)}</b></button><span>${esc(it.name || '')}</span>${hit ? `<span class="sc-alert" title="알림 가격: ${it.alertHi ? num(+it.alertHi) + ' 이상 ' : ''}${it.alertLo ? num(+it.alertLo) + ' 이하' : ''}">알림 가격 도달</span>` : ''}</td>
         <td>${num(p)}</td><td class="${cls(q.changePct)}">${pct(q.changePct)}</td>
         <td>${qty ? num(qty, 4) : '–'}</td><td>${avg ? num(avg) : '–'}</td>
         <td class="${cls(pl)}">${pl == null ? '–' : num(pl, 0)}</td><td class="${cls(plp)}">${pct(plp)}</td>
@@ -763,13 +767,14 @@
     const times = Object.values(watch.quotes).map(q => q.time).filter(Boolean).sort();
     $('wNote').textContent = (times.length ? `시세 기준: ${times[times.length - 1]} (${(Object.values(watch.quotes)[0] || {}).source || ''}) · ` : '') + '한국식 색: 오름 빨강 · 내림 파랑. 통화가 다른 종목을 섞으면 합계는 참고만 하세요.';
     $('wTable').querySelectorAll('[data-ed]').forEach(b => b.onclick = () => editItem(+b.dataset.ed));
+    $('wTable').querySelectorAll('[data-open]').forEach(b => b.onclick = () => { $('stQ').value = b.dataset.open; openStock(b.dataset.open); });
     $('wTable').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => { const it = items[+b.dataset.rm]; if (await confirmBox(`${it.symbol} 을(를) 뺄까요?`, '목록에서만 빠집니다.', '빼기')) { items.splice(+b.dataset.rm, 1); saveWatch(); renderWatch(); } });
   }
-  function editItem(i) {
-    const it = i == null ? { symbol: '', name: '', qty: '', avg: '', stop: '', target: '', alertHi: '', alertLo: '', memo: '' } : Object.assign({}, watch.items[i]);
+  function editItem(i, preset) {
+    const it = i == null ? Object.assign({ symbol: '', name: '', qty: '', avg: '', stop: '', target: '', alertHi: '', alertLo: '', memo: '' }, preset || {}) : Object.assign({}, watch.items[i]);
     const f = (k, l, t, ph) => `<label>${l}<input ${t === 'n' ? 'type="number" step="any" min="0"' : 'type="text"'} name="${k}" value="${esc(it[k] == null ? '' : it[k])}" placeholder="${ph || ''}"></label>`;
     const d = dialog(`<h3>${i == null ? '종목 추가' : esc(it.symbol) + ' 고치기'}</h3><form class="sc-form">
-      ${f('symbol', '종목 코드 (시세 API 형식)', 't', '예: AAPL, 005930.KS')}<p class="hint">시세 API 마다 한국 종목 표기가 다릅니다 (예: Twelve Data 005930:KRX · Alpha Vantage 005930.KS). 확인은 [시험] 으로.</p>
+      ${f('symbol', '종목 코드', 't', '예: 005930 · 0190G0 · AAPL')}<p class="hint">한국은 6자리 코드(ETF 처럼 영문이 섞인 0190G0 도 그대로), 미국은 AAPL 처럼. 이름은 아래 칸에.</p>
       ${f('name', '이름 (선택)', 't', '예: 삼성전자')}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${f('qty', '보유 수량 (관심만 있으면 비움)', 'n')}${f('avg', '평균 단가', 'n')}${f('stop', '손절가', 'n')}${f('target', '목표가', 'n')}${f('alertHi', '알림: 이 가격 이상', 'n')}${f('alertLo', '알림: 이 가격 이하', 'n')}</div>
       <label>메모 · 매수 이유<textarea name="memo" rows="3" placeholder="왜 샀는지 · 무엇이 틀리면 팔지">${esc(it.memo || '')}</textarea></label>
@@ -788,7 +793,7 @@
   async function refreshQuotes(silent) {
     if (refreshing) return; if (!dataFor('quote')) { if (!silent) { toast('시세 API 를 먼저 등록해 주세요', 2400); show('apis'); } return; }
     refreshing = true; const b = $('wRefresh'); b.disabled = true; let ok = 0; const fail = [];
-    try { for (const it of watch.items) { try { await runTool('get_quote', { symbol: it.symbol }); ok++; } catch (e) { fail.push(it.symbol); } } }
+    try { for (const it of watch.items) { try { await runTool('get_quote', { symbol: normSym(it.symbol) }); ok++; } catch (e) { fail.push(it.symbol); } } }
     finally { refreshing = false; b.disabled = false; }
     if (!$('vWatch').hidden) renderWatch();
     const hits = alertsHit();
@@ -1817,11 +1822,265 @@
   /* =====================================================================
      화면 전환 (2)
      ===================================================================== */
-  const VIEWS = { chat: 'vChat', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  /* =====================================================================
+     종목 분석 — 등록한 API 를 한 화면에: 시세(KIS 실시간 · 금융위 전일 종가) · 일봉 차트와 지표 · 예탁결제원 기록 · 내 보유
+     ===================================================================== */
+  const K_STOCK = 'sec:stock', K_KSDC = 'sec:ksdCache';
+  const stockPref = LS.get(K_STOCK, { recent: [], range: 120 });
+  const ksdCache = LS.get(K_KSDC, {}); // { key: { t, v } } — 개발 계정은 하루 100회라 아껴 씀
+  function ksdCached(key, ttlH, fn) {
+    const c = ksdCache[key]; if (c && Date.now() - c.t < ttlH * 36e5) return Promise.resolve(c.v);
+    return fn().then(v => { ksdCache[key] = { t: Date.now(), v }; const ks = Object.keys(ksdCache); if (ks.length > 120) ks.sort((a, b) => ksdCache[a].t - ksdCache[b].t).slice(0, ks.length - 120).forEach(k => delete ksdCache[k]); LS.set(K_KSDC, ksdCache); return v; });
+  }
+  /* "ETF 0190G0" · "005930.KS" · "A005930" → 005930 / 0190G0. 한국 코드가 아니면 그대로 (미국 AAPL 등) */
+  function normSym(s) {
+    const t = String(s || '').trim().toUpperCase();
+    const m = t.match(/(?:^|[^0-9A-Z])A?(\d[0-9A-Z]{5})(?:\.(?:KS|KQ))?(?:$|[^0-9A-Z])/);
+    return m ? m[1] : t.replace(/\s+/g, '');
+  }
+  const pick = it => Object.fromEntries(Object.entries(it || {}).map(([k, v]) => [k.replace(/^.*\[(\w+)\]$/, '$1'), v]));
+  /* 작년 배당 순위 전체를 한 번만 받아 코드 → 배당 으로 (하루 1회) */
+  function ksdDividends(year) {
+    const a = dataFor('ksd'); if (!a) return Promise.resolve(null);
+    return ksdCached('div:' + year, 24 * 7, async () => {
+      const r = await DATA.ksd.call(await keyOf(a), 'getDividendRankN1', { rankTpcd: '1', year: String(year), numOfRows: '5000' });
+      const m = {}; for (const it of r.items) { const x = pick(it); if (x.shotnIsin) m[x.shotnIsin] = [+x.num || 0, x.korSecnNm || '', x.caltotMartTpcd || '', +x.divAmtPerStk || 0, +x.divRateCpri || 0, x.secnKacd || '']; }
+      return { total: r.total, m };
+    });
+  }
+  /* 이름 → 코드 (예탁결제원 → 금융위 순서) */
+  async function resolveSym(q) {
+    const s = normSym(q); if (/^\d[0-9A-Z]{5}$/.test(s) || /^[A-Z.\-]{1,10}$/.test(s)) return { code: s, name: '' };
+    const k = dataFor('ksd');
+    if (k) { try { const b = await ksdCached('nm:' + q, 24 * 30, async () => (await DATA.ksd.call(await keyOf(k), 'getStkIsinByNmN1', { secnNm: q })).items.map(pick)); const x = b.find(i => /보통/.test(i.secnKacdNm || '')) || b[0]; if (x && x.shotnIsin) return { code: x.shotnIsin, name: x.korSecnNm || q }; } catch (e) { } }
+    const d = dataApis().find(a => a.type === 'datagokr');
+    if (d) { try { const r = await DATA.datagokr.quote(await keyOf(d), q); return { code: r.symbol, name: r.name || q }; } catch (e) { } }
+    throw new Error(`"${q}" 의 종목 코드를 찾지 못했습니다 — 6자리 코드(예: 005930)로 찾아 주세요`);
+  }
+
+  let stock = null, stockSeq = 0;
+  async function openStock(q) {
+    q = String(q || '').trim(); if (!q) return;
+    show('stock'); const my = ++stockSeq;
+    stock = { q, code: '', name: '', quote: null, bars: null, ksd: null, div: null, err: {}, loading: true };
+    renderStock();
+    try { const r = await resolveSym(q); stock.code = r.code; stock.name = r.name; }
+    catch (e) { stock.err.code = e.message; stock.loading = false; renderStock(); return; }
+    stock.name = String(stock.name || '').replace(/보통주$/, '');
+    const w = watch.items.find(it => normSym(it.symbol) === stock.code); if (w && w.name && !stock.name) stock.name = w.name;
+    stockPref.recent = [stock.code].concat(stockPref.recent.filter(x => x !== stock.code)).slice(0, 8); LS.set(K_STOCK, stockPref);
+    renderStock();
+    const done = () => { if (my === stockSeq) renderStock(); };
+    const jobs = [];
+    if (dataFor('quote')) jobs.push(callData('quote', stock.code).then(q2 => { stock.quote = q2; if (q2.name && !stock.name) stock.name = q2.name; watch.quotes[stock.code] = { price: q2.price, changePct: q2.changePct, time: q2.time || new Date().toISOString(), source: q2.source }; saveWatch(); }).catch(e => { stock.err.quote = e.message; }).then(done));
+    if (dataFor('history')) jobs.push(callData('history', stock.code, 260).then(b => { stock.bars = b; }).catch(e => { stock.err.bars = e.message; }).then(done));
+    const k = dataFor('ksd');
+    if (k && /^\d[0-9A-Z]{5}$/.test(stock.code)) {
+      jobs.push(ksdCached('stk:' + stock.code, 24 * 7, async () => {
+        const key = await keyOf(k), b = (await DATA.ksd.call(key, 'getStkIsinByShortIsinN1', { shortIsin: stock.code })).items.map(pick);
+        const x = b.find(i => /보통/.test(i.secnKacdNm || '')) || b[0] || {};
+        let l = null; if (x.isin) try { l = pick((await DATA.ksd.call(key, 'getStkListInfoN1', { isin: x.isin })).items[0]); } catch (e) { }
+        return { base: x, list: l };
+      }).then(v => { stock.ksd = v; if (v.base.korSecnNm && !stock.name) stock.name = v.base.korSecnNm.replace(/보통주$/, ''); }).catch(e => { stock.err.ksd = e.message; }).then(done));
+      const y = new Date().getFullYear() - 1;
+      jobs.push(ksdDividends(y).then(d => { stock.div = d ? { year: y, total: d.total, row: d.m[stock.code] || null } : null; }).catch(e => { stock.err.div = e.message; }).then(done));
+    }
+    await Promise.all(jobs); if (my === stockSeq) { stock.loading = false; renderStock(); }
+  }
+
+  /* 일봉 차트 (SVG) — 종가 선 · 20/60일 이동평균 · 손으로 짚으면 그날 값 */
+  function chartSvg(bars, mine, W, H) {
+    if (!bars || bars.length < 2) return '';
+    W = W || 760; H = H || 260; const P = { l: 8, r: 64, t: 14, b: 26 };
+    const c = bars.map(b => b.c), ma = k => c.map((_, i) => i + 1 >= k ? c.slice(i + 1 - k, i + 1).reduce((a, b) => a + b, 0) / k : null);
+    const m20 = ma(20), m60 = ma(60);
+    const lv = [mine && +mine.avg, mine && +mine.stop, mine && +mine.target].filter(v => v > 0);
+    let lo = Math.min(...bars.map(b => b.l || b.c)), hi = Math.max(...bars.map(b => b.h || b.c));
+    lv.forEach(v => { if (v > lo * .85 && v < hi * 1.15) { lo = Math.min(lo, v); hi = Math.max(hi, v); } });
+    const pad = (hi - lo) * .06 || hi * .02; lo -= pad; hi += pad;
+    const X = i => P.l + (W - P.l - P.r) * i / (bars.length - 1), Y = v => P.t + (H - P.t - P.b) * (1 - (v - lo) / (hi - lo));
+    const path = arr => arr.map((v, i) => v == null ? '' : `${arr[i - 1] == null ? 'M' : 'L'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join('');
+    const up = c[c.length - 1] >= c[0], col = up ? 'var(--sc-up)' : 'var(--sc-down)';
+    const ticks = [0, .25, .5, .75, 1].map(f => lo + (hi - lo) * f);
+    const fmt = v => v >= 1000 ? Math.round(v).toLocaleString('ko-KR') : v.toFixed(v >= 100 ? 1 : 2);
+    const dates = W < 480 ? [0, bars.length - 1] : [0, Math.floor(bars.length / 2), bars.length - 1];
+    const lines = [[mine && +mine.avg, '평균 단가'], [mine && +mine.stop, '손절'], [mine && +mine.target, '목표']].filter(([v]) => v > 0 && v > lo && v < hi);
+    return `<svg class="sc-chart" data-lo="${lo}" data-hi="${hi}" data-h="${H}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="최근 ${bars.length}거래일 종가 차트">
+      ${ticks.map(v => `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}" class="g"/><text x="${W - P.r + 6}" y="${Y(v) + 4}" class="ax">${fmt(v)}</text>`).join('')}
+      ${dates.map(i => `<text x="${X(i)}" y="${H - 6}" class="ax" text-anchor="${i === 0 ? 'start' : i === bars.length - 1 ? 'end' : 'middle'}">${bars[i].t.slice(2)}</text>`).join('')}
+      <path d="${path(c)}L${X(c.length - 1)},${H - P.b}L${X(0)},${H - P.b}Z" fill="${col}" opacity=".07"/>
+      <path d="${path(m60)}" class="ma60"/><path d="${path(m20)}" class="ma20"/>
+      <path d="${path(c)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round"/>
+      ${lines.map(([v, n]) => `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}" class="lv"/><text x="${P.l + 4}" y="${Y(v) - 4}" class="lvt">${n} ${fmt(v)}</text>`).join('')}
+      <circle cx="${X(c.length - 1)}" cy="${Y(c[c.length - 1])}" r="3.5" fill="${col}"/>
+      <g class="hv" style="display:none"><line class="hl" y1="${P.t}" y2="${H - P.b}"/><circle r="4" class="hc"/></g>
+      <rect class="hit" x="${P.l}" y="0" width="${W - P.l - P.r}" height="${H}" fill="transparent" data-l="${P.l}" data-w="${W - P.l - P.r}" data-vw="${W}"/>
+    </svg>`;
+  }
+  function wireChart(box, bars) {
+    const svg = box.querySelector('.sc-chart'); if (!svg) return;
+    const hit = svg.querySelector('.hit'), hv = svg.querySelector('.hv'), tip = box.querySelector('.sc-tip');
+    const H = +svg.dataset.h || 260, P = { t: 14, b: 26 };
+    const L = +svg.dataset.lo, Hh = +svg.dataset.hi; // 차트와 같은 세로 범위
+    const move = e => {
+      const r = svg.getBoundingClientRect(), vx = (e.clientX - r.left) / r.width * +hit.dataset.vw;
+      const i = Math.max(0, Math.min(bars.length - 1, Math.round((vx - +hit.dataset.l) / +hit.dataset.w * (bars.length - 1))));
+      const x = +hit.dataset.l + +hit.dataset.w * i / (bars.length - 1);
+      hv.style.display = ''; hv.querySelector('.hl').setAttribute('x1', x); hv.querySelector('.hl').setAttribute('x2', x);
+      const b = bars[i], prev = bars[i - 1];
+      hv.querySelector('.hc').setAttribute('cx', x); hv.querySelector('.hc').setAttribute('cy', P.t + (H - P.t - P.b) * (1 - (b.c - L) / (Hh - L)));
+      const ch = prev ? (b.c / prev.c - 1) * 100 : null;
+      tip.innerHTML = `<b>${esc(b.t)}</b> 종가 <b>${num(b.c)}</b> <span class="${cls(ch)}">${pct(ch)}</span>${b.v ? ` · 거래량 ${num(b.v, 0)}` : ''}`;
+    };
+    hit.addEventListener('pointermove', move); hit.addEventListener('pointerdown', move);
+    hit.addEventListener('pointerleave', () => { hv.style.display = 'none'; tip.innerHTML = tip.dataset.def || ''; });
+  }
+
+  function apiNeed(t, label) { return `<div class="sc-need">${icon('key', 16)}<span>${label}</span><button class="btn sm" data-goapi="${t}">연결하기</button></div>`; }
+  function renderStock() {
+    const box = $('stBody'); if (!box) return;
+    const recent = stockPref.recent.concat(watch.items.map(it => normSym(it.symbol))).filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 10);
+    $('stRecent').innerHTML = recent.map(s => { const it = watch.items.find(w => normSym(w.symbol) === s); return `<button type="button" data-s="${esc(s)}">${it && it.name ? `${esc(it.name)}<small>${esc(s)}</small>` : esc(s)}</button>`; }).join('');
+    $('stRecent').querySelectorAll('[data-s]').forEach(b => b.onclick = () => { $('stQ').value = b.dataset.s; openStock(b.dataset.s); });
+    if (!stock) {
+      const have = { quote: !!dataFor('quote'), history: !!dataFor('history'), ksd: !!dataFor('ksd') };
+      box.innerHTML = `<div class="sc-empty-st"><h2>종목 하나를 깊이 봅니다</h2><p>코드(005930 · 0190G0 · AAPL)나 이름(삼성전자)을 넣으면, 연결한 API 를 모두 모아 한 화면에 보여 줍니다.</p>
+        <ul class="sc-srcs">
+          <li class="${have.quote ? 'on' : ''}">${icon(have.quote ? 'check' : 'key', 15)}<b>시세</b><span>${have.quote ? esc(dataApis().filter(a => (TYPES[a.type].caps || []).includes('quote')).map(a => a.name).join(' · ')) : '연결 안 됨'}</span></li>
+          <li class="${have.history ? 'on' : ''}">${icon(have.history ? 'check' : 'key', 15)}<b>일봉 · 지표</b><span>${have.history ? '차트 · 이동평균 · RSI · 변동성 · 낙폭' : '연결 안 됨'}</span></li>
+          <li class="${have.ksd ? 'on' : ''}">${icon(have.ksd ? 'check' : 'key', 15)}<b>예탁결제원 기록</b><span>${have.ksd ? '표준코드 · 상장일 · 배당 순위' : '연결 안 됨'}</span></li>
+        </ul>${have.quote && have.ksd ? '' : `<button class="btn sm" data-goapi="">API 연결로</button>`}</div>`;
+      wireGoApi(box); return;
+    }
+    const s = stock, q = s.quote, b = s.bars, A = b && b.length > 1 ? analyze(b) : null;
+    const mine = watch.items.find(it => normSym(it.symbol) === s.code);
+    const price = q ? q.price : b && b.length ? b[b.length - 1].c : null;
+    const chg = q ? q.changePct : null;
+    const rng = stockPref.range || 120, shown = b ? b.slice(-rng) : null;
+    const per = n => shown && shown.length > n ? (shown[shown.length - 1].c / shown[0].c - 1) * 100 : null;
+    const loading = t => `<div class="sc-skel">${esc(t)} 불러오는 중…</div>`;
+    const chartW = Math.max(280, Math.min(1400, Math.round((box.clientWidth || 760) - 38))); // 화면 폭에 맞춰 (글자가 눌리지 않게)
+    const errBox = m => `<div class="sc-err">${icon('alert', 15)}<span>${esc(m)}</span></div>`;
+    const kv = rows => `<dl class="sc-kv">${rows.filter(r => r && r[1] != null && r[1] !== '' && r[1] !== '–').map(([k, v, c]) => `<dt>${k}</dt><dd${c ? ` class="${c}"` : ''}>${v}</dd>`).join('')}</dl>`;
+    const d8 = v => /^\d{8}$/.test(v || '') ? `${v.slice(0, 4)}.${v.slice(4, 6)}.${v.slice(6)}` : (v || '');
+    const rsi = A && A.rsi14 != null ? A.rsi14 : null;
+    const rsiTxt = rsi == null ? '' : rsi >= 70 ? '과열권' : rsi <= 30 ? '침체권' : '중립';
+    const k = s.ksd && s.ksd.base, l = s.ksd && s.ksd.list, dv = s.div && s.div.row;
+    const realtime = q && /실시간/.test(q.source || '');
+    box.innerHTML = `
+      <header class="st-head">
+        <div class="st-id"><h2>${esc(s.name || s.code || s.q)}</h2><span>${esc(s.code)}${k && k.engSecnNm ? ' · ' + esc(k.engSecnNm) : ''}${q && q.exchange ? ' · ' + esc(q.exchange) : ''}${q && q.sector ? ' · ' + esc(q.sector) : ''}</span></div>
+        <div class="st-px">${price != null ? `<b>${num(price)}</b><span class="${cls(chg)}">${q && q.change != null ? (q.change > 0 ? '▲ ' : q.change < 0 ? '▼ ' : '') + num(Math.abs(q.change)) + ' ' : ''}${pct(chg)}</span>` : s.err.code ? '' : '<b class="sc-skel-i">–</b>'}
+          <small>${q ? `<i class="dot ${realtime ? 'live' : ''}"></i>${esc(q.source || '')}` : s.err.quote ? '시세 불러오기 실패' : dataFor('quote') ? '시세 불러오는 중…' : '시세 API 없음'}</small></div>
+        <div class="st-acts">
+          <button class="btn ink" data-st="ai">${icon('sparkle', 16)}AI 분석</button>
+          ${mine ? `<button class="btn" data-st="edit">${icon('edit', 16)}보유 고치기</button>` : `<button class="btn" data-st="add">${icon('plus', 16)}관심 종목에</button>`}
+          <button class="btn" data-st="calc">${icon('calc', 16)}매매 계획</button>
+          <button class="btn" data-st="note">${icon('calendar', 16)}노트</button>
+        </div>
+      </header>
+      ${s.err.code ? errBox(s.err.code) : ''}
+      <div class="st-grid">
+        <section class="sc-card st-chart">
+          <div class="st-ch-head"><h3>가격 흐름</h3>
+            <div class="sc-seg" id="stRange">${[[20, '1개월'], [60, '3개월'], [120, '6개월'], [250, '1년']].map(([n, t]) => `<button type="button" data-n="${n}" class="${rng === n ? 'on' : ''}">${t}</button>`).join('')}</div></div>
+          ${shown ? `<p class="sc-tip" data-def="${esc(`${shown[0].t} → ${shown[shown.length - 1].t} · 이 기간 ${pct(per(1))} · 굵은 선 종가, 옅은 선 20일 · 점선 60일 이동평균`)}">${esc(`${shown[0].t} → ${shown[shown.length - 1].t} · 이 기간 ${pct(per(1))} · 굵은 선 종가, 옅은 선 20일 · 점선 60일 이동평균`)}</p>${chartSvg(shown, mine, chartW, chartW < 480 ? 210 : 260)}`
+            : s.err.bars ? errBox(s.err.bars) : dataFor('history') ? loading('일봉') : apiNeed('datagokr', '일봉 API 가 없습니다 (공공데이터포털 주식시세 · KIS)')}
+        </section>
+        <section class="sc-card">
+          <h3>지금 상태 <small>일봉으로 이 앱이 직접 계산</small></h3>
+          ${A ? `<div class="st-meter"><span>RSI 14</span><div class="bar"><i style="left:${Math.max(0, Math.min(100, rsi || 0))}%"></i><em style="left:30%"></em><em style="left:70%"></em></div><b>${num(rsi, 0)} · ${rsiTxt}</b></div>
+            ${kv([['추세', esc(A.trend)], ['5일', pct(A.returnPct.d5), cls(A.returnPct.d5)], ['20일', pct(A.returnPct.d20), cls(A.returnPct.d20)], ['60일', pct(A.returnPct.d60), cls(A.returnPct.d60)], ['1년', pct(A.returnPct.d250), cls(A.returnPct.d250)],
+              ['20 · 50일 평균', `${num(A.sma.d20, 0)} · ${num(A.sma.d50, 0)}`], ['고점 대비', pct(A.fromHighPct), cls(A.fromHighPct)], ['최대 낙폭', pct(A.maxDrawdownPct), 'down'], ['하루 평균 변동(ATR)', A.atrPct != null ? num(A.atrPct, 2) + '%' : null], ['연 변동성', A.volatility20dAnnualPct != null ? num(A.volatility20dAnnualPct, 1) + '%' : null]])}`
+            : s.err.bars ? errBox(s.err.bars) : dataFor('history') ? loading('지표') : apiNeed('datagokr', '일봉 API 가 있어야 계산합니다')}
+        </section>
+        <section class="sc-card">
+          <h3>시세 상세</h3>
+          ${q ? kv([['시가', num(q.open)], ['고가', num(q.high)], ['저가', num(q.low)], ['전일 종가', num(q.prevClose)], ['거래량', q.volume ? num(q.volume, 0) : null], ['52주 최고', q.week52 ? num(q.week52.high) : A ? num(A.rangeHigh) : null], ['52주 최저', q.week52 ? num(q.week52.low) : A ? num(A.rangeLow) : null],
+              ['PER', q.per ? num(q.per, 2) : null], ['PBR', q.pbr ? num(q.pbr, 2) : null], ['시가총액', q.marketCapEok ? num(q.marketCapEok, 0) + '억' : q.marketCap ? num(q.marketCap / 1e8, 0) + '억' : null]])
+            : s.err.quote ? errBox(s.err.quote) : dataFor('quote') ? loading('시세') : apiNeed('datagokr', '시세 API 가 없습니다')}
+        </section>
+        <section class="sc-card">
+          <h3>예탁결제원 기록 <small>공식 등록 정보</small></h3>
+          ${!dataFor('ksd') ? apiNeed('ksd', '한국예탁결제원 주식정보를 연결하면 표준코드 · 상장일 · 배당이 보입니다')
+            : !/^\d[0-9A-Z]{5}$/.test(s.code || '') ? '<p class="sc-mute">한국 종목에서만 볼 수 있습니다.</p>'
+            : s.err.ksd ? errBox(s.err.ksd) : !s.ksd ? loading('예탁결제원') : kv([['표준코드', esc(k.isin)], ['주식 종류', esc(k.secnKacdNm)], ['발행일', d8(k.issuDt)], ['상장일', l ? d8(l.apliDt) : null], ['상장폐지일', l && l.dlistDt ? d8(l.dlistDt) : null], ['전자증권', k.eltscYn === 'Y' ? '예' : k.eltscYn === 'N' ? '아니오' : null]])}
+          ${dataFor('ksd') && /^\d[0-9A-Z]{5}$/.test(s.code || '') ? `<h4>${s.div ? s.div.year + '년 배당' : '배당'}</h4>${s.err.div ? errBox(s.err.div) : !s.div ? loading('배당') : dv ? kv([['주당 배당금', num(dv[3], 0) + '원'], ['시가배당률', num(dv[4], 2) + '%'], ['배당 순위', `${num(dv[0], 0)}위 / ${num(s.div.total, 0)}`], ['시장', esc(dv[2])]]) : '<p class="sc-mute">이 해 배당 기록이 없습니다 (무배당이거나 ETF 등).</p>'}` : ''}
+        </section>
+        ${mine ? (() => { const qty = +mine.qty || 0, avg = +mine.avg || 0, pl = price && qty && avg ? (price - avg) * qty : null, plp = price && avg ? (price / avg - 1) * 100 : null, toStop = price && mine.stop ? (mine.stop / price - 1) * 100 : null, toT = price && mine.target ? (mine.target / price - 1) * 100 : null;
+          return `<section class="sc-card"><h3>내 보유 · 계획</h3>${kv([['수량', qty ? num(qty, 4) : '관심만'], ['평균 단가', avg ? num(avg) : null], ['평가 손익', pl != null ? num(pl, 0) : null, cls(pl)], ['수익률', plp != null ? pct(plp) : null, cls(plp)], ['손절가까지', toStop != null ? `${num(+mine.stop)} (${pct(toStop, 1)})` : '정하지 않음'], ['목표가까지', toT != null ? `${num(+mine.target)} (${pct(toT, 1)})` : null]])}${mine.memo ? `<p class="st-memo">${esc(mine.memo)}</p>` : ''}${!mine.stop ? '<p class="sc-mute">손절가가 없습니다. 들어가기 전에 "어디서 틀렸다고 인정할지"를 정해 두세요.</p>' : ''}</section>`; })() : ''}
+      </div>
+      <p class="sc-fine">숫자는 연결한 API 에서 그대로 가져오고, 지표는 이 앱이 일봉으로 계산합니다. 투자 판단과 책임은 본인에게 있습니다.</p>`;
+    fillIcons(box); wireGoApi(box);
+    if (shown) wireChart(box.querySelector('.st-chart'), shown);
+    const rg = $('stRange'); if (rg) rg.querySelectorAll('button').forEach(x => x.onclick = () => { stockPref.range = +x.dataset.n; LS.set(K_STOCK, stockPref); renderStock(); });
+    box.querySelectorAll('[data-st]').forEach(x => x.onclick = () => stockAct(x.dataset.st));
+  }
+  let stW = 0, stWt = 0; addEventListener('resize', () => { clearTimeout(stWt); stWt = setTimeout(() => { const b = $('stBody'); if (b && !$('vStock').hidden && stock && Math.abs(b.clientWidth - stW) > 24) { stW = b.clientWidth; renderStock(); } }, 200); });
+  function wireGoApi(box) { box.querySelectorAll('[data-goapi]').forEach(x => x.onclick = () => { show('apis'); if (x.dataset.goapi) setTimeout(() => openAdd(x.dataset.goapi), 60); }); }
+  function stockAct(a) {
+    const s = stock; if (!s) return; const label = s.name ? `${s.name}(${s.code})` : s.code;
+    if (a === 'ai') { show('chat'); send(`${label} 종목을 분석해 줘. get_quote · get_price_history${dataFor('ksd') ? ' · get_ksd_stock_info' : ''} 로 숫자를 먼저 확인하고, get_portfolio 로 내 보유 여부와 손절 · 목표를 본 뒤, ① 한 줄 결론 ② 근거 3가지 ③ 반대 근거 · 위험 ④ 지금 할 일(진입 · 대기 · 정리 중 하나, 손절 · 목표 가격) ⑤ 다음에 확인할 일 순서로 짧게. 나의 원칙과 어긋나는 점이 있으면 먼저 짚어 줘.`); }
+    if (a === 'add') editItem(null, { symbol: s.code, name: s.name || '' });
+    if (a === 'edit') { const i = watch.items.findIndex(it => normSym(it.symbol) === s.code); if (i >= 0) editItem(i); }
+    if (a === 'calc') { const p = s.quote ? s.quote.price : s.bars && s.bars.length ? s.bars[s.bars.length - 1].c : ''; show('calc'); $('cSym').value = s.code; if (p) $('cEntry').value = p; const A = s.bars && s.bars.length > 15 ? analyze(s.bars) : null; if (A && A.atr14 && p && !$('cStop').value) $('cStop').value = Math.round((p - 2 * A.atr14) * 100) / 100; renderCalc(); toast(A && A.atr14 ? '진입가는 현재가, 손절가는 ATR 2배 아래로 넣었습니다 — 고쳐 쓰세요' : '진입가를 현재가로 넣었습니다', 3200); }
+    if (a === 'note') { show('notes'); setTimeout(() => { const t = document.querySelector('#vNotes textarea, #nText'); if (typeof editNote === 'function') editNote(null, null, `${s.name || s.code} `); else if (t) { t.value = `${s.name || s.code} `; t.focus(); } }, 60); }
+  }
+  $('stForm').onsubmit = e => { e.preventDefault(); openStock($('stQ').value); };
+
+  /* =====================================================================
+     시장 데이터 — 예탁결제원: 배당 상위 · 의무보호예수(풀릴 물량) · 신규 예탁지정 · 시장 규모
+     ===================================================================== */
+  let mkMart = 'all';
+  const lastBizDays = n => { const out = []; const d = new Date(Date.now() + 9 * 36e5); while (out.length < n) { d.setUTCDate(d.getUTCDate() - 1); const w = d.getUTCDay(); if (w && w !== 6) out.push(d.toISOString().slice(0, 10).replace(/-/g, '')); } return out; };
+  async function ksdLatest(op, base, ttl) { // 최근 영업일부터 거슬러 올라가며 자료가 있는 날
+    const a = dataFor('ksd'), key = await keyOf(a);
+    return ksdCached(op + ':' + JSON.stringify(base) + ':' + lastBizDays(1)[0], ttl, async () => {
+      for (const d of lastBizDays(5)) { const r = await DATA.ksd.call(key, op, Object.assign({}, base, { stdDt: d })); if (r.items.length) return { d, items: r.items.map(pick) }; }
+      return { d: '', items: [] };
+    });
+  }
+  async function renderMarket() {
+    const box = $('mkBody'); if (!box) return;
+    if (!dataFor('ksd')) { box.innerHTML = `<div class="sc-empty-st"><h2>시장 데이터는 예탁결제원 주식정보로 봅니다</h2><p>배당 상위 종목 · 의무보호예수(곧 풀릴 수 있는 물량) · 새로 예탁 지정된 종목 · 시장 규모를 하루 한 번 받아 둡니다.</p>${apiNeed('ksd', '한국예탁결제원 주식정보(공공데이터포털)를 연결해 주세요')}</div>`; fillIcons(box); wireGoApi(box); return; }
+    const y = new Date().getFullYear() - 1, ym = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 7).replace('-', '');
+    box.innerHTML = `<div class="mk-grid">
+      <section class="sc-card mk-div"><div class="st-ch-head"><h3>${y}년 배당 상위 <small>시가배당률 · 누르면 종목 분석</small></h3><div class="sc-seg" id="mkMart">${[['all', '전체'], ['유가', '유가증권'], ['코스닥', '코스닥']].map(([v, t]) => `<button type="button" data-v="${v}" class="${mkMart === v ? 'on' : ''}">${t}</button>`).join('')}</div></div><div id="mkDiv"><div class="sc-skel">불러오는 중…</div></div></section>
+      <section class="sc-card"><h3>의무보호예수 <small>최대주주 · 공모 등으로 묶인 물량 — 풀리면 매물 부담</small></h3><div id="mkLock"><div class="sc-skel">불러오는 중…</div></div></section>
+      <section class="sc-card"><h3>시장 규모 <small>상장 회사 · 시가총액</small></h3><div id="mkSize"><div class="sc-skel">불러오는 중…</div></div></section>
+      <section class="sc-card"><h3>이번 달 신규 예탁지정 <small>곧 거래될 수 있는 새 종목 후보</small></h3><div id="mkNew"><div class="sc-skel">불러오는 중…</div></div></section>
+    </div><p class="sc-fine">한국예탁결제원 공공데이터를 하루 한 번 받아 이 기기에 둡니다 (개발 계정은 하루 100회 제한). 출처: 한국예탁결제원 · 공공데이터포털.</p>`;
+    fillIcons(box);
+    const fail = (id, e) => { $(id).innerHTML = `<div class="sc-err">${icon('alert', 15)}<span>${esc(e.message || e)}</span></div>`; };
+    const MK = { 11: '유가증권', 12: '코스닥', 13: 'K-OTC', 14: '코넥스', 50: '기타' };
+    ksdDividends(y).then(d => {
+      const rows = Object.entries(d.m).map(([code, r]) => ({ code, rank: r[0], name: r[1], mart: r[2], amt: r[3], rate: r[4], kind: r[5] }))
+        .filter(r => r.rate > 0 && (mkMart === 'all' || (r.mart || '').includes(mkMart))).sort((a, b) => b.rate - a.rate).slice(0, 20);
+      $('mkDiv').innerHTML = rows.length ? `<div class="sc-tablewrap"><table class="sc-table mk-t"><thead><tr><th>#</th><th>종목</th><th>시가배당률</th><th>주당 배당금</th></tr></thead><tbody>${rows.map((r, i) => `<tr data-open="${esc(r.code)}"><td>${i + 1}</td><td class="sym"><b>${esc(r.name)}</b><span>${esc(r.code)} · ${esc(r.mart)}${/우/.test(r.kind) ? ' · 우선주' : ''}</span></td><td class="up">${num(r.rate, 2)}%</td><td>${num(r.amt, 0)}원</td></tr>`).join('')}</tbody></table></div><p class="sc-mute">배당률이 지나치게 높으면 주가가 크게 떨어진 탓일 수 있습니다. 꾸준함은 종목 분석에서 함께 보세요.</p>` : '<p class="sc-mute">자료가 없습니다.</p>';
+      $('mkDiv').querySelectorAll('[data-open]').forEach(tr => tr.onclick = () => { $('stQ').value = tr.dataset.open; openStock(tr.dataset.open); });
+      $('mkMart').querySelectorAll('button').forEach(b => b.onclick = () => { mkMart = b.dataset.v; renderMarket(); });
+    }).catch(e => fail('mkDiv', e));
+    Promise.all([11, 12].map(t => ksdLatest('getSafeDpDutyDepoStatusN1', { listTpcd: String(t) }, 24).then(r => [t, r]))).then(rs => {
+      $('mkLock').innerHTML = rs.map(([t, r]) => { const it = r.items.find(x => /보통/.test(x.issuStkKindTpnm || '')) || r.items[0]; if (!it) return `<p class="sc-mute">${MK[t]}: 자료 없음</p>`;
+        return `<div class="mk-lock"><b>${MK[t]}</b><span class="big">${num(+it.safedpRatioValue, 2)}%</span><div class="bar"><i style="width:${Math.min(100, +it.safedpRatioValue * 5)}%"></i></div><small>${num(+it.stkDepoQty / 1e6, 1)}백만 주 · ${num(+it.cocnt, 0)}개 회사 · 기준 ${esc(r.d.slice(0, 4) + '.' + r.d.slice(4, 6) + '.' + r.d.slice(6))}</small></div>`; }).join('')
+        + '<p class="sc-mute">비율이 오르면 묶인 물량이 늘어난 것, 크게 줄면 그만큼 풀린 것입니다. 개별 종목의 해제일은 공시(DART)에서 확인하세요.</p>';
+    }).catch(e => fail('mkLock', e));
+    ksdLatest('getListStatN1', {}, 24).then(r => {
+      const rows = r.items.filter(x => MK[x.caltotMartTpcd] && +x.martpTotamt);
+      $('mkSize').innerHTML = rows.length ? `<div class="sc-tablewrap"><table class="sc-table"><thead><tr><th>시장</th><th>회사</th><th>종목</th><th>시가총액</th></tr></thead><tbody>${rows.map(x => `<tr><td>${MK[x.caltotMartTpcd]}</td><td>${num(+x.cocnt, 0)}</td><td>${num(+x.secncnt, 0)}</td><td>${num(+x.martpTotamt / 1e12, 1)}조</td></tr>`).join('')}</tbody></table></div><p class="sc-mute">기준 ${esc(r.d.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3'))}</p>` : '<p class="sc-mute">자료가 없습니다.</p>';
+    }).catch(e => fail('mkSize', e));
+    ksdCached('new:' + ym, 12, async () => (await DATA.ksd.call(await keyOf(dataFor('ksd')), 'getNewDepoSecnListN1', { yyyymm: ym, searchType: '1' })).items.map(pick)).then(items => {
+      $('mkNew').innerHTML = items.length ? `<ul class="mk-new">${items.slice(0, 15).map(x => `<li><b>${esc(x.korSecnNm || '')}</b><span>${esc(x.indtpNm || '')} · ${esc(x.secnKacdNm || '')} · ${esc((x.apliDt || '').replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3'))}</span></li>`).join('')}</ul>` : '<p class="sc-mute">이번 달은 아직 없습니다.</p>';
+    }).catch(e => fail('mkNew', e));
+  }
+  $('mkAsk').onclick = () => { show('chat'); send('query_ksd 로 의무보호예수 현황(getSafeDpDutyDepoStatusN1, 유가증권 11 · 코스닥 12, 최근 영업일)과 올해 신규 예탁지정 종목을 확인하고, 지금 시장 수급에 주는 의미와 내 관심 종목(get_portfolio)에 영향이 있는지 짧게 정리해 줘.'); };
+  $('mkReload').onclick = () => { for (const k of Object.keys(ksdCache)) if (!/^div:|^stk:|^nm:/.test(k)) delete ksdCache[k]; LS.set(K_KSDC, ksdCache); renderMarket(); };
+
+  const VIEWS = { chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'market') renderMarket();
     try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
