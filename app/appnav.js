@@ -25,6 +25,16 @@
   }
   if (document.body) build(); else document.addEventListener('DOMContentLoaded', build);
 
+  /* 카드를 길게 누르거나(안드로이드) 오른쪽 클릭하면 그 카드의 ⋯ 메뉴를 엶 — DOCUMENT · VIDEO 목록 (PRESENTATION 은 hub.js 가 누른 자리에서 직접 엶) */
+  document.addEventListener('contextmenu', e => {
+    if (e.defaultPrevented || e.target.closest('input, textarea, [contenteditable], .menu, .ProseMirror')) return;
+    const host = e.target.closest('.doc-card, .deck-card, #hmResume, #resume');
+    const more = host && host.querySelector('[data-more]');
+    if (!more) return;
+    e.preventDefault(); if (navigator.vibrate) try { navigator.vibrate(12); } catch (x) { }
+    more.click();
+  });
+
   /* PC: Alt+1 ~ Alt+5 로 작업장 바꾸기 (글 입력 중에는 그대로 둠) */
   document.addEventListener('keydown', e => {
     if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;

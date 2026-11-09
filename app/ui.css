@@ -827,6 +827,18 @@ body.dragover .drop-veil { display: flex; }
 .deck-actions { display: none; }
 .deck-body .kebab { width: 28px; min-width: 28px; height: 28px; opacity: 0; flex-shrink: 0; margin-top: -2px; }
 .deck-card:hover .kebab, .kebab:focus-visible { opacity: 1; }
+@media (hover: none) { .kebab[data-more], .resume-cta [data-more], .cta [data-more] { opacity: 1; color: var(--ui-fg); } } /* 휴대폰: ⋯ 를 늘 또렷하게 (마우스를 올릴 수 없으니) */
+.deck-thumb, .resume-main, .doc-sheet { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; } /* 길게 누를 때 그림 저장 메뉴 대신 교안 메뉴 */
+/* 휴대폰에서 길게 누른 메뉴: 아래에서 올라오는 시트 */
+.menu-shade { position: fixed; inset: 0; z-index: 299; background: var(--ui-overlay); animation: fade-in .15s ease; }
+.menu.sheet { position: fixed; left: 0; right: 0; bottom: 0; top: auto; min-width: 0; max-height: 80dvh; overflow-y: auto; padding: 8px max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); border-radius: 16px 16px 0 0; font-size: var(--fs-md); animation: sheet-up .18s var(--ease); }
+.menu.sheet::before { content: ''; display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--ui-border); margin: 2px auto 8px; }
+.menu.sheet .mh { display: flex; flex-direction: column; gap: 2px; padding: 4px 12px 10px; border-bottom: 1px solid var(--ui-border); margin-bottom: 6px; }
+.menu.sheet .mh b { font-size: var(--fs-md); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu.sheet .mh small { color: var(--ui-muted); font-size: var(--fs-xs); }
+.menu.sheet .mi { height: 48px; padding: 0 12px; gap: 14px; }
+@keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .menu.sheet, .menu-shade { animation: none; } }
 .deck-meta .draft-chip { background: var(--ui-warn-bg); border: 0; padding: 0 7px; font-size: var(--fs-xs); line-height: 18px; }
 .deck-card.ghost { pointer-events: none; }
 .deck-card.ghost .deck-body { flex-direction: column; gap: 7px; padding-top: 2px; }

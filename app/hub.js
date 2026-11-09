@@ -223,6 +223,7 @@
     if (!GUEST) resume.querySelector('[data-go=edit]').onclick = () => openEditor(d.name);
     resume.querySelector('[data-go=present]').onclick = () => openPresent(d.name);
     if (!GUEST) resume.querySelector('[data-more]').onclick = (ev) => actionMenu(ev.currentTarget, d, main);
+    pressMenu(resume, d, main);
     loadDeck(d).then(deck => {
       meta();
       resume.querySelector('.resume-title').textContent = d.title;
@@ -263,45 +264,105 @@
       if (btn.dataset.a === 'edit') openEditor(d.name);
     });
     c.appendChild(body);
+    pressMenu(c, d, c);
     return c;
   }
 
-  /* ---------- ⋯ 메뉴: 복제 · 이름 바꾸기 · 삭제 ---------- */
-  let openMenu = null;
-  function closeMenu() { if (openMenu) { openMenu.remove(); openMenu = null; } }
+  /* ---------- 길게 누르기(휴대폰) · 오른쪽 클릭(PC) · 메뉴 키(Shift+F10) → 같은 메뉴 ---------- */
+  function pressMenu(el, d, host) {
+    let t = null, sx = 0, sy = 0, fired = 0;
+    const at = (x, y) => ({ x, y });
+    const open = (x, y) => { fired = Date.now(); if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) { } actionMenu(null, d, host, at(x, y)); };
+    el.addEventListener('contextmenu', (ev) => { // 안드로이드 크롬은 길게 누르면 이 이벤트가 옴
+      if (ev.target.closest('input, textarea, [contenteditable]')) return;
+      ev.preventDefault(); clearTimeout(t);
+      if (Date.now() - fired < 700) return; // 직접 잰 길게 누르기로 이미 열었음
+      open(ev.clientX, ev.clientY);
+    });
+    el.addEventListener('pointerdown', (ev) => {
+      if (ev.pointerType === 'mouse') return;
+      sx = ev.clientX; sy = ev.clientY; clearTimeout(t);
+      t = setTimeout(() => open(sx, sy), 480); // 아이폰처럼 contextmenu 가 오지 않는 기기
+    });
+    const cancel = () => clearTimeout(t);
+    el.addEventListener('pointermove', (ev) => { if (Math.abs(ev.clientX - sx) > 10 || Math.abs(ev.clientY - sy) > 10) cancel(); });
+    el.addEventListener('pointerup', cancel); el.addEventListener('pointercancel', cancel);
+    el.addEventListener('click', (ev) => { if (Date.now() - fired < 700) { ev.preventDefault(); ev.stopPropagation(); } }, true); // 손을 뗄 때 카드가 열리지 않게
+    el.addEventListener('keydown', (ev) => {
+      if (ev.key === 'ContextMenu' || (ev.shiftKey && ev.key === 'F10')) { ev.preventDefault(); const r = (ev.target.getBoundingClientRect ? ev.target : el).getBoundingClientRect(); actionMenu(null, d, host, at(r.left + 24, r.top + 24)); }
+    });
+  }
+
+  /* ---------- ⋯ 메뉴 (길게 누르기 · 오른쪽 클릭도 같은 메뉴): 발표 · 편집 · 사본 만들기 · 이름 바꾸기 · 링크 복사 · 파일로 받기 · 삭제 ---------- */
+  let openMenu = null, openShade = null;
+  function closeMenu() { if (openMenu) { openMenu.remove(); openMenu = null; } if (openShade) { openShade.remove(); openShade = null; } }
   document.addEventListener('pointerdown', (ev) => { if (openMenu && !openMenu.contains(ev.target)) closeMenu(); });
   document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeMenu(); });
   window.addEventListener('resize', closeMenu);
-  function actionMenu(btn, d, host) {
-    const same = openMenu && openMenu._btn === btn; closeMenu(); if (same) return;
-    const m = document.createElement('div'); m.className = 'menu'; m.setAttribute('role', 'menu'); m._btn = btn;
-    const items = [['dup', 'copy', '복제'], ['rename', 'edit', '파일 이름 바꾸기'], null, ['del', 'trash', '삭제']];
+  function actionMenu(btn, d, host, at) {
+    const same = btn && openMenu && openMenu._btn === btn; closeMenu(); if (same) return;
+    const sheet = !btn && matchMedia('(max-width: 820px)').matches; // 휴대폰에서 길게 누르면: 아래에서 올라오는 시트
+    const m = document.createElement('div'); m.className = 'menu deck-menu' + (sheet ? ' sheet' : ''); m.setAttribute('role', 'menu'); m.setAttribute('aria-label', d.title + ' 메뉴'); m._btn = btn;
+    const fine = matchMedia('(pointer: fine)').matches;
+    const items = GUEST
+      ? [['present', 'play', '발표'], null, ['link', 'link', '발표 링크 복사']]
+      : [['edit', 'edit', '편집'], ['present', 'play', '발표'], fine ? ['newtab', 'expand', '새 탭에서 편집'] : null, null,
+        ['dup', 'copy', '사본 만들기'], ['rename', 'text', '파일 이름 바꾸기'], ['link', 'link', '발표 링크 복사'], ['export', 'export', '파일로 받기 (.json)'], null,
+        ['del', 'trash', '삭제']].filter((x, i, a) => x || (i && a[i - 1]));
+    if (sheet) m.insertAdjacentHTML('beforeend', `<div class="mh"><b>${esc(d.title)}</b><small>${d.slides !== '' ? `슬라이드 ${d.slides}장` : ''}</small></div>`);
     for (const it of items) {
       if (!it) { m.appendChild(document.createElement('hr')); continue; }
       const b = document.createElement('div'); b.className = 'mi' + (it[0] === 'del' ? ' danger' : ''); b.setAttribute('role', 'menuitem'); b.tabIndex = 0;
-      b.innerHTML = `${icon(it[1], 16)}<span>${it[2]}</span>`;
+      b.innerHTML = `${icon(it[1], sheet ? 20 : 16)}<span>${it[2]}</span>`;
       const go = () => { closeMenu(); act(it[0], d, host); };
       b.onclick = go; b.onkeydown = (ev) => { if (ev.key === 'Enter') go(); };
       m.appendChild(b);
     }
+    if (sheet) { openShade = document.createElement('div'); openShade.className = 'menu-shade'; openShade.onclick = closeMenu; document.body.appendChild(openShade); }
     document.body.appendChild(m); openMenu = m;
     /* 자판으로도: ↑↓ 로 고르고 Enter, Esc 는 닫고 ⋯ 단추로 돌아감 */
     const mis = Array.from(m.querySelectorAll('.mi'));
     m.addEventListener('keydown', (ev) => {
       const i = mis.indexOf(document.activeElement);
       if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); mis[(i + (ev.key === 'ArrowDown' ? 1 : -1) + mis.length) % mis.length].focus(); }
-      else if (ev.key === 'Escape') { ev.stopPropagation(); closeMenu(); btn.focus(); }
-      else if (ev.key === 'Tab') { btn.focus(); closeMenu(); }
+      else if (ev.key === 'Escape') { ev.stopPropagation(); closeMenu(); if (btn) btn.focus(); }
+      else if (ev.key === 'Tab') { if (btn) btn.focus(); closeMenu(); }
     });
-    mis[0].focus({ preventScroll: true });
-    const r = btn.getBoundingClientRect();
+    if (!sheet) mis[0].focus({ preventScroll: true });
+    if (sheet) return;
     m.style.position = 'fixed';
+    if (at) { // 누른 자리에서 열림 (화면 밖으로 나가지 않게)
+      m.style.left = Math.max(8, Math.min(at.x, innerWidth - m.offsetWidth - 8)) + 'px';
+      m.style.top = Math.max(8, Math.min(at.y, innerHeight - m.offsetHeight - 8)) + 'px';
+      return;
+    }
+    const r = btn.getBoundingClientRect();
     m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, innerWidth - m.offsetWidth - 8)) + 'px';
     m.style.top = (r.bottom + 6 + m.offsetHeight > innerHeight - 8 ? r.top - 6 - m.offsetHeight : r.bottom + 6) + 'px';
   }
   async function act(a, d, host) {
     /* 일하는 동안: 카드를 흐리게 (GitHub 은 몇 초 걸림 · 두 번 누름 방지) */
     const busy = () => { host.classList.add('busy'); return () => host.classList.remove('busy'); };
+    if (a === 'edit') return openEditor(d.name);
+    if (a === 'present') return openPresent(d.name);
+    if (a === 'newtab') { window.open('editor.html?deck=' + encodeURIComponent(d.name), '_blank'); return; }
+    if (a === 'link') {
+      const url = new URL('present.html?deck=' + encodeURIComponent(d.name), location.href).href;
+      try { await navigator.clipboard.writeText(url); toast('발표 링크를 복사했습니다'); }
+      catch (e) { window.prompt('이 주소를 복사하세요', url); }
+      return;
+    }
+    if (a === 'export') {
+      const done = busy();
+      try {
+        const deck = await API.load(d.name);
+        const u = URL.createObjectURL(new Blob([JSON.stringify(deck, null, 2)], { type: 'application/json' }));
+        const x = document.createElement('a'); x.href = u; x.download = d.name + '.json'; document.body.appendChild(x); x.click(); x.remove();
+        setTimeout(() => URL.revokeObjectURL(u), 5000);
+        toast('교안 파일을 받았습니다 — [파일 가져오기] 로 다시 넣을 수 있습니다', 3200);
+      } catch (e) { fail('파일로 받기 실패: ', e); }
+      done(); return;
+    }
     if (a === 'del') {
       const how = API.mode === 'server' ? 'decks/.trash 폴더로 옮깁니다.' : API.mode === 'github' ? '저장소에서 지웁니다. Git 기록에는 남습니다.' : '이 브라우저에서 지웁니다.';
       if (!(await askConfirm(`"${d.title}" 교안을 삭제할까요?`, how, '삭제'))) return;
