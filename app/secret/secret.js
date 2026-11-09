@@ -96,40 +96,49 @@
   let lockKey = null, keyMem = null; // 풀어 둔 동안만 메모리에
   async function derive(pass, salt) {
     const base = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
-    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
   }
   async function sealKeys() {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, lockKey, enc.encode(JSON.stringify(keyMem)));
     const was = LS.get(K_REMEMBER, null);
     cfg.lock.iv = b64(iv); cfg.lock.data = b64(data); cfg.lock.ids = Object.keys(keyMem).filter(id => keyMem[id]); saveCfg();
-    if (was && was.exp > Date.now()) LS.set(K_REMEMBER, { exp: was.exp, data: cfg.lock.data, keys: keyMem });
+    if (was && was.exp > Date.now()) LS.set(K_REMEMBER, Object.assign({}, was, { data: cfg.lock.data, keys: keyMem }));
   }
-  /* 이 기기에서 기억 (30일): 잠금 암호를 매번 묻지 않게. 내 기기의 저장소에만 두고, 동기화(GitHub)에는 올리지 않음 */
-  const K_REMEMBER = 'sec:keyRemember', REMEMBER_DAYS = 30;
-  function remembered() {
+  /* 이 기기에서 기억 (1년): 키와 잠금 열쇠를 이 기기의 저장소에만 두어 암호를 다시 묻지 않음 (동기화 · GitHub 에는 올리지 않음).
+     SECRET 은 관리자 한 사람만 쓰는 화면이라, 편하게 쓰는 쪽을 기본으로 함 */
+  const K_REMEMBER = 'sec:keyRemember', REMEMBER_DAYS = 365;
+  function remembered(full) {
     const r = LS.get(K_REMEMBER, null);
     if (!r || !cfg.lock || r.data !== cfg.lock.data || !(r.exp > Date.now())) return null;
-    return r.keys || null;
+    return full ? r : (r.keys || null);
   }
-  function remember(on) {
-    if (on && cfg.lock && keyMem) LS.set(K_REMEMBER, { exp: Date.now() + REMEMBER_DAYS * 864e5, data: cfg.lock.data, keys: keyMem });
-    else if (!on) { try { localStorage.removeItem(K_REMEMBER); } catch (e) { } }
+  async function remember(on) {
+    if (on && cfg.lock && keyMem) {
+      let raw = ''; try { if (lockKey) raw = b64(await crypto.subtle.exportKey('raw', lockKey)); } catch (e) { }
+      const was = LS.get(K_REMEMBER, null);
+      LS.set(K_REMEMBER, { exp: Date.now() + REMEMBER_DAYS * 864e5, data: cfg.lock.data, keys: keyMem, raw: raw || (was && was.data === cfg.lock.data ? was.raw || '' : '') });
+    } else if (!on) { try { localStorage.removeItem(K_REMEMBER); } catch (e) { } }
+  }
+  async function keyFromMemory() { // 기억해 둔 잠금 열쇠 꺼내기
+    const r = remembered(true); if (!r || !r.raw) return false;
+    try { lockKey = await crypto.subtle.importKey('raw', unb64(r.raw), { name: 'AES-GCM' }, true, ['encrypt', 'decrypt']); return true; } catch (e) { return false; }
   }
   const fillIds = () => { if (cfg.lock && keyMem && !cfg.lock.ids) { cfg.lock.ids = Object.keys(keyMem).filter(id => keyMem[id]); saveCfg(); } }; // 예전 잠금에도 키 목록을
-  { const r0 = remembered(); if (r0) { keyMem = Object.assign({}, r0); setTimeout(fillIds, 0); } } // 이 기기에서 기억 중이면 처음부터 풀린 채로
+  { const r0 = remembered(); if (r0) { keyMem = Object.assign({}, r0); keyFromMemory(); setTimeout(fillIds, 0); } } // 이 기기에서 기억 중이면 처음부터 풀린 채로
   let unlocking = null; // 여러 시세를 한꺼번에 불러도 암호 창은 하나만
   function unlock(force) {
     if (!cfg.lock || (keyMem && (!force || lockKey))) return Promise.resolve(true);
     if (!force) { const r = remembered(); if (r) { keyMem = Object.assign({}, r); return Promise.resolve(true); } }
     if (unlocking) return unlocking;
     unlocking = (async () => {
-      const pass = await askPass('API 키 잠금 풀기', '잠금 암호를 넣어 주세요.', false, true);
+      if (await keyFromMemory()) { const r = remembered(); if (r) keyMem = Object.assign({}, r); if (keyMem) return true; } // 기억해 둔 열쇠로 — 암호 없이
+      const pass = await askPass('API 키 잠금 풀기', keyMem ? '이번 한 번만 넣어 주세요. 이 기기에 1년 동안 기억해서 다시 묻지 않습니다.' : '잠금 암호를 넣어 주세요. 이 기기에 1년 동안 기억해서 다시 묻지 않습니다.', false, true);
       if (pass == null) return false;
       try {
         const k = await derive(pass, unb64(cfg.lock.salt));
         const raw = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(cfg.lock.iv) }, k, unb64(cfg.lock.data));
-        lockKey = k; keyMem = JSON.parse(dec.decode(raw)); fillIds(); remember(askPass.remember); renderApis(); return true;
+        lockKey = k; keyMem = JSON.parse(dec.decode(raw)); fillIds(); await remember(askPass.remember); renderApis(); return true;
       } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
     })();
     return unlocking.finally(() => { unlocking = null; });
@@ -161,7 +170,7 @@
   function askPass(title, desc, twice, rememberBox) {
     askPass.remember = false;
     return new Promise(res => {
-      const d = dialog(`<h3>${esc(title)}</h3><p class="modal-desc">${esc(desc)}</p><form class="sc-form"><label>암호<input type="password" id="pw1" autocomplete="new-password" required minlength="4"></label>${twice ? '<label>한 번 더<input type="password" id="pw2" autocomplete="new-password" required></label>' : ''}${rememberBox ? `<label class="sc-check"><input type="checkbox" id="pwKeep" checked><span>이 기기에서 ${REMEMBER_DAYS}일 동안 다시 묻지 않기</span></label>` : ''}<div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">확인</button></div></form>`, 'ask');
+      const d = dialog(`<h3>${esc(title)}</h3><p class="modal-desc">${esc(desc)}</p><form class="sc-form"><label>암호<input type="password" id="pw1" autocomplete="new-password" required minlength="4"></label>${twice ? '<label>한 번 더<input type="password" id="pw2" autocomplete="new-password" required></label>' : ''}${rememberBox ? `<label class="sc-check"><input type="checkbox" id="pwKeep" checked><span>이 기기에서 다시 묻지 않기 (1년)</span></label>` : ''}<div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">확인</button></div></form>`, 'ask');
       const f = d.el.querySelector('form'); setTimeout(() => d.el.querySelector('#pw1').focus(), 30);
       let done = false; const fin = v => { if (done) return; done = true; d.close(); res(v); };
       d.bg.addEventListener('closed', () => fin(null)); d.el.querySelector('[data-x]').onclick = () => fin(null);
@@ -1719,7 +1728,7 @@
       const before = new Set(cfg.apis.filter(a => hasKey(a)).map(a => a.id));
       if (!cfg.lock) { cfg.lock = { salt: L.salt, iv: L.iv, data: L.data }; lockKey = k; keyMem = Object.assign({}, got); cfg.apis.forEach(a => { if (a.key && !keyMem[a.id]) keyMem[a.id] = a.key; a.key = ''; }); await sealKeys(); }
       else { if (!(await unlock())) return false; for (const id in got) if (got[id] && !keyMem[id]) keyMem[id] = got[id]; if (lockKey) await sealKeys(); }
-      sy.keysSeen = L.data; saveSy(); saveCfg(); remember(keep);
+      sy.keysSeen = L.data; saveSy(); saveCfg(); await remember(keep);
       const added = cfg.apis.filter(a => !before.has(a.id) && keyMem && keyMem[a.id]);
       const still = cfg.apis.filter(a => !hasKey(a) && a.type !== 'custom');
       toast(added.length ? `키 ${added.length}개를 받았습니다: ${added.map(a => a.name).join(' · ')}${still.length ? ` · 아직 키가 없는 것: ${still.map(a => a.name).join(' · ')}` : ''}` : still.length ? `그 기기에도 ${still.map(a => a.name).join(' · ')} 의 키는 없습니다 — 이 기기에서 [고치기] 로 넣어 주세요` : '받을 새 키가 없습니다 — 이 기기에 이미 모두 있습니다', 5200);
@@ -1761,7 +1770,7 @@
     const p = await askPass(title, desc, true); if (!p) return false;
     const salt = crypto.getRandomValues(new Uint8Array(16)); lockKey = await derive(p, salt);
     keyMem = Object.fromEntries(cfg.apis.map(a => [a.id, a.key || ''])); cfg.apis.forEach(a => { a.key = ''; });
-    cfg.lock = { salt: b64(salt) }; await sealKeys(); return true;
+    cfg.lock = { salt: b64(salt) }; await sealKeys(); await remember(true); return true;
   }
   let connecting = false;
   async function connectDevice() {
