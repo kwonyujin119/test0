@@ -1,10 +1,10 @@
 {
  "date": "2026-11-09",
- "generatedAt": "2026-11-09T06:30+09:00",
+ "generatedAt": "2026-11-09T10:08+09:00",
  "feedsOk": 19,
  "feeds": 19,
- "articles": 906,
- "issues": 786,
+ "articles": 1101,
+ "issues": 889,
  "method": "여러 언론이 함께 다룬 정도 + 시장 핵심어 + 최신순 (AI 사용 안 함)",
  "items": [
   {
@@ -14,22 +14,27 @@
    "source": "서울경제",
    "time": "2026-11-08T11:16+09:00",
    "category": "국내 증시",
-   "sources": 17,
-   "articles": 17,
+   "sources": 15,
+   "articles": 15,
    "keywords": [
     "코스피",
     "급락",
     "최저",
     "반도체",
-    "AI",
-    "외국인"
+    "외국인",
+    "순매도"
    ],
-   "score": 81,
+   "score": 73,
    "related": [
     {
      "title": "'삼전닉스' 떠나는 外人…지난주에만 7.6조 내던져 보유율 최저 수준으로",
      "source": "뉴시스",
      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1keXhWcl9heE1la2R6TmV3dk5fTU1fNzdMcmNqYnRMV0hDZEVNNm9XSmVnYTZRVEZSdEx1d0lHVGNvbE5QaDlCaUZkSlI5TGg2VDFEMUJnTlN1X2taRllSY9IBeEFVX3lxTFBRV3VJbUJhLTlGYmtqSXQ1YS1VRjIyNnNSS3hsVzlfSE5uNFlyS29ySlZseHZaWDBhclNnZk5wN296N0l4RjNpNkl3dWlha1MzYjdteDFYTVZnZVlwT0ROU1FjQTZ3QWctT2VDc01IS1dOTmlaaTJSVQ?oc=5"
+    },
+    {
+     "title": "외국인, 지난주 삼전닉스 7.6조 투매... 삼전 보유율도 17년만 최저",
+     "source": "글로벌경제신문",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9taXNIdVoxajg2Mmw4TmZwYmJrR05nenhoMXVjdlNtV1VKb215UkdrZm1aZTlGMzZrd2VGR0pZRVh2b0F6QkdhdEF3VGpVdzNscE45UjBOYWNRcnlyRWU1ZHRnZXBHbFlCN2dkeThMd0XSAXBBVV95cUxPbWlzSHVaMWo4NjJsOE5mcGJia0dOZ3p4aDF1Y3ZTbVdVSm9teVJHa2ZtWmU5RjM2a3dlRkdKWUVYdm9BekJHYXRBd1RqVXczbHBOOVIwTmFjUXJ5ckVlNWR0Z2VwR2xZQjdnZHk4THdF?oc=5"
     },
     {
      "title": "삼전닉스 7.6조 폭풍매도한 외국인⋯보유율도 최저",
@@ -40,335 +45,418 @@
      "title": "삼성전자·SK하이닉스서 외국인 '썰물'…일주일 새 7.6조원 순매도",
      "source": "메디컬투데이",
      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE8tRGtTMUdHUkhsRzJBOUpNMkc0VV9WRktnWXJpVVJjU2hKbnAtWjhtZFFWeFpUR1hqWExTeklsV2lpbUZuZmtsWFl6NVBCMV9RRHViTzJYY25jQmpMSUhTUTN3MzNVb1d2U2pMMA?oc=5"
-    },
-    {
-     "title": "삼성전자·SK하이닉스 월요일 반등할까…미국 반도체주 4%대 상승에도 외국인 7.6조 매도 '변수'",
-     "source": "시사프리즘",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE03UDJuZVJSaUp6VHE1T2Z6Nk9ORzFma01tdXMyUlNRdV9hdk04MGtzSkI0Y0lkeFpES05rOWpKX2l6cFkwOGpwVUxyeGhtQUhuV0plbVBNQ2ZfWUVNd25mRTFLSy1rRDN6?oc=5"
     }
    ]
   },
   {
    "rank": 2,
-   "title": "리플 1.16달러 흔들…비트코인 ETF 4억달러 유출 직격",
-   "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNLWhKX1ZxZUQtc3FqaXVrRGRhQktMTnZURzZtVzR1WlBHSjhnYWtFZG80THl5ajFsU0hGbHNvYjMxMWRyaUdnMW5WbGZaYzVNY1VMUW1WYUNqUVVDbHZ4N1BrdHZBcmRYd3BRM0Y1MEpHV0hBLXR4dzRYeUl1TW0tN1FXRmQ0UmF0?oc=5",
-   "source": "글로벌이코노믹",
-   "time": "2026-11-09T06:15+09:00",
-   "category": "가상자산",
-   "sources": 4,
-   "articles": 6,
+   "title": "美 블루웨이브 덮친 외환시장…1360원대 환율 방향 가를 변수는",
+   "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9pRXB6aFJjaTA1R3hMV2hudDgyODh6N2tWZEdJdmhOcXU3djRjSjVOYzNPRFZiNzJBSTFjalgyUXpFZ2JXRlNIbGdKenpmVWhlaVZ3Q2pmZEJIcC1VSUltSW52SUdjd3RtdVlN0gFwQVVfeXFMTjVGNGk5MGgyXzBHbWxaV3BhRk1rQWRBY3dNOHVPLVBfZ2ktQVFnTG80WUNGSjFZZnF4bVd0djh4VDYta3E1OFdNblRHYlZ6N25UNEhUOHdHM1RsanU0ampVa1E4QUs5dWRZdi1ORGxTMQ?oc=5",
+   "source": "머니투데이",
+   "time": "2026-11-08T13:03+09:00",
+   "category": "거시 · 금리",
+   "sources": 12,
+   "articles": 16,
    "keywords": [
     "금리",
+    "연준",
+    "CPI",
     "고용",
-    "달러",
-    "급락",
-    "비트코인"
+    "환율",
+    "원·달러"
    ],
-   "score": 29,
+   "score": 66,
    "related": [
     {
-     "title": "리플(XRP) 1.16달러 지지선 지킬까…ETF 자금 유출에 1.12달러 경계",
-     "source": "코인리더스",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE12V2ZiaEM4b0ttVkRTSGN0UGg5TlJUVTZzUzZtNlBMRlQtY18yMXlkLWUxeGVYZjNNSEFReUl6eC1lcGxkY2w4Sk1n?oc=5"
+     "title": "AI 불안에 중동 리스크까지…환율 1360원대 상승 압력[외환브리핑]",
+     "source": "이데일리",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNR3ZqbHlnMm5jZnNqSERMaXhxcnFOLXJDYWtFQW5QaXFqazc1T3VvT3F5cF9xUEJGY1NtTVdBZDdBWXp0Y0RmQ0JsVGFHSjVHQ0pEblFNaC1oVWVacDV2SW9sUklOYlA5WnRGSXNhWXRqX0UyakhpU3ZPZ0p6Qmt4Zg?oc=5"
     },
     {
-     "title": "비트코인 ETF, 기술주 급락에 4억 3,020만 달러 이탈…유출 94%가 IBIT에 집중",
-     "source": "위키트리",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5fQVRnUGFUc09IMm9QZEFVUVlMdFJfZTkwcnNpaDg3RGh5N1pJQnpjeUlTSjNud3BRZGFqYjY3LWk4UUtRZnlrdTFaeHNDZVdmRF9tWEVn?oc=5"
+     "title": "'블루 웨이브' 쇼크에...환율, 1,360원대까지 상승",
+     "source": "뉴스1",
+     "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBrejdsaF91aTVCWWFvMVpJZUxza3ZPcTNRRFBSemFtei1JNW9yYzBQbzU1THp0YmhiSUxybnZKb2RsSER5UHlNVzhROA?oc=5"
     },
     {
-     "title": "비트코인(BTC) 7만 5,310달러 지지선 지킬까…ETF 자금 유출·롱 청산 부담",
-     "source": "코인리더스",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1fVWF5akd3SDVueTZEUWUxaUV6a2o1X1NHeHFpd1F3OTdaamljdUxDRWZUY3Z3MTFOaGNGRFBzU09hRlE3dTRNZGJR?oc=5"
+     "title": "美민주 상·하원 장악에 달러·원 환율 1360원 돌파",
+     "source": "뉴스1",
+     "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5NN1c3alVMODR0Qk0tNXRHWldhRjNkWmlXWTRRRzJPYzBWaGMxRUxtbEZLQW5lUWw5dFZaRGZUUmttWXFrQWVZbEVsVQ?oc=5"
     },
     {
-     "title": "비트코인 7만5천불 횡보…美 고용지표 호조에 금리 인상 '우려'",
-     "source": "지디넷코리아",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE1Kcl9OcVZJMS1WcEhvVWhtV3FqTk9mZXpEWGEtem1tc3pxS1hqR1R2QTBGM3BaMTFCNTdTNDhmamVrZDN5Ti1zRVRiM09KelF1RENXb2Fn?oc=5"
+     "title": "美 중간선거 충격에 환율 1360원대 급등",
+     "source": "뉴스1",
+     "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1KZ3FoWW8zU0I2elRwTUZIQmtPWm1SeHBxS2NDXzVRRE4wVzloREpfTzhnbkpRNE1PZ2VTVDZjMERoZTFpNnB0ZVJzZw?oc=5"
     }
    ]
   },
   {
    "rank": 3,
-   "title": "글로벌 증시 급락에 상장지수펀드 순자산 400조원 깨졌다",
-   "link": "https://www.yna.co.kr/view/AKR20261107028500008",
-   "source": "연합뉴스",
-   "time": "2026-11-08T06:05+09:00",
-   "category": "국내 증시",
-   "sources": 4,
-   "articles": 5,
+   "title": "비트코인(BTC), 8월 이후 최저치로...7만 달러 가나?",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE4zOGI5WWZLLVk5dkF3NXlNdU5tV2ZEam5FNlczTU82X1hhM2VJaURFTXF4c1lsaWYwTWlZbUp1RWs4QVIyT3JfUXZ3?oc=5",
+   "source": "코인리더스",
+   "time": "2026-11-09T09:30+09:00",
+   "category": "가상자산",
+   "sources": 10,
+   "articles": 15,
    "keywords": [
-    "증시",
+    "금리",
+    "고용",
+    "달러",
+    "나스닥",
     "급락",
-    "상장"
+    "최저"
    ],
-   "score": 24,
+   "score": 59,
    "related": [
     {
-     "title": "증시 급락에 ETF 시총 반년만에 400조 아래로",
-     "source": "매일경제",
-     "link": "https://www.mk.co.kr/news/stock/12201811"
+     "title": "비트코인(BTC) 7만 3,000달러 지킬까…롱 청산에 ETF 자금 이탈",
+     "source": "코인리더스",
+     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE9FdXV4WDFZaFRhcGdtTHNsYTBZZHBXOC00eHMtVmtKYXhtYktTOG1vV3NXdGNTbE1oczNDM09rY3VsWjZub0ZFMXFR?oc=5"
     },
     {
-     "title": "한미 증시 하락에…ETF 시가총액 400조원 붕괴",
-     "source": "매일경제",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFB3UzNJX1lfSHotR2tfTWlXTUY3NnJ2T3hHUmZvYlRTQjEtTXUwUU1xdHRtMDZXRGRKMWM5SktnOEZDbnZvSEc0WFlJNlpuWlMwOEE?oc=5"
+     "title": "[아주경제 코이너스 브리핑] 비트코인 7만4000달러대로…美 정책 불확실성에 약세",
+     "source": "아주경제",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE4yYjVmTXBfWG5PTk0tU1h6SDJ6WGhIRXlzcmJLOVBzcEVSRWZ3YmV0RXgzcGVNZ1JwWW1leHVtbWxUSTZXanp3RXY2T3FHams3YlJmWjVTN1R6UdIBWEFVX3lxTE9xTjcwUXV4TU1OQ19NNER0RXVZVVRBUTNLWkFOTnBCbW8zZzNnMjhJTXU2VC04SWZwcHpVTlFEOEVOQzVaLUs3S1B4UWJiMTFKY3M0VGVKWXE?oc=5"
     },
     {
-     "title": "[증시긴급] 500조 돌파하던 ETF 시장, 불과 4개월 만에 400조 깨진 사연",
-     "source": "CBC뉴스",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE8wNUNHLTdkS0xOWTJVMzNMNlVDZ1E5TnRlVlJnRUdjTlhEWEl3TWgtcVlhNi00b1g5SHZpSGFPWjdaWi1CZkt4NXBrdzF5Z2JEM2dEWjE4eURqWXhZYjlMelNHdFV1Mkl1?oc=5"
-    },
-    {
-     "title": "증시 급락에 국내 ETF 시장 시총 7개월 만에 400조원 아래로",
+     "title": "美 공화당 패배에 비트코인 혼조세… 7만5000달러대",
      "source": "Chosunbiz",
-     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQVG5HcWpYNlFvOUNQblpjYmx4UFVKaTQxVlM1T1hDZ09CQjRLVzVCVGQ5NkdCd2dodUQ0S29NOFVITVhqdGtIb1BBZkZJblc2X1RZS012RVFLYVpvRGtmcFlyNUVsNHNsNTRxemtLdDRxZXg3OU1NWmo2dmkzdEtaY0NFdnZ0WVNs0gGcAUFVX3lxTE5IOTVwdzJDcktqeTNzdjRuLUJxNjhPay1VOTFVM3hSamxSNkMwbU5sYjhkVVdUYWRjRkVZRU9sMWUtTk4wTzNvYUVhb1A2YmpiUUFNTmRCOWVNVEdlNHpZeUdIR2xNT0lpcVFuM19nX1ItaFRWU1lmdU1yd004YTBzWTlyT01GSDdXNDdVMGNJeVlpU0RiMHNESDlrbA?oc=5"
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxObXp2M0x5U01ZRlBWVWNObEh2R0ZsSWVYMVJyakp1aDJWOWNFSDBncVdzTUt0ZENybDZLTmhNOHlPUlBBbnNkcUU3V3R6Y1VqNE9GVGU3Q3h0MzVhSVhTLTNOSHQwMTJ0WXVrMzNqLUNTODhrNjZJZjlaZVNNUVQyNtIBlAFBVV95cUxQWHQ1R2tZWnJURXA4amh1S0J6UEgxZG5YNi1nc1ZocTdSaHhZYnczb0NjeVdoeEtMR3I4WTdEM0Z1WG83TEI1cThVMW4yTkY0dGV1NmN4dUVSNllqYjMwazlENmt5dU5fbFJ6WF9na2ZGV29mVW51LXhqbkpNbkx6eGpqWWlGNnVsX2hhX3Q3QWtPVHFH?oc=5"
+    },
+    {
+     "title": "비트코인 7만 5000달러 밑으로...ETF 주간 순유출 6월 말 이후 최대 [디센터 시황]",
+     "source": "www.decenter.kr",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9FRGdJZzcxUnVFeWZic0dsanRUNjNLa09HaHNiMmRQRVUwQlYzZDNqSDlMR3Q4MXZuUHdWV1FNbEZ2cWtRX2g4XzRoczZfSEFQNkE?oc=5"
     }
    ]
   },
   {
    "rank": 4,
-   "title": "비트코인 11억달러 롱 청산…7만5310달러 지지 시험대",
-   "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNOVlsNWN1MHpmSDVCR2QtaVJSLWNrZjFycTA2UmVBQlB5X3ZfZWNKVWRvb0ZyTGM5RzZJcUhodEdEZ1llTXlac1NQQTRudWpydWtVTENPUmFDT0FMcVUza295cWVfbnJvOGUwZm1weTlaYjN3cURUZkVjOUYyWTNGdm8yM3FncHFi?oc=5",
-   "source": "글로벌이코노믹",
-   "time": "2026-11-09T06:00+09:00",
-   "category": "가상자산",
-   "sources": 3,
-   "articles": 5,
+   "title": "‘美국채·나스닥에 반반 투자’ 삼성운용, 美나스닥100미국채혼합50 ETF 신규 상장",
+   "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9mVmdsNkUyUGF3WkJTVXMxZ2p3UHZHWlhpWG16ZF9rcF9rYVcyQXpkZ0tHNU1HZnZxOURyQTdGYzFMTXdTWV9hMzJWVU5nR1h4ZkNDWVZR?oc=5",
+   "source": "헤럴드경제",
+   "time": "2026-11-09T09:17+09:00",
+   "category": "거시 · 금리",
+   "sources": 10,
+   "articles": 10,
    "keywords": [
-    "달러",
+    "국채",
     "나스닥",
-    "급락",
-    "비트코인"
+    "상장"
    ],
-   "score": 22,
+   "score": 47,
    "related": [
     {
-     "title": "비트코인(BTC), 7만 4,900달러가 최후의 보루?...코웬 \"곰들의 반격\"",
-     "source": "코인리더스",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBmVE01MGQ0UDJ0NmdsV1NGRHIyRFRvWTk0NjdVdXFXXy1oMjNfZUJ5NzdCMXJRU3BXQ0VmcVBwOWF0MnVGb0VBd1p3?oc=5"
+     "title": "'KODEX 미국나스닥100미국채혼합50' ETF 신규 상장",
+     "source": "아시아경제",
+     "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFA5dlVyT0hJbk5xSnI2WmZTbG9nbGlvQ1VLektubzlRMUJ1R1N6dnJmaWZWcWVxbi1KSkdXdTlYRnlaQ2o1Q2IzS2ZXaDdxeURUOV9ETlMtaXpuYnFhN3plM213?oc=5"
     },
     {
-     "title": "비트코인 ETF, 올해 순유입 전부 지워졌다…중간선거 뒤 롱 청산 11억 달러",
-     "source": "위키트리",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE0tRXotUlozNmNNQmVETGppRjJjeHpRakZfZjJIMFlJV0JwcU1vNThfNm5hemxDeFNxUkZRMGE1YmlwRXFoeTBuVHQzQW8xbHFTZWVOSlBB?oc=5"
+     "title": "삼성운용, 美 나스닥100·단기국채 혼합 월배당 ETF 출시",
+     "source": "글로벌이코노믹",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOYU5hajZwZVlZRzRlTFFteXJ1VDBEa2szbkJzMnFvb0pXNm5RaWswMHY1c3JnWjJyV1pEd1JXVm5CRF80UUYxR0xmd0lHWktnRnM1SWFZb0xZNUxmTlBFd0VXcElmdzFuR1RKV0lzX3lCMHFJMGxLSEZKazhYTW5XeHNUUUp0WEZr?oc=5"
     },
     {
-     "title": "비트코인(BTC) 7만 5,310달러 지지선 지킬까…ETF 자금 유출 부담",
-     "source": "코인리더스",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBvVmlBVHBjVUNBamNXcy1adDNYLU1sdndsMUlVMGptWG5DN2hBdHRHYlVVLVhPSXh1RVVUc3BBSVc0UUxMbHFVQndB?oc=5"
+     "title": "삼성운용, 나스닥100·미국 단기국채 혼합 ETF 10일 상장",
+     "source": "매일일보",
+     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1DbUFVZUlweXJ5eEMwUDB3M3VTTmk5b29aeHJ0c0lLNUxSblFsXy1Pd2ZJWGtqVDdnT1JINjI3QS10TW5uM3IxM2ZhUkpqdmxrUUhsX2VOeTBKcGc2ZWlsZUNqcFQ?oc=5"
     },
     {
-     "title": "비트코인, 나스닥 급락에 7만 6,000달러 밑으로…하루 10억 달러 청산, 대부분이 롱",
-     "source": "위키트리",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBvLUJrak5XNkFoemxvNFlTZXBjc3VTa2NiVzhpNlppcEt6eWQybVBjaGlnZVVRZ1pORzR0UG0xeEhQVU9WN09fQjZVT3lsR0FCM3dzNGlR?oc=5"
+     "title": "삼성자산운용, 'KODEX 미국나스닥100미국채혼합50' ETF 10일 상장",
+     "source": "월요신문",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1jN2hBSXhHajRTNWJmc1p4aW50M2JNa19vVmV1SzFzdTdDWnpRSjZWUUdFUUk0UTFyaURzUzhjQ0NUbk9DaDdwVjNJbFV0QXhuWXFsV2dwTHVvUEVOa19vUFFTQUFkQWRWZWc?oc=5"
     }
    ]
   },
   {
    "rank": 5,
-   "title": "美 블루웨이브 덮친 외환시장…1360원대 환율 방향 가를 변수는",
-   "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9pRXB6aFJjaTA1R3hMV2hudDgyODh6N2tWZEdJdmhOcXU3djRjSjVOYzNPRFZiNzJBSTFjalgyUXpFZ2JXRlNIbGdKenpmVWhlaVZ3Q2pmZEJIcC1VSUltSW52SUdjd3RtdVlN0gFwQVVfeXFMTjVGNGk5MGgyXzBHbWxaV3BhRk1rQWRBY3dNOHVPLVBfZ2ktQVFnTG80WUNGSjFZZnF4bVd0djh4VDYta3E1OFdNblRHYlZ6N25UNEhUOHdHM1RsanU0ampVa1E4QUs5dWRZdi1ORGxTMQ?oc=5",
-   "source": "머니투데이",
-   "time": "2026-11-08T13:03+09:00",
-   "category": "환율 · 원자재",
-   "sources": 4,
-   "articles": 4,
+   "title": "코스피, 장초반 보합세로 '5천선' 사수전…코스닥 하락(종합)",
+   "link": "https://www.yna.co.kr/view/AKR20261109029651008",
+   "source": "연합뉴스",
+   "time": "2026-11-09T09:35+09:00",
+   "category": "국내 증시",
+   "sources": 6,
+   "articles": 7,
    "keywords": [
-    "환율",
-    "원·달러",
-    "달러",
-    "AI"
+    "코스피",
+    "코스닥",
+    "뉴욕증시",
+    "반도체",
+    "외국인",
+    "순매도"
    ],
-   "score": 22,
+   "score": 38,
    "related": [
     {
-     "title": "美 선거 후폭풍에 원·달러 환율 1360원대까지 올라",
-     "source": "국민일보",
-     "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFA2RjdZWjJ3OTJFOW15ZWdPSnpkMXNWRWRXNGdnMWhwampQU0xpT193YlRKb0lESFJrVXVLVUtJUFdXN05kQWlDZ1cxUGtXcWpldWVOdHlFN04?oc=5"
+     "title": "[속보] 코스피, 하락 출발후 보합권서 등락",
+     "source": "연합뉴스",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5MbWV5R2ZJZU12UTFDcHFCd2MyZ2tHa042aUtscXdOenFPVms0ekstRzVaVVl0X0FQeUJHcE54bWxXanNTRXFZcG1NUUlubTJCdThuLU5mWi1VYzFOdDFoQdIBYEFVX3lxTE5MbWV5R2ZJZU12UTFDcHFCd2MyZ2tHa042aUtscXdOenFPVms0ekstRzVaVVl0X0FQeUJHcE54bWxXanNTRXFZcG1NUUlubTJCdThuLU5mWi1VYzFOdDFoQQ?oc=5"
     },
     {
-     "title": "[이번주 환율] 美 중간선거 후폭풍에 환율 1360원대 터치…AI 투자심리가 변수",
-     "source": "오피니언뉴스",
-     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE81SlBCdWd2WWxNX096MmI1Y3Bid1FNdVJjRUlscHBIWm9pSTB0NW5GeEFlMWZYeXNRbGRZOVg3YkZGRVpMSWtKUHlyT2wxYmx6OUJNNDF1b0lfVU1SVkFJTnVWdW1KMU0wNDVQa2tWRkYwdw?oc=5"
+     "title": "'5천피' 코스피, 장 초반 보합권 등락…외국인 7거래일째 순매도",
+     "source": "싱글리스트",
+     "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBLM3NQR2xLOEwzSkJnNmpsUExpUEZKWkxiYkZKSjVIeU4yQzQ3cWZOOEVKNHdkLXhiWlN1QmlacUYwUVJpeDFDdUwxcG01dGloVHd3bE1XSTZpMDRVRGFwVzlLNEZGZw?oc=5"
     },
     {
-     "title": "블루 쓰나미에 AI 불안…환율 1360원 재돌파 촉각",
-     "source": "마켓인",
-     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1qbWxSVmJYZm02N3RVclk2MEVRNmxtV3c3dDdaaTA1dGpRMm1QQXRCd3pXS19RYXpPQlZFcnlwQnFyblR4N2RkQUE2bnpsWXFwQXkzUklseG9mWTJhN0liaktIaS1BUEJOQTk4QkI0MkJESnc?oc=5"
+     "title": "코스피 5천 간신히 사수…보합권서 등락",
+     "source": "KBS 뉴스",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBzYk9OVDg2X2p5WW5FRGowWnhXQ0VzLU9NOE5Cdm8wNTE1djRET3h6cU9pbWtMOFNVcHExeXdwcm16WGNPdGI4bktueElyNm4xak96OWp4N1dmVWs?oc=5"
+    },
+    {
+     "title": "뉴욕증시 반도체주 반등에도 코스피 하락 개장‥5천 선에서 등락",
+     "source": "MBC 뉴스",
+     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBSa3dDc2d5MW4xaDdjaXN3V2VibmxCSXBLVkthb1dka2JkM2NkTDZQNzVfWk9rN3VtYndxaXlCNjRtODU2TjJObl92NW5zdlZhWFY0d2RrdUhaMGhBUmNGS2xYVGpSU1pPUGM5OUN6cEZFenNn0gF0QVVfeXFMT19ENDBuU3ZxSkRES0tQcjhwZ1lhYlc3MnJRM1VZZ2Z5dFVvYl85Mk8wcEdscG9XMXRhb0R6QVZjazJIZkNhdUhuWnRYMFpvLWRfWmFMUmZ5MmhXc1dOLUpXZE82dkxuRTFqYWcwcjUxNG9BOG4?oc=5"
     }
    ]
   },
   {
    "rank": 6,
-   "title": "한 주 새 11.7% 빠진 코스피…美 반도체 반등에 5000선 지킬까 [선데이 머니카페]",
-   "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1lbTRiZDNfNmN2eVJteHdMRnd4TWhjcHNsRjh6dmYyY2twRjZmTmNPdnlsQkpIU3JYcHNDQXJ6ZnpWakFtdGpZTEdmRmV2YjFzN0HSAVNBVV95cUxQdkg1Y1g5VllLamRWNGlkM0I0c2NabE5jMEVmendnRjBLdnpiREQ4R3ZydVlGMDVya2p0bF9JbEFQbjVERjhya2x1N2FyeWJoOVhPTQ?oc=5",
-   "source": "서울경제",
-   "time": "2026-11-08T07:00+09:00",
-   "category": "국내 증시",
-   "sources": 2,
-   "articles": 2,
+   "title": "\"금·은·구리 가격 올라도 내려도 투자\"…삼성증권, ETN 6종 상장",
+   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5taEhzS29RTGVzeDU0QWlaRHpGcGhsVlFaUkdtTXZfMWw3bmRpU3RnNUwySE14UURBRm40X1Y5UEVnMW9SQzlYM1lSbTdmNWc4aHRKd0puOUt2QQ?oc=5",
+   "source": "파이낸셜뉴스",
+   "time": "2026-11-09T09:42+09:00",
+   "category": "환율 · 원자재",
+   "sources": 8,
+   "articles": 8,
    "keywords": [
-    "코스피",
-    "증시",
-    "폭락",
-    "반도체"
+    "금값",
+    "상장"
    ],
-   "score": 19,
+   "score": 36,
    "related": [
     {
-     "title": "코스피 한 주 만에 11.7% 폭락…5000선도 위태롭다 [美선거 후폭풍…증시 패닉 ①]",
-     "source": "이투데이",
-     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFB2d3JnOXQxeUk1U0U2ZThHUzJSQVVudG1qamQ0TEFKRzYydHpPX2Q0ZXphZ0s5U1dVX2hRRWllNlNya21ySFdFNWswbzJkTFA3bUd5ag?oc=5"
+     "title": "삼성증권, 금·은·구리 등 원자재 ETN 6종 상장",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9mZ0pfX0xxLVVhU1o5VjZhUzYyOURJZXNIRnRsS3JEOEtTdWMwUHNkdGpQbUZEeU1GOG1aeDdJcXFSWHh3enRMWlZ1ajVwdTNrMjdfMVFNVF84VEF1?oc=5"
+    },
+    {
+     "title": "삼성증권, 금·은·구리 선물 ETN 6종 상장…상승·하락 모두 투자",
+     "source": "서울타임즈뉴스",
+     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5VWHVfRDY0MTB4akZGSXpxRnhPeTF2T1ZpdWRKR3lYaHdjUFpHNkFCOXFTQkZTem84ZkF1ZDFqYXZCWVJUa3FQcENUTW03YlMtTXRfbE8yOVczYlQ2ZDAxeC1ZUDhtLUpGcWpF?oc=5"
+    },
+    {
+     "title": "삼성증권, 기초자산 ETN 신규 상장... 금·은·구리 선물 투자",
+     "source": "뉴스락",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFA0dmd4d2pQNm9sazVtTzM4WTFWZm5RdFpyZTlhVk9GNFlqM3poM1dheXRoZHRUV2tadnpZd3pqcllGSEF5aTFJNVNoeWVKOTIwSEpidU9sOEduU1BhWjBSQXl1VW40RDhIakdORA?oc=5"
+    },
+    {
+     "title": "삼성증권, 금·은·구리 선물 ETN 6종 상장…상승·하락 양방향 투자",
+     "source": "매일일보",
+     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBxbk5VWjF3cWEwWkFaY2pYd1BLRmhldmJTdVM5QkxEUGRNMThuektlN0c4T3BBSHRzcFFLcy1VdWFsVHNRY3ZlNmtiZDY0M0lnWlNtUFFUMVNSc2x3aVhId3dWQjM?oc=5"
     }
    ]
   },
   {
    "rank": 7,
-   "title": "동원파츠·바로팜·넥스아이…다음주 코스닥 3곳 데뷔",
-   "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE04QmozNnhLYUNTUE56MTNiNVV3d21GVjNEcFRCaVhTVkVZUDE4cVZPb1YzclU5U1NQUldfX3dkWUhCZ2w4WDFKbGZmREhZeVRtZXlfc2xibDNOUlRfSXF0azFGNUs0dlMw0gFuQVVfeXFMUHVycllLSGltV0tCTVMwMFJXYUc5TDRucWJ5QmZOX2xyUk5ZY0xOT0MxbWpXUlRiTlhVY1piZzNtckVmMjBraGo1dFhXUUVqN1pZMXVoYkowVFBGY2k3UVFLbWpWNExURXVTWC1SQVE?oc=5",
-   "source": "머니투데이",
-   "time": "2026-11-08T08:00+09:00",
-   "category": "기업 · 실적",
-   "sources": 3,
-   "articles": 3,
+   "title": "[코스피] 25.49p(0.50%) 내린 5,034.20(개장)",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5seml3dnFqaGd0WlQybE1IeEhPMmgzdkFEdWtTSUtlWEItNHBjUENYVVJtcktKX19jV19WWUtLRnRNMHN4OTlsNUJENEx6aUhPV1EwTEJKZFJZeWFZekNMMtIBYEFVX3lxTE5seml3dnFqaGd0WlQybE1IeEhPMmgzdkFEdWtTSUtlWEItNHBjUENYVVJtcktKX19jV19WWUtLRnRNMHN4OTlsNUJENEx6aUhPV1EwTEJKZFJZeWFZekNMMg?oc=5",
+   "source": "연합뉴스",
+   "time": "2026-11-09T09:01+09:00",
+   "category": "국내 증시",
+   "sources": 6,
+   "articles": 7,
    "keywords": [
+    "코스피",
     "코스닥",
-    "IPO",
-    "상장"
+    "뉴욕증시"
    ],
-   "score": 18,
+   "score": 34,
    "related": [
     {
-     "title": "[주간IPO] 동원파츠·바로팜·넥스아이, 코스닥 상장",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1vYmwzTjlRdGFKTC05eG1SNDBwNUNXQ3cwYXpiMlBuWHQ4WHQxTDFPanhScEhEaHRyVEtpUzlTS3ZmMkpRelZhUElfOWcxbVQwMlB6aXUxUXhneUdI?oc=5"
+     "title": "코스피, 약세 출발…0.5% 내린 5,034.20 개장",
+     "source": "연합인포맥스",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBubDc0SGlIWGMwOVRDRlFUUWJLRFNmYXFsckQzNWlGZ1hwYUdyODd3SmswX0Rqc2hqUWFlZ25NYkNycGJpTUtUQ0NESC1LM1RhX0xTOTVrRTh5TmNGdmJwR3hxSVpVdFpyN0V1RTVhZU3SAXRBVV95cUxQeHEtYl9Ga1dRVF9Na3V5RVI0eV9iS05IQWVBRkQyaFgyUl9qNmpISEFKNmFEMFhNSHZHQWxSYWZ4QTllcm4wS2c2a1ZQc1hQMDZyRTRrWVpHQjYyZ3BQbC1fQW40SDFmMHpQc1d6NzNRa29paA?oc=5"
     },
     {
-     "title": "[IPO 워치] 동원파츠·바로팜·넥스아이 코스닥 입성…청약 5곳",
-     "source": "뉴스투데이",
-     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFA3clJPZFJISXQ0T2JibzZUa2xRZm4zWFptN3ZQTGhkaEdWMFpNMWR0bUpzV1BTQ0NRYmNWZThic29BUTBEak5xS1lSUk9kSmtoRFJ6T1JKNDFOaFVBX2c?oc=5"
+     "title": "[속보]코스피 0.5%↓ 5034.20…'뉴욕증시 반등에도 5000선 보합 출발'",
+     "source": "이데일리",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOV3c2czRmMWNQZHhmWVhHemJqMTRhX3ktRDhWX29JVWtwUm1sMzJCb1RWTFVfckhuZmFoWVcxUUJPYzdEYmtlM21RTUZveVFXNk9VbWplNjU5NmVlUjFFNjRfc2tvTjlrc2pwN0xha1lWUnlqLXVFMDVlTUtVZkFTbw?oc=5"
+    },
+    {
+     "title": "코스피, 0.50% 내린 5034.20 출발…코스닥도 하락",
+     "source": "뉴스톱",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9CY01ibVpYeWZvdnZ1b2N1NVoyS2ZHOEFKTWdaa05EeFFMbTVkM3RfVkxDYkkxSFZiZmdFUkFwM2Mxa2lqOGhsczJzcWdwV1dKMjduUTV0NmVhYWlQSW1sdGJuSmgySXNuWUdaOWp5WQ?oc=5"
+    },
+    {
+     "title": "코스피, 0.50% 내린 5,034.20 출발…코스닥도 소폭 하락",
+     "source": "연합뉴스TV",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5KT0Z6OFlsSXp6VE5CRDRGbXJ2eS1ta18yX0o4Ri14cWRJa1ZRek15MnllUXB4SGotS1c0R0c1OUU2UUpNbHBmLXZzUXF0NHpDa2hId3NHS1hGUE53THkzME5YckF5SWs?oc=5"
     }
    ]
   },
   {
    "rank": 8,
-   "title": "‘폭락한 AI 기술주’ 다시 사들였다…나스닥 1.1% 반등",
-   "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE8tek1wWVRWN09rWkZFd1hGLVJ0OXFESnR3ZnN3S29vOTBQVWlFSGowTnZWdjZkM0JreU1IVW9LbWlCbHBpc1o4bmUtR3djXzQ5S0E?oc=5",
-   "source": "JTBC",
-   "time": "2026-11-08T22:28+09:00",
+   "title": "美증시, AI주 저가 매수에 혼조 마감…나스닥 1.09%↑-[글로벌 마감 시황]",
+   "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5RdXRVdnVrVXJWMW5vMlpJN2hFbFEtM2NqVm4tc296UkNOZ2ZUQmxvRWhYMkxIS3VDR2sxeE8yTS0wRWllelNVR2ZXb1dyd0lZaEdsaDljMnJoTTI0a2cwaHNRM3cySjhnbTBGaDdHRmhYNEU?oc=5",
+   "source": "한국경제TV",
+   "time": "2026-11-09T07:07+09:00",
    "category": "해외 증시",
-   "sources": 2,
-   "articles": 3,
+   "sources": 4,
+   "articles": 4,
    "keywords": [
+    "고용",
     "나스닥",
+    "다우",
+    "증시",
     "뉴욕증시",
-    "폭락",
-    "AI"
+    "반도체"
    ],
-   "score": 17,
+   "score": 30,
    "related": [
     {
-     "title": "뉴욕증시 반등, AI 기술주 폭락 후 저가 매수세…나스닥 1.1% 상승",
-     "source": "JTBC",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9sNF9PM3RCYldTX05kZlZUSkVBUU5HYllpNnpKVG5QalFqYU4zUWc2SzJfSm95b0kxbURmOU9KcHBJQ19hME5xU1NjUzBaRThMa2c?oc=5"
+     "title": "[굿모닝! 글로벌 뉴욕증시] 반도체 저가 매수에 나스닥 1.09%↑…고용 호조에 다우는 하락",
+     "source": "뉴스퀘스트",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1qekRpeTF2b29rdzZnQ29xRmloUkdYd3MwY1RjNC0tVGg0WkxqM1hGckJwdXlKY1pma0hTeEpIdUd4cjFnTDByZ21jN1YzUmdkeVdrY0I5QkFnSXAwdFlGLTMybHB1ZXBmYkV0R3Qwdw?oc=5"
     },
     {
-     "title": "뉴욕증시 기술주 저가 매수세…주말 나스닥 1.1%↑",
-     "source": "중소기업신문",
-     "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5zUUFHSTdxRmVxTUw0OU1hcGtXVUdHYkdsWHRPY3VBaUVZbWI0Nm1wUENXYld4NGZpWExJTEdQLUFkejRaOXU3NDh2bFdreTQ0YUROcUROSVJMRnZoMWRvQjRBM0RSdjRDSm95Rk1B?oc=5"
+     "title": "뉴욕증시, 반도체주 반등에 나스닥 1.09%↑",
+     "source": "뉴스톱",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBIWkNGcVJtUms0eXhBb21sdmpLd0hCZU9wV3U5XzJ4cF9ucDRMUUl3eVdhd3ZzTW9kaVhid3huQlVDM1R5ck8tOTREVzVzSDdvSUZRWE5TRjd0MFY5S0NIaVRCMUNsYWlqQUVaS1BXQQ?oc=5"
+    },
+    {
+     "title": "뉴욕증시 반도체 반등 나스닥 1.09% 상승",
+     "source": "기독일보",
+     "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5hTzZoLWJkX3doUmg1c0lLMDFTU3BZc2NTd0Jlc3BSRlUyQXotdWFaS19xRjZvQndxemp6eVh5ekYzRjJlQkxlMzh3dTFDS2tMNlNMdWhVONIBXEFVX3lxTE55TnpfR2wzbEhNbmNjMEpTYXUtcHp1OVlKNUhQNUxNYWJxQ2pqaW9uNTVFZVRYZktxUF80SHJnNEVJTnNNRk8zbGhZRTFTTjlqODJuYXZScF8zNnRw?oc=5"
     }
    ]
   },
   {
    "rank": 9,
-   "title": "증권사, 3분기 순이익 '반토막'…증시 침체에 주가·배당 기대도 흔들",
-   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBaem1wc1VjcXFKUDBYS3NFcnNReTVwODhoX21zWmFPZndQZ1pjRl82MEpXbHJqQlRmSFNQanAtOUNjTFNzZ1BYWXBkM2h1aU1CZHduMmFiVjE5cWhjdkdFXzJucHFWckctM09lZF9rb2vSAXRBVV95cUxPbGROODlick9SVXJ0QTNiaE9kRk1xLVIxM3dEdW52N0V4T3ptNWVRV2tVSnFyek5wcDQ3YU01VnlQamhsSGt1VDNwUlo3Ump4SU90c0lOWGt5V3JyRzR2LXZFZ0FkaDR4cWFUbnJjZ2tzXy15YQ?oc=5",
-   "source": "산경투데이",
-   "time": "2026-11-08T12:25+09:00",
-   "category": "거시 · 금리",
-   "sources": 2,
-   "articles": 2,
+   "title": "비트코인, 1억200만원대로 하락…美 중간선거 후폭풍에 투심 '꽁꽁'",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9sQkd4NmxEY1VheTFaUVRTSjhSdWlpdGxwZFByWFBrS2pZV1RtMzBTVHI0WnN3MzJ6RFZfYl9iZHczX29UcF8tXzJZLXJ2YVNZZU5ubkJ3X2xUb3V4RGlkTNIBeEFVX3lxTFBLb3lDaU92SEJkWUNGbFl5NUdzUHFvWnF5X3Q4YXBYMmFRLTRtNVhVYXhlZkdKOVp0cjRtRzFuX2Z3QnZ5OUdwR2p1NVl4cjNXQW5OYVFWdHFZNlB3TTExYXRDVUI3NWhlU2NYeHVXTkdhMWtBdDNhbw?oc=5",
+   "source": "뉴시스",
+   "time": "2026-11-09T08:41+09:00",
+   "category": "가상자산",
+   "sources": 5,
+   "articles": 6,
    "keywords": [
     "금리",
-    "침체",
-    "증시",
-    "주가",
-    "배당"
+    "AI",
+    "규제",
+    "비트코인"
    ],
-   "score": 17,
+   "score": 29,
    "related": [
     {
-     "title": "증시 부진에 금리 상승 악재…증권사 3분기 순이익 반토막",
-     "source": "서울경제TV",
-     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9ycWJRMVJfaFpvNDJ2b0JpdFRzWTE3R0xpZlZQdmJtcTNic2laS3FtVFd2cXlDUUxzaUxUeTFyQjFjdERiX2NQcFgwNE15emZPbTVKVXRpa19DcFJyRW5CSzRyYWo?oc=5"
+     "title": "비트코인 1억200만원대까지 하락···美 정책 불확실성에 약세",
+     "source": "뉴스웨이",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1yQVJwTjZpdGN4REdMMWlkVGREQ1J2T1dmaGFCQnVubTMyVG5JaDlnSi1paFNTdzA3ZDMxUmxZbUw3bkx5VDdKS2ZLVG9saGZsb0RwUUkzUGd1eHlvYzFmbVB5bHZpckhGTWc?oc=5"
+    },
+    {
+     "title": "비트코인 1억200만원대 약세...美 중간선거·AI 규제 우려",
+     "source": "메트로신문",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1hUDhpSTNXd0dGY3U1MEl5UDhDdFJCY1p1bTh1b3oyV3ZnT1FwQXluY1ZSTTFXeW5lTnQtMVdSUWdXdXVHUHo4X1hfVlFvUGk1YTl5SmZmM0Q2WkhCVlJLMw?oc=5"
+    },
+    {
+     "title": "비트코인 1억259만 원대 하락, 지속된 현물 ETF 자금 유출에 영향 받아",
+     "source": "비즈니스포스트",
+     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBYY1R4dWNDNnJKanRoMEg4S2oyaTFsZDd1eHFHQ2VkS2N3cEIxbFdqSGlTT2NZeXBvVDFCZm5DWmx2Ry15d2J6Wk4wWENmRnc1U3gwMktyLVdtZjFJT1ctcjFpdktWcURaN1pLaVdYR1hXQ2M?oc=5"
+    },
+    {
+     "title": "[08:08 가상자산] 비트코인, 현물 ETF 자금 유출에 약세",
+     "source": "신아일보",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1OdndST3llMlJLXzlXNUNIU2JuSjFTbERRSk9ZYVRkQWV4NGozbXhNbHJQWTRZcGVhZmhMOTNGX0R3cWsyaFdDbEpYZXAtTmJGNk1CeHlRR3RHSlJTa0IyUGNYMVI4LUVBQ0RXSG1OTkM?oc=5"
     }
    ]
   },
   {
    "rank": 10,
-   "title": "OpenAI CEO 샘 올트먼, 기업가치 1조2500억 달러 확보… Anthropic IPO 매수자는 1조1000억 달러 거론",
-   "link": "https://news.google.com/rss/articles/CBMipgJBVV95cUxOM2c5SWdaV0V1ekpoN3hLems2anlCdEN3QzZremw5VWJnWi1UdWNJQWk0X0tBXzFYbWJYNV9VTFNGcDQtQ05tbnNnZ3dSY1NPLUtwMzNjc3VvdE1RamZKLWU0WFpmczlhT1d3UDk4eFY2Tl81R1NfTkxTb1pMZ3RRVzZFd2hiZ0xMZlVtQkhLLXJrMHNrVGFfWXlzTVB6SC0wUktqZlE3YndIWkNZQWE3d1FjLUpMMDZLTDNfREREbWZkU3BzdEx6UGRub2xyaHB6cF8wMThnM2tZOWF4Z1ZNeE5iVjVXS0JSb2d4bVpEX3llNlptNHVMVGp5NzBiclVrZVFlR3JBbk5uTXZGanFqaXNoSUNWUEpWczl5WW1CN244cWhhNXc?oc=5",
-   "source": "Martin Cid Magazine",
-   "time": "2026-11-09T02:42+09:00",
-   "category": "기업 · 실적",
-   "sources": 2,
-   "articles": 2,
+   "title": "[개장시황] 반도체 반등에도 5000선 위태",
+   "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ZZjhnNGV2SmVjaFdmOGpjdEUzVGxTTHlYU1dkN3U0TGprbTloUUFZVnRKUmx1OF8xQnRlZ2E3VFJQUm9BY2sxeUxaZ0dXRHRMS1NnREFyeHZhTE8zSThJZ1lIcmctVUE?oc=5",
+   "source": "자본시장뉴스",
+   "time": "2026-11-09T09:50+09:00",
+   "category": "국내 증시",
+   "sources": 5,
+   "articles": 5,
    "keywords": [
-    "달러",
-    "폭락",
-    "AI",
-    "IPO",
-    "상장"
+    "코스피",
+    "반도체",
+    "외국인"
    ],
-   "score": 16,
+   "score": 28,
    "related": [
     {
-     "title": "앤스로픽, AI주 폭락에도 상장 강행…기업가치 1조5000억달러로 낮추나",
-     "source": "글로벌이코노믹",
-     "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQWThod0RQYmE4ajZ1SFlmcEM2RWpOaDFwc0d4N0x2WHc5UzFzanhpclRJTVU5ZXNxQnlqSUZFdWJTZ292c0tlejRiWFY2eDBDemRkZlN0ZXF3TDlfMlA5YVBxVDdDU1J5a2xIdGR6bE44UGlkTndxYVZ5U0JOWHNmS3hPWUw0dTA?oc=5"
+     "title": "美 반도체 반등에도 코스피 ‘흔들’…장중 다시 5000선 밑으로",
+     "source": "매일경제 마켓",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9wUzFnaDRGZzlOY3NXX2hyN181NW5ibVVFNFhTUVQ3eHltZ1dEYlIxQ0oteGU5OVpLSmU1SG1aNk8zUDZSYkJsZlhNemh1QUxWQ2ttaUlhcWhKMXJYUlVkbw?oc=5"
+    },
+    {
+     "title": "코스피, 美반도체 반등에도 1% 하락…장중 5000선 다시 붕괴",
+     "source": "뉴시안",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1RUjBJTlRUUzFfQ3F0TFhCckx0QkpSd2Z2UjV4bWFKUXFJYUgxVVdKT3c4VzZFMHFKMTZCNkhzbHF6NXBaRU1sOFRYVkoxWW8zd1VJZWQzUEstaGpvX3JUZXhHSTUyNkFJcnNpaA?oc=5"
+    },
+    {
+     "title": "[개장시황] 코스피, 외국인 매도에 1%대 하락…5000선 턱걸이",
+     "source": "브릿지경제",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE8weF9vR2thRkdQV3FOQXZITldWNm16ODBNaTdJZlVLWVFTYzdhbFRYYXpnNXdhU1BDdDBKUXJ1aFFBMHFtb1BtX3ZaSW1DNW9lUlJxbWZJY3VCQQ?oc=5"
+    },
+    {
+     "title": "코스피, 장 초반 5000선 위협…외국인 매도에 약세",
+     "source": "블루밍비트",
+     "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBzbVFEQ3JpMWtHaEg5ZFJfQ2ZhTEtSU1lMYW1hUHoxNW1ZdlByYmZ0R09xNFdxTDhJZ1h3c1owdnpKTnVpM1pKaEl1cFNjWmRX?oc=5"
     }
    ]
   },
   {
    "rank": 11,
-   "title": "코스피 5천선 아슬아슬⋯상장사 3곳 중 1곳 '올해 최저가'",
-   "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE9ydjQ3WmtBUUl5c2psdEdxWUdlWnNjWE9DT3hubnc3OGRKRVpIQUZqTHFaR0RvNEFKYS1nVFVrT1ZPZDBfSlY1QS1rTQ?oc=5",
-   "source": "아이뉴스24",
-   "time": "2026-11-08T21:06+09:00",
+   "title": "[주간증시전망] 외국인 10조 판 증시, CPI 주목",
+   "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1aRWRtWUxDUXM1Q1dzV3dXYXYyejlqZjh3UjNfZl90U2lpWGU3QXRJdEh0RWdzTncwTThwdEFrc3JqbFFKNXZDMWpsbEdpOXliREpnTElkV3F6M0dFQzkzZ191RzRSNFU?oc=5",
+   "source": "자본시장뉴스",
+   "time": "2026-11-09T08:52+09:00",
    "category": "국내 증시",
-   "sources": 2,
-   "articles": 2,
+   "sources": 3,
+   "articles": 3,
    "keywords": [
+    "CPI",
     "코스피",
     "증시",
-    "최저",
-    "상장"
+    "AI",
+    "외국인",
+    "규제"
    ],
-   "score": 16,
+   "score": 25,
    "related": [
     {
-     "title": "국내 증시 추락에 상장사 3곳 중 1곳 올해 최저가",
-     "source": "Chosunbiz",
-     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQTlZQX0xRNFNkMXFZcWNKV29URG9QUDRTYjg1RlI4alpwUjRMYkcyUFYxWXJ5bkpnYkRWeGJtMDdvTkZCeGtnQ2x5dm8xcXV0eHkxU1F0Z216dzlFSUxhamdfbnpTMHpiUGtGVzdSbV94c3NIVndHM3Z1YjQ3bjRqZVFHSUNuRV960gGcAUFVX3lxTFBseEowNmdYcU95X1R2SDVqekRiYlNENkE0Y3ZVcEtMN2ZBLXVfenp1Y0wwSUEyWEhST1ZRNW1JeHJXeUNDbzhtSzJPd2xNM0FMb2tCc2t6QXN1SzAzRXA3bVRGSjJwRDl1eGRCNTc0eUpUcWZjNmtzNk9RUHBBdHNuSUo5WkFZa2dOM2ZCdDBQaFlQMEhQcTM3Q2U1Nw?oc=5"
+     "title": "[주간수급리포트] 10조 던진 외국인에 멍든 코스피…미 AI 규제 우려 직격타",
+     "source": "이투데이",
+     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBDVjdDTFhCeFNTX3E5Q015X3lScHl6VWNUSVZoMUwtSlNaT1NodFlfNEJLd2VLVnRncHlfRzF2OXl5ODIyODlxd3VfOFJzTUNSUmtxZQ?oc=5"
+    },
+    {
+     "title": "공포의 외국인… 닷새간 10조 던지자 5천피 털썩",
+     "source": "서울신문",
+     "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5pRlY3a3lmUFlFVWU4Ykc1T1FHRkg2eU9RbmZZbUxhOFplYXB6dDBXR0loZUxUQlJya041T1Zzd0pNZ3hlQ0V0WHVGa21VZjlybzlUV2hNUQ?oc=5"
     }
    ]
   },
   {
    "rank": 12,
-   "title": "“삼성전자·SK하이닉스 개미들 월요일만 기다렸다”…美 반도체주 급반등, 코스피 살아날까",
-   "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5makhQajRURlE4WnV4LVdicGxtUFVCMkdhNXhOaFZVY0x3eWU2VkFPSzV5NXdrU3B3dHpLMHJQQmdtcnZIZ1hJU3IwdU5FZGJWb2hISXpub0YxSWRHUmlrTExDQ183anB4NEFkRQ?oc=5",
-   "source": "데일리25",
-   "time": "2026-11-09T05:25+09:00",
-   "category": "국내 증시",
-   "sources": 2,
-   "articles": 2,
+   "title": "美 반도체 반등에…삼성전자·SK하닉, 장 초반 상승 전환[핫스탁]",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5FUlVlTTRXSzBTS19WMGhIX0VKNEZ4TGlkaElMNnY4U3VsTkNjUjFEaG5wYURtZWJuLXZNMFBRcXVXVVFWOVdaUnBRNjNZWkVXUVJyR2F5cFZNYzl3WnIycNIBeEFVX3lxTE5KTXliY3Z5cmMtTDloc2VhVVliUVd2bHhXTklOWUJzRVhZdHVBR1g5b2VBM0dhY0R5NU0wczBQTTJrZlZVRFFTQ3FFNXlBeWpKNVBMOHFVTEd0dTZFSldmYlF4NG1UU05aMXlndkpDUG1YNG1iRGpTZA?oc=5",
+   "source": "뉴시스",
+   "time": "2026-11-09T09:23+09:00",
+   "category": "기타",
+   "sources": 5,
+   "articles": 5,
    "keywords": [
-    "코스피",
     "반도체"
    ],
-   "score": 15,
+   "score": 24,
    "related": [
+    {
+     "title": "[특징주] 저가 매수세 유입에 삼성전자·SK하이닉스 반등",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE4tZGdsYlROZGdsUTlpanlGWVVVUDNic3J1R1JWeXFkOEp5TWhRTEUzNjh2MjUwWlUxT0NGckREc2QtWkkwYmw2TmZMR081N1pUNktFcXZwY3FSZFNv?oc=5"
+    },
+    {
+     "title": "[특징주] 삼성전자·SK하이닉스, 美 반도체주 회복.. 동반 '상승'",
+     "source": "글로벌이코노믹",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOUk81eTZhVkdIbzhPWnVrVzdBaDNMYlJhQjcxNk5heDVuNXh5Z0c4Ni1UMGdab0VaQW5ZdVBTM2gtWmw2RUhPZmg3VnB5WlpzdW5vYmo4b1NGRXJRWmJWcFpCLXNTaWVVemFYZ2tCdG9HeW13S3VqV1dVd3U5b3AtNWc3NnRHNDFj?oc=5"
+    },
+    {
+     "title": "[특징주]삼성전자·SK하이닉스, 장 초반 강보합…美 반도체주 반등에 투자심리 회복",
+     "source": "브릿지경제",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5FQkVQdW1mTXVudDhTSmQwdy00UjNPTVlFTVBjYzg5ZXdvUXlCaklDTlh3VXAwbUhUdTRiUFZnd1hQeVo3UzF3U28wSUYxb1NmaHZYenJMRVVPZw?oc=5"
+    },
     {
      "title": "美 반도체주 급반등…9일 삼성전자·SK하이닉스도 반등할까",
      "source": "진일보 | 전남일보",
@@ -378,71 +466,86 @@
   },
   {
    "rank": 13,
-   "title": "물가 2.8%·코스피 6% 폭락…한은, 금리 인상 딜레마",
-   "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1MLVB0clRjdEQ0YVJuYlRQRmplQVdENF85MmlLZnRiYmd5QzZtUkNWVXMyejlFY1NYTGVNMkVHOVJBcGFCN0hmUVIyMlRUS0FsYm9adU1wc1BvS2FBWlktVW5wU2FmcnJkeFE?oc=5",
-   "source": "OBC 뉴스",
-   "time": "2026-11-08T09:06+09:00",
-   "category": "거시 · 금리",
-   "sources": 1,
-   "articles": 1,
-   "keywords": [
-    "금리",
-    "물가",
-    "코스피",
-    "폭락"
-   ],
-   "score": 14,
-   "related": []
-  },
-  {
-   "rank": 14,
-   "title": "트럼프 민주당 중간선거 승리로 美 역사적 후퇴…증시 3조달러 증발",
-   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9XMmlRNThJcTFWUGhFOVd0UG1TM0hjLTFxQ0M3NU1TM2VtNHFVUFNUcE1WMExPbl9RVzFvLVlTeVozWjNsU2czRDBlQTkzVWJNU2w1V2dkcmdpd9IBWEFVX3lxTFBTcm9ERnc1WjFkblpFMUY3Wm8xZUt0VGotT1U5X1RwU1ZWQjdKS0hFVHgzMGIzSEZfMjc0dkV4RHBFaE00aDlldVBpN3l4aC10OGZfRWNDVzg?oc=5",
-   "source": "아주경제",
-   "time": "2026-11-09T06:08+09:00",
-   "category": "환율 · 원자재",
+   "title": "기술주 쇼크에 앤트로픽 ‘2조달러 상장’ 흔들… 몸값 낮추기 검토",
+   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1ubkJBYWYzZXpSSHNkUUY0NDBTQ3VJMzFjSWZDUUZmTlR6R180dm54RUdSMEpsRllDMnZhUDNDOW5PUlVNNTAzeXkwemN4QkpxOENDR3VMYnFaQ2JJbnRkZ0x5WEU2TXRPeFR1bHJqTzY?oc=5",
+   "source": "블록체인투데이",
+   "time": "2026-11-09T08:41+09:00",
+   "category": "가상자산",
    "sources": 4,
    "articles": 4,
    "keywords": [
     "달러",
-    "증시"
+    "AI",
+    "IPO",
+    "상장",
+    "비트코인"
    ],
-   "score": 13,
+   "score": 23,
    "related": [
     {
-     "title": "트럼프 “민주당 중간선거 압승, 美 후퇴…증시 하루새 3조 달러 증발”",
-     "source": "중앙일보",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE4xNElMX2VtdURDd3pxdU5Mb19KM1Nub25aUE0zYUFrNFRZOUNLUnBUbTYzNW14bHN3Y0w0a0lnOGpHdk54MzNvT3lLR0hJVXF0QUNqdmRn?oc=5"
+     "title": "앤트로픽 상장 앞두고 악재 속출…몸값 2조달러서 1조달러로?",
+     "source": "블록미디어",
+     "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFB2UnVIckpnRk9PUHJYOVlhS1lwNlNNY3AzWjNDOFFlNlZRblRFbWlVcFIza09Gam93VVpaNUlTZ2VaX3dTRVJJQ3RLaEhPTGx1XzJDQXU2REQ?oc=5"
     },
     {
-     "title": "트럼프 \"선거 결과로 증시 하루 만에 3조달러 손실…더 강하게 회복할 것\"",
-     "source": "블루밍비트",
-     "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFA4Zkk3WHJzMFBST3RyRF9HVGdEUUZ2Tlo5ckoyVWVpOEFYeVFCTEQ3SW1hc3NHcnNHNU54dE9nSXpMSTlyaF9ZQ2h1WWtWVDF6?oc=5"
+     "title": "‘2조 달러 기대’ 흔들린 앤트로픽…최대 1,000억 달러 IPO에 AI주·비트코인 시장 촉각",
+     "source": "브랜드뉴스",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBnNFp1aTdWbGJaNERhdUN2TS1uYlcwQWlRVjJlOVpXWVp4TU5QNnJ4ZGVXRDB3ZlZOdGstNEZ0bFR6OENJdkxDeTI0NWdScjFmM2hEeEZFVHFaV21oWWQwZndpLXRoUVBkbEZ2bA?oc=5"
     },
     {
-     "title": "월가 하루 만에 암호화폐 시장 통째로 날렸다…역대급 3조 달러 증발",
-     "source": "코인리더스",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBVTU9yR2tFVWJYNDdsYnNkdEFwWHdmcTVRd2VKRkE0Q2otVlB6UEZvb0VnbURRWEFBR1JEdGlYYVhBZEFOcHJkR29B?oc=5"
+     "title": "데이터센터에 등 돌린 미국…앤트로픽 1조 달러 IPO 시험대",
+     "source": "OBC 뉴스",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE41cF9kbHhXTDhUT3FKd3RBUDVQdHMtc2V0azZhVHVJRExOT0c3QXl6Zm5LSkwyR00tcXBBb0dPRXlMUmJicVdZQ25oQm9XSWRkcEhQUDFfRWk3STZHOHVyZkJabHo5S3VwbEE?oc=5"
     }
    ]
   },
   {
-   "rank": 15,
-   "title": "[미리보는 증시재료] 美 물가·AI 투자 지속성 시험대…반도체 향방 주목",
-   "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5iY28xa2dBMmhDMDRFRUtuLVVJWFVlWlQwT2VWWXFoY29IX2tvbjdhMzc1MWt0YnVrN0UzWDFkWHVKSXNhWEUtRS1wRm96YmZiUmxFeXo5eEFCTkly?oc=5",
-   "source": "뉴스핌",
-   "time": "2026-11-09T06:00+09:00",
-   "category": "거시 · 금리",
+   "rank": 14,
+   "title": "美 AI·반도체주 반등 성공…필라델피아 반도체 지수 4.2%↑ S&P 500 0.31%↑·나스닥 1.09%↑…다우존스30은 0.46% 내려 韓증시 투자심리 지표 대부분 강세…코스피200 야간선물 1.6%↑ 변동성은 이어질 듯…앤트로픽 IPO도 반도체주 수급 영향 전망",
+   "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBtekpEUk02M2N0UG50dHpGVWEwWUlZTGhRUmVwMzNrd0F5Umh1aUlieXRaREZJQ2hHQWlSOUtyejY2blFSUDFQZG1pNTY2ZkFYbGIyajdPSGFvVzNJV2dvcDNOeGpfcEtCTkpTVg?oc=5",
+   "source": "세무사신문",
+   "time": "2026-11-09T09:47+09:00",
+   "category": "해외 증시",
    "sources": 1,
    "articles": 1,
    "keywords": [
-    "물가",
+    "코스피",
+    "나스닥",
+    "S&P",
+    "다우",
     "증시",
-    "반도체",
-    "AI"
+    "반도체"
    ],
-   "score": 13,
+   "score": 18,
    "related": []
+  },
+  {
+   "rank": 15,
+   "title": "KTcs, 3분기 영업이익 역대 최대…배당 늘리고 자사주 전량 소각",
+   "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOSTVpNGlQbmh6UDlFY2w3V2FlTGZpb3BSY1Z2S25tX05Da2lWeVNqUmliNnFnRGFyYjVfYkFtVk1XYlA0bzVnam1pc3I3MklHSFlyZHBUVEVHZFVaYktuUnU2clp5WS1Fa09ZR3dUMDVsSVg1RUtxMU5RckI3VldMRQ?oc=5",
+   "source": "이데일리",
+   "time": "2026-11-09T08:00+09:00",
+   "category": "기업 · 실적",
+   "sources": 3,
+   "articles": 3,
+   "keywords": [
+    "영업이익",
+    "자사주",
+    "배당"
+   ],
+   "score": 18,
+   "related": [
+    {
+     "title": "KTcs, 3분기 영업익 110억 '역대 최대'…배당 늘린다",
+     "source": "뉴스1",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1xLTBqWDh5Y1UwSWpVb2k3MTVQQUlSYl9UN2s5MFVWOHRRYXlvLWxEUWllZU1FdGZsQ3J6WVh1akc1emNEend4T01kZEJET1hCLWN1X2c0ZEVSaExxOWhGVA?oc=5"
+    },
+    {
+     "title": "KTcs, 3분기 영업이익 '역대 최대' 110억원",
+     "source": "지디넷코리아",
+     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9mTmwzdEc2NzQ0UHB2a21Hc1NJakxMU2NVZ1Q5MmNFZFBFNHBjOTQ4dTVwb2I0dTU4M0tja05kRTlPSG8xNF9wVnRxU3Jkc2FSN2ZPc0FR?oc=5"
+    }
+   ]
   }
  ],
  "feedItems": 95,
@@ -452,53 +555,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "반도체 호황에 고액 예금 1년새 138조 급증...삼성전자 214조원",
-     "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPa3FpcTJvdEEyUHRfX25lLUxSdUVSY2tVN2hfTkxEVklWRlJaMjdvb1NDUW00dXp1bi1RdzYxejdxNEJYUVJNSm5tZ21zMVRhb194S2RNTENtYVdBZ3dfaUNySGExdjNYSjhpcV9GYkRaYTNXLVJ1YnpWejZlWGJTSS1lQVBTTllZUlAw?oc=5",
-     "source": "조선일보",
-     "time": "2026-11-08T21:47+09:00",
-     "category": "기업 · 실적",
-     "sources": 2,
-     "score": 13
+     "title": "외국인, 지난주 삼전닉스 7.6조 던졌다‥보유율도 수년만 최저",
+     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE81SXJfYkhyOHN1NW0taDVYQWtLWFc3WDVqcGo2bXcxOVAwbkowWjhNeXZhVEdEV3VnT1VvMWZNam81X2Q1TFlSdXU1LUVQb094N0NCRGlUUjBRZnpOVmswd0kwcURzQkJJMGU2TklLdkFVM0tP0gF0QVVfeXFMTW9kaHFoT3hUZktZdzgzT2dfcVN5Snh2M1RNLWcxVEd1aDdEREVzUE1EMlNLUDRQcmR4eE5MdUdRRDFMb3pUM3BaMkZRWWVQOTN1RTR5TEcxc09XR1ZJQVhEb1M3YzVjSzJwcEJQa2o3R1dydUw?oc=5",
+     "source": "MBC 뉴스",
+     "time": "2026-11-08T11:50+09:00",
+     "category": "국내 증시",
+     "sources": 15,
+     "score": 73
     },
     {
      "rank": 2,
-     "title": "삼성전자 현금 보유액 200조원 돌파... 하루 2700억원씩 늘어",
-     "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNUGhXT2FSVWNXMFNqSVF3TnZtalUwaENsZktSejNsRDJUVmFCVmFxVm92eTduaGFPbHo3MU5xY1RVY183UXNjc3Y5VXRUMkFmNGMzTzBKaEJ0VjdFS21KSEUteDZSX3RyUDhRcExtMEtScjlaRmxJZUZPWnM1UnNNWmJEWQ?oc=5",
-     "source": "조선일보",
-     "time": "2026-11-08T14:58+09:00",
-     "category": "기업 · 실적",
-     "sources": 3,
-     "score": 13
+     "title": "NDF, 1,363.70/1,364.10원…8.05원↑(재송)",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE91SEN5U1kwYjJWdEZfWVRHWEpQYUlqQWtkZG8ybXhXckp1MXd3QmVneTRhLTJ6VE1Ja2hlWGJvQ2hwTlBhbkRXN0hFTGNSMzcyREJPU3E5OVFYb0dCcmcyZTY4ZjUwaEFKRVVCamVwRUXSAXRBVV95cUxNdVBWa21yRzlvdEJrMXE3SC02OWNSSVRqb0t4VmllS0RnS1NCdU91d3hIb0c0cEtMN2dKank4UWJYRkRGMUlPSzY3ZkdSOWxMbE9mRzNidWJnWjkzZXJSLVNNQ3ZOSkpvUEF2Ty04OFpZVEQzcg?oc=5",
+     "source": "연합인포맥스",
+     "time": "2026-11-09T07:40+09:00",
+     "category": "환율 · 원자재",
+     "sources": 2,
+     "score": 15
     },
     {
      "rank": 3,
-     "title": "1350원대로 뛰며 ‘블루쓰나미’ 휩쓸린 환율…\"당분간 변동성 커질 듯\"",
-     "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5rdUs3ZkRwZGlmZ1Mzb29sYnQwcDQ2YnlsQ2l4YnQ4czFJeDFrRUd0cHBrMjF6a1RoaUl1S1BYSmFObDh2S01UWU9wODd4a3pLREh3WkRPZmPSAVRBVV95cUxNZWVqdENlZGE1YUladkpybDNnc3plV20zM1JTNmhLa3VZVGdDOHExWFpackdfNFpaQUJ5UnZmNlFzb2oxVFp2QnFfX092SkpWREI0Yk4?oc=5",
-     "source": "세계일보",
-     "time": "2026-11-08T05:52+09:00",
-     "category": "환율 · 원자재",
+     "title": "“TSMC, 메모리 사업 진출 검토…엔비디아 요청”",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBZMHZtYUY3QlJRZUdQU1BaMUFTdjd6RVFJR3BjZDB0bkpMbEk2a3p1VGhiQlg4bGI0cGZzeWVsTWV5a2FnYUZlckxZcU8tQUxwMjlKalFiNmk1cGs?oc=5",
+     "source": "KBS 뉴스",
+     "time": "2026-11-09T08:10+09:00",
+     "category": "해외 증시",
      "sources": 2,
-     "score": 13
+     "score": 12
     },
     {
      "rank": 4,
-     "title": "'코스피 대탈출' 경고음…8조 던진 외국인 심상치 않다",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9xQ29vOVFEX2RwM1hSZGNSYi10XzVKMjJ6amhiZ1YzeDBpdFNxNkg0Q0pzdnAxUWRNN1FFbENEQWhUZTIxZUd4eEdSQTBueVZsQnZ3UXNaOUx0dw?oc=5",
-     "source": "한국경제",
-     "time": "2026-11-08T19:23+09:00",
-     "category": "국내 증시",
+     "title": "캐시 우드·피델리티, 美 증시 급락에도 '강세론'···AI 주식·비트코인에 무게",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1iMHhxRTBDaGpIMnFFSTJxVFoxdGlBWnpLdHFXcWJFdjNPRjl3SjE1Ny1Qby1FaGotenVJTHd4YmFhRDUyMUFyMHBiaC1kX0RIWk5vckpBckxFc1gtUVQ4YVd5X2NDbUpUUmlPcA?oc=5",
+     "source": "스마트비즈",
+     "time": "2026-11-09T07:44+09:00",
+     "category": "가상자산",
      "sources": 1,
-     "score": 9
+     "score": 12
     },
     {
      "rank": 5,
-     "title": "근원·헤드라인 물가 역전 눈앞…'끈적한 인플레'에 고심 깊은 정부",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBqbHNkeEhCb1l0eDNaLTVhYlM1Z0dGU0Q1RDdMNVdDYXh3YU5sWVFaM2ZSaTI4VWk4RmdjRzVnbnRSN3pSLUUtcVl2aXp4UTFDRTREZm5MLVNnSl9ORzFoNzdTMV9oTnpEWFJ3TkJTamk?oc=5",
-     "source": "연합인포맥스",
-     "time": "2026-11-08T08:05+09:00",
+     "title": "“며칠 새 연봉 날아갔다”…AI 규제·금리 인상 우려까지? [잇슈 머니]",
+     "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE54NS1YYnk0cnNUd3JhbWNsemVObDBrZGdpa2FRRkpCazRmd282bWNLd2FOT2lybGQtVEFDTEZjOUZzWTFmWW05Wk9velk0bkptLUdMQjNmMHl4VGkzY3RfZkJfSGp2dw?oc=5",
+     "source": "KBS 뉴스",
+     "time": "2026-11-09T06:57+09:00",
      "category": "거시 · 금리",
      "sources": 1,
-     "score": 8
+     "score": 11
     }
    ]
   },
@@ -507,53 +610,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "[증시긴급] 500조 돌파하던 ETF 시장, 불과 4개월 만에 400조 깨진 사연",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE8wNUNHLTdkS0xOWTJVMzNMNlVDZ1E5TnRlVlJnRUdjTlhEWEl3TWgtcVlhNi00b1g5SHZpSGFPWjdaWi1CZkt4NXBrdzF5Z2JEM2dEWjE4eURqWXhZYjlMelNHdFV1Mkl1?oc=5",
-     "source": "CBC뉴스",
-     "time": "2026-11-09T06:25+09:00",
+     "title": "코스피 5천 간신히 사수…보합권서 등락",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBzYk9OVDg2X2p5WW5FRGowWnhXQ0VzLU9NOE5Cdm8wNTE1djRET3h6cU9pbWtMOFNVcHExeXdwcm16WGNPdGI4bktueElyNm4xak96OWp4N1dmVWs?oc=5",
+     "source": "KBS 뉴스",
+     "time": "2026-11-09T09:37+09:00",
      "category": "국내 증시",
-     "sources": 4,
-     "score": 24
+     "sources": 6,
+     "score": 38
     },
     {
      "rank": 2,
-     "title": "코스피 한 주 만에 11.7% 폭락…5000선도 위태롭다 [美선거 후폭풍…증시 패닉 ①]",
-     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFB2d3JnOXQxeUk1U0U2ZThHUzJSQVVudG1qamQ0TEFKRzYydHpPX2Q0ZXphZ0s5U1dVX2hRRWllNlNya21ySFdFNWswbzJkTFA3bUd5ag?oc=5",
-     "source": "이투데이",
-     "time": "2026-11-09T06:00+09:00",
+     "title": "코스피, 0.50% 내린 5034.20 출발…코스닥도 하락",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9CY01ibVpYeWZvdnZ1b2N1NVoyS2ZHOEFKTWdaa05EeFFMbTVkM3RfVkxDYkkxSFZiZmdFUkFwM2Mxa2lqOGhsczJzcWdwV1dKMjduUTV0NmVhYWlQSW1sdGJuSmgySXNuWUdaOWp5WQ?oc=5",
+     "source": "뉴스톱",
+     "time": "2026-11-09T09:36+09:00",
      "category": "국내 증시",
-     "sources": 2,
-     "score": 19
+     "sources": 6,
+     "score": 34
     },
     {
      "rank": 3,
-     "title": "[주간IPO] 동원파츠·바로팜·넥스아이, 코스닥 상장",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1vYmwzTjlRdGFKTC05eG1SNDBwNUNXQ3cwYXpiMlBuWHQ4WHQxTDFPanhScEhEaHRyVEtpUzlTS3ZmMkpRelZhUElfOWcxbVQwMlB6aXUxUXhneUdI?oc=5",
-     "source": "뉴스핌",
-     "time": "2026-11-09T06:00+09:00",
-     "category": "기업 · 실적",
-     "sources": 3,
-     "score": 18
+     "title": "美 반도체 반등에도 코스피 ‘흔들’…장중 다시 5000선 밑으로",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9wUzFnaDRGZzlOY3NXX2hyN181NW5ibVVFNFhTUVQ3eHltZ1dEYlIxQ0oteGU5OVpLSmU1SG1aNk8zUDZSYkJsZlhNemh1QUxWQ2ttaUlhcWhKMXJYUlVkbw?oc=5",
+     "source": "매일경제 마켓",
+     "time": "2026-11-09T09:35+09:00",
+     "category": "국내 증시",
+     "sources": 5,
+     "score": 28
     },
     {
      "rank": 4,
-     "title": "코스피 5천선 아슬아슬⋯상장사 3곳 중 1곳 '올해 최저가'",
-     "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE9ydjQ3WmtBUUl5c2psdEdxWUdlWnNjWE9DT3hubnc3OGRKRVpIQUZqTHFaR0RvNEFKYS1nVFVrT1ZPZDBfSlY1QS1rTQ?oc=5",
-     "source": "아이뉴스24",
-     "time": "2026-11-08T21:06+09:00",
+     "title": "[주간증시전망] 외국인 10조 판 증시, CPI 주목",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1aRWRtWUxDUXM1Q1dzV3dXYXYyejlqZjh3UjNfZl90U2lpWGU3QXRJdEh0RWdzTncwTThwdEFrc3JqbFFKNXZDMWpsbEdpOXliREpnTElkV3F6M0dFQzkzZ191RzRSNFU?oc=5",
+     "source": "자본시장뉴스",
+     "time": "2026-11-09T08:52+09:00",
      "category": "국내 증시",
-     "sources": 2,
-     "score": 16
+     "sources": 3,
+     "score": 25
     },
     {
      "rank": 5,
-     "title": "美 반도체주 급반등…9일 삼성전자·SK하이닉스도 반등할까",
-     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1rMUNGSjJkN05IWVpoVXZCYi01ZUlmWmNNRUljSEpsQjVKYkxENXUwZkE2TWRLbDVfMEJCOFJkYjFaNXg3MTlqWDI1OHZsUlNqVGctV0dmMmpyMTJXTWQ4Z212bVlpcllKY1gzdGtETQ?oc=5",
-     "source": "진일보 | 전남일보",
-     "time": "2026-11-09T04:00+09:00",
+     "title": "코스피·코스닥 약세 출발...반도체주 보합세",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1jSXpWRmZxLXdwVks1WU5nOFVBb3BZeHFqckVmc0FSSE1kUWd0MkJQaUhWYWNMTEdFQ295R2d1ODF4RGJSWjg4Zmk4Tk9mblUxWFh2UE9TVzQ2OU5TZXVkR1hLRmdHVGpaU21EZVI0Yw?oc=5",
+     "source": "YTN",
+     "time": "2026-11-09T09:38+09:00",
      "category": "국내 증시",
-     "sources": 2,
-     "score": 15
+     "sources": 3,
+     "score": 22
     }
    ]
   },
@@ -567,48 +670,48 @@
      "source": "위키트리",
      "time": "2026-11-08T20:05+09:00",
      "category": "가상자산",
-     "sources": 3,
-     "score": 22
+     "sources": 10,
+     "score": 59
     },
     {
      "rank": 2,
-     "title": "‘폭락한 AI 기술주’ 다시 사들였다…나스닥 1.1% 반등",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE8tek1wWVRWN09rWkZFd1hGLVJ0OXFESnR3ZnN3S29vOTBQVWlFSGowTnZWdjZkM0JreU1IVW9LbWlCbHBpc1o4bmUtR3djXzQ5S0E?oc=5",
-     "source": "JTBC",
-     "time": "2026-11-08T22:28+09:00",
-     "category": "해외 증시",
-     "sources": 2,
-     "score": 17
+     "title": "삼성운용, 美 나스닥100·단기국채 혼합 월배당 ETF 출시",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOYU5hajZwZVlZRzRlTFFteXJ1VDBEa2szbkJzMnFvb0pXNm5RaWswMHY1c3JnWjJyV1pEd1JXVm5CRF80UUYxR0xmd0lHWktnRnM1SWFZb0xZNUxmTlBFd0VXcElmdzFuR1RKV0lzX3lCMHFJMGxLSEZKazhYTW5XeHNUUUp0WEZr?oc=5",
+     "source": "글로벌이코노믹",
+     "time": "2026-11-09T09:56+09:00",
+     "category": "거시 · 금리",
+     "sources": 10,
+     "score": 47
     },
     {
      "rank": 3,
-     "title": "월가 하루 만에 암호화폐 시장 통째로 날렸다…역대급 3조 달러 증발",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBVTU9yR2tFVWJYNDdsYnNkdEFwWHdmcTVRd2VKRkE0Q2otVlB6UEZvb0VnbURRWEFBR1JEdGlYYVhBZEFOcHJkR29B?oc=5",
-     "source": "코인리더스",
-     "time": "2026-11-08T07:48+09:00",
-     "category": "환율 · 원자재",
-     "sources": 4,
-     "score": 13
+     "title": "뉴욕증시 반도체주 반등에도 코스피 하락 개장‥5천 선에서 등락",
+     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBSa3dDc2d5MW4xaDdjaXN3V2VibmxCSXBLVkthb1dka2JkM2NkTDZQNzVfWk9rN3VtYndxaXlCNjRtODU2TjJObl92NW5zdlZhWFY0d2RrdUhaMGhBUmNGS2xYVGpSU1pPUGM5OUN6cEZFenNn0gF0QVVfeXFMT19ENDBuU3ZxSkRES0tQcjhwZ1lhYlc3MnJRM1VZZ2Z5dFVvYl85Mk8wcEdscG9XMXRhb0R6QVZjazJIZkNhdUhuWnRYMFpvLWRfWmFMUmZ5MmhXc1dOLUpXZE82dkxuRTFqYWcwcjUxNG9BOG4?oc=5",
+     "source": "MBC 뉴스",
+     "time": "2026-11-09T09:26+09:00",
+     "category": "국내 증시",
+     "sources": 6,
+     "score": 38
     },
     {
      "rank": 4,
-     "title": "AI 거품 공포에 흔들리는 美 증시…中, 물가·수출 성적표에 촉각",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBuQjdhZ0NveU9tVGpwbHFvM0FqX3RVN1NIUUxtMlV5UFRZVVJkU0RHdnpCSFB5WEVGZXBiWkNLZTlOZjM3b3UtYkYtbnlWdHVnOGVoZGZpZzg0UQ?oc=5",
-     "source": "한국경제",
-     "time": "2026-11-08T14:03+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 11
+     "title": "[속보]코스피 0.5%↓ 5034.20…'뉴욕증시 반등에도 5000선 보합 출발'",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOV3c2czRmMWNQZHhmWVhHemJqMTRhX3ktRDhWX29JVWtwUm1sMzJCb1RWTFVfckhuZmFoWVcxUUJPYzdEYmtlM21RTUZveVFXNk9VbWplNjU5NmVlUjFFNjRfc2tvTjlrc2pwN0xha1lWUnlqLXVFMDVlTUtVZkFTbw?oc=5",
+     "source": "이데일리",
+     "time": "2026-11-09T09:02+09:00",
+     "category": "국내 증시",
+     "sources": 6,
+     "score": 34
     },
     {
      "rank": 5,
-     "title": "[뉴욕증시 전망] 美 물가·코어위브 실적에 촉각…AI 기술주 변동성 확대 우려",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8xZnVxMXJvems1TmhzckkyVFFhT1Q1dFRCREhja29HX09pRl9CTUtRQkhsSk9GOUxhT3NyMFJfbGpJVnhCM1NMUmNvN251ZTBiLVlzV2E2ZDMwVFNhUjZYVWZuNk5vWUtzLXBqUW9yTXPSAXRBVV95cUxPd1ZPc19hVl9TUFUzVTdJVGlWMzlnMVdCUTMzX2VxRk9vSktud244NVJlZ1FjbEtuckhIZUVrSkxnM3MxRVc2ZjRpWEpKbHVkMklIM1ZQN2lNRVVHOVpCclNkUS05RS1kU1VvVGd0YXZKS3d5bA?oc=5",
-     "source": "산경투데이",
-     "time": "2026-11-08T13:15+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 11
+     "title": "[굿모닝! 글로벌 뉴욕증시] 반도체 저가 매수에 나스닥 1.09%↑…고용 호조에 다우는 하락",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1qekRpeTF2b29rdzZnQ29xRmloUkdYd3MwY1RjNC0tVGg0WkxqM1hGckJwdXlKY1pma0hTeEpIdUd4cjFnTDByZ21jN1YzUmdkeVdrY0I5QkFnSXAwdFlGLTMybHB1ZXBmYkV0R3Qwdw?oc=5",
+     "source": "뉴스퀘스트",
+     "time": "2026-11-09T08:12+09:00",
+     "category": "해외 증시",
+     "sources": 4,
+     "score": 30
     }
    ]
   },
@@ -617,13 +720,13 @@
    "items": [
     {
      "rank": 1,
-     "title": "외국인, 이번주 삼전닉스 7.6조원어치 매도…보유율 수년만 최저치",
-     "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE52cDh0QlZlUnA3VlhiWlBzMjBsV25rNXB3UTBBQk5VVDB1aVd3b21JSGM0UHBnOU5ITXh6YnNEdjU2cjd5NXlHUWRVVlVKSEV4?oc=5",
-     "source": "블루밍비트",
-     "time": "2026-11-08T11:46+09:00",
-     "category": "국내 증시",
-     "sources": 17,
-     "score": 81
+     "title": "美 연준 금리 인상 기대 상승에 원·달러, 1360원대 육박",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9kanJHV3BwX3NvdkJscVBrQmJhcUw1VFlYa0thVTlyQTFIV3VXcVRFeFFtaFA0YXl4dXVxUF9TdldJdGhuZGh2elh2c1pwLU1NQmYtMWt0MzlxaTFCbHlWa9IBeEFVX3lxTE5seFhOZWR5aWxKY21XMTZNYmJpTFdqaWNoZEU1dy1LaVB6Uy0wQk5fUkxaT05NWkswaXI5ZnFIQ1Q5LWc5WFo4eXlmMjFfM1lJdE44YUhuTENMSnZDNHRqOW9pQTlrSFp3dE5uRlg0eDFqd3h6VE5lTQ?oc=5",
+     "source": "뉴시스",
+     "time": "2026-11-09T09:45+09:00",
+     "category": "거시 · 금리",
+     "sources": 12,
+     "score": 66
     },
     {
      "rank": 2,
@@ -632,38 +735,38 @@
      "source": "지디넷코리아",
      "time": "2026-11-08T11:02+09:00",
      "category": "가상자산",
-     "sources": 4,
-     "score": 29
+     "sources": 10,
+     "score": 59
     },
     {
      "rank": 3,
-     "title": "블루 쓰나미에 AI 불안…환율 1360원 재돌파 촉각",
-     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1qbWxSVmJYZm02N3RVclk2MEVRNmxtV3c3dDdaaTA1dGpRMm1QQXRCd3pXS19RYXpPQlZFcnlwQnFyblR4N2RkQUE2bnpsWXFwQXkzUklseG9mWTJhN0liaktIaS1BUEJOQTk4QkI0MkJESnc?oc=5",
-     "source": "마켓인",
-     "time": "2026-11-08T07:00+09:00",
-     "category": "환율 · 원자재",
-     "sources": 4,
-     "score": 22
+     "title": "비트코인 1억341만 원대 하락, 미국 연방준비제도 금리 인상 가능성 영향",
+     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE0yY1VWdjhGR2p4YzZMWUg2ZTdWcFFkR2s1c3hEbmc3YmkwM1RvUFVhWmhzZ0FpTUZzbWRqY0dTMEQ5T1lwTGRqNW1QZzZEUkVXX0NQeG5haXhMMElNdmZFTV9kUWEtWWwtUk1WbHRXX3lBa1k?oc=5",
+     "source": "비즈니스포스트",
+     "time": "2026-11-08T11:56+09:00",
+     "category": "가상자산",
+     "sources": 5,
+     "score": 29
     },
     {
      "rank": 4,
-     "title": "증시 부진에 금리 상승 악재…증권사 3분기 순이익 반토막",
-     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9ycWJRMVJfaFpvNDJ2b0JpdFRzWTE3R0xpZlZQdmJtcTNic2laS3FtVFd2cXlDUUxzaUxUeTFyQjFjdERiX2NQcFgwNE15emZPbTVKVXRpa19DcFJyRW5CSzRyYWo?oc=5",
-     "source": "서울경제TV",
-     "time": "2026-11-08T07:40+09:00",
+     "title": "뉴욕증시 이번주 CPI·AI 기업 실적 시험대…12월 금리인상 확률 80%",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE0wR1ZmMjU3dDlxS09KYi1hdUVjM3dKa3VEZS1POEJDakNPZU9zZzQ4dm40WHRFdUl3M2xmdWpWTy1VSUtXMUJmWFBkMVE2a1ZpRWIzeHh6WHp5dkxwTFVNMTlxS3JmTFU?oc=5",
+     "source": "뉴스1",
+     "time": "2026-11-09T07:00+09:00",
      "category": "거시 · 금리",
-     "sources": 2,
+     "sources": 1,
      "score": 17
     },
     {
      "rank": 5,
-     "title": "물가 2.8%·코스피 6% 폭락…한은, 금리 인상 딜레마",
-     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1MLVB0clRjdEQ0YVJuYlRQRmplQVdENF85MmlLZnRiYmd5QzZtUkNWVXMyejlFY1NYTGVNMkVHOVJBcGFCN0hmUVIyMlRUS0FsYm9adU1wc1BvS2FBWlktVW5wU2FmcnJkeFE?oc=5",
-     "source": "OBC 뉴스",
-     "time": "2026-11-08T09:06+09:00",
-     "category": "거시 · 금리",
+     "title": "[마켓무버]뉴욕증시, AI 반도체 저가 매수에 나스닥 1% 반등…금리 부담은 여전",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNV08yeTVtX1ZkQXFfbHZsUkZkZlF3aFVwN3YtT1VCaXpBLXdCWUVrTkFkU0RqWEhFeGx6VTRtdXB3RkQ4WUxnQ01oSXc1Z3d6WVdhOGlNQ1phQjNSdjRVNU1CRG9hN1hibm5NVEUzaE5SVnZNTzFDeGZycEpDVWpJSA?oc=5",
+     "source": "이데일리",
+     "time": "2026-11-09T07:39+09:00",
+     "category": "해외 증시",
      "sources": 1,
-     "score": 14
+     "score": 16
     }
    ]
   },
@@ -672,53 +775,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "美 선거 후폭풍에 원·달러 환율 1360원대까지 올라",
-     "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFA2RjdZWjJ3OTJFOW15ZWdPSnpkMXNWRWRXNGdnMWhwampQU0xpT193YlRKb0lESFJrVXVLVUtJUFdXN05kQWlDZ1cxUGtXcWpldWVOdHlFN04?oc=5",
-     "source": "국민일보",
-     "time": "2026-11-08T14:13+09:00",
-     "category": "환율 · 원자재",
-     "sources": 4,
-     "score": 22
+     "title": "美 연준 금리 인상 기대 상승에 원·달러, 1360원대 육박",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9kanJHV3BwX3NvdkJscVBrQmJhcUw1VFlYa0thVTlyQTFIV3VXcVRFeFFtaFA0YXl4dXVxUF9TdldJdGhuZGh2elh2c1pwLU1NQmYtMWt0MzlxaTFCbHlWa9IBeEFVX3lxTE5seFhOZWR5aWxKY21XMTZNYmJpTFdqaWNoZEU1dy1LaVB6Uy0wQk5fUkxaT05NWkswaXI5ZnFIQ1Q5LWc5WFo4eXlmMjFfM1lJdE44YUhuTENMSnZDNHRqOW9pQTlrSFp3dE5uRlg0eDFqd3h6VE5lTQ?oc=5",
+     "source": "뉴시스",
+     "time": "2026-11-09T09:45+09:00",
+     "category": "거시 · 금리",
+     "sources": 12,
+     "score": 66
     },
     {
      "rank": 2,
-     "title": "주가 떠받칠 '44조 배당'... 환율엔 복병 되나",
-     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE00R1Fxa2VoWERwNC1GeWsxc0luaUJoQTF0dU5fVnV0eDJaVUVsWUpyQ2JmU2tEdXFzWjJON0l4UlBhdjVRVVlqQ1BGaG54cnVHZDNWMkpwMTlJY3JINkhpenJORGU?oc=5",
-     "source": "매일일보",
-     "time": "2026-11-08T10:00+09:00",
-     "category": "기업 · 실적",
+     "title": "원·달러 환율, 4.1원 오른 1360.7원",
+     "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQdVRuelNzRHlEajRLSnNHNndBN0luRS05V0ZqSHlLQ0xXc2RHY1lReDQzSVJfY3NOWWstWkJQeDg1V0pSQmx1UkoxSV9hWFJPMlFVejl0UndnZUhUaTc0YTJadktBQzJwcGlFR0dLY1VYWjRodUtnVW5EYl9MN1pNV0ZUSnJ3d9IBmgFBVV95cUxNMmFfazUyTzUtWjhqQ19hbG1lOUZkWXdtbWRpTG11cUpxY3U1S1A1T3VpY1l0NjBCZlNOYnk4MXJyUThGSHFVTUFWNmNEN01yS2hHRHlfUUw2aVVWeWtMR3NYOVdORFYzT2ZPRng0cFZxZDYyeWJxOFdPWGRudEhESndFQXFxT1YteF8xVEtRWEh5eUdJUmhLcm5R?oc=5",
+     "source": "Chosunbiz",
+     "time": "2026-11-09T09:18+09:00",
+     "category": "환율 · 원자재",
      "sources": 2,
-     "score": 13
+     "score": 15
     },
     {
      "rank": 3,
-     "title": "1320원서 1350원대로…수출 호조 속 환율 발목 잡은 '외국인 매도'",
-     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9NcHFQbXQ2VVFHMDVuNk1oN2gzV2E0RUJSWDVtNXJxT1RlbmpFaTVsMFR5MHUwME9fcXZRcm5acEFEYVFUdXZQQXFyeWNvM2t4amVMYg?oc=5",
-     "source": "뉴스1",
-     "time": "2026-11-08T07:50+09:00",
+     "title": "원·달러 NDF 8.05원 상승, 미 고용 호조",
+     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE81V2Nqb09UX25mQkFMRElyYkhQN0VybF9TY3NGZ1ZqbE5uY2RUaVBwTkZIdm13OW5zNlUwVThmVWRydTdLQ0gwSzQxa2RkSjhwVGJQVw?oc=5",
+     "source": "이투데이",
+     "time": "2026-11-09T07:38+09:00",
      "category": "환율 · 원자재",
      "sources": 2,
-     "score": 13
+     "score": 15
     },
     {
      "rank": 4,
-     "title": "2026년 11월 8일 오늘의 미국 달러 환율: 유로화와 일본 엔화와 함께 물가가 급락했습니다.",
-     "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQNzRqT1hIQmpzeHUxTnpENGdhRTB1MldGR1FFUlg5OGRyZzRiU0x0ZnZRV2FXM2ZPemVGLVJCYlVISW5YV1ZLcWVJMWRHTWZwSHpZdmJiSG9hYnBDaGIxR3NmVDVjYzdhdVhwelhFQzVCSVpUTlBBU29YeWRIRjJRbXgxQS1rTTU0TS1lZ3VhUE5MUQ?oc=5",
+     "title": "외환 시장, 오늘(11월 9일) USD/VND 환율: 미국 물가상승률 지수가 달러화의 '시험대'가 되고 있습니다.",
+     "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQTkc2RlZUN0ZYcENYSnlTSUNYNU1yTzNyMXVKRnBuY1dhNV9DbEwtT2o2Q2NiLUFFb3R0RnRQeW9fc0hveUFZRHM0b3VRcURwQlNGWkpMajMwSlhLcFNpY2Iwc0ZjSFRTbXRUMml3MElULVFNajJKUUFNWjVCVmVsWmJVa3BNc1o3UVNBYVlNNmVzRERkSEhuYWlfcXFMYXFQUEROakVVam0tZ2RpYldjVWVpNk1UVFJLbzdybg?oc=5",
      "source": "Vietnam.vn",
-     "time": "2026-11-08T11:23+09:00",
+     "time": "2026-11-09T09:32+09:00",
      "category": "환율 · 원자재",
      "sources": 1,
      "score": 11
     },
     {
      "rank": 5,
-     "title": "외국인 8.7조 '셀코리아'에도…반도체 달러 덕에 버틴 원화",
-     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNZzFGMG9hQW9GSjZvdWFPQ1RCMWkzc19MakR3UEEyZUZoNjF6dG1hT2lsaTdmbGx2OS1aM19xdFptVDlnOFRYdmlTM05hMDROOHRwdm1XZGVKR0I5ZE1RNm1GQnUtVEk4dTZPM0xqUlFPUHZ3NWdpbDNxOUtVUkxvaA?oc=5",
-     "source": "이데일리",
-     "time": "2026-11-09T04:58+09:00",
+     "title": "2026년 11월 8일 오늘의 미국 달러 환율: 유로화와 일본 엔화와 함께 물가가 급락했습니다.",
+     "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQNzRqT1hIQmpzeHUxTnpENGdhRTB1MldGR1FFUlg5OGRyZzRiU0x0ZnZRV2FXM2ZPemVGLVJCYlVISW5YV1ZLcWVJMWRHTWZwSHpZdmJiSG9hYnBDaGIxR3NmVDVjYzdhdVhwelhFQzVCSVpUTlBBU29YeWRIRjJRbXgxQS1rTTU0TS1lZ3VhUE5MUQ?oc=5",
+     "source": "Vietnam.vn",
+     "time": "2026-11-08T10:53+09:00",
      "category": "환율 · 원자재",
      "sources": 1,
-     "score": 10
+     "score": 11
     }
    ]
   },
@@ -727,16 +830,46 @@
    "items": [
     {
      "rank": 1,
+     "title": "삼성증권, 금·은·구리 등 원자재 ETN 6종 상장",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9mZ0pfX0xxLVVhU1o5VjZhUzYyOURJZXNIRnRsS3JEOEtTdWMwUHNkdGpQbUZEeU1GOG1aeDdJcXFSWHh3enRMWlZ1ajVwdTNrMjdfMVFNVF84VEF1?oc=5",
+     "source": "뉴스핌",
+     "time": "2026-11-09T10:06+09:00",
+     "category": "환율 · 원자재",
+     "sources": 8,
+     "score": 36
+    },
+    {
+     "rank": 2,
      "title": "[위클리 재테크 레터] 코스피 11.7% 급락에도 빚투 계속…금값 오르고 비트코인 내렸다",
      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5MdzBTMTJQeHYwellNSlBWdkpNOVBVZWl5NnpYc1l1Vmw2aVdMOE1HdkEwUG82YXFNaF85ZUotSVB0RTlLNDVnaDRVTk00ZUFJVV9IZFlVM0c5WV9tSURldA?oc=5",
      "source": "https://www.theconnectmoney.com/",
      "time": "2026-11-08T10:11+09:00",
      "category": "가상자산",
-     "sources": 1,
-     "score": 11
+     "sources": 2,
+     "score": 18
     },
     {
-     "rank": 2,
+     "rank": 3,
+     "title": "[오늘 금시세] 금 한돈 66만6,713원 0.6% 상승…미국 고용 호조에 국제 금값 압박, CPI 분수령",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFBJV0YzVVNINW5PeGQ2TkVvY1R1VzBsdW44aC1hWFBSb01XNm9DX291N3lmV0x4X2duUHFpdGFSeXpJcmgwTFFxN0pUVzYxcW85di1YZy1UWFR2SjlvSFJicW5VSGx0TmpzN1RLVnMzMUhXdw?oc=5",
+     "source": "톱스타뉴스",
+     "time": "2026-11-09T09:25+09:00",
+     "category": "거시 · 금리",
+     "sources": 1,
+     "score": 12
+    },
+    {
+     "rank": 4,
+     "title": "[원자재] 골드만삭스, 2026년 말 금 전망 4150달러로 하향… 연준 긴축 반영",
+     "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1kTXdGQzVGdjFyTGdLRTZ3MGxEQ3Q4N1pUcmFmcTlKZVdVOGlweTh4VmtrWllCN082NU9sUVVYVVRMY205di04OURpSnhMelZLeDlGdVZKblc5Rk9lVjQxNGxR?oc=5",
+     "source": "버핏연구소",
+     "time": "2026-11-09T10:05+09:00",
+     "category": "환율 · 원자재",
+     "sources": 1,
+     "score": 10
+    },
+    {
+     "rank": 5,
      "title": "금(금값, 금시세)는?…美 금리 인상 확률 높아진 상황 속 흐름 '이목'",
      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBlTVZEZ3VxSDBjblZsa25sN3JiXzAtdXRCcllCdU5TVmx3VUw3TENEel9VdkJ0RFAtZ2FCdEFVVnp1R0VWMTVjV0s3SWRhd3FjdENESWhvWmFrZW1kcVJmcWRlTUhrTS1l?oc=5",
      "source": "CBC뉴스",
@@ -744,36 +877,6 @@
      "category": "거시 · 금리",
      "sources": 1,
      "score": 9
-    },
-    {
-     "rank": 3,
-     "title": "금값, 일주일간 급등 후 급락 이후 전망.",
-     "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE00Ym9yVXloVENZRllOMFZEUGc0YmRoTVNXM1RHeW5sUzRUSFZ6eGlXcnBjOElGM1dXSUhURkEtTS1WWTBMdE94VVZDcWRXSm5mWDNreUJVbE5IbXB1TkRYVHZfUVVDX2h0T2lfOUc0ZGV1U0lCZ2NOQm5IUQ?oc=5",
-     "source": "Vietnam.vn",
-     "time": "2026-11-08T15:05+09:00",
-     "category": "환율 · 원자재",
-     "sources": 1,
-     "score": 9
-    },
-    {
-     "rank": 4,
-     "title": "금값이 급등했지만 투자자들은 여전히 ​​수백만 동에 달하는 손실을 입었다.",
-     "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxPVmVxTnJQbExBMzZSZFZfZnVNMGdXVXRldFdWSTF1cmRhMDdjQnJaTjhiQzBFWlJNcFQzYUlXdEVOVHFrMzRNRXZFLVlwaUxDcGZvYnU2V2tGclN6Ql9zaGh2Vm5sbXhlX21EUGwzcjlYSUhwUEFkbVotQklGQ2ctVElmOEFGWXpLMUZ2VlJlY1Bhcmxtb3VPX0VRMGp5Zw?oc=5",
-     "source": "Vietnam.vn",
-     "time": "2026-11-09T00:28+09:00",
-     "category": "환율 · 원자재",
-     "sources": 1,
-     "score": 8
-    },
-    {
-     "rank": 5,
-     "title": "\"인플레 압박 계속된다\"…美기업 실적발표서 언급 2년8개월래 최다",
-     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBhRHVieE13X1Y4c0pvU0xqcGVqd1FOWDY4QWFJVHFVVWYzS3BpNnhIT0liQ2lsQ0V3QXpLMWxubG5ON2g5WHJ4OUVndnpGTWo0c1dTclpCMUs2Ym5ZVDIxdmlQUW93YUhMaG5xUkhCaU1Qam8?oc=5",
-     "source": "마켓인",
-     "time": "2026-11-08T17:53+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 8
     }
    ]
   },
@@ -782,8 +885,38 @@
    "items": [
     {
      "rank": 1,
+     "title": "[주간 뉴욕증시] AI株 급락 후 반등 이어질까…물가·실적에 촉각",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9rNVQ3UjlCWW9YeUdrcW5iMFVPLXgyenU3bk5NNWlqbnluMVQ2NVYtWHBMcVVXVjd2SG92c2RYa2k1b002VnkxV3oxQ2RUaDk4RFpCcmMxeDk0S08ycTY0btIBeEFVX3lxTE9jZEZvOTcyTTZSb3FORTZ3OG5qM3hxQ3ZCYk9RQURrNmpscDdBYl90aURoLTZGYUU3cnpLTmttenlBQ25sWWZyclVTZkU4V3hzMW1pRmpUNjItSXUwYkQyem1BLXFSWVBTYUxCUGhtdEV6QUdZYXVUUw?oc=5",
+     "source": "뉴시스",
+     "time": "2026-11-09T09:32+09:00",
+     "category": "거시 · 금리",
+     "sources": 1,
+     "score": 15
+    },
+    {
+     "rank": 2,
+     "title": "한국타이어, 2026년 3분기 실적 발표 '역대 최대 매출' 이뤄내",
+     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBORlk3SzNRajVqWk1NNjhGZFBuZ2UwYWZ5WTgtR0dNeDVFNFZLaGpKLWIxWkpyZUo2WjVqa2s0SVd0eEMxUGVwZFNwUzluZFgwZU10N3FWeWR6bjAyUk92Y3NfTENxam9a?oc=5",
+     "source": "투데이플러스",
+     "time": "2026-11-09T08:39+09:00",
+     "category": "기업 · 실적",
+     "sources": 2,
+     "score": 13
+    },
+    {
+     "rank": 3,
+     "title": "뉴욕증시, 물가·AI 실적·이란 변수에 주목 [뉴욕인사이트]",
+     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFA2WDFzSE83WDVOT2F0VGhhSGx5Z1FYd2wxbmlqV0lEampKNjhNa25rRF9GeHpudEttaHhsWFZHRnVDbEFWRzlWajk4bW14OTJPYTVkTg?oc=5",
+     "source": "이투데이",
+     "time": "2026-11-09T07:16+09:00",
+     "category": "거시 · 금리",
+     "sources": 1,
+     "score": 13
+    },
+    {
+     "rank": 4,
      "title": "코어위브 실적, AI주 방향타…인플레이션 지표에도 촉각[이번주 美 증시는]",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9pOGtNQVpBY1hhTEdDUlkwdFlZTG81SHM3ZGlDVTJWZmFCSGZtdE4xNjV3RHhzd0VSdXNqUGZfU1pOT243R2ZLX2RSY0w0ZUJSdTlOZVE1T25TU0t6UjRUQmF0Tm82Tk9N0gFuQVVfeXFMT3V2Uy14V2FJZE91cHRHYzhfNUxQT3dhX3NMT05rbzU3X3VmMFdpXzk4QTlnXzFLemdVc3htNWNEZ0JoOVVhOUZDb0NSUGtjMjREbnhZV2Rpb1VVbEw3VWxpOG9JRWlnOW5iQVo2enc?oc=5",
+     "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE91dlMteFdhSWRPdXB0R2M4XzVMUE93YV9zTE9Oa281N191ZjBXaV85OEE5Z18xS3pnVXN4bTVjRGdCaDlVYTlGQ29DUlBrYzI0RG54WVdkaW9VVWxMN1VsaThvSUVpZzluYkFaNnp30gFuQVVfeXFMT3V2Uy14V2FJZE91cHRHYzhfNUxQT3dhX3NMT05rbzU3X3VmMFdpXzk4QTlnXzFLemdVc3htNWNEZ0JoOVVhOUZDb0NSUGtjMjREbnhZV2Rpb1VVbEw3VWxpOG9JRWlnOW5iQVo2enc?oc=5",
      "source": "머니투데이",
      "time": "2026-11-09T05:35+09:00",
      "category": "거시 · 금리",
@@ -791,44 +924,14 @@
      "score": 13
     },
     {
-     "rank": 2,
-     "title": "AI 거품 공포에 흔들리는 美 증시…中, 물가·수출 성적표에 촉각",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBuQjdhZ0NveU9tVGpwbHFvM0FqX3RVN1NIUUxtMlV5UFRZVVJkU0RHdnpCSFB5WEVGZXBiWkNLZTlOZjM3b3UtYkYtbnlWdHVnOGVoZGZpZzg0UQ?oc=5",
-     "source": "한국경제",
-     "time": "2026-11-08T14:03+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 11
-    },
-    {
-     "rank": 3,
-     "title": "AI발 증시 충격 속 아리바이오랩 급등…실적에 발목 잡힌 씨어스·인바디[바이오 맥짚기]",
-     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQbHdHZUNMeFZqSnozbDZWdDdRaVhCUmh0VnN1UkJ2TnUxUWhkSFJkcm9scnBYREZSZ2MyZXBiaGdpVzllRmx6NUFfdzNxZlV5elFIOU9hUndJODJnMmxnaU83XzVzVTZoQXB3dnR5OHVFS2dkWmNDQTU2eEZNYU10aQ?oc=5",
-     "source": "이데일리",
-     "time": "2026-11-08T08:40+09:00",
-     "category": "국내 증시",
-     "sources": 1,
-     "score": 11
-    },
-    {
-     "rank": 4,
-     "title": "[뉴욕증시-주간전망] 美 인플레 향방은…'AI 풍향계' 코어위브 실적 주목",
-     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1mSGEzcThsUnFDZzJEOEl1dF8zZGRrU1hPVkVOUXBKQnBkbmFOWnJPLWVOREU3OFJ2cWh6NnJ5Z2RVZ2ZaRE9mM0RFbVZId2ZDSWhpSW5ieHFmTlXSAWBBVV95cUxOOWNvX3J2aXk2b2FYanM1bGpOUGJnM0I3djd1X002UlVERG1WLWRnakR2eG5Ya0YwUnc1ZEVWdkIxS3VISkd0R3A0WlQybG5fQ2kxZlhzdGhheDBQVjJoazU?oc=5",
-     "source": "연합뉴스",
-     "time": "2026-11-08T07:00+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 11
-    },
-    {
      "rank": 5,
-     "title": "팔란티어(PLTR) 주가 전망: 3분기 실적으로 8일 연속 하락, 주가 130달러까지 하락 위험",
-     "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPMV9jNmw2ZXIwRzNQLU1GMl9fd0NMMk9TQmN6bmp4VnBtTU9oUTZzN3M2dnB2dVNjalBUSTROZktJRE1uamFLSWt1ZXkwdFZYSVBIRzJPUDRtc3N1UWJFMm1aY1V2UDhJVFRzMHZDRkcxcDdpQ2ZBZkYxd3VndDZ6YUlVSlhOX01vYWFtSUQ1T2VmUFRkTl96UFU0ZmhKelREZ1RBV3E0Zng0QW9aTkFET2hveTM1LWdTMXQ2OFZySm1JQ2xiR2c?oc=5",
-     "source": "TradingKey",
-     "time": "2026-11-09T01:27+09:00",
-     "category": "환율 · 원자재",
+     "title": "[넥스트 뉴욕증시] \"바닥을 잡을 때인가\" 미 물가 지표와 코어위브 실적에 쏠린 눈",
+     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9mbmJuYlF5LTY4RW5HSHV0WmhZa2tvcmlSYlBaSjdCc3BlSDZNWVlQbHB3UjF1SEFocjNVblhWUzlFdWhtM2FuWFZMR0FObkRRLXNMYjhzS0ZERWZTdVNrSUhqeVJkRktp?oc=5",
+     "source": "CBC뉴스",
+     "time": "2026-11-09T07:40+09:00",
+     "category": "거시 · 금리",
      "sources": 1,
-     "score": 10
+     "score": 12
     }
    ]
   },
@@ -842,48 +945,48 @@
      "source": "시사프리즘",
      "time": "2026-11-08T15:36+09:00",
      "category": "국내 증시",
-     "sources": 17,
-     "score": 81
+     "sources": 15,
+     "score": 73
     },
     {
      "rank": 2,
-     "title": "외국인, 삼성전자·SK하이닉스 7조6000억원 투매…보유율도 수년 만에 최저",
-     "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1MWS1TNmNtRjZMc3JRSm94NVd4X005ZFJ5eDFIOTlBbExoLXJzaEtqSE5oVFpZQnF6WHhpVWlJVkstdnQ0UlduS2lXUnZhM0w2amthN2VXa24tMnRxUmxYTEVxTjJyRXg3RVliMXFWMUViUjMxempB0gF3QVVfeXFMTUxZLVM2Y21GNkxzclFKb3g1V3hfTTlkUnl4MUg5OUFsTGgtcnNoS2pITmhUWllCcXpYeGlVaUlWSy12dDRSV25LaVdSdmEzTDZqa2E3ZVdrbi0ydHFSbFhMRXFOMnJFeDdFWWIxcVYxRWJSMzF6akE?oc=5",
-     "source": "핀포인트뉴스",
-     "time": "2026-11-08T06:37+09:00",
+     "title": "[개장시황] 반도체 반등에도 5000선 위태",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ZZjhnNGV2SmVjaFdmOGpjdEUzVGxTTHlYU1dkN3U0TGprbTloUUFZVnRKUmx1OF8xQnRlZ2E3VFJQUm9BY2sxeUxaZ0dXRHRMS1NnREFyeHZhTE8zSThJZ1lIcmctVUE?oc=5",
+     "source": "자본시장뉴스",
+     "time": "2026-11-09T09:50+09:00",
      "category": "국내 증시",
      "sources": 5,
-     "score": 26
+     "score": 28
     },
     {
      "rank": 3,
-     "title": "한 주 새 11.7% 빠진 코스피…美 반도체 반등에 5000선 지킬까 [선데이 머니카페]",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1lbTRiZDNfNmN2eVJteHdMRnd4TWhjcHNsRjh6dmYyY2twRjZmTmNPdnlsQkpIU3JYcHNDQXJ6ZnpWakFtdGpZTEdmRmV2YjFzN0HSAVNBVV95cUxQdkg1Y1g5VllLamRWNGlkM0I0c2NabE5jMEVmendnRjBLdnpiREQ4R3ZydVlGMDVya2p0bF9JbEFQbjVERjhya2x1N2FyeWJoOVhPTQ?oc=5",
-     "source": "서울경제",
-     "time": "2026-11-08T07:00+09:00",
+     "title": "[특징주] 저가 매수세 유입에 삼성전자·SK하이닉스 반등",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE4tZGdsYlROZGdsUTlpanlGWVVVUDNic3J1R1JWeXFkOEp5TWhRTEUzNjh2MjUwWlUxT0NGckREc2QtWkkwYmw2TmZMR081N1pUNktFcXZwY3FSZFNv?oc=5",
+     "source": "뉴스핌",
+     "time": "2026-11-09T10:04+09:00",
+     "category": "기타",
+     "sources": 5,
+     "score": 24
+    },
+    {
+     "rank": 4,
+     "title": "[속보] 美 반도체 저가매수에 4% 반등 … 삼전닉스 프리장 1~2%↑",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPWG1WNkJKYnBmeVFJX3lfZ3NEVG5tSUZlcGZjNWpnSVZURDlnYzFqQWU1M2NWalltNEEtQjNac2dEU01aWGY3Y09HWjRSRVFGdEdEVmlabF9RdXVpV0FPbUU5aDRzWFJvMS1oOTVNaEtZQ2FQQS1GZl82eEtHM1R1adIBgAFBVV95cUxPWG1WNkJKYnBmeVFJX3lfZ3NEVG5tSUZlcGZjNWpnSVZURDlnYzFqQWU1M2NWalltNEEtQjNac2dEU01aWGY3Y09HWjRSRVFGdEdEVmlabF9RdXVpV0FPbUU5aDRzWFJvMS1oOTVNaEtZQ2FQQS1GZl82eEtHM1R1aQ?oc=5",
+     "source": "뉴데일리",
+     "time": "2026-11-09T08:08+09:00",
      "category": "국내 증시",
      "sources": 2,
      "score": 19
     },
     {
-     "rank": 4,
-     "title": "“삼성전자·SK하이닉스 개미들 월요일만 기다렸다”…美 반도체주 급반등, 코스피 살아날까",
-     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5makhQajRURlE4WnV4LVdicGxtUFVCMkdhNXhOaFZVY0x3eWU2VkFPSzV5NXdrU3B3dHpLMHJQQmdtcnZIZ1hJU3IwdU5FZGJWb2hISXpub0YxSWRHUmlrTExDQ183anB4NEFkRQ?oc=5",
-     "source": "데일리25",
-     "time": "2026-11-09T05:25+09:00",
+     "rank": 5,
+     "title": "코스피 10% 급락에도 웃었다…통신·K콘텐츠 지수 9%대 상승 [마켓시그널]",
+     "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9EYVdONlByd09LdGEzZjZXVGhHX2NnTENUSGpOYnhWa1BNU0ktdUlIRV9uc2lxM3hGaXgwUjRVWl8wR0pyclUtUF9QbHdDd0xXWmdR0gFTQVVfeXFMT0RhV042UHJ3T0t0YTNmNldUaEdfY2dMQ1RIak5ieFZrUE1TSS11SUhFX25zaXEzeEZpeDBSNFVaXzBHSnJyVS1QX1Bsd0N3TFdaZ1E?oc=5",
+     "source": "서울경제",
+     "time": "2026-11-09T06:15+09:00",
      "category": "국내 증시",
      "sources": 2,
-     "score": 15
-    },
-    {
-     "rank": 5,
-     "title": "韓반도체, 언제 주울까 “삼성전자 17만원대부터 분할매수 권고” [투자360]",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE03WTgxcHNVR2wxUUxSbmN3TW1TY0hobjZtSl9neEdvZVF3MF9tYl83Nk00ekRzOTRBNTFMSXZEbndQellxRGdoT3ZrRnpzR2cxR19oWDJB?oc=5",
-     "source": "헤럴드경제",
-     "time": "2026-11-08T22:40+09:00",
-     "category": "기타",
-     "sources": 2,
-     "score": 13
+     "score": 19
     }
    ]
   },
@@ -892,46 +995,36 @@
    "items": [
     {
      "rank": 1,
-     "title": "‘대미투자 1호’ 사업 가능성 흔들… 반도체 수출 축소 땐 韓 GDP 둔화 우려",
-     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5IN0xkc1c4UnBzVHRaaW1vLVdKN3BOS2E0ZWd6aHRHbmpNZ3BRSGdpaUlBZ0h6TUNXYm1ONUowNVozejdIaU1LMjVGU2Q1cG4wY04xMGtaYmhEOUlYV2s1a080MDVIZlBGcXZtYzlIbw?oc=5",
-     "source": "서울신문",
-     "time": "2026-11-09T00:52+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 12
-    },
-    {
-     "rank": 2,
-     "title": "K-라면 수출 올해도 역대 최대 전망",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBNT1JkVktrVW9hMkVSMnNnbDhXWXZmOHVVRkJWSnRwWENiNklKTkh2V2NBOUV1bU9FeDgzWVhBcW5JVXVBZTJzS1ljN3d2X2tBMC02Q2RNOWNkNVFiNHVZbUMzVTcyaDVwVmJJejVEYkNZRGtu?oc=5",
-     "source": "연합뉴스 한민족센터",
-     "time": "2026-11-08T13:56+09:00",
-     "category": "정책 · 무역",
+     "title": "신약 상업화·기술수출 확대 기대감…한미사이언스 7% 급등",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE8xaDlQVEdyOG5vU3NHbUhfenViOWp2dHB3R09yT1lCQnFnYTVlMHJ6NktTRmwxa2ZTSVA5SlU5N2VBZmVPNExxS3NsM2E1SWFJb2Nob0lQWnNNdw?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-09T09:20+09:00",
+     "category": "기타",
      "sources": 2,
      "score": 12
     },
     {
-     "rank": 3,
-     "title": "AI 거품 공포에 흔들리는 美 증시…中, 물가·수출 성적표에 촉각",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBuQjdhZ0NveU9tVGpwbHFvM0FqX3RVN1NIUUxtMlV5UFRZVVJkU0RHdnpCSFB5WEVGZXBiWkNLZTlOZjM3b3UtYkYtbnlWdHVnOGVoZGZpZzg0UQ?oc=5",
-     "source": "한국경제",
-     "time": "2026-11-08T14:03+09:00",
-     "category": "거시 · 금리",
+     "rank": 2,
+     "title": "댄 아이브스, 기술주 폭락은 팬데믹·관세 폭락의 재림…\"황금빛 매수 기회\"",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE04Q0docDR5cDJsaEFnZS1DYlJWTzdqRE5wRUJOd2dSalFJZmdSSUtKTlY3blcyeUk4N2llRExsNHVEVHk0N2lHYUJDSXl4bk1yS01ZbzJQM1BOYk1vMUNjVloteUZTVDlBOVNvdEhPOEnSAXRBVV95cUxPYkpsRHplR2htSmh4dGphNDZSVmIxMzI5QlR4bHZUVVF6c1VEMnZqUzRwbWJ1Y3Y1MGQtMVpLWm9KUWFkckJUejZTUnMyeXVlQTAzTnU2OVZoNmY3dGdYZzhoZWRkSFItNF9yU1E2N1Azb2dnYg?oc=5",
+     "source": "연합인포맥스",
+     "time": "2026-11-09T07:54+09:00",
+     "category": "정책 · 무역",
      "sources": 1,
      "score": 11
     },
     {
-     "rank": 4,
-     "title": "美 제재·AI 붐 탓에...글로벌 반도체 장비사 中 매출 뚝",
-     "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPR1R5dm1jNVpJc2hobTZuWTl3clQ0MlNndjVmN2ptdkJpRWRDa1BZeEFIRTljMjB3WkVCZWpJX251VW10a3lhUTFyZEpIdkNXdHRtN1llTzJJTWYyWnhrOG9ZczY0dll3N1RKeU13RGZmX29oYjRvX1lDd09CNWNHQzZwVQ?oc=5",
-     "source": "조선일보",
-     "time": "2026-11-09T06:00+09:00",
-     "category": "기업 · 실적",
+     "rank": 3,
+     "title": "반도체가 이끈 수출, 왜 항만 화면만 나오나",
+     "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFA3d0xtRkRhS3FvWHJheUtDNzVjX3N3aWFySS00SDNnWlNkeERMVlp2dkFYdm9PS1ZLVFpWZEo0RWc3ZjRjd1c5UmRiSG5jUm1GZTB3cWZjMm5JTlloa1RLbUNB?oc=5",
+     "source": "일요시사",
+     "time": "2026-11-09T08:00+09:00",
+     "category": "정책 · 무역",
      "sources": 1,
      "score": 10
     },
     {
-     "rank": 5,
+     "rank": 4,
      "title": "타이어 3사, 고인치로 매출 늘렸지만…원가ㆍ관세부담에 수익 엇갈려",
      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ZSU1YN1pkWHdSSmhmS2I1aG1IS1daa0xFWWFpSklvLWFzYW5YamFoSUw3RDhQSkhqWXdDdW5sSXcyZzd3VTJ4TE5QQ0oxSzZlc0hEdmlsTFhtOVpBXzhuR2hvVkRiRzRMZWwtQ19ZUkdINnp5?oc=5",
      "source": "대한경제",
@@ -939,6 +1032,16 @@
      "category": "정책 · 무역",
      "sources": 1,
      "score": 10
+    },
+    {
+     "rank": 5,
+     "title": "[경제 초점] 美 여소야대 국면…韓 핵잠·車 관세 문제 어디로",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5DQjVMNnhDYm53Yzd5Q0Z4bFoyeGRZNjFNN2o3OVJJZHZ3VWlNRHZEQzk5Q2FnTjdCa2pvZk5WTFdCc2FieXQ0N3lCYVhpbjZTRXRqX0tacjQzSWxiWW8td0tYcGRkMGhVQTMxVA?oc=5",
+     "source": "이슈밸리",
+     "time": "2026-11-09T09:12+09:00",
+     "category": "정책 · 무역",
+     "sources": 1,
+     "score": 9
     }
    ]
   },
@@ -947,53 +1050,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "삼전닉스 7.6조 폭풍매도한 외국인⋯보유율도 최저",
-     "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE53TWg5cFlUNGFIT2FILVU0SHU2eVhub1FZd2lpakJjbWw5OU1hWlM3UDFsaTF3eVJEOFBWdmlKY3BBVXVleVo4UnhPSQ?oc=5",
-     "source": "아이뉴스24",
-     "time": "2026-11-08T19:32+09:00",
+     "title": "외국인, 지난주 삼전닉스 7.6조 투매... 삼전 보유율도 17년만 최저",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9taXNIdVoxajg2Mmw4TmZwYmJrR05nenhoMXVjdlNtV1VKb215UkdrZm1aZTlGMzZrd2VGR0pZRVh2b0F6QkdhdEF3VGpVdzNscE45UjBOYWNRcnlyRWU1ZHRnZXBHbFlCN2dkeThMd0XSAXBBVV95cUxPbWlzSHVaMWo4NjJsOE5mcGJia0dOZ3p4aDF1Y3ZTbVdVSm9teVJHa2ZtWmU5RjM2a3dlRkdKWUVYdm9BekJHYXRBd1RqVXczbHBOOVIwTmFjUXJ5ckVlNWR0Z2VwR2xZQjdnZHk4THdF?oc=5",
+     "source": "글로벌경제신문",
+     "time": "2026-11-09T07:47+09:00",
      "category": "국내 증시",
-     "sources": 17,
-     "score": 81
+     "sources": 15,
+     "score": 73
     },
     {
      "rank": 2,
-     "title": "\"삼전·닉스 7조6000억원 팔았다\"…외국인 대탈출에 개미는 매수",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iWTNIbDNhQmJGREwxTmFOUzM5UGFINmczcW5xUGNia3JNQ0ZnMjBZNGRDS2VRd1RtUGlNRXBxTUdaMXZMSTFIZHBUMnAxN3ZGd3VHSW8zT1ByQQ?oc=5",
-     "source": "파이낸셜뉴스",
-     "time": "2026-11-09T05:00+09:00",
+     "title": "'5천피' 코스피, 장 초반 보합권 등락…외국인 7거래일째 순매도",
+     "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBLM3NQR2xLOEwzSkJnNmpsUExpUEZKWkxiYkZKSjVIeU4yQzQ3cWZOOEVKNHdkLXhiWlN1QmlacUYwUVJpeDFDdUwxcG01dGloVHd3bE1XSTZpMDRVRGFwVzlLNEZGZw?oc=5",
+     "source": "싱글리스트",
+     "time": "2026-11-09T09:45+09:00",
      "category": "국내 증시",
-     "sources": 5,
-     "score": 26
+     "sources": 6,
+     "score": 38
     },
     {
      "rank": 3,
-     "title": "[주간수급리포트] 10조 던진 외국인에 멍든 코스피…미 AI 규제 우려 직격타",
-     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBDVjdDTFhCeFNTX3E5Q015X3lScHl6VWNUSVZoMUwtSlNaT1NodFlfNEJLd2VLVnRncHlfRzF2OXl5ODIyODlxd3VfOFJzTUNSUmtxZQ?oc=5",
-     "source": "이투데이",
-     "time": "2026-11-09T06:00+09:00",
+     "title": "[주간증시전망] 외국인 10조 판 증시, CPI 주목",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1aRWRtWUxDUXM1Q1dzV3dXYXYyejlqZjh3UjNfZl90U2lpWGU3QXRJdEh0RWdzTncwTThwdEFrc3JqbFFKNXZDMWpsbEdpOXliREpnTElkV3F6M0dFQzkzZ191RzRSNFU?oc=5",
+     "source": "자본시장뉴스",
+     "time": "2026-11-09T08:52+09:00",
      "category": "국내 증시",
-     "sources": 1,
-     "score": 12
+     "sources": 3,
+     "score": 25
     },
     {
      "rank": 4,
-     "title": "외인 조단위 순매도 속 코스피 급락…증권가 주목 업종은",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9DWlJYWXVtQ2h6RTc5T0RvallKU1ZEcnRSbFk1S3NLa1pKMzVKMXZWa1U3Xzl3eC05Mzl1aF93NlVHb0ZkLXhIT1RUaHVrVGQtUGthaG1nUzNzVVBKLWx0b0JQTUFyal9rSm1JaGNKNlU?oc=5",
-     "source": "연합인포맥스",
-     "time": "2026-11-08T15:52+09:00",
+     "title": "[투자자 순매수 TOP5] 지난주 외인 10.4조 투매…삼전닉스 매도 73% 집중",
+     "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5Kby1sLUlWWVNWTkhLTlIydzBEaDFsRUlWcHF2SmY5UTQ2bVdqaVFrWGcxSF9qeXk5bVhmRFJCb0ZxWUtWRUZCRlVoOFdHOC16a2s2eV9TUVrSAVhBVV95cUxOSm8tbC1JVllTVk5IS05SMncwRGgxbEVJVnBxdkpmOVE0Nm1XamlRa1hnMUhfanl5OW1YZkRSQm9GcVlLVkVGQkZVaDhXRzgtemtrNnlfU1Fa?oc=5",
+     "source": "SBS Biz",
+     "time": "2026-11-09T07:42+09:00",
      "category": "국내 증시",
-     "sources": 1,
-     "score": 10
+     "sources": 3,
+     "score": 20
     },
     {
      "rank": 5,
-     "title": "'블루 웨이브'에 외인 10조 매도…코스피 5000 사수 가능할까",
-     "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1sYmlHdmhVY3ZTWk5EdVhGd3otNXVWWlpvb2wydlpnTjN2TkhRbEh2eEoyYUxPNF9RbkpFcHllV0xQX2VPaUR5VW9vYURnUmxkOGlZMGNvUGd5N05aME5n?oc=5",
-     "source": "MTN 머니투데이방송",
-     "time": "2026-11-09T06:00+09:00",
-     "category": "국내 증시",
-     "sources": 1,
-     "score": 9
+     "title": "코스피 한 주 11.7% 급락…외국인 현물 10.6조 팔고 선물 2.5조 샀다",
+     "link": "https://news.google.com/rss/articles/CBMiQ0FVX3lxTE9hZXBwWDlfSHNKMUw4aGpkVzRlZWxpa2dHOXFNY1d2UmVuWEJSNlY2WmtzRnotS0lFbDBhNkJrZEZhQzg?oc=5",
+     "source": "한국공공정책신문",
+     "time": "2026-11-09T09:07+09:00",
+     "category": "가상자산",
+     "sources": 2,
+     "score": 18
     }
    ]
   },
@@ -1002,53 +1105,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "증권사, 3분기 순이익 '반토막'…증시 침체에 주가·배당 기대도 흔들",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBaem1wc1VjcXFKUDBYS3NFcnNReTVwODhoX21zWmFPZndQZ1pjRl82MEpXbHJqQlRmSFNQanAtOUNjTFNzZ1BYWXBkM2h1aU1CZHduMmFiVjE5cWhjdkdFXzJucHFWckctM09lZF9rb2vSAXRBVV95cUxPbGROODlick9SVXJ0QTNiaE9kRk1xLVIxM3dEdW52N0V4T3ptNWVRV2tVSnFyek5wcDQ3YU01VnlQamhsSGt1VDNwUlo3Ump4SU90c0lOWGt5V3JyRzR2LXZFZ0FkaDR4cWFUbnJjZ2tzXy15YQ?oc=5",
-     "source": "산경투데이",
-     "time": "2026-11-08T12:25+09:00",
+     "title": "삼성운용, 美 나스닥100·단기국채 혼합 월배당 ETF 출시",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOYU5hajZwZVlZRzRlTFFteXJ1VDBEa2szbkJzMnFvb0pXNm5RaWswMHY1c3JnWjJyV1pEd1JXVm5CRF80UUYxR0xmd0lHWktnRnM1SWFZb0xZNUxmTlBFd0VXcElmdzFuR1RKV0lzX3lCMHFJMGxLSEZKazhYTW5XeHNUUUp0WEZr?oc=5",
+     "source": "글로벌이코노믹",
+     "time": "2026-11-09T09:56+09:00",
      "category": "거시 · 금리",
-     "sources": 2,
-     "score": 17
+     "sources": 10,
+     "score": 47
     },
     {
      "rank": 2,
+     "title": "KTcs, 3분기 영업이익 '역대 최대' 110억원",
+     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9mTmwzdEc2NzQ0UHB2a21Hc1NJakxMU2NVZ1Q5MmNFZFBFNHBjOTQ4dTVwb2I0dTU4M0tja05kRTlPSG8xNF9wVnRxU3Jkc2FSN2ZPc0FR?oc=5",
+     "source": "지디넷코리아",
+     "time": "2026-11-09T09:12+09:00",
+     "category": "기업 · 실적",
+     "sources": 3,
+     "score": 18
+    },
+    {
+     "rank": 3,
+     "title": "버크셔 해서웨이, 자사주 매입 확대…3분기 96억 달러 매입",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9ZNnV0cTdlM1RvR3lLVWNCUldZUndHWmo2TWZ4UjdqZUhHMnBWcVVFY1ZrOWM3R3hkbF9uWDdMVkh1UE5JM1hIcTdNN2tSMkxTQlNFM0I1d0JfVklzZ3VoRHJGaFQ3Q2tqdEY1ZDRVeFDSAXRBVV95cUxQX3hEWUJGM0VRTGlJSUFsUjItQ1NZcDEyTzRjX1FSWmxoSTlfeFh6LV83Rk9UZG1mbXliSFo0Rmc4elZ6Ym5Gb2tBbE1XMnN6Q1pJUVNOM3lxbXNYdmRaVlg2bVV2N1VhVGRaS09aNU5FSlMtZA?oc=5",
+     "source": "연합인포맥스",
+     "time": "2026-11-09T08:24+09:00",
+     "category": "환율 · 원자재",
+     "sources": 3,
+     "score": 16
+    },
+    {
+     "rank": 4,
+     "title": "래블업, 최대주주 측 지분 51.56% 보유 공시에 15%대 급등",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBuTWcxRHFaNFVCXzY2Q0VTTlFIYlM3WGp4aWlFNTR3dDB1Mzg0YkM0SmVDd3NtZFAxb0tGVVVmZGVraWZyZkdKeGV5cUlFaEpjTWs4cnd6NjRTdElzanBTZ3cyTkZjbnJSd2c?oc=5",
+     "source": "뉴스웨이",
+     "time": "2026-11-09T09:31+09:00",
+     "category": "기타",
+     "sources": 2,
+     "score": 12
+    },
+    {
+     "rank": 5,
      "title": "[공시] 11월 9일, 코스닥 상장사 78개 종목 자사주 매수 신청",
      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1TbjVuTTJPWjFGNzVaLWh5MV9YSElZamdtcThrM1pBUFNWQjY3T2hQZkpndE5qOHk3SHFpdkZqeXVGMTNVc3Y4TUt0bE9GV1h2YThlTUlOMEdTclNxMV9XMDh1WTJoSjdBdGc?oc=5",
      "source": "뉴스티앤티",
      "time": "2026-11-08T20:13+09:00",
      "category": "국내 증시",
      "sources": 1,
-     "score": 13
-    },
-    {
-     "rank": 3,
-     "title": "\"1년 새 두 배\" 현금 214조 쌓은 삼성전자… 배당·반도체·M&A '돈 쓸 곳' 몰렸다",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1IREpPMHhPaVNaQ01vcWdQR0lVWFFjRG5xNkhnUDUteWotaHY4TThSeDEyck1JNXU3WExyOFE3eExFTjNRU3JHQi1YdFhJSl9jNDJMUTk5amlvcG9TcXdUYkVZcG1wYUZ4cHR0eUVqSFFZcGR0?oc=5",
-     "source": "파이낸셜포스트",
-     "time": "2026-11-08T14:06+09:00",
-     "category": "기업 · 실적",
-     "sources": 2,
-     "score": 13
-    },
-    {
-     "rank": 4,
-     "title": "주가 떠받칠 '44조 배당'... 환율엔 복병 되나",
-     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE00R1Fxa2VoWERwNC1GeWsxc0luaUJoQTF0dU5fVnV0eDJaVUVsWUpyQ2JmU2tEdXFzWjJON0l4UlBhdjVRVVlqQ1BGaG54cnVHZDNWMkpwMTlJY3JINkhpenJORGU?oc=5",
-     "source": "매일일보",
-     "time": "2026-11-08T10:00+09:00",
-     "category": "기업 · 실적",
-     "sources": 2,
-     "score": 13
-    },
-    {
-     "rank": 5,
-     "title": "삼전 현금 200조 시대…자사주 매입 '우선주 초점' 변화",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE40dTNHN294ck5IcnRSUmoyT3pLcnFoNUV5ZWExUUxQdl8wN0MxSExGNGFnNl9pMGFEcmdrQmtHSUxTYzJNY2tHSWo4LUx1MW9jQ2Q0dGd3MEpLNFhpd29ELWFpRHFrRnlPT2t5cko0dGowWFRk?oc=5",
-     "source": "파이낸셜포스트",
-     "time": "2026-11-08T07:30+09:00",
-     "category": "기업 · 실적",
-     "sources": 3,
-     "score": 13
+     "score": 12
     }
    ]
   },
@@ -1057,50 +1160,50 @@
    "items": [
     {
      "rank": 1,
-     "title": "리플 1.16달러 흔들…비트코인 ETF 4억달러 유출 직격",
-     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNLWhKX1ZxZUQtc3FqaXVrRGRhQktMTnZURzZtVzR1WlBHSjhnYWtFZG80THl5ajFsU0hGbHNvYjMxMWRyaUdnMW5WbGZaYzVNY1VMUW1WYUNqUVVDbHZ4N1BrdHZBcmRYd3BRM0Y1MEpHV0hBLXR4dzRYeUl1TW0tN1FXRmQ0UmF0?oc=5",
-     "source": "글로벌이코노믹",
-     "time": "2026-11-09T06:15+09:00",
+     "title": "비트코인(BTC), 8월 이후 최저치로...7만 달러 가나?",
+     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE4zOGI5WWZLLVk5dkF3NXlNdU5tV2ZEam5FNlczTU82X1hhM2VJaURFTXF4c1lsaWYwTWlZbUp1RWs4QVIyT3JfUXZ3?oc=5",
+     "source": "코인리더스",
+     "time": "2026-11-09T09:30+09:00",
      "category": "가상자산",
-     "sources": 4,
-     "score": 29
+     "sources": 10,
+     "score": 59
     },
     {
      "rank": 2,
-     "title": "비트코인 11억달러 롱 청산…7만5310달러 지지 시험대",
-     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNOVlsNWN1MHpmSDVCR2QtaVJSLWNrZjFycTA2UmVBQlB5X3ZfZWNKVWRvb0ZyTGM5RzZJcUhodEdEZ1llTXlac1NQQTRudWpydWtVTENPUmFDT0FMcVUza295cWVfbnJvOGUwZm1weTlaYjN3cURUZkVjOUYyWTNGdm8yM3FncHFi?oc=5",
-     "source": "글로벌이코노믹",
-     "time": "2026-11-09T06:00+09:00",
+     "title": "비트코인 1억200만원대까지 하락···美 정책 불확실성에 약세",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1yQVJwTjZpdGN4REdMMWlkVGREQ1J2T1dmaGFCQnVubTMyVG5JaDlnSi1paFNTdzA3ZDMxUmxZbUw3bkx5VDdKS2ZLVG9saGZsb0RwUUkzUGd1eHlvYzFmbVB5bHZpckhGTWc?oc=5",
+     "source": "뉴스웨이",
+     "time": "2026-11-09T09:29+09:00",
      "category": "가상자산",
-     "sources": 3,
-     "score": 22
+     "sources": 5,
+     "score": 29
     },
     {
      "rank": 3,
-     "title": "트럼프 \"선거 결과로 증시 하루 만에 3조달러 손실…더 강하게 회복할 것\"",
-     "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFA4Zkk3WHJzMFBST3RyRF9HVGdEUUZ2Tlo5ckoyVWVpOEFYeVFCTEQ3SW1hc3NHcnNHNU54dE9nSXpMSTlyaF9ZQ2h1WWtWVDF6?oc=5",
-     "source": "블루밍비트",
-     "time": "2026-11-09T00:53+09:00",
-     "category": "환율 · 원자재",
-     "sources": 4,
-     "score": 13
+     "title": "캐시 우드·피델리티, 美 증시 급락에도 '강세론'···AI 주식·비트코인에 무게",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1iMHhxRTBDaGpIMnFFSTJxVFoxdGlBWnpLdHFXcWJFdjNPRjl3SjE1Ny1Qby1FaGotenVJTHd4YmFhRDUyMUFyMHBiaC1kX0RIWk5vckpBckxFc1gtUVQ4YVd5X2NDbUpUUmlPcA?oc=5",
+     "source": "스마트비즈",
+     "time": "2026-11-09T07:44+09:00",
+     "category": "가상자산",
+     "sources": 1,
+     "score": 12
     },
     {
      "rank": 4,
-     "title": "[가상자산 나침반] 비트코인 ‘블루 쓰나미’에 시험대…美 CPI·12월 금리에 쏠린 눈",
-     "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE5zV3VMVDJEa0VKb2JMT1dpZXd3bVE2TlExU2FIc0xWVFlWMkpSYnJ0MkNPcGlWU2lLZmItUnBWcUlMVW8zbnREYko4NGFvZw?oc=5",
-     "source": "www.dt.co.kr",
-     "time": "2026-11-08T12:30+09:00",
+     "title": "비트코인 10만 달러 재돌파할까…금리·ETF 자금·미국 정책이 향방 가른다",
+     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE54RTNmeDVaVVlNZnZWb1ZNbW10bm9tczFIc2xpVVZlRkhZY0p6NGhYa1hKb0w1OXE2VXFfUllYeVZSaldXNlB4YVA4aExlTjN2YV9WcEJJbm9hNFFDNlk4MTZHYlE?oc=5",
+     "source": "베타뉴스",
+     "time": "2026-11-09T10:00+09:00",
      "category": "가상자산",
      "sources": 1,
      "score": 11
     },
     {
      "rank": 5,
-     "title": "S&P 500, 55분 만에 2.2조 달러 증발...비트코인(BTC)도 바닥 신호?",
-     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1WRzgtZ2xjOFV4UkJNNVY2LWdQaDcyZDRYU3V5OC1hemlTa2NhNXFqTDJaRFlFbmxPdmtITkd6ZWswSlpUeFVQZEZR?oc=5",
+     "title": "비트코인은 사기라던 JP모건 CEO…엡스타인 조사에 은행 주가 4% 급락, 아이러니?",
+     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE42TW9FQ04yVVhXTjY4RlNsZ2xtRjY0cnJqNFJMUW11alNGOXc1VlhPRDJYRG92bmhUbUtRME5QeDNvT1pQQzdqVnF3?oc=5",
      "source": "코인리더스",
-     "time": "2026-11-09T04:00+09:00",
+     "time": "2026-11-09T07:45+09:00",
      "category": "가상자산",
      "sources": 1,
      "score": 10
@@ -1112,53 +1215,53 @@
    "items": [
     {
      "rank": 1,
+     "title": "삼성운용, 나스닥100·미국 단기국채 혼합 ETF 10일 상장",
+     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1DbUFVZUlweXJ5eEMwUDB3M3VTTmk5b29aeHJ0c0lLNUxSblFsXy1Pd2ZJWGtqVDdnT1JINjI3QS10TW5uM3IxM2ZhUkpqdmxrUUhsX2VOeTBKcGc2ZWlsZUNqcFQ?oc=5",
+     "source": "매일일보",
+     "time": "2026-11-09T09:53+09:00",
+     "category": "거시 · 금리",
+     "sources": 10,
+     "score": 47
+    },
+    {
+     "rank": 2,
+     "title": "삼성증권, 금·은·구리 등 원자재 ETN 6종 상장",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9mZ0pfX0xxLVVhU1o5VjZhUzYyOURJZXNIRnRsS3JEOEtTdWMwUHNkdGpQbUZEeU1GOG1aeDdJcXFSWHh3enRMWlZ1ajVwdTNrMjdfMVFNVF84VEF1?oc=5",
+     "source": "뉴스핌",
+     "time": "2026-11-09T10:06+09:00",
+     "category": "환율 · 원자재",
+     "sources": 8,
+     "score": 36
+    },
+    {
+     "rank": 3,
+     "title": "기술주 쇼크에 앤트로픽 ‘2조달러 상장’ 흔들… 몸값 낮추기 검토",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1ubkJBYWYzZXpSSHNkUUY0NDBTQ3VJMzFjSWZDUUZmTlR6R180dm54RUdSMEpsRllDMnZhUDNDOW5PUlVNNTAzeXkwemN4QkpxOENDR3VMYnFaQ2JJbnRkZ0x5WEU2TXRPeFR1bHJqTzY?oc=5",
+     "source": "블록체인투데이",
+     "time": "2026-11-09T08:41+09:00",
+     "category": "가상자산",
+     "sources": 4,
+     "score": 23
+    },
+    {
+     "rank": 4,
+     "title": "몸값 낮춘 앤트로픽, 'AI 투매' 악재에도 26일 이전 IPO 완료 방침",
+     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE0tcGRxZ0ljMUJVWkJFdGxENkpxY3BodmhWck9HLWRQb2NXYmNKQV9rTFpSVjVXUV9veVdBVnFValRsX0tOZUJFbGljS2pMb2lfcVhRNGRwRE1DY0tmcXc?oc=5",
+     "source": "YTN",
+     "time": "2026-11-09T09:25+09:00",
+     "category": "기업 · 실적",
+     "sources": 3,
+     "score": 16
+    },
+    {
+     "rank": 5,
      "title": "[주간IPO] 동원파츠·바로팜·넥스아이, 코스닥 상장",
      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1vYmwzTjlRdGFKTC05eG1SNDBwNUNXQ3cwYXpiMlBuWHQ4WHQxTDFPanhScEhEaHRyVEtpUzlTS3ZmMkpRelZhUElfOWcxbVQwMlB6aXUxUXhneUdI?oc=5",
      "source": "뉴스핌",
      "time": "2026-11-09T06:00+09:00",
      "category": "기업 · 실적",
-     "sources": 3,
-     "score": 18
-    },
-    {
-     "rank": 2,
-     "title": "OpenAI CEO 샘 올트먼, 기업가치 1조2500억 달러 확보… Anthropic IPO 매수자는 1조1000억 달러 거론",
-     "link": "https://news.google.com/rss/articles/CBMipgJBVV95cUxOM2c5SWdaV0V1ekpoN3hLems2anlCdEN3QzZremw5VWJnWi1UdWNJQWk0X0tBXzFYbWJYNV9VTFNGcDQtQ05tbnNnZ3dSY1NPLUtwMzNjc3VvdE1RamZKLWU0WFpmczlhT1d3UDk4eFY2Tl81R1NfTkxTb1pMZ3RRVzZFd2hiZ0xMZlVtQkhLLXJrMHNrVGFfWXlzTVB6SC0wUktqZlE3YndIWkNZQWE3d1FjLUpMMDZLTDNfREREbWZkU3BzdEx6UGRub2xyaHB6cF8wMThnM2tZOWF4Z1ZNeE5iVjVXS0JSb2d4bVpEX3llNlptNHVMVGp5NzBiclVrZVFlR3JBbk5uTXZGanFqaXNoSUNWUEpWczl5WW1CN244cWhhNXc?oc=5",
-     "source": "Martin Cid Magazine",
-     "time": "2026-11-09T02:42+09:00",
-     "category": "기업 · 실적",
      "sources": 2,
-     "score": 16
-    },
-    {
-     "rank": 3,
-     "title": "[중국증시 주간 포인트] 미·중 물가 지표와 통화정책, 中 외화 지준율 인상, '미·러·우크라' 협상, G7 외교장관 회의, 中·캐나다 경제금융 대화, 앤스로픽 IPO, 바이두 월",
-     "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE0taFNna3o3SXp4N2JDNGE1NXVta09MUWNvRzJiV1lfZVFUU25nUkQybzdjekxkLWVmdlA1YjRSVVVPSFJvdFh1bThVaGNLZTRvSjVRNG8tZ3dsSnIyODdDakVocV9QdmNTY29DRDlHcFZmTUdidlBzeWRNUQ?oc=5",
-     "source": "네이버 프리미엄콘텐츠",
-     "time": "2026-11-09T00:02+09:00",
-     "category": "거시 · 금리",
-     "sources": 2,
-     "score": 12
-    },
-    {
-     "rank": 4,
-     "title": "데이터센터에 등 돌린 미국…앤트로픽 1조 달러 IPO 시험대",
-     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE41cF9kbHhXTDhUT3FKd3RBUDVQdHMtc2V0azZhVHVJRExOT0c3QXl6Zm5LSkwyR00tcXBBb0dPRXlMUmJicVdZQ25oQm9XSWRkcEhQUDFfRWk3STZHOHVyZkJabHo5S3VwbEE?oc=5",
-     "source": "OBC 뉴스",
-     "time": "2026-11-08T10:49+09:00",
-     "category": "환율 · 원자재",
-     "sources": 2,
-     "score": 11
-    },
-    {
-     "rank": 5,
-     "title": "스페이스X 주가, 상장 이후 최고치 대비 30% 하락: 향후 전망은?",
-     "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQa0dqMG9vX3ZOdWtTWVh1dmpJdFF0a3V2Z2xQYUZOVUFVQlZDNGtBb2l1Wm5jdGtuemEzUkRTY3F0MEZXSG02cm9kMGdEVVJYTno3MXFrV19oTlhrR0FsWGY0UGlNSS1zSl9tc2hvNmRrcVQ0X0dvUUhTeFVOZ1cwYVdJSjRKZ2FpSnhnaUtzdzJ5NlB0Nmo5S2hrdkNWdG5hZTg0QnJYeUhPVVVNcXgxVVFId1dQaGJVMTZTa2s5Yk15V2oyU2tyLQ?oc=5",
-     "source": "TradingKey",
-     "time": "2026-11-09T00:32+09:00",
-     "category": "기업 · 실적",
-     "sources": 1,
-     "score": 10
+     "score": 14
     }
    ]
   },
@@ -1167,53 +1270,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "외국인, 지난주 삼전닉스 7.6조 던졌다…보유율도 수년만 최저",
-     "link": "https://www.yna.co.kr/view/AKR20261107026400008",
-     "source": "연합뉴스",
-     "time": "2026-11-08T06:10+09:00",
-     "category": "국내 증시",
-     "sources": 5,
-     "score": 26
+     "title": "삼성운용, 美 단기국채·나스닥100 50대50 투자 ETF 10일 상장",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1sMDRhSlpMODFWNk5aZ1hLdXV5dlV1Z1BiOF81U3dUQUxTY25fT0tzNW5TVHRvRkV3Y2FOcVlmMnVSMGRuaGpuQ3BxYVFNandSc0E?oc=5",
+     "source": "매일경제 마켓",
+     "time": "2026-11-09T09:06+09:00",
+     "category": "거시 · 금리",
+     "sources": 10,
+     "score": 47
     },
     {
      "rank": 2,
-     "title": "'블루 쓰나미'에 휘청 코스피, 美증시 반등에 충격 벗어날까",
-     "link": "https://www.yna.co.kr/view/AKR20261107025700008",
+     "title": "코스피, 장초반 보합세로 '5천선' 사수전…코스닥 하락(종합)",
+     "link": "https://www.yna.co.kr/view/AKR20261109029651008",
      "source": "연합뉴스",
-     "time": "2026-11-08T06:00+09:00",
+     "time": "2026-11-09T09:35+09:00",
      "category": "국내 증시",
-     "sources": 2,
-     "score": 14
+     "sources": 6,
+     "score": 38
     },
     {
      "rank": 3,
-     "title": "맞춤형 HBM이 바꾼 SK·삼성 인사…기술통이 미주사업 이끈다",
-     "link": "https://www.yna.co.kr/view/AKR20261108042900003",
-     "source": "연합뉴스",
-     "time": "2026-11-09T06:09+09:00",
-     "category": "기타",
-     "sources": 1,
-     "score": 8
+     "title": "삼성증권, 금·은·구리 선물 ETN 6종 신규 상장",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQZXVhSjFsWWJnVTdLYmUzV0QzbmRsVVIyWkRpTVctSDhJUUt5SHJqZ1h4dzRsVzJrSjRGVTZJcnJsNktEdVBjbjU5WDVUc1lxdWphVVN5ZGJQa2NPd0tWTXpjZEdtanl2VmlQbXV2bmVmc0k4WHZ4cExwTDV0MU1xZXFrMTFRUU1z?oc=5",
+     "source": "글로벌이코노믹",
+     "time": "2026-11-09T09:46+09:00",
+     "category": "환율 · 원자재",
+     "sources": 8,
+     "score": 36
     },
     {
      "rank": 4,
-     "title": "오세훈 \"국민연금으로 지방선거용 주식도박…李대통령 사과해야\"",
-     "link": "https://www.yna.co.kr/view/AKR20261108016700004",
-     "source": "연합뉴스",
-     "time": "2026-11-08T10:16+09:00",
-     "category": "정책 · 무역",
-     "sources": 3,
-     "score": 8
+     "title": "키움증권, 롯데쇼핑 목표가↓…\"국내증시 하락에 자산효과 악화\"",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5kY3BqM012ZW5LR0ZEMmxTYnNqcERfWmhheHdfWWJfdFp3NVZaaEc4NDdjOElNZjNUakRRQ09HQmhuQWRtZGRucjRSUWhFUlhkRWc?oc=5",
+     "source": "매일경제 마켓",
+     "time": "2026-11-09T08:28+09:00",
+     "category": "국내 증시",
+     "sources": 2,
+     "score": 12
     },
     {
      "rank": 5,
-     "title": "급락장에 줄줄이 추락…지난주 상장사 3개중 1개는 연중 최저가",
-     "link": "https://www.yna.co.kr/view/AKR20261106189100008",
+     "title": "씨티 \"반도체 꺾이면 금리인상 조기종료…내년 하반기 인하\"",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1QaGVXRDkzRjNWdl9VQVZ5clBDTzZuWU9SZFFPT25GZ3ZJOVhxdmJfbFlSRFNmLUZXTHhwVXBzOHo4aDlZWWN6T3BUTGpFZnE5TTF2aUZNeU9tTHPSAWBBVV95cUxNajVwVUtZdDdiNTltY25ySjRXY1U4eW5GNUwyMDRpc3doRVlzWlFtQnhTSXpKb1pxYnFXSW5RZTctOHQ3QUlpU2lkRjd5WmFNTTNYMzMzTXpKVnZqSVJ3TjA?oc=5",
      "source": "연합뉴스",
-     "time": "2026-11-08T06:25+09:00",
-     "category": "기업 · 실적",
+     "time": "2026-11-09T09:27+09:00",
+     "category": "거시 · 금리",
      "sources": 1,
-     "score": 8
+     "score": 11
     }
    ]
   },
@@ -1222,53 +1325,53 @@
    "items": [
     {
      "rank": 1,
-     "title": "외국인, 지난주 삼전닉스 7.6조 던졌다…보유율도 수년만 최저",
-     "link": "https://www.yna.co.kr/view/AKR20261107026400008",
-     "source": "연합뉴스",
-     "time": "2026-11-08T06:10+09:00",
-     "category": "국내 증시",
-     "sources": 5,
-     "score": 26
+     "title": "삼성운용, 美 단기국채·나스닥100 50대50 투자 ETF 10일 상장",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1sMDRhSlpMODFWNk5aZ1hLdXV5dlV1Z1BiOF81U3dUQUxTY25fT0tzNW5TVHRvRkV3Y2FOcVlmMnVSMGRuaGpuQ3BxYVFNandSc0E?oc=5",
+     "source": "매일경제 마켓",
+     "time": "2026-11-09T09:06+09:00",
+     "category": "거시 · 금리",
+     "sources": 10,
+     "score": 47
     },
     {
      "rank": 2,
-     "title": "글로벌 증시 급락에 상장지수펀드 순자산 400조원 깨졌다",
-     "link": "https://www.yna.co.kr/view/AKR20261107028500008",
+     "title": "코스피, 장초반 보합세로 '5천선' 사수전…코스닥 하락(종합)",
+     "link": "https://www.yna.co.kr/view/AKR20261109029651008",
      "source": "연합뉴스",
-     "time": "2026-11-08T06:05+09:00",
+     "time": "2026-11-09T09:35+09:00",
      "category": "국내 증시",
-     "sources": 4,
-     "score": 24
+     "sources": 6,
+     "score": 38
     },
     {
      "rank": 3,
-     "title": "'블루 쓰나미'에 휘청 코스피, 美증시 반등에 충격 벗어날까",
-     "link": "https://www.yna.co.kr/view/AKR20261107025700008",
-     "source": "연합뉴스",
-     "time": "2026-11-08T06:00+09:00",
-     "category": "국내 증시",
-     "sources": 2,
-     "score": 14
+     "title": "삼성증권, 금·은·구리 선물 ETN 6종 신규 상장",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQZXVhSjFsWWJnVTdLYmUzV0QzbmRsVVIyWkRpTVctSDhJUUt5SHJqZ1h4dzRsVzJrSjRGVTZJcnJsNktEdVBjbjU5WDVUc1lxdWphVVN5ZGJQa2NPd0tWTXpjZEdtanl2VmlQbXV2bmVmc0k4WHZ4cExwTDV0MU1xZXFrMTFRUU1z?oc=5",
+     "source": "글로벌이코노믹",
+     "time": "2026-11-09T09:46+09:00",
+     "category": "환율 · 원자재",
+     "sources": 8,
+     "score": 36
     },
     {
      "rank": 4,
-     "title": "[뉴욕증시-주간전망] 美 인플레 향방은…'AI 풍향계' 코어위브 실적 주목",
-     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1mSGEzcThsUnFDZzJEOEl1dF8zZGRrU1hPVkVOUXBKQnBkbmFOWnJPLWVOREU3OFJ2cWh6NnJ5Z2RVZ2ZaRE9mM0RFbVZId2ZDSWhpSW5ieHFmTlXSAWBBVV95cUxOOWNvX3J2aXk2b2FYanM1bGpOUGJnM0I3djd1X002UlVERG1WLWRnakR2eG5Ya0YwUnc1ZEVWdkIxS3VISkd0R3A0WlQybG5fQ2kxZlhzdGhheDBQVjJoazU?oc=5",
+     "title": "[코스피] 25.49p(0.50%) 내린 5,034.20(개장)",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5seml3dnFqaGd0WlQybE1IeEhPMmgzdkFEdWtTSUtlWEItNHBjUENYVVJtcktKX19jV19WWUtLRnRNMHN4OTlsNUJENEx6aUhPV1EwTEJKZFJZeWFZekNMMtIBYEFVX3lxTE5seml3dnFqaGd0WlQybE1IeEhPMmgzdkFEdWtTSUtlWEItNHBjUENYVVJtcktKX19jV19WWUtLRnRNMHN4OTlsNUJENEx6aUhPV1EwTEJKZFJZeWFZekNMMg?oc=5",
      "source": "연합뉴스",
-     "time": "2026-11-08T07:00+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 11
+     "time": "2026-11-09T09:01+09:00",
+     "category": "국내 증시",
+     "sources": 6,
+     "score": 34
     },
     {
      "rank": 5,
-     "title": "증시 급락에 PEF 투자기업도 주가도 '뚝'…지분 가치 하락 부담",
-     "link": "https://www.yna.co.kr/view/AKR20261106190400008",
-     "source": "연합뉴스",
-     "time": "2026-11-08T06:30+09:00",
-     "category": "국내 증시",
-     "sources": 1,
-     "score": 9
+     "title": "FT \"앤트로픽, 26일 이전 IPO 완료 방침\"",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1oU3FoTUdVZDJWQWxqVGFfRGk3dTNiV0VxS3RHZzhnLTFGbDdRLU1JN2JUVFBKd0VGb2Z5MjhwZi1aVDR4WGhDTGJmaE9WcUtxX2c?oc=5",
+     "source": "매일경제 마켓",
+     "time": "2026-11-09T08:24+09:00",
+     "category": "기업 · 실적",
+     "sources": 3,
+     "score": 16
     }
    ]
   },
@@ -1277,18 +1380,38 @@
    "items": [
     {
      "rank": 1,
-     "title": "'코스피 대탈출' 경고음…8조 던진 외국인 심상치 않다",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9xQ29vOVFEX2RwM1hSZGNSYi10XzVKMjJ6amhiZ1YzeDBpdFNxNkg0Q0pzdnAxUWRNN1FFbENEQWhUZTIxZUd4eEdSQTBueVZsQnZ3UXNaOUx0dw?oc=5",
+     "title": "\"롯데쇼핑, 증시 하락發 자산효과 약화 우려…목표가↓\"-키움",
+     "link": "https://www.hankyung.com/article/2026110936236",
      "source": "한국경제",
-     "time": "2026-11-08T19:23+09:00",
+     "time": "2026-11-09T08:05+09:00",
      "category": "국내 증시",
-     "sources": 1,
-     "score": 9
+     "sources": 2,
+     "score": 12
     },
     {
      "rank": 2,
+     "title": "증시 급락에 연금계좌도 '악'…\"어떻게 하나\" 전문가 답변은",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1ULTlCbDRqaU1ZS0pzaER5RUhNVEtndkdQTlVKUFZlTjl1OXMybTM0dDMzaTZIaFZzQnZtS2xNVEpSWFUwTlhoUXdySXdiM2prUVRBQ3JnVkZFUQ?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-09T08:00+09:00",
+     "category": "국내 증시",
+     "sources": 1,
+     "score": 10
+    },
+    {
+     "rank": 3,
+     "title": "[스타워즈] 증시 폭락에 고군분투…생존자 포트폴리오 보니",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFAxaWRpMC1MNEprQ3J3NzRmYWVEc0FOZEtMQjdhVFpscmFKdVJzTEZYSk9PR2hzc05naXl2ejVndmxCUDNvQjhFdTZxNmhWaE1KM0pEWEpJb0l5Zw?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-09T08:00+09:00",
+     "category": "국내 증시",
+     "sources": 1,
+     "score": 10
+    },
+    {
+     "rank": 4,
      "title": "\"AI 전면 규제는 비현실적…코스피 5000서 바닥 테스트\"",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qS3Rad2VzeUFhVGc1aGZrT0VST3JFYVU5V2J0ZnJhQS1oNFlhZ0VIU3pIeDlmZUNfSkdGbmpRWGFWdjBwOWJONlFvblRndy1iZ3dOU0RmWmRLdw?oc=5",
+     "link": "https://www.hankyung.com/article/2026110832381",
      "source": "한국경제",
      "time": "2026-11-08T17:41+09:00",
      "category": "정책 · 무역",
@@ -1296,34 +1419,14 @@
      "score": 9
     },
     {
-     "rank": 3,
-     "title": "뉴욕·상하이 증시, 美 소비자물가·코어위브 실적 '주목'",
-     "link": "https://www.hankyung.com/article/2026110832181",
-     "source": "한국경제",
-     "time": "2026-11-08T17:32+09:00",
-     "category": "국내 증시",
-     "sources": 1,
-     "score": 8
-    },
-    {
-     "rank": 4,
-     "title": "증시 폭락에 떠오르는 손실의 악몽…당신의 기억은 틀렸다",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE4tYUhOekFEMVlPbF9GYVhNY1FKRlVxdGRZRDBKcTN3V05vNUlPS3QtMTMtd25SR1BOTng3M0JYbEdJX0xGdGxVUG1XUzQ1Z1pzbHJtNXI5SG1fdw?oc=5",
-     "source": "한국경제",
-     "time": "2026-11-08T16:01+09:00",
-     "category": "국내 증시",
-     "sources": 1,
-     "score": 8
-    },
-    {
      "rank": 5,
-     "title": "\"AI 투자 시험대는 2028년\"...센터장이 보는 반도체 미래는?",
-     "link": "https://www.hankyung.com/article/202611082969i",
+     "title": "'이틀 연속 폭락' 삼전닉스, 프리마켓서 소폭 상승 출발",
+     "link": "https://www.hankyung.com/article/2026110937046",
      "source": "한국경제",
-     "time": "2026-11-08T15:26+09:00",
+     "time": "2026-11-09T08:08+09:00",
      "category": "기타",
      "sources": 1,
-     "score": 7
+     "score": 8
     }
    ]
   },
@@ -1332,36 +1435,26 @@
    "items": [
     {
      "rank": 1,
-     "title": "삼성전자, 보유 현금 200조원 첫 돌파",
-     "link": "https://www.hankyung.com/article/2026110833367",
+     "title": "AI 투자심리 꺾이자 주석 급락…현물 프리미엄 급등",
+     "link": "https://www.hankyung.com/article/202611093653i",
      "source": "한국경제",
-     "time": "2026-11-08T18:14+09:00",
-     "category": "기업 · 실적",
-     "sources": 3,
-     "score": 13
+     "time": "2026-11-09T07:53+09:00",
+     "category": "기타",
+     "sources": 1,
+     "score": 11
     },
     {
      "rank": 2,
-     "title": "급락한 美 증시, 내년 운명은 AI 산업·국채금리에 달렸다",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE0xWS1jWTI0ME01ZXpWNXU5cVpyRTJ1dUMwTnJRSDRWNk5pTFZYNjduQkZpdzJjeEs0SHpuU0x6bXVya2t3YlNqNnNJaWViZkZUMTgwUWhxTEZFdw?oc=5",
+     "title": "AI주 급락에도 앤트로픽 더 산다…월가 투자사 XN의 베팅",
+     "link": "https://www.hankyung.com/article/202611093819i",
      "source": "한국경제",
-     "time": "2026-11-08T15:29+09:00",
-     "category": "거시 · 금리",
+     "time": "2026-11-09T08:36+09:00",
+     "category": "기타",
      "sources": 1,
-     "score": 11
+     "score": 9
     },
     {
      "rank": 3,
-     "title": "AI 거품 공포에 흔들리는 美 증시…中, 물가·수출 성적표에 촉각",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBuQjdhZ0NveU9tVGpwbHFvM0FqX3RVN1NIUUxtMlV5UFRZVVJkU0RHdnpCSFB5WEVGZXBiWkNLZTlOZjM3b3UtYkYtbnlWdHVnOGVoZGZpZzg0UQ?oc=5",
-     "source": "한국경제",
-     "time": "2026-11-08T14:03+09:00",
-     "category": "거시 · 금리",
-     "sources": 1,
-     "score": 11
-    },
-    {
-     "rank": 4,
      "title": "\"韓 제조업, 이미 상당 부분 경쟁력 잃어…이대로 가면 반도체도 위험\"",
      "link": "https://www.hankyung.com/article/2026110831791",
      "source": "한국경제",
@@ -1371,14 +1464,24 @@
      "score": 6
     },
     {
-     "rank": 5,
-     "title": "\"외국인들 싹 쓸어가\"…불닭·신라면 제친 '이 라면' 일냈다 [박상경의 영수증 리뷰]",
-     "link": "https://www.hankyung.com/article/202611069940g",
+     "rank": 4,
+     "title": "[밤 사이 해외뉴스 영상 ]민주당 승리에 ‘AI 규제 먹구름’… 나스닥 시가총액 하루 새 2.5조 달러 증발",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE00azVWWUZ5dWN0NHJnSE1hUDlmS19OOHRtV2VfYTJncUhCUlBnTUliaXBTZTBDSlpONlpyRkVXM25nckxiWlF6LW9oOGJwbVMyVVg2WmdVX0FjUQ?oc=5",
      "source": "한국경제",
-     "time": "2026-11-08T11:00+09:00",
-     "category": "국내 증시",
+     "time": "2026-11-09T08:05+09:00",
+     "category": "환율 · 원자재",
      "sources": 1,
-     "score": 5
+     "score": 3
+    },
+    {
+     "rank": 5,
+     "title": "농심, 라면 年 62억개 생산해 글로벌 공략",
+     "link": "https://www.hankyung.com/article/2026110832661",
+     "source": "한국경제",
+     "time": "2026-11-08T18:10+09:00",
+     "category": "정책 · 무역",
+     "sources": 2,
+     "score": 12
     }
    ]
   },
@@ -1387,18 +1490,18 @@
    "items": [
     {
      "rank": 1,
-     "title": "증시 급락에 ETF 시총 반년만에 400조 아래로",
-     "link": "https://www.mk.co.kr/news/stock/12201811",
-     "source": "매일경제",
-     "time": "2026-11-08T17:26+09:00",
+     "title": "美 반도체 반등에도 코스피 ‘흔들’…장중 다시 5000선 밑으로",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9wUzFnaDRGZzlOY3NXX2hyN181NW5ibVVFNFhTUVQ3eHltZ1dEYlIxQ0oteGU5OVpLSmU1SG1aNk8zUDZSYkJsZlhNemh1QUxWQ2ttaUlhcWhKMXJYUlVkbw?oc=5",
+     "source": "매일경제 마켓",
+     "time": "2026-11-09T09:35+09:00",
      "category": "국내 증시",
-     "sources": 4,
-     "score": 24
+     "sources": 5,
+     "score": 28
     },
     {
      "rank": 2,
      "title": "증시 폭락에도 멘탈 지키려면? … 장기 투자 방패 TDF에 주목",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1SNjZxXzh1djlnRkJBSVpsbFJXZkd5LXpTa0RQU0plWHpCc0IzNFd4TUFZOWpBYnJUbVh4S1U2WTRGM3F4S2Y0LXNZYkFlcGVSYUE?oc=5",
+     "link": "https://www.mk.co.kr/news/stock/12201708",
      "source": "매일경제",
      "time": "2026-11-09T05:00+09:00",
      "category": "국내 증시",
@@ -1407,31 +1510,31 @@
     },
     {
      "rank": 3,
-     "title": "美 중간선거후 투자자가 봐야할 것 ... AI기업, 주가 좌우할 한가지 기준",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5zVUhZMnZ3SGhfQ3VaTThKaVNKV0xJQ2NTbW1pV3BFZjZlMFE0S09GX3EzZ2tHQ21fX2J2OUN2RmN6ZVNicHNadDYxN3ZyZzUtOFE?oc=5",
+     "title": "“코스피, 작은 호재에도 반등 가능”…SK증권이 꼽은 회복 조건",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1UX1dlVmpFS0dvdHNueWNFdnRYMXZWUTZpZXlfaDlDZ3RsQzgwbDR1ZUluWUhkeUNzVDByajRyaTRnbFg5bkNvdTA4c0NmQ3VKMkE?oc=5",
      "source": "매일경제",
-     "time": "2026-11-09T05:30+09:00",
-     "category": "기타",
+     "time": "2026-11-09T09:18+09:00",
+     "category": "국내 증시",
      "sources": 1,
-     "score": 8
+     "score": 9
     },
     {
      "rank": 4,
-     "title": "[동여의도 위클리] 블루 쓰나미에 흔들린 AI株…10일 밤 美CPI 발표에 촉각",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1ZSVdabGpvcTNCTDY1ckNTbDVRZUlSdGE0enVSaG0tWVRVdDJHWUw3dk5GcXQ3dk5nN3VrNXVJakFfbjFSWWJIV2daS0U5ajNuNnc?oc=5",
-     "source": "매일경제 마켓",
-     "time": "2026-11-08T16:47+09:00",
-     "category": "거시 · 금리",
+     "title": "증시 급락에 ETF 시총 반년만에 400조 아래로",
+     "link": "https://www.mk.co.kr/news/stock/12201811",
+     "source": "매일경제",
+     "time": "2026-11-08T17:26+09:00",
+     "category": "국내 증시",
      "sources": 1,
-     "score": 8
+     "score": 9
     },
     {
      "rank": 5,
-     "title": "“미국 물가부터 옵션 만기까지”…다음 주 증시 변수, 미리 대비하려면",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5PZmUyVDN0MU1DU2pNc091ZjJMRzNHWF9Nd000SFpFSE5sSnBkSTZLTWl1S2lscEUzOHdrZHlQVW9TUklZNlR6Z3hfUWhNaExkdHc?oc=5",
-     "source": "매일경제 마켓",
-     "time": "2026-11-08T08:08+09:00",
-     "category": "거시 · 금리",
+     "title": "“어처구니 없는 실적 쇼크”…애널리스트도 등돌린 이 회사 [오늘 나온 보고서]",
+     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE03bUEzQjI4QWxNUWlsNDJJVUlqR0w5RW1mVTdPSXE2M1pHRXZISlJ4ajEyQWZyWTRHOXZwSmNXUzlxblphQ3pGQkp2bzJ3cFpkS3c?oc=5",
+     "source": "매일경제",
+     "time": "2026-11-09T10:04+09:00",
+     "category": "기업 · 실적",
      "sources": 1,
      "score": 8
     }
@@ -1453,22 +1556,22 @@
     {
      "rank": 2,
      "title": "“금리 1%P 오르면 생명보험사 자본 8조 감소”…보험연구원 발표 ‘주목’",
-     "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9nT3dIX0xVV1M2djRtdjVxSzRjQnJfTUctbEdxdUlqbV9TbjVSLWdyMXNsbnQ4cUdkQ243d2ZMaFVlVnhIcFdvZVNRX05idw?oc=5",
+     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE82MmlpSzVIV3V4S2tCVXFuLXZGMDByeDNhZW9CSlhYeVhKb216eVJtTU51eWlJaXU4b3JZZDhXTm0yTUIxazc2UTJRek9TUVFDOHQzcw?oc=5",
      "source": "매일경제",
-     "time": "2026-11-08T09:52+09:00",
+     "time": "2026-11-08T13:04+09:00",
      "category": "거시 · 금리",
      "sources": 1,
      "score": 7
     },
     {
      "rank": 3,
-     "title": "이달 디지털자산법 정부안, 대주주 지분제한 유예 유력",
-     "link": "https://www.mk.co.kr/news/economy/12201848",
+     "title": "우리은행, 대한천일은행 학술대회...근대 금융사 연구 조명",
+     "link": "https://www.mk.co.kr/news/economy/12201615",
      "source": "매일경제",
-     "time": "2026-11-08T17:35+09:00",
-     "category": "정책 · 무역",
-     "sources": 5,
-     "score": 21
+     "time": "2026-11-08T10:50+09:00",
+     "category": "기타",
+     "sources": 3,
+     "score": 12
     },
     {
      "rank": 4,
@@ -1477,18 +1580,18 @@
      "source": "매일경제",
      "time": "2026-11-08T12:00+09:00",
      "category": "기타",
-     "sources": 5,
-     "score": 21
+     "sources": 2,
+     "score": 9
     },
     {
      "rank": 5,
-     "title": "우리은행, 대한천일은행 학술대회...근대 금융사 연구 조명",
-     "link": "https://www.mk.co.kr/news/economy/12201615",
+     "title": "카뱅·토뱅도 애플페이 … 현대카드 독점 깨진다",
+     "link": "https://www.mk.co.kr/news/economy/12201942",
      "source": "매일경제",
-     "time": "2026-11-08T10:50+09:00",
-     "category": "기타",
-     "sources": 3,
-     "score": 12
+     "time": "2026-11-08T19:49+09:00",
+     "category": "해외 증시",
+     "sources": 2,
+     "score": 8
     }
    ]
   }
