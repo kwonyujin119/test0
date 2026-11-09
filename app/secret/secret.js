@@ -99,27 +99,47 @@
   async function sealKeys() {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, lockKey, enc.encode(JSON.stringify(keyMem)));
+    const was = LS.get(K_REMEMBER, null);
     cfg.lock.iv = b64(iv); cfg.lock.data = b64(data); saveCfg();
+    if (was && was.exp > Date.now()) LS.set(K_REMEMBER, { exp: was.exp, data: cfg.lock.data, keys: keyMem });
   }
-  async function unlock() {
-    if (!cfg.lock || keyMem) return true;
-    const pass = await askPass('API 키 잠금 풀기', '잠금 암호를 넣어 주세요. 이 화면을 닫을 때까지 풀린 채로 둡니다.');
-    if (pass == null) return false;
-    try {
-      const k = await derive(pass, unb64(cfg.lock.salt));
-      const raw = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(cfg.lock.iv) }, k, unb64(cfg.lock.data));
-      lockKey = k; keyMem = JSON.parse(dec.decode(raw)); renderApis(); return true;
-    } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
+  /* 이 기기에서 기억 (30일): 잠금 암호를 매번 묻지 않게. 내 기기의 저장소에만 두고, 동기화(GitHub)에는 올리지 않음 */
+  const K_REMEMBER = 'sec:keyRemember', REMEMBER_DAYS = 30;
+  function remembered() {
+    const r = LS.get(K_REMEMBER, null);
+    if (!r || !cfg.lock || r.data !== cfg.lock.data || !(r.exp > Date.now())) return null;
+    return r.keys || null;
   }
+  function remember(on) {
+    if (on && cfg.lock && keyMem) LS.set(K_REMEMBER, { exp: Date.now() + REMEMBER_DAYS * 864e5, data: cfg.lock.data, keys: keyMem });
+    else if (!on) { try { localStorage.removeItem(K_REMEMBER); } catch (e) { } }
+  }
+  let unlocking = null; // 여러 시세를 한꺼번에 불러도 암호 창은 하나만
+  function unlock(force) {
+    if (!cfg.lock || (keyMem && (!force || lockKey))) return Promise.resolve(true);
+    if (!force) { const r = remembered(); if (r) { keyMem = Object.assign({}, r); return Promise.resolve(true); } }
+    if (unlocking) return unlocking;
+    unlocking = (async () => {
+      const pass = await askPass('API 키 잠금 풀기', '잠금 암호를 넣어 주세요.', false, true);
+      if (pass == null) return false;
+      try {
+        const k = await derive(pass, unb64(cfg.lock.salt));
+        const raw = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(cfg.lock.iv) }, k, unb64(cfg.lock.data));
+        lockKey = k; keyMem = JSON.parse(dec.decode(raw)); remember(askPass.remember); renderApis(); return true;
+      } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
+    })();
+    return unlocking.finally(() => { unlocking = null; });
+  }
+  let adoptTried = false; // 다른 기기의 키 받기는 이 화면에서 한 번만 자동으로 물음 (그 뒤엔 [이 기기 연결] 단추로)
   async function keyOf(api) {
     if (!cfg.lock) { if (api.key) return api.key; }
     else { if (!(await unlock())) throw new Error('API 키 잠금을 풀지 않았습니다'); if (keyMem[api.id]) return keyMem[api.id]; }
-    if (cfg.lockRemote && (await adoptRemoteKeys())) return cfg.lock && keyMem ? keyMem[api.id] || '' : api.key || '';
+    if (cfg.lockRemote && !adoptTried) { adoptTried = true; if (await adoptRemoteKeys()) return cfg.lock && keyMem ? keyMem[api.id] || '' : api.key || ''; }
     return '';
   }
   async function setKey(api, key) {
     if (!cfg.lock) { api.key = key; return; }
-    if (!(await unlock())) throw new Error('API 키 잠금을 풀어야 저장할 수 있습니다');
+    if (!(await unlock(true))) throw new Error('API 키 잠금을 풀어야 저장할 수 있습니다'); // 잠그려면 열쇠가 있어야 해서 이때는 암호를 물음
     keyMem[api.id] = key; api.key = ''; await sealKeys();
   }
 
@@ -134,13 +154,14 @@
     bg.addEventListener('mousedown', e => { if (e.target === bg) { close(); bg.dispatchEvent(new Event('closed')); } });
     return { el: bg.firstElementChild, bg, close };
   }
-  function askPass(title, desc, twice) {
+  function askPass(title, desc, twice, rememberBox) {
+    askPass.remember = false;
     return new Promise(res => {
-      const d = dialog(`<h3>${esc(title)}</h3><p class="modal-desc">${esc(desc)}</p><form class="sc-form"><label>암호<input type="password" id="pw1" autocomplete="new-password" required minlength="4"></label>${twice ? '<label>한 번 더<input type="password" id="pw2" autocomplete="new-password" required></label>' : ''}<div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">확인</button></div></form>`, 'ask');
+      const d = dialog(`<h3>${esc(title)}</h3><p class="modal-desc">${esc(desc)}</p><form class="sc-form"><label>암호<input type="password" id="pw1" autocomplete="new-password" required minlength="4"></label>${twice ? '<label>한 번 더<input type="password" id="pw2" autocomplete="new-password" required></label>' : ''}${rememberBox ? `<label class="sc-check"><input type="checkbox" id="pwKeep" checked><span>이 기기에서 ${REMEMBER_DAYS}일 동안 다시 묻지 않기</span></label>` : ''}<div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">확인</button></div></form>`, 'ask');
       const f = d.el.querySelector('form'); setTimeout(() => d.el.querySelector('#pw1').focus(), 30);
       let done = false; const fin = v => { if (done) return; done = true; d.close(); res(v); };
       d.bg.addEventListener('closed', () => fin(null)); d.el.querySelector('[data-x]').onclick = () => fin(null);
-      f.onsubmit = e => { e.preventDefault(); const a = d.el.querySelector('#pw1').value; if (twice && a !== d.el.querySelector('#pw2').value) { toast('두 암호가 다릅니다', 2000); return; } fin(a); };
+      f.onsubmit = e => { e.preventDefault(); const a = d.el.querySelector('#pw1').value; if (twice && a !== d.el.querySelector('#pw2').value) { toast('두 암호가 다릅니다', 2000); return; } const kp = d.el.querySelector('#pwKeep'); askPass.remember = !!(kp && kp.checked); fin(a); };
     });
   }
   function confirmBox(title, desc, ok) {
@@ -607,7 +628,9 @@
      ===================================================================== */
   let cur = null, busy = null;
   const newChat = () => ({ id: uid(), title: '새 대화', updated: Date.now(), view: [], wire: { ai: '', msgs: [] } });
-  function openChat(id) { cur = chats.find(c => c.id === id) || null; renderChat(); renderChatList(); }
+  const K_CUR = 'sec:curChat';
+  const keepCur = () => { try { if (cur && cur.id) localStorage.setItem(K_CUR, cur.id); else localStorage.removeItem(K_CUR); } catch (e) { } };
+  function openChat(id) { cur = chats.find(c => c.id === id) || null; keepCur(); renderChat(); renderChatList(); }
 
   /* 고른 AI 가 바뀌면 지금까지의 글만으로 대화 기록을 새로 만든다 (다른 회사의 형식은 섞지 않음) */
   function ensureWire(chat, api) {
@@ -625,7 +648,7 @@
     text = String(text || '').trim(); if (!text || busy) return;
     const api = activeAI();
     if (!api) { toast('먼저 AI API 를 등록해 주세요', 2400); show('apis'); openAdd('claude'); return; }
-    if (!cur) { cur = newChat(); chats.unshift(cur); }
+    if (!cur) { cur = newChat(); chats.unshift(cur); keepCur(); }
     const chat = cur;
     ensureWire(chat, api);
     if (!chat.view.length) chat.title = text.replace(/\s+/g, ' ').slice(0, 40);
@@ -714,6 +737,7 @@
   }
   function renderChat() {
     $('chatTitle').textContent = cur ? cur.title : 'AI 어시스턴트';
+    const hb = $('btnHist'); if (hb) { hb.querySelector('em').textContent = chats.length || ''; hb.hidden = !chats.length; }
     renderAiSel(); renderMsgs(); renderQuick();
   }
   function renderChatList() {
@@ -739,7 +763,8 @@
   $('q').addEventListener('input', grow);
   $('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('compose').requestSubmit(); } });
   $('compose').onsubmit = e => { e.preventDefault(); const q = $('q'); const t = q.value; if (!t.trim() || busy) return; q.value = ''; grow(); send(t); };
-  $('btnNew').onclick = () => { if (busy) return; cur = null; show('chat'); renderChat(); renderChatList(); $('q').focus(); };
+  $('btnHist').onclick = () => show('history');
+  $('btnNew').onclick = () => { if (busy) return; cur = null; keepCur(); show('chat'); renderChat(); renderChatList(); $('q').focus(); };
 
   /* =====================================================================
      관심 종목 · 보유
@@ -1556,14 +1581,17 @@
     if (tk) tk.onclick = () => { const v = $('syTok').value.trim(); if (!v) return; const o = LS.get('ve:sync', {}); o.token = v; LS.set('ve:sync', o); renderSyncBox(); toast('토큰을 넣었습니다. [켜기] 를 누르세요', 2200); };
   }
   /* 다른 기기에서 잠근 API 키 받기 (같은 암호로) */
-  async function adoptRemoteKeys() {
+  let adopting = null;
+  function adoptRemoteKeys() { if (!adopting) adopting = adoptRemoteKeys1().finally(() => { adopting = null; }); return adopting; }
+  async function adoptRemoteKeys1() {
     const L = cfg.lockRemote; if (!L) return false;
-    const pass = await askPass('다른 기기의 API 키 받기', '다른 기기에서 건 키 잠금 암호를 넣으면, 그 기기에 등록한 API 키를 이 기기에서도 씁니다.'); if (pass == null) return false;
+    const pass = await askPass('다른 기기의 API 키 받기', '다른 기기에서 건 키 잠금 암호를 넣으면, 그 기기에 등록한 API 키를 이 기기에서도 씁니다.', false, true); if (pass == null) return false;
+    const keep = askPass.remember;
     try {
       const k = await derive(pass, unb64(L.salt)); const got = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(L.iv) }, k, unb64(L.data))));
       if (!cfg.lock) { cfg.lock = { salt: L.salt, iv: L.iv, data: L.data }; lockKey = k; keyMem = Object.assign({}, got); cfg.apis.forEach(a => { if (a.key && !keyMem[a.id]) keyMem[a.id] = a.key; a.key = ''; }); await sealKeys(); }
       else { if (!(await unlock())) return false; for (const id in got) if (!keyMem[id]) keyMem[id] = got[id]; await sealKeys(); }
-      saveCfg(); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); renderBanner(); return true;
+      saveCfg(); remember(keep); toast('다른 기기의 API 키를 받았습니다', 2200); renderApis(); renderBanner(); return true;
     } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
   }
 
@@ -1839,12 +1867,37 @@
     return m ? m[1] : t.replace(/\s+/g, '');
   }
   const pick = it => Object.fromEntries(Object.entries(it || {}).map(([k, v]) => [k.replace(/^.*\[(\w+)\]$/, '$1'), v]));
+  const numOf = v => { const t = String(v == null ? '' : v).replace(/[,%\s]/g, ''); if (t === '') return NaN; const n = +t; return isFinite(n) ? n : NaN; };
+  const fld = (x, re) => { for (const k in x) if (re.test(k) && x[k] !== '') return x[k]; return ''; };
+  const rawBox = (e, it) => it ? `<details class="sc-raw"><summary>받은 원문 보기</summary><pre>${esc(JSON.stringify(it, null, 1))}</pre></details>` : '';
   /* 작년 배당 순위 전체를 한 번만 받아 코드 → 배당 으로 (하루 1회) */
   function ksdDividends(year) {
     const a = dataFor('ksd'); if (!a) return Promise.resolve(null);
     return ksdCached('div:' + year, 24 * 7, async () => {
-      const r = await DATA.ksd.call(await keyOf(a), 'getDividendRankN1', { rankTpcd: '1', year: String(year), numOfRows: '5000' });
-      const m = {}; for (const it of r.items) { const x = pick(it); if (x.shotnIsin) m[x.shotnIsin] = [+x.num || 0, x.korSecnNm || '', x.caltotMartTpcd || '', +x.divAmtPerStk || 0, +x.divRateCpri || 0, x.secnKacd || '']; }
+      const key = await keyOf(a), y = String(year);
+      const pages = async (base, max) => { // 1000건씩 나눠 받기
+        let all = [], total = 0;
+        for (let pg = 1; pg <= max; pg++) {
+          const r = await DATA.ksd.call(key, 'getDividendRankN1', Object.assign({}, base, { pageNo: String(pg), numOfRows: '1000' }));
+          total = r.total || total; all = all.concat(r.items);
+          if (!r.items.length || all.length >= total) break;
+        }
+        return { total: total || all.length, items: all };
+      };
+      const tries = [
+        () => pages({ rankTpcd: '1', year: y }, 4),
+        () => pages({ rankTpcd: '1', year: y, stkTpcd: '1' }, 4),
+        async () => { const out = { total: 0, items: [] }; for (const lt of ['11', '12']) { const r = await pages({ rankTpcd: '1', year: y, stkTpcd: '1', listTpcd: lt }, 3); out.total += r.total; out.items = out.items.concat(r.items); } return out; },
+      ];
+      let r = null, err = null;
+      for (const t of tries) { try { r = await t(); break; } catch (e) { err = e; if (!/PARAMETER/i.test(e.message)) throw e; } }
+      if (!r) throw err;
+      const m = {};
+      for (const it of r.items) {
+        const x = pick(it), code = x.shotnIsin || fld(x, /shotn|short|srtn/i);
+        if (code) m[code] = [+fld(x, /^num$|rank/i) || 0, x.korSecnNm || fld(x, /nm$/i) || '', x.caltotMartTpcd || fld(x, /mart/i) || '', numOf(x.divAmtPerStk || fld(x, /amt/i)), numOf(x.divRateCpri || fld(x, /cpri|rate/i)), x.secnKacd || fld(x, /kacd|kind/i) || ''];
+      }
+      if (!Object.keys(m).length && r.items.length) { const e = new Error('배당 자료의 항목 이름이 예상과 다릅니다'); e.raw = r.items[0]; throw e; }
       return { total: r.total, m };
     });
   }
@@ -2051,7 +2104,7 @@
       <section class="sc-card"><h3>이번 달 신규 예탁지정 <small>곧 거래될 수 있는 새 종목 후보</small></h3><div id="mkNew"><div class="sc-skel">불러오는 중…</div></div></section>
     </div><p class="sc-fine">한국예탁결제원 공공데이터를 하루 한 번 받아 이 기기에 둡니다 (개발 계정은 하루 100회 제한). 출처: 한국예탁결제원 · 공공데이터포털.</p>`;
     fillIcons(box);
-    const fail = (id, e) => { $(id).innerHTML = `<div class="sc-err">${icon('alert', 15)}<span>${esc(e.message || e)}</span></div>`; };
+    const fail = (id, e) => { $(id).innerHTML = `<div class="sc-err">${icon('alert', 15)}<span>${esc(e.message || e)}</span></div>${rawBox(e, e && e.raw)}`; };
     const MK = { 11: '유가증권', 12: '코스닥', 13: 'K-OTC', 14: '코넥스', 50: '기타' };
     ksdDividends(y).then(d => {
       const rows = Object.entries(d.m).map(([code, r]) => ({ code, rank: r[0], name: r[1], mart: r[2], amt: r[3], rate: r[4], kind: r[5] }))
@@ -2061,8 +2114,14 @@
       $('mkMart').querySelectorAll('button').forEach(b => b.onclick = () => { mkMart = b.dataset.v; renderMarket(); });
     }).catch(e => fail('mkDiv', e));
     Promise.all([11, 12].map(t => ksdLatest('getSafeDpDutyDepoStatusN1', { listTpcd: String(t) }, 24).then(r => [t, r]))).then(rs => {
-      $('mkLock').innerHTML = rs.map(([t, r]) => { const it = r.items.find(x => /보통/.test(x.issuStkKindTpnm || '')) || r.items[0]; if (!it) return `<p class="sc-mute">${MK[t]}: 자료 없음</p>`;
-        return `<div class="mk-lock"><b>${MK[t]}</b><span class="big">${num(+it.safedpRatioValue, 2)}%</span><div class="bar"><i style="width:${Math.min(100, +it.safedpRatioValue * 5)}%"></i></div><small>${num(+it.stkDepoQty / 1e6, 1)}백만 주 · ${num(+it.cocnt, 0)}개 회사 · 기준 ${esc(r.d.slice(0, 4) + '.' + r.d.slice(4, 6) + '.' + r.d.slice(6))}</small></div>`; }).join('')
+      $('mkLock').innerHTML = rs.map(([t, r]) => {
+        const val = x => { const q = numOf(x.stkDepoQty || fld(x, /depo.*qty|qty.*depo/i)), iss = numOf(x.issuStkqty || fld(x, /issu.*qty/i)); let ratio = numOf(x.safedpRatioValue || fld(x, /ratio|rate|rt$/i)); if (!isFinite(ratio) && q > 0 && iss > 0) ratio = q / iss * 100; return { q, iss, ratio, co: numOf(x.cocnt || fld(x, /cocnt|cnt/i)) }; };
+        const kind = x => x.issuStkKindTpnm || fld(x, /kind.*nm|tpnm/i);
+        const rows = r.items.map(x => ({ x, v: val(x) })).filter(o => isFinite(o.v.ratio) || isFinite(o.v.q));
+        const pickRow = rows.find(o => /합계|전체|^계$/.test(kind(o.x))) || rows.find(o => /보통/.test(kind(o.x))) || rows[0];
+        if (!pickRow) return `<p class="sc-mute">${MK[t]}: 숫자를 읽지 못했습니다</p>${rawBox(null, r.items[0])}`;
+        const it = pickRow.x, v = pickRow.v;
+        return `<div class="mk-lock"><b>${MK[t]}</b><span class="big">${isFinite(v.ratio) ? num(v.ratio, 2) + '%' : '–'}</span><div class="bar"><i style="width:${isFinite(v.ratio) ? Math.min(100, v.ratio * 5) : 0}%"></i></div><small>${isFinite(v.q) ? num(v.q / 1e6, 1) + '백만 주' : ''}${isFinite(v.co) ? ` · ${num(v.co, 0)}개 회사` : ''}${kind(it) ? ` · ${esc(kind(it))}` : ''} · 기준 ${esc(r.d.slice(0, 4) + '.' + r.d.slice(4, 6) + '.' + r.d.slice(6))}</small></div>`; }).join('')
         + '<p class="sc-mute">비율이 오르면 묶인 물량이 늘어난 것, 크게 줄면 그만큼 풀린 것입니다. 개별 종목의 해제일은 공시(DART)에서 확인하세요.</p>';
     }).catch(e => fail('mkLock', e));
     ksdLatest('getListStatN1', {}, 24).then(r => {
@@ -2095,6 +2154,7 @@
     const old = LS.get(K_CHATS, null); // 예전처럼 localStorage 에 있던 대화를 옮김
     if (Array.isArray(old) && old.length) { for (const c of old) if (c && c.id && !chats.some(x => x.id === c.id)) { chats.push(c); await IDB.put(c); } try { localStorage.removeItem(K_CHATS); } catch (e) { } }
     chats.forEach(c => { savedAt[c.id] = c.updated; }); chats.sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    if (!cur) { let id = null; try { id = localStorage.getItem(K_CUR); } catch (e) { } const c = id && chats.find(x => x.id === id); if (c) cur = c; } // 다시 열면 보던 대화 그대로
     renderChatList(); const v = Object.keys(VIEWS).find(k => !$(VIEWS[k]).hidden); if (v === 'chat' || v === 'history') show(v);
     if (sy.on) {
       syncNow();
