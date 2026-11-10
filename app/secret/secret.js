@@ -417,7 +417,13 @@
         this._loading = (async () => {
           const r = await this._call(k, 'corpCode.xml');
           const buf = await r.arrayBuffer(), u8 = new Uint8Array(buf);
-          if (!(u8[0] === 0x50 && u8[1] === 0x4b)) { let msg = ''; try { msg = new TextDecoder().decode(u8.slice(0, 400)); } catch (e) { } const m = msg.match(/<message>([^<]+)/) || msg.match(/"message"\s*:\s*"([^"]+)/) || msg.match(/"error"\s*:\s*"([^"]+)/); throw new Error('DART 고유번호 표를 받지 못했습니다' + (m ? ': ' + m[1] : '')); }
+          if (!(u8[0] === 0x50 && u8[1] === 0x4b)) { // 압축 파일이 아니면 받은 것을 그대로 보여 줌 (원인을 알 수 있게)
+            let msg = ''; try { msg = new TextDecoder().decode(u8.slice(0, 2000)); } catch (e) { }
+            const m = msg.match(/<message>([^<]+)/) || msg.match(/"message"\s*:\s*"([^"]+)/) || msg.match(/"error"\s*:\s*"([^"]+)/);
+            const plain = msg.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 70);
+            const why = m ? m[1] : !u8.length ? `빈 응답 (HTTP ${r.status})` : /<html|<!doctype/i.test(msg) ? `DART 가 웹 페이지로 답함 (HTTP ${r.status}) ${plain}` : `HTTP ${r.status} ${plain}`;
+            throw new Error('DART 고유번호 표를 받지 못했습니다 — ' + why);
+          }
           const xml = await unzipFirst(buf), m = {};
           const re = /<list>([\s\S]*?)<\/list>/g; let x;
           while ((x = re.exec(xml))) { const b = x[1], sc = (b.match(/<stock_code>\s*([0-9A-Z]{6})\s*<\/stock_code>/) || [])[1]; if (!sc) continue; const cc = (b.match(/<corp_code>(\d{8})<\/corp_code>/) || [])[1], nm = (b.match(/<corp_name>([^<]*)<\/corp_name>/) || [])[1] || ''; if (cc) m[sc] = [cc, nm.trim()]; }
