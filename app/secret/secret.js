@@ -98,6 +98,16 @@
   const relayApi = () => dataApis().find(a => a.type === 'kisrelay');
   const realtimeOn = () => dataApis().some(kisOn);
   const needRelay = who => new Error(`${who} 는 Cloudflare 중계를 거칩니다 — API 연결에서 [Cloudflare 중계] 를 먼저 만들어 주세요 (KIS 는 꺼 둬도 됩니다)`);
+  /* 예전(KIS 만 하던) 중계 코드는 x-api-key 를 허락하지 않아 브라우저가 요청을 막음 → 주소 문제와 구별해서 알림 */
+  const OLD_RELAY = '중계 코드가 예전 것입니다 — 중계 카드 연필 → [중계 만드는 법] → [중계 코드 복사] 로 최신 코드를 Cloudflare 에 붙여 넣고 Deploy 하세요 (비밀 값은 그대로 두면 됨)';
+  async function relayDown(base, rk) {
+    try { await fetch(base + '/ping', { headers: { 'x-relay-key': String(rk || '').trim() } }); }
+    catch (e) { return new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+    return new Error(OLD_RELAY); // 암호만 보내면 닿는데 API 키를 함께 보내면 막힘
+  }
+  async function relayFresh(base, rk) {
+    try { await fetch(base + '/ping', { headers: { 'x-relay-key': String(rk || '').trim(), 'x-api-key': '-' } }); return true; } catch (e) { return false; }
+  }
   const dataFor = cap => dataApis().find(a => capsOf(a).includes(cap));
   cfg.apis.forEach(a => { if (a.type === 'kisrelay' && a.name === '한국투자증권 KIS (실시간 중계)') a.name = TYPES.kisrelay.name; }); // 예전 이름
 
@@ -391,10 +401,10 @@
       async _call(k, ep, q) {
         const { base, rk } = await this._relay();
         let r; try { r = await fetch(`${base}/dart?` + new URLSearchParams(Object.assign({ ep }, q || {})), { headers: { 'x-relay-key': rk, 'x-api-key': String(k || '').trim() } }); }
-        catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+        catch (e) { throw await relayDown(base, rk); }
         if (ep === 'corpCode.xml') return r;
         const j = await r.json().catch(() => null);
-        if (r.status === 404 || (j && /종목은 6자리 코드로|없는 기능입니다 \(\/quote/.test(j.error || '') && !/dart/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+        if (r.status === 404 || (j && /종목은 6자리 코드로|없는 기능입니다 \(\/quote/.test(j.error || '') && !/dart/.test(j.error || ''))) throw new Error(OLD_RELAY);
         if (!j || !j.ok) throw new Error('DART: ' + ((j && j.error) || ('HTTP ' + r.status)));
         if (j.status && j.status !== '000' && j.status !== '013') throw new Error('DART: ' + (j.message || j.status) + (j.status === '010' || j.status === '011' ? ' — DART 인증키를 다시 확인하세요' : j.status === '020' ? ' — 오늘 조회 한도를 넘었습니다' : ''));
         return j;
@@ -464,9 +474,9 @@
         for (const c of ser.cycles) {
           const from = new Date(Date.now() - (c === 'M' ? 800 : 120) * 864e5), to = new Date(Date.now() + 9 * 36e5);
           let r; try { r = await fetch(`${base}/ecos?` + new URLSearchParams({ stat: ser.stat, cycle: c, from: ymd(from, c), to: ymd(to, c), item: ser.item }), { headers: { 'x-relay-key': String(rk || '').trim(), 'x-api-key': String(k || '').trim() } }); }
-          catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 코드를 최신으로 붙여 넣었는지 확인하세요'); }
+          catch (e) { throw await relayDown(base, rk); }
           const j = await r.json().catch(() => null);
-          if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+          if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error(OLD_RELAY);
           if (j && j.ok && (j.rows || []).length) {
             const rows = j.rows.map(x => ({ t: x.TIME, v: +x.DATA_VALUE })).filter(x => isFinite(x.v));
             const lv = rows[rows.length - 1], back = rows[Math.max(0, rows.length - (c === 'M' ? 2 : 21))];
@@ -591,9 +601,9 @@
     if (!r0) throw needRelay(who);
     const base = String(r0.base || '').trim().replace(/\/+$/, ''), rk = String(await keyOf(r0) || '').trim();
     let r; try { r = await fetch(base + path + '?' + new URLSearchParams(params || {}), { headers: { 'x-relay-key': rk, 'x-api-key': String(apiKey || '').trim() } }); }
-    catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+    catch (e) { throw await relayDown(base, rk); }
     const j = await r.json().catch(() => null);
-    if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+    if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error(OLD_RELAY);
     if (!j || !j.ok) throw new Error((j && j.error) || `${who}: HTTP ${r.status}`);
     return j;
   }
@@ -1501,6 +1511,7 @@ ${[
           let r; try { r = await fetch(base + '/ping', { headers: { 'x-relay-key': String(k).trim() } }); } catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
           const j = await r.json().catch(() => null);
           if (!r.ok || !j || !j.ok) throw new Error('중계: ' + ((j && j.error) || ('HTTP ' + r.status)));
+          if (dataApis().some(x => ['dart', 'naver', 'ecos', 'fred'].includes(x.type)) && !(await relayFresh(base, k))) throw new Error(OLD_RELAY);
           if (a.kis !== false) {
             if (j.kis === false) throw new Error('중계는 됩니다. 다만 KIS 앱키가 중계에 없습니다 — KIS 를 보류하려면 카드의 「KIS」 를 끄세요');
             try { await DATA.kisrelay.quote(k, '005930', a); } catch (e) { throw new Error(e.message.replace(/^KIS 중계: /, 'KIS: ') + ' — 중계 통로는 됩니다. KIS 를 보류하려면 카드의 「KIS」 를 끄세요'); }
