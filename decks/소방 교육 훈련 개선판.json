@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-10T12:52:40.000Z",
- "modified": "2026-11-10T12:52:40.000Z",
+ "modified": "2026-11-10T13:20:14.167Z",
  "footer": {
   "text": "소방 교육 훈련 · 권유진",
   "num": true,
@@ -2388,14 +2388,16 @@
      "rotate": 0,
      "opacity": 1,
      "type": "embed",
-     "x": 240,
-     "y": 110,
-     "w": 1440,
-     "h": 810,
-     "url": "",
+     "x": -24,
+     "y": -8,
+     "w": 1949,
+     "h": 1096,
+     "url": "bigvideo/kwonyujin119/test0/video-mwapesea5voh/5-4194304-16977266/대전화재_편집_-eseblz8.mp4",
      "radius": 16,
      "autoplay": false,
-     "shadow": false
+     "shadow": false,
+     "posterOf": "bigvideo/kwonyujin119/test0/video-mwapesea5voh/5-4194304-16977266/대전화재_편집_-eseblz8.mp4",
+     "poster": "assets/대전화재_편집_-poster-eshqrn8.png"
     },
     {
      "id": "yrs0vho1v",
@@ -2572,11 +2574,11 @@
      "rotate": 0,
      "opacity": 1,
      "type": "embed",
-     "x": 240,
-     "y": 110,
-     "w": 1440,
-     "h": 810,
-     "url": "",
+     "x": -82,
+     "y": -97,
+     "w": 2104,
+     "h": 1282,
+     "url": "https://www.youtube.com/embed/3HH1vBd7KIQ?feature=oembed",
      "radius": 16,
      "autoplay": false,
      "shadow": false
@@ -3787,7 +3789,7 @@
      "style": {
       "fontSize": 32,
       "color": "#141414",
-      "lineHeight": 2.0
+      "lineHeight": 2
      }
     },
     {
@@ -3866,7 +3868,7 @@
      "style": {
       "fontSize": 32,
       "color": "#141414",
-      "lineHeight": 2.0
+      "lineHeight": 2
      }
     },
     {
@@ -3945,7 +3947,7 @@
      "style": {
       "fontSize": 32,
       "color": "#141414",
-      "lineHeight": 2.0
+      "lineHeight": 2
      }
     }
    ],
@@ -4044,7 +4046,7 @@
      "w": 560,
      "h": 780,
      "src": "assets/edu-form3.png",
-     "fit": "contain",
+     "fit": "fill",
      "radius": 0,
      "shadow": false
     }
@@ -4066,14 +4068,17 @@
      "rotate": 0,
      "opacity": 1,
      "type": "embed",
-     "x": 240,
-     "y": 110,
-     "w": 1440,
-     "h": 810,
-     "url": "",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "bigvideo/kwonyujin119/test0/video-mwaplahmy35h/18-4194304-74664459/긴급구조훈련_3분30초_-lahmj7r.mp4",
      "radius": 16,
      "autoplay": false,
-     "shadow": false
+     "shadow": false,
+     "posterOf": "bigvideo/kwonyujin119/test0/video-mwaplahmy35h/18-4194304-74664459/긴급구조훈련_3분30초_-lahmj7r.mp4",
+     "poster": "assets/긴급구조훈련_3분30초_-poster-lakb8bo.png",
+     "locked": false
     },
     {
      "id": "9aot4stjb",
@@ -5144,45 +5149,6 @@
    "notes": "[28:00] 0 : 20 대비를 3초 보여주고 시작. 자위소방대의 피난유도팀 장면과 연결.\n\"차이는 시설이 아니라, 누군가 '이쪽으로!'라고 외쳤느냐였습니다.\"\n\n(상세 표: 숨김 부록 슬라이드)",
    "elements": [
     {
-     "id": "y0ej9o6k7",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 1000,
-     "y": 0,
-     "w": 920,
-     "h": 1080,
-     "src": "assets/edu2-case28.jpg",
-     "fit": "cover",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "t05cjotqs",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1000,
-     "y": 0,
-     "w": 920,
-     "h": 1080,
-     "shape": "rect",
-     "fill": "#141414",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {},
-     "fill2": "#141414",
-     "fill2Op": 0.25,
-     "gAngle": 0
-    },
-    {
      "id": "fe1pch0es",
      "step": 0,
      "anim": "fade",
@@ -5440,6 +5406,45 @@
       "color": "#D0D0D0",
       "lineHeight": 1.35
      }
+    },
+    {
+     "id": "eqzf34i2o",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1115,
+     "y": 3,
+     "w": 805,
+     "h": 1099,
+     "src": "assets/clipboard-1794316580146-ri2notm.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "t05cjotqs",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1000,
+     "y": 0,
+     "w": 920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#141414",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#141414",
+     "fill2Op": 0.25,
+     "gAngle": 0
     }
    ],
    "hidden": false,
