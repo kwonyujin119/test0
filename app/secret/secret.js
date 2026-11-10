@@ -173,10 +173,11 @@
     return '';
   }
   async function setKey(api, key) {
-    if (!cfg.lock) { api.key = key; return; }
+    if (!cfg.lock) { api.key = key; markKey(api.id); return; }
     if (!(await unlock(true))) throw new Error('API 키 잠금을 풀어야 저장할 수 있습니다'); // 잠그려면 열쇠가 있어야 해서 이때는 암호를 물음
-    keyMem[api.id] = key; api.key = ''; await sealKeys();
+    keyMem[api.id] = key; api.key = ''; await sealKeys(); markKey(api.id);
   }
+  const markKey = id => { sy.keyT[id] = Date.now(); saveSy(); SYNCQ.mark('keys'); }; // 다른 기기로 옮길 때 더 최근 것이 이기도록
 
   /* ---------- 작은 창 ---------- */
   function dialog(html, cls) {
@@ -1454,7 +1455,7 @@ ${[
     $('apiGrid').innerHTML = cfg.apis.map(a => {
       const T = TYPES[a.type] || {}; const ai = T.kind === 'ai';
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
-      const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
+      const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : (sy.on ? '<span class="ks bad">이 기기에 없음 — 다른 기기에서 넣었다면 그 기기에서 SECRET 을 한 번 열면 저절로 옮겨 옵니다 · 아니면 [고치기] 로 넣기</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기 (기기 연결을 켜면 다른 기기의 키도 저절로 옮겨 옵니다)</span>');
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
         <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${a.type === 'kisrelay' ? `<dt>제공</dt><dd>DART · 네이버 · ECOS · FRED 통로${a.kis === false ? ' · <b>KIS 보류</b>' : ' · KIS 현재가 · 일봉'}</dd>` : !ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요', newsKR: '국내 최신 뉴스', usmacro: '미국 금리 · 물가 · 고용' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
@@ -1470,11 +1471,11 @@ ${[
     $('apiGrid').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
       const a = cfg.apis.find(x => x.id === b.dataset.rm);
       if (!(await confirmBox(`${a.name} 를 지울까요?`, '이 기기에 저장한 키도 함께 지웁니다.', '지우기'))) return;
-      cfg.apis = cfg.apis.filter(x => x !== a); if (keyMem) { delete keyMem[a.id]; if (lockKey) await sealKeys(); } if (cfg.ai === a.id) cfg.ai = ''; saveCfg(); renderApis(); renderAiSel();
+      cfg.apis = cfg.apis.filter(x => x !== a); if (keyMem) { delete keyMem[a.id]; if (lockKey) await sealKeys(); } if (cfg.ai === a.id) cfg.ai = ''; saveCfg(); markKey(a.id); renderApis(); renderAiSel();
     });
     $('lockBox').innerHTML = cfg.lock
       ? `<div><b>키 잠금 켜짐</b> — 키를 암호로 감싸 두었습니다. ${(() => { const r = LS.get(K_REMEMBER, null), ok = remembered(); return ok ? `<b>이 기기에서 기억 중</b> (${Math.max(1, Math.ceil((r.exp - Date.now()) / 864e5))}일 남음) — 암호를 묻지 않습니다.` : keyMem ? '지금은 풀려 있습니다 (이 화면을 닫으면 다시 잠깁니다).' : '키가 필요할 때 암호를 한 번 묻습니다.'; })()}</div>${keyMem ? '' : '<button class="btn" id="lkOpen">풀기</button>'}${remembered() ? '<button class="btn ghost" id="lkForget">기억 지우기</button>' : ''}${remoteMissing() ? `<button class="btn" id="lkGet">${icon('key', 15)}다른 기기 키 받기</button>` : ''}<button class="btn ghost" id="lkOff">잠금 끄기</button>`
-      : `<div><b>키 잠금 꺼짐</b> — 잠금 암호를 걸면 키를 AES-GCM 으로 감싸 저장합니다. 암호를 잊으면 키를 다시 등록해야 합니다.</div><button class="btn" id="lkOn">${icon('lock', 15)}잠금 암호 걸기</button>${remoteMissing() ? `<button class="btn" id="lkGet">${icon('key', 15)}다른 기기 키 받기</button>` : ''}`;
+      : `<div><b>키 잠금 꺼짐 (선택)</b> — 키는 잠금 없이도 기기끼리 저절로 옮겨집니다. 이 기기 안에서도 키를 암호로 감싸 두려면 잠금을 거세요. 암호를 잊으면 키를 다시 등록해야 합니다.</div><button class="btn" id="lkOn">${icon('lock', 15)}잠금 암호 걸기</button>${remoteMissing() ? `<button class="btn" id="lkGet">${icon('key', 15)}다른 기기 키 받기</button>` : ''}`;
     fillIcons($('vApis'));
     const on = $('lkOn'), off = $('lkOff'), op = $('lkOpen');
     if (op) op.onclick = async () => { if (await unlock()) { toast('키 잠금을 풀었습니다', 1800); renderApis(); renderBanner(); } };
@@ -2024,10 +2025,13 @@ ${[
      · state.json: 나의 원칙 · 노트 · 매매 일지 · 관심 종목 · 계산기 · API 목록(키 빼고) · 잠근 키 묶음(암호화된 것만) · 대화 목록
      · chats/<id>.json: 대화 하나씩 (개수 제한 없음)
      · 합치는 법: 노트 · 일지 · 대화는 하나씩 더 최근 것이 이김(지운 것은 '지움 표시'로 전달), 나머지는 고친 시각이 늦은 쪽이 이김
-     · API 키는 잠금 암호를 건 경우에만 암호화된 채로 옮겨지고, 다른 기기에서 같은 암호로 풉니다
+     · API 키: 한 기기에서 넣으면 다른 기기에서도 저절로 씀. 키 하나마다 고친 시각이 늦은 쪽이 이김.
+       state.json 의 vault 에 AES-GCM 으로 감싸 둠 (열쇠도 같은 비공개 저장소에 — 보호는 비공개 저장소 · GitHub 토큰이 맡고,
+       암호화는 키가 글자 그대로 보이거나 비밀 값 검사에 걸리지 않게 하는 것). 잠금 암호를 건 기기는 풀려 있을 때(기억 중 포함)만 주고받음
      ===================================================================== */
   const K_SYNC = 'sec:sync';
-  const sy = Object.assign({ on: false, shaState: '', shaChat: {}, tomb: { notes: {}, journal: {}, chats: {} }, rev: {}, hash: {}, pushed: '', at: 0, err: '' }, LS.get(K_SYNC, {}));
+  const sy = Object.assign({ on: false, shaState: '', shaChat: {}, tomb: { notes: {}, journal: {}, chats: {} }, rev: {}, hash: {}, pushed: '', at: 0, err: '', keyT: {} }, LS.get(K_SYNC, {}));
+  if (!sy.keyT) sy.keyT = {};
   sy.tomb = Object.assign({ notes: {}, journal: {}, chats: {} }, sy.tomb);
   const saveSy = () => LS.set(K_SYNC, sy);
   const SY = { busy: false, state: sy.on ? 'idle' : 'off', msg: '', timer: 0, again: false };
@@ -2119,6 +2123,53 @@ ${[
     for (const k in sect) sy.hash[k] = hashOf(JSON.stringify(sect[k]()));
     return changed;
   }
+  /* ---------- API 키 보관함 (기기끼리 저절로) ---------- */
+  let vault = null, vaultH = '', ring = '', remoteMap = null; // 메모리에만
+  const ringKey = b => crypto.subtle.importKey('raw', unb64(b), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+  /* 이 기기의 키: 잠금이 없으면 카드에, 잠금이 있으면 풀려 있을 때만 (잠겨 있으면 null → 주고받지 않음) */
+  function localKeys() {
+    if (cfg.lock && !keyMem) { const r = remembered(); if (r) keyMem = Object.assign({}, r); }
+    if (cfg.lock && !keyMem) return null;
+    return Object.fromEntries(cfg.apis.map(a => [a.id, (cfg.lock ? keyMem[a.id] : a.key) || '']));
+  }
+  async function putKeys(got) {
+    if (!cfg.lock) { cfg.apis.forEach(a => { if (a.id in got) a.key = got[a.id]; }); LS.set(K_CFG, cfg); return true; }
+    if (!lockKey && !(await keyFromMemory())) return false;
+    Object.assign(keyMem, got); await sealKeys(); return true;
+  }
+  async function mergeKeys(v) {
+    remoteMap = null;
+    if (!v || !v.ring || !v.iv || !v.data) return false;
+    try { remoteMap = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(v.iv) }, await ringKey(v.ring), unb64(v.data)))); } catch (e) { return false; }
+    ring = v.ring; vault = v; vaultH = hashOf(JSON.stringify(remoteMap));
+    const loc = localKeys(); if (!loc) return false;
+    const got = {};
+    for (const [id, e] of Object.entries(remoteMap)) {
+      if (!(id in loc) || !e) continue;
+      const lt = sy.keyT[id] || (loc[id] ? 1 : 0), rt = e.t || 0, rk = e.k || '';
+      if (rk !== loc[id] && (rt > lt || (lt <= 1 && !loc[id] && rk))) got[id] = rk;
+    }
+    if (!Object.keys(got).length) return false;
+    if (!(await putKeys(got))) return false;
+    for (const id in got) sy.keyT[id] = Math.max(sy.keyT[id] || 0, remoteMap[id].t || 1);
+    saveSy(); return true;
+  }
+  async function buildVault() {
+    const loc = localKeys(); if (!loc) return; // 잠겨 있으면 받은 것을 그대로 다시 올림
+    const map = Object.assign({}, remoteMap || {});
+    for (const id of new Set([...Object.keys(loc), ...Object.keys(sy.keyT)])) {
+      const k = loc[id] || '', t = sy.keyT[id] || (k ? 1 : 0);
+      if (!t) continue;
+      if (!map[id] || t > (map[id].t || 0) || (t === (map[id].t || 0) && k)) map[id] = { k, t };
+    }
+    if (!Object.keys(map).length) return;
+    const plain = JSON.stringify(map), h = hashOf(plain);
+    if (vault && ring && vault.ring === ring && vaultH === h) return; // 그대로면 다시 감싸지 않음 (안 바뀐 것을 또 올리지 않게)
+    if (!ring) ring = b64(crypto.getRandomValues(new Uint8Array(32)));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await ringKey(ring), enc.encode(plain));
+    vault = { v: 1, ring, iv: b64(iv), data: b64(data) }; vaultH = h; remoteMap = map;
+  }
   /* 대화: 다른 기기에서 더 최근에 고친 것만, 6개씩 나눠 받음 (받는 대로 목록에 보임) */
   async function pullChats(r) {
     const need = (r.chats || []).filter(rc => !((sy.tomb.chats[rc.id] || 0) >= rc.updated) && !((chats.find(c => c.id === rc.id) || {}).updated >= rc.updated));
@@ -2137,7 +2188,7 @@ ${[
   }
   function localState() {
     const s = {}; for (const k in sect) s[k] = sect[k]();
-    return Object.assign(s, { v: 1, at: Date.now(), device: deviceName(), rev: sy.rev, tomb: sy.tomb, chats: chats.map(c => ({ id: c.id, title: c.title, updated: c.updated })) });
+    return Object.assign(s, { v: 1, at: Date.now(), device: deviceName(), rev: sy.rev, tomb: sy.tomb, chats: chats.map(c => ({ id: c.id, title: c.title, updated: c.updated })) }, vault ? { vault } : {});
   }
   async function syncNow(opts) {
     opts = opts || {};
@@ -2148,6 +2199,8 @@ ${[
       const rem = await getFile('secret/state.json');
       let changed = false;
       if (rem && rem.sha !== sy.shaState) { changed = await mergeRemote(rem.data); if (changed) refreshAfterSync(); if (await pullChats(rem.data)) { changed = true; if (cur) renderMsgs(); } }
+      if (rem && await mergeKeys(rem.data.vault)) { changed = true; renderAiSel(); if (!$('vApis').hidden) renderApis(); renderBanner(); }
+      await buildVault();
       const rIdx = new Map(((rem && rem.data.chats) || []).map(c => [c.id, c.updated]));
       const up = chats.filter(c => !(c === cur && busy) && (!rIdx.has(c.id) || (c.updated || 0) > rIdx.get(c.id)));
       for (let i = 0; i < up.length; i++) { // 같은 가지에 한꺼번에 올리면 서로 부딪치므로 하나씩
@@ -2190,7 +2243,7 @@ ${[
   function renderSyncBox() {
     const c = ghCfg(), box = $('syncBox'); if (!box) return;
     const when = sy.at ? new Date(sy.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-    box.innerHTML = `<span class="ico-wrap">${icon('cloud', 20)}</span><div class="tx"><b>모든 기기에서 같게 보기</b> — 대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 의 secret 폴더에 두고, 휴대폰 · PC 어디서 열어도 같게 맞춥니다. API 키는 잠금 암호를 건 경우에만 암호화된 채로 옮겨집니다.
+    box.innerHTML = `<span class="ico-wrap">${icon('cloud', 20)}</span><div class="tx"><b>모든 기기에서 같게 보기</b> — 대화 기록 · 노트 · 매매 일지 · 나의 원칙 · 관심 종목을 비공개 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 의 secret 폴더에 두고, 휴대폰 · PC 어디서 열어도 같게 맞춥니다. API 키도 암호화해 함께 옮기므로, 한 기기에서 넣으면 다른 기기에서도 바로 씁니다.
       <div class="st ${SY.state === 'ok' ? 'ok' : SY.state === 'bad' ? 'bad' : ''}">${!sy.on ? '꺼져 있음 — 이 기기에만 저장 중' : SY.state === 'busy' ? '맞추는 중…' : SY.state === 'bad' ? esc(SY.msg || sy.err) : `켜짐 · 마지막으로 맞춘 때 ${esc(when)}`}</div>
       ${!c.token ? `<div class="tok"><input type="password" id="syTok" placeholder="GitHub 토큰 (${esc(c.repo)} 저장소 Contents 읽기 · 쓰기)" autocomplete="off"><button class="btn" id="syTokOk">넣기</button></div><p class="sc-fine" style="text-align:left;margin:4px 0 0">영상(VIDEO) 동기화에 쓰는 것과 같은 토큰입니다. 이 기기에 한 번만 넣으면 됩니다.</p>` : ''}</div>
       <div class="acts">${sy.on ? `<button class="btn" id="syNow">${icon('refresh', 15)}지금 맞추기</button><button class="btn ghost" id="syOff">끄기</button>` : `<button class="btn ink" id="syOn">${icon('cloud', 15)}이 기기 연결</button>`}</div>`;
@@ -2269,11 +2322,6 @@ ${[
       if (!sy.on) return; // 실패 문구는 배너에
       const ai = aiApis();
       if (cfg.lockRemote && ai.some(a => !hasKey(a))) await adoptRemoteKeys();
-      else if (!cfg.lock && cfg.apis.some(a => a.key) && !sy.askedLock) {
-        sy.askedLock = true; saveSy();
-        if (await confirmBox('API 키도 다른 기기로 옮길까요?', '잠금 암호를 정하면 키를 암호화해 함께 옮깁니다. 다른 기기에서는 [이 기기 연결] 을 누르고 같은 암호만 넣으면 됩니다. 옮기지 않으면 기기마다 키를 따로 넣습니다.', '암호 정하기'))
-          if (await lockFlow('키 잠금 암호 정하기', '4자 이상. 다른 기기에서 같은 암호를 넣으면 키가 옮겨집니다. 이 암호는 어디에도 저장하지 않습니다.')) toast('API 키도 함께 옮겨집니다', 2400);
-      }
       toast('이 기기 연결을 마쳤습니다. 이제 휴대폰 · PC 어디서나 같게 보입니다', 3000);
     } finally { connecting = false; renderBanner(); }
   }
