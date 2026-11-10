@@ -80,6 +80,7 @@
     etf: { kind: 'data', name: '공공데이터포털 ETF 시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/data/15094806/openapi.do', note: 'ETF 의 하루 단위 시세 · 일봉 · 순자산가치(NAV) · 기초지수. 금융위원회 주식시세와 같은 공공데이터포털 키를 그대로 넣으세요 (공공데이터포털에서 「금융위원회_증권상품시세정보」 활용신청 필요).' },
     index: { kind: 'data', name: '공공데이터포털 지수 시세 (금융위원회)', caps: ['index'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EA%B8%88%EC%9C%B5%EC%9C%84%EC%9B%90%ED%9A%8C_%EC%A7%80%EC%88%98%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '코스피 · 코스닥 · 코스피 200 의 하루 단위 지수 (종가 · 등락 · 5일 · 20일 흐름). 같은 공공데이터포털 키를 그대로 넣으세요 (「금융위원회_지수시세정보」 활용신청 필요).' },
     ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
+    dart: { kind: 'data', name: 'OpenDART (금융감독원 공시)', caps: ['dart'], keyUrl: 'https://opendart.fss.or.kr/', note: '공시 목록 · 주요 재무(매출 · 영업이익 · 순이익 · 자산 · 부채 · 자본) · 회사 개요. 금융감독원이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함). 처음 한 번 회사 고유번호 표를 받아 이 기기에 30일 둡니다.' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
     kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
@@ -348,6 +349,70 @@
         return { source: '공공데이터포털 (금융위원회 지수시세 · 종가 기준)', indices: out, errors: errs.length ? errs : undefined };
       },
     },
+    /* OpenDART — KIS 중계의 /dart 를 거쳐 (DART 키는 SECRET 에) */
+    dart: {
+      async _relay() { const r = dataApis().find(a => a.type === 'kisrelay'); if (!r) throw new Error('OpenDART 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요'); return { base: String(r.base || '').trim().replace(/\/+$/, ''), rk: String(await keyOf(r) || '').trim() }; },
+      async _call(k, ep, q) {
+        const { base, rk } = await this._relay();
+        let r; try { r = await fetch(`${base}/dart?` + new URLSearchParams(Object.assign({ ep }, q || {})), { headers: { 'x-relay-key': rk, 'x-api-key': String(k || '').trim() } }); }
+        catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+        if (ep === 'corpCode.xml') return r;
+        const j = await r.json().catch(() => null);
+        if (r.status === 404 || (j && /종목은 6자리 코드로|없는 기능입니다 \(\/quote/.test(j.error || '') && !/dart/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+        if (!j || !j.ok) throw new Error('DART: ' + ((j && j.error) || ('HTTP ' + r.status)));
+        if (j.status && j.status !== '000' && j.status !== '013') throw new Error('DART: ' + (j.message || j.status) + (j.status === '010' || j.status === '011' ? ' — DART 인증키를 다시 확인하세요' : j.status === '020' ? ' — 오늘 조회 한도를 넘었습니다' : ''));
+        return j;
+      },
+      /* 종목코드 → DART 고유번호: 고유번호 압축 파일을 한 번 받아 이 기기에서 풀어 30일 둠 */
+      async _map(k) {
+        const c = LS.get('sec:dartCorp', null); if (c && c.t && Date.now() - c.t < 30 * 864e5 && c.m) return c.m;
+        if (this._loading) return this._loading;
+        this._loading = (async () => {
+          const r = await this._call(k, 'corpCode.xml');
+          const buf = await r.arrayBuffer(), u8 = new Uint8Array(buf);
+          if (!(u8[0] === 0x50 && u8[1] === 0x4b)) { let msg = ''; try { msg = new TextDecoder().decode(u8.slice(0, 400)); } catch (e) { } const m = msg.match(/<message>([^<]+)/) || msg.match(/"message"\s*:\s*"([^"]+)/) || msg.match(/"error"\s*:\s*"([^"]+)/); throw new Error('DART 고유번호 표를 받지 못했습니다' + (m ? ': ' + m[1] : '')); }
+          const xml = await unzipFirst(buf), m = {};
+          const re = /<list>([\s\S]*?)<\/list>/g; let x;
+          while ((x = re.exec(xml))) { const b = x[1], sc = (b.match(/<stock_code>\s*([0-9A-Z]{6})\s*<\/stock_code>/) || [])[1]; if (!sc) continue; const cc = (b.match(/<corp_code>(\d{8})<\/corp_code>/) || [])[1], nm = (b.match(/<corp_name>([^<]*)<\/corp_name>/) || [])[1] || ''; if (cc) m[sc] = [cc, nm.trim()]; }
+          if (!Object.keys(m).length) throw new Error('DART 고유번호 표가 비어 있습니다');
+          LS.set('sec:dartCorp', { t: Date.now(), m }); return m;
+        })();
+        try { return await this._loading; } finally { this._loading = null; }
+      },
+      async corp(k, s) {
+        const m = await this._map(k), q = String(s || '').trim(), code = normSym(q);
+        if (m[code]) return { stock: code, corp: m[code][0], name: m[code][1] };
+        const hit = Object.entries(m).find(([, v]) => v[1] === q) || Object.entries(m).find(([, v]) => v[1].replace(/\s|\(주\)|주식회사/g, '') === q.replace(/\s|\(주\)|주식회사/g, ''));
+        if (hit) return { stock: hit[0], corp: hit[1][0], name: hit[1][1] };
+        throw new Error(`${s}: DART 에서 찾지 못했습니다 (상장 종목의 6자리 코드나 정확한 회사명으로)`);
+      },
+      async disclosures(k, s, days) {
+        const c = await this.corp(k, s), ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '');
+        const j = await this._call(k, 'list.json', { corp_code: c.corp, bgn_de: ymd(new Date(Date.now() - (days || 90) * 864e5)), end_de: ymd(new Date(Date.now() + 9 * 36e5)), page_count: '40' });
+        return { company: c.name, stock: c.stock, items: (j.list || []).map(x => ({ date: `${x.rcept_dt.slice(0, 4)}-${x.rcept_dt.slice(4, 6)}-${x.rcept_dt.slice(6)}`, title: String(x.report_nm || '').replace(/\s+/g, ' ').trim(), filer: x.flr_nm, url: `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${x.rcept_no}` })), source: 'OpenDART (금융감독원)' };
+      },
+      async company(k, s) {
+        const c = await this.corp(k, s), j = await this._call(k, 'company.json', { corp_code: c.corp });
+        return { name: j.corp_name, ceo: j.ceo_nm, market: { Y: '유가증권', K: '코스닥', N: '코넥스', E: '기타' }[j.corp_cls] || j.corp_cls, industryCode: j.induty_code, founded: j.est_dt, fiscalMonth: j.acc_mt, homepage: j.hm_url, address: j.adres };
+      },
+      /* 주요 재무: 가장 최근 보고서(올해 3분기 → 반기 → 1분기 → 작년 사업보고서 …), 연결 우선 */
+      async financials(k, s) {
+        const c = await this.corp(k, s), y = new Date().getFullYear();
+        const tries = [[y, '11014', '3분기'], [y, '11012', '반기'], [y, '11013', '1분기'], [y - 1, '11011', '사업보고서'], [y - 1, '11014', '3분기'], [y - 2, '11011', '사업보고서']];
+        for (const [yy, rc, rn] of tries) {
+          const j = await this._call(k, 'fnlttSinglAcnt.json', { corp_code: c.corp, bsns_year: String(yy), reprt_code: rc });
+          const list = j.list || []; if (!list.length) continue;
+          const fs = list.some(x => x.fs_div === 'CFS') ? 'CFS' : 'OFS', L = list.filter(x => x.fs_div === fs);
+          const n = v => { const t = String(v || '').replace(/,/g, '').trim(); return t === '' || t === '-' ? null : +t; };
+          const g = nm => L.find(x => x.account_nm === nm) || L.find(x => String(x.account_nm).replace(/\s/g, '').startsWith(nm.replace(/\s/g, '')));
+          const row = nm => { const x = g(nm); if (!x) return null; const cur = n(x.thstrm_amount), prev = n(x.frmtrm_amount); return { now: cur, before: prev, change: cur != null && prev ? Math.round((cur / prev - 1) * 1000) / 10 : null, period: x.thstrm_nm, prevPeriod: x.frmtrm_nm }; };
+          const out = { 매출액: row('매출액') || row('영업수익'), 영업이익: row('영업이익'), 당기순이익: row('당기순이익') || row('당기순이익(손실)'), 자산총계: row('자산총계'), 부채총계: row('부채총계'), 자본총계: row('자본총계') };
+          const r = (a, b) => a && b && a.now != null && b.now ? Math.round(a.now / b.now * 1000) / 10 : null;
+          return { company: c.name, stock: c.stock, year: yy, report: rn, basis: fs === 'CFS' ? '연결' : '별도', unit: '원', items: out, ratios: { 영업이익률: r(out.영업이익, out.매출액), 순이익률: r(out.당기순이익, out.매출액), 부채비율: r(out.부채총계, out.자본총계) }, note: '3분기 · 반기 · 1분기 보고서의 손익은 해당 분기(3개월) 또는 누적 기준일 수 있음 — period 로 확인', source: 'OpenDART (금융감독원)' };
+        }
+        throw new Error(`${c.name}: 최근 정기보고서 재무 자료가 없습니다`);
+      },
+    },
     /* 한국은행 ECOS — KIS 중계의 /ecos 를 거쳐 (ECOS 키는 여기 SECRET 에, 중계에는 지나가기만) */
     ecos: {
       SERIES: [
@@ -365,7 +430,7 @@
           let r; try { r = await fetch(`${base}/ecos?` + new URLSearchParams({ stat: ser.stat, cycle: c, from: ymd(from, c), to: ymd(to, c), item: ser.item }), { headers: { 'x-relay-key': String(rk || '').trim(), 'x-api-key': String(k || '').trim() } }); }
           catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 코드를 최신으로 붙여 넣었는지 확인하세요'); }
           const j = await r.json().catch(() => null);
-          if (r.status === 404) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+          if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
           if (j && j.ok && (j.rows || []).length) {
             const rows = j.rows.map(x => ({ t: x.TIME, v: +x.DATA_VALUE })).filter(x => isFinite(x.v));
             const lv = rows[rows.length - 1], back = rows[Math.max(0, rows.length - (c === 'M' ? 2 : 21))];
@@ -484,6 +549,18 @@
     getWrtInfoN1: { d: '신주인수권증권 정보', p: 'stdDt*=YYYYMMDD', f: { korSecnNm: '종목명', bondIsin: '채권 표준코드', deliDt: '교부일', isin: '표준코드', issuDt: '발행일', issuNtimes: '발행횟수' } },
     getKDRSecnInfo: { d: '시장별 KDR 종목', p: 'caltotMartTpcd*=11 유가 · 12 코스닥 · 13 코넥스', f: { kdrIsin: 'KDR 표준코드', korSecnNm: '종목명', listDt: '상장일', ovsListStkmkCd: '해외상장시장' } },
   };
+  async function unzipFirst(buf) {
+    const v = new DataView(buf); let e = buf.byteLength - 22;
+    while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
+    if (e < 0) throw new Error('압축 파일을 읽지 못했습니다');
+    const cd = v.getUint32(e + 16, true);
+    if (v.getUint32(cd, true) !== 0x02014b50) throw new Error('압축 파일을 읽지 못했습니다');
+    const method = v.getUint16(cd + 10, true), size = v.getUint32(cd + 20, true), lh = v.getUint32(cd + 42, true);
+    const start = lh + 30 + v.getUint16(lh + 26, true) + v.getUint16(lh + 28, true), data = new Uint8Array(buf, start, size);
+    if (method === 0) return new TextDecoder().decode(data);
+    if (typeof DecompressionStream === 'undefined') throw new Error('이 브라우저는 압축 풀기를 지원하지 않습니다 — 최신 크롬 · 엣지 · 사파리에서 열어 주세요');
+    return await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+  }
   async function callData(cap, ...args) {
     const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr', 'etf'].map(t => dataApis().find(a => a.type === t)).filter(Boolean) : [];
     if (krs.length) {
@@ -545,6 +622,10 @@
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
     T.push({ name: 'get_briefing', description: '이 앱이 매일 아침(8시 전까지 여러 번 보강) 모으는 그날의 모닝 브리핑(여러 언론이 함께 다룬 주식 관련 큰 이슈 15개 · 언론사 수 · 분류)과 전략 브리핑(증권사 데일리 시황 · 투자전략 리포트의 제목 · 요약, 주간 전략, 자주 나온 말)을 돌려준다. "오늘 · 요즘 시장", 이슈, 특정 종목 · 업종의 최근 뉴스나 증권사 시각을 말할 때 웹 검색보다 먼저 확인한다. focus 를 주면 그 말이 들어간 항목만 골라 준다.', input_schema: { type: 'object', properties: { focus: { type: 'string', description: '종목명 · 업종 · 키워드 (선택, 예: 삼성전자, 반도체, 환율)' }, date: { type: 'string', description: 'YYYY-MM-DD (선택, 기본 가장 최근 판)' } }, additionalProperties: false } });
+    if (dataFor('dart')) {
+      T.push({ name: 'get_disclosures', description: '한국 상장사의 최근 공시 목록(날짜 · 제목 · 제출인 · 원문 링크)을 금융감독원 OpenDART 에서 받는다. 실적 · 유상증자 · 전환사채 · 자사주 · 최대주주 변경 · 소송 등 주가에 영향을 줄 일을 확인할 때 쓴다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 회사명' }, days: { type: 'integer', description: '최근 며칠 (기본 90, 최대 365)' } }, required: ['symbol'], additionalProperties: false } });
+      T.push({ name: 'get_financials', description: '한국 상장사의 가장 최근 정기보고서 주요 재무(매출액 · 영업이익 · 당기순이익 · 자산 · 부채 · 자본, 전기 대비 증감, 영업이익률 · 순이익률 · 부채비율)와 회사 개요를 OpenDART 에서 받는다. 실적 · 재무 건전성 · 밸류에이션을 말할 때 쓴다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 회사명' } }, required: ['symbol'], additionalProperties: false } });
+    }
     if (dataFor('index')) T.push({ name: 'get_index', description: '코스피 · 코스닥 · 코스피 200 의 최근 종가 · 등락률 · 5일/20일 수익률 · 최근 10일 값을 공식 자료(금융위원회)로 돌려준다. 시장 분위기 · 지수 수준을 말하기 전에 확인한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('macro')) T.push({ name: 'get_macro', description: '한국은행 ECOS 공식 자료로 기준금리 · 국고채 3년/10년 금리 · 원/달러 환율의 최근 값과 한 달 변화, 최근 10개 값을 돌려준다. 금리 · 환율을 말하기 전에 이 도구로 확인한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('ksd')) {
@@ -560,7 +641,7 @@
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -576,6 +657,8 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'get_disclosures': { const a = dataFor('dart'); return await DATA.dart.disclosures(await keyOf(a), String(input.symbol).trim(), Math.max(7, Math.min(365, +input.days || 90))); }
+      case 'get_financials': { const a = dataFor('dart'), k = await keyOf(a); const f = await DATA.dart.financials(k, String(input.symbol).trim()); try { f.profile = await DATA.dart.company(k, String(input.symbol).trim()); } catch (e) { } return f; }
       case 'get_briefing': return await briefingForAI(String(input.focus || '').trim(), String(input.date || '').trim());
       case 'get_index': { const a = dataFor('index'); return await DATA.index.get(await keyOf(a)); }
       case 'get_macro': { const a = dataFor('macro'); return await DATA.ecos.macro(await keyOf(a)); }
@@ -605,6 +688,8 @@ ${[
   ['get_quote', '현재가 — 결과의 source 로 실시간(KIS)인지 전일 종가(공공데이터)인지 구분해 말함. ETF 는 NAV 와 괴리율도'],
   ['get_price_history', '추세 · 지표 · 변동성 · 낙폭 (이 앱이 계산)'],
   ['get_ksd_stock_info', '한국 종목의 공식 기록 · 상장일 · 작년 배당'],
+  ['get_financials', '실적 · 재무 건전성 (매출 · 영업이익 · 순이익 · 부채비율, 금융감독원)'],
+  ['get_disclosures', '최근 공시 (유상증자 · 전환사채 · 자사주 · 최대주주 변경 등) — 종목 판단 전에 확인'],
   ['query_ksd', '의무보호예수(풀릴 물량) · 신규 예탁지정 · 시장 통계'],
   ['get_news', '해외 종목 회사 뉴스'],
 ].filter(([n]) => tools.includes(n)).map(([n, w]) => `- ${n}: ${w}`).join('\n') || '- (시세 · 자료 도구 없음)'}
@@ -1051,7 +1136,7 @@ ${[
     { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
     { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
     { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
-    { soon: true, name: 'OpenDART (금융감독원 공시)', why: '공시 목록 · 재무제표 · 주요 사항', how: 'OpenDART 인증키 신청', keyUrl: 'https://opendart.fss.or.kr/', note: '연결 준비 중 — 키를 미리 받아 두세요' },
+    { type: 'dart', why: '공시 목록 · 매출 · 영업이익 · 순이익 · 부채비율 · 회사 개요', how: 'OpenDART 인증키 신청 (KIS 중계를 거침)' },
   ];
   function renderReco() {
     const box = $('apiReco'); if (!box) return;
@@ -1078,7 +1163,7 @@ ${[
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
       const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
         <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
@@ -1120,7 +1205,8 @@ ${[
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
         const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
-        if (a.type === 'ecos') { await DATA.ecos.macro(k); }
+        if (a.type === 'dart') { const d = await DATA.dart.disclosures(k, '005930', 30); if (!d.company) throw new Error('DART: 삼성전자를 찾지 못했습니다'); }
+        else if (a.type === 'ecos') { await DATA.ecos.macro(k); }
         else if (a.type === 'index') { await DATA.index.get(k, ['코스피']); }
         else if (a.type === 'etf') { await DATA.etf.quote(k, '069500'); } // KODEX 200
         else if (a.type === 'ksd') { const r = await DATA.ksd.call(k, 'getStkIsinByShortIsinN1', { shortIsin: '005930' }); if (!r.items.length) throw new Error('예탁결제원: 시험 종목(005930)을 찾지 못했습니다'); }
@@ -2141,7 +2227,7 @@ ${[
   async function openStock(q) {
     q = String(q || '').trim(); if (!q) return;
     show('stock'); const my = ++stockSeq;
-    stock = { q, code: '', name: '', quote: null, bars: null, ksd: null, div: null, err: {}, loading: true };
+    stock = { q, code: '', name: '', quote: null, bars: null, ksd: null, div: null, dart: null, err: {}, loading: true };
     renderStock();
     try { const r = await resolveSym(q); stock.code = r.code; stock.name = r.name; }
     catch (e) { stock.err.code = e.message; stock.loading = false; renderStock(); return; }
@@ -2164,6 +2250,7 @@ ${[
       const y = new Date().getFullYear() - 1;
       jobs.push(ksdDividends(y).then(d => { stock.div = d ? { year: d.year || y, total: d.total, top: d.top, row: d.m[stock.code] || null } : null; }).catch(e => { stock.err.div = e.message; }).then(done));
     }
+    if (dataFor('dart') && /^\d[0-9A-Z]{5}$/.test(stock.code)) jobs.push((async () => { const a = dataFor('dart'), k2 = await keyOf(a); const [f, d] = await Promise.all([DATA.dart.financials(k2, stock.code).catch(e => ({ err: e.message })), DATA.dart.disclosures(k2, stock.code, 120).catch(e => ({ err: e.message }))]); stock.dart = { f, d }; })().catch(e => { stock.err.dart = e.message; }).then(done));
     await Promise.all(jobs); if (my === stockSeq) { stock.loading = false; renderStock(); }
   }
 
@@ -2343,6 +2430,13 @@ ${[
             : s.err.ksd ? errBox(s.err.ksd) : !s.ksd ? loading('예탁결제원') : kv([['표준코드', esc(k.isin)], ['주식 종류', esc(k.secnKacdNm)], ['발행일', d8(k.issuDt)], ['상장일', l ? d8(l.apliDt) : null], ['상장폐지일', l && l.dlistDt ? d8(l.dlistDt) : null], ['전자증권', k.eltscYn === 'Y' ? '예' : k.eltscYn === 'N' ? '아니오' : null]])}
           ${dataFor('ksd') && /^\d[0-9A-Z]{5}$/.test(s.code || '') ? `<h4>${s.div ? s.div.year + '년 배당' : '배당'}</h4>${s.err.div ? errBox(s.err.div) : !s.div ? loading('배당') : dv ? kv([['주당 배당금', num(dv[3], 0) + '원'], ['시가배당률', num(dv[4], 2) + '%'], ['배당 순위', `${esc(dv[2] || '')} ${num(dv[0], 0)}위`], ['시장', esc(dv[2])]]) : `<p class="sc-mute">${s.div && s.div.top ? '시가배당률 시장별 상위 100위 안에 없습니다 (배당이 적거나 없음).' : '이 해 배당 기록이 없습니다 (무배당이거나 ETF 등).'}</p>`}` : ''}
         </section>
+        ${/^\d[0-9A-Z]{5}$/.test(s.code || '') ? `<section class="sc-card st-dart"><h3>실적 · 공시 <small>금융감독원 OpenDART</small></h3>${!dataFor('dart') ? apiNeed('dart', 'OpenDART 를 연결하면 매출 · 영업이익 · 순이익 · 부채비율과 최근 공시가 보입니다')
+          : s.err.dart ? errBox(s.err.dart) : !s.dart ? loading('공시 · 재무') : (() => {
+            const f = s.dart.f, d = s.dart.d, eok = v => v == null ? '–' : num(v / 1e8, 0) + '억', chg = x => x && x.change != null ? ` <span class="${cls(x.change)}">${x.change > 0 ? '+' : ''}${num(x.change, 1)}%</span>` : '';
+            const fin = f.err ? errBox(f.err) : `<p class="sc-mute" style="margin:0 0 8px">${esc(String(f.year))}년 ${esc(f.report)} · ${esc(f.basis)} · ${esc((f.items.매출액 || f.items.영업이익 || {}).period || '')}</p>${kv([['매출액', eok((f.items.매출액 || {}).now) + chg(f.items.매출액)], ['영업이익', eok((f.items.영업이익 || {}).now) + chg(f.items.영업이익)], ['당기순이익', eok((f.items.당기순이익 || {}).now) + chg(f.items.당기순이익)], ['영업이익률', f.ratios.영업이익률 != null ? num(f.ratios.영업이익률, 1) + '%' : null], ['부채비율', f.ratios.부채비율 != null ? num(f.ratios.부채비율, 1) + '%' : null], ['자본총계', eok((f.items.자본총계 || {}).now)]])}`;
+            const dis = d.err ? errBox(d.err) : (d.items || []).length ? `<ul class="st-dis">${d.items.slice(0, 8).map(x => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><span>${esc(x.date)} · ${esc(x.filer || '')}</span></li>`).join('')}</ul>` : '<p class="sc-mute">최근 4개월 공시가 없습니다.</p>';
+            return `${fin}<h4>최근 공시</h4>${dis}`;
+          })()}</section>` : ''}
         ${mine ? (() => { const qty = +mine.qty || 0, avg = +mine.avg || 0, pl = price && qty && avg ? (price - avg) * qty : null, plp = price && avg ? (price / avg - 1) * 100 : null, toStop = price && mine.stop ? (mine.stop / price - 1) * 100 : null, toT = price && mine.target ? (mine.target / price - 1) * 100 : null;
           return `<section class="sc-card"><h3>내 보유 · 계획</h3>${kv([['수량', qty ? num(qty, 4) : '관심만'], ['평균 단가', avg ? num(avg) : null], ['평가 손익', pl != null ? num(pl, 0) : null, cls(pl)], ['수익률', plp != null ? pct(plp) : null, cls(plp)], ['손절가까지', toStop != null ? `${num(+mine.stop)} (${pct(toStop, 1)})` : '정하지 않음'], ['목표가까지', toT != null ? `${num(+mine.target)} (${pct(toT, 1)})` : null]])}${mine.memo ? `<p class="st-memo">${esc(mine.memo)}</p>` : ''}${!mine.stop ? '<p class="sc-mute">손절가가 없습니다. 들어가기 전에 "어디서 틀렸다고 인정할지"를 정해 두세요.</p>' : ''}</section>`; })() : ''}
       </div>
@@ -2357,7 +2451,7 @@ ${[
   function wireGoApi(box) { box.querySelectorAll('[data-goapi]').forEach(x => x.onclick = () => { show('apis'); if (x.dataset.goapi) setTimeout(() => openAdd(x.dataset.goapi), 60); }); }
   function stockAct(a) {
     const s = stock; if (!s) return; const label = s.name ? `${s.name}(${s.code})` : s.code;
-    if (a === 'ai') { show('chat'); send(`${label} 종목을 분석해 줘. get_quote · get_price_history${dataFor('ksd') ? ' · get_ksd_stock_info' : ''} 로 숫자를 먼저 확인하고, get_portfolio 로 내 보유 여부와 손절 · 목표를 본 뒤, ① 한 줄 결론 ② 근거 3가지 ③ 반대 근거 · 위험 ④ 지금 할 일(진입 · 대기 · 정리 중 하나, 손절 · 목표 가격) ⑤ 다음에 확인할 일 순서로 짧게. 나의 원칙과 어긋나는 점이 있으면 먼저 짚어 줘.`); }
+    if (a === 'ai') { show('chat'); send(`${label} 종목을 분석해 줘. get_quote · get_price_history${dataFor('ksd') ? ' · get_ksd_stock_info' : ''}${dataFor('dart') ? ' · get_financials · get_disclosures' : ''} 로 숫자를 먼저 확인하고, get_portfolio 로 내 보유 여부와 손절 · 목표를 본 뒤, ① 한 줄 결론 ② 근거 3가지 ③ 반대 근거 · 위험 ④ 지금 할 일(진입 · 대기 · 정리 중 하나, 손절 · 목표 가격) ⑤ 다음에 확인할 일 순서로 짧게. 나의 원칙과 어긋나는 점이 있으면 먼저 짚어 줘.`); }
     if (a === 'add') editItem(null, { symbol: s.code, name: s.name || '' });
     if (a === 'edit') { const i = watch.items.findIndex(it => normSym(it.symbol) === s.code); if (i >= 0) editItem(i); }
     if (a === 'calc') { const p = s.quote ? s.quote.price : s.bars && s.bars.length ? s.bars[s.bars.length - 1].c : ''; show('calc'); $('cSym').value = s.code; if (p) $('cEntry').value = p; const A = s.bars && s.bars.length > 15 ? analyze(s.bars) : null; if (A && A.atr14 && p && !$('cStop').value) $('cStop').value = Math.round((p - 2 * A.atr14) * 100) / 100; renderCalc(); toast(A && A.atr14 ? '진입가는 현재가, 손절가는 ATR 2배 아래로 넣었습니다 — 고쳐 쓰세요' : '진입가를 현재가로 넣었습니다', 3200); }

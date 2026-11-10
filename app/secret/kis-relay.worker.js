@@ -39,6 +39,23 @@ export default {
     const code = String(url.searchParams.get('code') || '').toUpperCase();
     if (url.pathname === '/ping') return out(200, { ok: true, mock: env.KIS_MOCK === '1' });
     /* 한국은행 ECOS 금리 · 환율 (SECRET 이 x-api-key 로 ECOS 키를 보냄 · 통계 조회만) */
+    /* OpenDART 공시 · 재무 (SECRET 이 x-api-key 로 DART 키를 보냄 · 조회만). corpCode.xml 은 압축 파일을 그대로 넘김 (풀기는 SECRET 이) */
+    if (url.pathname === '/dart') {
+      const DART_OK = ['list.json', 'company.json', 'fnlttSinglAcnt.json', 'corpCode.xml'];
+      const q = new URLSearchParams(url.search), ep = q.get('ep') || '', k = req.headers.get('x-api-key') || env.DART_KEY || '';
+      if (!k) return out(400, { error: 'DART 키가 없습니다' });
+      if (!DART_OK.includes(ep)) return out(400, { error: '없는 기능입니다 (공시 목록 · 회사 개요 · 주요 재무 · 고유번호만)' });
+      q.delete('ep');
+      for (const [kk, v] of q) if (!/^[a-z_]{2,20}$/.test(kk) || !/^[0-9A-Za-z]{0,20}$/.test(v)) return out(400, { error: '요청 값이 맞지 않습니다' });
+      q.set('crtfc_key', k);
+      try {
+        const r = await fetch(`https://opendart.fss.or.kr/api/${ep}?${q}`);
+        if (ep === 'corpCode.xml') return new Response(r.body, { status: r.status, headers: { 'content-type': r.headers.get('content-type') || 'application/zip', 'cache-control': 'no-store', ...cors } });
+        const j = await r.json().catch(() => null);
+        if (!j) return out(502, { error: 'DART 응답을 읽지 못했습니다' });
+        return out(200, Object.assign({ ok: true }, j));
+      } catch (e) { return out(502, { error: 'DART: ' + String(e.message || e) }); }
+    }
     if (url.pathname === '/ecos') {
       const q = url.searchParams, k = req.headers.get('x-api-key') || env.ECOS_KEY || '';
       const stat = q.get('stat') || '', cyc = q.get('cycle') || '', from = q.get('from') || '', to = q.get('to') || '', item = q.get('item') || '';
@@ -79,7 +96,7 @@ export default {
         }
         return out(200, { ok: true, code, name, period, rows: rows.slice(0, days) }, keep);
       }
-      return out(404, { error: '없는 기능입니다 (/quote · /daily · /ecos 만)' });
+      return out(404, { error: '없는 기능입니다 (/quote · /daily · /ecos · /dart 만)' });
     } catch (e) {
       return out(502, { error: String(e.message || e) });
     }
