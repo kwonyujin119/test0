@@ -197,6 +197,21 @@ function Handle-Request($ctx) {
             Send-Json $ctx @{ ok = $true; src = 'assets/' + $fname; name = $fname }; return
         }
     }
+    # ---------- 교안 폴더 (교안 목록에서 묶어 보기 · 교안 파일과 따로 gyoan-folders.json 에 저장) ----------
+    if ($path -eq '/api/folders') {
+        $file = Join-Path $Root 'gyoan-folders.json'
+        if ($method -eq 'GET') {
+            if (-not (Test-Path $file)) { Send-Json $ctx @{ error = 'not found' } 404; return }
+            Send-Bytes $ctx 200 'application/json; charset=utf-8' ([System.IO.File]::ReadAllBytes($file)); return
+        }
+        if ($method -eq 'PUT') {
+            $text = [System.Text.Encoding]::UTF8.GetString((Read-Body $ctx))
+            try { $parsed = ConvertFrom-Json $text } catch { Send-Json $ctx @{ error = 'invalid json' } 400; return }
+            if ($null -eq $parsed -or $null -eq $parsed.folders) { Send-Json $ctx @{ error = 'not folders' } 400; return }
+            [System.IO.File]::WriteAllText($file, $text, (New-Object System.Text.UTF8Encoding $false))
+            Send-Json $ctx @{ ok = $true }; return
+        }
+    }
     # ---------- best 문서 (한글 작업장 레퍼런스) ----------
     # GET  /api/best            목록 (구조·본문 글은 뺀 요약)
     # GET  /api/best/<id>       기록 전체 (best/<id>.json)
