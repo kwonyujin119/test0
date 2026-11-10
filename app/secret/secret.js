@@ -80,6 +80,8 @@
     etf: { kind: 'data', name: '공공데이터포털 ETF 시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/data/15094806/openapi.do', note: 'ETF 의 하루 단위 시세 · 일봉 · 순자산가치(NAV) · 기초지수. 금융위원회 주식시세와 같은 공공데이터포털 키를 그대로 넣으세요 (공공데이터포털에서 「금융위원회_증권상품시세정보」 활용신청 필요).' },
     index: { kind: 'data', name: '공공데이터포털 지수 시세 (금융위원회)', caps: ['index'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EA%B8%88%EC%9C%B5%EC%9C%84%EC%9B%90%ED%9A%8C_%EC%A7%80%EC%88%98%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '코스피 · 코스닥 · 코스피 200 의 하루 단위 지수 (종가 · 등락 · 5일 · 20일 흐름). 같은 공공데이터포털 키를 그대로 넣으세요 (「금융위원회_지수시세정보」 활용신청 필요).' },
     ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
+    naver: { kind: 'data', name: '네이버 뉴스 검색', caps: ['newsKR'], keyUrl: 'https://developers.naver.com/apps/#/register', note: '아침 브리핑 이후 나온 종목별 최신 국내 뉴스 (무료 하루 25,000회). 네이버 개발자센터 → 애플리케이션 등록 → 사용 API 에서 [검색] 을 고르고, 받은 Client ID 와 Client Secret 을 「아이디:시크릿」 처럼 콜론(:)으로 이어 붙여 넣으세요. KIS 중계를 거칩니다.' },
+    fred: { kind: 'data', name: 'FRED (미국 경제지표)', caps: ['usmacro'], keyUrl: 'https://fredaccount.stlouisfed.org/apikeys', note: '미국 연준 자료: 10년 · 2년 국채 금리 · 연방기금 금리 · 소비자물가(CPI) · 실업률 · 원/달러. 무료 가입 후 API 키를 넣으세요. KIS 중계를 거칩니다.' },
     dart: { kind: 'data', name: 'OpenDART (금융감독원 공시)', caps: ['dart'], keyUrl: 'https://opendart.fss.or.kr/', note: '공시 목록 · 주요 재무(매출 · 영업이익 · 순이익 · 자산 · 부채 · 자본) · 회사 개요. 금융감독원이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함). 처음 한 번 회사 고유번호 표를 받아 이 기기에 30일 둡니다.' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
     kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
@@ -349,6 +351,32 @@
         return { source: '공공데이터포털 (금융위원회 지수시세 · 종가 기준)', indices: out, errors: errs.length ? errs : undefined };
       },
     },
+    /* 네이버 뉴스 검색 — KIS 중계의 /naver */
+    naver: {
+      async search(k, q, n) {
+        const j = await relayGet('/naver', { query: String(q || '').slice(0, 80), display: String(Math.max(1, Math.min(30, +n || 10))), sort: 'date' }, k, '네이버');
+        const clean = t => String(t || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&apos;|&#39;/g, "'").replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+        return { query: q, total: j.total, items: (j.items || []).map(x => ({ title: clean(x.title), summary: clean(x.description).slice(0, 220), date: x.pubDate ? new Date(new Date(x.pubDate).getTime() + 9 * 36e5).toISOString().replace('T', ' ').slice(0, 16) : '', url: x.originallink || x.link })), source: '네이버 뉴스 검색 (최신순)' };
+      },
+    },
+    /* FRED 미국 경제지표 — KIS 중계의 /fred */
+    fred: {
+      SERIES: [['DGS10', '미국 10년 국채', '%'], ['DGS2', '미국 2년 국채', '%'], ['FEDFUNDS', '연방기금 금리', '%'], ['CPIAUCSL', '소비자물가(CPI) 전년비', '%', 'yoy'], ['UNRATE', '실업률', '%'], ['DEXKOUS', '원/달러 (연준)', '원']],
+      async overview(k) {
+        const out = [], errs = [];
+        for (const [id, name, unit, mode] of this.SERIES) {
+          try {
+            const j = await relayGet('/fred', { series_id: id, limit: mode === 'yoy' ? '14' : '30' }, k, 'FRED');
+            const rows = (j.rows || []).map(r => ({ t: r.t, v: +r.v })).filter(r => isFinite(r.v));
+            if (!rows.length) throw new Error(`${name}: 자료 없음`);
+            if (mode === 'yoy') { if (rows.length < 13) throw new Error(`${name}: 자료 부족`); const y = Math.round((rows[0].v / rows[12].v - 1) * 1000) / 10, p = rows.length > 13 ? Math.round((rows[1].v / rows[13].v - 1) * 1000) / 10 : null; out.push({ id, name, unit, date: rows[0].t, value: y, prev: p }); }
+            else { const back = rows[Math.min(rows.length - 1, 20)]; out.push({ id, name, unit, date: rows[0].t, value: rows[0].v, change1m: Math.round((rows[0].v - back.v) * 100) / 100 }); }
+          } catch (e) { errs.push(e.message); }
+        }
+        if (!out.length) throw new Error(errs[0] || 'FRED 자료를 받지 못했습니다');
+        return { source: 'FRED (미국 세인트루이스 연준)', series: out, errors: errs.length ? errs : undefined };
+      },
+    },
     /* OpenDART — KIS 중계의 /dart 를 거쳐 (DART 키는 SECRET 에) */
     dart: {
       async _relay() { const r = dataApis().find(a => a.type === 'kisrelay'); if (!r) throw new Error('OpenDART 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요'); return { base: String(r.base || '').trim().replace(/\/+$/, ''), rk: String(await keyOf(r) || '').trim() }; },
@@ -549,6 +577,18 @@
     getWrtInfoN1: { d: '신주인수권증권 정보', p: 'stdDt*=YYYYMMDD', f: { korSecnNm: '종목명', bondIsin: '채권 표준코드', deliDt: '교부일', isin: '표준코드', issuDt: '발행일', issuNtimes: '발행횟수' } },
     getKDRSecnInfo: { d: '시장별 KDR 종목', p: 'caltotMartTpcd*=11 유가 · 12 코스닥 · 13 코넥스', f: { kdrIsin: 'KDR 표준코드', korSecnNm: '종목명', listDt: '상장일', ovsListStkmkCd: '해외상장시장' } },
   };
+  /* KIS 중계를 거쳐 부르기 (네이버 · FRED): 중계 주소 · 암호는 KIS 카드의 것, 그 API 의 키는 x-api-key 로 */
+  async function relayGet(path, params, apiKey, who) {
+    const r0 = dataApis().find(a => a.type === 'kisrelay');
+    if (!r0) throw new Error(`${who} 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요`);
+    const base = String(r0.base || '').trim().replace(/\/+$/, ''), rk = String(await keyOf(r0) || '').trim();
+    let r; try { r = await fetch(base + path + '?' + new URLSearchParams(params || {}), { headers: { 'x-relay-key': rk, 'x-api-key': String(apiKey || '').trim() } }); }
+    catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+    const j = await r.json().catch(() => null);
+    if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
+    if (!j || !j.ok) throw new Error((j && j.error) || `${who}: HTTP ${r.status}`);
+    return j;
+  }
   async function unzipFirst(buf) {
     const v = new DataView(buf); let e = buf.byteLength - 22;
     while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
@@ -622,6 +662,8 @@
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
     T.push({ name: 'get_briefing', description: '이 앱이 매일 아침(8시 전까지 여러 번 보강) 모으는 그날의 모닝 브리핑(여러 언론이 함께 다룬 주식 관련 큰 이슈 15개 · 언론사 수 · 분류)과 전략 브리핑(증권사 데일리 시황 · 투자전략 리포트의 제목 · 요약, 주간 전략, 자주 나온 말)을 돌려준다. "오늘 · 요즘 시장", 이슈, 특정 종목 · 업종의 최근 뉴스나 증권사 시각을 말할 때 웹 검색보다 먼저 확인한다. focus 를 주면 그 말이 들어간 항목만 골라 준다.', input_schema: { type: 'object', properties: { focus: { type: 'string', description: '종목명 · 업종 · 키워드 (선택, 예: 삼성전자, 반도체, 환율)' }, date: { type: 'string', description: 'YYYY-MM-DD (선택, 기본 가장 최근 판)' } }, additionalProperties: false } });
+    if (dataFor('newsKR')) T.push({ name: 'search_news_kr', description: '네이버 뉴스에서 최신순으로 국내 기사를 찾는다(제목 · 요약 · 시각 · 원문 링크). 아침 브리핑 이후의 종목 · 업종 뉴스, 장중 급등락 이유를 확인할 때 쓴다. 웹 검색보다 국내 언론에 빠르고 정확하다.', input_schema: { type: 'object', properties: { query: { type: 'string', description: '검색어 (예: 삼성전자 실적, 2차전지 수주)' }, count: { type: 'integer', description: '몇 건 (기본 10, 최대 30)' } }, required: ['query'], additionalProperties: false } });
+    if (dataFor('usmacro')) T.push({ name: 'get_us_macro', description: '미국 연준 FRED 자료로 10년 · 2년 국채 금리, 연방기금 금리, 소비자물가(전년비), 실업률, 원/달러의 최근 값과 변화를 돌려준다. 미국 금리 · 물가 · 고용이 한국 증시에 주는 영향을 말할 때 쓴다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('dart')) {
       T.push({ name: 'get_disclosures', description: '한국 상장사의 최근 공시 목록(날짜 · 제목 · 제출인 · 원문 링크)을 금융감독원 OpenDART 에서 받는다. 실적 · 유상증자 · 전환사채 · 자사주 · 최대주주 변경 · 소송 등 주가에 영향을 줄 일을 확인할 때 쓴다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 회사명' }, days: { type: 'integer', description: '최근 며칠 (기본 90, 최대 365)' } }, required: ['symbol'], additionalProperties: false } });
       T.push({ name: 'get_financials', description: '한국 상장사의 가장 최근 정기보고서 주요 재무(매출액 · 영업이익 · 당기순이익 · 자산 · 부채 · 자본, 전기 대비 증감, 영업이익률 · 순이익률 · 부채비율)와 회사 개요를 OpenDART 에서 받는다. 실적 · 재무 건전성 · 밸류에이션을 말할 때 쓴다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 회사명' } }, required: ['symbol'], additionalProperties: false } });
@@ -641,7 +683,7 @@
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', search_news_kr: '국내 뉴스', get_us_macro: '미국 지표', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -657,6 +699,8 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'search_news_kr': { const a = dataFor('newsKR'); return await DATA.naver.search(await keyOf(a), String(input.query).trim(), input.count); }
+      case 'get_us_macro': { const a = dataFor('usmacro'); return await DATA.fred.overview(await keyOf(a)); }
       case 'get_disclosures': { const a = dataFor('dart'); return await DATA.dart.disclosures(await keyOf(a), String(input.symbol).trim(), Math.max(7, Math.min(365, +input.days || 90))); }
       case 'get_financials': { const a = dataFor('dart'), k = await keyOf(a); const f = await DATA.dart.financials(k, String(input.symbol).trim()); try { f.profile = await DATA.dart.company(k, String(input.symbol).trim()); } catch (e) { } return f; }
       case 'get_briefing': return await briefingForAI(String(input.focus || '').trim(), String(input.date || '').trim());
@@ -689,6 +733,8 @@ ${[
   ['get_price_history', '추세 · 지표 · 변동성 · 낙폭 (이 앱이 계산)'],
   ['get_ksd_stock_info', '한국 종목의 공식 기록 · 상장일 · 작년 배당'],
   ['get_financials', '실적 · 재무 건전성 (매출 · 영업이익 · 순이익 · 부채비율, 금융감독원)'],
+  ['search_news_kr', '브리핑 이후 국내 최신 뉴스 · 급등락 이유 (네이버, 웹 검색보다 먼저)'],
+  ['get_us_macro', '미국 국채 · 연준 금리 · 물가 · 고용 (FRED)'],
   ['get_disclosures', '최근 공시 (유상증자 · 전환사채 · 자사주 · 최대주주 변경 등) — 종목 판단 전에 확인'],
   ['query_ksd', '의무보호예수(풀릴 물량) · 신규 예탁지정 · 시장 통계'],
   ['get_news', '해외 종목 회사 뉴스'],
@@ -1135,8 +1181,12 @@ ${[
     { type: 'index', why: '코스피 · 코스닥 지수 흐름 — AI 가 시장 분위기를 숫자로', how: '같은 공공데이터포털 키 · 「금융위원회_지수시세정보」 활용신청' },
     { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
     { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
-    { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
     { type: 'dart', why: '공시 목록 · 매출 · 영업이익 · 순이익 · 부채비율 · 회사 개요', how: 'OpenDART 인증키 신청 (KIS 중계를 거침)' },
+    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI 와 종목 분석에', how: '네이버 개발자센터 · 검색 API · 「아이디:시크릿」 (KIS 중계를 거침)' },
+    { type: 'fred', why: '미국 국채 · 연준 금리 · 물가 · 실업률 — 미국장 영향', how: 'FRED 무료 가입 → API Keys (KIS 중계를 거침)' },
+    { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
+    { type: 'twelvedata', why: '미국 · 해외 종목 일봉 · 차트 (하루 800회)', how: 'Twelve Data 무료 가입 → API Keys' },
+    { type: 'alphavantage', why: '미국 종목 일봉 · 뉴스 감성 점수 (하루 25회)', how: 'Alpha Vantage 무료 키 신청' },
   ];
   function renderReco() {
     const box = $('apiReco'); if (!box) return;
@@ -1163,7 +1213,7 @@ ${[
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
       const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요', newsKR: '국내 최신 뉴스', usmacro: '미국 금리 · 물가 · 고용' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
         <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
@@ -1205,7 +1255,9 @@ ${[
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
         const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
-        if (a.type === 'dart') { const d = await DATA.dart.disclosures(k, '005930', 30); if (!d.company) throw new Error('DART: 삼성전자를 찾지 못했습니다'); }
+        if (a.type === 'naver') { const n = await DATA.naver.search(k, '삼성전자', 1); if (!n.items.length) throw new Error('네이버: 검색 결과가 없습니다'); }
+        else if (a.type === 'fred') { await DATA.fred.overview(k); }
+        else if (a.type === 'dart') { const d = await DATA.dart.disclosures(k, '005930', 30); if (!d.company) throw new Error('DART: 삼성전자를 찾지 못했습니다'); }
         else if (a.type === 'ecos') { await DATA.ecos.macro(k); }
         else if (a.type === 'index') { await DATA.index.get(k, ['코스피']); }
         else if (a.type === 'etf') { await DATA.etf.quote(k, '069500'); } // KODEX 200
@@ -2227,7 +2279,7 @@ ${[
   async function openStock(q) {
     q = String(q || '').trim(); if (!q) return;
     show('stock'); const my = ++stockSeq;
-    stock = { q, code: '', name: '', quote: null, bars: null, ksd: null, div: null, dart: null, err: {}, loading: true };
+    stock = { q, code: '', name: '', quote: null, bars: null, ksd: null, div: null, dart: null, news: null, err: {}, loading: true };
     renderStock();
     try { const r = await resolveSym(q); stock.code = r.code; stock.name = r.name; }
     catch (e) { stock.err.code = e.message; stock.loading = false; renderStock(); return; }
@@ -2250,6 +2302,7 @@ ${[
       const y = new Date().getFullYear() - 1;
       jobs.push(ksdDividends(y).then(d => { stock.div = d ? { year: d.year || y, total: d.total, top: d.top, row: d.m[stock.code] || null } : null; }).catch(e => { stock.err.div = e.message; }).then(done));
     }
+    if (dataFor('newsKR')) jobs.push((async () => { const a = dataFor('newsKR'); for (let i = 0; i < 20 && !stock.name && stock.loading; i++) await new Promise(r => setTimeout(r, 150)); stock.news = await DATA.naver.search(await keyOf(a), stock.name || stock.code, 8); })().catch(e => { stock.err.news = e.message; }).then(done));
     if (dataFor('dart') && /^\d[0-9A-Z]{5}$/.test(stock.code)) jobs.push((async () => { const a = dataFor('dart'), k2 = await keyOf(a); const [f, d] = await Promise.all([DATA.dart.financials(k2, stock.code).catch(e => ({ err: e.message })), DATA.dart.disclosures(k2, stock.code, 120).catch(e => ({ err: e.message }))]); stock.dart = { f, d }; })().catch(e => { stock.err.dart = e.message; }).then(done));
     await Promise.all(jobs); if (my === stockSeq) { stock.loading = false; renderStock(); }
   }
@@ -2437,6 +2490,8 @@ ${[
             const dis = d.err ? errBox(d.err) : (d.items || []).length ? `<ul class="st-dis">${d.items.slice(0, 8).map(x => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><span>${esc(x.date)} · ${esc(x.filer || '')}</span></li>`).join('')}</ul>` : '<p class="sc-mute">최근 4개월 공시가 없습니다.</p>';
             return `${fin}<h4>최근 공시</h4>${dis}`;
           })()}</section>` : ''}
+        ${dataFor('newsKR') || /^\d[0-9A-Z]{5}$/.test(s.code || '') ? `<section class="sc-card st-news"><h3>최근 뉴스 <small>네이버 · 최신순</small></h3>${!dataFor('newsKR') ? apiNeed('naver', '네이버 뉴스 검색을 연결하면 이 종목의 최신 기사가 보입니다')
+          : s.err.news ? errBox(s.err.news) : !s.news ? loading('뉴스') : s.news.items.length ? `<ul class="st-dis">${s.news.items.map(x => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><span>${esc(x.date)}${x.summary ? ' · ' + esc(x.summary.length > 80 ? x.summary.slice(0, 80) + '…' : x.summary) : ''}</span></li>`).join('')}</ul>` : '<p class="sc-mute">최근 기사가 없습니다.</p>'}</section>` : ''}
         ${mine ? (() => { const qty = +mine.qty || 0, avg = +mine.avg || 0, pl = price && qty && avg ? (price - avg) * qty : null, plp = price && avg ? (price / avg - 1) * 100 : null, toStop = price && mine.stop ? (mine.stop / price - 1) * 100 : null, toT = price && mine.target ? (mine.target / price - 1) * 100 : null;
           return `<section class="sc-card"><h3>내 보유 · 계획</h3>${kv([['수량', qty ? num(qty, 4) : '관심만'], ['평균 단가', avg ? num(avg) : null], ['평가 손익', pl != null ? num(pl, 0) : null, cls(pl)], ['수익률', plp != null ? pct(plp) : null, cls(plp)], ['손절가까지', toStop != null ? `${num(+mine.stop)} (${pct(toStop, 1)})` : '정하지 않음'], ['목표가까지', toT != null ? `${num(+mine.target)} (${pct(toT, 1)})` : null]])}${mine.memo ? `<p class="st-memo">${esc(mine.memo)}</p>` : ''}${!mine.stop ? '<p class="sc-mute">손절가가 없습니다. 들어가기 전에 "어디서 틀렸다고 인정할지"를 정해 두세요.</p>' : ''}</section>`; })() : ''}
       </div>
@@ -2451,7 +2506,7 @@ ${[
   function wireGoApi(box) { box.querySelectorAll('[data-goapi]').forEach(x => x.onclick = () => { show('apis'); if (x.dataset.goapi) setTimeout(() => openAdd(x.dataset.goapi), 60); }); }
   function stockAct(a) {
     const s = stock; if (!s) return; const label = s.name ? `${s.name}(${s.code})` : s.code;
-    if (a === 'ai') { show('chat'); send(`${label} 종목을 분석해 줘. get_quote · get_price_history${dataFor('ksd') ? ' · get_ksd_stock_info' : ''}${dataFor('dart') ? ' · get_financials · get_disclosures' : ''} 로 숫자를 먼저 확인하고, get_portfolio 로 내 보유 여부와 손절 · 목표를 본 뒤, ① 한 줄 결론 ② 근거 3가지 ③ 반대 근거 · 위험 ④ 지금 할 일(진입 · 대기 · 정리 중 하나, 손절 · 목표 가격) ⑤ 다음에 확인할 일 순서로 짧게. 나의 원칙과 어긋나는 점이 있으면 먼저 짚어 줘.`); }
+    if (a === 'ai') { show('chat'); send(`${label} 종목을 분석해 줘. get_quote · get_price_history${dataFor('ksd') ? ' · get_ksd_stock_info' : ''}${dataFor('dart') ? ' · get_financials · get_disclosures' : ''}${dataFor('newsKR') ? ' · search_news_kr' : ''} 로 숫자를 먼저 확인하고, get_portfolio 로 내 보유 여부와 손절 · 목표를 본 뒤, ① 한 줄 결론 ② 근거 3가지 ③ 반대 근거 · 위험 ④ 지금 할 일(진입 · 대기 · 정리 중 하나, 손절 · 목표 가격) ⑤ 다음에 확인할 일 순서로 짧게. 나의 원칙과 어긋나는 점이 있으면 먼저 짚어 줘.`); }
     if (a === 'add') editItem(null, { symbol: s.code, name: s.name || '' });
     if (a === 'edit') { const i = watch.items.findIndex(it => normSym(it.symbol) === s.code); if (i >= 0) editItem(i); }
     if (a === 'calc') { const p = s.quote ? s.quote.price : s.bars && s.bars.length ? s.bars[s.bars.length - 1].c : ''; show('calc'); $('cSym').value = s.code; if (p) $('cEntry').value = p; const A = s.bars && s.bars.length > 15 ? analyze(s.bars) : null; if (A && A.atr14 && p && !$('cStop').value) $('cStop').value = Math.round((p - 2 * A.atr14) * 100) / 100; renderCalc(); toast(A && A.atr14 ? '진입가는 현재가, 손절가는 ATR 2배 아래로 넣었습니다 — 고쳐 쓰세요' : '진입가를 현재가로 넣었습니다', 3200); }
