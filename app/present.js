@@ -230,8 +230,13 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   }
   function setBlank(kind) { st.blank = st.blank === kind ? '' : kind; pblank.className = 'pblank ' + st.blank; }
   function hud(msg) { phud.textContent = msg; phud.classList.add('show'); clearTimeout(hudTimer); hudTimer = setTimeout(() => phud.classList.remove('show'), 1600); }
+  /* 전체화면: 표준 이름이 없는 브라우저(아이패드 사파리 등)는 webkit 이름으로 */
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+  const fsExit = () => { const x = document.exitFullscreen || document.webkitExitFullscreen; if (x) { try { const p = x.call(document); if (p && p.catch) p.catch(() => { }); } catch (e) { } } };
+  /* 영상만 전체화면으로 키운 상태 (영상의 전체화면 단추 · 두 번 누르기) */
+  const videoFs = () => { const f = fsEl(); return !!(f && f !== document.documentElement && f.closest && f.closest('.el-embed')); };
   function toggleFullscreen() {
-    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    if (fsEl()) { fsExit(); return; }
     const el = document.documentElement, rf = el.requestFullscreen || el.webkitRequestFullscreen;
     if (!rf) { hud('이 기기는 전체화면을 지원하지 않습니다 (홈 화면에 추가하면 전체화면으로 열립니다)'); return; }
     try { const p = rf.call(el); if (p && p.catch) p.catch(() => hud('전체화면을 사용할 수 없습니다 (F11 을 눌러보세요)')); } catch (e) { hud('전체화면을 사용할 수 없습니다 (F11 을 눌러보세요)'); }
@@ -242,7 +247,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     if (!w) hud('팝업이 차단되었습니다 — 주소창의 팝업 허용을 눌러 주세요'); else hud('발표자 보기를 열었습니다 · 이 화면은 F 로 전체화면');
   }
   function exitShow() {
-    if (document.fullscreenElement) document.exitFullscreen();
+    if (fsEl()) fsExit();
     if (channel) channel.postMessage({ type: 'bye' }); // 발표자 보기 창도 함께 닫힘
     if (window.EMBEDDED_DECK) { // 내보낸 단독 파일: 돌아갈 목록이 없음
       if ($('pend').classList.contains('show')) { window.close(); hud('발표를 마쳤습니다 — 이 창(탭)을 닫으세요'); }
@@ -323,6 +328,15 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   function anyOverlayOpen() { return overview.isOpen() || $('phelp').classList.contains('show'); }
   document.addEventListener('keydown', (ev) => {
     const k = ev.key; const ctrl = ev.ctrlKey || ev.metaKey;
+    /* 영상만 전체화면일 때: 슬라이드를 넘기면 영상이 사라지며 전체화면이 풀리므로, 키는 영상 조작에만 씀 */
+    if (videoFs()) {
+      const v = fsEl().tagName === 'VIDEO' ? fsEl() : fsEl().querySelector('video');
+      if (!v) return;
+      if (k === ' ' || k === 'k' || k === 'K' || k === 'Enter') { ev.preventDefault(); if (v.paused) v.play().catch(() => { }); else v.pause(); }
+      else if (k === 'ArrowRight' || k === 'ArrowLeft' || k === 'PageDown' || k === 'PageUp') { ev.preventDefault(); v.currentTime = clamp(v.currentTime + (k === 'ArrowRight' || k === 'PageDown' ? 5 : -5), 0, v.duration || 0); }
+      else if (k === 'f' || k === 'F' || k === 'F5') { ev.preventDefault(); fsExit(); }
+      return;
+    }
     if (ctrl && k.toLowerCase() === 'e') { ev.preventDefault(); if (window.EMBEDDED_DECK) return;
       // 편집기에서 연 발표 창이면: 편집기를 하나 더 열지 않고 이 창을 닫아 원래 편집기로 돌아감
       try { if (window.opener && !window.opener.closed && /editor\.html$/.test(window.opener.location.pathname)) { window.close(); return; } } catch (e) { }
@@ -380,7 +394,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
       case 'Escape':
         if (st.pen) { togglePen(); break; } if (st.laser) { toggleLaser(); break; }
         if (st.ended) { exitShow(); break; }
-        if (document.fullscreenElement) { /* 브라우저가 전체화면을 해제함 */ hud('한 번 더 Esc: 발표 종료'); break; }
+        if (fsEl()) { /* 브라우저가 전체화면을 해제함 */ hud('한 번 더 Esc: 발표 종료'); break; }
         exitShow(); break;
     }
   });
@@ -425,10 +439,20 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     if (a === 'back') { st.ended = false; $('pend').classList.remove('show'); broadcast(); } if (a === 'first') goto(firstVisible(), 0); if (a === 'exit') exitShow();
   });
   $('phelp').addEventListener('click', () => $('phelp').classList.remove('show'));
-  window.addEventListener('resize', () => { if (curLayer) fitSlide(curLayer, curLayer.firstChild); redraw(); if (overview.isOpen()) overview.refit(); });
+  const refitAll = () => { if (curLayer) fitSlide(curLayer, curLayer.firstChild); redraw(); if (overview.isOpen()) overview.refit(); };
+  window.addEventListener('resize', refitAll);
+  /* 전체화면이 되거나 풀릴 때: 크기 알림(resize)이 늦거나 오지 않는 브라우저가 있어, 바뀐 화면 크기로 다시 맞춤
+     (바로 · 그림 두 번 뒤 · 0.35초 뒤 — 화면이 커지는 움직임이 끝난 뒤의 크기까지) */
+  function onFullscreen() {
+    refitAll(); requestAnimationFrame(() => requestAnimationFrame(refitAll)); setTimeout(refitAll, 350);
+    const on = !!fsEl(), b = $('pmenu').querySelector('[data-a=full]');
+    if (b) { b.innerHTML = `${icon(on ? 'shrink' : 'expand', 16)}${on ? '전체화면 끝' : '전체화면'}`; b.title = on ? '전체화면 끝내기 (F · Esc)' : '전체화면 (F)'; }
+    document.body.classList.toggle('is-full', on);
+  }
+  document.addEventListener('fullscreenchange', onFullscreen); document.addEventListener('webkitfullscreenchange', onFullscreen);
 
   show(st.idx, 0, 1);
-  if (!document.fullscreenElement) hud(matchMedia('(pointer: coarse)').matches ? '좌우로 밀어서 넘기기' : 'F 또는 F5: 전체화면  ·  ?: 단축키 도움말');
+  if (!fsEl()) hud(matchMedia('(pointer: coarse)').matches ? '좌우로 밀어서 넘기기' : 'F 또는 F5: 전체화면  ·  ?: 단축키 도움말');
 
   /* ======================= 발표자 보기 ======================= */
   function notesView() {

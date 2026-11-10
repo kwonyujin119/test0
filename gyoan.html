@@ -25,6 +25,7 @@
       <button class="rail-item" data-filter="week"><i data-ic="clock"></i><span>최근 7일</span><em id="cWeek"></em></button>
       <button class="rail-item" data-filter="draft" data-admin><i data-ic="edit"></i><span>저장 안 한 작업본</span><em id="cDraft"></em></button>
     </nav>
+    <nav class="rail-nav rail-folders" id="railFolders" aria-label="폴더" hidden></nav>
     <div class="rail-grow"></div>
     <nav class="rail-nav quiet" aria-label="도구">
       <button class="rail-item" id="btnImport" data-admin title="PowerPoint 파일(.pptx)이나 내보내기로 받아 둔 교안 파일(.json)을 교안으로 가져옵니다"><i data-ic="import"></i><span>파일 가져오기</span></button>
@@ -54,9 +55,14 @@
     </header>
     <div class="hub-notice" id="notice" style="display:none"></div>
     <section class="resume" id="resume" style="display:none" aria-label="이어서 작업"></section>
+    <div class="folder-bar" id="folderBar" style="display:none"></div>
     <h2 class="hub-h2" id="gridHead" style="display:none">모든 교안</h2>
     <div class="deck-grid" id="grid"></div>
     <div class="hub-empty" id="empty" style="display:none"></div>
+    <section class="folder-sec" id="folderSec" style="display:none" aria-labelledby="folderHead">
+      <div class="folder-head"><h2 class="hub-h2" id="folderHead">폴더 <em id="folderCount"></em></h2><button class="btn sm ghost" id="btnNewFolder" data-admin><i data-ic="folderPlus"></i>새 폴더</button></div>
+      <div class="deck-grid folder-grid" id="folderGrid"></div>
+    </section>
   </main>
 </div>
 <input type="file" id="fileImport" accept=".json,.pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps,application/json" style="display:none">

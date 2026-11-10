@@ -192,6 +192,10 @@ const ICONS = {
   panels: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16"/><path d="M16 4v16"/>',
   expand: '<path d="M4 9V5a1 1 0 0 1 1-1h4"/><path d="M15 4h4a1 1 0 0 1 1 1v4"/><path d="M20 15v4a1 1 0 0 1-1 1h-4"/><path d="M9 20H5a1 1 0 0 1-1-1v-4"/>',
   notes: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h3"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
+  folderPlus: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10v6"/><path d="M9 13h6"/>',
+  folderOut: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 16v-6"/><path d="m9 12 3-3 3 3"/>',
+  shrink: '<path d="M9 4v4a1 1 0 0 1-1 1H4"/><path d="M20 9h-4a1 1 0 0 1-1-1V4"/><path d="M15 20v-4a1 1 0 0 1 1-1h4"/><path d="M4 15h4a1 1 0 0 1 1 1v4"/>',
 };
 function icon(name, size) {
   const z = size || 18;
@@ -974,6 +978,7 @@ function embedPlayer(e, p, autoplay) {
     // 방금 올린 영상: 사이트에 반영(1~2분)되기 전에는 저장소에서 바로 읽음
     if (!big && API.mode === 'github' && GH.cfg && !/^(data:|blob:|https?:)/i.test(p.src) && !API.blobs[p.src]) v.addEventListener('error', () => { if (v.dataset.fb) return; v.dataset.fb = '1'; v.src = GH.rawUrl(p.src) + frag; if (autoplay) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); } });
     if (r.end) v.addEventListener('timeupdate', () => { if (v.currentTime >= r.end) { if (e.loop) v.currentTime = r.start; else v.pause(); } });
+    VIDFIT.watch(v);
     return v;
   }
   const f = document.createElement('iframe');
@@ -983,6 +988,60 @@ function embedPlayer(e, p, autoplay) {
   f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
   return f;
 }
+/* 실제 화면 찾기: 휴대폰 화면 녹화처럼 영상 둘레에 검은 여백이 붙은 동영상은 실제 화면이 작게 보이고,
+   전체화면으로 키워도 여백까지 함께 커져 화면이 꽉 차지 않음.
+   재생하는 동안 몇 장면을 작게 그려 보아 여백을 재고(장면마다 잰 값의 가운데 값),
+   그 안쪽만 보이게 잘라 냄(object-view-box) — 상자 안에서도, 영상의 전체화면 단추로 키웠을 때도 화면에 꽉 맞음.
+   이 속성을 모르는 브라우저(사파리 · 파이어폭스)는 지금처럼 여백째 보여 줌. 내용은 자르지 않고 검은 여백만 뺌 */
+const VIDFIT = {
+  ok: typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('object-view-box', 'inset(1px)'),
+  W: 120,        // 재 볼 때 줄이는 너비 (픽셀)
+  MIN: 0.03,     // 이보다 얇은 여백은 그대로 둠
+  watch(v) {
+    if (!this.ok) return;
+    const boxes = []; let cv = null, last = -1, timer = 0;
+    const sample = () => {
+      if (!v.isConnected) { clearInterval(timer); return; }
+      if (v.readyState < 2 || !v.videoWidth || (boxes.length && Math.abs(v.currentTime - last) < 0.4)) return;
+      last = v.currentTime;
+      const b = this.measure(v, cv || (cv = document.createElement('canvas')));
+      if (b === false) { clearInterval(timer); v.removeEventListener('seeked', sample); return; } // 그려 볼 수 없는 영상 (다른 사이트)
+      if (!b) return;                                                                             // 거의 검은 장면 (장면 전환)
+      boxes.push(b); if (boxes.length > 15) boxes.shift();
+      this.apply(v, boxes);
+    };
+    v.addEventListener('loadeddata', sample); v.addEventListener('seeked', sample);
+    v.addEventListener('play', () => { clearInterval(timer); timer = setInterval(() => { if (!v.paused) sample(); }, 600); });
+    v.addEventListener('pause', () => clearInterval(timer));
+    v.addEventListener('emptied', () => { boxes.length = 0; last = -1; v.style.objectViewBox = ''; delete v.dataset.fit; });
+  },
+  /* 한 장면의 여백 (각 변에서 몇 % 가 검은가). 그릴 수 없으면 false, 거의 검은 장면이면 null */
+  measure(v, cv) {
+    const w = this.W, h = Math.max(8, Math.round(w * v.videoHeight / v.videoWidth));
+    let d;
+    try { cv.width = w; cv.height = h; const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(v, 0, 0, w, h); d = x.getImageData(0, 0, w, h).data; }
+    catch (e) { return false; }
+    const lit = (x, y) => { const i = (y * w + x) * 4; return Math.max(d[i], d[i + 1], d[i + 2]) > 36; };
+    const rows = []; for (let y = 0; y < h; y++) { let n = 0; for (let x = 0; x < w; x++) if (lit(x, y)) n++; rows.push(n); }
+    let t = 0, b = h - 1; while (t < h && rows[t] < w * 0.1) t++; while (b > t && rows[b] < w * 0.1) b--;
+    if (b - t < h * 0.12) return null;
+    const cols = []; for (let x = 0; x < w; x++) { let n = 0; for (let y = t; y <= b; y++) if (lit(x, y)) n++; cols.push(n); }
+    const hh = b - t + 1; let l = 0, r = w - 1; while (l < w && cols[l] < hh * 0.1) l++; while (r > l && cols[r] < hh * 0.1) r--;
+    if (r - l < w * 0.12) return null;
+    return { t: t / h, b: (h - 1 - b) / h, l: l / w, r: (w - 1 - r) / w };
+  },
+  apply(v, boxes) {
+    const mid = (k) => { const a = boxes.map(x => x[k]).sort((p, q) => p - q); return a[a.length >> 1]; };
+    if (boxes.length < 3) return; // 한두 장면만으로는 정하지 않음 (시작 화면 · 자막만 있는 장면)
+    const m = { t: mid('t'), r: mid('r'), b: mid('b'), l: mid('l') };
+    for (const k in m) if (m[k] < this.MIN) m[k] = 0;
+    const cut = m.t + m.r + m.b + m.l ? `inset(${(m.t * 100).toFixed(1)}% ${(m.r * 100).toFixed(1)}% ${(m.b * 100).toFixed(1)}% ${(m.l * 100).toFixed(1)}%)` : '';
+    const prev = v.dataset.fit ? v.dataset.fit.split(',').map(Number) : [0, 0, 0, 0];
+    if ([m.t, m.r, m.b, m.l].every((x, i) => Math.abs(x - prev[i]) < 0.015)) return; // 거의 그대로면 움직이지 않음
+    v.dataset.fit = [m.t, m.r, m.b, m.l].map(x => x.toFixed(3)).join(',');
+    v.style.objectViewBox = cut;
+  },
+};
 /* 동영상 파일의 표지 그림 (그 영상에 맞춰 만든 것일 때만 — 주소를 바꾸면 쓰지 않음) */
 function embedPoster(e) { return e.poster && e.posterOf === e.url ? e.poster : ''; }
 function renderEmbed(e, node, theme, mode) {
