@@ -6,10 +6,10 @@
    · 접근 토큰은 암호화해서 SECRET 에 맡겨 두고 다시 씁니다 (토큰을 자주 새로 받으면 KIS 가 알림을 보내고 1분에 1번으로 막음).
 
    비밀 값 (Worker → Settings → Variables and Secrets → Add → Type: Secret)
-     KIS_APPKEY     한국투자증권 앱키
-     KIS_APPSECRET  한국투자증권 앱시크릿
-     RELAY_KEY      SECRET 에서 [중계 암호 만들기] 로 만든 값
+     RELAY_KEY      SECRET 에서 [중계 암호 만들기] 로 만든 값 (꼭 필요)
    선택
+     KIS_APPKEY     한국투자증권 앱키      ─┐ 둘 다 있으면 KIS 실시간 시세
+     KIS_APPSECRET  한국투자증권 앱시크릿  ─┘ 없으면 DART · 네이버 · ECOS · FRED 통로로만
      KIS_MOCK       "1" 이면 모의투자 서버로 */
 
 const ORIGINS = ['https://kwonyujin119.github.io'];
@@ -32,12 +32,13 @@ export default {
     const out = (status, body, extra) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...cors, ...(extra || {}) } });
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     if (req.method !== 'GET') return out(405, { error: 'GET 만 됩니다' });
-    if (!env.KIS_APPKEY || !env.KIS_APPSECRET || !env.RELAY_KEY) return out(500, { error: '비밀 값(KIS_APPKEY · KIS_APPSECRET · RELAY_KEY)이 아직 없습니다' });
+    if (!env.RELAY_KEY) return out(500, { error: '비밀 값 RELAY_KEY 가 아직 없습니다' });
     if (!same(req.headers.get('x-relay-key') || '', env.RELAY_KEY)) return out(401, { error: '중계 암호가 맞지 않습니다' });
 
     const url = new URL(req.url);
     const code = String(url.searchParams.get('code') || '').toUpperCase();
-    if (url.pathname === '/ping') return out(200, { ok: true, mock: env.KIS_MOCK === '1' });
+    const hasKis = !!(env.KIS_APPKEY && env.KIS_APPSECRET); // KIS 는 선택 — 없으면 DART · 네이버 · ECOS · FRED 통로로만
+    if (url.pathname === '/ping') return out(200, { ok: true, kis: hasKis, mock: env.KIS_MOCK === '1' });
     /* 한국은행 ECOS 금리 · 환율 (SECRET 이 x-api-key 로 ECOS 키를 보냄 · 통계 조회만) */
     /* 네이버 뉴스 검색 (x-api-key = "클라이언트아이디:시크릿") · 뉴스 검색만
        2026-07-31 부터 새 키는 네이버 클라우드 NAVER API HUB(헤더 X-NCP-APIGW-API-KEY-ID/KEY) — 먼저 HUB, 안 되면 예전 개발자센터 주소로 */
@@ -104,6 +105,7 @@ export default {
       } catch (e) { return out(502, { error: 'ECOS: ' + String(e.message || e) }); }
     }
     if (!/^[0-9A-Z]{6}$/.test(code)) return out(400, { error: '종목은 6자리 코드로 (예: 005930)' });
+    if (!hasKis) return out(503, { error: 'KIS 비밀 값(KIS_APPKEY · KIS_APPSECRET)이 없어 KIS 시세는 쉬는 중입니다' });
 
     try {
       const tok = await token(env, req.headers.get('x-kis-token'));

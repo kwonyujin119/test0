@@ -80,19 +80,26 @@
     datagokr: { kind: 'data', name: '공공데이터포털 주식시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A3%BC%EC%8B%9D%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '국내 상장 종목의 하루 단위 시세 · 일봉 (무료). 마지막 영업일 종가 기준이라 장중 실시간은 아닙니다. 마이페이지의 일반 인증키를 Encoding · Decoding 어느 쪽이든 그대로 붙여 넣으세요. 종목은 6자리 코드(005930)나 종목명(삼성전자).' },
     etf: { kind: 'data', name: '공공데이터포털 ETF 시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/data/15094806/openapi.do', note: 'ETF 의 하루 단위 시세 · 일봉 · 순자산가치(NAV) · 기초지수. 금융위원회 주식시세와 같은 공공데이터포털 키를 그대로 넣으세요 (공공데이터포털에서 「금융위원회_증권상품시세정보」 활용신청 필요).' },
     index: { kind: 'data', name: '공공데이터포털 지수 시세 (금융위원회)', caps: ['index'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EA%B8%88%EC%9C%B5%EC%9C%84%EC%9B%90%ED%9A%8C_%EC%A7%80%EC%88%98%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '코스피 · 코스닥 · 코스피 200 의 하루 단위 지수 (종가 · 등락 · 5일 · 20일 흐름). 같은 공공데이터포털 키를 그대로 넣으세요 (「금융위원회_지수시세정보」 활용신청 필요).' },
-    ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
-    naver: { kind: 'data', name: '네이버 뉴스 검색', caps: ['newsKR'], keyUrl: 'https://console.ncloud.com/', note: '아침 브리핑 이후 나온 종목별 최신 국내 뉴스. 2026년 7월 31일부터 네이버 검색 API 새 키는 네이버 클라우드의 NAVER API HUB 에서 받습니다 (예전 개발자센터 키도 그대로 됨). [네이버 키 받는 법] 을 보세요. KIS 중계를 거칩니다.' },
-    fred: { kind: 'data', name: 'FRED (미국 경제지표)', caps: ['usmacro'], keyUrl: 'https://fredaccount.stlouisfed.org/apikeys', note: '미국 연준 자료: 10년 · 2년 국채 금리 · 연방기금 금리 · 소비자물가(CPI) · 실업률 · 원/달러. 무료 가입 후 API 키를 넣으세요. KIS 중계를 거칩니다.' },
-    dart: { kind: 'data', name: 'OpenDART (금융감독원 공시)', caps: ['dart'], keyUrl: 'https://opendart.fss.or.kr/', note: '공시 목록 · 주요 재무(매출 · 영업이익 · 순이익 · 자산 · 부채 · 자본) · 회사 개요. 금융감독원이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함). 처음 한 번 회사 고유번호 표를 받아 이 기기에 30일 둡니다.' },
+    ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 Cloudflare 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
+    naver: { kind: 'data', name: '네이버 뉴스 검색', caps: ['newsKR'], keyUrl: 'https://console.ncloud.com/', note: '아침 브리핑 이후 나온 종목별 최신 국내 뉴스. 2026년 7월 31일부터 네이버 검색 API 새 키는 네이버 클라우드의 NAVER API HUB 에서 받습니다 (예전 개발자센터 키도 그대로 됨). [네이버 키 받는 법] 을 보세요. Cloudflare 중계를 거칩니다.' },
+    fred: { kind: 'data', name: 'FRED (미국 경제지표)', caps: ['usmacro'], keyUrl: 'https://fredaccount.stlouisfed.org/apikeys', note: '미국 연준 자료: 10년 · 2년 국채 금리 · 연방기금 금리 · 소비자물가(CPI) · 실업률 · 원/달러. 무료 가입 후 API 키를 넣으세요. Cloudflare 중계를 거칩니다.' },
+    dart: { kind: 'data', name: 'OpenDART (금융감독원 공시)', caps: ['dart'], keyUrl: 'https://opendart.fss.or.kr/', note: '공시 목록 · 주요 재무(매출 · 영업이익 · 순이익 · 자산 · 부채 · 자본) · 회사 개요. 금융감독원이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 Cloudflare 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함). 처음 한 번 회사 고유번호 표를 받아 이 기기에 30일 둡니다.' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
-    kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
+    kisrelay: { kind: 'data', name: 'Cloudflare 중계 (KIS 시세 선택)', caps: ['quote', 'history'], note: '내 Cloudflare 무료 중계. OpenDART · 네이버 뉴스 · 한국은행 ECOS · FRED 는 브라우저에서 바로 부를 수 없어 이 중계를 거칩니다. 한국투자증권 앱키를 중계에 넣었으면 「KIS 실시간 시세도 쓰기」를 켜서 실시간 현재가 · PER · PBR 도 받습니다 (주문 기능 없음). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
   };
   const isAI = a => TYPES[a.type] && TYPES[a.type].kind === 'ai';
   const aiApis = () => cfg.apis.filter(a => isAI(a) && a.on !== false);
   const dataApis = () => cfg.apis.filter(a => !isAI(a) && a.on !== false);
   const activeAI = () => aiApis().find(a => a.id === cfg.ai) || aiApis()[0] || null;
-  const dataFor = cap => dataApis().find(a => (TYPES[a.type].caps || []).includes(cap));
+  /* 중계 카드: kis === false 면 KIS 시세는 보류하고 DART · 네이버 · ECOS · FRED 통로로만 */
+  const kisOn = a => a.type === 'kisrelay' && a.kis !== false;
+  const capsOf = a => a.type === 'kisrelay' && a.kis === false ? [] : (TYPES[a.type].caps || []);
+  const relayApi = () => dataApis().find(a => a.type === 'kisrelay');
+  const realtimeOn = () => dataApis().some(kisOn);
+  const needRelay = who => new Error(`${who} 는 Cloudflare 중계를 거칩니다 — API 연결에서 [Cloudflare 중계] 를 먼저 만들어 주세요 (KIS 는 꺼 둬도 됩니다)`);
+  const dataFor = cap => dataApis().find(a => capsOf(a).includes(cap));
+  cfg.apis.forEach(a => { if (a.type === 'kisrelay' && a.name === '한국투자증권 KIS (실시간 중계)') a.name = TYPES.kisrelay.name; }); // 예전 이름
 
   /* ---------- 키 잠금 (선택) ---------- */
   const enc = new TextEncoder(), dec = new TextDecoder();
@@ -380,11 +387,11 @@
     },
     /* OpenDART — KIS 중계의 /dart 를 거쳐 (DART 키는 SECRET 에) */
     dart: {
-      async _relay() { const r = dataApis().find(a => a.type === 'kisrelay'); if (!r) throw new Error('OpenDART 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요'); return { base: String(r.base || '').trim().replace(/\/+$/, ''), rk: String(await keyOf(r) || '').trim() }; },
+      async _relay() { const r = relayApi(); if (!r) throw needRelay('OpenDART'); return { base: String(r.base || '').trim().replace(/\/+$/, ''), rk: String(await keyOf(r) || '').trim() }; },
       async _call(k, ep, q) {
         const { base, rk } = await this._relay();
         let r; try { r = await fetch(`${base}/dart?` + new URLSearchParams(Object.assign({ ep }, q || {})), { headers: { 'x-relay-key': rk, 'x-api-key': String(k || '').trim() } }); }
-        catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+        catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
         if (ep === 'corpCode.xml') return r;
         const j = await r.json().catch(() => null);
         if (r.status === 404 || (j && /종목은 6자리 코드로|없는 기능입니다 \(\/quote/.test(j.error || '') && !/dart/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
@@ -457,7 +464,7 @@
         for (const c of ser.cycles) {
           const from = new Date(Date.now() - (c === 'M' ? 800 : 120) * 864e5), to = new Date(Date.now() + 9 * 36e5);
           let r; try { r = await fetch(`${base}/ecos?` + new URLSearchParams({ stat: ser.stat, cycle: c, from: ymd(from, c), to: ymd(to, c), item: ser.item }), { headers: { 'x-relay-key': String(rk || '').trim(), 'x-api-key': String(k || '').trim() } }); }
-          catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 코드를 최신으로 붙여 넣었는지 확인하세요'); }
+          catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 코드를 최신으로 붙여 넣었는지 확인하세요'); }
           const j = await r.json().catch(() => null);
           if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
           if (j && j.ok && (j.rows || []).length) {
@@ -470,8 +477,8 @@
         throw new Error(`${ser.name}: ${last}`);
       },
       async macro(k) {
-        const relay = dataApis().find(a => a.type === 'kisrelay');
-        if (!relay) throw new Error('한국은행 ECOS 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요');
+        const relay = relayApi();
+        if (!relay) throw needRelay('한국은행 ECOS');
         const out = [], errs = [];
         for (const ser of this.SERIES) { try { out.push(await this._one(k, ser, relay)); } catch (e) { errs.push(e.message); } }
         if (!out.length) throw new Error(errs[0] || '한국은행 자료를 받지 못했습니다');
@@ -578,13 +585,13 @@
     getWrtInfoN1: { d: '신주인수권증권 정보', p: 'stdDt*=YYYYMMDD', f: { korSecnNm: '종목명', bondIsin: '채권 표준코드', deliDt: '교부일', isin: '표준코드', issuDt: '발행일', issuNtimes: '발행횟수' } },
     getKDRSecnInfo: { d: '시장별 KDR 종목', p: 'caltotMartTpcd*=11 유가 · 12 코스닥 · 13 코넥스', f: { kdrIsin: 'KDR 표준코드', korSecnNm: '종목명', listDt: '상장일', ovsListStkmkCd: '해외상장시장' } },
   };
-  /* KIS 중계를 거쳐 부르기 (네이버 · FRED): 중계 주소 · 암호는 KIS 카드의 것, 그 API 의 키는 x-api-key 로 */
+  /* Cloudflare 중계를 거쳐 부르기 (네이버 · FRED): 중계 주소 · 암호는 KIS 카드의 것, 그 API 의 키는 x-api-key 로 */
   async function relayGet(path, params, apiKey, who) {
-    const r0 = dataApis().find(a => a.type === 'kisrelay');
-    if (!r0) throw new Error(`${who} 는 KIS 중계를 거칩니다 — API 연결에서 [한국투자증권 KIS (실시간 중계)] 를 먼저 만들어 주세요`);
+    const r0 = relayApi();
+    if (!r0) throw needRelay(who);
     const base = String(r0.base || '').trim().replace(/\/+$/, ''), rk = String(await keyOf(r0) || '').trim();
     let r; try { r = await fetch(base + path + '?' + new URLSearchParams(params || {}), { headers: { 'x-relay-key': rk, 'x-api-key': String(apiKey || '').trim() } }); }
-    catch (e) { throw new Error('KIS 중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+    catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
     const j = await r.json().catch(() => null);
     if (r.status === 404 || (j && /종목은 6자리 코드로/.test(j.error || ''))) throw new Error('중계 코드가 예전 것입니다 — [중계 코드 복사] 로 최신 코드를 Cloudflare 에 다시 붙여 넣어 주세요');
     if (!j || !j.ok) throw new Error((j && j.error) || `${who}: HTTP ${r.status}`);
@@ -603,7 +610,7 @@
     return await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
   }
   async function callData(cap, ...args) {
-    const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr', 'etf'].map(t => dataApis().find(a => a.type === t)).filter(Boolean) : [];
+    const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr', 'etf'].map(t => dataApis().find(a => a.type === t && capsOf(a).includes(cap))).filter(Boolean) : [];
     if (krs.length) {
       let last = null;
       for (const a of krs) { try { return await DATA[a.type][cap](await keyOf(a), ...args, a); } catch (e) { last = e; } }
@@ -915,7 +922,7 @@ ${[
 - 서로 상관없는 조회는 한 번에 함께 부릅니다 (예: get_quote + get_price_history + get_ksd_stock_info). 한국 종목은 6자리 코드(005930)로 부릅니다.
 
 데이터 원칙
-- 쓸 수 있는 도구: ${tools.join(', ') || '없음'}. ${dataFor('quote') ? '' : '시세 API 가 등록되어 있지 않으니, 가격을 말할 때는 웹 검색 결과나 사용자가 준 숫자만 쓰고 그 사실을 밝힙니다. '}
+- 쓸 수 있는 도구: ${tools.join(', ') || '없음'}. ${dataFor('quote') ? '' : '시세 API 가 등록되어 있지 않으니, 가격을 말할 때는 웹 검색 결과나 사용자가 준 숫자만 쓰고 그 사실을 밝힙니다. '}${dataFor('quote') && !realtimeOn() ? '지금 국내 시세는 공공데이터포털 종가 기준(보통 전 영업일, 장중 실시간 아님)입니다. 가격을 말할 때 "○월 ○일 종가"처럼 기준일을 밝히고, 오늘 장중 움직임이 중요하면 search_news_kr · 웹 검색으로 보완하되 그 숫자는 출처와 함께 따로 적습니다. ' : ''}
 - 가격 · 등락률 · 지표 · 날짜는 도구 결과나 검색 결과에 있는 것만 말하고, 언제 기준인지 적습니다. 모르는 숫자는 지어내지 말고 "확인 필요"라고 씁니다.
 - 지표 계산(수익률 · 이동평균 · RSI · MACD · 변동성 · 지지/저항)은 get_stock_dossier · get_price_history 결과를, 비중 · 수량은 position_size 결과를 씁니다. 직접 계산해서 숫자를 만들지 않습니다.
 - 사용자의 보유 · 관심 종목이 관련되면 get_portfolio 로, 과거 매매 · 습관이 관련되면 get_journal 로, 특정 기업에 대해 사용자가 적어 둔 생각이 관련되면 get_notes 로 먼저 확인합니다.
@@ -1362,11 +1369,11 @@ ${[
     { type: 'etf', why: 'ETF 시세 · NAV · 기초지수 (0190G0 같은 ETF)', how: '같은 공공데이터포털 키 · 「금융위원회_증권상품시세정보」 활용신청' },
     { type: 'ksd', why: '종목 공식 기록 · 배당 순위 · 의무보호예수', how: '같은 공공데이터포털 키 · 「한국예탁결제원_주식정보서비스」' },
     { type: 'index', why: '코스피 · 코스닥 지수 흐름 — AI 가 시장 분위기를 숫자로', how: '같은 공공데이터포털 키 · 「금융위원회_지수시세정보」 활용신청' },
-    { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
-    { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
-    { type: 'dart', why: '공시 목록 · 매출 · 영업이익 · 순이익 · 부채비율 · 회사 개요', how: 'OpenDART 인증키 신청 (KIS 중계를 거침)' },
-    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI · 종목 분석 · 오늘 한눈에', how: '네이버 클라우드 NAVER API HUB → 뉴스 검색 (2026.7.31 부터 새 키는 여기서, KIS 중계를 거침)', keyUrl: 'https://console.ncloud.com/', guide: 'naver' },
-    { type: 'fred', why: '미국 국채 · 연준 금리 · 물가 · 실업률 — 미국장 영향', how: 'FRED 무료 가입 → API Keys (KIS 중계를 거침)' },
+    { type: 'kisrelay', why: 'DART · 네이버 · ECOS · FRED 를 잇는 통로 (선택: KIS 실시간 현재가 · PER · PBR)', how: '내 Cloudflare 무료 중계 한 번 만들기 — KIS 앱키 없이도 됨' },
+    { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (Cloudflare 중계를 거침)' },
+    { type: 'dart', why: '공시 목록 · 매출 · 영업이익 · 순이익 · 부채비율 · 회사 개요', how: 'OpenDART 인증키 신청 (Cloudflare 중계를 거침)' },
+    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI · 종목 분석 · 오늘 한눈에', how: '네이버 클라우드 NAVER API HUB → 뉴스 검색 (2026.7.31 부터 새 키는 여기서, Cloudflare 중계를 거침)', keyUrl: 'https://console.ncloud.com/', guide: 'naver' },
+    { type: 'fred', why: '미국 국채 · 연준 금리 · 물가 · 실업률 — 미국장 영향', how: 'FRED 무료 가입 → API Keys (Cloudflare 중계를 거침)' },
     { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
     { type: 'twelvedata', why: '미국 · 해외 종목 일봉 · 차트 (하루 800회)', how: 'Twelve Data 무료 가입 → API Keys' },
     { type: 'alphavantage', why: '미국 종목 일봉 · 뉴스 감성 점수 (하루 25회)', how: 'Alpha Vantage 무료 키 신청' },
@@ -1388,8 +1395,50 @@ ${[
     box.querySelectorAll('[data-guide="naver"]').forEach(b => b.onclick = () => naverGuide());
     box.querySelectorAll('[data-reco-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(x => x.id === b.dataset.recoTest), b));
   }
+  const FEATS = [
+    { t: 'claude', n: 'AI 대화 · 분석', use: '대화 · 종목 종합 · 내 종목 점검', ai: true },
+    { t: 'datagokr', n: '국내 시세 · 일봉 (종가)', use: '관심 종목 · 종목 분석 · 차트 · 지표' },
+    { t: 'kisrelay', n: '실시간 시세 · PER · PBR', use: '장중 현재가 (KIS)', kis: true },
+    { t: 'etf', n: 'ETF 시세 · NAV', use: 'ETF 종목 분석 · 괴리율' },
+    { t: 'index', n: '코스피 · 코스닥 지수', use: '오늘 · 시장 · 상대 강도' },
+    { t: 'ksd', n: '배당 · 보호예수 · 상장', use: '종목 분석 · 시장 데이터' },
+    { t: 'dart', n: '공시 · 재무', use: '종목 분석 · 오늘 · 위험 공시', relay: true },
+    { t: 'naver', n: '국내 최신 뉴스', use: '종목 분석 · 오늘 · AI', relay: true },
+    { t: 'ecos', n: '금리 · 환율', use: '오늘 · 시장', relay: true },
+    { t: 'fred', n: '미국 경제지표', use: '오늘 · AI', relay: true },
+  ];
+  function capState(f) {
+    const api = f.ai ? activeAI() : f.kis ? (dataApis().find(kisOn) || relayApi()) : dataApis().find(a => a.type === f.t);
+    if (!api) return { s: 'off', l: '없음', api: null, act: f.ai ? 'add' : 'add' };
+    if (f.kis && api.kis === false) return { s: 'off', l: 'KIS 보류 · 종가로 대신', api, act: '' };
+    if (f.relay && !relayApi()) return { s: 'warn', l: '중계가 있어야 함', api, act: 'relay' };
+    if (!hasKey(api) && api.type !== 'custom') return { s: 'warn', l: '키 없음', api, act: 'edit' };
+    if (api.test === 'ok') return { s: 'ok', l: '됨', api, act: '' };
+    if (api.test) return { s: 'bad', l: api.test, api, act: 'test' };
+    return { s: 'idle', l: '시험 전', api, act: 'test' };
+  }
+  function renderCaps() {
+    const box = $('apiCaps'); if (!box) return;
+    const rows = FEATS.map(f => ({ f, st: capState(f) })), ok = rows.filter(r => r.st.s === 'ok').length;
+    const btn = (r, i) => r.st.act === 'add' ? `<button class="btn sm ghost" data-cap-add="${r.f.t}">연결</button>` : r.st.act === 'relay' ? `<button class="btn sm ghost" data-cap-add="kisrelay">중계 연결</button>` : r.st.act === 'edit' ? `<button class="btn sm ghost" data-cap-edit="${r.st.api.id}">키 넣기</button>` : r.st.act === 'test' ? `<button class="btn sm ghost" data-cap-test="${r.st.api.id}">시험</button>` : '';
+    box.innerHTML = `<div class="sc-reco-h sc-caps-h"><div><h2>지금 되는 기능 <small>${ok} / ${rows.length}</small></h2><p>연결한 API 로 어떤 화면이 채워지는지 봅니다. 초록이 아닌 줄은 오른쪽 단추로 고칩니다.</p></div><button class="btn sm" id="capAll">${icon('check', 14)}모두 시험</button></div>
+      <div class="sc-caps">${rows.map((r, i) => `<div class="sc-cap ${r.st.s}"><i class="dot" aria-hidden="true"></i><div class="tx"><b>${esc(r.f.n)}</b><small title="${esc(r.st.l)}">${esc(r.st.s === 'bad' || r.st.s === 'warn' || (r.st.s === 'off' && r.st.api) ? r.st.l : r.f.use)}</small></div>${r.st.s === 'bad' ? '<span class="lb">오류</span>' : r.st.s === 'off' && r.st.api ? '<span class="lb">보류</span>' : ''}${btn(r, i)}</div>`).join('')}</div>`;
+    fillIcons(box);
+    box.querySelectorAll('[data-cap-add]').forEach(b => b.onclick = () => { const t = b.dataset.capAdd, have = cfg.apis.find(a => a.type === t); openAdd(t, have || undefined); });
+    box.querySelectorAll('[data-cap-edit]').forEach(b => b.onclick = () => openAdd(null, cfg.apis.find(a => a.id === b.dataset.capEdit)));
+    box.querySelectorAll('[data-cap-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(a => a.id === b.dataset.capTest), b));
+    $('capAll').onclick = async ev => {
+      const b = ev.currentTarget, list = cfg.apis.filter(a => a.on !== false && (hasKey(a) || a.type === 'custom'));
+      if (!list.length) { toast('시험할 API 가 없습니다 — 먼저 연결해 주세요', 2200); return; }
+      if (cfg.lock && !(await unlock())) return;
+      b.disabled = true; let n = 0;
+      for (const a of list) { b.textContent = `시험 중 ${++n} / ${list.length}`; await testApi(a, null, true); }
+      const bad = list.filter(a => a.test !== 'ok');
+      toast(bad.length ? `${list.length - bad.length}개 통과 · ${bad.length}개 확인 필요: ${bad.map(a => a.name).join(', ')}` : `${list.length}개 모두 통과했습니다`, 4200);
+    };
+  }
   function renderApis() {
-    $('cApi').textContent = cfg.apis.length || ''; renderReco();
+    $('cApi').textContent = cfg.apis.length || ''; renderReco(); renderCaps();
     $('apiNote').innerHTML = `${icon('shield', 15)}<span>키는 <b>이 기기의 이 브라우저에만</b> 저장되고 GitHub · 다른 기기로 가지 않습니다. 같은 주소(github.io)의 다른 페이지도 브라우저 저장소를 읽을 수 있으니 <b>잠금 암호</b>를 걸어 두기를 권합니다. 주문(매수 · 매도) 기능은 없습니다.</span>`;
     const cur = activeAI();
     $('apiGrid').innerHTML = cfg.apis.map(a => {
@@ -1397,14 +1446,15 @@ ${[
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
       const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요', newsKR: '국내 최신 뉴스', usmacro: '미국 금리 · 물가 · 고용' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${a.type === 'kisrelay' ? `<dt>제공</dt><dd>DART · 네이버 · ECOS · FRED 통로${a.kis === false ? ' · <b>KIS 보류</b>' : ' · KIS 현재가 · 일봉'}</dd>` : !ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요', newsKR: '국내 최신 뉴스', usmacro: '미국 금리 · 물가 · 고용' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
-        <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
+        <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>${a.type === 'kisrelay' ? `<label class="use" title="끄면 KIS 시세는 쉬고, 국내 시세는 공공데이터포털(종가)로 봅니다. 중계 통로는 그대로"><input type="checkbox" data-kis="${a.id}"${a.kis !== false ? ' checked' : ''}>KIS</label>` : ''}`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
     }).join('') + `<button class="sc-api sc-add" id="apiPlus">${icon('plus', 26)}<b>API 추가</b><span style="font-size:var(--fs-xs)">AI · 시세 API 를 여러 개 붙일 수 있습니다</span></button>`;
     $('apiPlus').onclick = () => openAdd();
     $('apiGrid').querySelectorAll('[name=useAi]').forEach(r => r.onchange = () => { cfg.ai = r.value; saveCfg(); renderAiSel(); });
     $('apiGrid').querySelectorAll('[data-on]').forEach(c => c.onchange = () => { const a = cfg.apis.find(x => x.id === c.dataset.on); a.on = c.checked; saveCfg(); renderApis(); });
+    $('apiGrid').querySelectorAll('[data-kis]').forEach(c => c.onchange = () => { const a = cfg.apis.find(x => x.id === c.dataset.kis); a.kis = c.checked; a.test = ''; saveCfg(); renderApis(); toast(c.checked ? 'KIS 시세를 다시 씁니다 — [시험] 으로 확인하세요' : 'KIS 를 보류했습니다 — 국내 시세는 공공데이터포털(종가), 중계 통로는 그대로', 3000); });
     $('apiGrid').querySelectorAll('[data-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(x => x.id === b.dataset.test), b));
     $('apiGrid').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openAdd(null, cfg.apis.find(x => x.id === b.dataset.edit)));
     $('apiGrid').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
@@ -1426,7 +1476,7 @@ ${[
       cfg.apis.forEach(a => { a.key = keyMem[a.id] || ''; }); cfg.lock = null; lockKey = null; keyMem = null; saveCfg(); toast('잠금을 껐습니다', 2000); renderApis();
     };
   }
-  async function testApi(a, btn) {
+  async function testApi(a, btn, quiet) {
     if (btn) btn.disabled = true;
     try {
       const k = await keyOf(a); if (!k && a.type !== 'custom') throw new Error('키가 비어 있습니다');
@@ -1445,13 +1495,24 @@ ${[
         else if (a.type === 'ecos') { await DATA.ecos.macro(k); }
         else if (a.type === 'index') { await DATA.index.get(k, ['코스피']); }
         else if (a.type === 'etf') { await DATA.etf.quote(k, '069500'); } // KODEX 200
+        else if (a.type === 'kisrelay') {
+          const base = String(a.base || '').trim().replace(/\/+$/, '');
+          if (!/^https:\/\/[^/]+/.test(base)) throw new Error('중계 주소를 넣어 주세요 (https://….workers.dev)');
+          let r; try { r = await fetch(base + '/ping', { headers: { 'x-relay-key': String(k).trim() } }); } catch (e) { throw new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
+          const j = await r.json().catch(() => null);
+          if (!r.ok || !j || !j.ok) throw new Error('중계: ' + ((j && j.error) || ('HTTP ' + r.status)));
+          if (a.kis !== false) {
+            if (j.kis === false) throw new Error('중계는 됩니다. 다만 KIS 앱키가 중계에 없습니다 — KIS 를 보류하려면 카드의 「KIS」 를 끄세요');
+            try { await DATA.kisrelay.quote(k, '005930', a); } catch (e) { throw new Error(e.message.replace(/^KIS 중계: /, 'KIS: ') + ' — 중계 통로는 됩니다. KIS 를 보류하려면 카드의 「KIS」 를 끄세요'); }
+          }
+        }
         else if (a.type === 'ksd') { const r = await DATA.ksd.call(k, 'getStkIsinByShortIsinN1', { shortIsin: '005930' }); if (!r.items.length) throw new Error('예탁결제원: 시험 종목(005930)을 찾지 못했습니다'); }
         else if (T.caps.includes('quote')) await DATA[a.type].quote(k, s, a); else await DATA.custom.custom(k, s, a);
       }
-      a.test = 'ok'; toast(`${a.name}: 연결됐습니다`, 2000);
+      a.test = 'ok'; if (!quiet) toast(`${a.name}: 연결됐습니다${a.type === 'kisrelay' && a.kis === false ? ' (KIS 보류 · 중계 통로만)' : ''}`, 2000);
     } catch (e) {
       a.test = /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? '연결 실패 (네트워크 · 브라우저 차단)' : e.message.slice(0, 120);
-      toast(`${a.name}: ${a.test}`, 4000);
+      if (!quiet) toast(`${a.name}: ${a.test}`, 4000);
     } finally { saveCfg(); if (btn) btn.disabled = false; renderApis(); }
   }
   function naverGuide() {
@@ -1464,18 +1525,18 @@ ${[
         <li><b>Application 관리</b> 에서 만든 것을 고르고 <b>[인증 정보]</b> → <b>Client ID</b> 와 <b>Client Secret</b> 복사</li>
         <li>SECRET 네이버 카드의 <b>[키 넣기]</b> → <b>Client ID</b> · <b>Client Secret</b> 칸에 각각 붙여 넣고 [추가하고 시험]</li>
       </ol>
-      <p class="hint">요금은 네이버 클라우드 안내를 확인하세요 (검색 API 는 한시적 무료로 안내된 적이 있음). 네이버 뉴스는 KIS 중계를 거치므로, 시험에서 "중계 코드가 예전 것" 이라고 나오면 [중계 코드 복사] 로 Cloudflare 코드를 한 번 바꿔 주세요. 자세한 공식 안내: <a href="https://guide.ncloud-docs.com/docs/apihub-overview" target="_blank" rel="noopener">NAVER API HUB 개요</a></p>
+      <p class="hint">요금은 네이버 클라우드 안내를 확인하세요 (검색 API 는 한시적 무료로 안내된 적이 있음). 네이버 뉴스는 Cloudflare 중계를 거치므로, 시험에서 "중계 코드가 예전 것" 이라고 나오면 [중계 코드 복사] 로 Cloudflare 코드를 한 번 바꿔 주세요. 자세한 공식 안내: <a href="https://guide.ncloud-docs.com/docs/apihub-overview" target="_blank" rel="noopener">NAVER API HUB 개요</a></p>
       <div class="actions"><a class="btn ink" href="https://console.ncloud.com/" target="_blank" rel="noopener">${icon('link', 16)}네이버 클라우드 콘솔 열기</a><button class="btn" data-x>닫기</button></div>`, 'sc-dlg');
     d.el.querySelector('[data-x]').onclick = d.close;
   }
   function kisGuide() {
-    const d = dialog(`<h3>KIS 중계 만드는 법 (한 번만, 약 5분)</h3>
-      <p class="modal-desc">한국투자증권 API 는 웹페이지에서 직접 부르는 것을 막아 두어서, 내 계정의 작은 중계(Cloudflare Worker, 무료)를 거칩니다. 앱키 · 앱시크릿은 그 중계에만 들어가고, 중계는 <b>시세 조회만</b> 하며 주문 기능이 없습니다.</p>
+    const d = dialog(`<h3>Cloudflare 중계 만드는 법 (한 번만, 약 5분)</h3>
+      <p class="modal-desc">OpenDART · 네이버 뉴스 · 한국은행 ECOS · FRED · 한국투자증권은 웹페이지에서 직접 부르는 것을 막아 두어서, 내 계정의 작은 중계(Cloudflare Worker, 무료)를 거칩니다. 중계는 <b>조회만</b> 하며 주문 기능이 없습니다. <b>KIS 앱키는 선택</b>입니다 — 없으면 KIS 시세만 빠지고 나머지는 그대로 됩니다.</p>
       <ol class="sc-steps">
         <li><a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">Cloudflare</a> 에 무료로 가입하고 로그인합니다.</li>
         <li>왼쪽 메뉴 <b>Workers &amp; Pages</b>(또는 Compute) → <b>Create</b> → <b>Hello World</b> 로 시작 → 이름을 <b>dpv-kis</b> 로 → <b>Deploy</b>.</li>
         <li><b>Edit code</b> → 원래 코드를 모두 지우고, 아래 <b>[중계 코드 복사]</b> 한 것을 붙여 넣기 → <b>Deploy</b>.</li>
-        <li>그 Worker 의 <b>Settings → Variables and Secrets → Add</b> 에서 종류를 <b>Secret</b> 으로 세 개를 넣습니다.<br><code>KIS_APPKEY</code> = 앱키 · <code>KIS_APPSECRET</code> = 앱시크릿 · <code>RELAY_KEY</code> = [중계 암호 만들기] 로 만든 값<br><small>모의투자 앱키라면 <code>KIS_MOCK</code> = <code>1</code> 도 넣습니다.</small></li>
+        <li>그 Worker 의 <b>Settings → Variables and Secrets → Add</b> 에서 종류를 <b>Secret</b> 으로 넣습니다.<br><code>RELAY_KEY</code> = [중계 암호 만들기] 로 만든 값 (꼭 필요)<br><small>KIS 실시간 시세도 쓰려면 <code>KIS_APPKEY</code> = 앱키 · <code>KIS_APPSECRET</code> = 앱시크릿 (모의투자 앱키면 <code>KIS_MOCK</code> = <code>1</code> 도). KIS 를 보류하면 이 둘은 넣지 않아도 됩니다.</small></li>
         <li>Worker 화면 위쪽의 주소(<code>https://dpv-kis.○○○.workers.dev</code>)를 복사해 이 창의 <b>주소</b> 칸에 넣고 [추가하고 시험].</li>
       </ol>
       <p class="hint">처음 시험할 때 KIS 가 접근 토큰 발급 알림(카카오톡)을 보낼 수 있습니다. 토큰은 하루 동안 다시 써서 알림이 자주 오지 않습니다.</p>
@@ -1495,6 +1556,7 @@ ${[
       <label>종류<select name="type"${edit && isAI(edit) ? ' disabled' : ''}>${edit && !isAI(edit) ? '' : opts('ai', 'AI (대화)')}${opts('data', '시세 · 데이터')}</select></label>
       <p class="hint" id="tNote"></p>
       <div class="sc-kis" id="nvHelp" hidden><button type="button" class="btn sm" id="nvGuide">${icon('help', 14)}네이버 키 받는 법</button><a class="btn sm" href="https://console.ncloud.com/" target="_blank" rel="noopener">${icon('link', 14)}네이버 클라우드 콘솔 열기</a></div>
+      <label class="sc-chk" id="fKis" hidden><input type="checkbox" name="kis"${edit ? (a.kis !== false ? ' checked' : '') : ''}><span>KIS 실시간 시세도 쓰기 <small>앱키 · 앱시크릿을 중계에 넣었을 때만. 끄면 중계는 DART · 네이버 · ECOS · FRED 통로로만 씁니다.</small></span></label>
       <div class="sc-kis" id="kisHelp" hidden><button type="button" class="btn sm" id="kisGuide">${icon('help', 14)}중계 만드는 법</button><button type="button" class="btn sm" id="kisGen">${icon('lock', 14)}중계 암호 만들기</button></div>
       <label>이름<input type="text" name="name" value="${esc(a.name)}" placeholder="예: 내 Claude"></label>
       <label><span id="fKeyL">API 키</span><input type="password" name="key" placeholder="${edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요'}" autocomplete="off"></label>
@@ -1507,7 +1569,7 @@ ${[
       const T = TYPES[f.type.value]; const ai = T.kind === 'ai';
       $('tNote').innerHTML = esc(T.note || '') + (T.keyUrl ? ` <a href="${T.keyUrl}" target="_blank" rel="noopener">키 발급 페이지</a>` : '');
       $('fModel').hidden = !ai; f.model.placeholder = f.type.value === 'claude' ? 'claude-opus-5-5 (비우면 기본)' : '예: 해당 회사의 모델 이름';
-      const kis = f.type.value === 'kisrelay'; $('kisHelp').hidden = !kis;
+      const kis = f.type.value === 'kisrelay'; $('kisHelp').hidden = !kis; $('fKis').hidden = !kis;
       const nv = f.type.value === 'naver'; $('nvHelp').hidden = !nv; $('fSecret').hidden = !nv; $('fKeyL').textContent = nv ? 'Client ID' : 'API 키';
       $('fBase').hidden = !(kis || f.type.value === 'compat' || f.type.value === 'custom' || (ai && f.type.value !== 'claude' && edit));
       f.base.placeholder = kis ? 'https://dpv-kis.○○○.workers.dev' : f.type.value === 'custom' ? 'https://…?symbol={symbol}&apikey={key}' : (T.base || 'https://…/v1');
@@ -1534,6 +1596,7 @@ ${[
       if (T.kind === 'ai' && t !== 'claude' && !f.model.value.trim()) { toast('모델 이름을 넣어 주세요', 1800); return; }
       const o = edit || { id: uid(), type: t, on: true };
       if (edit && !isAI(edit) && T.kind === 'data' && o.type !== t) { if (o.name === TYPES[o.type].name) o.name = ''; o.type = t; } // 종류 바꾸기 (키는 그대로)
+      if (t === 'kisrelay') o.kis = !!f.kis.checked;
       o.name = f.name.value.trim() || T.name; o.model = T.kind === 'ai' ? f.model.value.trim() : ''; o.base = f.base.value.trim() || '';
       try { if (key || !edit) await setKey(o, key); } catch (err) { toast(err.message, 2600); return; }
       if (!edit) { cfg.apis.push(o); if (T.kind === 'ai' && !activeAI()) cfg.ai = o.id; }
@@ -1773,7 +1836,7 @@ ${[
     clearInterval(autoTm); const m = +(cfg.auto || 0); $('wAuto').value = String(m);
     if (m > 0) autoTm = setInterval(() => { if (document.visibilityState === 'visible' && dataFor('quote') && watch.items.length) refreshQuotes(true); }, m * 60000);
   }
-  $('wAuto').onchange = e => { cfg.auto = +e.target.value; saveCfg(); setAuto(); toast(cfg.auto ? `${cfg.auto}분마다 시세를 다시 불러옵니다 (이 화면을 열어 둔 동안)` : '자동 새로 고침을 껐습니다', 2400); };
+  $('wAuto').onchange = e => { cfg.auto = +e.target.value; saveCfg(); setAuto(); toast(cfg.auto ? `${cfg.auto}분마다 시세를 다시 불러옵니다 (이 화면을 열어 둔 동안)${realtimeOn() ? '' : ' — 지금 국내 시세는 종가 기준이라 장중에는 거의 바뀌지 않습니다'}` : '자동 새로 고침을 껐습니다', 3200); };
 
   /* =====================================================================
      노트 — 날짜별 메모 · 기업 탭 · 달력
@@ -2586,7 +2649,7 @@ ${[
   const RANGES = [[20, '1개월'], [60, '3개월'], [120, '6개월'], [250, '1년'], ['3y', '3년'], ['5y', '5년'], ['10y', '10년'], ['20y', '20년']];
   const perOf = r => typeof r === 'number' ? 'D' : parseInt(r) <= 5 ? 'W' : 'M';
   async function loadLong(code, yrs, per) {
-    const kis = dataApis().find(a => a.type === 'kisrelay');
+    const kis = dataApis().find(kisOn);
     if (kis) {
       try {
         const j = await DATA.kisrelay._call(await keyOf(kis), kis, '/daily', { code, period: per, days: per === 'W' ? yrs * 53 : yrs * 12 + 2 });
