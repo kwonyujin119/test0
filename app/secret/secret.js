@@ -78,6 +78,7 @@
     alphavantage: { kind: 'data', name: 'Alpha Vantage', caps: ['quote', 'history', 'news'], keyUrl: 'https://www.alphavantage.co/support/#api-key', note: '현재가 · 일봉 · 뉴스 감성 (무료: 하루 25회).' },
     datagokr: { kind: 'data', name: '공공데이터포털 주식시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A3%BC%EC%8B%9D%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '국내 상장 종목의 하루 단위 시세 · 일봉 (무료). 마지막 영업일 종가 기준이라 장중 실시간은 아닙니다. 마이페이지의 일반 인증키를 Encoding · Decoding 어느 쪽이든 그대로 붙여 넣으세요. 종목은 6자리 코드(005930)나 종목명(삼성전자).' },
     etf: { kind: 'data', name: '공공데이터포털 ETF 시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/data/15094806/openapi.do', note: 'ETF 의 하루 단위 시세 · 일봉 · 순자산가치(NAV) · 기초지수. 금융위원회 주식시세와 같은 공공데이터포털 키를 그대로 넣으세요 (공공데이터포털에서 「금융위원회_증권상품시세정보」 활용신청 필요).' },
+    index: { kind: 'data', name: '공공데이터포털 지수 시세 (금융위원회)', caps: ['index'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EA%B8%88%EC%9C%B5%EC%9C%84%EC%9B%90%ED%9A%8C_%EC%A7%80%EC%88%98%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '코스피 · 코스닥 · 코스피 200 의 하루 단위 지수 (종가 · 등락 · 5일 · 20일 흐름). 같은 공공데이터포털 키를 그대로 넣으세요 (「금융위원회_지수시세정보」 활용신청 필요).' },
     ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
     kisrelay: { kind: 'data', name: '한국투자증권 KIS (실시간 중계)', caps: ['quote', 'history'], note: '국내 종목 실시간 현재가 · 일봉 · PER · PBR · 52주 고저. 앱키 · 앱시크릿은 여기가 아니라 내 Cloudflare 중계에 넣습니다 (주문 기능 없는 시세 전용). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
@@ -317,6 +318,36 @@
         return (await DATA.datagokr._get(k, s, days, this.URLS)).map(x => ({ t: `${x.basDt.slice(0, 4)}-${x.basDt.slice(4, 6)}-${x.basDt.slice(6)}`, o: n(x.mkp), h: n(x.hipr), l: n(x.lopr), c: n(x.clpr), v: n(x.trqu) })).slice(-days);
       },
     },
+    /* 공공데이터포털 · 금융위원회_지수시세정보 — 코스피 · 코스닥 · 코스피 200 */
+    index: {
+      URLS: ['https://apis.data.go.kr/1160100/GetMarketIndexInfoService_V2/getStockMarketIndex_V2', 'https://apis.data.go.kr/1160100/service/GetMarketIndexInfoService/getStockMarketIndex'],
+      async _one(key, name) {
+        const begin = new Date(Date.now() - 50 * 864e5).toISOString().slice(0, 10).replace(/-/g, '');
+        let bad = null;
+        for (const u of this.URLS) {
+          for (const p of ['idxNm', 'likeIdxNm']) {
+            let r; try { r = await fetch(`${u}?resultType=json&pageNo=1&numOfRows=60&beginBasDt=${begin}&${p}=${E(name)}&serviceKey=${E(key)}`); } catch (e) { throw new Error('공공데이터포털에 연결하지 못했습니다 (네트워크)'); }
+            const j = await r.json().catch(() => null), h = j && j.OpenAPI_ServiceResponse && j.OpenAPI_ServiceResponse.cmmMsgHeader;
+            if (h) { bad = bad || h; break; }
+            let it = j && j.response && j.response.body && j.response.body.items && j.response.body.items.item; it = Array.isArray(it) ? it : it ? [it] : [];
+            it = it.filter(x => x.idxNm === name || p === 'likeIdxNm').sort((a, b) => a.basDt.localeCompare(b.basDt));
+            if (it.length) {
+              const n = v => +String(v).replace(/,/g, ''), c = it.map(x => n(x.clpr)), last = it[it.length - 1], ret = k => c.length > k ? Math.round((c[c.length - 1] / c[c.length - 1 - k] - 1) * 10000) / 100 : null;
+              return { name: last.idxNm, date: last.basDt, close: n(last.clpr), change: n(last.vs), changePct: n(last.fltRt), high: n(last.hipr), low: n(last.lopr), ret5d: ret(5), ret20d: ret(20), recent: it.slice(-10).map(x => [x.basDt, n(x.clpr)]) };
+            }
+          }
+        }
+        if (bad) throw new Error('공공데이터포털(지수): ' + (bad.returnAuthMsg || bad.errMsg) + (/NOT_REGISTERED/.test(bad.errMsg || '') ? ' — 「금융위원회_지수시세정보」 활용신청이 필요합니다' : ''));
+        throw new Error(`${name}: 지수 자료가 없습니다`);
+      },
+      async get(k, names) {
+        const k0 = String(k || '').replace(/\s+/g, ''), key = /%[0-9A-F]{2}/i.test(k0) ? decodeURIComponent(k0) : k0;
+        const out = [], errs = [];
+        for (const nm of names || ['코스피', '코스닥', '코스피 200']) { try { out.push(await this._one(key, nm)); } catch (e) { errs.push(e.message); } }
+        if (!out.length) throw new Error(errs[0] || '지수 자료를 받지 못했습니다');
+        return { source: '공공데이터포털 (금융위원회 지수시세 · 종가 기준)', indices: out, errors: errs.length ? errs : undefined };
+      },
+    },
     /* 한국은행 ECOS — KIS 중계의 /ecos 를 거쳐 (ECOS 키는 여기 SECRET 에, 중계에는 지나가기만) */
     ecos: {
       SERIES: [
@@ -513,6 +544,8 @@
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
+    T.push({ name: 'get_briefing', description: '이 앱이 매일 아침(8시 전까지 여러 번 보강) 모으는 그날의 모닝 브리핑(여러 언론이 함께 다룬 주식 관련 큰 이슈 15개 · 언론사 수 · 분류)과 전략 브리핑(증권사 데일리 시황 · 투자전략 리포트의 제목 · 요약, 주간 전략, 자주 나온 말)을 돌려준다. "오늘 · 요즘 시장", 이슈, 특정 종목 · 업종의 최근 뉴스나 증권사 시각을 말할 때 웹 검색보다 먼저 확인한다. focus 를 주면 그 말이 들어간 항목만 골라 준다.', input_schema: { type: 'object', properties: { focus: { type: 'string', description: '종목명 · 업종 · 키워드 (선택, 예: 삼성전자, 반도체, 환율)' }, date: { type: 'string', description: 'YYYY-MM-DD (선택, 기본 가장 최근 판)' } }, additionalProperties: false } });
+    if (dataFor('index')) T.push({ name: 'get_index', description: '코스피 · 코스닥 · 코스피 200 의 최근 종가 · 등락률 · 5일/20일 수익률 · 최근 10일 값을 공식 자료(금융위원회)로 돌려준다. 시장 분위기 · 지수 수준을 말하기 전에 확인한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('macro')) T.push({ name: 'get_macro', description: '한국은행 ECOS 공식 자료로 기준금리 · 국고채 3년/10년 금리 · 원/달러 환율의 최근 값과 한 달 변화, 최근 10개 값을 돌려준다. 금리 · 환율을 말하기 전에 이 도구로 확인한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('ksd')) {
       T.push({ name: 'get_ksd_stock_info', description: '한국예탁결제원 공식 자료로 한국 종목 하나의 기본정보(표준코드 · 영문명 · 발행일 · 주식종류) · 상장정보(상장일 · 상장폐지일) · 작년 배당(시가배당률 · 주당배당금 · 순위)을 돌려준다. 시세는 없다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) 또는 정확한 회사명(삼성전자)' }, year: { type: 'integer', description: '배당 기준연도 (선택, 기본 작년)' } }, required: ['symbol'], additionalProperties: false } });
@@ -527,7 +560,7 @@
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -543,6 +576,8 @@
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
       case 'fetch_custom_data': return await callData('custom', s);
+      case 'get_briefing': return await briefingForAI(String(input.focus || '').trim(), String(input.date || '').trim());
+      case 'get_index': { const a = dataFor('index'); return await DATA.index.get(await keyOf(a)); }
       case 'get_macro': { const a = dataFor('macro'); return await DATA.ecos.macro(await keyOf(a)); }
       case 'get_ksd_stock_info': { const a = dataFor('ksd'); const r = await DATA.ksd.stock(await keyOf(a), String(input.symbol).trim(), input.year); return Object.assign({ symbol: s, source: '한국예탁결제원 (공공데이터포털)' }, r); }
       case 'query_ksd': { const a = dataFor('ksd'); const r = await DATA.ksd.call(await keyOf(a), String(input.op), Object.fromEntries(Object.entries(input.params || {}).map(([k2, v]) => [k2, String(v)]))); if (r.items.length > 200) { r.note = `${r.items.length}건 중 앞 200건만`; r.items = r.items.slice(0, 200); } return r; }
@@ -562,6 +597,19 @@
 
 목표: 사용자가 근거 있는 판단을 하고, 손실을 통제하고, 같은 실수를 반복하지 않게 도와 수익을 낼 가능성을 높이는 것. 수익을 약속하지 않습니다.
 
+데이터 지도 (등록된 것만, 도구가 있으면 기억이나 짐작 대신 꼭 도구로)
+${[
+  ['get_briefing', '오늘 · 요즘 시장, 이슈, 증권사 시각 → 먼저 이것 (아침 8시 전 보강판), 그 뒤 소식은 웹 검색'],
+  ['get_index', '코스피 · 코스닥 수준과 흐름'],
+  ['get_macro', '기준금리 · 국고채 · 원/달러 (한국은행)'],
+  ['get_quote', '현재가 — 결과의 source 로 실시간(KIS)인지 전일 종가(공공데이터)인지 구분해 말함. ETF 는 NAV 와 괴리율도'],
+  ['get_price_history', '추세 · 지표 · 변동성 · 낙폭 (이 앱이 계산)'],
+  ['get_ksd_stock_info', '한국 종목의 공식 기록 · 상장일 · 작년 배당'],
+  ['query_ksd', '의무보호예수(풀릴 물량) · 신규 예탁지정 · 시장 통계'],
+  ['get_news', '해외 종목 회사 뉴스'],
+].filter(([n]) => tools.includes(n)).map(([n, w]) => `- ${n}: ${w}`).join('\n') || '- (시세 · 자료 도구 없음)'}
+- 서로 상관없는 조회는 한 번에 함께 부릅니다 (예: get_quote + get_price_history + get_ksd_stock_info). 한국 종목은 6자리 코드(005930)로 부릅니다.
+
 데이터 원칙
 - 쓸 수 있는 도구: ${tools.join(', ') || '없음'}. ${dataFor('quote') ? '' : '시세 API 가 등록되어 있지 않으니, 가격을 말할 때는 웹 검색 결과나 사용자가 준 숫자만 쓰고 그 사실을 밝힙니다. '}
 - 가격 · 등락률 · 지표 · 날짜는 도구 결과나 검색 결과에 있는 것만 말하고, 언제 기준인지 적습니다. 모르는 숫자는 지어내지 말고 "확인 필요"라고 씁니다.
@@ -578,6 +626,7 @@
 6. 다음에 확인할 것 (실적 발표일 · 공시 · 지표 발표 등)
 
 습관 원칙: 잦은 매매 · 몰빵 · 물타기 · 손절 미루기 · 뉴스 추격 매수의 위험을 필요할 때 짚습니다. 레버리지 · 신용 · 단기 급등주는 위험을 분명히 말합니다. 세금 · 수수료도 고려합니다.
+답의 끝에는 쓴 근거를 한 줄로: "근거: 시세(출처 · 기준일) · 브리핑(날짜) · 리포트(증권사) …". 근거 사이에 엇갈림이 있으면(뉴스는 낙관, 리포트는 경계 등) 숨기지 말고 짚습니다.
 이것은 정보 제공이며 투자 판단과 책임은 사용자에게 있다는 점을 첫 답에서 한 번만 짧게 밝힙니다. 표는 짧게, 문단은 짧게 씁니다.` + meBlock();
   }
 
@@ -783,7 +832,7 @@
   }
 
   const PROMPTS = [
-    ['오늘 시장 한눈에', '미국 · 한국 증시와 금리 · 환율 · 유가 흐름, 오늘 주목할 일정', '오늘 미국과 한국 증시 흐름, 금리 · 환율 · 유가, 그리고 이번 주 주목할 일정(실적 · 지표 발표)을 근거와 함께 요약해 줘.'],
+    ['오늘 시장 한눈에', '미국 · 한국 증시와 금리 · 환율 · 유가 흐름, 오늘 주목할 일정', '오늘 시장을 정리해 줘. get_briefing 으로 오늘 아침 큰 이슈와 증권사 시각을, 있으면 get_index 로 코스피 · 코스닥, get_macro 로 금리 · 환율을 먼저 확인하고, 그 뒤 필요한 것만 웹 검색으로 보완해. ① 한 줄 요약 ② 지수 · 금리 · 환율 숫자 ③ 큰 이슈 3가지와 증권사 시각 ④ 내 관심 종목(get_portfolio)에 미칠 영향 ⑤ 이번 주 일정 순서로.'],
     ['내 종목 점검', '보유 · 관심 종목의 추세 · 위험 · 다음 확인할 일', '내 관심 종목과 보유 종목을 get_portfolio 로 보고, 각 종목의 시세 · 추세 · 위험과 다음에 확인할 일을 표로 점검해 줘. 손절가나 비중이 위험해 보이면 짚어 줘.'],
     ['매수 전 따져 보기', '살까 말까 고민되는 종목을 결론 · 근거 · 반대 근거로', '매수를 고민하는 종목이 있어. 종목은 '],
     ['손절 · 목표가 · 수량', '감수할 손실에서 거꾸로 수량과 비중 계산', '계좌 금액 1000만 원, 한 번에 1% 까지 손실을 감수할 때, 종목 '],
@@ -998,6 +1047,7 @@
     { type: 'datagokr', why: '국내 주식 시세 · 일봉 · 20년 차트', how: '공공데이터포털 「금융위원회_주식시세정보」 활용신청' },
     { type: 'etf', why: 'ETF 시세 · NAV · 기초지수 (0190G0 같은 ETF)', how: '같은 공공데이터포털 키 · 「금융위원회_증권상품시세정보」 활용신청' },
     { type: 'ksd', why: '종목 공식 기록 · 배당 순위 · 의무보호예수', how: '같은 공공데이터포털 키 · 「한국예탁결제원_주식정보서비스」' },
+    { type: 'index', why: '코스피 · 코스닥 지수 흐름 — AI 가 시장 분위기를 숫자로', how: '같은 공공데이터포털 키 · 「금융위원회_지수시세정보」 활용신청' },
     { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
     { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
     { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
@@ -1028,7 +1078,7 @@
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
       const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기</span>';
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
-        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율' })[c]).join(' · ')}</dd>` : ''}</dl>
+        <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${!ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
         <div class="row">${ai ? `<label class="use"><input type="radio" name="useAi" value="${a.id}"${cur && cur.id === a.id ? ' checked' : ''}${a.on === false ? ' disabled' : ''}>대화에 쓰기</label>` : `<label class="use"><input type="checkbox" data-on="${a.id}"${a.on !== false ? ' checked' : ''}>사용</label>`}<span class="grow"></span>
           <button class="btn sm" data-test="${a.id}">시험</button><button class="btn sm ghost icon" data-edit="${a.id}" title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button class="btn sm ghost icon" data-rm="${a.id}" title="지우기" aria-label="지우기">${icon('trash', 15)}</button></div></div>`;
@@ -1071,6 +1121,7 @@
       } else {
         const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
         if (a.type === 'ecos') { await DATA.ecos.macro(k); }
+        else if (a.type === 'index') { await DATA.index.get(k, ['코스피']); }
         else if (a.type === 'etf') { await DATA.etf.quote(k, '069500'); } // KODEX 200
         else if (a.type === 'ksd') { const r = await DATA.ksd.call(k, 'getStkIsinByShortIsinN1', { shortIsin: '005930' }); if (!r.items.length) throw new Error('예탁결제원: 시험 종목(005930)을 찾지 못했습니다'); }
         else if (T.caps.includes('quote')) await DATA[a.type].quote(k, s, a); else await DATA.custom.custom(k, s, a);
@@ -1485,6 +1536,23 @@
     if (r.status === 404) return null;
     if (!r.ok) throw new Error('브리핑을 불러오지 못했습니다 (' + r.status + ')');
     const j = await r.json(); bui.cache[f] = j; return j;
+  }
+  async function briefingForAI(focus, date) {
+    const ok = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
+    const m = await getBrief(ok(date) ? date + '.json' : 'latest.json').catch(() => null);
+    const st = await getBrief(ok(date) ? 'strategy/' + date + '.json' : 'strategy/latest.json').catch(() => null);
+    if (!m && !st) throw new Error('브리핑 자료를 받지 못했습니다');
+    const hit = t => !focus || String(t || '').toLowerCase().includes(focus.toLowerCase());
+    const cut = (t, n) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n) + '…' : t; };
+    const issues = m ? (m.items || []).filter(x => hit(x.title + ' ' + (x.keywords || []).join(' ') + ' ' + (x.related || []).map(r => r.title).join(' '))).map(x => ({ rank: x.rank, title: x.title, category: x.category, outlets: x.sources, source: x.source, time: x.time, also: (x.related || []).slice(0, 2).map(r => `${r.source}: ${r.title}`) })) : [];
+    const feeds = !m || !m.byFeed ? [] : Array.isArray(m.byFeed) ? m.byFeed.map(f => [f.name, f.items]) : Object.entries(m.byFeed); // [{ name, items }] (예전 모양도)
+    const extra = focus ? feeds.flatMap(([feed, list]) => (Array.isArray(list) ? list : []).filter(x => hit(x.title)).map(x => ({ feed, title: x.title, source: x.source, time: x.time }))).slice(0, 12) : [];
+    const rep = (list, n, len) => (list || []).filter(x => hit(x.title + ' ' + x.summary)).slice(0, n).map(x => ({ broker: x.broker, kind: x.kindName, date: x.date, title: x.title, reads: x.reads, summary: cut(x.summary, len) }));
+    return {
+      morning: m ? { date: m.date, builtAt: m.generatedAt, picked: `${m.issues || ''}개 이슈 중 여러 언론이 함께 다룬 큰 이슈`, issues, moreFromFeeds: extra.length ? extra : undefined } : null,
+      strategy: st ? { date: st.date, builtAt: st.generatedAt, dailyDate: st.dailyDate, daily: rep(st.daily, focus ? 8 : 10, focus ? 700 : 420), weekly: rep(st.weekly, focus ? 5 : 6, 300), topWords: (st.dailyKeywords || []).slice(0, 12).map(k => `${k.word}(${k.count})`).join(', ') } : null,
+      note: '아침 8시 전까지 여러 번 보강하는 자료. 이후 소식은 웹 검색으로 보완',
+    };
   }
   async function renderBrief(force) {
     const box = $('bList');
@@ -2327,6 +2395,7 @@
     box.innerHTML = `<div class="mk-grid">
       <section class="sc-card mk-div"><div class="st-ch-head"><h3>${y}년 배당 상위 <small>시가배당률 · 누르면 종목 분석</small></h3><div class="sc-seg" id="mkMart">${[['all', '전체'], ['유가', '유가증권'], ['코스닥', '코스닥']].map(([v, t]) => `<button type="button" data-v="${v}" class="${mkMart === v ? 'on' : ''}">${t}</button>`).join('')}</div></div><div id="mkDiv"><div class="sc-skel">불러오는 중…</div></div></section>
       <section class="sc-card"><h3>의무보호예수 <small>최대주주 · 공모 등으로 묶인 물량 — 풀리면 매물 부담</small></h3><div id="mkLock"><div class="sc-skel">불러오는 중…</div></div></section>
+      ${dataFor('index') ? '<section class="sc-card"><h3>지수 <small>금융위원회 · 종가 기준</small></h3><div id="mkIdx"><div class="sc-skel">불러오는 중…</div></div></section>' : ''}
       ${dataFor('macro') ? '<section class="sc-card"><h3>금리 · 환율 <small>한국은행 ECOS · 한 달 변화</small></h3><div id="mkMacro"><div class="sc-skel">불러오는 중…</div></div></section>' : ''}
       <section class="sc-card"><h3>시장 규모 <small>상장 회사 · 시가총액</small></h3><div id="mkSize"><div class="sc-skel">불러오는 중…</div></div></section>
       <section class="sc-card"><h3>이번 달 신규 예탁지정 <small>곧 거래될 수 있는 새 종목 후보</small></h3><div id="mkNew"><div class="sc-skel">불러오는 중…</div></div></section>
@@ -2353,6 +2422,9 @@
         return `<div class="mk-lock"><b>${MK[t]}</b><span class="big">${isFinite(v.ratio) ? num(v.ratio, 2) + '%' : '–'}</span><div class="bar"><i style="width:${isFinite(v.ratio) ? Math.min(100, v.ratio * 5) : 0}%"></i></div><small>${isFinite(v.q) ? num(v.q / 1e6, 1) + '백만 주' : ''}${isFinite(v.co) ? ` · ${num(v.co, 0)}개 회사` : ''}${kind(it) ? ` · ${esc(kind(it))}` : ''} · 기준 ${esc(r.d.slice(0, 4) + '.' + r.d.slice(4, 6) + '.' + r.d.slice(6))}</small></div>`; }).join('')
         + '<p class="sc-mute">비율이 오르면 묶인 물량이 늘어난 것, 크게 줄면 그만큼 풀린 것입니다. 개별 종목의 해제일은 공시(DART)에서 확인하세요.</p>';
     }).catch(e => fail('mkLock', e));
+    if (dataFor('index')) (async () => { const a = dataFor('index'); return ksdCached('idx:' + lastBizDays(1)[0], 6, async () => DATA.index.get(await keyOf(a))); })().then(m => {
+      $('mkIdx').innerHTML = `<dl class="sc-kv mk-macro">${m.indices.map(x => `<dt>${esc(x.name)}<small>${esc(String(x.date).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3'))} · 20일 ${pct(x.ret20d)}</small></dt><dd>${num(x.close, 2)} <span class="${cls(x.changePct)}">${pct(x.changePct)}</span></dd>`).join('')}</dl>${m.errors ? `<p class="sc-mute">${esc(m.errors.join(' · '))}</p>` : ''}`;
+    }).catch(e => fail('mkIdx', e));
     if (dataFor('macro')) (async () => { const a = dataFor('macro'); return ksdCached('ecos:' + lastBizDays(1)[0], 12, async () => DATA.ecos.macro(await keyOf(a))); })().then(m => {
       $('mkMacro').innerHTML = `<dl class="sc-kv mk-macro">${m.series.map(x => `<dt>${esc(x.name)}<small>${esc(String(x.date).replace(/(\d{4})(\d{2})(\d{2})?/, (a0, y, mo, d) => d ? `${y}.${mo}.${d}` : `${y}.${mo}`))}</small></dt><dd>${num(x.value, x.unit === '원' ? 1 : 2)}${x.unit === '원' ? '원' : '%'}${x.change1m != null ? ` <span class="${cls(x.change1m)}">${x.change1m > 0 ? '+' : ''}${num(x.change1m, x.unit === '원' ? 1 : 2)}${x.unit === '원' ? '' : '%p'}</span>` : ''}</dd>`).join('')}</dl>${m.errors ? `<p class="sc-mute">${esc(m.errors.join(' · '))}</p>` : ''}`;
     }).catch(e => fail('mkMacro', e));
