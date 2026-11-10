@@ -1483,7 +1483,7 @@ const API = {
       const files = await GH.dir('decks');
       return files.filter(f => /\.json$/i.test(f.name)).map(f => {
         const name = f.name.replace(/\.json$/i, '');
-        return { name, title: name, slides: '', theme: '', modified: '', size: f.size, partial: true };
+        return { name, title: name, slides: '', theme: '', modified: '', size: f.size, sha: f.sha || '', partial: true }; // sha: 내용이 같은지 (목록 화면이 기억해 둔 제목·저장 시각을 그대로 써도 되는지)
       });
     }
     const all = this._local();
