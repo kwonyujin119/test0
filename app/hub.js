@@ -225,14 +225,29 @@
   /* 새로 만들기·가져오기·복제 전에: 최신 목록을 확인 (목록을 못 읽은 채 같은 이름으로 덮어쓰지 않게) */
   async function freshList() { await refresh(); if (!listOk) tell('목록을 확인할 수 없습니다', '교안 목록을 확인할 수 없어 진행하지 않았습니다. 인터넷 연결을 확인한 뒤 다시 해 주세요.'); return listOk; }
   window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); // 뒤로 가기로 돌아오면 목록을 새로
+  /* GitHub 저장소의 목록에는 파일 이름만 있고 제목·저장 시각이 없음. 그대로 그리면 이름순으로 먼저 보였다가
+     내용을 다 읽은 뒤 최근 저장순으로 다시 바뀌어, 새로 고칠 때마다 엉뚱한 교안이 맨 위에 잠깐 보였음.
+     → 교안마다 제목·슬라이드 수·저장 시각을 이 기기에 기억해 두고(파일 내용의 sha 가 같을 때만 씀),
+       처음 보거나 바뀐 교안은 내용을 읽은 뒤에 한 번에 그림 (그동안은 빈 카드 자리) */
+  const META = 'gyoan:hub:meta';
+  const deckMeta = (() => { try { const m = JSON.parse(localStorage.getItem(META) || '{}'); return m && typeof m === 'object' ? m : {}; } catch (e) { return {}; } })();
+  let metaTimer = 0;
+  const saveMeta = () => { clearTimeout(metaTimer); metaTimer = setTimeout(() => { try { localStorage.setItem(META, JSON.stringify(deckMeta)); } catch (e) { } }, 300); };
+  function fillMeta(d, title, slides, when) { d._read = true; d.title = title || d.name; d.slides = slides; d.modified = fmtWhen(when); d._t = Date.parse(when) || 0; d._when = when || ''; }
+  let foldersFirst = null; // 폴더 정보를 처음 읽는 중 (첫 그림을 폴더까지 맞춘 뒤에 그리려고)
+  const within = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
   async function refresh() {
     try { decks = await API.list(); listOk = true; } catch (e) { listOk = false; toast('목록을 불러오지 못했습니다' + (e && e.message ? ' — ' + e.message : '') + (decks.length ? ' (이전 목록을 보여 줍니다)' : ''), 4000); } // 실패해도 보이던 목록은 그대로
     decks = decks.filter(d => !(removed.has(d.name) && Date.now() - removed.get(d.name) < 120000));
+    for (const d of decks) if (d.partial && !d._read) { const m = deckMeta[d.name]; if (m && d.sha && m.sha === d.sha) fillMeta(d, m.title, m.slides, m.when); }
+    if (listOk) { let gone = false; for (const k in deckMeta) if (!decks.some(d => d.name === k)) { delete deckMeta[k]; gone = true; } if (gone) saveMeta(); }
+    const unknown = decks.filter(d => d.partial && !d._read);
+    if (unknown.length) await within(Promise.all(unknown.map(d => loadDeck(d).catch(() => null))), 8000); // 오래 걸리면(느린 연결) 8초 뒤에는 아는 만큼 그림
+    if (!loadedOnce && foldersFirst) await within(foldersFirst, 3000);
     loadedOnce = true;
     render();
-    /* 목록에 제목·날짜가 없는 저장소(GitHub): 내용을 다 읽은 뒤 한 번 더 정렬해 그림 */
-    const partial = decks.filter(d => d.partial && !d._read);
-    if (partial.length) Promise.all(partial.map(d => loadDeck(d).catch(() => null))).then(() => { if (!document.querySelector('.deck-card.busy')) render(); });
+    const still = decks.filter(d => d.partial && !d._read);
+    if (still.length) Promise.all(still.map(d => loadDeck(d).catch(() => null))).then(() => { if (!document.querySelector('.deck-card.busy')) render(); });
   }
 
   /* ---------- 때 ---------- */
@@ -254,10 +269,17 @@
 
   /* ---------- 교안 내용 (썸네일용) ---------- */
   function loadDeck(d) {
-    const ck = d.name + '|' + (d.size || '') + '|' + (d.modified || '');
+    const ck = d.name + '|' + (d.size || '') + '|' + (d.sha || d.modified || ''); // GitHub: sha 로 (제목·시각을 채운 뒤에도 같은 열쇠 → 두 번 받지 않음)
     if (!deckCache.has(ck)) deckCache.set(ck, API.load(d.name).catch(e => { deckCache.delete(ck); throw e; }));
     return deckCache.get(ck).then(deck => {
-      if (d.partial && !d._read) { d._read = true; d.title = deck.title || d.name; d.slides = (deck.slides || []).length; const when = deck.modified || deck.created; d.modified = fmtWhen(when); d._t = Date.parse(when) || 0; }
+      if (d.partial) {
+        const title = deck.title || d.name, slides = (deck.slides || []).length, when = deck.modified || deck.created || '';
+        const was = d._read ? [d.title, d.slides, d._when] : null;
+        fillMeta(d, title, slides, when);
+        if (d.sha) { deckMeta[d.name] = { sha: d.sha, title, slides, when }; saveMeta(); }
+        // 기억해 둔 것과 실제 내용이 다르면(사이트 반영이 늦던 때 기억한 것 등) 고쳐서 다시 그림
+        if (was && (was[0] !== title || was[1] !== slides || was[2] !== when) && loadedOnce) { clearTimeout(loadDeck._t); loadDeck._t = setTimeout(() => { if (!document.querySelector('.deck-card.busy')) render(); }, 200); }
+      }
       return deck;
     });
   }
@@ -279,7 +301,7 @@
     const kw = (q.value || '').trim().toLowerCase();
     const vf = viewFolder();
     const grouped = filter === 'all' && !kw; // 모든 교안: 폴더 밖 교안 → 폴더
-    let all = decks.filter(d => !kw || ((d.title || '') + ' ' + d.name).toLowerCase().includes(kw));
+    let all = (loadedOnce ? decks : []).filter(d => !kw || ((d.title || '') + ' ' + d.name).toLowerCase().includes(kw));
     if (filter === 'week') all = all.filter(inWeek);
     if (filter === 'draft') all = all.filter(d => Draft.has(d.name));
     all = sorted(all);
@@ -836,9 +858,10 @@
   });
 
   { const h = folderOfHash(); if (h) filter = 'f:' + h; }
+  foldersFirst = Folders.load();
   render(); // 불러오기 전 빈 카드 자리
   refresh();
-  Folders.load().then(() => { render(); if (Folders.pend.length && !GUEST) Folders.flush(); }); // 지난번에 저장하지 못한 변경이 있으면 이어서 저장
+  foldersFirst.then(() => { if (loadedOnce) render(); if (Folders.pend.length && !GUEST) Folders.flush(); }); // 지난번에 저장하지 못한 변경이 있으면 이어서 저장
   /* 다른 기기(휴대폰 · PC)에서 바꾼 폴더: 이 화면으로 돌아올 때 다시 읽음 */
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !Folders.pend.length && !Folders.busy) Folders.load().then(ok => { if (ok && !Folders.pend.length && !Folders.busy) render(); }); });
   window.addEventListener('pagehide', () => { if (Folders.pend.length && !Folders.busy) Folders.flush(); }); // 저장하기 전에 화면을 떠나면 바로 저장 시작 (끝내지 못하면 다음에 이어서)
