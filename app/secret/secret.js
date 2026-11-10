@@ -615,30 +615,192 @@
   }
 
   /* 일봉에서 지표를 계산 (AI 가 숫자를 지어내지 않도록, 계산은 여기서) */
+  const R2 = v => v == null || !isFinite(v) ? null : Math.round(v * 100) / 100;
   function analyze(bars) {
-    const c = bars.map(b => b.c).filter(isFinite); const n = c.length; if (n < 2) return { bars: n };
+    bars = (bars || []).filter(b => b && isFinite(b.c) && b.c > 0);
+    const c = bars.map(b => b.c), n = c.length; if (n < 2) return { bars: n };
+    const H = i => isFinite(bars[i].h) && bars[i].h > 0 ? bars[i].h : c[i], L = i => isFinite(bars[i].l) && bars[i].l > 0 ? bars[i].l : c[i];
     const last = c[n - 1], ret = k => n > k ? (last / c[n - 1 - k] - 1) * 100 : null;
-    const sma = k => n >= k ? c.slice(-k).reduce((a, b) => a + b, 0) / k : null;
+    const smaAt = (k, i) => i + 1 >= k ? c.slice(i + 1 - k, i + 1).reduce((a, b) => a + b, 0) / k : null, sma = k => smaAt(k, n - 1);
+    const ema = (a, k) => { const w = 2 / (k + 1); let e = a[0]; return a.map((x, i) => (e = i ? x * w + e * (1 - w) : x)); };
     let rsi = null;
     if (n > 15) { let g = 0, l = 0; for (let i = 1; i <= 14; i++) { const d = c[i] - c[i - 1]; if (d > 0) g += d; else l -= d; } g /= 14; l /= 14; for (let i = 15; i < n; i++) { const d = c[i] - c[i - 1]; g = (g * 13 + Math.max(d, 0)) / 14; l = (l * 13 + Math.max(-d, 0)) / 14; } rsi = l === 0 ? 100 : 100 - 100 / (1 + g / l); }
     let atr = null;
-    if (n > 15) { const tr = []; for (let i = n - 14; i < n; i++) { const b = bars[i], p = bars[i - 1].c; tr.push(Math.max(b.h - b.l, Math.abs(b.h - p), Math.abs(b.l - p))); } atr = tr.reduce((a, b) => a + b, 0) / tr.length; }
+    if (n > 15) { const tr = []; for (let i = n - 14; i < n; i++) { const p = c[i - 1]; tr.push(Math.max(H(i) - L(i), Math.abs(H(i) - p), Math.abs(L(i) - p))); } atr = tr.reduce((a, b) => a + b, 0) / tr.length; }
     const lr = []; for (let i = Math.max(1, n - 20); i < n; i++) lr.push(Math.log(c[i] / c[i - 1]));
     const mean = lr.reduce((a, b) => a + b, 0) / lr.length, vol = Math.sqrt(lr.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, lr.length - 1)) * Math.sqrt(252) * 100;
-    const hi = Math.max(...bars.map(b => b.h)), lo = Math.min(...bars.map(b => b.l));
+    let hi = -Infinity, lo = Infinity; for (let i = 0; i < n; i++) { hi = Math.max(hi, H(i)); lo = Math.min(lo, L(i)); }
     let peak = c[0], mdd = 0; for (const x of c) { peak = Math.max(peak, x); mdd = Math.min(mdd, (x / peak - 1) * 100); }
     const s20 = sma(20), s50 = sma(50), s200 = sma(200);
-    const r2 = v => v == null ? null : Math.round(v * 100) / 100;
+    // MACD (12, 26, 9)
+    let macd = null;
+    if (n >= 35) { const e12 = ema(c, 12), e26 = ema(c, 26), m = c.map((_, i) => e12[i] - e26[i]), sg = ema(m.slice(25), 9), h1 = m[n - 1] - sg[sg.length - 1], h0 = m[n - 2] - sg[sg.length - 2];
+      macd = { macd: R2(m[n - 1]), signal: R2(sg[sg.length - 1]), hist: R2(h1), state: h1 > 0 ? (h0 <= 0 ? '방금 시그널 상향 돌파' : '시그널 위 (상승 힘)') : (h0 >= 0 ? '방금 시그널 하향 이탈' : '시그널 아래 (하락 힘)') }; }
+    // 볼린저 (20, 2)
+    let boll = null;
+    if (n >= 20) { const w = c.slice(-20), sd = Math.sqrt(w.reduce((a, b) => a + (b - s20) ** 2, 0) / 20), up = s20 + 2 * sd, dn = s20 - 2 * sd; boll = { upper: R2(up), lower: R2(dn), pctB: R2((last - dn) / ((up - dn) || 1) * 100), widthPct: R2((up - dn) / s20 * 100) }; }
+    // 52주 위치 · 지지 / 저항 · 거래량 · 연속
+    const w52 = Math.max(0, n - 250); let h52 = -Infinity, l52 = Infinity; for (let i = w52; i < n; i++) { h52 = Math.max(h52, H(i)); l52 = Math.min(l52, L(i)); }
+    const lvl = k => { let a = Infinity, b = -Infinity; for (let i = Math.max(0, n - 1 - k); i < n - 1; i++) { a = Math.min(a, L(i)); b = Math.max(b, H(i)); } return [R2(a), R2(b)]; };
+    const [sup20, res20] = lvl(20), [sup60, res60] = lvl(60);
+    const vs = bars.map(b => +b.v || 0), vAvg = vs.slice(Math.max(0, n - 21), n - 1).reduce((a, b) => a + b, 0) / Math.max(1, Math.min(20, n - 1));
+    const volRatio = vAvg > 0 && vs[n - 1] > 0 ? vs[n - 1] / vAvg : null;
+    let streak = 0; for (let i = n - 1; i > 0; i--) { const d = Math.sign(c[i] - c[i - 1]); if (!d) break; if (!streak || Math.sign(streak) === d) streak += d; else break; }
+    let cross = null;
+    if (n >= 52) for (let i = n - 1; i >= Math.max(50, n - 30); i--) { const a = smaAt(20, i) - smaAt(50, i), b = smaAt(20, i - 1) - smaAt(50, i - 1); if (a > 0 && b <= 0) { cross = { type: '골든크로스 (20일선이 50일선 위로)', date: bars[i].t, daysAgo: n - 1 - i }; break; } if (a < 0 && b >= 0) { cross = { type: '데드크로스 (20일선이 50일선 아래로)', date: bars[i].t, daysAgo: n - 1 - i }; break; } }
+    const dist = v => v ? R2((last / v - 1) * 100) : null;
+    const sig = [];
+    if (rsi != null) { if (rsi >= 70) sig.push(`RSI ${R2(rsi)} — 과열권(70 이상)`); else if (rsi <= 30) sig.push(`RSI ${R2(rsi)} — 침체권(30 이하)`); }
+    if (s200) sig.push(last >= s200 ? `200일선 위 (${dist(s200)}%) — 장기 상승 구간` : `200일선 아래 (${dist(s200)}%) — 장기 약세 구간`);
+    if (cross) sig.push(`${cross.type} ${cross.daysAgo}거래일 전`);
+    if (macd && /방금/.test(macd.state)) sig.push('MACD ' + macd.state);
+    if (boll) { if (boll.pctB > 100) sig.push('볼린저 상단 돌파 — 강한 상승 또는 과열'); else if (boll.pctB < 0) sig.push('볼린저 하단 이탈 — 급락 또는 과매도'); if (n >= 140) { const ws = []; for (let i = n - 120; i < n; i += 5) { const w = c.slice(i - 19, i + 1), m = w.reduce((a, b) => a + b, 0) / 20; ws.push(Math.sqrt(w.reduce((a, b) => a + (b - m) ** 2, 0) / 20) * 4 / m * 100); } if (boll.widthPct <= Math.min(...ws) * 1.1) sig.push('볼린저 폭이 최근 6개월 가장 좁음 — 큰 움직임 직전일 수 있음'); } }
+    if (volRatio != null && volRatio >= 2) sig.push(`거래량 평소(20일 평균)의 ${R2(volRatio)}배`);
+    if (h52 > 0 && last >= h52 * 0.98) sig.push('52주 최고가 근처 (2% 이내)'); else if (l52 > 0 && last <= l52 * 1.02) sig.push('52주 최저가 근처 (2% 이내)');
+    if (Math.abs(streak) >= 4) sig.push(`${Math.abs(streak)}일 연속 ${streak > 0 ? '상승' : '하락'}`);
+    if (mdd <= -30 && (last / hi - 1) * 100 > -10) sig.push('큰 낙폭 뒤 고점 근처까지 회복');
     return {
-      from: bars[0].t, to: bars[n - 1].t, bars: n, last: r2(last),
-      returnPct: { d5: r2(ret(5)), d20: r2(ret(20)), d60: r2(ret(60)), d120: r2(ret(120)), d250: r2(ret(250)) },
-      sma: { d20: r2(s20), d50: r2(s50), d200: r2(s200) },
+      from: bars[0].t, to: bars[n - 1].t, bars: n, last: R2(last),
+      returnPct: { d1: R2(ret(1)), d5: R2(ret(5)), d20: R2(ret(20)), d60: R2(ret(60)), d120: R2(ret(120)), d250: R2(ret(250)) },
+      sma: { d20: R2(s20), d50: R2(s50), d200: R2(s200) }, fromSmaPct: { d20: dist(s20), d50: dist(s50), d200: dist(s200) },
       trend: s20 && s50 ? (last > s20 && s20 > s50 ? '상승 정렬 (종가 > 20일 > 50일)' : last < s20 && s20 < s50 ? '하락 정렬 (종가 < 20일 < 50일)' : '혼조') : '자료 부족',
-      rsi14: r2(rsi), atr14: r2(atr), atrPct: atr ? r2(atr / last * 100) : null, volatility20dAnnualPct: r2(vol),
-      rangeHigh: r2(hi), rangeLow: r2(lo), fromHighPct: r2((last / hi - 1) * 100), maxDrawdownPct: r2(mdd),
-      avgVolume20: r2(bars.slice(-20).reduce((a, b) => a + (b.v || 0), 0) / Math.min(20, n)),
-      recentCloses: bars.slice(-10).map(b => [b.t, r2(b.c)]),
+      rsi14: R2(rsi), macd, bollinger: boll, atr14: R2(atr), atrPct: atr ? R2(atr / last * 100) : null, volatility20dAnnualPct: R2(vol),
+      rangeHigh: R2(hi), rangeLow: R2(lo), fromHighPct: R2((last / hi - 1) * 100), maxDrawdownPct: R2(mdd),
+      week52: { high: R2(h52), low: R2(l52), positionPct: h52 > l52 ? R2((last - l52) / (h52 - l52) * 100) : null },
+      levels: { support20: sup20, resistance20: res20, support60: sup60, resistance60: res60, note: '직전 20 · 60거래일의 최저 · 최고 (오늘 제외)' },
+      volume: { last: vs[n - 1] || null, avg20: R2(vAvg), ratio: R2(volRatio) }, streakDays: streak, lastCross: cross,
+      signals: sig, signalNote: '이 앱이 규칙으로 계산한 사실 — 매수 · 매도 추천이 아님',
+      recentCloses: bars.slice(-10).map(b => [b.t, R2(b.c)]),
     };
+  }
+
+  /* 여러 개를 동시에 몇 개씩만 (KIS 초당 한도 · 공공데이터 부담) */
+  async function pool(list, k, fn) { const out = new Array(list.length); let i = 0; await Promise.all(Array.from({ length: Math.min(k, list.length) }, async () => { while (i < list.length) { const j = i++; out[j] = await fn(list[j], j); } })); return out; }
+  const DISC_RISK = /유상증자|전환사채|신주인수권부사채|교환사채|감자|최대주주\s*변경|소송|거래정지|매매거래정지|횡령|배임|관리종목|불성실공시|상장적격성|감사의견|회생|부도|영업정지|투자주의|투자경고|투자위험|단기과열|자기주식\s*처분|주식등의대량보유/;
+  const DISC_GOOD = /자기주식\s*(취득|소각)|자사주\s*(매입|소각)|무상증자|배당|단일판매|공급계약|수주|특허|기술이전|영업실적.*(증가|호전)/;
+  const discTag = t => DISC_RISK.test(t) ? '주의' : DISC_GOOD.test(t) ? '긍정' : '';
+  /* 관심 · 보유 종목 목록에 있으면 손익 · 손절/목표까지 거리 · 경고 */
+  function posInfo(s, price) {
+    const it = watch.items.find(x => String(x.symbol || '').toUpperCase() === s); if (!it) return null;
+    const o = { name: it.name || undefined, holding: +it.qty > 0, qty: +it.qty || 0, avg: +it.avg || null, stop: +it.stop || null, target: +it.target || null, memo: it.memo || undefined, alerts: [] };
+    if (price) {
+      if (o.avg) { o.pnlPct = R2((price / o.avg - 1) * 100); if (o.qty) o.pnlAmount = Math.round((price - o.avg) * o.qty); }
+      if (o.stop) { o.toStopPct = R2((o.stop / price - 1) * 100); if (price <= o.stop) o.alerts.push('손절가 이탈'); else if (o.toStopPct > -3) o.alerts.push('손절가까지 3% 이내'); }
+      if (o.target) { o.toTargetPct = R2((o.target / price - 1) * 100); if (price >= o.target) o.alerts.push('목표가 도달'); }
+      if (o.avg && o.stop && o.avg !== o.stop) o.rMultiple = R2((price - o.avg) / Math.abs(o.avg - o.stop));
+      if (+it.alertHi && price >= +it.alertHi) o.alerts.push(`알림가 ${it.alertHi} 이상`);
+      if (+it.alertLo && price <= +it.alertLo) o.alerts.push(`알림가 ${it.alertLo} 이하`);
+    }
+    return o;
+  }
+  /* 회사 이름으로 왔으면 DART 회사 목록으로 6자리 코드 찾기 */
+  async function toCode(s) {
+    if (!/[가-힣]/.test(s) || !dataFor('dart')) return s;
+    try { const c = await DATA.dart.corp(await keyOf(dataFor('dart')), s); return c.stock || s; } catch (e) { return s; }
+  }
+
+  /* 한 종목 종합: 따로 부르던 것을 한 번에 (AI 왕복을 줄이고, 신호 · 밸류 · 공시 분류는 여기서 계산) */
+  async function stockDossier(sym0) {
+    let s = String(sym0 || '').trim().toUpperCase(); s = await toCode(s);
+    const kr = isKR(s), gaps = [], dk = dataFor('dart') && kr ? await keyOf(dataFor('dart')).catch(() => null) : null;
+    const safe = async (label, ok, fn) => { if (!ok) return undefined; try { return await fn(); } catch (e) { gaps.push(`${label}: ${e.message}`); return undefined; } };
+    const [q, bars, fin, disc, idx] = await Promise.all([
+      safe('시세', dataFor('quote'), () => callData('quote', s)),
+      safe('일봉', dataFor('history'), () => callData('history', s, 260)),
+      safe('재무', dk, () => DATA.dart.financials(dk, s)),
+      safe('공시', dk, () => DATA.dart.disclosures(dk, s, 45)),
+      safe('지수', kr && dataFor('index'), async () => DATA.index.get(await keyOf(dataFor('index')), ['코스피', '코스닥'])),
+    ]);
+    const tech = bars && bars.length ? analyze(bars) : null;
+    const wi = watch.items.find(x => String(x.symbol || '').toUpperCase() === s);
+    const name = (q && q.name) || (fin && fin.company) || (disc && disc.company) || (wi && wi.name) || s;
+    const [news, brief] = await Promise.all([
+      kr ? safe('국내 뉴스', dataFor('newsKR'), async () => DATA.naver.search(await keyOf(dataFor('newsKR')), name, 10)) : safe('뉴스', dataFor('news'), async () => ({ items: await callData('news', s, 7) })),
+      safe('브리핑', /[가-힣A-Za-z]{2,}/.test(name) && name !== s || !kr, () => briefingForAI(name, '')),
+    ]);
+    const price = q && isFinite(q.price) ? q.price : tech ? tech.last : null;
+    // 지수 대비 (코스닥 종목이면 코스닥)
+    let rel = null;
+    if (tech && idx && idx.indices) {
+      const kq = /KOSDAQ|코스닥/i.test((q && q.exchange) || '') || /코스닥/.test(JSON.stringify((fin && fin.profile) || ''));
+      const ix = idx.indices.find(x => x.name === (kq ? '코스닥' : '코스피')) || idx.indices[0];
+      if (ix) rel = { index: ix.name, indexRet5d: ix.ret5d, indexRet20d: ix.ret20d, excess5dPctPt: tech.returnPct.d5 != null && ix.ret5d != null ? R2(tech.returnPct.d5 - ix.ret5d) : null, excess20dPctPt: tech.returnPct.d20 != null && ix.ret20d != null ? R2(tech.returnPct.d20 - ix.ret20d) : null };
+    }
+    // 밸류: 증권사(KIS) 값이 있으면 그것, 없으면 시가총액 ÷ 최근 보고서
+    const val = {}, mcap = q ? (q.marketCap || (q.marketCapEok ? q.marketCapEok * 1e8 : null)) : null;
+    if (q) { if (q.per) val.per = q.per; if (q.pbr) val.pbr = q.pbr; if (q.eps) val.eps = q.eps; if (q.week52) val.week52 = q.week52; }
+    if (mcap) val.marketCapEok = Math.round(mcap / 1e8);
+    if (fin && mcap) {
+      const eq = fin.items.자본총계 && fin.items.자본총계.now, ni = fin.items.당기순이익 && fin.items.당기순이익.now;
+      if (eq > 0 && !val.pbr) val.pbrCalc = R2(mcap / eq);
+      if (ni != null && !val.per && fin.report === '사업보고서') val.perCalc = ni > 0 ? R2(mcap / ni) : '적자';
+    }
+    if (Object.keys(val).length) val.note = 'per · pbr 은 증권사(KIS) 값, perCalc · pbrCalc 는 시가총액 ÷ 최근 보고서 순이익 · 자본으로 이 앱이 계산 (지배주주 몫과 조금 다를 수 있음, 분기 보고서로는 PER 을 계산하지 않음)';
+    const di = disc ? disc.items.map(x => Object.assign({}, x, { tag: discTag(x.title) })) : null;
+    // 한눈에 (규칙 계산 · 판단은 AI 가)
+    const card = {};
+    if (tech) {
+      card.추세 = tech.trend + (tech.sma.d200 ? (tech.last >= tech.sma.d200 ? ' · 200일선 위' : ' · 200일선 아래') : '');
+      card.모멘텀 = `5일 ${tech.returnPct.d5}% · 20일 ${tech.returnPct.d20}% · RSI ${tech.rsi14}` + (rel && rel.excess20dPctPt != null ? ` · ${rel.index} 대비 20일 ${rel.excess20dPctPt > 0 ? '+' : ''}${rel.excess20dPctPt}%p` : '');
+      card.위험 = `변동성(연) ${tech.volatility20dAnnualPct}% · 하루 평균 움직임(ATR) ${tech.atrPct}% · 구간 고점 대비 ${tech.fromHighPct}%`;
+      card.가격대 = `지지 ${tech.levels.support20}(20일) / ${tech.levels.support60}(60일) · 저항 ${tech.levels.resistance20}(20일) / ${tech.levels.resistance60}(60일)`;
+    }
+    if (fin) card.재무 = `${fin.year} ${fin.report}(${fin.basis}): 영업이익률 ${fin.ratios.영업이익률}% · 부채비율 ${fin.ratios.부채비율}%` + (fin.items.영업이익 && fin.items.영업이익.change != null ? ` · 영업이익 전기 대비 ${fin.items.영업이익.change}%` : '');
+    if (Object.keys(val).length) card.밸류 = [val.per && `PER ${val.per}`, val.perCalc && `PER(계산) ${val.perCalc}`, val.pbr && `PBR ${val.pbr}`, val.pbrCalc && `PBR(계산) ${val.pbrCalc}`, val.marketCapEok && `시총 ${val.marketCapEok.toLocaleString('ko-KR')}억`].filter(Boolean).join(' · ');
+    if (di) { const r = di.filter(x => x.tag === '주의'), g = di.filter(x => x.tag === '긍정'); card.공시 = `최근 45일 ${di.length}건 — 주의 ${r.length} · 긍정 ${g.length}` + (r.length ? ` (${r.slice(0, 3).map(x => x.title).join(' / ')})` : ''); }
+    const pos = posInfo(s, price);
+    return {
+      symbol: s, name, asOf: (q && q.time) || (tech && tech.to) || null,
+      quote: q || null, scorecard: card, signals: tech ? tech.signals : [], technicals: tech, relative: rel, valuation: Object.keys(val).length ? val : null,
+      financials: fin || null, disclosures: di ? { recent: di.slice(0, 15), risk: di.filter(x => x.tag === '주의'), positive: di.filter(x => x.tag === '긍정') } : null,
+      news: news ? (news.items || []).slice(0, 8) : null, briefing: brief || null, position: pos,
+      gaps, howToUse: 'scorecard 로 큰 그림 → signals · technicals 로 가격대 → financials · valuation · disclosures 로 근본 → news · briefing 으로 최근 이유. gaps 는 못 받은 자료 — 확신을 낮추거나 다른 도구 · 웹 검색으로 보충',
+    };
+  }
+
+  /* 관심 · 보유 종목 전체 점검: 급한 것부터 */
+  async function scanPortfolio() {
+    const items = watch.items.filter(x => x.symbol).slice(0, 20);
+    if (!items.length) return { count: 0, note: '관심 · 보유 종목이 없습니다 — 내 종목 화면에서 추가하면 점검할 수 있습니다' };
+    const dk = dataFor('dart') ? await keyOf(dataFor('dart')).catch(() => null) : null;
+    const rows = await pool(items, 4, async it => {
+      const s = String(it.symbol).toUpperCase(), row = { symbol: s, name: it.name || undefined };
+      try {
+        const t = analyze(await callData('history', s, 130));
+        Object.assign(row, { date: t.to, last: t.last, ret: { d1: t.returnPct.d1, d5: t.returnPct.d5, d20: t.returnPct.d20 }, rsi14: t.rsi14, trend: t.trend, atrPct: t.atrPct, support20: t.levels.support20, signals: t.signals });
+      } catch (e) { row.error = e.message; }
+      const live = watch.quotes[s]; const price = live && isFinite(live.price) && live.time && Date.now() - new Date(live.time) < 6 * 36e5 ? live.price : row.last;
+      const pos = posInfo(s, price); if (pos) { delete pos.name; delete pos.memo; Object.assign(row, pos); }
+      if (dk && isKR(s)) { try { const d = await DATA.dart.disclosures(dk, s, 7); row.newDisclosures = d.items.slice(0, 5).map(x => ({ date: x.date, title: x.title, tag: discTag(x.title), url: x.url })); } catch (e) { } }
+      let u = 0; for (const a of row.alerts || []) u += /이탈/.test(a) ? 5 : /도달|이내/.test(a) ? 3 : 2;
+      for (const d of row.newDisclosures || []) u += d.tag === '주의' ? 3 : d.tag === '긍정' ? 1 : 0;
+      for (const g of row.signals || []) u += /방금|돌파|이탈|크로스|배$/.test(g) ? 1 : 0;
+      if (row.ret && Math.abs(row.ret.d1 || 0) >= 5) u += 2;
+      row.urgency = u; return row;
+    });
+    rows.sort((a, b) => b.urgency - a.urgency);
+    const held = rows.filter(r => r.holding), val = held.reduce((a, r) => a + (r.last || 0) * (r.qty || 0), 0), cost = held.reduce((a, r) => a + (r.avg || 0) * (r.qty || 0), 0);
+    return { count: rows.length, scannedAt: new Date().toISOString(), summary: { holdings: held.length, watchOnly: rows.length - held.length, marketValue: Math.round(val) || null, cost: Math.round(cost) || null, pnlPct: cost ? R2((val / cost - 1) * 100) : null, needsAttention: rows.filter(r => r.urgency >= 3).map(r => r.name || r.symbol) }, rows, note: '급한 순(urgency). 가격은 마지막 일봉 종가(최근 6시간 안에 불러온 시세가 있으면 그것) 기준' + (watch.items.length > 20 ? ` · 앞 20개만 (전체 ${watch.items.length})` : '') };
+  }
+
+  /* 여러 종목 나란히 + 수익률 상관관계 */
+  async function compareStocks(list) {
+    const syms = [...new Set((list || []).map(x => String(x || '').trim().toUpperCase()).filter(Boolean))].slice(0, 6);
+    if (syms.length < 2) throw new Error('비교할 종목을 두 개 이상 주세요');
+    const codes = await Promise.all(syms.map(toCode));
+    const got = await pool(codes, 3, async s => { try { const b = await callData('history', s, 260); return { s, b, t: analyze(b) }; } catch (e) { return { s, err: e.message }; } });
+    const ok = got.filter(x => x.t);
+    const table = got.map(x => x.t ? { symbol: x.s, last: x.t.last, date: x.t.to, ret: x.t.returnPct, volatilityPct: x.t.volatility20dAnnualPct, maxDrawdownPct: x.t.maxDrawdownPct, fromHighPct: x.t.fromHighPct, rsi14: x.t.rsi14, trend: x.t.trend, week52Pos: x.t.week52.positionPct, signals: x.t.signals } : { symbol: x.s, error: x.err });
+    const rets = o => { const m = new Map(); for (let i = Math.max(1, o.b.length - 120); i < o.b.length; i++) m.set(o.b[i].t, o.b[i].c / o.b[i - 1].c - 1); return m; };
+    const corr = [];
+    for (let i = 0; i < ok.length; i++) for (let j = i + 1; j < ok.length; j++) {
+      const A = rets(ok[i]), B = rets(ok[j]), xs = [], ys = []; for (const [t, v] of A) if (B.has(t)) { xs.push(v); ys.push(B.get(t)); }
+      if (xs.length < 20) continue; const ma = xs.reduce((a, b) => a + b, 0) / xs.length, mb = ys.reduce((a, b) => a + b, 0) / ys.length;
+      let sab = 0, sa = 0, sb = 0; xs.forEach((x, k) => { sab += (x - ma) * (ys[k] - mb); sa += (x - ma) ** 2; sb += (ys[k] - mb) ** 2; });
+      corr.push({ pair: [ok[i].s, ok[j].s], corr120d: R2(sab / Math.sqrt(sa * sb)), days: xs.length });
+    }
+    const best = k => ok.slice().sort((a, b) => (b.t.returnPct[k] ?? -1e9) - (a.t.returnPct[k] ?? -1e9)).map(x => x.s);
+    return { table, correlation: corr, rankBy20d: best('d20'), rankBy250d: best('d250'), note: '상관관계 1 에 가까우면 같이 움직임(분산 효과 작음), 0 근처면 따로, 음수면 반대로' };
   }
 
   function sizePlan({ account, risk_percent, entry, stop, target, win_rate }) {
@@ -662,6 +824,9 @@
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
+    if (dataFor('quote') || dataFor('history') || dataFor('dart')) T.push({ name: 'get_stock_dossier', description: '한 종목 종합 조사를 한 번에: 시세 · 일봉 지표(추세 · RSI · MACD · 볼린저 · 52주 위치 · 지지/저항 · 거래량) · 규칙 신호(signals) · 지수 대비 성과 · 밸류(PER · PBR · 시총) · 최근 재무 · 최근 45일 공시(주의/긍정 분류) · 국내 뉴스 · 오늘 브리핑 언급 · 사용자 보유 현황(손익 · 손절/목표 거리)과 한눈에 보기(scorecard), 못 받은 자료(gaps). 종목 하나를 판단 · 설명할 때 가장 먼저 이것만 부르고, gaps 만 다른 도구로 보충한다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) · 미국 티커(AAPL) · 또는 한국 회사명' } }, required: ['symbol'], additionalProperties: false } });
+    if (dataFor('history')) T.push({ name: 'scan_portfolio', description: '사용자의 관심 · 보유 종목 전체(최대 20개)를 점검해 급한 순으로 돌려준다: 최근 종가 · 1/5/20일 수익률 · RSI · 추세 · 신호, 보유 손익 · 손절가/목표가까지 거리 · R 배수 · 경고(손절 이탈 · 목표 도달 · 알림가), 최근 7일 새 공시(주의/긍정). "내 종목 어때", "오늘 점검", "뭐부터 봐야 해" 에 쓴다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
+    if (dataFor('history')) T.push({ name: 'compare_stocks', description: '2~6개 종목을 나란히 비교한다: 기간 수익률 · 변동성 · 최대 낙폭 · 고점 대비 · RSI · 추세 · 52주 위치 · 신호와, 최근 120거래일 일간 수익률 상관관계(분산 효과), 20일 · 1년 수익률 순위. 종목 고르기 · 갈아타기 · 분산을 물을 때 쓴다.', input_schema: { type: 'object', properties: { symbols: { type: 'array', items: { type: 'string' }, description: '종목 코드 또는 회사명 2~6개' } }, required: ['symbols'], additionalProperties: false } });
     T.push({ name: 'get_briefing', description: '이 앱이 매일 아침(8시 전까지 여러 번 보강) 모으는 그날의 모닝 브리핑(여러 언론이 함께 다룬 주식 관련 큰 이슈 15개 · 언론사 수 · 분류)과 전략 브리핑(증권사 데일리 시황 · 투자전략 리포트의 제목 · 요약, 주간 전략, 자주 나온 말)을 돌려준다. "오늘 · 요즘 시장", 이슈, 특정 종목 · 업종의 최근 뉴스나 증권사 시각을 말할 때 웹 검색보다 먼저 확인한다. focus 를 주면 그 말이 들어간 항목만 골라 준다.', input_schema: { type: 'object', properties: { focus: { type: 'string', description: '종목명 · 업종 · 키워드 (선택, 예: 삼성전자, 반도체, 환율)' }, date: { type: 'string', description: 'YYYY-MM-DD (선택, 기본 가장 최근 판)' } }, additionalProperties: false } });
     if (dataFor('newsKR')) T.push({ name: 'search_news_kr', description: '네이버 뉴스에서 최신순으로 국내 기사를 찾는다(제목 · 요약 · 시각 · 원문 링크). 아침 브리핑 이후의 종목 · 업종 뉴스, 장중 급등락 이유를 확인할 때 쓴다. 웹 검색보다 국내 언론에 빠르고 정확하다.', input_schema: { type: 'object', properties: { query: { type: 'string', description: '검색어 (예: 삼성전자 실적, 2차전지 수주)' }, count: { type: 'integer', description: '몇 건 (기본 10, 최대 30)' } }, required: ['query'], additionalProperties: false } });
     if (dataFor('usmacro')) T.push({ name: 'get_us_macro', description: '미국 연준 FRED 자료로 10년 · 2년 국채 금리, 연방기금 금리, 소비자물가(전년비), 실업률, 원/달러의 최근 값과 변화를 돌려준다. 미국 금리 · 물가 · 고용이 한국 증시에 주는 영향을 말할 때 쓴다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
@@ -677,18 +842,19 @@
         + Object.entries(KSD_OPS).map(([k, v]) => `${k}: ${v.d} (${v.p})`).join(' / '),
         input_schema: { type: 'object', properties: { op: { type: 'string', enum: Object.keys(KSD_OPS) }, params: { type: 'object', description: '요청 값 (예: {"stdDt":"20261106"})', additionalProperties: { type: 'string' } } }, required: ['op'], additionalProperties: false } });
     }
-    T.push({ name: 'get_portfolio', description: '사용자가 이 앱에 적어 둔 관심 종목 · 보유 수량 · 평균 단가 · 목표가 · 손절가 · 메모와 마지막으로 불러온 시세를 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
+    T.push({ name: 'get_portfolio', description: '(종목별 점검은 scan_portfolio 가 낫다) 사용자가 이 앱에 적어 둔 관심 종목 · 보유 수량 · 평균 단가 · 목표가 · 손절가 · 메모와 마지막으로 불러온 시세를 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'get_journal', description: '사용자의 매매 일지: 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 승률)와 최근 매매 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · 교훈)을 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'get_notes', description: '사용자가 노트 탭에 날짜별로 적은 메모를 돌려준다. company 를 주면 그 기업이 들어간 노트만 (최근 60개).', input_schema: { type: 'object', properties: { company: { type: 'string', description: '기업 이름 (선택, 예: 삼성전자)' } }, additionalProperties: false } });
     T.push({ name: 'save_memory', description: '앞으로의 답에 계속 필요한 사용자 정보 · 선호를 한 문장으로 기억한다. 사용자가 "기억해" 라고 했거나 투자 성향 · 제약을 새로 알았을 때만 쓴다. 시세처럼 금방 바뀌는 정보나 이미 프로필에 있는 내용은 저장하지 않는다. 사용자는 나의 원칙 화면에서 보고 지울 수 있다.', input_schema: { type: 'object', properties: { text: { type: 'string', description: '기억할 한 문장' } }, required: ['text'], additionalProperties: false } });
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', search_news_kr: '국내 뉴스', get_us_macro: '미국 지표', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_stock_dossier: '종목 종합', scan_portfolio: '내 종목 점검', compare_stocks: '종목 비교', get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', search_news_kr: '국내 뉴스', get_us_macro: '미국 지표', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
     for (const k of def.input_schema.required || []) if (input[k] == null || input[k] === '') return `${k} 가 없습니다`;
+    for (const [k, sc] of Object.entries(def.input_schema.properties)) if (input[k] != null && sc.type === 'array' && !Array.isArray(input[k])) return `${k} 는 목록이어야 합니다`;
     for (const [k, s] of Object.entries(def.input_schema.properties)) if (input[k] != null && s.type === 'number' && !isFinite(+input[k])) return `${k} 는 숫자여야 합니다`;
     return '';
   }
@@ -696,6 +862,9 @@
     const bad = validate(name, input); if (bad) throw new Error('INVALID_INPUT: ' + bad);
     const s = String(input.symbol || '').trim().toUpperCase();
     switch (name) {
+      case 'get_stock_dossier': return await stockDossier(input.symbol);
+      case 'scan_portfolio': return await scanPortfolio();
+      case 'compare_stocks': return await compareStocks(input.symbols);
       case 'get_quote': { const q = await callData('quote', s); watch.quotes[s] = { price: q.price, changePct: q.changePct, time: q.time || new Date().toISOString(), source: q.source }; saveWatch(); return q; }
       case 'get_price_history': { const d = Math.max(60, Math.min(400, +input.days || 260)); const bars = await callData('history', s, d); if (!bars.length) throw new Error(`${s}: 일봉이 없습니다`); return Object.assign({ symbol: s }, analyze(bars)); }
       case 'get_news': return { symbol: s, items: await callData('news', s, Math.max(1, Math.min(30, +input.days || 7))) };
@@ -727,6 +896,9 @@
 
 데이터 지도 (등록된 것만, 도구가 있으면 기억이나 짐작 대신 꼭 도구로)
 ${[
+  ['get_stock_dossier', '종목 하나를 판단 · 설명 → 먼저 이것 하나 (시세 · 지표 · 신호 · 밸류 · 재무 · 공시 · 뉴스 · 브리핑 · 내 보유 현황). gaps 에 있는 것만 다른 도구로 보충'],
+  ['scan_portfolio', '"내 종목 어때 · 오늘 점검 · 뭐부터" → 관심 · 보유 전체를 급한 순으로 (손절 · 목표 거리, 경고, 새 공시)'],
+  ['compare_stocks', '두 종목 이상 비교 · 고르기 · 분산 → 수익률 · 위험 · 상관관계를 나란히'],
   ['get_briefing', '오늘 · 요즘 시장, 이슈, 증권사 시각 → 먼저 이것 (아침 8시 전 보강판), 그 뒤 소식은 웹 검색'],
   ['get_index', '코스피 · 코스닥 수준과 흐름'],
   ['get_macro', '기준금리 · 국고채 · 원/달러 (한국은행)'],
@@ -745,7 +917,7 @@ ${[
 데이터 원칙
 - 쓸 수 있는 도구: ${tools.join(', ') || '없음'}. ${dataFor('quote') ? '' : '시세 API 가 등록되어 있지 않으니, 가격을 말할 때는 웹 검색 결과나 사용자가 준 숫자만 쓰고 그 사실을 밝힙니다. '}
 - 가격 · 등락률 · 지표 · 날짜는 도구 결과나 검색 결과에 있는 것만 말하고, 언제 기준인지 적습니다. 모르는 숫자는 지어내지 말고 "확인 필요"라고 씁니다.
-- 지표 계산(수익률 · 이동평균 · RSI · 변동성)은 get_price_history 결과를, 비중 · 수량은 position_size 결과를 씁니다.
+- 지표 계산(수익률 · 이동평균 · RSI · MACD · 변동성 · 지지/저항)은 get_stock_dossier · get_price_history 결과를, 비중 · 수량은 position_size 결과를 씁니다. 직접 계산해서 숫자를 만들지 않습니다.
 - 사용자의 보유 · 관심 종목이 관련되면 get_portfolio 로, 과거 매매 · 습관이 관련되면 get_journal 로, 특정 기업에 대해 사용자가 적어 둔 생각이 관련되면 get_notes 로 먼저 확인합니다.
 - 사용자가 "기억해" 라고 하거나 앞으로 계속 필요한 사용자 정보(성향 · 제약 · 선호)를 새로 알게 되면 save_memory 로 한 문장만 저장하고, 저장했다고 짧게 말합니다.
 
@@ -756,6 +928,14 @@ ${[
 4. 시나리오: 강세 · 기본 · 약세 각각의 조건과 대략의 가격대
 5. 실행 계획: 진입 조건, 손절가(근거), 목표가, 1회 감수 손실 기준의 수량 · 비중
 6. 다음에 확인할 것 (실적 발표일 · 공시 · 지표 발표 등)
+
+분석 원칙
+- signals 는 이 앱이 규칙으로 계산한 사실이지 매수 · 매도 추천이 아닙니다. 추세 · 모멘텀 · 재무 · 공시 · 뉴스 중 여러 갈래가 같은 방향일 때만 확신을 올리고, 갈래끼리 엇갈리면 그 엇갈림이 결론입니다.
+- 확신 정도는 근거의 수와 질로 정합니다. gaps(못 받은 자료)가 판단에 중요한 부분이면 확신을 '낮음' 으로 두고 무엇이 비었는지 밝힙니다.
+- 손절가 · 목표가 · 진입 가격대는 계산값에 근거합니다: 지지/저항(levels), 이동평균, ATR(손절은 보통 진입가에서 ATR 1.5~2배 아래 또는 직전 지지선 바로 아래). 어느 값을 썼는지 괄호로 적습니다.
+- 사용자가 보유 중이면(position.holding) 평균 단가 · 손절가 · 목표가 기준으로, 손익과 R 배수를 넣어 말합니다. 경고(alerts)가 있으면 맨 먼저 말합니다.
+- 공시에 '주의' 가 있으면(유상증자 · 전환사채 · 최대주주 변경 · 소송 등) 결론보다 먼저 짚습니다.
+- 답을 보내기 전에 스스로 검산합니다: 인용한 숫자가 모두 도구 결과에 있는가, 기준일이 맞는가, 결론이 반대 근거보다 강한가. 아니면 고칩니다.
 
 습관 원칙: 잦은 매매 · 몰빵 · 물타기 · 손절 미루기 · 뉴스 추격 매수의 위험을 필요할 때 짚습니다. 레버리지 · 신용 · 단기 급등주는 위험을 분명히 말합니다. 세금 · 수수료도 고려합니다.
 답의 끝에는 쓴 근거를 한 줄로: "근거: 시세(출처 · 기준일) · 브리핑(날짜) · 리포트(증권사) …". 근거 사이에 엇갈림이 있으면(뉴스는 낙관, 리포트는 경계 등) 숨기지 말고 짚습니다.
@@ -777,12 +957,12 @@ ${[
   async function claudeTurn(api, key, wire, ui, signal) {
     const webOn = cfg.web !== false;
     const tools = toolDefs().map(t => Object.assign({}, t, { eager_input_streaming: true }));
-    if (webOn) tools.push({ type: 'web_search_20260209', name: 'web_search', max_uses: 6 });
+    if (webOn) tools.push({ type: 'web_search_20260209', name: 'web_search', max_uses: cfg.deep !== false ? 10 : 6 });
     const body = {
       model: api.model || TYPES.claude.model, max_tokens: 64000, stream: true,
       system: systemPrompt(webOn), messages: wire, tools,
       thinking: { type: 'adaptive', display: 'summarized' },
-      output_config: { effort: 'medium' },
+      output_config: { effort: cfg.deep !== false ? 'high' : 'medium' },
       cache_control: { type: 'ephemeral' },
       fallbacks: 'default',
     };
@@ -852,7 +1032,7 @@ ${[
       if (res.stop !== 'tool_use') break;
       const uses = res.content.filter(b => b.type === 'tool_use');
       const results = await Promise.all(uses.map(async u => {
-        const st = { id: u.id, name: u.name, label: (LABEL[u.name] || u.name) + (u.input && u.input.symbol ? ' ' + u.input.symbol : ''), state: 'run' }; ui.steps.push(st); paint();
+        const st = { id: u.id, name: u.name, label: (LABEL[u.name] || u.name) + (u.input && u.input.symbol ? ' ' + u.input.symbol : u.input && Array.isArray(u.input.symbols) ? ' ' + u.input.symbols.join(' · ') : ''), state: 'run' }; ui.steps.push(st); paint();
         try {
           if (bad.includes(u)) throw new Error('INVALID_JSON: 도구 입력이 올바른 JSON 이 아닙니다. 다시 보내 주세요');
           const out = await runTool(u.name, u.input); st.state = 'ok'; paint();
@@ -880,7 +1060,7 @@ ${[
       if (!(m.tool_calls && m.tool_calls.length)) break;
       for (const tc of m.tool_calls) {
         let args = {}; try { args = JSON.parse(tc.function.arguments || '{}'); } catch (e) { }
-        const st = { id: tc.id, name: tc.function.name, label: (LABEL[tc.function.name] || tc.function.name) + (args.symbol ? ' ' + args.symbol : ''), state: 'run' }; ui.steps.push(st); paint();
+        const st = { id: tc.id, name: tc.function.name, label: (LABEL[tc.function.name] || tc.function.name) + (args.symbol ? ' ' + args.symbol : Array.isArray(args.symbols) ? ' ' + args.symbols.join(' · ') : ''), state: 'run' }; ui.steps.push(st); paint();
         let content; try { content = JSON.stringify(await runTool(tc.function.name, args)); st.state = 'ok'; } catch (e) { content = 'ERROR: ' + e.message; st.state = 'bad'; st.err = e.message; }
         wire.push({ role: 'tool', tool_call_id: tc.id, content }); paint();
       }
@@ -1021,9 +1201,11 @@ ${[
     sel.innerHTML = list.length ? list.map(x => `<option value="${x.id}"${a && a.id === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('') : '<option value="">AI API 없음</option>';
     sel.disabled = !list.length;
     $('webWrap').hidden = !(a && a.type === 'claude'); $('webOn').checked = cfg.web !== false;
+    $('deepWrap').hidden = !(a && a.type === 'claude'); $('deepOn').checked = cfg.deep !== false;
   }
   $('aiSel').onchange = e => { cfg.ai = e.target.value; saveCfg(); renderAiSel(); };
   $('webOn').onchange = e => { cfg.web = e.target.checked; saveCfg(); };
+  $('deepOn').onchange = e => { cfg.deep = e.target.checked; saveCfg(); toast(e.target.checked ? '깊게 분석: 더 오래 생각하고 더 많이 찾습니다 (느리고 토큰을 더 씀)' : '보통 분석: 더 빠르게 답합니다', 2600); };
   const grow = () => { const q = $('q'); q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight, innerHeight * .4) + 'px'; };
   $('q').addEventListener('input', grow);
   $('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('compose').requestSubmit(); } });
@@ -1779,7 +1961,7 @@ ${[
   const hashOf = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h); };
   const sect = {
     me: () => me, notes: () => notes, journal: () => journal, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
-    cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data, ids: cfg.lock.ids || undefined } : null }), // ids: 어느 API 에 키가 있는지만 (키 값 아님)
+    cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, deep: cfg.deep, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data, ids: cfg.lock.ids || undefined } : null }), // ids: 어느 API 에 키가 있는지만 (키 값 아님)
   };
   /* 고칠 때마다 부름: 내용이 실제로 바뀌었으면 그 칸의 고친 시각을 기록하고 잠시 뒤 올림 */
   SYNCQ.mark = k => {
@@ -1855,7 +2037,7 @@ ${[
     if (take('cfg') && r.cfg) {
       const keep = new Map(cfg.apis.map(a => [a.id, a]));
       cfg.apis = (r.cfg.apis || []).map(a => Object.assign({}, a, { key: (keep.get(a.id) || {}).key || '', test: (keep.get(a.id) || {}).test || '' }));
-      cfg.ai = r.cfg.ai; cfg.web = r.cfg.web; cfg.auto = r.cfg.auto || 0; sy.rev.cfg = Math.max(rr.cfg || 0, 2); changed = true;
+      cfg.ai = r.cfg.ai; cfg.web = r.cfg.web; if ('deep' in r.cfg) cfg.deep = r.cfg.deep; cfg.auto = r.cfg.auto || 0; sy.rev.cfg = Math.max(rr.cfg || 0, 2); changed = true;
     }
     cfg.lockRemote = r.cfg && r.cfg.lock && r.cfg.lock.data ? r.cfg.lock : null;
     LS.set(K_CFG, cfg);
