@@ -21,6 +21,7 @@
     alert: '<path d="M12 4 2.5 20h19Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
     cloud: '<path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 7.97Z"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>',
+    home: '<path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.5 9.5V19.5h11V9.5"/><path d="M10 19.5v-5h4v5"/>',
     key: '<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2"/><path d="m16 7 3 3"/><path d="m13.5 9.5 2 2"/>',
     user: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.4-3.4 4.3-5 7.5-5s6.1 1.6 7.5 5"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7"/>',
@@ -1182,7 +1183,7 @@ ${[
     { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
     { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
     { type: 'dart', why: '공시 목록 · 매출 · 영업이익 · 순이익 · 부채비율 · 회사 개요', how: 'OpenDART 인증키 신청 (KIS 중계를 거침)' },
-    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI 와 종목 분석에', how: '네이버 개발자센터 · 검색 API · 「아이디:시크릿」 (KIS 중계를 거침)' },
+    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI · 종목 분석 · 오늘 한눈에', how: '네이버 개발자센터 → 애플리케이션 등록 → 사용 API [검색] (KIS 중계를 거침)', keyUrl: 'https://developers.naver.com/apps/#/register?api=search', guide: 'naver' },
     { type: 'fred', why: '미국 국채 · 연준 금리 · 물가 · 실업률 — 미국장 영향', how: 'FRED 무료 가입 → API Keys (KIS 중계를 거침)' },
     { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
     { type: 'twelvedata', why: '미국 · 해외 종목 일봉 · 차트 (하루 800회)', how: 'Twelve Data 무료 가입 → API Keys' },
@@ -1197,11 +1198,12 @@ ${[
         return `<div class="sc-reco-i${ok ? ' on' : ''}${r.soon ? ' soon' : ''}">
           <div class="t"><b>${esc(name)}</b>${ok ? `<span class="ks ok">${icon('check', 13)}연결됨</span>` : have ? '<span class="ks warn">키 없음</span>' : r.soon ? '<span class="ks">준비 중</span>' : ''}</div>
           <p class="why">${esc(r.why)}</p><p class="how">${esc(r.how)}</p>
-          <div class="row">${url ? `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${icon('link', 14)}키 받으러 가기</a>` : ''}${r.soon ? `<span class="soon-n">${esc(r.note)}</span>` : ok ? `<button class="btn sm" data-reco-test="${have.id}">시험</button>` : `<button class="btn sm ink" data-reco="${r.type}">${icon('key', 14)}${have ? '키 넣기' : '키 넣기'}</button>`}</div>
+          <div class="row">${url ? `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${icon('link', 14)}키 받으러 가기</a>` : ''}${r.guide === 'naver' ? `<button class="btn sm ghost" data-guide="naver">${icon('help', 14)}받는 법</button>` : ''}${r.soon ? `<span class="soon-n">${esc(r.note)}</span>` : ok ? `<button class="btn sm" data-reco-test="${have.id}">시험</button>` : `<button class="btn sm ink" data-reco="${r.type}">${icon('key', 14)}${have ? '키 넣기' : '키 넣기'}</button>`}</div>
         </div>`;
       }).join('')}</div>`;
     fillIcons(box);
     box.querySelectorAll('[data-reco]').forEach(b => b.onclick = () => { const have = cfg.apis.find(a => a.type === b.dataset.reco); openAdd(b.dataset.reco, have || undefined); });
+    box.querySelectorAll('[data-guide="naver"]').forEach(b => b.onclick = () => naverGuide());
     box.querySelectorAll('[data-reco-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(x => x.id === b.dataset.recoTest), b));
   }
   function renderApis() {
@@ -1270,6 +1272,23 @@ ${[
       toast(`${a.name}: ${a.test}`, 4000);
     } finally { saveCfg(); if (btn) btn.disabled = false; renderApis(); }
   }
+  function naverGuide() {
+    const site = 'https://kwonyujin119.github.io';
+    const d = dialog(`<h3>네이버 키 받는 법 (약 2분)</h3>
+      <p class="modal-desc">네이버 개발자센터에서 [검색] API 를 쓰는 애플리케이션을 하나 만들면 Client ID 와 Client Secret 이 나옵니다. 무료이고 하루 25,000번까지 씁니다.</p>
+      <ol class="sc-steps">
+        <li><a href="https://developers.naver.com/apps/#/register?api=search" target="_blank" rel="noopener"><b>애플리케이션 등록 화면 열기</b></a> (네이버 로그인)</li>
+        <li><b>애플리케이션 이름</b>: 아무 이름 (예: DPV)</li>
+        <li><b>사용 API</b>: 목록을 <b>아래로 내려 [검색]</b> 을 고릅니다 ('뉴스' 라는 항목은 따로 없고 [검색] 안에 들어 있습니다).</li>
+        <li><b>비로그인 오픈 API 서비스 환경</b> → [환경 추가] → <b>WEB 설정</b> → 웹 서비스 URL 에 <code>${site}</code> <button type="button" class="btn sm" data-cpu>주소 복사</button></li>
+        <li><b>[등록하기]</b> → 열린 화면(또는 <a href="https://developers.naver.com/apps/#/list" target="_blank" rel="noopener">내 애플리케이션</a>)에서 <b>Client ID</b> 와 <b>Client Secret</b>([보기]) 을 복사</li>
+        <li>SECRET 의 이 창에서 <b>Client ID</b> · <b>Client Secret</b> 칸에 각각 붙여 넣고 [추가하고 시험]</li>
+      </ol>
+      <p class="hint">네이버 뉴스는 만들어 둔 KIS 중계를 거칩니다. 시험에서 "중계 코드가 예전 것" 이라고 나오면 [중계 코드 복사] 로 Cloudflare 코드를 한 번 바꿔 주세요.</p>
+      <div class="actions"><a class="btn ink" href="https://developers.naver.com/apps/#/register?api=search" target="_blank" rel="noopener">${icon('link', 16)}등록 화면 열기</a><button class="btn" data-x>닫기</button></div>`, 'sc-dlg');
+    d.el.querySelector('[data-x]').onclick = d.close;
+    d.el.querySelector('[data-cpu]').onclick = async ev => { try { await navigator.clipboard.writeText(site); ev.currentTarget.textContent = '복사했습니다'; } catch (e) { window.prompt('이 주소를 복사하세요', site); } };
+  }
   function kisGuide() {
     const d = dialog(`<h3>KIS 중계 만드는 법 (한 번만, 약 5분)</h3>
       <p class="modal-desc">한국투자증권 API 는 웹페이지에서 직접 부르는 것을 막아 두어서, 내 계정의 작은 중계(Cloudflare Worker, 무료)를 거칩니다. 앱키 · 앱시크릿은 그 중계에만 들어가고, 중계는 <b>시세 조회만</b> 하며 주문 기능이 없습니다.</p>
@@ -1296,9 +1315,11 @@ ${[
     const d = dialog(`<h3>${edit ? 'API 고치기' : 'API 추가'}</h3><form class="sc-form" autocomplete="off">
       <label>종류<select name="type"${edit && isAI(edit) ? ' disabled' : ''}>${edit && !isAI(edit) ? '' : opts('ai', 'AI (대화)')}${opts('data', '시세 · 데이터')}</select></label>
       <p class="hint" id="tNote"></p>
+      <div class="sc-kis" id="nvHelp" hidden><button type="button" class="btn sm" id="nvGuide">${icon('help', 14)}네이버 키 받는 법</button><a class="btn sm" href="https://developers.naver.com/apps/#/register?api=search" target="_blank" rel="noopener">${icon('link', 14)}바로 등록하러 가기</a></div>
       <div class="sc-kis" id="kisHelp" hidden><button type="button" class="btn sm" id="kisGuide">${icon('help', 14)}중계 만드는 법</button><button type="button" class="btn sm" id="kisGen">${icon('lock', 14)}중계 암호 만들기</button></div>
       <label>이름<input type="text" name="name" value="${esc(a.name)}" placeholder="예: 내 Claude"></label>
-      <label>API 키<input type="password" name="key" placeholder="${edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요'}" autocomplete="off"></label>
+      <label><span id="fKeyL">API 키</span><input type="password" name="key" placeholder="${edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요'}" autocomplete="off"></label>
+      <label id="fSecret" hidden>Client Secret<input type="password" name="secret" placeholder="${edit ? '바꿀 때만 넣으세요' : 'Client Secret 을 붙여 넣으세요'}" autocomplete="off"></label>
       <label id="fModel">모델<input type="text" name="model" value="${esc(a.model || '')}"></label>
       <label id="fBase">주소<input type="text" name="base" value="${esc(a.base || '')}"></label>
       <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">${edit ? '저장' : '추가하고 시험'}</button></div></form>`);
@@ -1308,13 +1329,15 @@ ${[
       $('tNote').innerHTML = esc(T.note || '') + (T.keyUrl ? ` <a href="${T.keyUrl}" target="_blank" rel="noopener">키 발급 페이지</a>` : '');
       $('fModel').hidden = !ai; f.model.placeholder = f.type.value === 'claude' ? 'claude-opus-5-5 (비우면 기본)' : '예: 해당 회사의 모델 이름';
       const kis = f.type.value === 'kisrelay'; $('kisHelp').hidden = !kis;
+      const nv = f.type.value === 'naver'; $('nvHelp').hidden = !nv; $('fSecret').hidden = !nv; $('fKeyL').textContent = nv ? 'Client ID' : 'API 키';
       $('fBase').hidden = !(kis || f.type.value === 'compat' || f.type.value === 'custom' || (ai && f.type.value !== 'claude' && edit));
       f.base.placeholder = kis ? 'https://dpv-kis.○○○.workers.dev' : f.type.value === 'custom' ? 'https://…?symbol={symbol}&apikey={key}' : (T.base || 'https://…/v1');
-      f.key.placeholder = kis ? '중계 암호 ([중계 암호 만들기] 로 만든 값)' : (edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요');
+      f.key.placeholder = kis ? '중계 암호 ([중계 암호 만들기] 로 만든 값)' : nv ? (edit ? '바꿀 때만 넣으세요' : 'Client ID 를 붙여 넣으세요') : (edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요');
       if (!f.name.value || f.name.dataset.auto || Object.values(TYPES).some(x => x.name === f.name.value)) { f.name.value = T.name; f.name.dataset.auto = '1'; }
     };
     f.name.oninput = () => { delete f.name.dataset.auto; };
     $('kisGuide').onclick = () => kisGuide();
+    $('nvGuide').onclick = () => naverGuide();
     $('kisGen').onclick = async () => { // 긴 무작위 암호 — 이 칸과 Cloudflare 의 RELAY_KEY 에 같은 값
       const v = Array.from(crypto.getRandomValues(new Uint8Array(24)), b => b.toString(16).padStart(2, '0')).join('');
       f.key.type = 'text'; f.key.value = v;
@@ -1324,7 +1347,9 @@ ${[
     d.el.querySelector('[data-x]').onclick = d.close;
     f.onsubmit = async e => {
       e.preventDefault();
-      const t = f.type.value, T = TYPES[t], key = f.key.value.trim();
+      const t = f.type.value, T = TYPES[t];
+      let key = f.key.value.trim();
+      if (t === 'naver') { const sec = f.secret.value.trim(); if (key && !key.includes(':')) { if (!sec) { toast('Client Secret 도 넣어 주세요', 2000); return; } key = key + ':' + sec; } else if (!key && sec) { toast('Client ID 도 넣어 주세요', 2000); return; } } // 두 칸 → 「아이디:시크릿」
       if (!edit && !key && t !== 'custom') { toast('API 키를 넣어 주세요', 1800); return; }
       if ((t === 'compat' || t === 'custom' || t === 'kisrelay') && !f.base.value.trim()) { toast(t === 'kisrelay' ? '중계 주소를 넣어 주세요 ([중계 만드는 법] 5번)' : '주소를 넣어 주세요', 2200); return; }
       if (T.kind === 'ai' && t !== 'claude' && !f.model.value.trim()) { toast('모델 이름을 넣어 주세요', 1800); return; }
@@ -2590,19 +2615,128 @@ ${[
   $('mkAsk').onclick = () => { show('chat'); send('query_ksd 로 의무보호예수 현황(getSafeDpDutyDepoStatusN1, 유가증권 11 · 코스닥 12, 최근 영업일)과 올해 신규 예탁지정 종목을 확인하고, 지금 시장 수급에 주는 의미와 내 관심 종목(get_portfolio)에 영향이 있는지 짧게 정리해 줘.'); };
   $('mkReload').onclick = () => { for (const k of Object.keys(ksdCache)) if (!/^div:|^stk:|^nm:/.test(k)) delete ksdCache[k]; LS.set(K_KSDC, ksdCache); renderMarket(); };
 
-  const VIEWS = { chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  /* =====================================================================
+     오늘 한눈에 — 연결한 API 를 모두 모은 아침 화면
+     시장(지수 · 금리 · 환율 · 미국 지표) · 내 종목 레이더(경고 · 새 공시 · 오늘 뉴스) · 큰 이슈 · 증권사 시각 · 내 종목 소식 · AI 오늘 리포트
+     ===================================================================== */
+  const td = { radar: null, at: 0, busy: false };
+  const kstToday = () => new Date(Date.now() + 9 * 36e5);
+  function tdTile(label, value, sub, c, src) { return `<div class="td-tile"><span>${esc(label)}</span><b>${value}</b><small class="${c || ''}">${sub || ''}</small>${src ? `<i>${esc(src)}</i>` : ''}</div>`; }
+  async function renderToday(force) {
+    const k = kstToday(), wd = '일월화수목금토'[k.getUTCDay()];
+    $('tdTitle').textContent = `오늘 · ${k.getUTCMonth() + 1}월 ${k.getUTCDate()}일 (${wd})`;
+    const have = t => !!dataFor(t), miss = [['index', '지수'], ['macro', '금리 · 환율'], ['usmacro', '미국 지표'], ['dart', '공시'], ['newsKR', '국내 뉴스'], ['quote', '시세']].filter(([t]) => !have(t)).map(([, n]) => n);
+    $('tdLead').innerHTML = `연결한 API 를 모두 모아 아침에 볼 것만 한 화면에. ${miss.length ? `<span class="td-miss">아직 없는 것: ${esc(miss.join(' · '))} — <button type="button" class="linkish" data-goapi="">API 연결</button></span>` : '모든 자료가 연결되어 있습니다.'}`;
+    wireGoApi($('tdLead'));
+    if (force) { td.radar = null; for (const kk of Object.keys(ksdCache)) if (/^(idx|ecos|fred):/.test(kk)) delete ksdCache[kk]; LS.set(K_KSDC, ksdCache); }
+    tdStrip(); tdBrief(); tdRadar(force);
+  }
+  /* 1) 시장 띠: 코스피 · 코스닥 · 원/달러 · 국고채 3년 · 미 10년 · 연준 금리 */
+  async function tdStrip() {
+    const box = $('tdStrip'); box.innerHTML = '<div class="sc-skel">시장 자료 불러오는 중…</div>';
+    const day = lastBizDays(1)[0], jobs = [];
+    if (dataFor('index')) jobs.push(ksdCached('idx:' + day, 6, async () => DATA.index.get(await keyOf(dataFor('index')))).then(m => ({ idx: m })).catch(e => ({ err: '지수: ' + e.message })));
+    if (dataFor('macro')) jobs.push(ksdCached('ecos:' + day, 12, async () => DATA.ecos.macro(await keyOf(dataFor('macro')))).then(m => ({ kr: m })).catch(e => ({ err: '한국은행: ' + e.message })));
+    if (dataFor('usmacro')) jobs.push(ksdCached('fred:' + day, 12, async () => DATA.fred.overview(await keyOf(dataFor('usmacro')))).then(m => ({ us: m })).catch(e => ({ err: 'FRED: ' + e.message })));
+    if (!jobs.length) { box.innerHTML = `<div class="sc-need">${icon('key', 16)}<span>지수 · 금리 · 환율 · 미국 지표 API 를 연결하면 여기에 시장 띠가 생깁니다.</span><button class="btn sm" data-goapi="index">연결하기</button></div>`; fillIcons(box); wireGoApi(box); return; }
+    const rs = await Promise.all(jobs), o = Object.assign({}, ...rs.filter(r => !r.err)), errs = rs.filter(r => r.err).map(r => r.err), t = [];
+    const fd = d => String(d || '').replace(/^(\d{4})-?(\d{2})-?(\d{2}).*/, '$2.$3').replace(/^(\d{4})(\d{2})$/, '$1.$2');
+    for (const x of (o.idx ? o.idx.indices : []).slice(0, 2)) t.push(tdTile(x.name, num(x.close, 2), `${pct(x.changePct)} · 20일 ${pct(x.ret20d)}`, cls(x.changePct), fd(x.date)));
+    const s = id => o.kr && o.kr.series.find(x => x.id === id), u = id => o.us && o.us.series.find(x => x.id === id);
+    const fx = s('usd') || u('DEXKOUS'); if (fx) t.push(tdTile('원/달러', num(fx.value, 1), fx.change1m != null ? `한 달 ${fx.change1m > 0 ? '+' : ''}${num(fx.change1m, 1)}원` : '', cls(fx.change1m), fd(fx.date)));
+    const k3 = s('ktb3'); if (k3) t.push(tdTile('국고채 3년', num(k3.value, 3) + '%', k3.change1m != null ? `한 달 ${k3.change1m > 0 ? '+' : ''}${num(k3.change1m, 2)}%p` : '', cls(k3.change1m), fd(k3.date)));
+    const bs = s('base'); if (bs) t.push(tdTile('한국 기준금리', num(bs.value, 2) + '%', '', '', fd(bs.date)));
+    const u10 = u('DGS10'); if (u10) t.push(tdTile('미국 10년', num(u10.value, 2) + '%', u10.change1m != null ? `한 달 ${u10.change1m > 0 ? '+' : ''}${num(u10.change1m, 2)}%p` : '', cls(u10.change1m), fd(u10.date)));
+    const ff = u('FEDFUNDS'); if (ff) t.push(tdTile('연준 금리', num(ff.value, 2) + '%', '', '', fd(ff.date)));
+    const cpi = u('CPIAUCSL'); if (cpi) t.push(tdTile('미국 물가', num(cpi.value, 1) + '%', cpi.prev != null ? `전월 ${num(cpi.prev, 1)}%` : '전년비', cls(cpi.value - (cpi.prev || cpi.value)), fd(cpi.date)));
+    box.innerHTML = (t.length ? `<div class="td-strip">${t.join('')}</div>` : '') + (errs.length ? `<p class="sc-mute">${esc(errs.join(' · '))}</p>` : '');
+  }
+  /* 2) 오늘 큰 이슈 · 증권사 시각 (브리핑 — API 키 없이) */
+  async function tdBrief() {
+    $('tdIssues').innerHTML = $('tdBroker').innerHTML = '<div class="sc-skel">불러오는 중…</div>';
+    try {
+      const b = await briefingForAI('', '');
+      const m = b.morning, st = b.strategy;
+      $('tdIssues').innerHTML = m && m.issues.length ? `<ol class="td-list">${m.issues.slice(0, 6).map(x => `<li><b>${esc(x.title)}</b><span>${esc(x.category || '')} · ${num(x.outlets, 0)}개 언론</span></li>`).join('')}</ol><button class="btn sm ghost" data-v="brief">모닝 브리핑 전체</button>${morningNote(m.date)}` : '<p class="sc-mute">오늘 브리핑이 아직 없습니다.</p>';
+      $('tdBroker').innerHTML = st && st.daily.length ? `<ul class="td-list">${st.daily.slice(0, 4).map(x => `<li><b>${esc(x.broker)} · ${esc(x.title)}</b><span>${esc(String(x.summary || '').split(/\n|(?<=다\.)\s/).map(z => z.replace(/^[-·•\s]+/, '').trim()).filter(z => z.length > 12).slice(0, 2).join(' · ').slice(0, 160))}</span></li>`).join('')}</ul>${st.topWords ? `<p class="sc-mute">자주 나온 말: ${esc(st.topWords)}</p>` : ''}<button class="btn sm ghost" data-v="strat">전략 브리핑 전체</button>` : '<p class="sc-mute">오늘 증권사 리포트가 아직 없습니다.</p>';
+      for (const id of ['tdIssues', 'tdBroker']) $(id).querySelectorAll('[data-v]').forEach(x => x.onclick = () => show(x.dataset.v));
+      td.brief = m;
+    } catch (e) { $('tdIssues').innerHTML = `<div class="sc-err">${icon('alert', 15)}<span>${esc(e.message)}</span></div>`; $('tdBroker').innerHTML = ''; }
+  }
+  /* 3) 내 종목 레이더: 종목마다 시세 · 추세 · 경고 · 새 공시 · 오늘 뉴스 (10분 기억) */
+  async function tdRadar(force) {
+    const box = $('tdRadar'), mine = $('tdMine');
+    const items = watch.items.slice(0, 12);
+    if (!items.length) { box.innerHTML = `<div class="sc-need">${icon('trend', 16)}<span>관심 종목 · 보유를 적으면 종목마다 경고 · 새 공시 · 오늘 뉴스를 모아 보여 줍니다.</span><button class="btn sm" id="tdAdd">종목 추가</button></div>`; fillIcons(box); $('tdAdd').onclick = () => { show('watch'); editItem(null); }; mine.innerHTML = '<p class="sc-mute">관심 종목이 없습니다.</p>'; return; }
+    if (td.radar && !force && Date.now() - td.at < 600000) { paintRadar(); return; }
+    if (td.busy) return; td.busy = true;
+    box.innerHTML = `<div class="sc-skel">내 종목 ${items.length}개 살펴보는 중…</div>`;
+    const res = [];
+    const one = async it => {
+      const code = normSym(it.symbol), kr = /^\d[0-9A-Z]{5}$/.test(code), r = { it, code, kr, flags: [], err: [] };
+      try { r.q = await callData('quote', code); watch.quotes[code] = { price: r.q.price, changePct: r.q.changePct, time: r.q.time || new Date().toISOString(), source: r.q.source }; } catch (e) { r.err.push('시세'); }
+      if (dataFor('history')) try { const b = await callData('history', code, 120); if (b.length > 20) r.a = analyze(b); } catch (e) { }
+      if (kr && dataFor('dart')) try { const d = await DATA.dart.disclosures(await keyOf(dataFor('dart')), code, 7); r.dis = d.items; } catch (e) { }
+      if (dataFor('newsKR')) try { const n = await DATA.naver.search(await keyOf(dataFor('newsKR')), it.name || (r.q && r.q.name) || code, 10); const since = Date.now() - 864e5; r.news = n.items.filter(x => x.date && new Date(x.date.replace(' ', 'T') + ':00+09:00').getTime() > since); } catch (e) { }
+      const p = r.q && r.q.price, stop = +it.stop, tgt = +it.target, avg = +it.avg;
+      if (p && stop) { const d = (p / stop - 1) * 100; if (p <= stop) r.flags.push(['bad', '손절가 이탈']); else if (d < 3) r.flags.push(['bad', `손절가까지 ${num(d, 1)}%`]); }
+      if (p && tgt && p >= tgt) r.flags.push(['good', '목표가 도달']);
+      if (p && ((+it.alertHi && p >= +it.alertHi) || (+it.alertLo && p <= +it.alertLo))) r.flags.push(['warn', '알림 가격']);
+      if (r.a && r.a.rsi14 != null) { if (r.a.rsi14 >= 70) r.flags.push(['warn', `RSI ${num(r.a.rsi14, 0)} 과열`]); else if (r.a.rsi14 <= 30) r.flags.push(['warn', `RSI ${num(r.a.rsi14, 0)} 침체`]); }
+      if (r.a && r.a.sma && r.a.sma.d20 && p) r.flags.push([p >= r.a.sma.d20 ? 'ok' : 'warn', p >= r.a.sma.d20 ? '20일선 위' : '20일선 아래']);
+      if (r.dis && r.dis.length) r.flags.push(['news', `새 공시 ${r.dis.length}`]);
+      if (r.news && r.news.length) r.flags.push(['news', `오늘 뉴스 ${r.news.length}`]);
+      if (p && avg && +it.qty) r.pl = (p / avg - 1) * 100;
+      if (p && !stop && +it.qty) r.flags.push(['warn', '손절가 없음']);
+      res.push(r);
+    };
+    try { const q = items.slice(); await Promise.all([0, 1, 2].map(async () => { while (q.length) await one(q.shift()); })); }
+    finally { td.busy = false; }
+    saveWatch();
+    td.radar = items.map(it => res.find(r => r.it === it)).filter(Boolean); td.at = Date.now();
+    paintRadar();
+  }
+  function paintRadar() {
+    const box = $('tdRadar'), rs = td.radar || [];
+    const rank = r => r.flags.some(f => f[0] === 'bad') ? 0 : r.flags.some(f => f[0] === 'news' || f[0] === 'warn') ? 1 : 2; // 급한 것 먼저
+    box.innerHTML = `<div class="td-radar">${rs.slice().sort((a, b) => rank(a) - rank(b)).map(r => `<button type="button" class="td-row" data-open="${esc(r.code)}">
+        <span class="nm"><b>${esc(r.it.name || (r.q && r.q.name) || r.code)}</b><small>${esc(r.code)}${r.pl != null ? ` · 내 수익 <em class="${cls(r.pl)}">${pct(r.pl, 1)}</em>` : ''}</small></span>
+        <span class="px">${r.q ? `<b>${num(r.q.price)}</b><small class="${cls(r.q.changePct)}">${pct(r.q.changePct)}</small>` : `<small>${r.err.length ? '시세 없음' : '–'}</small>`}</span>
+        <span class="fl">${r.flags.map(f => `<i class="f-${f[0]}">${esc(f[1])}</i>`).join('')}</span>
+      </button>`).join('')}</div><p class="sc-mute">${new Date(td.at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 기준 · 누르면 종목 분석 · 경고가 있는 종목이 위로</p>`;
+    box.querySelectorAll('[data-open]').forEach(b => b.onclick = () => { $('stQ').value = b.dataset.open; openStock(b.dataset.open); });
+    /* 내 종목 소식: 새 공시 · 오늘 뉴스 · 오늘 브리핑에 나온 것 */
+    const names = rs.map(r => [r, r.it.name || (r.q && r.q.name) || '']).filter(([, n]) => n && n.length > 1);
+    const rows = [];
+    for (const r of rs) {
+      for (const d of (r.dis || []).slice(0, 2)) rows.push(`<li><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a><span>공시 · ${esc(r.it.name || r.code)} · ${esc(d.date)}</span></li>`);
+      for (const n of (r.news || []).slice(0, 2)) rows.push(`<li><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a><span>뉴스 · ${esc(r.it.name || r.code)} · ${esc(n.date.slice(11))}</span></li>`);
+    }
+    for (const x of (td.brief && td.brief.issues) || []) { const hit = names.find(([, n]) => x.title.includes(n)); if (hit) rows.push(`<li><b>${esc(x.title)}</b><span>오늘 브리핑 · ${esc(hit[1])}</span></li>`); }
+    $('tdMine').innerHTML = rows.length ? `<ul class="st-dis">${rows.slice(0, 12).join('')}</ul>` : `<p class="sc-mute">${dataFor('dart') || dataFor('newsKR') ? '내 종목에 새 공시 · 오늘 뉴스가 없습니다.' : 'OpenDART · 네이버 뉴스를 연결하면 내 종목의 새 공시 · 오늘 뉴스가 여기에 모입니다.'}</p>`;
+  }
+  $('tdReload').onclick = () => renderToday(true);
+  $('tdAI').onclick = () => {
+    const has = t => toolDefs().some(x => x.name === t);
+    const first = ['get_briefing', 'get_index', 'get_macro', 'get_us_macro', 'get_portfolio'].filter(has).join(' · ');
+    const per = ['get_quote', 'get_price_history', 'get_disclosures', 'search_news_kr'].filter(has).join(' · ');
+    show('chat'); if (cur && (cur.view || []).length) { cur = null; keepCur(); renderChat(); }
+    send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
+  };
+
+  const VIEWS = { today: 'vToday', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'market') renderMarket();
-    try { history.replaceState(null, '', v === 'chat' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket();
+    try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
 
   fillIcons(document);
   $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
-  show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'chat');
+  show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'today');
   paintSync(); renderBanner();
   (async () => {
     try { chats = (await IDB.all()) || []; } catch (e) { chats = []; }
