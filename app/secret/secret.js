@@ -100,6 +100,9 @@
   const needRelay = who => new Error(`${who} 는 Cloudflare 중계를 거칩니다 — API 연결에서 [Cloudflare 중계] 를 먼저 만들어 주세요 (KIS 는 꺼 둬도 됩니다)`);
   /* 예전(KIS 만 하던) 중계 코드는 x-api-key 를 허락하지 않아 브라우저가 요청을 막음 → 주소 문제와 구별해서 알림 */
   const OLD_RELAY = '중계 코드가 예전 것입니다 — 중계 카드 연필 → [중계 만드는 법] → [중계 코드 복사] 로 최신 코드를 Cloudflare 에 붙여 넣고 Deploy 하세요 (비밀 값은 그대로 두면 됨)';
+  /* 오류 문구에서 키 가리기 (예전 중계는 DART 주소를 키째 돌려줌) · 예전 중계의 DART 이동 문제는 코드 바꾸기로 안내 */
+  const scrub = s => String(s || '').replace(/(crtfc_key|api_key|apikey|servicekey)=[^&\s"']+/gi, '$1=…').replace(/(StatisticSearch\/)[^/\s]+/g, '$1…');
+  const dartWhy = s => /too many redirects/i.test(s) ? 'DART 가 중계 요청을 계속 다른 주소로 보냅니다 — 중계 카드 연필 → [중계 만드는 법] → [중계 코드 복사] 로 최신 코드를 Cloudflare 에 붙여 넣고 Deploy 하세요 (이 문제를 고친 코드)' : scrub(s);
   async function relayDown(base, rk) {
     try { await fetch(base + '/ping', { headers: { 'x-relay-key': String(rk || '').trim() } }); }
     catch (e) { return new Error('중계에 연결하지 못했습니다 — 중계 주소를 확인하세요'); }
@@ -406,7 +409,7 @@
         if (ep === 'corpCode.xml') return r;
         const j = await r.json().catch(() => null);
         if (r.status === 404 || (j && /종목은 6자리 코드로|없는 기능입니다 \(\/quote/.test(j.error || '') && !/dart/.test(j.error || ''))) throw new Error(OLD_RELAY);
-        if (!j || !j.ok) throw new Error('DART: ' + ((j && j.error) || ('HTTP ' + r.status)));
+        if (!j || !j.ok) throw new Error(dartWhy('DART: ' + String((j && j.error) || ('HTTP ' + r.status)).replace(/^DART: /, '')));
         if (j.status && j.status !== '000' && j.status !== '013') throw new Error('DART: ' + (j.message || j.status) + (j.status === '010' || j.status === '011' ? ' — DART 인증키를 다시 확인하세요' : j.status === '020' ? ' — 오늘 조회 한도를 넘었습니다' : ''));
         return j;
       },
@@ -421,7 +424,7 @@
             let msg = ''; try { msg = new TextDecoder().decode(u8.slice(0, 2000)); } catch (e) { }
             const m = msg.match(/<message>([^<]+)/) || msg.match(/"message"\s*:\s*"([^"]+)/) || msg.match(/"error"\s*:\s*"([^"]+)/);
             const plain = msg.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 70);
-            const why = m ? m[1] : !u8.length ? `빈 응답 (HTTP ${r.status})` : /<html|<!doctype/i.test(msg) ? `DART 가 웹 페이지로 답함 (HTTP ${r.status}) ${plain}` : `HTTP ${r.status} ${plain}`;
+            const why = m ? dartWhy(m[1]) : !u8.length ? `빈 응답 (HTTP ${r.status})` : /<html|<!doctype/i.test(msg) ? `DART 가 웹 페이지로 답함 (HTTP ${r.status}) ${plain}` : `HTTP ${r.status} ${plain}`;
             throw new Error('DART 고유번호 표를 받지 못했습니다 — ' + why);
           }
           const xml = await unzipFirst(buf), m = {};
@@ -1529,7 +1532,7 @@ ${[
       }
       a.test = 'ok'; if (!quiet) toast(`${a.name}: 연결됐습니다${a.type === 'kisrelay' && a.kis === false ? ' (KIS 보류 · 중계 통로만)' : ''}`, 2000);
     } catch (e) {
-      a.test = /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? '연결 실패 (네트워크 · 브라우저 차단)' : e.message.slice(0, 120);
+      a.test = /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? '연결 실패 (네트워크 · 브라우저 차단)' : scrub(e.message).slice(0, 160);
       if (!quiet) toast(`${a.name}: ${a.test}`, 4000);
     } finally { saveCfg(); if (btn) btn.disabled = false; renderApis(); }
   }

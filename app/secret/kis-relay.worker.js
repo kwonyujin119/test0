@@ -72,7 +72,7 @@ export default {
         const j = await r.json().catch(() => null);
         if (!r.ok || !j || j.error_message) return out(r.status >= 400 ? r.status : 502, { error: 'FRED: ' + ((j && j.error_message) || ('HTTP ' + r.status)) });
         return out(200, { ok: true, rows: (j.observations || []).map(o => ({ t: o.date, v: o.value })) });
-      } catch (e) { return out(502, { error: 'FRED: ' + String(e.message || e) }); }
+      } catch (e) { return out(502, { error: 'FRED: ' + hide(e.message || e) }); }
     }
     /* OpenDART 공시 · 재무 (SECRET 이 x-api-key 로 DART 키를 보냄 · 조회만). corpCode.xml 은 압축 파일을 그대로 넘김 (풀기는 SECRET 이) */
     if (url.pathname === '/dart') {
@@ -84,12 +84,12 @@ export default {
       for (const [kk, v] of q) if (!/^[a-z_]{2,20}$/.test(kk) || !/^[0-9A-Za-z]{0,20}$/.test(v)) return out(400, { error: '요청 값이 맞지 않습니다' });
       q.set('crtfc_key', k);
       try {
-        const r = await fetch(`https://opendart.fss.or.kr/api/${ep}?${q}`);
+        const r = await follow(`https://opendart.fss.or.kr/api/${ep}?${q}`); // DART 는 쿠키를 심고 다시 보내므로 쿠키를 들고 따라감
         if (ep === 'corpCode.xml') return new Response(r.body, { status: r.status, headers: { 'content-type': r.headers.get('content-type') || 'application/zip', 'cache-control': 'no-store', ...cors } });
         const j = await r.json().catch(() => null);
         if (!j) return out(502, { error: 'DART 응답을 읽지 못했습니다' });
         return out(200, Object.assign({ ok: true }, j));
-      } catch (e) { return out(502, { error: 'DART: ' + String(e.message || e) }); }
+      } catch (e) { return out(502, { error: 'DART: ' + hide(e.message || e) }); }
     }
     if (url.pathname === '/ecos') {
       const q = url.searchParams, k = req.headers.get('x-api-key') || env.ECOS_KEY || '';
@@ -102,7 +102,7 @@ export default {
         if (!j) return out(502, { error: 'ECOS 응답을 읽지 못했습니다' });
         if (j.RESULT) return out(400, { error: 'ECOS: ' + (j.RESULT.MESSAGE || j.RESULT.CODE) });
         return out(200, { ok: true, rows: (j.StatisticSearch && j.StatisticSearch.row) || [] });
-      } catch (e) { return out(502, { error: 'ECOS: ' + String(e.message || e) }); }
+      } catch (e) { return out(502, { error: 'ECOS: ' + hide(e.message || e) }); }
     }
     if (!/^[0-9A-Z]{6}$/.test(code)) return out(400, { error: '종목은 6자리 코드로 (예: 005930)' });
     if (!hasKis) return out(503, { error: 'KIS 비밀 값(KIS_APPKEY · KIS_APPSECRET)이 없어 KIS 시세는 쉬는 중입니다' });
@@ -140,6 +140,24 @@ export default {
 };
 
 const ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '');
+/* 쿠키를 들고 따라가는 fetch — 일부 공공 사이트(DART 등)는 처음 요청에 쿠키를 심고 같은 주소로 다시 보내는데,
+   Worker 의 기본 fetch 는 그 쿠키를 들고 가지 않아 '이동이 너무 많음(Too many redirects)' 으로 끝남 */
+async function follow(u, n) {
+  const jar = new Map();
+  for (let i = 0; i < (n || 8); i++) {
+    const h = { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36', accept: '*/*', 'accept-language': 'ko-KR,ko;q=0.9' };
+    if (jar.size) h.cookie = [...jar].map(([k, v]) => k + '=' + v).join('; ');
+    const r = await fetch(u, { headers: h, redirect: 'manual' });
+    const sc = typeof r.headers.getSetCookie === 'function' ? r.headers.getSetCookie() : typeof r.headers.getAll === 'function' ? r.headers.getAll('set-cookie') : r.headers.get('set-cookie') ? [r.headers.get('set-cookie')] : [];
+    for (const c of sc) { const m = /^\s*([^=;\s]+)=([^;]*)/.exec(c); if (m) jar.set(m[1], m[2]); }
+    const loc = r.headers.get('location');
+    if (r.status >= 300 && r.status < 400 && loc) { u = new URL(loc, u).toString(); continue; }
+    return r;
+  }
+  throw new Error('이동이 너무 많습니다 — DART 가 중계 요청을 계속 다른 주소로 보냅니다');
+}
+/* 오류 문구에 키가 섞여 나가지 않게 */
+const hide = s => String(s).replace(/(crtfc_key|api_key|apikey|servicekey)=[^&\s"']+/gi, '$1=…').replace(/(StatisticSearch\/)[^/\s]+/g, '$1…');
 function same(a, b) { // 시간 차로 암호를 알아내지 못하게
   if (a.length !== b.length) return false;
   let x = 0; for (let i = 0; i < a.length; i++) x |= a.charCodeAt(i) ^ b.charCodeAt(i);
