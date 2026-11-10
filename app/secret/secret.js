@@ -910,7 +910,7 @@
         input_schema: { type: 'object', properties: { op: { type: 'string', enum: Object.keys(KSD_OPS) }, params: { type: 'object', description: '요청 값 (예: {"stdDt":"20261106"})', additionalProperties: { type: 'string' } } }, required: ['op'], additionalProperties: false } });
     }
     T.push({ name: 'get_portfolio', description: '(종목별 점검은 scan_portfolio 가 낫다) 사용자가 이 앱에 적어 둔 관심 종목 · 보유 수량 · 평균 단가 · 목표가 · 손절가 · 메모와 마지막으로 불러온 시세를 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
-    T.push({ name: 'get_journal', description: '사용자의 매매 일지: 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 승률)와 최근 매매 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · 교훈)을 돌려준다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
+    T.push({ name: 'get_journal', description: '사용자의 결정 카드(매매 일지): 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트별), 성적표(reportCard: 같은 기간 지수 대비 평균 초과 · 지수를 이긴 비율, 손절 규율 — 손절가에 닿은 수 · 미룬 수 · 미뤄서 더 잃은 R, 체크리스트 · AI 의견 · 감정별 승률 · 평균 R · 지수 대비, 점검일이 된 결정 수)와 최근 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · AI 의견 · 점검일 · 교훈 · 자동 채점 score)을 돌려준다.', input_schema: { type: 'object', properties: { period: { type: 'string', enum: ['all', 'year', '90'], description: '성적표 기간 (기본 all)' } }, additionalProperties: false } });
     T.push({ name: 'get_notes', description: '사용자가 노트 탭에 날짜별로 적은 메모를 돌려준다. company 를 주면 그 기업이 들어간 노트만 (최근 60개).', input_schema: { type: 'object', properties: { company: { type: 'string', description: '기업 이름 (선택, 예: 삼성전자)' } }, additionalProperties: false } });
     T.push({ name: 'save_memory', description: '앞으로의 답에 계속 필요한 사용자 정보 · 선호를 한 문장으로 기억한다. 사용자가 "기억해" 라고 했거나 투자 성향 · 제약을 새로 알았을 때만 쓴다. 시세처럼 금방 바뀌는 정보나 이미 프로필에 있는 내용은 저장하지 않는다. 사용자는 나의 원칙 화면에서 보고 지울 수 있다.', input_schema: { type: 'object', properties: { text: { type: 'string', description: '기억할 한 문장' } }, required: ['text'], additionalProperties: false } });
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
@@ -946,7 +946,7 @@
       case 'get_ksd_stock_info': { const a = dataFor('ksd'); const r = await DATA.ksd.stock(await keyOf(a), String(input.symbol).trim(), input.year); return Object.assign({ symbol: s, source: '한국예탁결제원 (공공데이터포털)' }, r); }
       case 'query_ksd': { const a = dataFor('ksd'); const r = await DATA.ksd.call(await keyOf(a), String(input.op), Object.fromEntries(Object.entries(input.params || {}).map(([k2, v]) => [k2, String(v)]))); if (r.items.length > 200) { r.note = `${r.items.length}건 중 앞 200건만`; r.items = r.items.slice(0, 200); } return r; }
       case 'get_notes': { const c = String(input.company || '').trim(); const list = notes.filter(n => !c || (n.companies || []).includes(c) || String(n.text).includes(c)).sort((a, b) => a.date.localeCompare(b.date)).slice(-60); return { company: c || null, count: list.length, notes: list.map(n => ({ date: n.date, companies: n.companies, text: n.text })) }; }
-      case 'get_journal': return { stats: jStats(), checklist: me.checklist, trades: journal.slice(-40) };
+      case 'get_journal': return { stats: jStats(), reportCard: reportCard(input.period || 'all'), checklist: me.checklist, trades: journal.slice(-40).map(t => Object.assign({}, t, { score: t.score ? Object.assign({}, t.score, { at: undefined }) : undefined })) };
       case 'save_memory': { const t = String(input.text).trim().slice(0, 200); if (!me.notes.some(n => n.text === t)) { me.notes.push({ t: Date.now(), text: t, by: 'AI' }); me.notes = me.notes.slice(-50); saveMe(); } return { saved: t, total: me.notes.length }; }
       case 'get_portfolio': return { items: watch.items, quotes: watch.quotes, note: '수량 · 평균 단가가 0 이면 관심만 있는 종목' };
       case 'position_size': return sizePlan({ account: +input.account, risk_percent: +input.risk_percent, entry: +input.entry, stop: +input.stop, target: input.target ? +input.target : 0, win_rate: input.win_rate ? +input.win_rate : 0 });
@@ -1004,6 +1004,7 @@ ${[
 - 공시에 '주의' 가 있으면(유상증자 · 전환사채 · 최대주주 변경 · 소송 등) 결론보다 먼저 짚습니다.
 - 답을 보내기 전에 스스로 검산합니다: 인용한 숫자가 모두 도구 결과에 있는가, 기준일이 맞는가, 결론이 반대 근거보다 강한가. 아니면 고칩니다.
 
+결정 카드: 사용자가 사거나 팔기로 마음먹으면, 매매 일지의 [결정 카드] 에 이유 · 손절가 · 목표가 · 점검일 · AI 의견을 적어 두라고 짧게 권합니다 (점검일에 지수 대비 · 손절 규율이 자동 채점됨). 성과를 물으면 get_journal 의 reportCard 를 근거로, 표본 수와 함께 말합니다.
 습관 원칙: 잦은 매매 · 몰빵 · 물타기 · 손절 미루기 · 뉴스 추격 매수의 위험을 필요할 때 짚습니다. 레버리지 · 신용 · 단기 급등주는 위험을 분명히 말합니다. 세금 · 수수료도 고려합니다.
 답의 끝에는 쓴 근거를 한 줄로: "근거: 시세(출처 · 기준일) · 브리핑(날짜) · 리포트(증권사) …". 근거 사이에 엇갈림이 있으면(뉴스는 낙관, 리포트는 경계 등) 숨기지 말고 짚습니다.
 이것은 정보 제공이며 투자 판단과 책임은 사용자에게 있다는 점을 첫 답에서 한 번만 짧게 밝힙니다. 표는 짧게, 문단은 짧게 씁니다.` + meBlock();
@@ -1833,28 +1834,118 @@ ${[
       byChecklist: by(t => t.checkTotal ? ((t.checks || []).length >= t.checkTotal ? '체크리스트 모두 지킴' : '일부만 지킴') : ''),
     };
   }
+  /* =====================================================================
+     결정 카드 채점 — 점검일 · 손절 규율 · 지수 대비 (일봉으로 계산, AI 없이)
+     ===================================================================== */
+  const AIOP = ['AI 와 같은 의견', 'AI 는 신중 · 반대', 'AI 에게 묻지 않음'];
+  const todayStr = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10); // 한국 날짜
+  const d10 = x => { const s = String(x || ''); return /^\d{8}$/.test(s) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6)}` : s.slice(0, 10).replace(/\//g, '-'); };
+  const curOf = s => { const c = cnSym(s); return c ? (c.startsWith('hk') ? 'HKD' : 'CNY') : isKR(s) ? 'KRW' : 'USD'; };
+  /* 같은 시장의 지수 대신 그 지수를 따라가는 ETF 로 (시세 API 하나로 일봉을 받을 수 있게) */
+  const benchOf = s => { const c = cnSym(s); return c ? (c.startsWith('hk') ? { sym: 'hk02800', name: '항셍지수 (TraHK)' } : { sym: 'sh510300', name: 'CSI300 (중국)' }) : isKR(s) ? { sym: '069500', name: '코스피200 (KODEX 200)' } : { sym: 'SPY', name: 'S&P500 (SPY)' }; };
+  const isDue = t => !isClosed(t) && t.reviewDate && t.reviewDate <= todayStr();
+  /* 계좌 규모: "3000만 원" · "1억 5000만" · 30000000 → 원 */
+  const parseWon = v => { let sum = 0, hit = false; const re = /(\d+(?:\.\d+)?)\s*(조|억|천만|백만|만|천)?/g, U = { 조: 1e12, 억: 1e8, 천만: 1e7, 백만: 1e6, 만: 1e4, 천: 1e3 }; let m; const t = String(v || '').replace(/,/g, ''); while ((m = re.exec(t))) { hit = true; sum += +m[1] * (U[m[2]] || 1); } return hit ? sum : NaN; };
+  const accountWon = () => { const c = +(LS.get(K_CALC, {}).cAcc || 0); return c > 0 ? c : parseWon(me.profile.account); };
+  const barCache = new Map(); // 이 화면을 연 동안만: 종목 → 일봉
+  async function barsOf(sym, n) {
+    const k = String(sym).toUpperCase(), c = barCache.get(k);
+    if (c && c.n >= n && Date.now() - c.at < 30 * 6e4) return c.bars;
+    const bars = (await callData('history', sym, n)).map(b => Object.assign({}, b, { t: d10(b.t) })).filter(b => b.t && isFinite(b.c));
+    barCache.set(k, { n, at: Date.now(), bars }); return bars;
+  }
+  async function scoreTrade(t) {
+    const e = +t.entry, st = +t.stop, tg = +t.target, risk = st > 0 ? Math.abs(e - st) : 0, today = todayStr();
+    const open = d10(t.openDate) || today, closed = isClosed(t), end = closed ? d10(t.closeDate) || today : today;
+    const n = Math.min(400, Math.ceil(Math.max(1, (Date.parse(today) - Date.parse(open)) / 864e5) * 0.75) + 20);
+    const bars = await barsOf(t.symbol, n), after = bars.filter(b => b.t > open && b.t <= end);
+    const live = watch.quotes[String(t.symbol).toUpperCase()], lastBar = bars[bars.length - 1];
+    const px = closed ? +t.exit : live && live.price && live.time && Date.now() - new Date(live.time) < 6 * 36e5 ? live.price : lastBar ? lastBar.c : null;
+    const R = v => risk > 0 && v != null ? Math.round((v - e) / risk * 100) / 100 : null, r1 = v => v == null ? null : Math.round(v * 10) / 10;
+    const lo = b => isFinite(b.l) && b.l > 0 ? b.l : b.c, hi = b => isFinite(b.h) && b.h > 0 ? b.h : b.c;
+    const stopBar = st > 0 && st < e ? after.find(b => lo(b) <= st) : null, tgtBar = tg > e ? after.find(b => hi(b) >= tg) : null;
+    let below = 0; if (!closed && st > 0) for (let i = after.length - 1; i >= 0 && after[i].c < st; i--) below++;
+    const heldPast = !!(closed && stopBar && +t.exit < st && (!t.closeDate || stopBar.t < d10(t.closeDate)));
+    const ret = px ? (px / e - 1) * 100 : null;
+    let bench = null;
+    const B = benchOf(t.symbol);
+    try {
+      const bb = await barsOf(B.sym, Math.max(n, 60)), b0 = bb.find(b => b.t >= open), b1 = [...bb].reverse().find(b => b.t <= end);
+      if (b0 && b1 && b1.t >= b0.t) bench = { sym: B.sym, name: B.name, ret: r1((b1.c / b0.c - 1) * 100), from: b0.t, to: b1.t };
+    } catch (err) { bench = { sym: B.sym, name: B.name, err: String(err.message || err).slice(0, 80) }; }
+    const mfe = after.length ? Math.max(...after.map(hi)) : null, mae = after.length ? Math.min(...after.map(lo)) : null;
+    const status = closed ? (heldPast ? '손절 미룸' : t.exitReason || '청산')
+      : below > 0 ? `손절선 아래 ${below}일째` : stopBar ? '손절가 닿음 · 보유 중' : tgtBar ? '목표가 닿음 · 보유 중' : isDue(t) ? '점검일 지남' : '진행 중';
+    return { at: Date.now(), done: closed, px, r: R(px), ret: r1(ret), bench, excess: bench && bench.ret != null && ret != null ? r1(ret - bench.ret) : null,
+      stopHit: stopBar ? stopBar.t : '', targetHit: tgtBar ? tgtBar.t : '', first: stopBar && tgtBar ? (stopBar.t <= tgtBar.t ? 'stop' : 'target') : stopBar ? 'stop' : tgtBar ? 'target' : '',
+      daysBelowStop: below, heldPastStop: heldPast, extraLossR: heldPast && risk > 0 ? Math.round(((+t.exit - st) / risk) * 100) / 100 : 0,
+      mfeR: R(mfe), maeR: R(mae), bars: after.length, status };
+  }
+  let scoring = false;
+  async function autoScore(force) {
+    if (scoring || !dataFor('history')) return 0; scoring = true;
+    const stale = journal.filter(t => t.symbol && +t.entry > 0 && (force || !t.score || (!t.score.done && Date.now() - t.score.at > 6 * 36e5) || (isClosed(t) && !t.score.done)));
+    let changed = 0;
+    try {
+      for (const t of stale) {
+        try { const sc = await scoreTrade(t), was = JSON.stringify(Object.assign({}, t.score || {}, { at: 0 })); t.score = sc; t.scoreErr = ''; if (JSON.stringify(Object.assign({}, sc, { at: 0 })) !== was) { t.updated = Date.now(); changed++; } }
+        catch (e) { if (t.scoreErr !== String(e.message || e).slice(0, 120)) { t.scoreErr = String(e.message || e).slice(0, 120); changed++; } }
+      }
+    } finally { scoring = false; }
+    if (changed) saveJournal(); else LS.set(K_JOURNAL, journal);
+    if (!$('vJournal').hidden) renderJournal(true);
+    return stale.length;
+  }
+  /* 성적표: 기간 안에서 시작한 결정만 */
+  function reportCard(period) {
+    const today = todayStr(), from = period === 'year' ? today.slice(0, 4) + '-01-01' : period === '90' ? new Date(Date.now() - 90 * 864e5).toISOString().slice(0, 10) : '';
+    const L = journal.filter(t => +t.entry > 0 && (!from || d10(t.openDate) >= from)), C = L.filter(isClosed);
+    const avg = a => { a = a.filter(v => v != null && isFinite(v)); return a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length * 100) / 100 : null; };
+    const grp = (list, key) => { const o = {}; for (const t of list) { const k = key(t) || '미기록'; (o[k] = o[k] || []).push(t); } return Object.fromEntries(Object.entries(o).map(([k, a]) => [k, { n: a.length, winPct: Math.round(a.filter(t => +t.exit > +t.entry).length / a.length * 100), avgR: avg(a.map(jR)), avgRet: avg(a.map(t => (+t.exit / +t.entry - 1) * 100)), avgExcess: avg(a.map(t => t.score && t.score.excess)) }])); };
+    const withB = C.filter(t => t.score && t.score.excess != null), stopTouched = C.filter(t => t.score && t.score.stopHit), held = C.filter(t => t.score && t.score.heldPastStop);
+    const gaveBack = C.filter(t => t.score && t.score.mfeR != null && +t.target > +t.entry && t.score.mfeR >= 0.8 * ((+t.target - +t.entry) / Math.abs(+t.entry - +t.stop || 1)) && +t.exit <= +t.entry);
+    return {
+      period: period || 'all', decisions: L.length, closed: C.length, open: L.length - C.length, due: L.filter(isDue).length,
+      vsIndex: { n: withB.length, avgReturnPct: avg(withB.map(t => t.score.ret)), avgIndexPct: avg(withB.map(t => t.score.bench.ret)), avgExcessPct: avg(withB.map(t => t.score.excess)), beatPct: withB.length ? Math.round(withB.filter(t => t.score.excess > 0).length / withB.length * 100) : null },
+      openVsIndex: { n: L.filter(t => !isClosed(t) && t.score && t.score.excess != null).length, avgExcessPct: avg(L.filter(t => !isClosed(t) && t.score).map(t => t.score.excess)) },
+      byChecklist: grp(C, t => t.checkTotal ? ((t.checks || []).length >= t.checkTotal ? '모두 지킴' : '일부만 지킴') : ''),
+      byAI: grp(C, t => t.ai), byEmotion: grp(C, t => t.emotion),
+      stopDiscipline: { touched: stopTouched.length, heldPast: held.length, extraLossR: Math.round(held.reduce((a, t) => a + (t.score.extraLossR || 0), 0) * 100) / 100, openBelow: L.filter(t => !isClosed(t) && t.score && t.score.daysBelowStop > 0).map(t => ({ symbol: t.symbol, days: t.score.daysBelowStop })) },
+      gaveBack: gaveBack.length,
+    };
+  }
+  function cardVerdict(c) {
+    const v = c.vsIndex;
+    if (!c.decisions) return '아직 결정 카드가 없습니다. 사기 전에 [결정 카드] 로 이유 · 손절 · 목표 · 점검일을 적으면, 점검일마다 자동으로 채점합니다.';
+    if (v.n < 10) return `지수와 비교된 끝난 결정이 ${v.n}건입니다. 10건이 넘으면 "내 방식이 지수를 사 두는 것보다 나은가" 를 말할 수 있습니다.`;
+    return v.avgExcessPct > 0 ? `끝난 결정 ${v.n}건이 같은 기간 지수보다 평균 ${v.avgExcessPct}%p 높았습니다 (지수를 이긴 비율 ${v.beatPct}%). 표본이 늘어도 유지되는지 계속 봅니다.`
+      : `끝난 결정 ${v.n}건이 같은 기간 지수보다 평균 ${Math.abs(v.avgExcessPct)}%p 낮았습니다 (지수를 이긴 비율 ${v.beatPct}%). 지금까지의 기록으로는 개별 종목 선택이 지수를 사 두는 것보다 못했다는 뜻입니다.`;
+  }
   const EMO = ['계획대로 차분히', '확신', '불안', '조급함 (놓칠까 봐)', '만회하려고', '지루해서'];
   const EXITR = ['목표가 도달', '손절가 도달', '계획을 바꿈 (근거 있음)', '감정적으로 (불안 · 조급)', '기타'];
-  function renderJournal() {
+  function renderJournal(noScore) {
     const st = jStats(); $('cJournal').textContent = journal.length || '';
+    renderCard();
+    if (!noScore) setTimeout(() => autoScore(false), 50);
     const R = v => v == null ? '–' : (v > 0 ? '+' : '') + v + 'R';
     $('jSum').innerHTML = `<div><span>끝난 매매 · 보유 중</span><b>${st.closedTrades} · ${st.openTrades}</b></div><div><span>승률</span><b>${st.winRatePct == null ? '–' : st.winRatePct + '%'}</b></div><div><span>평균 이익 · 평균 손실</span><b>${R(st.avgWinR)} · ${R(st.avgLossR)}</b></div><div><span>1회 기대값</span><b class="${cls(st.expectancyR)}">${R(st.expectancyR)}</b></div><div><span>손익 합계</span><b class="${cls(st.totalPnl)}">${st.closedTrades ? num(st.totalPnl, 0) : '–'}</b></div><div><span>평균 보유</span><b>${st.avgHoldDays == null ? '–' : st.avgHoldDays + '일'}</b></div>`;
     const list = journal.map((t, i) => [t, i]).sort((a, b) => (isClosed(a[0]) - isClosed(b[0])) || String(b[0].openDate || '').localeCompare(String(a[0].openDate || '')));
     const rows = list.map(([t, i]) => {
-      const closed = isClosed(t), q = (watch.quotes[String(t.symbol || '').toUpperCase()] || {}).price;
+      const closed = isClosed(t), sc = t.score || null, q0 = (watch.quotes[String(t.symbol || '').toUpperCase()] || {}).price, q = q0 || (sc && !closed ? sc.px : null);
       const px = closed ? +t.exit : q, risk = Math.abs(+t.entry - +t.stop);
+      const warn = sc && (sc.daysBelowStop > 0 || sc.heldPastStop || (!closed && sc.stopHit)), due = isDue(t);
       const r = px && risk > 0 ? (px - +t.entry) / risk : null, ret = px ? (px / +t.entry - 1) * 100 : null, pnl = px && t.qty ? (px - +t.entry) * +t.qty : null;
-      return `<tr><td>${esc(t.openDate || '')}${closed && t.closeDate ? `<br><span style="font-size:var(--fs-xs);color:var(--ui-muted)">→ ${esc(t.closeDate)}</span>` : ''}</td>
-        <td class="sym"><b>${esc(t.symbol)}</b>${closed ? `<span class="sc-tag">${esc(t.exitReason || '청산')}</span>` : '<span class="sc-tag open">보유 중</span>'}</td>
+      return `<tr${due ? ' class="due"' : ''}><td>${esc(t.openDate || '')}${closed && t.closeDate ? `<br><span style="font-size:var(--fs-xs);color:var(--ui-muted)">→ ${esc(t.closeDate)}</span>` : t.reviewDate ? `<br><span class="rv${due ? ' on' : ''}">점검 ${esc(t.reviewDate.slice(5))}</span>` : ''}</td>
+        <td class="sym"><b>${esc(t.symbol)}</b>${sc ? `<span class="sc-tag${warn ? ' warn' : closed ? '' : ' open'}">${esc(sc.status)}</span>` : closed ? `<span class="sc-tag">${esc(t.exitReason || '청산')}</span>` : '<span class="sc-tag open">보유 중</span>'}${t.ai ? `<span class="sc-ai">${esc(t.ai)}</span>` : ''}</td>
         <td>${num(+t.entry)}</td><td>${t.qty ? num(+t.qty, 4) : '–'}</td><td>${t.stop ? num(+t.stop) : '–'}</td><td>${t.target ? num(+t.target) : '–'}</td>
         <td>${closed ? num(+t.exit) : q ? `<span title="현재가">${num(q)}</span>` : '–'}</td>
-        <td class="${cls(r)}">${r == null ? '–' : (r > 0 ? '+' : '') + r.toFixed(2) + 'R'}<br><span style="font-size:var(--fs-xs)">${pct(ret, 1)}</span></td>
+        <td class="${cls(r)}">${r == null ? '–' : (r > 0 ? '+' : '') + r.toFixed(2) + 'R'}<br><span style="font-size:var(--fs-xs)">${pct(ret, 1)}</span>${sc && sc.excess != null ? `<br><span class="vs ${cls(sc.excess)}" title="같은 기간 ${esc(sc.bench.name)} ${pct(sc.bench.ret, 1)}">지수 대비 ${sc.excess > 0 ? '+' : ''}${sc.excess}%p</span>` : t.scoreErr ? `<br><span class="vs" title="${esc(t.scoreErr)}">채점 못 함</span>` : ''}</td>
         <td class="${cls(pnl)}">${pnl == null ? '–' : num(pnl, 0)}</td>
         <td>${esc(t.emotion || '–')}</td><td>${t.checkTotal ? `${(t.checks || []).length}/${t.checkTotal}` : '–'}</td>
         <td class="why">${t.reason ? `<b>이유</b> ${esc(t.reason)}` : ''}${t.lesson ? `<br><b>교훈</b> ${esc(t.lesson)}` : ''}</td>
         <td><span class="acts"><button class="btn ghost" data-jed="${i}" title="고치기 · 청산 적기" aria-label="${esc(t.symbol)} 고치기">${icon('edit', 15)}</button><button class="btn ghost" data-jrm="${i}" title="지우기" aria-label="${esc(t.symbol)} 지우기">${icon('trash', 15)}</button></span></td></tr>`;
     }).join('');
-    $('jTable').innerHTML = `<thead><tr><th>날짜</th><th class="sym">종목</th><th>진입가</th><th>수량</th><th>손절</th><th>목표</th><th>청산 · 현재가</th><th>결과</th><th>손익</th><th>그때 감정</th><th>체크</th><th>이유 · 교훈</th><th></th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="13">아직 기록이 없습니다. 살 때 [매매 기록] 으로 이유 · 손절가 · 감정을 적고, 팔 때 같은 줄을 열어 청산가와 교훈을 적으세요.</td></tr>'}</tbody>`;
+    $('jTable').innerHTML = `<thead><tr><th>날짜</th><th class="sym">종목</th><th>진입가</th><th>수량</th><th>손절</th><th>목표</th><th>청산 · 현재가</th><th>결과</th><th>손익</th><th>그때 감정</th><th>체크</th><th>이유 · 교훈</th><th></th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="13">아직 기록이 없습니다. 사기 전에 [결정 카드] 로 이유 · 손절가 · 목표가 · 점검일을 적고, 팔 때 같은 줄을 열어 청산가와 교훈을 적으세요.</td></tr>'}</tbody>`;
     const bc = st.byChecklist, a = bc['체크리스트 모두 지킴'], b = bc['일부만 지킴'];
     $('jNote').textContent = (st.closedTrades < 5 ? `끝난 매매가 ${st.closedTrades}건입니다. 5건 이상 쌓이면 통계가 의미 있어지고, 20건 이상이면 계산기의 승률로 쓸 만합니다. ` : '') + (a && b ? `체크리스트를 다 지켰을 때 승률 ${a.winRatePct}% (${a.trades}건) · 일부만 지켰을 때 ${b.winRatePct}% (${b.trades}건). ` : '') + 'R = (청산가 − 진입가) ÷ (진입가 − 손절가). 1R 은 처음 정한 손실 한 번만큼입니다.';
     $('jTable').querySelectorAll('[data-jed]').forEach(b => b.onclick = () => editTrade(+b.dataset.jed));
@@ -1862,14 +1953,15 @@ ${[
   }
   function editTrade(i) {
     const today = new Date().toISOString().slice(0, 10);
-    const t = i == null ? { openDate: today, symbol: '', entry: '', qty: '', stop: '', target: '', reason: '', emotion: '', checks: [], closeDate: '', exit: '', exitReason: '', lesson: '' } : Object.assign({}, journal[i]);
+    const t = i == null ? { openDate: today, symbol: '', entry: '', qty: '', stop: '', target: '', reason: '', emotion: '', checks: [], closeDate: '', exit: '', exitReason: '', lesson: '', reviewDate: new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10), ai: '', fx: '' } : Object.assign({}, journal[i]);
     const v = k => esc(t[k] == null ? '' : t[k]);
     const n = (k, l) => `<label>${l}<input type="number" step="any" min="0" name="${k}" value="${v(k)}"></label>`;
     const checks = me.checklist.map((c, j) => `<label><input type="checkbox" name="ck" value="${esc(c)}"${(t.checks || []).includes(c) ? ' checked' : ''}><span>${esc(c)}</span></label>`).join('');
-    const d = dialog(`<h3>${i == null ? '매매 기록' : esc(t.symbol) + ' 기록'}</h3><form class="sc-form">
-      <div class="grid3"><label>산 날<input type="date" name="openDate" value="${v('openDate')}"></label><label>종목<input type="text" name="symbol" value="${v('symbol')}" placeholder="예: AAPL"></label>${n('entry', '진입가')}${n('qty', '수량')}${n('stop', '손절가')}${n('target', '목표가')}</div>
+    const d = dialog(`<h3>${i == null ? '결정 카드 — 사기 전에' : esc(t.symbol) + ' 결정 카드'}</h3>${i == null ? '<p class="modal-desc">이유와 손절가를 한 문장으로 못 쓰면 사지 않는 것이 원칙입니다. 점검일이 되면 SECRET 이 결과 · 손절 규율 · 같은 기간 지수 대비를 자동으로 채점합니다.</p>' : ''}<form class="sc-form">
+      <div class="grid3"><label>산 날<input type="date" name="openDate" value="${v('openDate')}"></label><label>종목<input type="text" name="symbol" value="${v('symbol')}" placeholder="예: 005930 · AAPL · hk00700"></label>${n('entry', '진입가')}${n('stop', '손절가 (틀렸다고 인정할 곳)')}${n('target', '목표가')}${n('qty', '수량')}</div>
+      <div class="sc-qty"><label class="fx">환율 (1 단위 = 원)<input type="number" step="any" min="0" name="fx" value="${v('fx')}" placeholder="해외 종목만"></label><button type="button" class="btn sm" data-qty>${icon('calc', 14)}위험 기준 수량 계산</button><span class="sc-qty-o" data-qo></span></div>
       <label>산 이유 (한두 문장)<textarea name="reason" rows="2" placeholder="예: 실적 서프라이즈 뒤 20일선 지지 확인">${v('reason')}</textarea></label>
-      <label>그때 감정<select name="emotion"><option value="">고르기</option>${EMO.map(o => `<option${t.emotion === o ? ' selected' : ''}>${o}</option>`).join('')}</select></label>
+      <div class="grid3"><label>그때 감정<select name="emotion"><option value="">고르기</option>${EMO.map(o => `<option${t.emotion === o ? ' selected' : ''}>${o}</option>`).join('')}</select></label><label>AI 의견<select name="ai"><option value="">고르기</option>${AIOP.map(o => `<option${t.ai === o ? ' selected' : ''}>${o}</option>`).join('')}</select></label><label>점검일<input type="date" name="reviewDate" value="${v('reviewDate')}"></label></div>
       ${me.checklist.length ? `<fieldset><legend>매수 전 체크리스트 (지킨 것)</legend><div class="sc-checks">${checks}</div></fieldset>` : ''}
       <fieldset><legend>판 뒤에 적기 (보유 중이면 비워 둠)</legend>
         <div class="grid3"><label>판 날<input type="date" name="closeDate" value="${v('closeDate')}"></label>${n('exit', '청산가')}<label>판 이유<select name="exitReason"><option value="">고르기</option>${EXITR.map(o => `<option${t.exitReason === o ? ' selected' : ''}>${o}</option>`).join('')}</select></label></div>
@@ -1877,21 +1969,55 @@ ${[
       </fieldset>
       <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">저장</button></div></form>`, 'sc-dlg wide');
     const f = d.el.querySelector('form'); setTimeout(() => (i == null ? f.symbol : f.exit).focus(), 30); d.el.querySelector('[data-x]').onclick = d.close;
+    const fxShow = () => { const s = f.symbol.value.trim(); f.fx.closest('label').hidden = !s || curOf(s) === 'KRW'; f.fx.placeholder = s ? `1 ${curOf(s)} = ? 원` : '해외 종목만'; };
+    f.symbol.addEventListener('input', fxShow); fxShow();
+    d.el.querySelector('[data-qty]').onclick = () => { // 1회 감수 손실(나의 원칙) · 한 종목 최대 비중으로 수량
+      const out = d.el.querySelector('[data-qo]'), e0 = +f.entry.value, s0 = +f.stop.value, acc = accountWon(), cur = curOf(f.symbol.value.trim()), fx = cur === 'KRW' ? 1 : +f.fx.value;
+      const rk = +me.profile.riskTrade || 1, mp = +me.profile.maxPos || 100;
+      if (!(acc > 0)) { out.innerHTML = '<b>나의 원칙</b> 의 계좌 규모(또는 계산기의 계좌 금액)를 넣으면 계산합니다'; return; }
+      if (!(e0 > 0 && s0 > 0 && e0 !== s0)) { out.textContent = '진입가와 손절가를 먼저 넣어 주세요'; return; }
+      if (!(fx > 0)) { out.textContent = `해외 종목이라 환율(1 ${cur} = ? 원)이 필요합니다`; return; }
+      const byRisk = Math.floor(acc * rk / 100 / (Math.abs(e0 - s0) * fx)), byPos = Math.floor(acc * mp / 100 / (e0 * fx)), q = Math.max(0, Math.min(byRisk, byPos));
+      f.qty.value = q; const cost = q * e0 * fx;
+      out.innerHTML = `계좌 ${num(acc / 1e4, 0)}만 원 · 1회 손실 ${rk}% (${num(acc * rk / 100 / 1e4, 1)}만 원) → <b>${num(q, 0)}주</b> · 투입 ${num(cost / 1e4, 0)}만 원 (계좌의 ${num(cost / acc * 100, 1)}%)${byPos < byRisk ? ` — 한 종목 최대 비중 ${mp}% 때문에 ${num(byRisk, 0)}주에서 줄임` : ''}`;
+    };
     f.onsubmit = e => {
       e.preventDefault();
       const o = { id: t.id || uid() };
-      for (const k of ['openDate', 'symbol', 'reason', 'emotion', 'closeDate', 'exitReason', 'lesson']) o[k] = f[k].value.trim();
-      for (const k of ['entry', 'qty', 'stop', 'target', 'exit']) o[k] = f[k].value === '' ? '' : +f[k].value;
+      for (const k of ['openDate', 'symbol', 'reason', 'emotion', 'closeDate', 'exitReason', 'lesson', 'ai', 'reviewDate']) o[k] = f[k].value.trim();
+      for (const k of ['entry', 'qty', 'stop', 'target', 'exit', 'fx']) o[k] = f[k].value === '' ? '' : +f[k].value;
       o.symbol = o.symbol.toUpperCase();
       if (!o.symbol || !(o.entry > 0)) { toast('종목과 진입가를 넣어 주세요', 2000); return; }
       if (o.exit && !o.closeDate) o.closeDate = today;
       o.checks = [...f.querySelectorAll('[name=ck]:checked')].map(x => x.value); o.checkTotal = me.checklist.length;
+      if (t.score && ['openDate', 'symbol', 'entry', 'stop', 'target', 'exit', 'closeDate'].every(k => String(o[k]) === String(t[k] == null ? '' : t[k]))) o.score = t.score; // 바뀐 게 없으면 채점 그대로, 바뀌면 다시
       o.updated = Date.now(); if (i == null) journal.push(o); else journal[i] = o; saveJournal(); d.close(); renderJournal();
-      if (!o.stop) toast('손절가가 없으면 R(손익비) 을 계산할 수 없습니다', 2600);
+      if (!o.stop) toast('손절가가 없으면 R(손익비) 과 손절 규율을 채점할 수 없습니다', 2600);
+      else if (!o.reason) toast('산 이유가 비어 있습니다 — 한 문장이라도 적어 두면 나중에 무엇이 통했는지 알 수 있습니다', 3200);
     };
   }
+  function renderCard() {
+    const box = $('jCard'); if (!box) return;
+    const per = box.dataset.per || 'all', c = reportCard(per), R = v => v == null ? '–' : (v > 0 ? '+' : '') + v + 'R', P = v => v == null ? '–' : (v > 0 ? '+' : '') + v + '%p';
+    const rows = o => Object.entries(o).map(([k, x]) => `<tr><th>${esc(k)}</th><td>${x.n}건</td><td>${x.winPct}%</td><td class="${cls(x.avgR)}">${R(x.avgR)}</td><td class="${cls(x.avgExcess)}">${P(x.avgExcess)}</td></tr>`).join('') || '<tr><td class="empty" colspan="5">끝난 결정이 없습니다</td></tr>';
+    const tbl = (h, o) => `<section><h3>${h}</h3><table class="sc-mini"><thead><tr><th></th><th>건수</th><th>승률</th><th>평균 R</th><th>지수 대비</th></tr></thead><tbody>${rows(o)}</tbody></table></section>`;
+    const v = c.vsIndex, sd = c.stopDiscipline;
+    box.innerHTML = `<div class="sc-rc-h"><h2>성적표</h2><div class="sc-tools"><select id="jPer" aria-label="기간"><option value="all"${per === 'all' ? ' selected' : ''}>전체</option><option value="year"${per === 'year' ? ' selected' : ''}>올해</option><option value="90"${per === '90' ? ' selected' : ''}>최근 90일</option></select><button class="btn sm" id="jScore">${icon('refresh', 14)}지금 채점</button></div></div>
+      ${c.due ? `<p class="sc-due">${icon('alert', 15)}점검일이 된 결정 ${c.due}건 — 줄을 열어 계속 가질지 · 팔지 정하고, 계속 가지면 점검일을 새로 정하세요.</p>` : ''}
+      <p class="sc-rc-v">${esc(cardVerdict(c))}</p>
+      <div class="sc-rc-g">
+        <section><h3>같은 기간 지수 대비</h3><dl class="sc-kv2"><div><dt>끝난 결정 평균 수익률</dt><dd class="${cls(v.avgReturnPct)}">${v.avgReturnPct == null ? '–' : pct(v.avgReturnPct, 1)}</dd></div><div><dt>같은 기간 지수</dt><dd>${v.avgIndexPct == null ? '–' : pct(v.avgIndexPct, 1)}</dd></div><div><dt>평균 초과 (지수를 이긴 비율)</dt><dd class="${cls(v.avgExcessPct)}">${P(v.avgExcessPct)}${v.beatPct != null ? ` · ${v.beatPct}%` : ''}</dd></div><div><dt>보유 중 평균 초과</dt><dd class="${cls(c.openVsIndex.avgExcessPct)}">${P(c.openVsIndex.avgExcessPct)}</dd></div></dl></section>
+        <section><h3>손절 규율</h3><dl class="sc-kv2"><div><dt>손절가에 닿은 끝난 결정</dt><dd>${sd.touched}건</dd></div><div><dt>그중 손절을 미룬 것</dt><dd class="${sd.heldPast ? 'bad' : ''}">${sd.heldPast}건</dd></div><div><dt>미뤄서 더 잃은 것</dt><dd class="${sd.extraLossR < 0 ? 'bad' : ''}">${sd.extraLossR ? R(sd.extraLossR) : '–'}</dd></div><div><dt>지금 손절선 아래 보유</dt><dd class="${sd.openBelow.length ? 'bad' : ''}">${sd.openBelow.length ? sd.openBelow.map(x => `${esc(x.symbol)} ${x.days}일`).join(' · ') : '없음'}</dd></div><div><dt>목표 근처까지 갔다가 손실로 끝남</dt><dd>${c.gaveBack}건</dd></div></dl></section>
+        ${tbl('원칙 (체크리스트)', c.byChecklist)}
+        ${tbl('AI 의견', c.byAI)}
+      </div>
+      <p class="sc-fine" style="text-align:left">지수 대비 = 내 수익률 − 같은 날짜 사이 ${esc('그 시장 지수 ETF')} 수익률 (한국 KODEX 200 · 미국 SPY · 중국 CSI300 · 홍콩 TraHK). 수수료 · 세금 · 환율 효과는 빠져 있습니다.</p>`;
+    fillIcons(box);
+    $('jPer').onchange = e => { box.dataset.per = e.target.value; renderCard(); };
+    $('jScore').onclick = async () => { const b = $('jScore'); b.disabled = true; barCache.clear(); const n = await autoScore(true); toast(n ? `결정 ${n}건을 다시 채점했습니다` : dataFor('history') ? '채점할 결정이 없습니다' : '일봉을 주는 시세 API 가 있어야 채점합니다', 2400); };
+  }
   $('jAdd').onclick = () => editTrade(null);
-  $('jAsk').onclick = () => { show('chat'); send('get_journal 로 내 매매 일지를 보고 회고해 줘: 승률 · 평균 이익과 손실(R) · 기대값, 감정별 · 판 이유별 · 체크리스트를 다 지켰을 때와 아닐 때의 결과 차이, 반복되는 실수 3가지, 그리고 내 규칙에 더하면 좋을 규칙 3가지. 기록이 적으면 그 한계도 말해 줘.'); };
+  $('jAsk').onclick = () => { show('chat'); send('get_journal 로 내 결정 카드와 성적표를 보고 회고해 줘: 같은 기간 지수 대비 성과(내 방식이 지수를 사 두는 것보다 나은지), 손절 규율(미룬 횟수와 그 비용), 체크리스트를 지켰을 때와 아닐 때, AI 의견을 따랐을 때와 아닐 때의 차이, 반복되는 실수 3가지, 그리고 내 규칙에 더하면 좋을 규칙 3가지. 표본이 적으면 그 한계부터 말해 줘.'); };
   $('cWinJ').onclick = () => { const st = jStats(); if (st.closedTrades < 3) { toast(`끝난 매매가 ${st.closedTrades}건이라 아직 승률로 쓰기 어렵습니다`, 2600); return; } $('cWin').value = Math.round(st.winRatePct); renderCalc(); toast(`매매 일지 ${st.closedTrades}건의 승률 ${st.winRatePct}% 를 넣었습니다`, 2400); };
 
   /* =====================================================================
@@ -3097,6 +3223,7 @@ ${[
   $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'today');
+  { const due = journal.filter(isDue).length, k = 'sec:dueToast'; if (due && LS.get(k, '') !== todayStr()) { LS.set(k, todayStr()); setTimeout(() => toast(`점검일이 된 결정 카드 ${due}건 — 매매 일지에서 확인하세요`, 4000), 1500); } }
   paintSync(); renderBanner();
   (async () => {
     try { chats = (await IDB.all()) || []; } catch (e) { chats = []; }
