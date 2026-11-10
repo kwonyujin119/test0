@@ -86,6 +86,7 @@
     dart: { kind: 'data', name: 'OpenDART (금융감독원 공시)', caps: ['dart'], keyUrl: 'https://opendart.fss.or.kr/', note: '공시 목록 · 주요 재무(매출 · 영업이익 · 순이익 · 자산 · 부채 · 자본) · 회사 개요. 금융감독원이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 Cloudflare 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함). 처음 한 번 회사 고유번호 표를 받아 이 기기에 30일 둡니다.' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
     kisrelay: { kind: 'data', name: 'Cloudflare 중계 (KIS 시세 선택)', caps: ['quote', 'history'], note: '내 Cloudflare 무료 중계. OpenDART · 네이버 뉴스 · 한국은행 ECOS · FRED 는 브라우저에서 바로 부를 수 없어 이 중계를 거칩니다. 한국투자증권 앱키를 중계에 넣었으면 「KIS 실시간 시세도 쓰기」를 켜서 실시간 현재가 · PER · PBR 도 받습니다 (주문 기능 없음). 아래 [중계 만드는 법] 대로 한 번 만든 뒤, 주소 칸에 중계 주소, API 키 칸에 중계 암호를 넣으세요.' },
+    tencent: { kind: 'data', name: '텐센트 증권 (중국 · 홍콩 시세)', caps: ['quote', 'history'], nokey: true, note: '중국 상하이 · 선전 A주와 홍콩 주식의 현재가 · 일봉 · PER · 52주 고저 · 시가총액. 키가 필요 없습니다 — [추가] 만 누르면 됩니다. 종목은 sh600519(상하이) · sz000001(선전) · hk00700(홍콩), 또는 600519.SS · 0700.HK 처럼 씁니다. 텐센트의 공개 시세 주소를 쓰는 것이라(공식 API 아님) 바뀌거나 막힐 수 있어 개인 참고용입니다.' },
     custom: { kind: 'data', name: '사용자 정의 (REST)', caps: ['custom'], note: '주소에 {symbol} 과 {key} 를 넣으면 그 자리에 종목과 키가 들어갑니다. 받은 내용을 AI 가 읽습니다.' },
   };
   const isAI = a => TYPES[a.type] && TYPES[a.type].kind === 'ai';
@@ -94,6 +95,7 @@
   const activeAI = () => aiApis().find(a => a.id === cfg.ai) || aiApis()[0] || null;
   /* 중계 카드: kis === false 면 KIS 시세는 보류하고 DART · 네이버 · ECOS · FRED 통로로만 */
   const kisOn = a => a.type === 'kisrelay' && a.kis !== false;
+  const noKey = a => !!a && (a.type === 'custom' || !!(TYPES[a.type] || {}).nokey); // 키 없이 쓰는 종류
   const capsOf = a => a.type === 'kisrelay' && a.kis === false ? [] : (TYPES[a.type].caps || []);
   const relayApi = () => dataApis().find(a => a.type === 'kisrelay');
   const realtimeOn = () => dataApis().some(kisOn);
@@ -381,6 +383,32 @@
         return { query: q, total: j.total, items: (j.items || []).map(x => ({ title: clean(x.title), summary: clean(x.description).slice(0, 220), date: x.pubDate ? new Date(new Date(x.pubDate).getTime() + 9 * 36e5).toISOString().replace('T', ' ').slice(0, 16) : '', url: x.originallink || x.link })), source: '네이버 뉴스 검색 (최신순)' };
       },
     },
+    /* 텐센트 증권 공개 시세 — 중국 A주 · 홍콩 (키 없음 · 브라우저에서 바로 · 공식 API 아님). 현재가는 GBK 글자, 칸은 ~ 로 나뉨 */
+    tencent: {
+      _code(s) { const c = cnSym(s); if (!c) throw new Error(`${s}: 텐센트 시세는 중국 · 홍콩 종목만 됩니다 — 상하이 sh600519 · 선전 sz000001 · 홍콩 hk00700 (또는 600519.SS · 0700.HK)`); return c; },
+      async _get(u) { let r; try { r = await fetch(u, { cache: 'no-store' }); } catch (e) { throw new Error('텐센트 시세에 연결하지 못했습니다 (인터넷 · 차단 여부를 확인하세요)'); } if (!r.ok) throw new Error('텐센트 시세: HTTP ' + r.status); return r; },
+      async quote(k, s) {
+        const c = this._code(s), hk = c.startsWith('hk');
+        const r = await this._get('https://qt.gtimg.cn/q=' + (hk ? 'r_' : '') + c);
+        let t = ''; try { t = new TextDecoder('gbk').decode(await r.arrayBuffer()); } catch (e) { }
+        const m = t.match(/="([^"]*)"/), f = m ? m[1].split('~') : [];
+        const n = i => { const v = parseFloat(f[i]); return isFinite(v) ? v : null; };
+        if (f.length < 40 || !n(3)) throw new Error(`${s}: 텐센트에 이 종목 시세가 없습니다 (코드를 확인하세요)`);
+        const ts = String(f[30] || ''), time = /^\d{14}$/.test(ts) ? `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)} ${ts.slice(8, 10)}:${ts.slice(10, 12)}` : ts.replace(/\//g, '-').slice(0, 16);
+        const w = hk ? [n(48), n(49)] : [n(67), n(68)];
+        return { symbol: c, name: f[1] || '', exchange: { sh: '상하이', sz: '선전', hk: '홍콩' }[c.slice(0, 2)], currency: f.find(x => /^(CNY|HKD|USD)$/.test(x)) || (hk ? 'HKD' : 'CNY'),
+          price: n(3), change: n(31), changePct: n(32), open: n(5), high: n(33), low: n(34), prevClose: n(4), volume: hk ? n(6) : n(6) != null ? n(6) * 100 : null,
+          per: n(39) || undefined, pbr: hk ? undefined : n(46) || undefined, marketCap: n(45) ? n(45) * 1e8 : undefined, marketCapUnit: hk ? '홍콩달러' : '위안',
+          week52: w[0] && w[1] ? { high: w[0], low: w[1] } : undefined, time, source: `텐센트 증권 (${hk ? '홍콩' : '중국'} · 공식 API 아님 · 통화 ${hk ? 'HKD' : 'CNY'})` };
+      },
+      async history(k, s, days) {
+        const c = this._code(s), n = Math.max(20, Math.min(days || 260, 2000));
+        const r = await this._get(`https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${c},day,,,${n},qfq`);
+        const j = await r.json().catch(() => null), d = j && j.data && j.data[c], rows = d ? (d.qfqday || d.day || []) : [];
+        if (!rows.length) throw new Error(`${s}: 텐센트에 이 종목 일봉이 없습니다`);
+        return rows.map(x => ({ t: x[0], o: +x[1], c: +x[2], h: +x[3], l: +x[4], v: +x[5] })).filter(b => isFinite(b.c) && b.c > 0); // 수정주가(배당 · 분할 반영)
+      },
+    },
     /* FRED 미국 경제지표 — KIS 중계의 /fred */
     fred: {
       SERIES: [['DGS10', '미국 10년 국채', '%'], ['DGS2', '미국 2년 국채', '%'], ['FEDFUNDS', '연방기금 금리', '%'], ['CPIAUCSL', '소비자물가(CPI) 전년비', '%', 'yoy'], ['UNRATE', '실업률', '%'], ['DEXKOUS', '원/달러 (연준)', '원']],
@@ -586,6 +614,14 @@
     },
   };
   const isKR = s => /^A?\d[0-9A-Z]{5}(\.(KS|KQ))?$|:KRX$|[가-힣]/i.test(String(s || '').trim()); // 0190G0 같은 새 영문 섞인 코드(ETF 등)도
+  /* 중국 · 홍콩 종목 → 텐센트 코드 (sh600519 · sz000001 · hk00700). 한국 6자리와 겹치므로 시장 표시가 꼭 있어야 함 */
+  const cnSym = s => {
+    const t = String(s || '').trim().toUpperCase().replace(/\s/g, ''); let m;
+    if ((m = /^(SH|SZ)(\d{6})$/.exec(t))) return m[1].toLowerCase() + m[2];
+    if ((m = /^(\d{6})\.(SS|SH|SHH|SZ|SHZ)$/.exec(t))) return (/^S(S|H|HH)$/.test(m[2]) ? 'sh' : 'sz') + m[1];
+    if ((m = /^HK(\d{1,5})$/.exec(t) || /^(\d{1,5})\.HK$/.exec(t))) return 'hk' + m[1].padStart(5, '0');
+    return null;
+  };
   const KSD_OPS = {
     getStkIsinByShortIsinN1: { d: '단축코드로 종목 기본정보', p: 'shortIsin*=6자리 코드', f: { secnKacdNm: '주식종류', engSecnNm: '영문 종목명', isin: '표준코드', issuDt: '발행일', issucoCustno: '발행회사번호', korSecnNm: '종목명', eltscYn: '전자증권 여부', shotnIsin: '단축코드' } },
     getStkIsinByNmN1: { d: '회사명으로 종목 기본정보', p: 'secnNm*=발행회사명', f: { shotnIsin: '단축코드', engSecnNm: '영문 종목명', isin: '표준코드', issuDt: '발행일', issucoCustno: '발행회사번호', korSecnNm: '종목명', secnKacdNm: '주식종류', eltscYn: '전자증권 여부' } },
@@ -630,13 +666,16 @@
     return await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
   }
   async function callData(cap, ...args) {
+    const cn = (cap === 'quote' || cap === 'history') && cnSym(args[0]), tc = dataApis().find(a => a.type === 'tencent');
+    if (cn && tc) return DATA.tencent[cap]('', ...args, tc);
     const krs = (cap === 'quote' || cap === 'history') && isKR(args[0]) ? ['kisrelay', 'datagokr', 'etf'].map(t => dataApis().find(a => a.type === t && capsOf(a).includes(cap))).filter(Boolean) : [];
     if (krs.length) {
       let last = null;
       for (const a of krs) { try { return await DATA[a.type][cap](await keyOf(a), ...args, a); } catch (e) { last = e; } }
       throw last;
     }
-    const api = dataFor(cap); if (!api) throw new Error(`'${cap}' 를 주는 시세 API 가 등록되어 있지 않습니다`);
+    const api = dataApis().find(a => a.type !== 'tencent' && capsOf(a).includes(cap));
+    if (!api) throw new Error(tc && (cap === 'quote' || cap === 'history') ? `${args[0]}: 텐센트 시세는 중국 · 홍콩 종목만 됩니다 — 상하이 sh600519 · 선전 sz000001 · 홍콩 hk00700 처럼 넣어 주세요` : `'${cap}' 를 주는 시세 API 가 등록되어 있지 않습니다`);
     const k = await keyOf(api);
     return DATA[api.type][cap](k, ...args, api);
   }
@@ -846,12 +885,13 @@
      ===================================================================== */
   function toolDefs() {
     const T = [];
-    const sym = { type: 'string', description: '종목 코드. 미국은 AAPL, 한국은 6자리 코드(005930)를 먼저 쓴다(종목명도 공공데이터포털에서는 됨). 한국 종목은 KIS 중계(실시간)가 있으면 그쪽, 없거나 실패하면 공공데이터포털(전 영업일 종가)로 조회됨 — 결과의 source 로 실시간인지 확인' };
+    const cnHint = dataApis().some(a => a.type === 'tencent') ? ' 중국 A주는 sh600519(상하이) · sz000001(선전), 홍콩은 hk00700 처럼 시장을 앞에 붙인다(한국 6자리와 겹치므로 꼭). 회사 이름만 알면 코드로 바꿔서 부른다. 값은 위안(CNY) · 홍콩달러(HKD).' : '';
+    const sym = { type: 'string', description: '종목 코드. 미국은 AAPL, 한국은 6자리 코드(005930)를 먼저 쓴다(종목명도 공공데이터포털에서는 됨). 한국 종목은 KIS 중계(실시간)가 있으면 그쪽, 없거나 실패하면 공공데이터포털(전 영업일 종가)로 조회됨 — 결과의 source 로 실시간인지 확인.' + cnHint };
     if (dataFor('quote')) T.push({ name: 'get_quote', description: '종목의 현재가(또는 최근 종가) · 등락률 · 고가 · 저가를 등록된 시세 API 로 조회한다. 가격을 말하기 전에 반드시 이 도구로 확인한다.', input_schema: { type: 'object', properties: { symbol: sym }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('history')) T.push({ name: 'get_price_history', description: '일봉을 받아 이 앱이 직접 계산한 지표를 돌려준다: 기간 수익률(5·20·60·120·250일), 이동평균(20·50·200), 추세 정렬, RSI14, ATR14, 20일 변동성(연율), 구간 고점 대비 하락, 최대 낙폭, 최근 10일 종가.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '받을 거래일 수 (60~400, 기본 260)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('news')) T.push({ name: 'get_news', description: '종목의 최근 회사 뉴스 제목 · 출처 · 링크 · 요약을 시세 API 로 받는다.', input_schema: { type: 'object', properties: { symbol: sym, days: { type: 'integer', description: '최근 며칠 (1~30, 기본 7)' } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('custom')) T.push({ name: 'fetch_custom_data', description: '사용자가 등록한 사용자 정의 API 를 종목 코드로 불러 원문(JSON 또는 텍스트)을 돌려준다.', input_schema: { type: 'object', properties: { symbol: { type: 'string' } }, required: ['symbol'], additionalProperties: false } });
-    if (dataFor('quote') || dataFor('history') || dataFor('dart')) T.push({ name: 'get_stock_dossier', description: '한 종목 종합 조사를 한 번에: 시세 · 일봉 지표(추세 · RSI · MACD · 볼린저 · 52주 위치 · 지지/저항 · 거래량) · 규칙 신호(signals) · 지수 대비 성과 · 밸류(PER · PBR · 시총) · 최근 재무 · 최근 45일 공시(주의/긍정 분류) · 국내 뉴스 · 오늘 브리핑 언급 · 사용자 보유 현황(손익 · 손절/목표 거리)과 한눈에 보기(scorecard), 못 받은 자료(gaps). 종목 하나를 판단 · 설명할 때 가장 먼저 이것만 부르고, gaps 만 다른 도구로 보충한다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) · 미국 티커(AAPL) · 또는 한국 회사명' } }, required: ['symbol'], additionalProperties: false } });
+    if (dataFor('quote') || dataFor('history') || dataFor('dart')) T.push({ name: 'get_stock_dossier', description: '한 종목 종합 조사를 한 번에: 시세 · 일봉 지표(추세 · RSI · MACD · 볼린저 · 52주 위치 · 지지/저항 · 거래량) · 규칙 신호(signals) · 지수 대비 성과 · 밸류(PER · PBR · 시총) · 최근 재무 · 최근 45일 공시(주의/긍정 분류) · 국내 뉴스 · 오늘 브리핑 언급 · 사용자 보유 현황(손익 · 손절/목표 거리)과 한눈에 보기(scorecard), 못 받은 자료(gaps). 종목 하나를 판단 · 설명할 때 가장 먼저 이것만 부르고, gaps 만 다른 도구로 보충한다.', input_schema: { type: 'object', properties: { symbol: { type: 'string', description: '6자리 코드(005930) · 미국 티커(AAPL) · 또는 한국 회사명.' + cnHint } }, required: ['symbol'], additionalProperties: false } });
     if (dataFor('history')) T.push({ name: 'scan_portfolio', description: '사용자의 관심 · 보유 종목 전체(최대 20개)를 점검해 급한 순으로 돌려준다: 최근 종가 · 1/5/20일 수익률 · RSI · 추세 · 신호, 보유 손익 · 손절가/목표가까지 거리 · R 배수 · 경고(손절 이탈 · 목표 도달 · 알림가), 최근 7일 새 공시(주의/긍정). "내 종목 어때", "오늘 점검", "뭐부터 봐야 해" 에 쓴다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     if (dataFor('history')) T.push({ name: 'compare_stocks', description: '2~6개 종목을 나란히 비교한다: 기간 수익률 · 변동성 · 최대 낙폭 · 고점 대비 · RSI · 추세 · 52주 위치 · 신호와, 최근 120거래일 일간 수익률 상관관계(분산 효과), 20일 · 1년 수익률 순위. 종목 고르기 · 갈아타기 · 분산을 물을 때 쓴다.', input_schema: { type: 'object', properties: { symbols: { type: 'array', items: { type: 'string' }, description: '종목 코드 또는 회사명 2~6개' } }, required: ['symbols'], additionalProperties: false } });
     T.push({ name: 'get_briefing', description: '이 앱이 매일 아침(8시 전까지 여러 번 보강) 모으는 그날의 모닝 브리핑(여러 언론이 함께 다룬 주식 관련 큰 이슈 15개 · 언론사 수 · 분류)과 전략 브리핑(증권사 데일리 시황 · 투자전략 리포트의 제목 · 요약, 주간 전략, 자주 나온 말)을 돌려준다. "오늘 · 요즘 시장", 이슈, 특정 종목 · 업종의 최근 뉴스나 증권사 시각을 말할 때 웹 검색보다 먼저 확인한다. focus 를 주면 그 말이 들어간 항목만 골라 준다.', input_schema: { type: 'object', properties: { focus: { type: 'string', description: '종목명 · 업종 · 키워드 (선택, 예: 삼성전자, 반도체, 환율)' }, date: { type: 'string', description: 'YYYY-MM-DD (선택, 기본 가장 최근 판)' } }, additionalProperties: false } });
@@ -1397,29 +1437,38 @@ ${[
     { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
     { type: 'twelvedata', why: '미국 · 해외 종목 일봉 · 차트 (하루 800회)', how: 'Twelve Data 무료 가입 → API Keys' },
     { type: 'alphavantage', why: '미국 종목 일봉 · 뉴스 감성 점수 (하루 25회)', how: 'Alpha Vantage 무료 키 신청' },
+    { type: 'tencent', why: '중국 A주(상하이 · 선전) · 홍콩 주식 현재가 · 일봉 · PER · 52주 고저', how: '키 필요 없음 — [추가] 한 번이면 끝 (공식 API 가 아니라 개인 참고용)' },
   ];
   function renderReco() {
     const box = $('apiReco'); if (!box) return;
     box.innerHTML = `<div class="sc-reco-h"><h2>추천 API</h2><p>키만 받아 오면 [키 넣기] 한 번으로 연결됩니다. 위에서부터 효과가 큰 순서입니다.</p></div>
       <div class="sc-reco">${RECO.map(r => {
-        const T = r.type ? TYPES[r.type] : null, have = r.type && cfg.apis.find(a => a.type === r.type), ok = have && (hasKey(have) || r.type === 'custom');
+        const T = r.type ? TYPES[r.type] : null, have = r.type && cfg.apis.find(a => a.type === r.type), ok = have && (hasKey(have) || noKey(have));
         const name = r.name || T.name, url = r.keyUrl || (T && T.keyUrl) || '';
         return `<div class="sc-reco-i${ok ? ' on' : ''}${r.soon ? ' soon' : ''}">
           <div class="t"><b>${esc(name)}</b>${ok ? `<span class="ks ok">${icon('check', 13)}연결됨</span>` : have ? '<span class="ks warn">키 없음</span>' : r.soon ? '<span class="ks">준비 중</span>' : ''}</div>
           <p class="why">${esc(r.why)}</p><p class="how">${esc(r.how)}</p>
-          <div class="row">${url ? `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${icon('link', 14)}키 받으러 가기</a>` : ''}${r.guide === 'naver' ? `<button class="btn sm ghost" data-guide="naver">${icon('help', 14)}받는 법</button>` : ''}${r.soon ? `<span class="soon-n">${esc(r.note)}</span>` : ok ? `<button class="btn sm" data-reco-test="${have.id}">시험</button>` : `<button class="btn sm ink" data-reco="${r.type}">${icon('key', 14)}${have ? '키 넣기' : '키 넣기'}</button>`}</div>
+          <div class="row">${url ? `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${icon('link', 14)}키 받으러 가기</a>` : ''}${r.guide === 'naver' ? `<button class="btn sm ghost" data-guide="naver">${icon('help', 14)}받는 법</button>` : ''}${r.soon ? `<span class="soon-n">${esc(r.note)}</span>` : ok ? `<button class="btn sm" data-reco-test="${have.id}">시험</button>` : T && T.nokey ? `<button class="btn sm ink" data-reco="${r.type}">${icon('plus', 14)}추가</button>` : `<button class="btn sm ink" data-reco="${r.type}">${icon('key', 14)}키 넣기</button>`}</div>
         </div>`;
       }).join('')}</div>`;
     fillIcons(box);
-    box.querySelectorAll('[data-reco]').forEach(b => b.onclick = () => { const have = cfg.apis.find(a => a.type === b.dataset.reco); openAdd(b.dataset.reco, have || undefined); });
+    box.querySelectorAll('[data-reco]').forEach(b => b.onclick = () => { const have = cfg.apis.find(a => a.type === b.dataset.reco); if (TYPES[b.dataset.reco].nokey) quickAdd(b.dataset.reco); else openAdd(b.dataset.reco, have || undefined); });
     box.querySelectorAll('[data-guide="naver"]').forEach(b => b.onclick = () => naverGuide());
     box.querySelectorAll('[data-reco-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(x => x.id === b.dataset.recoTest), b));
+  }
+  /* 키 없이 쓰는 종류: 창 없이 바로 추가하고 시험 */
+  function quickAdd(t) {
+    const T = TYPES[t], have = cfg.apis.find(a => a.type === t);
+    if (have) { if (have.on === false) { have.on = true; saveCfg(); renderApis(); } testApi(have); return; }
+    const o = { id: uid(), type: t, on: true, name: T.name, model: '', base: '', key: '', test: '' };
+    cfg.apis.push(o); saveCfg(); renderApis(); toast(`${T.name} 를 추가했습니다`, 1800); testApi(o);
   }
   const FEATS = [
     { t: 'claude', n: 'AI 대화 · 분석', use: '대화 · 종목 종합 · 내 종목 점검', ai: true },
     { t: 'datagokr', n: '국내 시세 · 일봉 (종가)', use: '관심 종목 · 종목 분석 · 차트 · 지표' },
     { t: 'kisrelay', n: '실시간 시세 · PER · PBR', use: '장중 현재가 (KIS)', kis: true },
     { t: 'etf', n: 'ETF 시세 · NAV', use: 'ETF 종목 분석 · 괴리율' },
+    { t: 'tencent', n: '중국 · 홍콩 시세', use: '중국 A주 · 홍콩 종목 분석 · 차트 (키 없음)' },
     { t: 'index', n: '코스피 · 코스닥 지수', use: '오늘 · 시장 · 상대 강도' },
     { t: 'ksd', n: '배당 · 보호예수 · 상장', use: '종목 분석 · 시장 데이터' },
     { t: 'dart', n: '공시 · 재무', use: '종목 분석 · 오늘 · 위험 공시', relay: true },
@@ -1432,7 +1481,7 @@ ${[
     if (!api) return { s: 'off', l: '없음', api: null, act: f.ai ? 'add' : 'add' };
     if (f.kis && api.kis === false) return { s: 'off', l: 'KIS 보류 · 종가로 대신', api, act: '' };
     if (f.relay && !relayApi()) return { s: 'warn', l: '중계가 있어야 함', api, act: 'relay' };
-    if (!hasKey(api) && api.type !== 'custom') return { s: 'warn', l: '키 없음', api, act: 'edit' };
+    if (!hasKey(api) && !noKey(api)) return { s: 'warn', l: '키 없음', api, act: 'edit' };
     if (api.test === 'ok') return { s: 'ok', l: '됨', api, act: '' };
     if (api.test) return { s: 'bad', l: api.test, api, act: 'test' };
     return { s: 'idle', l: '시험 전', api, act: 'test' };
@@ -1444,11 +1493,11 @@ ${[
     box.innerHTML = `<div class="sc-reco-h sc-caps-h"><div><h2>지금 되는 기능 <small>${ok} / ${rows.length}</small></h2><p>연결한 API 로 어떤 화면이 채워지는지 봅니다. 초록이 아닌 줄은 오른쪽 단추로 고칩니다.</p></div><button class="btn sm" id="capAll">${icon('check', 14)}모두 시험</button></div>
       <div class="sc-caps">${rows.map((r, i) => `<div class="sc-cap ${r.st.s}"><i class="dot" aria-hidden="true"></i><div class="tx"><b>${esc(r.f.n)}</b><small title="${esc(r.st.l)}">${esc(r.st.s === 'bad' || r.st.s === 'warn' || (r.st.s === 'off' && r.st.api) ? r.st.l : r.f.use)}</small></div>${r.st.s === 'bad' ? '<span class="lb">오류</span>' : r.st.s === 'off' && r.st.api ? '<span class="lb">보류</span>' : ''}${btn(r, i)}</div>`).join('')}</div>`;
     fillIcons(box);
-    box.querySelectorAll('[data-cap-add]').forEach(b => b.onclick = () => { const t = b.dataset.capAdd, have = cfg.apis.find(a => a.type === t); openAdd(t, have || undefined); });
+    box.querySelectorAll('[data-cap-add]').forEach(b => b.onclick = () => { const t = b.dataset.capAdd, have = cfg.apis.find(a => a.type === t); if (TYPES[t] && TYPES[t].nokey) quickAdd(t); else openAdd(t, have || undefined); });
     box.querySelectorAll('[data-cap-edit]').forEach(b => b.onclick = () => openAdd(null, cfg.apis.find(a => a.id === b.dataset.capEdit)));
     box.querySelectorAll('[data-cap-test]').forEach(b => b.onclick = () => testApi(cfg.apis.find(a => a.id === b.dataset.capTest), b));
     $('capAll').onclick = async ev => {
-      const b = ev.currentTarget, list = cfg.apis.filter(a => a.on !== false && (hasKey(a) || a.type === 'custom'));
+      const b = ev.currentTarget, list = cfg.apis.filter(a => a.on !== false && (hasKey(a) || noKey(a)));
       if (!list.length) { toast('시험할 API 가 없습니다 — 먼저 연결해 주세요', 2200); return; }
       if (cfg.lock && !(await unlock())) return;
       b.disabled = true; let n = 0;
@@ -1464,7 +1513,7 @@ ${[
     $('apiGrid').innerHTML = cfg.apis.map(a => {
       const T = TYPES[a.type] || {}; const ai = T.kind === 'ai';
       const k = cfg.lock ? (keyMem ? keyMem[a.id] : '') : a.key;
-      const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : a.type === 'custom' ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : (sy.on ? '<span class="ks bad">이 기기에 없음 — 다른 기기에서 넣었다면 그 기기에서 SECRET 을 한 번 열면 저절로 옮겨 옵니다 · 아니면 [고치기] 로 넣기</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기 (기기 연결을 켜면 다른 기기의 키도 저절로 옮겨 옵니다)</span>');
+      const ks = hasKey(a) ? (k ? `<span class="ks ok">${icon('check', 13)}이 기기에 있음</span> ${esc(mask(k))}` : `<span class="ks ok">${icon('lock', 13)}있음 · 잠김</span>`) : noKey(a) ? '<span class="ks">필요 없음</span>' : remoteHas(a.id) ? '<span class="ks warn">다른 기기에 있음 · 받기 전</span>' : (sy.on ? '<span class="ks bad">이 기기에 없음 — 다른 기기에서 넣었다면 그 기기에서 SECRET 을 한 번 열면 저절로 옮겨 옵니다 · 아니면 [고치기] 로 넣기</span>' : '<span class="ks bad">없음 — [고치기] 로 넣기 (기기 연결을 켜면 다른 기기의 키도 저절로 옮겨 옵니다)</span>');
       return `<div class="sc-api${a.on === false ? ' off' : ''}"><div class="h"><span class="kind ${ai ? '' : 'data'}">${ai ? 'AI' : '시세'}</span><b title="${esc(a.name)}">${esc(a.name)}</b></div>
         <dl><dt>종류</dt><dd>${esc(T.name || a.type)}</dd><dt>키</dt><dd>${ks}</dd>${ai ? `<dt>모델</dt><dd>${esc(a.model || T.model || '–')}</dd>` : ''}${a.base ? `<dt>주소</dt><dd title="${esc(a.base)}">${esc(a.base)}</dd>` : ''}${a.type === 'kisrelay' ? `<dt>제공</dt><dd>DART · 네이버 · ECOS · FRED 통로${a.kis === false ? ' · <b>KIS 보류</b>' : ' · KIS 현재가 · 일봉'}</dd>` : !ai ? `<dt>제공</dt><dd>${(T.caps || []).map(c => ({ quote: '현재가', history: '일봉', news: '뉴스', custom: '원문', ksd: '종목 기본정보 · 상장 · 배당 · 의무보호예수', macro: '금리 · 환율', index: '코스피 · 코스닥 지수', dart: '공시 · 재무 · 회사 개요', newsKR: '국내 최신 뉴스', usmacro: '미국 금리 · 물가 · 고용' })[c]).join(' · ')}</dd>` : ''}</dl>
         <span class="st ${a.test === 'ok' ? 'ok' : a.test ? 'bad' : ''}">${a.test === 'ok' ? '시험 통과' : a.test ? esc(a.test) : '아직 시험하지 않음'}</span>
@@ -1499,7 +1548,7 @@ ${[
   async function testApi(a, btn, quiet) {
     if (btn) btn.disabled = true;
     try {
-      const k = await keyOf(a); if (!k && a.type !== 'custom') throw new Error('키가 비어 있습니다');
+      const k = await keyOf(a); if (!k && !noKey(a)) throw new Error('키가 비어 있습니다');
       if (a.type === 'claude') {
         const r = await fetch('https://api.anthropic.com/v1/models?limit=1', { headers: { 'x-api-key': k, 'anthropic-version': '2026-10-21', 'anthropic-dangerous-direct-browser-access': 'true' } });
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, 'Claude')); }
@@ -1508,7 +1557,7 @@ ${[
         const r = await fetch(base + '/models', { headers: { Authorization: 'Bearer ' + k } });
         if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[a.type].name)); }
       } else {
-        const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : 'AAPL';
+        const T = TYPES[a.type]; const s = a.type === 'datagokr' || a.type === 'kisrelay' ? '005930' : a.type === 'tencent' ? 'hk00700' : 'AAPL';
         if (a.type === 'naver') { const n = await DATA.naver.search(k, '삼성전자', 1); if (!n.items.length) throw new Error('네이버: 검색 결과가 없습니다'); }
         else if (a.type === 'fred') { await DATA.fred.overview(k); }
         else if (a.type === 'dart') { const d = await DATA.dart.disclosures(k, '005930', 30); if (!d.company) throw new Error('DART: 삼성전자를 찾지 못했습니다'); }
@@ -1592,6 +1641,7 @@ ${[
       $('fModel').hidden = !ai; f.model.placeholder = f.type.value === 'claude' ? 'claude-opus-5-5 (비우면 기본)' : '예: 해당 회사의 모델 이름';
       const kis = f.type.value === 'kisrelay'; $('kisHelp').hidden = !kis; $('fKis').hidden = !kis;
       const nv = f.type.value === 'naver'; $('nvHelp').hidden = !nv; $('fSecret').hidden = !nv; $('fKeyL').textContent = nv ? 'Client ID' : 'API 키';
+      $('fKeyL').parentElement.hidden = !!T.nokey; // 키 없이 쓰는 종류는 키 칸을 숨김
       $('fBase').hidden = !(kis || f.type.value === 'compat' || f.type.value === 'custom' || (ai && f.type.value !== 'claude' && edit));
       f.base.placeholder = kis ? 'https://dpv-kis.○○○.workers.dev' : f.type.value === 'custom' ? 'https://…?symbol={symbol}&apikey={key}' : (T.base || 'https://…/v1');
       f.key.placeholder = kis ? '중계 암호 ([중계 암호 만들기] 로 만든 값)' : nv ? (edit ? '바꿀 때만 넣으세요' : 'Client ID 를 붙여 넣으세요') : (edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요');
@@ -1612,7 +1662,7 @@ ${[
       const t = f.type.value, T = TYPES[t];
       let key = f.key.value.trim();
       if (t === 'naver') { const sec = f.secret.value.trim(); if (key && !key.includes(':')) { if (!sec) { toast('Client Secret 도 넣어 주세요', 2000); return; } key = key + ':' + sec; } else if (!key && sec) { toast('Client ID 도 넣어 주세요', 2000); return; } } // 두 칸 → 「아이디:시크릿」
-      if (!edit && !key && t !== 'custom') { toast('API 키를 넣어 주세요', 1800); return; }
+      if (!edit && !key && t !== 'custom' && !T.nokey) { toast('API 키를 넣어 주세요', 1800); return; }
       if ((t === 'compat' || t === 'custom' || t === 'kisrelay') && !f.base.value.trim()) { toast(t === 'kisrelay' ? '중계 주소를 넣어 주세요 ([중계 만드는 법] 5번)' : '주소를 넣어 주세요', 2200); return; }
       if (T.kind === 'ai' && t !== 'claude' && !f.model.value.trim()) { toast('모델 이름을 넣어 주세요', 1800); return; }
       const o = edit || { id: uid(), type: t, on: true };
@@ -2276,7 +2326,7 @@ ${[
       else { if (!(await unlock())) return false; for (const id in got) if (got[id] && !keyMem[id]) keyMem[id] = got[id]; if (lockKey) await sealKeys(); }
       sy.keysSeen = L.data; saveSy(); saveCfg(); await remember(keep);
       const added = cfg.apis.filter(a => !before.has(a.id) && keyMem && keyMem[a.id]);
-      const still = cfg.apis.filter(a => !hasKey(a) && a.type !== 'custom');
+      const still = cfg.apis.filter(a => !hasKey(a) && !noKey(a));
       toast(added.length ? `키 ${added.length}개를 받았습니다: ${added.map(a => a.name).join(' · ')}${still.length ? ` · 아직 키가 없는 것: ${still.map(a => a.name).join(' · ')}` : ''}` : still.length ? `그 기기에도 ${still.map(a => a.name).join(' · ')} 의 키는 없습니다 — 이 기기에서 [고치기] 로 넣어 주세요` : '받을 새 키가 없습니다 — 이 기기에 이미 모두 있습니다', 5200);
       renderApis(); renderBanner(); return true;
     } catch (e) { toast('암호가 맞지 않습니다', 2200); return false; }
@@ -2297,7 +2347,7 @@ ${[
   }
   const keysToGet = () => cfg.apis.filter(a => remoteHas(a.id));
   /* [다른 기기 키 받기] 단추: 그쪽에만 있는 키가 남아 있을 때 ('나중에' 와 상관없이) */
-  function remoteMissing() { const L = cfg.lockRemote; if (!L || !L.data || (cfg.lock && cfg.lock.data === L.data)) return false; return cfg.apis.some(a => a.type !== 'custom' && !hasKey(a) && (!L.ids || L.ids.includes(a.id))); }
+  function remoteMissing() { const L = cfg.lockRemote; if (!L || !L.data || (cfg.lock && cfg.lock.data === L.data)) return false; return cfg.apis.some(a => !noKey(a) && !hasKey(a) && (!L.ids || L.ids.includes(a.id))); }
   function askToken() {
     return new Promise(res => {
       const c = ghCfg();
