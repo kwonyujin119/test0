@@ -81,7 +81,7 @@
     etf: { kind: 'data', name: '공공데이터포털 ETF 시세 (금융위원회)', caps: ['quote', 'history'], keyUrl: 'https://www.data.go.kr/data/15094806/openapi.do', note: 'ETF 의 하루 단위 시세 · 일봉 · 순자산가치(NAV) · 기초지수. 금융위원회 주식시세와 같은 공공데이터포털 키를 그대로 넣으세요 (공공데이터포털에서 「금융위원회_증권상품시세정보」 활용신청 필요).' },
     index: { kind: 'data', name: '공공데이터포털 지수 시세 (금융위원회)', caps: ['index'], keyUrl: 'https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EA%B8%88%EC%9C%B5%EC%9C%84%EC%9B%90%ED%9A%8C_%EC%A7%80%EC%88%98%EC%8B%9C%EC%84%B8%EC%A0%95%EB%B3%B4', note: '코스피 · 코스닥 · 코스피 200 의 하루 단위 지수 (종가 · 등락 · 5일 · 20일 흐름). 같은 공공데이터포털 키를 그대로 넣으세요 (「금융위원회_지수시세정보」 활용신청 필요).' },
     ecos: { kind: 'data', name: '한국은행 ECOS (금리 · 환율)', caps: ['macro'], keyUrl: 'https://ecos.bok.or.kr/api/', note: '기준금리 · 국고채 3년/10년 · 원/달러 환율을 AI 와 시장 데이터 화면에 넣습니다. 한국은행이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함).' },
-    naver: { kind: 'data', name: '네이버 뉴스 검색', caps: ['newsKR'], keyUrl: 'https://developers.naver.com/apps/#/register', note: '아침 브리핑 이후 나온 종목별 최신 국내 뉴스 (무료 하루 25,000회). 네이버 개발자센터 → 애플리케이션 등록 → 사용 API 에서 [검색] 을 고르고, 받은 Client ID 와 Client Secret 을 「아이디:시크릿」 처럼 콜론(:)으로 이어 붙여 넣으세요. KIS 중계를 거칩니다.' },
+    naver: { kind: 'data', name: '네이버 뉴스 검색', caps: ['newsKR'], keyUrl: 'https://console.ncloud.com/', note: '아침 브리핑 이후 나온 종목별 최신 국내 뉴스. 2026년 7월 31일부터 네이버 검색 API 새 키는 네이버 클라우드의 NAVER API HUB 에서 받습니다 (예전 개발자센터 키도 그대로 됨). [네이버 키 받는 법] 을 보세요. KIS 중계를 거칩니다.' },
     fred: { kind: 'data', name: 'FRED (미국 경제지표)', caps: ['usmacro'], keyUrl: 'https://fredaccount.stlouisfed.org/apikeys', note: '미국 연준 자료: 10년 · 2년 국채 금리 · 연방기금 금리 · 소비자물가(CPI) · 실업률 · 원/달러. 무료 가입 후 API 키를 넣으세요. KIS 중계를 거칩니다.' },
     dart: { kind: 'data', name: 'OpenDART (금융감독원 공시)', caps: ['dart'], keyUrl: 'https://opendart.fss.or.kr/', note: '공시 목록 · 주요 재무(매출 · 영업이익 · 순이익 · 자산 · 부채 · 자본) · 회사 개요. 금융감독원이 브라우저에서 바로 부르는 것을 막아 두어, 만들어 둔 KIS 중계를 거칩니다 (중계 코드를 최신으로 다시 붙여 넣어야 함). 처음 한 번 회사 고유번호 표를 받아 이 기기에 30일 둡니다.' },
     ksd: { kind: 'data', name: '한국예탁결제원 주식정보 (공공데이터포털)', caps: ['ksd'], keyUrl: 'https://www.data.go.kr/data/15157413/openapi.do', note: '시세가 아니라 종목의 "속사정"을 봅니다: 표준코드 · 발행일 · 상장일/상장폐지 · 배당 순위(시가배당률 · 주당배당금) · 의무보호예수(풀릴 물량) · 신규 예탁 지정 · 시장별 발행주식수. 공공데이터포털 일반 인증키를 그대로 붙여 넣으세요 (금융위원회 시세와 같은 키).' },
@@ -1183,7 +1183,7 @@ ${[
     { type: 'kisrelay', why: '실시간 현재가 · PER · PBR · 20년 월봉', how: '한국투자증권 앱키 · 앱시크릿 → 내 Cloudflare 중계' },
     { type: 'ecos', why: '기준금리 · 국고채 · 원/달러 환율', how: '한국은행 ECOS 인증키 신청 (KIS 중계를 거침)' },
     { type: 'dart', why: '공시 목록 · 매출 · 영업이익 · 순이익 · 부채비율 · 회사 개요', how: 'OpenDART 인증키 신청 (KIS 중계를 거침)' },
-    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI · 종목 분석 · 오늘 한눈에', how: '네이버 개발자센터 → 애플리케이션 등록 → 사용 API [검색] (KIS 중계를 거침)', keyUrl: 'https://developers.naver.com/apps/#/register?api=search', guide: 'naver' },
+    { type: 'naver', why: '브리핑 이후 종목별 최신 국내 뉴스 — AI · 종목 분석 · 오늘 한눈에', how: '네이버 클라우드 NAVER API HUB → 뉴스 검색 (2026.7.31 부터 새 키는 여기서, KIS 중계를 거침)', keyUrl: 'https://console.ncloud.com/', guide: 'naver' },
     { type: 'fred', why: '미국 국채 · 연준 금리 · 물가 · 실업률 — 미국장 영향', how: 'FRED 무료 가입 → API Keys (KIS 중계를 거침)' },
     { type: 'finnhub', why: '미국 주식 시세 · 회사 뉴스', how: 'Finnhub 무료 가입 후 대시보드의 키' },
     { type: 'twelvedata', why: '미국 · 해외 종목 일봉 · 차트 (하루 800회)', how: 'Twelve Data 무료 가입 → API Keys' },
@@ -1273,21 +1273,18 @@ ${[
     } finally { saveCfg(); if (btn) btn.disabled = false; renderApis(); }
   }
   function naverGuide() {
-    const site = 'https://kwonyujin119.github.io';
-    const d = dialog(`<h3>네이버 키 받는 법 (약 2분)</h3>
-      <p class="modal-desc">네이버 개발자센터에서 [검색] API 를 쓰는 애플리케이션을 하나 만들면 Client ID 와 Client Secret 이 나옵니다. 무료이고 하루 25,000번까지 씁니다.</p>
+    const d = dialog(`<h3>네이버 뉴스 키 받는 법 (NAVER API HUB)</h3>
+      <p class="modal-desc">네이버가 <b>2026년 7월 31일부터 검색 API 새 신청을 개발자센터에서 막고</b>, 네이버 클라우드의 <b>NAVER API HUB</b> 로 옮겼습니다. (개발자센터에서 "신규로 등록할 수 없는 API" 가 뜨는 이유) 이미 받아 둔 개발자센터 키가 있으면 그것도 그대로 됩니다.</p>
       <ol class="sc-steps">
-        <li><a href="https://developers.naver.com/apps/#/register?api=search" target="_blank" rel="noopener"><b>애플리케이션 등록 화면 열기</b></a> (네이버 로그인)</li>
-        <li><b>애플리케이션 이름</b>: 아무 이름 (예: DPV)</li>
-        <li><b>사용 API</b>: 목록을 <b>아래로 내려 [검색]</b> 을 고릅니다 ('뉴스' 라는 항목은 따로 없고 [검색] 안에 들어 있습니다).</li>
-        <li><b>비로그인 오픈 API 서비스 환경</b> → [환경 추가] → <b>WEB 설정</b> → 웹 서비스 URL 에 <code>${site}</code> <button type="button" class="btn sm" data-cpu>주소 복사</button></li>
-        <li><b>[등록하기]</b> → 열린 화면(또는 <a href="https://developers.naver.com/apps/#/list" target="_blank" rel="noopener">내 애플리케이션</a>)에서 <b>Client ID</b> 와 <b>Client Secret</b>([보기]) 을 복사</li>
-        <li>SECRET 의 이 창에서 <b>Client ID</b> · <b>Client Secret</b> 칸에 각각 붙여 넣고 [추가하고 시험]</li>
+        <li><a href="https://www.ncloud.com/" target="_blank" rel="noopener"><b>네이버 클라우드 플랫폼</b></a> 에 로그인 (네이버 아이디로 가입 가능)</li>
+        <li><a href="https://console.ncloud.com/" target="_blank" rel="noopener"><b>콘솔</b></a> → 메뉴 <b>All Services → Application Services → NAVER API HUB</b> → <b>[신청하기]</b> → Subscription 에서 <b>[서비스 이용 신청]</b> (약관 동의)</li>
+        <li>NAVER API HUB 의 <b>Application → [Application 등록]</b> → API 에서 <b>뉴스 검색</b> 을 고르고 [다음] → 이름(예: DPV) → 등록</li>
+        <li><b>Application 관리</b> 에서 만든 것을 고르고 <b>[인증 정보]</b> → <b>Client ID</b> 와 <b>Client Secret</b> 복사</li>
+        <li>SECRET 네이버 카드의 <b>[키 넣기]</b> → <b>Client ID</b> · <b>Client Secret</b> 칸에 각각 붙여 넣고 [추가하고 시험]</li>
       </ol>
-      <p class="hint">네이버 뉴스는 만들어 둔 KIS 중계를 거칩니다. 시험에서 "중계 코드가 예전 것" 이라고 나오면 [중계 코드 복사] 로 Cloudflare 코드를 한 번 바꿔 주세요.</p>
-      <div class="actions"><a class="btn ink" href="https://developers.naver.com/apps/#/register?api=search" target="_blank" rel="noopener">${icon('link', 16)}등록 화면 열기</a><button class="btn" data-x>닫기</button></div>`, 'sc-dlg');
+      <p class="hint">요금은 네이버 클라우드 안내를 확인하세요 (검색 API 는 한시적 무료로 안내된 적이 있음). 네이버 뉴스는 KIS 중계를 거치므로, 시험에서 "중계 코드가 예전 것" 이라고 나오면 [중계 코드 복사] 로 Cloudflare 코드를 한 번 바꿔 주세요. 자세한 공식 안내: <a href="https://guide.ncloud-docs.com/docs/apihub-overview" target="_blank" rel="noopener">NAVER API HUB 개요</a></p>
+      <div class="actions"><a class="btn ink" href="https://console.ncloud.com/" target="_blank" rel="noopener">${icon('link', 16)}네이버 클라우드 콘솔 열기</a><button class="btn" data-x>닫기</button></div>`, 'sc-dlg');
     d.el.querySelector('[data-x]').onclick = d.close;
-    d.el.querySelector('[data-cpu]').onclick = async ev => { try { await navigator.clipboard.writeText(site); ev.currentTarget.textContent = '복사했습니다'; } catch (e) { window.prompt('이 주소를 복사하세요', site); } };
   }
   function kisGuide() {
     const d = dialog(`<h3>KIS 중계 만드는 법 (한 번만, 약 5분)</h3>
@@ -1315,7 +1312,7 @@ ${[
     const d = dialog(`<h3>${edit ? 'API 고치기' : 'API 추가'}</h3><form class="sc-form" autocomplete="off">
       <label>종류<select name="type"${edit && isAI(edit) ? ' disabled' : ''}>${edit && !isAI(edit) ? '' : opts('ai', 'AI (대화)')}${opts('data', '시세 · 데이터')}</select></label>
       <p class="hint" id="tNote"></p>
-      <div class="sc-kis" id="nvHelp" hidden><button type="button" class="btn sm" id="nvGuide">${icon('help', 14)}네이버 키 받는 법</button><a class="btn sm" href="https://developers.naver.com/apps/#/register?api=search" target="_blank" rel="noopener">${icon('link', 14)}바로 등록하러 가기</a></div>
+      <div class="sc-kis" id="nvHelp" hidden><button type="button" class="btn sm" id="nvGuide">${icon('help', 14)}네이버 키 받는 법</button><a class="btn sm" href="https://console.ncloud.com/" target="_blank" rel="noopener">${icon('link', 14)}네이버 클라우드 콘솔 열기</a></div>
       <div class="sc-kis" id="kisHelp" hidden><button type="button" class="btn sm" id="kisGuide">${icon('help', 14)}중계 만드는 법</button><button type="button" class="btn sm" id="kisGen">${icon('lock', 14)}중계 암호 만들기</button></div>
       <label>이름<input type="text" name="name" value="${esc(a.name)}" placeholder="예: 내 Claude"></label>
       <label><span id="fKeyL">API 키</span><input type="password" name="key" placeholder="${edit ? '바꿀 때만 넣으세요' : '키를 붙여 넣으세요'}" autocomplete="off"></label>

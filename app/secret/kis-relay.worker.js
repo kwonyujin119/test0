@@ -39,18 +39,27 @@ export default {
     const code = String(url.searchParams.get('code') || '').toUpperCase();
     if (url.pathname === '/ping') return out(200, { ok: true, mock: env.KIS_MOCK === '1' });
     /* 한국은행 ECOS 금리 · 환율 (SECRET 이 x-api-key 로 ECOS 키를 보냄 · 통계 조회만) */
-    /* 네이버 뉴스 검색 (x-api-key = "클라이언트아이디:시크릿") · 뉴스 검색만 */
+    /* 네이버 뉴스 검색 (x-api-key = "클라이언트아이디:시크릿") · 뉴스 검색만
+       2026-07-31 부터 새 키는 네이버 클라우드 NAVER API HUB(헤더 X-NCP-APIGW-API-KEY-ID/KEY) — 먼저 HUB, 안 되면 예전 개발자센터 주소로 */
     if (url.pathname === '/naver') {
       const k = req.headers.get('x-api-key') || env.NAVER_KEY || '', i = k.indexOf(':');
       if (i < 1) return out(400, { error: '네이버 키는 "Client ID:Client Secret" 처럼 콜론으로 이어 넣어 주세요' });
       const q = url.searchParams.get('query') || '', n = Math.max(1, Math.min(30, +url.searchParams.get('display') || 10)), sort = url.searchParams.get('sort') === 'sim' ? 'sim' : 'date';
       if (!q.trim() || q.length > 80) return out(400, { error: '검색어가 비었거나 너무 깁니다' });
-      try {
-        const r = await fetch('https://openapi.naver.com/v1/search/news.json?' + new URLSearchParams({ query: q, display: String(n), sort }), { headers: { 'X-Naver-Client-Id': k.slice(0, i).trim(), 'X-Naver-Client-Secret': k.slice(i + 1).trim() } });
-        const j = await r.json().catch(() => null);
-        if (!r.ok || !j) return out(r.status === 401 ? 401 : 502, { error: '네이버: ' + ((j && (j.errorMessage || j.message)) || ('HTTP ' + r.status)) });
-        return out(200, { ok: true, items: j.items || [], total: j.total || 0 });
-      } catch (e) { return out(502, { error: '네이버: ' + String(e.message || e) }); }
+      const id = k.slice(0, i).trim(), sec = k.slice(i + 1).trim(), qs = new URLSearchParams({ query: q, display: String(n), sort });
+      const pick = j => { const b = j && (j.items ? j : j.result || j.data || j.response || j); return b && Array.isArray(b.items) ? { items: b.items, total: b.total || b.items.length } : null; };
+      const errs = [];
+      for (const [url, h, who] of [
+        ['https://naverapihub.apigw.ntruss.com/search/v1/news?' + qs, { 'X-NCP-APIGW-API-KEY-ID': id, 'X-NCP-APIGW-API-KEY': sec }, 'API HUB'],
+        ['https://openapi.naver.com/v1/search/news.json?' + qs, { 'X-Naver-Client-Id': id, 'X-Naver-Client-Secret': sec }, '개발자센터'],
+      ]) {
+        try {
+          const r = await fetch(url, { headers: h }), j = await r.json().catch(() => null), got = r.ok && pick(j);
+          if (got) return out(200, Object.assign({ ok: true, via: who }, got));
+          errs.push(`${who} ${r.status}: ` + ((j && (j.errorMessage || j.message || (j.error && (j.error.message || j.error.errorMessage)))) || '응답을 읽지 못함'));
+        } catch (e) { errs.push(`${who}: ` + String(e.message || e)); }
+      }
+      return out(502, { error: '네이버: ' + errs.join(' / ') });
     }
     /* FRED 미국 경제지표 (x-api-key = FRED 키) · 관측값 조회만 */
     if (url.pathname === '/fred') {
