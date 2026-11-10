@@ -1,17 +1,8 @@
 {
  "title": "We need PT Tool now",
- "theme": "clean",
+ "theme": "ocean",
  "transition": "fade",
  "created": "2026-11-09T09:00:00.000Z",
- "colors": {
-  "accent": "#E8590C",
-  "accent2": "#2B2D6E",
-  "title": "#14213D",
-  "fg": "#2A3148",
-  "muted": "#667089",
-  "surface": "#FFF3EA"
- },
- "decor": "none",
  "footer": {
   "num": true,
   "total": true,
@@ -11105,5 +11096,6 @@
    ],
    "noFooter": true
   }
- ]
+ ],
+ "modified": "2026-11-10T01:09:07.521Z"
 }
