@@ -39,6 +39,31 @@ export default {
     const code = String(url.searchParams.get('code') || '').toUpperCase();
     if (url.pathname === '/ping') return out(200, { ok: true, mock: env.KIS_MOCK === '1' });
     /* 한국은행 ECOS 금리 · 환율 (SECRET 이 x-api-key 로 ECOS 키를 보냄 · 통계 조회만) */
+    /* 네이버 뉴스 검색 (x-api-key = "클라이언트아이디:시크릿") · 뉴스 검색만 */
+    if (url.pathname === '/naver') {
+      const k = req.headers.get('x-api-key') || env.NAVER_KEY || '', i = k.indexOf(':');
+      if (i < 1) return out(400, { error: '네이버 키는 "Client ID:Client Secret" 처럼 콜론으로 이어 넣어 주세요' });
+      const q = url.searchParams.get('query') || '', n = Math.max(1, Math.min(30, +url.searchParams.get('display') || 10)), sort = url.searchParams.get('sort') === 'sim' ? 'sim' : 'date';
+      if (!q.trim() || q.length > 80) return out(400, { error: '검색어가 비었거나 너무 깁니다' });
+      try {
+        const r = await fetch('https://openapi.naver.com/v1/search/news.json?' + new URLSearchParams({ query: q, display: String(n), sort }), { headers: { 'X-Naver-Client-Id': k.slice(0, i).trim(), 'X-Naver-Client-Secret': k.slice(i + 1).trim() } });
+        const j = await r.json().catch(() => null);
+        if (!r.ok || !j) return out(r.status === 401 ? 401 : 502, { error: '네이버: ' + ((j && (j.errorMessage || j.message)) || ('HTTP ' + r.status)) });
+        return out(200, { ok: true, items: j.items || [], total: j.total || 0 });
+      } catch (e) { return out(502, { error: '네이버: ' + String(e.message || e) }); }
+    }
+    /* FRED 미국 경제지표 (x-api-key = FRED 키) · 관측값 조회만 */
+    if (url.pathname === '/fred') {
+      const k = req.headers.get('x-api-key') || env.FRED_KEY || '', id = url.searchParams.get('series_id') || '', n = Math.max(1, Math.min(60, +url.searchParams.get('limit') || 30));
+      if (!k) return out(400, { error: 'FRED 키가 없습니다' });
+      if (!/^[A-Z0-9]{2,20}$/.test(id)) return out(400, { error: '요청 값이 맞지 않습니다' });
+      try {
+        const r = await fetch('https://api.stlouisfed.org/fred/series/observations?' + new URLSearchParams({ series_id: id, api_key: k, file_type: 'json', sort_order: 'desc', limit: String(n) }));
+        const j = await r.json().catch(() => null);
+        if (!r.ok || !j || j.error_message) return out(r.status >= 400 ? r.status : 502, { error: 'FRED: ' + ((j && j.error_message) || ('HTTP ' + r.status)) });
+        return out(200, { ok: true, rows: (j.observations || []).map(o => ({ t: o.date, v: o.value })) });
+      } catch (e) { return out(502, { error: 'FRED: ' + String(e.message || e) }); }
+    }
     /* OpenDART 공시 · 재무 (SECRET 이 x-api-key 로 DART 키를 보냄 · 조회만). corpCode.xml 은 압축 파일을 그대로 넘김 (풀기는 SECRET 이) */
     if (url.pathname === '/dart') {
       const DART_OK = ['list.json', 'company.json', 'fnlttSinglAcnt.json', 'corpCode.xml'];
@@ -96,7 +121,7 @@ export default {
         }
         return out(200, { ok: true, code, name, period, rows: rows.slice(0, days) }, keep);
       }
-      return out(404, { error: '없는 기능입니다 (/quote · /daily · /ecos · /dart 만)' });
+      return out(404, { error: '없는 기능입니다 (/quote · /daily · /ecos · /dart · /naver · /fred 만)' });
     } catch (e) {
       return out(502, { error: String(e.message || e) });
     }
