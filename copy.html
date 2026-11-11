@@ -37,7 +37,7 @@ button, .btn { appearance: none; border: 0; border-radius: 12px; font: inherit; 
 <script>
 'use strict';
 (async function () {
-  const TITLES = { 'pt-tool': 'PT Tool 한 번에 만들기', 'pt-make': 'PT(교안) 만들기' };
+  const TITLES = { 'pt-tool': 'PT Tool 한 번에 만들기', 'pt-make': 'PT(교안) 만들기', 'pt-boost': '권교수가 자주 쓰는 프롬프트' };
   const key = (new URLSearchParams(location.search).get('p') || '').toLowerCase();
   const $ = (id) => document.getElementById(id), btn = $('copy');
   if (!/^[a-z0-9-]{1,40}$/.test(key)) { $('t').innerHTML = '<span class="err">주소가 잘못되었습니다</span>'; return; }
