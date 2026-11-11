@@ -7,6 +7,7 @@
   const escH = s => esc(s);
   const H = () => W.doc.header;
   const today = () => { const d = new Date(); return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`; };
+  const todayW = () => { const d = new Date(); return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.(${'일월화수목금토'[d.getDay()]})`; };
   const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
   const blockText = b => textNodesOf(b).map(t => t.nodeValue).join('').replace(/[​﻿]/g, '');
   const editorOpen = () => !!W.doc && !(typeof HwpHome !== 'undefined' && HwpHome.visible);
@@ -16,6 +17,8 @@
      ===================================================================== */
   const SYM = ['□', '○', '-', '·'];
   const SYM_RE = /^([□○■◦●\-·∙ㅇ])\s/;
+  const HEAD_RE = /^(\d{1,2})\.\s+(?=\S)/; // 손으로 친 큰 제목 '1. 추진 배경' (행안부 2026 보고서 예시의 방식)
+  const isItem = t => SYM_RE.test(t) || HEAD_RE.test(t);
   // 단계별 문단 모양: 왼쪽 여백 + 내어쓰기(둘째 줄이 기호 뒤 글자에 맞춰지도록)
   const LV_PP = [{ left: 0, intent: -1700, prev: 900 }, { left: 1300, intent: -1700, prev: 300 }, { left: 2600, intent: -1100, prev: 150 }, { left: 3600, intent: -1100, prev: 0 }];
   const lvPp = (base, L) => H().derivePp(base || '0', Object.assign({ align: 'JUSTIFY' }, LV_PP[L]));
@@ -28,16 +31,18 @@
      〔 〕 는 채울 칸 — Alt+. 로 다음 칸, 점검(F8)에서 남은 칸을 알려 줌
      ===================================================================== */
   const T = {};
-  T.report = { name: '1쪽 보고서 (검토 보고)', icon: 'doc', tag: '보고', desc: '결재권자가 첫 줄만 읽어도 무엇을 결정해야 하는지 알게 하는 두괄식 1쪽 보고서', tips: ['첫 상자(요지)에 <b>결론 · 건의</b>를 한두 줄로 먼저 씁니다 (두괄식).', '한 항목은 두 줄을 넘기지 않습니다. 길면 나눕니다.', '숫자는 비교 대상과 함께: “5일 → 2일(60% 단축)”.', '자세한 근거 · 통계는 본문에 넣지 말고 <b>붙임</b>으로 뺍니다.'],
-    lines: ['#〔제목: 무엇을 하겠다는 것인지 한 줄〕', '@' + today() + ' 〔부서명〕', '', '>보고 요지: 〔결론 · 건의 사항을 한두 줄로 — 무엇을 승인 · 결정해 주시면 되는지〕', '□ 추진 배경', '○ 〔왜 지금 필요한지 — 근거 법령 · 지시 · 민원 · 사고 사례〕', '□ 현황 및 문제점', '○ 〔현재 상태를 숫자로〕', '- 〔세부 내용〕', '○ 〔문제점〕', '□ 검토 의견', '○ 〔대안 1 · 2 비교 — 장단점 · 비용 · 효과〕', '○ 〔추천안과 그 이유〕', '□ 건의 사항', '○ 〔결재권자가 결정할 것: 승인 · 예산 · 인력 등〕', '□ 향후 계획', '○ 〔언제까지 · 무엇을〕', '', '붙임  〔관련 자료〕 1부.'] };
-  T.plan = { name: '추진계획(안)', icon: 'list', tag: '계획', desc: '사업 · 행사 · 훈련의 목적, 개요, 세부 계획, 일정, 예산, 기대 효과를 갖춘 표준 계획서', tips: ['<b>추진 개요</b>에 기간 · 장소 · 대상 · 내용을 모두 적어 한눈에 보이게 합니다.', '일정은 날짜(숫자와 온점)로: 2026. 12. 1.', '예산은 산출 근거(단가 × 수량)를 함께 씁니다.', '행정사항(협조 부서 · 보고 시점)을 빼먹지 않습니다.'],
-    lines: ['#〔사업명〕 추진계획(안)', '@' + today() + ' 〔부서명〕', '', '>〔무엇을 · 언제까지 · 어떻게 추진하려는지 한 줄 요약〕', '□ 추진 배경 및 목적', '○ 〔배경: 근거 법령 · 상위 계획 · 지시 사항〕', '○ 〔목적: 이 사업으로 바꾸려는 것〕', '□ 추진 개요', '○ 기간: 〔2026. 12. 1.~12. 31.〕', '○ 장소: 〔장소〕', '○ 대상: 〔대상 · 인원〕', '○ 내용: 〔주요 내용〕', '□ 세부 추진 계획', '○ 〔1단계: 준비〕', '- 〔세부 내용 · 담당〕', '○ 〔2단계: 실행〕', '○ 〔3단계: 평가 · 환류〕', '□ 추진 일정', '○ 〔11월: 계획 수립 → 12월: 실행 → 1월: 결과 보고〕', '□ 소요 예산', '○ 총 〔000〕천원 (〔예산 과목〕)', '- 〔산출 근거: 단가 × 수량〕', '□ 기대 효과', '○ 〔숫자로 말할 수 있는 효과〕', '□ 행정사항', '○ 〔협조 부서 · 보고 시점 · 유의 사항〕'] };
-  T.result = { name: '결과 보고', icon: 'check', tag: '보고', desc: '행사 · 훈련 · 점검이 끝난 뒤 무엇을 했고 어떤 결과가 났는지 숫자로 보고', tips: ['계획 대비 실적(목표 → 결과)을 숫자로 비교합니다.', '잘된 점만 쓰지 말고 문제점과 개선 방안을 함께 씁니다.', '사진 · 명단은 붙임으로 뺍니다.'],
-    lines: ['#〔행사 · 훈련명〕 결과 보고', '@' + today() + ' 〔부서명〕', '', '>〔계획 대비 결과 한 줄: 목표 00명 → 참여 00명(000%), 주요 성과〕', '□ 개요', '○ 일시: 〔2026. 11. 11.(수) 14:00~16:00〕', '○ 장소: 〔장소〕', '○ 참석: 〔누가 · 몇 명〕', '○ 내용: 〔무엇을 했는지〕', '□ 주요 결과', '○ 〔성과 1 — 숫자로〕', '○ 〔성과 2〕', '□ 문제점 및 개선 방안', '○ 〔문제점〕 → 〔개선 방안〕', '□ 향후 조치', '○ 〔후속 조치 · 다음 일정〕', '', '붙임  〔사진 · 참석자 명단〕 1부.'] };
-  T.meeting = { name: '회의자료', icon: 'rows', tag: '회의', desc: '회의 목적, 안건, 논의할 쟁점, 결정이 필요한 사항을 정리한 회의자료', tips: ['회의에서 <b>결정해야 할 것</b>을 맨 앞에 둡니다.', '쟁점마다 선택지(가안 · 나안)와 담당 부서 의견을 나란히 씁니다.', '회의 뒤 바로 결과 보고로 바꿀 수 있게 결정 칸을 비워 둡니다.'],
-    lines: ['#〔회의명〕 회의자료', '@' + today() + ' 〔부서명〕', '', '>결정 필요 사항: 〔이번 회의에서 정할 것〕', '□ 회의 개요', '○ 일시: 〔2026. 11. 11.(수) 10:00〕', '○ 장소: 〔회의실〕', '○ 참석: 〔참석 범위〕', '□ 안건', '○ 〔안건 1〕', '○ 〔안건 2〕', '□ 논의 사항', '○ 〔쟁점 1〕', '- 가안: 〔내용〕', '- 나안: 〔내용〕', '- 부서 의견: 〔의견〕', '□ 결정 사항 (회의 뒤 적음)', '○ 〔결정 내용 · 담당 · 기한〕'] };
-  T.press = { name: '보도자료', icon: 'notes', tag: '홍보', desc: '제목 · 부제 · 리드(육하원칙) · 본문 · 인용 · 담당자 순서의 보도자료', tips: ['제목은 주민이 얻는 이익이나 바뀌는 점을 담아 짧게.', '첫 문단(리드)에 누가 · 언제 · 어디서 · 무엇을 · 왜 · 어떻게를 담습니다.', '중요한 내용부터 덜 중요한 순서로 씁니다 (역피라미드).', '보도자료는 서술식(~했다)으로 씁니다.'],
-    lines: ['@보도 시점: 〔2026. 11. 12.(목) 06:00〕 / 배포: ' + today(), '#〔제목: 주민에게 무엇이 좋아지는지〕', '=- 〔부제: 핵심 숫자나 배경 한 줄〕 -', '', '〔리드: ○○소방서(서장 ○○○)는 ○일 ○○에서 ○○을 위해 ○○을 했다고 밝혔다.〕', '', '〔본문 1: 자세한 내용 · 숫자〕', '', '〔본문 2: 배경 · 그동안의 경과〕', '', '〔인용: ○○○ 서장은 “ … ”라고 말했다.〕', '', '@담당 부서: 〔○○과〕 / 담당자: 〔○○○〕 (〔000-000-0000〕)'] };
+  // 2026. 8. 24. 행안부 'AI 친화적 보고서' 원칙: 큰 제목 1. 2. · 항목 ○ - · 문장은 주어와 서술어가 있게 · 표는 위에 < 제목 > · 표 안의 표 금지
+  T.report = { name: '1쪽 보고서 (검토 보고)', icon: 'doc', tag: '보고', desc: '결재권자가 첫 줄만 읽어도 무엇을 결정할지 아는 두괄식 1쪽 보고서 (행안부 2026 보고서 원칙)', tips: ['첫 상자(보고 요지)에 <b>결론 · 건의</b>를 한두 문장으로 먼저 씁니다 (두괄식).', '○ 항목은 “개선 요구 지속”처럼 명사로 끊지 말고 “개선 요구가 계속 나오고 있음”처럼 <b>주어와 서술어</b>가 보이게 씁니다 (행안부 2026. 8. 24. 원칙).', '○ 뒤에 (현황) (문제점) 같은 <b>괄호 소제목</b>을 달면 훑어 읽기 쉽습니다.', '표는 위에 <b>&lt; 제목 &gt;</b>을 달고, 표 안에 표를 넣지 않습니다.', '자세한 근거 · 통계는 <b>붙임</b>으로 뺍니다.'],
+    lines: ['#〔제목: 무엇을 하겠다는 것인지 한 줄〕', '=서면보고 / ' + todayW() + ' / 〔부서 · 보고자〕', '', '>보고 요지: 〔결론과 건의를 한두 문장으로 — 무엇을 승인 · 결정해 주시면 되는지〕', '1. 추진 배경', '○ (근거) 〔법령 · 지시 · 민원 등 왜 지금 필요한지를 문장으로 씀〕', '2. 현황 및 문제점', '○ (현황) 〔현재 상태를 숫자로 씀 — 예: ○○개 중 ○○개(○○%)가 기준에 못 미침〕', '- 〔세부 근거〕', '○ (문제점) 〔무엇이 왜 문제인지 원인까지 씀〕', '3. 검토 의견', '=< 대안 비교 >', '|구분|1안 〔이름〕|2안 〔이름〕|', '|비용|〔 〕|〔 〕|', '|효과|〔 〕|〔 〕|', '|기간 · 부담|〔 〕|〔 〕|', '○ (추천) 〔추천안과 그 이유〕', '4. 건의 사항', '○ 〔결재권자가 결정할 것: 승인 · 예산 · 인력〕', '5. 향후 계획', '○ 〔언제까지 무엇을 할 예정임〕', '', '붙임  〔관련 자료〕 1부.'] };
+  T.plan = { name: '추진계획(안) — 시장 · 기관장 보고', icon: 'list', tag: '계획', desc: '배경 · 현황 · 추진 개요 · 단계별 계획 · 일정표 · 예산 · 효과 · 협조 사항을 갖춘 표준 계획서. 첫머리에 승인받을 것을 먼저', tips: ['<b>보고 요지</b>에 무엇을 · 언제까지 · 얼마로 · 무엇을 승인받는지 씁니다.', '현황은 표로, 표 위에 <b>&lt; 제목 &gt;</b>.', '효과는 <b>전 → 후 숫자</b>로: “기준 미달 ○○곳 → 0곳”.', '예산은 산출 근거(단가 × 수량)와 재원(국 · 시비)을 함께.', '다른 기관(상수도사업소 등)이 할 일은 <b>협조 사항</b>에 이름을 적어 둡니다.'],
+    lines: ['#〔사업명〕 추진계획(안)', '=〔시장〕 보고 / ' + todayW() + ' / 〔부서 · 보고자〕', '', '>보고 요지: 〔무엇을 · 언제까지 · 얼마로 추진하려 하며, 무엇을 승인받고자 하는지〕', '1. 추진 배경', '○ (근거) 〔근거 법령 · 상위 계획 · 지시 사항〕', '○ (필요성) 〔지금 문제와 그로 인한 위험을 숫자로 씀〕', '2. 현황 및 문제점', '=< 〔현황표 제목〕 (〔기준일〕 기준) >', '|구분|〔항목〕|〔항목〕|비고|', '|〔 〕|〔 〕|〔 〕|〔 〕|', '○ (문제점) 〔원인까지 밝혀 씀〕', '3. 추진 개요', '○ (기간) 〔2026. 12. 1.~2027. 6. 30.〕', '○ (대상) 〔대상 · 수량〕', '○ (내용) 〔주요 내용〕', '○ (예산) 총 〔000〕천원 (〔국비 · 시비〕)', '4. 세부 추진 계획', '○ (1단계: 진단) 〔무엇을 · 누가 · 어떻게 함〕', '○ (2단계: 개선) 〔 〕', '○ (3단계: 확인 · 환류) 〔 〕', '=< 추진 일정 >', '|단계|내용|기간|담당|', '|1단계|〔 〕|〔 〕|〔 〕|', '|2단계|〔 〕|〔 〕|〔 〕|', '|3단계|〔 〕|〔 〕|〔 〕|', '5. 소요 예산', '○ 총 〔000〕천원 — 산출 근거: 〔단가 × 수량〕', '6. 기대 효과', '○ 〔전 → 후를 숫자로 씀 — 예: 기준 미달 ○○곳 → 0곳〕', '7. 협조 및 행정사항', '○ 〔협조 기관 · 역할 분담 · 다음 보고 시점〕', '', '붙임  〔세부 현황〕 1부.'] };
+  T.result = { name: '결과 보고', icon: 'check', tag: '보고', desc: '행사 · 훈련 · 점검이 끝난 뒤 계획 대비 결과를 숫자로 보고', tips: ['계획 대비 실적(목표 → 결과)을 숫자로 비교합니다.', '잘된 점만 쓰지 말고 문제점과 개선 방안을 함께 씁니다.', '사진 · 명단은 붙임으로 뺍니다.'],
+    lines: ['#〔행사 · 훈련명〕 결과 보고', '=서면보고 / ' + todayW() + ' / 〔부서 · 보고자〕', '', '>보고 요지: 〔계획 대비 결과 한 문장: 목표 00명 중 00명(000%) 참여, 주요 성과〕', '1. 개요', '○ (일시) 〔2026. 11. 11.(수) 14:00~16:00〕', '○ (장소) 〔장소〕', '○ (참석) 〔누가 · 몇 명〕', '2. 주요 결과', '=< 계획 대비 결과 >', '|구분|계획|결과|달성률|', '|〔 〕|〔 〕|〔 〕|〔 〕|', '○ 〔성과를 문장으로 씀〕', '3. 문제점 및 개선 방안', '○ (문제점) 〔 〕', '○ (개선) 〔 〕', '4. 향후 조치', '○ 〔후속 조치 · 다음 일정〕', '', '붙임  〔사진 · 참석자 명단〕 1부.'] };
+  T.meeting = { name: '회의자료', icon: 'rows', tag: '회의', desc: '회의 목적, 안건, 논의할 쟁점, 결정이 필요한 사항을 정리한 회의자료', tips: ['회의에서 <b>결정해야 할 것</b>을 맨 앞에 둡니다.', '쟁점마다 선택지(가안 · 나안)와 부서 의견을 표로 나란히 씁니다.', '회의 뒤 바로 결과 보고로 바꿀 수 있게 결정 칸을 비워 둡니다.'],
+    lines: ['#〔회의명〕 회의자료', '=' + todayW() + ' / 〔부서〕', '', '>결정 필요 사항: 〔이번 회의에서 정할 것〕', '1. 회의 개요', '○ (일시) 〔2026. 11. 11.(수) 10:00〕', '○ (장소) 〔회의실〕', '○ (참석) 〔참석 범위〕', '2. 안건', '○ 〔안건 1〕', '○ 〔안건 2〕', '3. 논의 사항', '=< 쟁점별 선택지 >', '|쟁점|가안|나안|부서 의견|', '|〔 〕|〔 〕|〔 〕|〔 〕|', '4. 결정 사항 (회의 뒤 적음)', '○ 〔결정 내용 · 담당 · 기한〕'] };
+  // 보도자료: 2025년 공문서 평가(문체부 · 국립국어원)에서 우수 보도자료로 꼽힌 권익위 「“소방자동차 진로 방해, 이제는 그만!”」(2025. 10. 13.)의 짜임을 따름
+  T.press = { name: '보도자료', icon: 'notes', tag: '홍보', desc: '보도 시점 · 제목 · 부제 · 첫 문단(결과) · 배경 · 내용 · 인용 · 담당자. 2025년 우수 보도자료(권익위)의 짜임', tips: ['첫 문단에 <b>주민에게 무엇이 달라지는지</b>를 먼저 씁니다 (우수 보도자료 첫 문장: “앞으로 소방차, 구급차 등이 적시에 현장에 도착할 수 있도록 … 기대된다.”).', '부제(- …)는 두 줄: 누가 무엇을 했는지 · 주요 내용.', '용어 풀이는 <b>*</b> 각주로, 통계는 <b>※</b> 로 문단 아래에 붙입니다.', '보도자료는 서술식(~했다)으로, 한 문단은 □ 하나에 한 가지 내용.', '외국어 · 외국 문자(AI, TF, R&amp;D)는 우리말로 바꾸거나 처음에 풀어 씁니다 — 공문서 평가의 “용이성” 지표.'],
+    lines: ['@보도 시점: 〔2026. 11. 12.(목) 06:00〕 / 배포: ' + todayW(), '#〔제목: 주민에게 무엇이 달라지는지〕', '=〔부제: 핵심 숫자나 배경 한 줄〕', '- 〔누가 무엇을 했는지〕', '- 〔주요 내용 두세 가지〕', '', '□ 〔첫 문단: 앞으로 무엇이 달라지는지 · 기대 효과〕', '〔○○소방서(서장 ○○○)는 ○일 ○○을 했다고 밝혔다.〕', '□ 〔배경: 왜 필요했는지〕', '※ 〔근거 통계: 최근 5년(2021~2025년)간 ○○건 중 ○○건(○○%)〕', '□ 〔주요 내용 1〕', '* 〔어려운 용어 풀이〕', '□ 〔주요 내용 2〕', '□ 〔인용: ○○○ 서장은 “ … ”라고 말했다.〕', '', '@담당 부서: 〔○○과〕 / 책임자: 〔과장 ○○○ (000-000-0000)〕 / 담당자: 〔○○○ (000-000-0000)〕'] };
   T.gongmun = { name: '공문 (기안문 본문)', icon: 'filePlus', tag: '공문', desc: '수신 · 제목 · 본문(1. 가. 자동 번호) · 붙임 · 끝. 을 갖춘 기안문 본문', tips: ['항목 기호는 1. → 가. → 1) → 가) 순서 — 이 서식은 번호가 자동으로 붙습니다 (Alt+Shift+→ / ← 로 단계 바꾸기).', '날짜는 2026. 11. 11. 처럼 숫자와 온점, 시간은 14:00 처럼 씁니다.', '금액은 금113,560원(금일십일만삼천오백육십원) — 점검(F8)에서 한글 금액을 붙여 줍니다.', '본문이 끝나면 두 칸 띄우고 “끝.” — 붙임이 있으면 붙임 끝에.'],
     lines: ['수신  〔수신자 (경유)〕', '(경유)', '제목  〔제목〕', '', '1.〔관련: ○○과-0000(2026. 11. 1.)〕', '2.〔본문 — 무엇을 요청 · 알리는지〕', '가.〔세부 내용〕', '나.〔세부 내용〕', '1)〔더 자세한 내용〕', '', '붙임  1. 〔○○ 계획서〕 1부.', '      2. 〔○○ 명단〕 1부.  끝.', '', '=〔발신 명의: ○○소방서장〕'] };
   T.proactive = { name: '적극행정 우수사례', icon: 'star', tag: '승진', desc: '적극행정 우수사례 공모 · 경진대회 제출용. 심사 기준(국민 체감도 · 적극성 · 창의성 · 난이도 · 확산 가능성) 순서로 구성', tips: ['심사표 항목 순서대로 쓰면 심사위원이 점수를 매기기 쉽습니다.', '<b>국민 체감도</b>: 주민 · 현장이 실제로 얻은 이익을 숫자로 (시간 · 비용 · 피해 감소).', '<b>적극성</b>: 무엇이 가로막았고(규정 · 관행 · 협업) 어떻게 넘었는지.', '<b>확산 가능성</b>: 다른 소방서 · 기관도 따라 할 수 있는지.'],
@@ -65,8 +70,11 @@
       return d;
     };
     const st0 = s0 ? s0.id : '0';
+    let tbl = null;
     for (const ln of lines) {
       let m;
+      if (ln.startsWith('|')) { const row = ln.replace(/^\||\|$/g, '').split('|').map(x => x.trim()); if (!tbl) { tbl = mk(base, st0, cpBody, ''); tbl.dataset.tbl = '[]'; out.push(tbl); } const r = JSON.parse(tbl.dataset.tbl); r.push(row); tbl.dataset.tbl = JSON.stringify(r); continue; }
+      tbl = null;
       if (ln.startsWith('#')) out.push(mk(ppC, st0, cpTitle, ln.slice(1)));
       else if (ln.startsWith('@')) out.push(mk(ppR, st0, cpMeta, ln.slice(1)));
       else if (ln.startsWith('=')) out.push(mk(ppC, st0, cpBody, ln.slice(1)));
@@ -75,7 +83,8 @@
         const lv = /\d/.test(m[1]) ? (m[2] === '.' ? 1 : 3) : (m[2] === '.' ? 2 : 4);
         const s = sty('개요 ' + lv);
         if (s) out.push(mk(s.pp, s.id, cpBody, ln.slice(m[0].length))); else out.push(mk(base, st0, cpBody, ln));
-      } else if ((m = SYM_RE.exec(ln))) { const L = symLevel(m[1]); out.push(mk(lvPp(base, L), st0, L === 0 ? cpH : cpBody, ln)); }
+      } else if (HEAD_RE.test(ln)) out.push(mk(lvPp(base, 0), st0, cpH, ln));
+      else if ((m = SYM_RE.exec(ln))) { const L = symLevel(m[1]); out.push(mk(lvPp(base, L), st0, L === 0 ? cpH : cpBody, ln)); }
       else out.push(mk(base, st0, cpBody, ln));
     }
     return out;
@@ -91,6 +100,12 @@
     for (const c of Array.from(b0.childNodes)) first.appendChild(c);
     ensureBr(first);
     let last = first; for (const b of blocks) { last.after(b); last = b; }
+    for (const tb of Array.from(doc.querySelectorAll('.hp[data-tbl]'))) { // 서식의 표: 그 자리에 표를 만들고 머리 줄에 옅은 바탕
+      const rows = JSON.parse(tb.dataset.tbl); delete tb.dataset.tbl; caretToStart(tb); tableFromRows(rows);
+      const t = tb.querySelector('table.htb') || (tb.nextElementSibling && tb.nextElementSibling.querySelector('table.htb'));
+      if (t && t.rows[0]) cellFill(Array.from(t.rows[0].cells), '#eef2f7');
+      const nx = (t && blockOf(t.parentElement) || tb).nextElementSibling; if (nx && nx.classList.contains('hp') && isEmptyBlock(nx) && !nx.querySelector('.isl')) nx.remove(); // 표 뒤 빈 줄 하나는 지움
+    }
     UNDO.stack.length = 0; UNDO.redo.length = 0; UNDO.cur = null;
     W.dirty = true; U.updateState(); changed();
     setTimeout(() => { layout(); nextSlot(false, true); }, 30);
@@ -143,18 +158,33 @@
     if (GUEST || !editorOpen() || e.isComposing || e.keyCode === 229) return false;
     const r = rng(); if (!r || !r.collapsed) return false;
     const b = blockOf(r.startContainer); if (!b || cellOf(r.startContainer) || b.querySelector('table')) return false;
-    const t = blockText(b); const m = SYM_RE.exec(t); if (!m) return false;
+    const t = blockText(b); const hm = HEAD_RE.exec(t); const m = SYM_RE.exec(t) || (hm && ['', '□']); if (!m) return false;
     if (caretOffset(b, r.startContainer, r.startOffset) !== t.length) return false; // 줄 끝에서만
     e.preventDefault(); e.stopImmediatePropagation();
-    if (t.trim() === m[1]) { // 기호만 있는 빈 항목: 기호를 지우고 개조식을 끝냄
+    if (!hm && t.trim() === m[1]) { // 기호만 있는 빈 항목: 기호를 지우고 개조식을 끝냄
       selectTextRange(b, 0, t.length); insertText(''); const base = (H().styles.find(s => s.name === '바탕글') || {}).pp || '0';
       edit(b, b, () => { b.dataset.pp = base; b.className = b.className.replace(/\bpp-\S+/, 'pp-' + base); }); return true;
     }
+    const toSub = m[1] === '□' || m[1] === '■'; // □ 제목 · '1.' 큰 제목 다음 줄은 ○ 항목 (글자는 본문 모양)
+    const sym = toSub ? '○' : m[1];
+    const tn = textNodesOf(b).filter(x => x.nodeValue.length).pop();
+    let cp = tn ? cpOfNode(tn) : (b.dataset.dcp || '0');
+    if (toSub) {
+      let nx = b.nextElementSibling; while (nx && !(nx.classList.contains('hp') && /^○\s/.test(blockText(nx)))) nx = nx.nextElementSibling;
+      const nt = nx && textNodesOf(nx).find(x => x.nodeValue.trim());
+      cp = nt ? cpOfNode(nt) : H().deriveCp(cp, { bold: false });
+    }
     splitBlock();
-    const sym = m[1] === '□' || m[1] === '■' ? '○' : m[1]; // □ 제목 다음 줄은 보통 ○ 항목
-    const nb = blockOf(rng().startContainer);
-    if (sym !== m[1] && nb) { const base = (H().styles.find(s => s.name === '바탕글') || {}).pp || '0'; const pp = lvPp(base, 1); edit(nb, nb, () => { nb.dataset.pp = pp; nb.className = nb.className.replace(/\bpp-\S+/, 'pp-' + pp); }); }
-    insertText(sym + ' ');
+    const nb = blockOf(rng().startContainer); if (!nb) return true;
+    const base = (H().styles.find(s => s.name === '바탕글') || {}).pp || '0';
+    const pp = toSub ? lvPp(base, 1) : nb.dataset.pp;
+    let sp;
+    edit(nb, nb, () => {
+      nb.replaceChildren(...nb.querySelectorAll(':scope > .isl.hid'));
+      sp = document.createElement('span'); sp.className = 'cp-' + cp; sp.dataset.cp = cp; sp.textContent = sym + ' '; nb.appendChild(sp);
+      nb.dataset.pp = pp; nb.dataset.dcp = cp; nb.className = `hp pp-${pp} cp-${cp}`;
+    });
+    placeCaret(sp.firstChild, sp.firstChild.length);
     return true;
   }
   function shiftLevel(d) {
@@ -214,6 +244,7 @@
     const tops = Array.from(doc.querySelectorAll('.hsec > .hp'));
     const texts = new Map(blocks.map(b => [b, blockText(b)]));
     const gong = blocks.some(b => /^\s*수신\s/.test(texts.get(b)));
+    const press = blocks.filter(b => texts.get(b).trim()).slice(0, 4).some(b => /^\s*(\(?공동\s?\)?\s*)?보\s?도\s?자\s?료\s*$|^\s*보도\s?시점/.test(texts.get(b))); // 보도자료는 서술식 · 부제는 명사로 끝나는 것이 정상
     const add = (cat, b, a, z, msg, rep, more) => res.push(Object.assign({ cat, b, a, z, find: texts.get(b).slice(a, z), msg, rep }, more || {}));
     const each = (b, re, fn) => { const t = texts.get(b); re.lastIndex = 0; let m; while ((m = re.exec(t))) { fn(m, t); if (!re.global) break; if (m[0] === '') re.lastIndex++; } };
     let chars = 0, sentN = 0, sentLen = 0, gaejo = 0, seosul = [];
@@ -256,9 +287,22 @@
       // 문장 길이 · 문체
       for (const s of t.split(/(?<=[.?!])\s+/)) { const L = s.replace(/\s/g, '').length; if (L > 2) { sentN++; sentLen += L; } }
       const parts = t.split(/(?<=[.?!])\s+/); let k = 0;
-      for (const s of parts) { const L = s.replace(/\s/g, '').length; if (L > 70) { const a = t.indexOf(s, k); add('sent', b, a, a + s.length, `한 문장이 ${L}자입니다 — 둘로 나누면 읽기 쉽습니다 (권장 50자 안팎)`, null, { long: true }); } k += s.length; }
+      const item = !press && /^[○\-·∙ㅇ◦]\s/.test(t.trim()), lim = item ? 70 : 100; // 공공기관 원문 11건 실측: 우수 보도자료도 70~90자 문장이 흔함 → 서술식은 100자, 개조식 한 항목은 두 줄(70자)
+      for (const s of parts) { const L = s.replace(/\s/g, '').length; if (L > lim) { const a = t.indexOf(s, k); add('sent', b, a, a + s.length, item ? `한 항목이 ${L}자입니다 — 두 줄을 넘지 않게 나누세요` : `한 문장이 ${L}자입니다 — 둘로 나누면 읽기 쉽습니다`, null, { long: true }); } k += s.length; }
       const tt = t.trim();
-      if (/(함|임|음|됨|필요|예정|계획|추진|완료|검토|중|\)|〕)$/.test(tt) || SYM_RE.test(tt)) gaejo++;
+      if (/(함|임|음|됨|필요|예정|계획|추진|완료|검토|중|\)|〕)$/.test(tt) || isItem(tt)) gaejo++;
+      // 행안부 2026. 8. 24. AI 친화 보고서 원칙: ○ - · 항목을 명사로 끊지 말고 주어 · 서술어가 있는 문장으로
+      const sm = /^([○\-·∙ㅇ◦])\s/.exec(tt);
+      if (sm && !press && !/〔/.test(tt)) {
+        const body = tt.replace(/^[○\-·∙ㅇ◦]\s*(\([^)]{1,12}\)\s*)?/, '').replace(/[.。]$/, '');
+        const nm = /(지속|필요|추진|확대|강화|개선|검토|마련|실시|시행|완료|증가|감소|부족|미흡|발생|확보|운영|점검|협의|구축|도입|설치|정비|요구|요청|제고|해소|지원|추가|변경|조정|반영|확인|예정|계획|곤란|저하|노후)$/.exec(body);
+        if (body.length >= 10 && nm && !/[:：]/.test(body)) {
+          const fix = { 필요: '필요함', 예정: '예정임', 계획: '계획임', 곤란: '곤란함', 부족: '부족함', 미흡: '미흡함' }[nm[1]];
+          const at = t.lastIndexOf(nm[1]);
+          add('shape', b, at, at + nm[1].length, `“${nm[1]}”에서 끊긴 명사형 항목 — 행안부 보고서 원칙(2026. 8. 24.)은 주어와 서술어가 보이는 문장 (예: “개선 요구 지속” → “개선 요구가 계속 나오고 있음”)`, fix || null);
+        }
+      }
+      if (/^[◆◇▶▷►▣◈★☆◎]/.test(tt)) add('shape', b, t.indexOf(tt[0]), t.indexOf(tt[0]) + 1, '꾸밈 기호 대신 표준 항목 기호를 씁니다 — 1. 가. 1) 또는 □ ○ - · (시행규칙 제2조)', null);
       if (/(니다|습니다)\.?$/.test(tt) && !/[“"].*니다[.]?[”"]/.test(tt)) seosul.push(b);
     }
     // 개조식 문서에 섞인 서술식
@@ -266,6 +310,15 @@
       const t = texts.get(b); const e = ENDS.find(([re]) => re.test(t)); if (!e) continue;
       const m = e[0].exec(t); add('shape', b, m.index, t.length, '개조식 문서에 서술식(~습니다) 문장이 섞였습니다', e[1]);
     }
+    // 표: 위에 < 제목 >, 표 안의 표 금지 (행안부 2026. 8. 24. 원칙 ①)
+    const allTops = Array.from(doc.querySelectorAll('.hsec > .hp'));
+    allTops.forEach((tb, i) => {
+      const t = tb.querySelector(':scope > table.htb'); if (!t) return;
+      let j = i - 1; while (j >= 0 && !blockText(allTops[j]).trim() && !allTops[j].querySelector('table')) j--;
+      const prev = j >= 0 ? blockText(allTops[j]).trim() : '';
+      if (!/^[<〈＜《\[［].{1,60}[>〉＞》\]］]$|^(표|그림)\s*\d|^\(단위/.test(prev)) res.push({ cat: 'shape', b: j >= 0 ? allTops[j] : tb, a: 0, z: 0, find: '', msg: '표 위에 제목이 없습니다 — 예: < 소화전 급수능력 측정 결과 > (행안부 보고서 원칙: 표 · 그림은 위에 제목)', rep: null });
+      if (t.querySelector('td table')) res.push({ cat: 'shape', b: tb, a: 0, z: 0, find: '', msg: '표 안에 표가 있습니다 — 사람도 AI 도 읽기 어렵습니다. 표를 나누거나 글로 푸세요', rep: null });
+    });
     // 두괄식: 제목 다음 네 줄 안에 결론 · 요지가 보이는지 (보고 · 계획 문서)
     const nonEmpty = tops.filter(b => (texts.get(b) || blockText(b)).trim());
     const title = nonEmpty[0] ? blockText(nonEmpty[0]) : '';
@@ -287,7 +340,8 @@
     res.sort((x, y) => (blocks.indexOf(x.b) - blocks.indexOf(y.b)) || (x.a - y.a));
     const out = []; let lastB = null, lastZ = -1;
     for (const x of res) { if (x.b === lastB && x.z > x.a && x.a < lastZ) continue; out.push(x); if (x.z > x.a) { lastB = x.b; lastZ = x.z; } }
-    return { list: out, stat: { chars, pages, avg: sentN ? Math.round(sentLen / sentN) : 0, gong } };
+    const real = out.filter(x => x.cat !== 'slot').length;
+    return { list: out, stat: { chars, pages, avg: sentN ? Math.round(sentLen / sentN) : 0, gong, press, per1k: chars ? +(real / chars * 1000).toFixed(1) : 0 } };
   }
 
   let chkOpen = false, chkT = null, chkData = null, chkFilter = 'all';
@@ -304,7 +358,7 @@
     const fixable = list.filter(x => x.rep != null && (chkFilter === 'all' || x.cat === chkFilter)).length;
     const chips = `<button class="ck-chip${chkFilter === 'all' ? ' on' : ''}" data-f="all">전체 ${list.length}</button>` + Object.keys(CATS).filter(k => cnt[k]).map(k => `<button class="ck-chip${chkFilter === k ? ' on' : ''}" data-f="${k}">${CATS[k]} ${cnt[k]}</button>`).join('');
     const shown = list.map((x, i) => [x, i]).filter(([x]) => chkFilter === 'all' || x.cat === chkFilter);
-    $id('ckSum').innerHTML = `<span>${stat.gong ? '공문' : '보고 · 일반 문서'}</span><span>${stat.pages}쪽</span><span>${stat.chars.toLocaleString()}자</span><span title="문장 하나의 평균 글자 수(띄어쓰기 빼고)">평균 문장 ${stat.avg}자</span>`;
+    $id('ckSum').innerHTML = `<span>${stat.gong ? '공문' : stat.press ? '보도자료' : '보고 · 일반 문서'}</span><span title="빈칸을 뺀 지적 수. 공공기관 원문 11건 실측: 우수 보도자료(권익위 2025. 10.) 0.8 · 행안부 2.3~2.5 · 소방청 보도자료 1.8~7.3">1,000자당 ${stat.per1k}건 <small>(우수 문서 1~3)</small></span><span>${stat.pages}쪽</span><span>${stat.chars.toLocaleString()}자</span><span title="문장 하나의 평균 글자 수(띄어쓰기 빼고)">평균 문장 ${stat.avg}자</span>`;
     $id('ckChips').innerHTML = chips;
     $id('ckFixAll').hidden = GUEST || !fixable; $id('ckFixAll').textContent = `고칠 수 있는 ${fixable}건 모두 고치기`;
     $id('ckList').innerHTML = shown.length ? shown.map(([x, i]) => `<li data-i="${i}" class="ck-${x.cat}"><button class="ck-go" data-go="${i}"><em>${CATS[x.cat]}</em><span class="m">${escH(x.msg)}</span>${x.find && x.find.trim() ? `<span class="f">${escH(x.find.length > 60 ? x.find.slice(0, 60) + '…' : x.find)}${x.rep != null ? ` <b>→</b> ${escH(x.rep.trim() ? x.rep : '(지움)')}` : ''}</span>` : ''}</button>${x.rep != null && !GUEST ? `<button class="tb ck-fix" data-fix="${i}">고치기</button>` : ''}</li>`).join('')
