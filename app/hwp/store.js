@@ -159,10 +159,81 @@ const HwpStore = (() => {
     await GH.commit('문서함 갱신', [{ path: DIR + '/index.bin', base64: b64(await seal(enc.encode(JSON.stringify(items)), DIR + '/index.bin')) }]);
   }
 
+  /* ---------- 공통 문서 저장소: documents/ (교안의 decks/ 와 같은 방식) ----------
+     documents/<문서 이름>.hwpx + documents/index.json { v, items: [{ id(=파일 이름), name, size, modified, created, device, preview, ver?, note?, pages?, legacy? }] }
+     잠그지 않는다 — 어느 기기에서나, 게스트도(읽기만) 본다. 쓰기(저장 · 이름 바꾸기 · 지우기)는 GitHub 토큰이 있는 관리자만.
+     읽기: 토큰이 있으면 GitHub API(방금 저장한 것까지 바로), 없으면 이 사이트(GitHub Pages)에서 받음. */
+  const PDIR = 'documents', PIDX = PDIR + '/index.json';
+  async function pagesGet(path) {
+    const r = await fetch(path.split('/').map(encodeURIComponent).join('/'), { cache: 'no-store' });
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error('문서를 받지 못했습니다 (' + r.status + ')');
+    return new Uint8Array(await r.arrayBuffer());
+  }
+  async function readP(path) {
+    if (ready()) { try { return await ghBin(path); } catch (e) { if (e.status !== 401) throw e; } }
+    return pagesGet(path);
+  }
+  const fileOf = n => (String(n || '').replace(/[\\/:*?"<>|#%\x00-\x1f]/g, '_').replace(/^\.+/, '').trim().slice(0, 100) || '문서') + '.hwpx';
+  /* 목록 파일: { v, folders: [{ id, name, locked? }], items: [...] } — 폴더는 화면 정리용, 잠긴 폴더는 게스트 화면에서 숨김 (교안 폴더와 같은 방식) */
+  async function readIdx() {
+    const u = await readP(PIDX); if (!u) return { items: [], folders: [] };
+    const j = JSON.parse(dec.decode(u)); const arr = Array.isArray(j) ? j : (j.items || []);
+    return { folders: (j.folders || []).filter(f => f && f.id), items: arr.map(it => Object.assign({}, it, { id: it.id || it.file, modified: it.modified || it.added || '' })) };
+  }
+  let lastFolders = [];
+  async function plist() {
+    const x = await readIdx(); lastFolders = x.folders;
+    return x.items.sort((a, b) => (b.modified || '').localeCompare(a.modified || ''));
+  }
+  const idxJson = (items, folders) => JSON.stringify({ v: 1, folders, items: items.map(({ file, added, ...it }) => it) }, null, 1);
+  function needWrite() { if (!ready()) { const e = new Error('저장하려면 GitHub 연결이 필요합니다'); e.status = 401; throw e; } }
+  async function pload(id) { const u = await readP(`${PDIR}/${id}`); if (!u) throw new Error('문서를 찾지 못했습니다: ' + id); return u; }
+  async function psave(id, name, blob, device, preview, extra) {
+    needWrite();
+    const data = new Uint8Array(await blob.arrayBuffer());
+    const { items, folders } = await readIdx(); // 목록을 못 읽으면 저장도 멈춤 (다른 문서 목록을 덮어쓰지 않도록)
+    if (!id) { let f = fileOf(name), k = 2; while (items.some(x => x.id === f)) f = fileOf(name + ' (' + k++ + ')'); id = f; }
+    const now = new Date().toISOString();
+    const i = items.findIndex(x => x.id === id), rec = Object.assign({ id, name, size: data.length, modified: now, device: device || '' }, extra || {});
+    if (preview != null) rec.preview = String(preview).slice(0, 400);
+    if (i >= 0) items[i] = Object.assign(items[i], rec); else items.push(Object.assign({ created: now }, rec));
+    await GH.commit('문서 저장: ' + name, [{ path: `${PDIR}/${id}`, base64: b64(data) }, { path: PIDX, content: idxJson(items, folders) }]);
+    return id;
+  }
+  /* 여러 문서를 한 번에 (이전 잠긴 문서함에서 옮길 때) — docs: [{ name, data(Uint8Array), modified, device, preview, legacy }] */
+  async function pimport(docs) {
+    needWrite();
+    const { items, folders } = await readIdx(); const files = [];
+    for (const d of docs) {
+      let f = fileOf(d.name), k = 2; while (items.some(x => x.id === f)) f = fileOf(d.name + ' (' + k++ + ')');
+      items.push({ id: f, name: d.name, size: d.data.length, created: d.created || d.modified || new Date().toISOString(), modified: d.modified || new Date().toISOString(), device: d.device || '', preview: d.preview || '', legacy: d.legacy });
+      files.push({ path: `${PDIR}/${f}`, base64: b64(d.data) });
+    }
+    if (files.length) await GH.commit(`문서 옮기기: 잠긴 문서함 → documents/ (${files.length}개)`, files.concat([{ path: PIDX, content: idxJson(items, folders) }]));
+    return files.length;
+  }
+  async function premove(id) { needWrite(); const { items, folders } = await readIdx(); await GH.commit('문서 삭제: ' + id, [{ path: `${PDIR}/${id}`, delete: true }, { path: PIDX, content: idxJson(items.filter(x => x.id !== id), folders) }]); }
+  /* 목록 파일만 바꾸는 일 (이름 · 폴더) — fn(items, folders) 가 고치고 커밋 메시지를 돌려줌 */
+  async function pidx(fn) { needWrite(); const x = await readIdx(); const msg = fn(x.items, x.folders); if (!msg) return; await GH.commit(msg, [{ path: PIDX, content: idxJson(x.items, x.folders) }]); lastFolders = x.folders; }
+  const prename = (id, name) => pidx(items => { const it = items.find(x => x.id === id); if (!it) return null; it.name = name; return '문서 이름 바꾸기: ' + name; });
+  const newFid = () => 'f' + Date.now().toString(36) + crypto.getRandomValues(new Uint16Array(1))[0].toString(36);
+  const folder = {
+    list: () => lastFolders,
+    create: name => { const id = newFid(); return pidx((items, fs) => { fs.push({ id, name }); return '문서 폴더 만들기: ' + name; }).then(() => id); },
+    rename: (id, name) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; f.name = name; return '문서 폴더 이름: ' + name; }),
+    lock: (id, on) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; if (on) f.locked = true; else delete f.locked; return `문서 폴더 ${on ? '잠금' : '잠금 풀기'}: ${f.name}`; }),
+    remove: id => pidx((items, fs) => { const i = fs.findIndex(x => x.id === id); if (i < 0) return null; const n = fs[i].name; fs.splice(i, 1); items.forEach(it => { if (it.folder === id) delete it.folder; }); return '문서 폴더 지우기(안의 문서는 밖으로): ' + n; }),
+    move: (docId, fid) => pidx(items => { const it = items.find(x => x.id === docId); if (!it) return null; if (fid) it.folder = fid; else delete it.folder; return '문서 폴더 옮기기: ' + it.name; }),
+  };
+
   return {
     canFS, pickOpen, pickSave, pickSaveHandle, writeHandle, download, drafts,
-    box: { ready, unlock, restoreKey, lock, exists, list, load, save, remove, rename, get unlocked() { return !!key; },
-      /* best 문서(best.js)가 같은 암호로 잠가 올릴 때 씀 */
+    /* 공통 저장소 — ui.js · home.js 는 예전 '문서함'과 같은 이름으로 부른다 (잠금 관련 함수는 늘 열림) */
+    box: { ready: () => true, canWrite: ready, unlock: async () => true, restoreKey: async () => true, lock() { }, exists: async () => true,
+      list: plist, load: pload, save: psave, remove: premove, rename: prename, importMany: pimport, folder, get unlocked() { return true; } },
+    /* 예전 잠긴 문서함(hwp/*.bin) — 옮기기와 best 문서(암호)에만 씀 */
+    legacy: { ready, unlock, restoreKey, lock, exists, list, load, get unlocked() { return !!key; },
       read: ghBin, seal: (u8, path) => seal(u8, path), open: (u8, path) => open(u8, path) },
   };
 })();
