@@ -1,0 +1,19 @@
+name: mkt probe3 (temporary)
+on:
+  push:
+    branches: [secret-mkt-probe3]
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 - <<'PY'
+          import sys, json; sys.path.insert(0,'.github/scripts'); import market_close as m
+          for u in ['https://m.stock.naver.com/api/index/KOSPI/price?pageSize=3&page=1','https://m.stock.naver.com/api/index/KOSPI/price?pageSize=100&page=1','https://m.stock.naver.com/api/stock/005930/price?pageSize=100&page=1','https://m.stock.naver.com/api/stocks/marketValue/KOSDAQ?page=1&pageSize=2']:
+            try: t=m.get(u); print('URL',u,len(t), t[:700] if 'pageSize=100' not in u else (len(json.loads(t)), json.loads(t)[-1]))
+            except Exception as e: print('ERR',u,e)
+          for u in ['https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt','https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt']:
+            try: t=m.get(u,accept='text/plain'); print('URL',u,len(t)); print(t[:400])
+            except Exception as e: print('ERR',u,e)
+          PY
