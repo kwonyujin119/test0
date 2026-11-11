@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>프롬프트 복사</title>
+<meta name="theme-color" content="#111318">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* 교안의 QR 을 찍으면 열리는 페이지 — 프롬프트를 크게 보여 주고 단추 하나로 복사.
+   주소: copy.html?p=<prompts 폴더의 파일 이름(확장자 빼고)> */
+:root { --bg: #f7f5f1; --fg: #17181c; --muted: #5f636b; --card: #ffffff; --line: #e3ded4; --accent: #c2410c; --ok: #15803d; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111318; --fg: #eceef2; --muted: #a3a7af; --card: #1b1e25; --line: #2c313b; --accent: #ff7a45; --ok: #4ade80; } }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: max(18px, env(safe-area-inset-top)) 16px max(110px, calc(env(safe-area-inset-bottom) + 96px)); }
+.k { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .08em; }
+h1 { font-size: 24px; line-height: 1.3; margin: 6px 0 6px; letter-spacing: -.02em; word-break: keep-all; }
+.how { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 0 16px; word-break: keep-all; }
+pre { white-space: pre-wrap; word-break: break-word; margin: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; font: 15px/1.65 'Pretendard Variable', Pretendard, system-ui, sans-serif; user-select: all; -webkit-user-select: all; }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 8px; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); justify-content: center; }
+button, .btn { appearance: none; border: 0; border-radius: 12px; font: inherit; font-size: 17px; font-weight: 700; padding: 0 18px; min-height: 52px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+#copy { flex: 1; max-width: 480px; background: var(--accent); color: #fff; }
+#copy.done { background: var(--ok); }
+.btn { background: var(--card); color: var(--fg); border: 1px solid var(--line); }
+.err { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <div class="k">FOLLOW ME · 프롬프트</div>
+  <h1 id="t">불러오는 중…</h1>
+  <p class="how">아래 <b>[프롬프트 복사]</b>를 한 번 누른 뒤, Claude Code(<b>claude.ai/code</b>)의 입력 칸에 붙여 넣으세요. 휴대폰 앱에서 바로 붙여 넣어도 됩니다.</p>
+  <pre id="p"></pre>
+</main>
+<div class="bar"><button id="copy" disabled>프롬프트 복사</button><a class="btn" href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code 열기</a></div>
+<script>
+'use strict';
+(async function () {
+  const TITLES = { 'pt-tool': 'PT Tool 한 번에 만들기', 'pt-make': 'PT(교안) 만들기' };
+  const key = (new URLSearchParams(location.search).get('p') || '').toLowerCase();
+  const $ = (id) => document.getElementById(id), btn = $('copy');
+  if (!/^[a-z0-9-]{1,40}$/.test(key)) { $('t').innerHTML = '<span class="err">주소가 잘못되었습니다</span>'; return; }
+  let text = '';
+  try { const r = await fetch('prompts/' + key + '.txt', { cache: 'no-cache' }); if (!r.ok) throw new Error(r.status); text = (await r.text()).replace(/\s+$/, '') + '\n'; }
+  catch (e) { $('t').innerHTML = '<span class="err">프롬프트를 불러오지 못했습니다</span>'; return; }
+  $('t').textContent = TITLES[key] || key; document.title = (TITLES[key] || key) + ' · 프롬프트 복사'; $('p').textContent = text;
+  async function copy() {
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { }
+    if (!ok) { // 오래된 브라우저 · 권한 없음: 숨긴 글 상자로 복사
+      const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length); try { ok = document.execCommand('copy'); } catch (e) { } ta.remove();
+    }
+    btn.textContent = ok ? '복사했습니다 ✓ 붙여 넣으세요' : '길게 눌러 직접 복사해 주세요'; btn.classList.toggle('done', ok);
+    return ok;
+  }
+  btn.disabled = false; btn.onclick = copy;
+  // 브라우저가 허락하면(누르지 않아도 복사를 허용하는 일부 PC 브라우저) 열자마자 복사
+  try { if (navigator.clipboard && document.hasFocus()) { await navigator.clipboard.writeText(text); btn.textContent = '이미 복사했습니다 ✓ 붙여 넣으세요'; btn.classList.add('done'); } } catch (e) { }
+})();
+</script>
+</body>
+</html>
