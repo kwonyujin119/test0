@@ -70,9 +70,11 @@
       return d;
     };
     const st0 = s0 ? s0.id : '0';
-    let tbl = null;
+    let tbl = null, pb = false;
     for (const ln of lines) {
       let m;
+      if (ln === '---') { pb = true; tbl = null; continue; } // 쪽 나누기 (붙임 등)
+      const n0 = out.length;
       if (ln.startsWith('|')) { const row = ln.replace(/^\||\|$/g, '').split('|').map(x => x.trim()); if (!tbl) { tbl = mk(base, st0, cpBody, ''); tbl.dataset.tbl = '[]'; out.push(tbl); } const r = JSON.parse(tbl.dataset.tbl); r.push(row); tbl.dataset.tbl = JSON.stringify(r); continue; }
       tbl = null;
       if (ln.startsWith('#')) out.push(mk(ppC, st0, cpTitle, ln.slice(1)));
@@ -86,6 +88,7 @@
       } else if (HEAD_RE.test(ln)) out.push(mk(lvPp(base, 0), st0, cpH, ln));
       else if ((m = SYM_RE.exec(ln))) { const L = symLevel(m[1]); out.push(mk(lvPp(base, L), st0, L === 0 ? cpH : cpBody, ln)); }
       else out.push(mk(base, st0, cpBody, ln));
+      if (pb && out.length > n0) { out[n0].dataset.pb = '1'; pb = false; }
     }
     return out;
   }
@@ -104,6 +107,12 @@
       const rows = JSON.parse(tb.dataset.tbl); delete tb.dataset.tbl; caretToStart(tb); tableFromRows(rows);
       const t = tb.querySelector('table.htb') || (tb.nextElementSibling && tb.nextElementSibling.querySelector('table.htb'));
       if (t && t.rows[0]) cellFill(Array.from(t.rows[0].cells), '#eef2f7');
+      if (t && rows.length) { // 칸 너비를 글 양에 맞춤 (짧은 칸은 좁게, 설명 칸은 넓게)
+        const n = Math.max(...rows.map(r => r.length)); const g = tableGrid(t); const total = g.colW.reduce((x, y) => x + y, 0);
+        const wt = Array.from({ length: n }, (_, j) => Math.min(26, Math.max(7, ...rows.map(r => (r[j] || '').length))));
+        const sum = wt.reduce((x, y) => x + y, 0);
+        if (total && g.cols === n) { for (const tr of t.rows) Array.from(tr.cells).forEach((td, j) => { if ((td.colSpan || 1) === 1) td.dataset.w = Math.round(total * wt[j] / sum); }); refreshCols(t); }
+      }
       const nx = (t && blockOf(t.parentElement) || tb).nextElementSibling; if (nx && nx.classList.contains('hp') && isEmptyBlock(nx) && !nx.querySelector('.isl')) nx.remove(); // 표 뒤 빈 줄 하나는 지움
     }
     UNDO.stack.length = 0; UNDO.redo.length = 0; UNDO.cur = null;
@@ -231,7 +240,7 @@
     ['거버넌스', '협치'], ['로드맵', '단계별 이행안'], ['매뉴얼', '지침서'], ['모니터링', '점검'], ['인센티브', '성과 보상'], ['컨트롤\\s?타워', '총괄 기구'], ['태스크\\s?포스', '전담 조직'], ['(?<![A-Za-z])TF(?![A-Za-z])', '전담 조직'],
     ['워크숍', '공동 연수'], ['리스크', '위험'], ['이슈', '쟁점'], ['피드백', '의견 반영'], ['프로세스', '절차'], ['가이드라인', '지침'], ['니즈', '수요'], ['원스톱', '한자리'], ['핫라인', '직통 전화'],
     ['인프라', '기반 시설'], ['마스터\\s?플랜', '종합 계획'], ['벤치마킹', '본따르기'], ['(?<![A-Za-z])MOU(?![A-Za-z])', '업무 협약'], ['아젠다|어젠다', '의제'], ['팩트', '사실'], ['업그레이드', '개선'], ['컨설팅', '상담'],
-    ['송부', null, '보내다 (예: 송부합니다 → 보냅니다)'], ['득하', null, '얻다 · 받다 (예: 승인을 득한 → 승인을 받은)'], ['요하는|요함|요합니다', null, '필요한 · 필요함'], ['제고', null, '높임 · 향상'], ['기재하', null, '적다 · 쓰다'], ['지득', null, '알게 됨'],
+    ['송부', null, '보내다 (예: 송부합니다 → 보냅니다)'], ['득하', null, '얻다 · 받다 (예: 승인을 득한 → 승인을 받은)'], ['(?<![가-힣])요(?:하는|함|합니다)', null, '필요한 · 필요함'], ['제고', null, '높임 · 향상'], ['기재하', null, '적다 · 쓰다'], ['지득', null, '알게 됨'],
     ['시달', null, '알림 · 지시'], ['하명', null, '지시'], ['함에\\s?있어(서)?', null, '~할 때 · ~하는 데'], ['에\\s?있어서', null, '~에서 · ~할 때'], ['불철주야', null, '밤낮없이'],
   ].map(([p, rep, hint]) => ({ re: new RegExp(p, 'g'), rep, hint }));
   // 서술식 → 개조식 끝맺음
