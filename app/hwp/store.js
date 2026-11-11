@@ -175,51 +175,85 @@ const HwpStore = (() => {
     return pagesGet(path);
   }
   const fileOf = n => (String(n || '').replace(/[\\/:*?"<>|#%\x00-\x1f]/g, '_').replace(/^\.+/, '').trim().slice(0, 100) || '문서') + '.hwpx';
-  /* 목록 파일: { v, folders: [{ id, name, locked? }], items: [...] } — 폴더는 화면 정리용, 잠긴 폴더는 게스트 화면에서 숨김 (교안 폴더와 같은 방식) */
-  async function readIdx() {
-    const u = await readP(PIDX); if (!u) return { items: [], folders: [] };
-    const j = JSON.parse(dec.decode(u)); const arr = Array.isArray(j) ? j : (j.items || []);
-    return { folders: (j.folders || []).filter(f => f && f.id), items: arr.map(it => Object.assign({}, it, { id: it.id || it.file, modified: it.modified || it.added || '' })) };
+  /* 목록 파일: { v, folders: [{ id, name, locked? }], items: [...], legacySkipped?: [] } — 폴더는 화면 정리용, 잠긴 폴더는 게스트 화면에서 숨김 (교안 폴더와 같은 방식) */
+  function normIdx(j) {
+    const arr = Array.isArray(j) ? j : ((j && j.items) || []);
+    const o = Object.assign({}, Array.isArray(j) ? {} : j, { v: 1 });
+    o.folders = ((j && j.folders) || []).filter(f => f && f.id);
+    o.items = arr.map(it => { const { file, added, ...x } = it; return Object.assign(x, { id: it.id || file, modified: it.modified || added || '' }); });
+    return o;
   }
-  let lastFolders = [];
+  async function readIdx() { const u = await readP(PIDX); return normIdx(u ? JSON.parse(dec.decode(u)) : null); }
+  let last = { folders: [], legacySkipped: [] };
   async function plist() {
-    const x = await readIdx(); lastFolders = x.folders;
+    const x = await readIdx(); last = { folders: x.folders, legacySkipped: x.legacySkipped || [] };
     return x.items.sort((a, b) => (b.modified || '').localeCompare(a.modified || ''));
   }
-  const idxJson = (items, folders) => JSON.stringify({ v: 1, folders, items: items.map(({ file, added, ...it }) => it) }, null, 1);
   function needWrite() { if (!ready()) { const e = new Error('저장하려면 GitHub 연결이 필요합니다'); e.status = 401; throw e; } }
-  async function pload(id) { const u = await readP(`${PDIR}/${id}`); if (!u) throw new Error('문서를 찾지 못했습니다: ' + id); return u; }
+  /* 목록 바꾸기: 지금 판(sha)을 읽어 고친 뒤 "그 판이 그대로일 때만" 저장 — 두 기기가 동시에 저장해도 서로 덮어쓰지 않음.
+     (예전 문서함은 목록을 통째로 다시 써서, 동시에 저장하면 지운 문서가 목록에 되살아나 '파일 없는 문서'가 생겼음) */
+  async function idxGet() {
+    const j = await GH.api('GET', `/contents/${encPath(PIDX)}?ref=${encodeURIComponent(GH.cfg.branch)}`);
+    if (!j) return { sha: null, data: normIdx(null) };
+    let text;
+    if (j.content && j.encoding === 'base64') text = dec.decode(unb64(j.content.replace(/\s+/g, '')));
+    else { const b = await fetch(`${GH.base()}/git/blobs/${j.sha}`, { headers: GH.headers('application/vnd.github.raw+json'), cache: 'no-store' }); text = await b.text(); }
+    return { sha: j.sha, data: normIdx(JSON.parse(text)) };
+  }
+  async function idxUpdate(msg, mut) {
+    needWrite();
+    for (let a = 0; a < 6; a++) {
+      const { sha, data } = await idxGet();
+      if (mut(data) === false) return data;
+      const body = { message: typeof msg === 'function' ? msg() : msg, content: b64(enc.encode(JSON.stringify(data, null, 1))), branch: GH.cfg.branch }; if (sha) body.sha = sha;
+      try { await GH.api('PUT', `/contents/${encPath(PIDX)}`, body); last = { folders: data.folders, legacySkipped: data.legacySkipped || [] }; return data; }
+      catch (e) { if (e.status !== 409 && e.status !== 422) throw e; await new Promise(r => setTimeout(r, 300 + 400 * a)); } // 그 사이 다른 기기가 바꿈 → 새 판으로 다시
+    }
+    throw new Error('다른 기기의 저장과 계속 겹칩니다. 잠시 후 다시 시도해 주세요');
+  }
+  const uniq = (items, name) => { let f = fileOf(name), k = 2; while (items.some(x => x.id === f)) f = fileOf(name + ' (' + k++ + ')'); return f; };
+  async function pload(id) { const u = await readP(`${PDIR}/${id}`); if (!u) throw new Error('문서 파일을 찾지 못했습니다: ' + id); return u; }
   async function psave(id, name, blob, device, preview, extra) {
     needWrite();
     const data = new Uint8Array(await blob.arrayBuffer());
-    const { items, folders } = await readIdx(); // 목록을 못 읽으면 저장도 멈춤 (다른 문서 목록을 덮어쓰지 않도록)
-    if (!id) { let f = fileOf(name), k = 2; while (items.some(x => x.id === f)) f = fileOf(name + ' (' + k++ + ')'); id = f; }
+    if (!id) id = uniq((await idxGet()).data.items, name);
+    // 1) 파일 먼저, 2) 목록 — 목록에 있는데 파일이 없는 일이 생기지 않게
+    await GH.commit('문서 저장: ' + name, [{ path: `${PDIR}/${id}`, base64: b64(data) }]);
     const now = new Date().toISOString();
-    const i = items.findIndex(x => x.id === id), rec = Object.assign({ id, name, size: data.length, modified: now, device: device || '' }, extra || {});
-    if (preview != null) rec.preview = String(preview).slice(0, 400);
-    if (i >= 0) items[i] = Object.assign(items[i], rec); else items.push(Object.assign({ created: now }, rec));
-    await GH.commit('문서 저장: ' + name, [{ path: `${PDIR}/${id}`, base64: b64(data) }, { path: PIDX, content: idxJson(items, folders) }]);
+    await idxUpdate('문서 목록: ' + name, d => {
+      const i = d.items.findIndex(x => x.id === id), rec = Object.assign({ id, name, size: data.length, modified: now, device: device || '' }, extra || {});
+      if (preview != null) rec.preview = String(preview).slice(0, 400);
+      if (i >= 0) d.items[i] = Object.assign(d.items[i], rec); else d.items.push(Object.assign({ created: now }, rec));
+    });
     return id;
   }
-  /* 여러 문서를 한 번에 (이전 잠긴 문서함에서 옮길 때) — docs: [{ name, data(Uint8Array), modified, device, preview, legacy }] */
-  async function pimport(docs) {
+  /* 여러 문서를 한 번에 (이전 잠긴 문서함에서 옮길 때) — docs: [{ name, data, modified, device, preview, legacy }], skipped: 파일이 없어 못 옮긴 예전 id */
+  async function pimport(docs, skipped) {
     needWrite();
-    const { items, folders } = await readIdx(); const files = [];
-    for (const d of docs) {
-      let f = fileOf(d.name), k = 2; while (items.some(x => x.id === f)) f = fileOf(d.name + ' (' + k++ + ')');
-      items.push({ id: f, name: d.name, size: d.data.length, created: d.created || d.modified || new Date().toISOString(), modified: d.modified || new Date().toISOString(), device: d.device || '', preview: d.preview || '', legacy: d.legacy });
-      files.push({ path: `${PDIR}/${f}`, base64: b64(d.data) });
-    }
-    if (files.length) await GH.commit(`문서 옮기기: 잠긴 문서함 → documents/ (${files.length}개)`, files.concat([{ path: PIDX, content: idxJson(items, folders) }]));
-    return files.length;
+    const taken = (await idxGet()).data.items.slice(); const plan = [];
+    for (const d of docs) { const f = uniq(taken, d.name); taken.push({ id: f }); plan.push([f, d]); }
+    if (plan.length) await GH.commit(`문서 옮기기: 잠긴 문서함 → documents/ (${plan.length}개)`, plan.map(([f, d]) => ({ path: `${PDIR}/${f}`, base64: b64(d.data) })));
+    await idxUpdate(`문서 목록: 옮긴 문서 ${plan.length}개`, data => {
+      for (const [f, d] of plan) if (!data.items.some(x => x.id === f)) data.items.push({ id: f, name: d.name, size: d.data.length, created: d.created || d.modified || new Date().toISOString(), modified: d.modified || new Date().toISOString(), device: d.device || '', preview: d.preview || '', legacy: d.legacy });
+      if (skipped && skipped.length) data.legacySkipped = Array.from(new Set((data.legacySkipped || []).concat(skipped)));
+    });
+    return plan.length;
   }
-  async function premove(id) { needWrite(); const { items, folders } = await readIdx(); await GH.commit('문서 삭제: ' + id, [{ path: `${PDIR}/${id}`, delete: true }, { path: PIDX, content: idxJson(items.filter(x => x.id !== id), folders) }]); }
-  /* 목록 파일만 바꾸는 일 (이름 · 폴더) — fn(items, folders) 가 고치고 커밋 메시지를 돌려줌 */
-  async function pidx(fn) { needWrite(); const x = await readIdx(); const msg = fn(x.items, x.folders); if (!msg) return; await GH.commit(msg, [{ path: PIDX, content: idxJson(x.items, x.folders) }]); lastFolders = x.folders; }
+  async function premove(id) {
+    needWrite();
+    await idxUpdate('문서 삭제: ' + id, d => { d.items = d.items.filter(x => x.id !== id); }); // 목록 먼저 빼고
+    await GH.commit('문서 파일 삭제: ' + id, [{ path: `${PDIR}/${id}`, delete: true }]).catch(e => console.warn('파일 삭제', e)); // 파일은 그다음 (실패해도 목록은 맞음)
+  }
+  /* 목록 파일만 바꾸는 일 (이름 · 폴더) — fn(items, folders) 가 고치고 커밋 메시지를 돌려줌 (null 이면 바꾸지 않음) */
+  async function pidx(fn) {
+    let msg = null;
+    await idxUpdate(() => msg || '문서 목록', d => { msg = fn(d.items, d.folders); return msg ? undefined : false; });
+  }
   const prename = (id, name) => pidx(items => { const it = items.find(x => x.id === id); if (!it) return null; it.name = name; return '문서 이름 바꾸기: ' + name; });
   const newFid = () => 'f' + Date.now().toString(36) + crypto.getRandomValues(new Uint16Array(1))[0].toString(36);
   const folder = {
-    list: () => lastFolders,
+    list: () => last.folders,
+    skipped: () => last.legacySkipped,
     create: name => { const id = newFid(); return pidx((items, fs) => { fs.push({ id, name }); return '문서 폴더 만들기: ' + name; }).then(() => id); },
     rename: (id, name) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; f.name = name; return '문서 폴더 이름: ' + name; }),
     lock: (id, on) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; if (on) f.locked = true; else delete f.locked; return `문서 폴더 ${on ? '잠금' : '잠금 풀기'}: ${f.name}`; }),
