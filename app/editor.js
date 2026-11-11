@@ -322,7 +322,7 @@
         const st = resolveTextStyle(e, th);
         const txt = e.type === 'table' ? (e.rows || []).flat().join(' ').trim() : stripHtml(e.html);
         const short = txt.replace(/\s+/g, ' ').slice(0, 24) + (txt.length > 24 ? '…' : '');
-        if (!txt) { if (e.type === 'text') out.push({ i, id: e.id, lv: 'info', k: 'empty', msg: '빈 글 상자 — 발표 화면에는 안 보이지만 지워 두면 깔끔합니다' }); return; }
+        if (!txt) { if (e.type === 'text' && !st.bg && !/<(svg|img)\b/i.test(e.html || '')) out.push({ i, id: e.id, lv: 'info', k: 'empty', msg: '빈 글 상자 — 발표 화면에는 안 보이지만 지워 두면 깔끔합니다' }); return; } // 바탕만 칠한 상자 · 아이콘은 꾸밈
         if (e.type !== 'table') chars += txt.replace(/\s/g, '').length;
         /* 글자 크기: 상자 기본 크기 + 글 안에서 따로 정한 크기 중 가장 작은 것 */
         const sizes = [st.fontSize].concat(((e.html || '').match(/font-size:\s*(\d+(?:\.\d+)?)px/gi) || []).map(x => parseFloat(x.split(':')[1])));
@@ -334,7 +334,7 @@
         if (!bgs && st.bg) bgs = bgColors(themeColor(st.bg, th), th);
         if (!bgs && e.type !== 'shape') {
           const cx = e.x + e.w / 2, cy = e.y + e.h / 2;
-          for (let j = k - 1; j >= 0 && !bgs; j--) { const u = s.elements[j]; if (u.hide || cx < u.x || cx > u.x + u.w || cy < u.y || cy > u.y + u.h) continue; if (u.type === 'image') { bgs = 'unknown'; break; } if (u.type === 'shape' && u.fill && u.fill !== 'none' && (u.opacity == null || u.opacity > 0.9)) bgs = bgColors(themeColor(u.fill, th), th) || 'unknown'; }
+          for (let j = k - 1; j >= 0 && !bgs; j--) { const u = s.elements[j]; if (u.hide || cx < u.x || cx > u.x + u.w || cy < u.y || cy > u.y + u.h) continue; if (u.type === 'image') { bgs = 'unknown'; break; } if (u.type === 'shape' && u.fill && u.fill !== 'none' && (u.opacity == null || u.opacity > 0.9)) bgs = bgColors(themeColor(u.fill, th), th) || 'unknown'; if (u.type === 'text' && u.style && u.style.bg && (u.opacity == null || u.opacity > 0.9)) bgs = bgColors(themeColor(u.style.bg, th), th) || 'unknown'; }
         }
         if (!bgs) bgs = sbg;
         const deco = /^[\p{P}\p{S}\s]*$/u.test(txt) || (e.opacity != null && e.opacity < 0.95) || minPx >= 160; // 문장부호만 · 반투명 · 아주 큰 장식 글자는 일부러 흐리게 쓴 것으로 봄
