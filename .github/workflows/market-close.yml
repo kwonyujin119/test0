@@ -14,6 +14,9 @@ on:
         description: '장이 열리지 않은 날 · 마감 전이어도 저장 (시험용)'
         type: boolean
         default: false
+  push:                      # .github/market-run.txt 를 바꿔 main 에 올리면 바로 실행 (예약 실행이 밀리거나 빠졌을 때)
+    branches: [main]
+    paths: ['.github/market-run.txt']
 
 permissions:
   contents: write
