@@ -65,12 +65,13 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
         <div><span>포인터 숨기기</span><span><kbd>Ctrl+H</kbd></span></div>
         <div><span>발표자 보기 창</span><span><kbd>Alt+F5</kbd> <kbd>S</kbd></span></div>
         <div><span>전체화면</span><span><kbd>F</kbd> <kbd>F5</kbd> <kbd>F11</kbd></span></div>
-        <div><span>타이머 표시</span><span><kbd>T</kbd></span></div>
+        <div><span>타이머 표시 (목표를 정하면 남은 시간도)</span><span><kbd>T</kbd></span></div>
         <div><span>이 도움말</span><span><kbd>F1</kbd> <kbd>?</kbd> <kbd>H</kbd></span></div>
         <div><span>편집기로</span><span><kbd>Ctrl+E</kbd></span></div>
         <div><span>발표 종료</span><span><kbd>Esc</kbd> (전체화면이면 한 번 더)</span></div>
       </div>
-      <div style="margin-top:12px;font-size:13px;line-height:1.6"><b>휴대폰 · 태블릿</b> — 화면을 누르면 다음 슬라이드, 옆으로 밀면 앞·뒤로 넘어갑니다. 누를 때마다 오른쪽 위에 메뉴(목록 · 전체화면 · 종료)가 잠깐 나타납니다.</div>
+      <div style="margin-top:12px;font-size:13px;line-height:1.6"><b>발표자 보기(S)</b> — 목표 시간 · 남은 시간(10% 남으면 노랑, 넘으면 빨강) · 타이머 멈춤 · 이 장에 머문 시간과 지난 기록 비교. 1분 넘게 발표하면 장별 시간이 이 브라우저에 저장되어 편집기 <b>점검</b>에서 볼 수 있습니다.</div>
+      <div style="margin-top:8px;font-size:13px;line-height:1.6"><b>휴대폰 · 태블릿</b> — 화면을 누르면 다음 슬라이드, 옆으로 밀면 앞·뒤로 넘어갑니다. 누를 때마다 오른쪽 위에 메뉴(목록 · 전체화면 · 종료)가 잠깐 나타납니다.</div>
       <div class="muted" style="margin-top:14px;font-size:13px">아무 키나 누르거나 화면을 눌러 닫기 · 전체 설명서: <a href="shortcuts.html" target="_blank" onclick="event.stopPropagation()">shortcuts.html</a></div>
     </div></div>
     <div class="pmenu peek" id="pmenu">
@@ -82,6 +83,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     </div>
     <div class="pend" id="pend">
       <div class="pend-t">발표가 끝났습니다</div>
+      <div class="psum" id="pendSum"></div>
       <div class="pend-a"><button class="btn" data-a="back">마지막 슬라이드로</button><button class="btn" data-a="first">처음부터</button><button class="btn ink" data-a="exit">종료</button></div>
     </div>`;
   const $ = (id) => document.getElementById(id);
@@ -92,7 +94,21 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   function nextVisible(i, d) { let j = i + d; while (j >= 0 && j < N && !visible(j)) j += d; return j; }
   let startIdx = clamp(parseInt(qs('start') || '0', 10) || 0, 0, N - 1);
   if (startIdx === 0 && !visible(0)) { const j = nextVisible(0, 1); if (j < N) startIdx = j; }
-  const st = { idx: startIdx, step: 0, blank: '', pen: false, laser: false, goto: '', timerStart: null, showTimer: false, ended: false };
+  const st = { idx: startIdx, step: 0, blank: '', pen: false, laser: false, goto: '', timerStart: null, pausedAt: null, showTimer: false, ended: false };
+  /* 장별 시간 기록 (멈춘 시간은 빼고) — 발표가 끝나거나 창을 닫을 때 "지난 발표 기록"으로 저장 */
+  const T = { acc: {}, mark: 0, runId: '' };
+  const elapsedMs = () => st.timerStart ? (st.pausedAt || Date.now()) - st.timerStart : 0;
+  function startTimer() { if (st.timerStart) return; st.timerStart = Date.now(); st.pausedAt = null; T.acc = {}; T.mark = 0; T.runId = uid(); }
+  function account() { if (!st.timerStart) return; const now = elapsedMs(), id = slideOf(st.idx).id; if (st.ended) { T.mark = now; return; } /* 끝 화면에 머문 시간은 빼고 */ T.acc[id] = (T.acc[id] || 0) + Math.max(0, now - T.mark); T.mark = now; }
+  function saveRun() {
+    if (!st.timerStart) return null;
+    account();
+    const total = Math.round(elapsedMs() / 1000); if (total < 60) return null; // 1분이 안 되는 시험 재생은 기록하지 않음
+    const slides = {}; for (const k in T.acc) slides[k] = Math.round(T.acc[k] / 1000);
+    const run = { id: T.runId, at: Date.now(), total, slides, n: Object.keys(slides).filter(k => slides[k] > 0).length };
+    PresTime.saveRun(name, run); return run;
+  }
+  window.addEventListener('pagehide', () => saveRun());
   const strokes = {}; // idx -> [[{x,y},...], ...] (슬라이드 기준 0~1 좌표)
   let curLayer = null, curNodes = null, hudTimer = null, gotoTimer = null, idleTimer = null, hideMenuTimer = null;
 
@@ -107,6 +123,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   }
   function show(i, step, dir) {
     const old = curLayer, fromIdx = st.idx;
+    if (old && fromIdx !== i) account();
     const layer = makeLayer(i, step, dir < 0);
     const tr = old ? transitionOf(i) : 'none';
     if (tr === 'morph') {
@@ -196,12 +213,15 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     const ms = maxStep(slideOf(st.idx));
     pnum.textContent = `${st.idx + 1} / ${N}` + (ms ? `  ·  ${st.step}/${ms}` : '') + (st.showTimer ? '   ' + timerText() : '');
   }
-  function timerText() { if (!st.timerStart) return '00:00'; const s = Math.floor((Date.now() - st.timerStart) / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  function timerText() {
+    const s = Math.floor(elapsedMs() / 1000), tg = PresTime.target(name);
+    return PresTime.fmt(s) + (tg ? '  (남은 ' + PresTime.fmt(tg * 60 - s) + ')' : '') + (st.pausedAt ? '  멈춤' : '');
+  }
   setInterval(() => { if (st.showTimer) updateHud(); }, 1000);
 
   function next() {
     if (st.ended) { return; }
-    if (!st.timerStart) st.timerStart = Date.now();
+    if (!st.timerStart) startTimer();
     if (st.step < maxStep(slideOf(st.idx))) { st.step++; applyStep(); return; }
     const j = nextVisible(st.idx, 1);
     if (j < N) show(j, 0, 1);
@@ -214,12 +234,24 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     if (j >= 0) show(j, maxStep(slideOf(j)), -1);
   }
   function goto(i, step) { i = clamp(i, 0, N - 1); st.ended = false; $('pend').classList.remove('show'); show(i, step || 0, i >= st.idx ? 1 : -1); }
-  function endShow() { st.ended = true; $('pend').classList.add('show'); broadcast(); }
-  function broadcast() { if (channel) channel.postMessage({ type: 'state', idx: st.idx, step: st.step, ended: st.ended, timerStart: st.timerStart }); }
+  function endShow() { const run = saveRun(); st.ended = true; $('pendSum').innerHTML = runSummary(run); $('pend').classList.add('show'); broadcast(); }
+  /* 끝 화면: 이번 발표 시간 · 목표와의 차이 · 오래 머문 장 */
+  function runSummary(run) {
+    if (!run) return st.timerStart ? '<div class="psum-t">1분이 안 되어 시간 기록은 남기지 않았습니다</div>' : '';
+    const tg = PresTime.target(name), diff = run.total - tg * 60;
+    const top = deck.slides.map((s, i) => ({ i, t: run.slides[s.id] || 0 })).filter(x => x.t > 0).sort((a, b) => b.t - a.t).slice(0, 3);
+    return `<div class="psum-t">발표 시간 <b>${PresTime.fmt(run.total)}</b>` +
+      (tg ? ` · 목표 ${tg}분보다 <b class="${diff > 0 ? 'over' : -diff <= tg * 6 ? 'ok' : ''}">${PresTime.fmt(Math.abs(diff))} ${diff > 0 ? '김' : '짧음'}</b>` : '') + `</div>` +
+      (top.length ? `<div class="psum-s">오래 머문 장 · ${top.map(x => `${x.i + 1}장 ${PresTime.fmt(x.t)}`).join(' · ')}</div>` : '') +
+      `<div class="psum-s">장별 시간은 편집기의 <b>점검</b>에서 볼 수 있습니다 (이 브라우저에 저장)</div>`;
+  }
+  function broadcast() { if (channel) channel.postMessage({ type: 'state', idx: st.idx, step: st.step, ended: st.ended, timerStart: st.timerStart, pausedAt: st.pausedAt, mark: T.mark, blank: st.blank }); }
   if (channel) channel.onmessage = (ev) => {
     const m = ev.data || {};
     if (m.type === 'hello') broadcast();
-    if (m.type === 'nav') { if (m.cmd === 'next') next(); else if (m.cmd === 'prev') prev(); else if (m.cmd === 'goto') goto(m.idx, 0); else if (m.cmd === 'timer') { st.timerStart = m.value; broadcast(); } }
+    if (m.type === 'nav') { if (m.cmd === 'next') next(); else if (m.cmd === 'prev') prev(); else if (m.cmd === 'goto') goto(m.idx, 0); else if (m.cmd === 'timer') { st.timerStart = null; startTimer(); st.timerStart = m.value || Date.now(); broadcast(); }
+      else if (m.cmd === 'pause') { if (!st.timerStart) startTimer(); else if (st.pausedAt) { st.timerStart += Date.now() - st.pausedAt; st.pausedAt = null; } else st.pausedAt = Date.now(); updateHud(); broadcast(); }
+      else if (m.cmd === 'blank') { setBlank(m.kind); } }
   };
 
   /* ---- 화면 상태 ---- */
@@ -228,7 +260,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     pstage.style.transform = st.zoom > 1 ? `scale(${st.zoom})` : ''; pstage.style.transformOrigin = 'center center';
     hud(st.zoom > 1 ? `확대 ${st.zoom}× (− 로 축소 · 마우스로 보고 싶은 곳을 가리키세요)` : '원래 크기');
   }
-  function setBlank(kind) { st.blank = st.blank === kind ? '' : kind; pblank.className = 'pblank ' + st.blank; }
+  function setBlank(kind) { st.blank = st.blank === kind ? '' : kind; pblank.className = 'pblank ' + st.blank; broadcast(); }
   function hud(msg) { phud.textContent = msg; phud.classList.add('show'); clearTimeout(hudTimer); hudTimer = setTimeout(() => phud.classList.remove('show'), 1600); }
   /* 전체화면: 표준 이름이 없는 브라우저(아이패드 사파리 등)는 webkit 이름으로 */
   const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
@@ -363,7 +395,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
       else if (k === 'Escape' || k === 'o' || k === 'O' || k === 'g' || k === 'G' || k === '-') { ev.preventDefault(); overview.close(); }
       return;
     }
-    if (st.blank && !['b', 'B', '.', 'w', 'W', ',', 'F5', 'f', 'F', 'F11'].includes(k)) { st.blank = ''; pblank.className = 'pblank'; ev.preventDefault(); return; }
+    if (st.blank && !['b', 'B', '.', 'w', 'W', ',', 'F5', 'f', 'F', 'F11'].includes(k)) { setBlank(st.blank); ev.preventDefault(); return; }
     // 번호를 치는 중: Esc = 취소, Backspace = 한 자 지움
     if (st.goto && (k === 'Escape' || k === 'Backspace')) {
       st.goto = k === 'Escape' ? '' : st.goto.slice(0, -1); ev.preventDefault();
@@ -389,7 +421,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
       case 'd': case 'D': ev.preventDefault(); togglePen(); break;
       case 'e': case 'E': ev.preventDefault(); clearDrawing(); break;
       case 'l': case 'L': ev.preventDefault(); toggleLaser(); break;
-      case 't': case 'T': ev.preventDefault(); st.showTimer = !st.showTimer; if (st.showTimer && !st.timerStart) st.timerStart = Date.now(); pnum.classList.toggle('keep', st.showTimer); updateHud(); hud(st.showTimer ? '타이머 표시 (오른쪽 아래)' : '타이머 숨김'); break;
+      case 't': case 'T': ev.preventDefault(); st.showTimer = !st.showTimer; if (st.showTimer && !st.timerStart) startTimer(); pnum.classList.toggle('keep', st.showTimer); updateHud(); hud(st.showTimer ? '타이머 표시 (오른쪽 아래)' : '타이머 숨김'); break;
       case '?': case 'h': case 'H': case 'F1': ev.preventDefault(); $('phelp').classList.add('show'); break;
       case 'Escape':
         if (st.pen) { togglePen(); break; } if (st.laser) { toggleLaser(); break; }
@@ -401,7 +433,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   // 클릭 = 다음, 우클릭 = 이전, 휠, 터치 스와이프
   pstage.addEventListener('click', (ev) => {
     if (st.pen || anyOverlayOpen()) return;
-    if (st.blank) { st.blank = ''; pblank.className = 'pblank'; return; }
+    if (st.blank) { setBlank(st.blank); return; }
     if (ev.target.closest('video, iframe')) return;                 // 동영상 조작은 넘기지 않음
     const an = ev.target.closest('a[href]');
     if (an) { ev.preventDefault(); const h = (an.getAttribute('href') || '').trim(); if (h && !/^(javascript|data|vbscript):/i.test(h)) window.open(/^[a-z][\w+.-]*:/i.test(h) ? h : 'https://' + h, '_blank', 'noopener'); return; }
@@ -417,7 +449,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   }
   /* 동영상(YouTube 등)을 누른 뒤에도 리모컨·키보드가 계속 발표기를 조작하도록 포커스를 되돌림 */
   window.addEventListener('blur', () => setTimeout(() => { const a = document.activeElement; if (a && a.tagName === 'IFRAME' && /youtube|vimeo/i.test(a.src || '')) { a.blur(); window.focus(); } }, 0));
-  pblank.addEventListener('click', () => { st.blank = ''; pblank.className = 'pblank'; });
+  pblank.addEventListener('click', () => { if (st.blank) setBlank(st.blank); });
   document.addEventListener('contextmenu', (ev) => { ev.preventDefault(); if (!st.pen && !anyOverlayOpen() && lastPointer === 'mouse') prev(); }); // 터치의 길게 누르기는 뒤로 가지 않음
   let wheelLock = 0;
   document.addEventListener('wheel', (ev) => { if (anyOverlayOpen() || ev.ctrlKey || st.blank) return; const t = Date.now(); if (t - wheelLock < 500) return; wheelLock = t; if (ev.deltaY > 0) next(); else if (ev.deltaY < 0) prev(); }, { passive: true });
@@ -457,12 +489,17 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   /* ======================= 발표자 보기 ======================= */
   function notesView() {
     document.body.className = 'notes-view';
+    const tg0 = PresTime.target(name), plan = PresTime.plan(deck);
     document.body.innerHTML = `<div class="nv">
       <div class="nv-top">
-        <div class="timer" id="timer">00:00</div>
-        <button class="btn sm" id="tReset" title="타이머 초기화">초기화</button>
+        <div class="timer" id="timer" title="지난 시간 (멈춘 시간 빼고)">00:00</div>
+        <button class="btn sm" id="tPause" title="타이머 멈춤 · 계속">멈춤</button>
+        <button class="btn sm" id="tReset" title="타이머를 0 으로 (이번 기록도 새로 시작)">초기화</button>
+        <label class="nv-goal" title="발표 목표 시간 — 남은 시간이 10%(최소 2분) 이하면 노랑, 넘으면 빨강">목표 <input type="number" id="tGoal" min="0" max="600" step="1" inputmode="numeric" value="${tg0 || ''}" placeholder="${plan.total ? Math.round(plan.total / 60) : '—'}">분</label>
+        <div class="nv-remain" id="remain"></div>
         <span class="sep"></span>
         <div id="pos" style="font-size:18px;font-weight:600"></div>
+        <div class="nv-blank" id="blankTag" hidden></div>
         <div class="grow"></div>
         <button class="btn" id="bPrev">${icon('back', 16)}이전</button><button class="btn ink" id="bNext">다음${icon('arrowRight', 16)}</button>
         <span class="sep"></span>
@@ -471,11 +508,14 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
       </div>
       <div class="nv-cur" id="cur"></div>
       <div class="nv-right">
+        <div class="nv-pace" id="pace"></div>
         <div><div class="lbl">다음</div><div class="nv-next" id="next"></div></div>
         <div class="nv-notes" id="notes"></div>
-      </div></div>`;
+      </div>
+      <div class="nv-goto" id="ngoto"></div></div>`;
     const $ = (id) => document.getElementById(id);
-    let s = { idx: 0, step: 0, timerStart: null, ended: false };
+    let s = { idx: 0, step: 0, timerStart: null, pausedAt: null, mark: 0, ended: false, blank: '' };
+    const last = PresTime.last(name);
     function render() {
       if (!deck.slides[s.idx]) return; // 발표 창과 교안 사본이 다른 경우
       const cur = $('cur'), nx = $('next'); cur.innerHTML = ''; nx.innerHTML = '';
@@ -487,26 +527,65 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
       nx.previousElementSibling.textContent = nextLabel;
       $('notes').innerHTML = `<div class="lbl">노트</div>` + (esc(deck.slides[s.idx].notes || '').trim() || '<span class="muted">(노트 없음)</span>');
       $('pos').textContent = `${s.idx + 1} / ${N}` + (ms ? ` · ${s.step}/${ms}` : '') + (deck.slides[s.idx].hidden ? ' · 숨긴 슬라이드' : '') + (s.ended ? ' · 종료' : '');
+      const bt = $('blankTag'); bt.hidden = !s.blank; bt.textContent = s.blank === 'white' ? '흰 화면 중 (W)' : '검은 화면 중 (B)';
+    }
+    const elapsed = () => s.timerStart ? Math.max(0, ((s.pausedAt || Date.now()) - s.timerStart) / 1000) : 0;
+    /* 이 장에 머문 시간 · 지난 기록(또는 노트에 적은 계획)과 비교한 빠르기 */
+    function pace() {
+      const sl = deck.slides[s.idx]; if (!sl) return '';
+      const here = s.timerStart ? Math.max(0, elapsed() - (s.mark || 0) / 1000) : 0;
+      const parts = [`<span>이 장 <b>${PresTime.fmt(here)}</b></span>`];
+      let ref = null, label = '';
+      if (last && last.slides[sl.id] != null) { parts.push(`<span class="muted">지난 기록 ${PresTime.fmt(last.slides[sl.id])}</span>`); ref = PresTime.expectedStart(deck, last, sl.id); label = '지난 기록'; }
+      const p = plan.by[sl.id];
+      if (p && p.dur != null) parts.push(`<span class="muted">계획 ${PresTime.fmt(p.dur)}</span>`);
+      if (ref == null && p && p.start != null) { ref = p.start; label = '노트 계획'; }
+      if (ref != null && s.timerStart) {
+        const d = (s.mark || 0) / 1000 - ref;
+        parts.push(Math.abs(d) < 15 ? `<span class="pace-ok">${label}과 비슷</span>` : `<span class="${d > 0 ? 'pace-late' : 'pace-ok'}">${label}보다 ${PresTime.fmt(Math.abs(d))} ${d > 0 ? '늦음' : '빠름'}</span>`);
+      }
+      return parts.join('');
     }
     function tick() {
-      const t = s.timerStart ? Math.floor((Date.now() - s.timerStart) / 1000) : 0;
-      $('timer').textContent = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+      const t = elapsed(), tg = PresTime.target(name);
+      $('timer').textContent = PresTime.fmt(t);
+      $('timer').classList.toggle('paused', !!s.pausedAt);
+      $('tPause').textContent = !s.timerStart ? '시작' : s.pausedAt ? '계속' : '멈춤';
+      const r = $('remain'), lv = PresTime.level(tg * 60 - t, tg);
+      r.className = 'nv-remain ' + lv;
+      r.textContent = !tg ? '' : lv === 'over' ? `${PresTime.fmt(t - tg * 60)} 넘김` : `남은 ${PresTime.fmt(tg * 60 - t)}`;
+      $('pace').innerHTML = pace();
       $('clock').textContent = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     }
     setInterval(tick, 1000); tick();
     const send = (m) => channel && channel.postMessage(Object.assign({ type: 'nav' }, m));
     const edge = (d) => { let j = d > 0 ? 0 : N - 1; while (j >= 0 && j < N && deck.slides[j].hidden) j += d; return j >= 0 && j < N ? j : (d > 0 ? 0 : N - 1); }; // 숨긴 슬라이드를 건너뛴 처음 · 끝
-    if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'bye') { window.close(); return; } if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, ended: m.ended }; render(); tick(); } };
+    if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'bye') { window.close(); return; } if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, pausedAt: m.pausedAt || null, mark: m.mark || 0, ended: m.ended, blank: m.blank || '' }; render(); tick(); } };
     $('bNext').onclick = () => send({ cmd: 'next' }); $('bPrev').onclick = () => send({ cmd: 'prev' });
-    $('tReset').onclick = () => send({ cmd: 'timer', value: Date.now() });
+    $('tReset').onclick = () => { if (s.timerStart && elapsed() > 60 && !confirm('타이머를 0 으로 되돌릴까요? 이번 발표의 장별 시간도 새로 잽니다.')) return; send({ cmd: 'timer', value: Date.now() }); };
+    $('tPause').onclick = () => send({ cmd: 'pause' });
+    $('tGoal').onchange = () => { $('tGoal').value = PresTime.setTarget(name, $('tGoal').value) || ''; tick(); };
     $('bBig').onclick = () => $('bBig').classList.toggle('active', $('notes').classList.toggle('big'));
+    /* 번호 + Enter = 그 슬라이드로 (PowerPoint 와 같음) */
+    let goto = '', gotoTimer = null;
+    const showGoto = () => { const g = $('ngoto'); g.innerHTML = goto ? `${goto}<small>Enter 로 이동 · Esc 취소</small>` : ''; g.classList.toggle('show', !!goto); clearTimeout(gotoTimer); if (goto) gotoTimer = setTimeout(() => { goto = ''; showGoto(); }, 3000); };
     document.addEventListener('keydown', (ev) => {
+      if (ev.target && ev.target.tagName === 'INPUT') { if (ev.key === 'Enter' || ev.key === 'Escape') ev.target.blur(); return; } // 목표 시간 칸에 쓰는 중
+      if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      if (/^[0-9]$/.test(ev.key)) { ev.preventDefault(); goto += ev.key; showGoto(); return; }
+      if (goto && (ev.key === 'Enter' || ev.key === 'Escape' || ev.key === 'Backspace')) {
+        ev.preventDefault();
+        if (ev.key === 'Enter') send({ cmd: 'goto', idx: clamp(parseInt(goto, 10) - 1, 0, N - 1) });
+        goto = ev.key === 'Backspace' ? goto.slice(0, -1) : ''; showGoto(); return;
+      }
       switch (ev.key) {
-        case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': ev.preventDefault(); send({ cmd: 'next' }); break;
-        case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': case 'p': ev.preventDefault(); send({ cmd: 'prev' }); break;
+        case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': case 'N': ev.preventDefault(); send({ cmd: 'next' }); break;
+        case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace': case 'p': case 'P': ev.preventDefault(); send({ cmd: 'prev' }); break;
         case 'Home': ev.preventDefault(); send({ cmd: 'goto', idx: edge(1) }); break; case 'End': ev.preventDefault(); send({ cmd: 'goto', idx: edge(-1) }); break;
+        case 'b': case 'B': case '.': ev.preventDefault(); send({ cmd: 'blank', kind: 'black' }); break;
+        case 'w': case 'W': case ',': ev.preventDefault(); send({ cmd: 'blank', kind: 'white' }); break;
         case 'Escape': window.close(); break;
-        case 'F1': case '?': ev.preventDefault(); window.open('shortcuts.html', '_blank'); break;
+        case 'F1': case '?': ev.preventDefault(); window.open('shortcuts.html#notes', '_blank'); break;
       }
     });
     window.addEventListener('resize', render);
