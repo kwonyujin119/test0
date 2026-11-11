@@ -246,6 +246,7 @@
     const u = deckUsage(), mb = u.total / 1048576;
     b.textContent = `용량 ${fmtSize(u.total)}${u.unknown ? '+' : ''}`;
     b.dataset.lv = mb >= 500 ? 'big' : mb >= 100 ? 'mid' : 'ok';
+    updateCheckChip();
   }
   async function showDeckSize() {
     document.querySelectorAll('.modal-bg.size-bg').forEach(n => n.remove());
@@ -283,6 +284,133 @@
       <div class="actions"><button class="btn" data-close>닫기</button></div>`;
   }
   $('btnSize').onclick = showDeckSize;
+
+  /* ---------- 발표 점검: 슬라이드 품질 + 발표 시간 ----------
+     근거: 글자 크기(뒷자리 가독성) · 대비(WCAG 4.5:1 / 큰 글자 3:1) · 글 양(Mayer 간결성 · 한 장 한 메시지)
+     자동으로 고치지 않고, 어디를 보면 되는지만 알려 줌. 숨긴 슬라이드(부록)는 빼고 점검 */
+  const QC = { MIN_PX: 24, MAX_CHARS: 150 };
+  function parseColor(c) {
+    c = String(c || '').trim().toLowerCase(); let m;
+    if ((m = c.match(/^#([0-9a-f]{3,8})$/))) {
+      let h = m[1]; if (h.length <= 4) h = h.split('').map(x => x + x).join('');
+      const a = h.length === 8 ? parseInt(h.slice(6, 8), 16) / 255 : 1;
+      return { r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16), a };
+    }
+    if ((m = c.match(/^rgba?\(([^)]+)\)$/))) { const p = m[1].split(/[\s,/]+/).filter(Boolean).map(parseFloat); return { r: p[0], g: p[1], b: p[2], a: p[3] == null ? 1 : p[3] }; }
+    if (c === 'white') return { r: 255, g: 255, b: 255, a: 1 }; if (c === 'black') return { r: 0, g: 0, b: 0, a: 1 };
+    return null;
+  }
+  function luminance(c) { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b); }
+  function contrast(a, b) { const x = luminance(a), y = luminance(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  /* 배경색 후보(그라데이션이면 들어 있는 색 모두). 사진 배경은 알 수 없어 null */
+  function bgColors(css, th) {
+    if (!css) return null; const str = String(css);
+    if (/url\(/i.test(str)) return null;
+    const list = (str.match(/#[0-9a-f]{3,8}\b|rgba?\([^)]+\)/gi) || []).map(x => parseColor(themeColor(x, th))).filter(c => c && c.a > 0.9);
+    return list.length ? list : null;
+  }
+  function slideBgColors(s, th) { const b = s.bg || {}; if (b.image) return null; return bgColors(b.gradient || b.color || th.bgGradient || th.bg, th); }
+  function auditDeck(deck) {
+    const th = deckTheme(deck), out = [], pairs = new Map(); // 대비: 같은 글자색·바탕색 짝은 한 줄로 묶음 (테마 색 하나만 바꾸면 한꺼번에 고쳐지므로)
+    deck.slides.forEach((s, i) => {
+      if (s.hidden) return;
+      const sbg = slideBgColors(s, th);
+      let chars = 0;
+      s.elements.forEach((e, k) => {
+        if (e.hide || !['text', 'shape', 'table'].includes(e.type)) return;
+        const st = resolveTextStyle(e, th);
+        const txt = e.type === 'table' ? (e.rows || []).flat().join(' ').trim() : stripHtml(e.html);
+        const short = txt.replace(/\s+/g, ' ').slice(0, 24) + (txt.length > 24 ? '…' : '');
+        if (!txt) { if (e.type === 'text') out.push({ i, id: e.id, lv: 'info', k: 'empty', msg: '빈 글 상자 — 발표 화면에는 안 보이지만 지워 두면 깔끔합니다' }); return; }
+        if (e.type !== 'table') chars += txt.replace(/\s/g, '').length;
+        /* 글자 크기: 상자 기본 크기 + 글 안에서 따로 정한 크기 중 가장 작은 것 */
+        const sizes = [st.fontSize].concat(((e.html || '').match(/font-size:\s*(\d+(?:\.\d+)?)px/gi) || []).map(x => parseFloat(x.split(':')[1])));
+        const minPx = Math.min.apply(null, sizes.filter(x => x > 0));
+        if (minPx < QC.MIN_PX) out.push({ i, id: e.id, lv: 'warn', k: 'small', msg: `글자가 작음 ${Math.round(minPx)}px — 「${esc(short)}」 · 뒷자리에서도 읽히게 ${QC.MIN_PX}px 이상(본문은 28px 이상)` });
+        /* 대비: 글 상자 바탕 → 밑에 깔린 도형 → 슬라이드 배경 순서로 바탕색을 찾음 */
+        let bgs = null;
+        if (e.type === 'shape') bgs = e.fill && e.fill !== 'none' ? bgColors(themeColor(e.fill, th), th) : null;
+        if (!bgs && st.bg) bgs = bgColors(themeColor(st.bg, th), th);
+        if (!bgs && e.type !== 'shape') {
+          const cx = e.x + e.w / 2, cy = e.y + e.h / 2;
+          for (let j = k - 1; j >= 0 && !bgs; j--) { const u = s.elements[j]; if (u.hide || cx < u.x || cx > u.x + u.w || cy < u.y || cy > u.y + u.h) continue; if (u.type === 'image') { bgs = 'unknown'; break; } if (u.type === 'shape' && u.fill && u.fill !== 'none' && (u.opacity == null || u.opacity > 0.9)) bgs = bgColors(themeColor(u.fill, th), th) || 'unknown'; }
+        }
+        if (!bgs) bgs = sbg;
+        const deco = /^[\p{P}\p{S}\s]*$/u.test(txt) || (e.opacity != null && e.opacity < 0.95) || minPx >= 160; // 문장부호만 · 반투명 · 아주 큰 장식 글자는 일부러 흐리게 쓴 것으로 봄
+        if (Array.isArray(bgs) && !deco) {
+          const fgs = [st.color].concat(((e.html || '').match(/(?:^|[;"\s])color:\s*(#[0-9a-f]{3,8}|rgba?\([^)]+\))/gi) || []).map(x => x.replace(/^.*color:\s*/i, ''))).map(c => parseColor(themeColor(c, th))).filter(c => c && c.a > 0.5);
+          let worst = Infinity, wf = null, wb = null; for (const f of fgs) for (const b of bgs) { const c = contrast(f, b); if (c < worst) { worst = c; wf = f; wb = b; } }
+          const big = minPx >= 48 || (minPx >= 36 && st.bold), need = big ? 3 : 4.5;
+          if (Math.round(worst * 10) / 10 < need) {
+            const hx = (c) => '#' + [c.r, c.g, c.b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+            const key = hx(wf) + hx(wb) + need; let g = pairs.get(key);
+            if (!g) { g = { i, id: e.id, lv: 'warn', k: 'contrast', fg: hx(wf), bg: hx(wb), ratio: worst, need, short, slides: [] }; pairs.set(key, g); out.push(g); }
+            if (!g.slides.includes(i)) g.slides.push(i);
+          }
+        }
+        if (e.type === 'text' && (e.x < -10 || e.y < -10 || e.x + e.w > SLIDE_W + 10 || e.y + e.h > SLIDE_H + 10)) out.push({ i, id: e.id, lv: 'warn', k: 'off', msg: `글 상자가 슬라이드 밖으로 나감 — 「${esc(short)}」` });
+      });
+      if (chars > QC.MAX_CHARS) out.push({ i, lv: 'warn', k: 'much', msg: `글이 많음 (${chars}자) — 한 장에 한 메시지. 설명은 발표자 노트로 옮기거나 두 장으로 나누세요` });
+    });
+    const sw = (c) => `<i class="qc-sw" style="background:${c}"></i>`;
+    for (const g of pairs.values()) {
+      const n = g.slides.length, at = g.slides.slice(0, 8).map(x => x + 1).join(', ') + (n > 8 ? ' …' : '');
+      g.msg = `대비 낮음 ${g.ratio.toFixed(1)}:1 (기준 ${g.need}:1) — ${sw(g.fg)}글자 ${g.fg} / ${sw(g.bg)}바탕 ${g.bg}` + (n > 1 ? ` · ${n}개 장(${at})` : ` · 「${esc(g.short)}」`) + (n > 2 ? ' — 디자인의 색 하나를 바꾸면 한 번에 고쳐집니다' : '');
+    }
+    return out.sort((a, b) => a.i - b.i);
+  }
+  const QC_KIND = { much: '글 양', small: '글자 크기', contrast: '대비', off: '밖으로 나감', empty: '빈 상자' };
+  function updateCheckChip() {
+    const b = $('btnCheck'); if (!b || !S.deck) return;
+    let n = 0; try { n = auditDeck(S.deck).filter(x => x.lv === 'warn').length; } catch (e) { }
+    b.innerHTML = `점검${n ? ` <em>${n}</em>` : ''}`; b.dataset.lv = n ? 'mid' : 'ok';
+    b.title = n ? `발표 점검 — 고쳐 볼 곳 ${n}곳 (글 양 · 글자 크기 · 대비) · 장별 발표 시간` : '발표 점검 — 글 양 · 글자 크기 · 대비 · 장별 발표 시간';
+  }
+  function showCheck(tab) {
+    document.querySelectorAll('.modal-bg.check-bg').forEach(n => n.remove());
+    const bg = document.createElement('div'); bg.className = 'modal-bg check-bg';
+    const close = () => bg.remove();
+    let cur = tab || 'quality';
+    const draw = () => {
+      const deck = S.deck, list = auditDeck(deck), warns = list.filter(x => x.lv === 'warn');
+      const vis = deck.slides.filter(s => !s.hidden), hid = deck.slides.length - vis.length;
+      const noNotes = deck.slides.map((s, i) => ({ s, i })).filter(x => !x.s.hidden && !(x.s.notes || '').trim()).map(x => x.i + 1);
+      const counts = {}; for (const x of warns) counts[x.k] = (counts[x.k] || 0) + 1;
+      const q = `<div class="qc-sum"><b>${warns.length ? `고쳐 볼 곳 ${warns.length}곳` : '눈에 띄는 문제가 없습니다'}</b><span>슬라이드 ${vis.length}장 점검${hid ? ` · 숨긴 슬라이드 ${hid}장은 뺌` : ''}</span></div>
+        ${warns.length ? `<div class="qc-kinds">${Object.keys(counts).map(k => `<span>${QC_KIND[k]} <b>${counts[k]}</b></span>`).join('')}</div>` : ''}
+        <div class="qc-list">${list.map(x => `<div class="r ${x.lv}" data-slide="${x.i}"${x.id ? ` data-el="${x.id}"` : ''}><span class="sl">${x.i + 1}장</span><span class="ms">${x.msg}</span></div>`).join('') || ''}</div>
+        ${noNotes.length ? `<p class="qc-note">발표자 노트가 없는 장 ${noNotes.length}개: ${noNotes.slice(0, 20).join(', ')}${noNotes.length > 20 ? ' …' : ''} — 노트 첫 줄에 <code>[1분]</code> 처럼 적으면 발표자 보기에서 계획과 비교해 줍니다</p>` : ''}
+        <p class="qc-note">기준: 글자 ${QC.MIN_PX}px 미만 · 대비 4.5:1 미만(48px 이상 또는 36px 굵은 글은 3:1, WCAG) · 한 장에 글자 ${QC.MAX_CHARS}자 초과(공백 빼고, 표는 뺌). 사진 위의 글은 대비를 잴 수 없어 빼고 봅니다.</p>`;
+      /* 시간 탭: 목표 · 노트 계획 · 지난 발표 기록(장별) */
+      const runs = PresTime.runs(S.name), last = runs[0], plan = PresTime.plan(deck), tg = PresTime.target(S.name);
+      const top = last ? Math.max(1, ...vis.map(s => last.slides[s.id] || 0)) : 1;
+      const t = `<div class="qc-time">
+          <label>목표 시간 <input type="number" id="qcGoal" min="0" max="600" value="${tg || ''}" placeholder="${plan.total ? Math.round(plan.total / 60) : ''}"> 분</label>
+          ${plan.total ? `<span>노트에 적은 계획 합계 <b>${PresTime.fmt(plan.total)}</b></span>` : plan.kind === 'at' ? '<span>노트에 시작 시각이 적혀 있습니다 — 발표자 보기에서 비교합니다</span>' : ''}
+          ${last ? `<span>지난 발표 <b>${PresTime.fmt(last.total)}</b> <em class="muted">${new Date(last.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</em></span>` : ''}
+        </div>
+        ${last ? `<div class="qc-bars">${deck.slides.map((s, i) => { if (s.hidden) return ''; const v = last.slides[s.id] || 0, p = plan.by[s.id], pd = p && p.dur; const over = pd && v > pd * 1.25 + 10;
+            return `<div class="r" data-slide="${i}"><span class="sl">${i + 1}</span><span class="bar"><i class="${over ? 'over' : ''}" style="width:${Math.round(v / top * 100)}%"></i></span><span class="v">${PresTime.fmt(v)}</span><span class="p">${pd ? '계획 ' + PresTime.fmt(pd) : ''}</span></div>`; }).join('')}</div>
+          ${runs.length > 1 ? `<p class="qc-note">최근 기록: ${runs.map(r => PresTime.fmt(r.total)).join(' · ')}</p>` : ''}
+          <p class="qc-note">발표 화면에서 1분 넘게 진행하면 이 브라우저에 장별 시간이 저장됩니다(멈춘 시간은 뺌). 계획보다 25% 넘게 긴 장은 주황으로 표시합니다. <button class="btn sm" id="qcClear">기록 지우기</button></p>`
+          : `<p class="qc-empty">아직 발표 기록이 없습니다.<br>발표 화면에서 <b>S</b>(발표자 보기)를 열고 리허설해 보세요 — 끝나면 장별 시간이 여기에 나옵니다.</p>`}`;
+      bg.innerHTML = `<div class="modal check-modal"><h3>발표 점검</h3>
+        <div class="seg qc-tabs" role="tablist"><button class="btn sm${cur === 'quality' ? ' active' : ''}" data-tab="quality">슬라이드 품질${warns.length ? ` ${warns.length}` : ''}</button><button class="btn sm${cur === 'time' ? ' active' : ''}" data-tab="time">발표 시간</button></div>
+        <div class="qc-body">${cur === 'quality' ? q : t}</div>
+        <div class="actions"><span class="muted" style="flex:1;font-size:12px">줄을 누르면 그 슬라이드(개체)로 갑니다</span><button class="btn" data-close>닫기</button></div></div>`;
+      const g = bg.querySelector('#qcGoal'); if (g) g.onchange = () => { g.value = PresTime.setTarget(S.name, g.value) || ''; };
+      const c = bg.querySelector('#qcClear'); if (c) c.onclick = (ev) => { ev.stopPropagation(); if (confirm('이 교안의 발표 기록을 모두 지울까요?')) { PresTime.clearRuns(S.name); draw(); } };
+    };
+    bg.onclick = (ev) => {
+      if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }
+      const tb = ev.target.closest('[data-tab]'); if (tb) { cur = tb.dataset.tab; draw(); return; }
+      const r = ev.target.closest('.r[data-slide]');
+      if (r) { const id = r.dataset.el; if (!matchMedia('(min-width: 900px)').matches) close(); gotoSlide(+r.dataset.slide); if (id && curSlide().elements.some(e => e.id === id)) { S.sel = [id]; markSelection(); renderOverlay(); renderProps(); } bg.querySelectorAll('.r.on').forEach(x => x.classList.remove('on')); r.classList.add('on'); }
+    };
+    bg.tabIndex = -1; bg.addEventListener('keydown', (ev) => { if (ev.target.tagName === 'INPUT') return; ev.stopPropagation(); if (ev.key === 'Escape') close(); });
+    document.body.appendChild(bg); draw(); bg.focus();
+  }
+  $('btnCheck').onclick = () => showCheck();
   sizeLater(); loadAssetSizes().then(sizeLater);
 
   /* ---------- 렌더 ---------- */
@@ -2400,11 +2528,11 @@
           if (e.poster && e.posterOf === old) { e.poster = await toData(e.poster); e.posterOf = e.url; }
         }
       } }
-    let slideCss, uiCss, commonJs, presentJs;
-    try { [slideCss, uiCss, commonJs, presentJs] = await Promise.all(['app/slide.css', 'app/ui.css', 'app/common.js', 'app/present.js'].map(u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ' (' + r.status + ')'); return r.text(); }))); }
+    let slideCss, uiCss, commonJs, presentJs, timeJs;
+    try { [slideCss, uiCss, commonJs, presentJs, timeJs] = await Promise.all(['app/slide.css', 'app/ui.css', 'app/common.js', 'app/present.js', 'app/prestime.js'].map(u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ' (' + r.status + ')'); return r.text(); }))); }
     catch (err) { alert('HTML 파일을 만들지 못했습니다: 프로그램 파일을 읽을 수 없습니다 (' + err.message + ')\n서버(또는 사이트)로 연 화면에서 다시 해 주세요.'); return; }
     const json = JSON.stringify(deck).replace(/<\/script/gi, '<\\/script');
-    const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(deck.title)}</title><style>${slideCss}\n${uiCss}</style></head><body class="present"><script>window.EMBEDDED_DECK=${json};<\/script><script>${commonJs}<\/script><script>${presentJs}<\/script></body></html>`;
+    const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(deck.title)}</title><style>${slideCss}\n${uiCss}</style></head><body class="present"><script>window.EMBEDDED_DECK=${json};<\/script><script>${commonJs}<\/script><script>${timeJs}<\/script><script>${presentJs}<\/script></body></html>`;
     download(S.name + '.html', html, 'text/html');
     const vnote = vlocal ? ` · 동영상 파일 ${vlocal}개는 담기지 않습니다 (HTML 파일 옆에 assets 폴더를 함께 두어야 재생)` : vids ? ` · 동영상 파일 ${vids}개는 인터넷이 있어야 재생됩니다` : '';
     toast((lost ? `HTML 파일을 내려받았습니다 — 이미지 ${lost}개는 넣지 못했습니다 (그 그림은 인터넷이 있어야 보입니다)` : 'HTML 파일을 내려받았습니다') + vnote, lost || vnote ? 6000 : 2600);
