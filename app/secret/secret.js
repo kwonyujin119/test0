@@ -3489,5 +3489,48 @@ ${[
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && sy.on) syncNow(); });
     addEventListener('online', () => { if (sy.on) syncNow(); });
   })();
+
+  /* =====================================================================
+     장 마감 노트 — GitHub Actions(market-close.yml)가 평일 저녁 8시 무렵 briefing 브랜치 market/recent.json 에 저장한
+     시장 온도 · 코스피 등락률 · 시가총액 상위 10개 종목 등락률을 그날 날짜의 노트로 남김 (AI 토큰 안 씀)
+     · 노트 번호를 날짜로 고정(mkt-YYYY-MM-DD): 여러 기기에서 만들어도 하나로 합쳐짐
+     · 사용자가 지운 날(tomb)은 다시 만들지 않고, 이미 있는 노트(고친 것 포함)는 건드리지 않음
+     ===================================================================== */
+  const mktText = r => {
+    const p = v => v == null ? '–' : (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%';
+    const w = v => v == null ? '–' : Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+    const t = r.temp || {}, b = r.breadth, k = r.kospi || {};
+    return [`[장 마감 ${r.date}]`,
+      `1. 시장 온도: ${t.score ?? '–'} / 100 (${t.label || '–'})${b ? ` — 상승 ${b.up} · 하락 ${b.down} · 보합 ${b.flat} 종목` : ''}`,
+      `2. 코스피: ${w(k.close)} (${p(k.chgPct)}${k.diff != null ? `, ${k.diff > 0 ? '+' : ''}${w(k.diff)}p` : ''})`,
+      `3. 시가총액 상위 10개 종목`,
+      ...(r.top10 || []).map(s => `  ${s.rank}. ${s.name} ${w(s.close)}원 ${p(s.chgPct)}`),
+      '', `기준: ${r.top10Basis || '네이버 증권'} · ${String(r.at || '').slice(11, 16)} 수집. 온도 = ${t.formula || ''}`].join('\n');
+  };
+  let mktAt = 0;
+  async function marketNotes() {
+    if (Date.now() - mktAt < 10 * 60000) return; mktAt = Date.now();
+    let list = null;
+    try {
+      const ref = await latestRef();
+      let r = await fetch(briefUrl('market/recent.json', ref), { cache: 'no-store' });
+      if (ref && !r.ok && r.status !== 404) r = await fetch(briefUrl('market/recent.json'), { cache: 'no-store' });
+      if (r.ok) list = await r.json();
+    } catch (e) { }
+    if (!Array.isArray(list)) return;
+    let added = 0;
+    for (const m of list) {
+      if (!m || !/^\d{4}-\d{2}-\d{2}$/.test(m.date || '') || !m.kospi) continue;
+      const id = 'mkt-' + m.date;
+      if (sy.tomb.notes[id] || notes.some(n => n.id === id)) continue;
+      const ts = Date.parse(m.at) || Date.now();
+      notes.push({ id, created: ts, updated: ts, date: m.date, text: mktText(m), companies: [], auto: 'market' }); added++;
+    }
+    if (!added) return;
+    saveNotes(); if (!$('vNotes').hidden) renderNotes();
+  }
+  marketNotes();
+  setInterval(() => { if (document.visibilityState === 'visible') marketNotes(); }, 15 * 60000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') marketNotes(); });
   addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS[v]) show(v); });
 })();
