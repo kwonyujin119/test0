@@ -5,7 +5,7 @@
 const CACHE = 'ws-app-v69';
 const CORE = [
   './', 'index.html', 'gyoan.html', 'hangul.html', 'video.html', 'editor.html', 'present.html', 'shortcuts.html', 'manifest.webmanifest',
-  'app/common.js', 'app/access.js', 'app/hub.css', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/prestime.js', 'app/pptx.js', 'app/pptsym.js', 'app/pptin.js', 'app/bgai.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js', 'app/appnav.js',
+  'app/common.js', 'app/access.js', 'app/hub.css', 'app/hub.js', 'app/editor.js', 'app/present.js', 'app/prestime.js', 'app/folderlock.js', 'app/pptx.js', 'app/pptsym.js', 'app/pptin.js', 'app/bgai.js', 'app/ui.css', 'app/slide.css', 'app/pwa.js', 'app/appnav.js',
   'app/hwp/zip.js', 'app/hwp/hwpx.js', 'app/hwp/store.js', 'app/hwp/best.js', 'app/hwp/edit.js', 'app/hwp/ui.js', 'app/hwp/work.js', 'app/hwp/home.js', 'app/hwp/hwp.css',
   'app/video/core.js', 'app/video/dsp.js', 'app/video/chars.js', 'app/video/render.js', 'app/video/swap.js', 'app/video/player.js', 'app/video/timeline.js', 'app/video/tools.js', 'app/video/voices.js', 'app/video/sync.js', 'app/video/export.js', 'app/video/rec.js', 'app/video/panels.js', 'app/video/shorts.js', 'app/video/app.js', 'app/video/video.css',
   'videos.html', 'app/video/home.js', 'app/video/home.css',

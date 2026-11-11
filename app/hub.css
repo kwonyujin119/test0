@@ -215,3 +215,8 @@ body.deck-dragging .folder-card .deck-thumb { box-shadow: 0 0 0 1.5px var(--ui-b
   .rail-folders { order: 2; max-height: none; overflow-y: visible; }
   .rail-label { display: none; }
 }
+/* 잠긴 폴더 */
+.folder-lock-badge { position: absolute; top: 8px; right: 8px; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(17,19,24,.78); }
+.folder-lock-badge .ico { width: 13px; height: 13px; }
+.folder-locked { color: var(--ui-fg); }
+.fb-lock { margin-left: 8px; font-style: normal; font-size: var(--fs-xs); color: var(--ui-muted); }

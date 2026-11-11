@@ -13,6 +13,8 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   if (window.EMBEDDED_DECK) deck = window.EMBEDDED_DECK;
   else {
     await API.init();
+    /* 잠긴 폴더의 교안: 관리자가 아닌 기기에서는 열지 않음 */
+    if (typeof FolderLock !== 'undefined') { const lk = await FolderLock.blocked(name); if (lk) { document.body.innerHTML = FolderLock.screen(lk); return; } }
     try {
       if (qs('draft')) deck = Draft.get(name); // 편집 화면의 [미리보기]: 아직 저장하지 않은 작업본
       if (deck && role === 'main' && !qs('print')) setTimeout(() => toast('아직 저장하지 않은 작업본을 보여 줍니다 (미리보기)', 3500), 800);
