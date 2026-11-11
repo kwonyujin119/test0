@@ -515,7 +515,7 @@
   $id('btnBar1More').addEventListener('click', e => {
     const dark = UiTheme.get() === 'dark';
     const items = (GUEST ? [] : [{ icon: 'filePlus', label: '새 문서', kbd: 'Alt+N', run: () => act('new') }, { icon: 'export', label: '다른 이름으로 저장', kbd: 'Alt+V', run: () => act('saveAs') }, { icon: 'lock', label: '문서함', run: () => act('box') }])
-      .concat([{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null])
+      .concat(GUEST ? [] : [{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null])
       .concat(window.HwpWork ? [{ icon: 'check', label: '문서 점검', kbd: 'F8', run: () => HwpWork.openCheck() }].concat(GUEST ? [] : [{ icon: 'filePlus', label: '서식으로 새 문서', run: () => HwpWork.templateDialog() }, { icon: 'star', label: '실적 기록장', run: () => HwpWork.winsDialog() }]).concat([{ icon: 'search', label: '명령 찾기', kbd: 'Ctrl+K', run: () => HwpWork.palette() }, null]) : [])
       .concat([{ icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
     popMenu(e.currentTarget, items, { alignRight: true, keyboard: viaKey(e) });
@@ -538,7 +538,7 @@
 
   /* ---------- 명령 ---------- */
   const ALIGN = { alJ: 'JUSTIFY', alL: 'LEFT', alC: 'CENTER', alR: 'RIGHT', alD: 'DISTRIBUTE' };
-  const GUEST_OK = /^(home|open|help|best|print|find|replace|zoomIn|zoomOut)$/;
+  const GUEST_OK = /^(home|open|help|print|find|replace|zoomIn|zoomOut)$/; // best 문서는 관리자만
   function act(a) {
     if (GUEST && !GUEST_OK.test(a)) { guestSay(); return; }
     if (a === 'home') return HwpHome.show();

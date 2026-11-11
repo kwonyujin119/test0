@@ -532,7 +532,7 @@
       ['표 만들기', 'table', 'Ctrl+N, T', A('table'), 'table', true, true], ['그림 넣기', 'image', 'Ctrl+N, I', A('image'), 'image 사진', true, true], ['문자표', 'symbol', 'Ctrl+F10', A('symbol'), '특수문자 기호', true, true],
       ['쪽 나누기', 'pageBreak', 'Ctrl+Enter', A('pageBreak'), 'page break', true, true], ['편집 용지', 'ruler', 'F7', A('pageDlg'), '여백 용지 가로 세로', true, true], ['쪽 번호 매기기', 'hash', 'Ctrl+N, P', A('pageNum'), 'page number', true, true], ['머리말 · 꼬리말', 'layout', 'Ctrl+N, H', A('headFoot'), 'header footer', true, true],
       ['개요 번호 켜기/끄기', 'listNum', '', A('outline'), '번호 1. 가.', true, true], ['글머리표 켜기/끄기', 'list', '', A('bullet'), 'bullet', true, true],
-      ['문서함 (GitHub 보관)', 'lock', '', A('box'), '보관 동기화', true], ['best 문서', 'bookmark', '', A('best'), '레퍼런스 예시'], ['첫 화면', 'back', '', A('home'), 'home 홈'], ['단축키 모음', 'help', 'F1', A('help'), 'help 도움말'],
+      ['문서함 (GitHub 보관)', 'lock', '', A('box'), '보관 동기화', true], ['best 문서', 'bookmark', '', A('best'), '레퍼런스 예시', true], ['첫 화면', 'back', '', A('home'), 'home 홈'], ['단축키 모음', 'help', 'F1', A('help'), 'help 도움말'],
     ];
     const h = W.doc && H();
     if (h) h.styles.filter(s => s.type !== 'CHAR').slice(0, 12).forEach((s, i) => c.push([`스타일: ${s.name || s.eng}`, 'list', i < 9 ? 'Ctrl+' + (i + 1) : '', () => { applyStyle(s.id); }, 'style ' + (s.eng || ''), true, true]));

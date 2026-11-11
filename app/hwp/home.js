@@ -24,7 +24,7 @@ const HwpHome = (() => {
 
   /* ---------- 보이기 / 숨기기 ---------- */
   function show(which) {
-    if (which && FILTERS[which]) setFilter(which);
+    if (which && FILTERS[which]) setFilter(GUEST && which === 'best' ? 'all' : which); // 게스트는 best 문서를 볼 수 없음
     root.hidden = false;
     render();  // 받아 둔 자료로 먼저 그리고
     refresh(); // 새로 받아 다시 그림
@@ -54,6 +54,7 @@ const HwpHome = (() => {
     render();
   }
   async function loadBest() {
+    if (GUEST) return; // 게스트에게는 best 문서 목록을 받지도 않음
     await BestDocs.init();
     if (BestDocs.mode() === 'github' && !HwpStore.box.unlocked && !(await HwpStore.box.restoreKey())) { best.state = 'locked'; render(); return; }
     best.state = best.items.length ? 'ok' : 'loading'; render();
@@ -216,7 +217,12 @@ const HwpHome = (() => {
      돌려주는 값: 문서함 상태(연결 없음 · 잠김 · 오류)를 이 자리의 안내 판으로 보였는지 — 보였으면 위 한 줄 알림은 줄임 */
   function renderDocs(list, hero, q) {
     const S = $('secDocs'), body = $('docsBody'), acts = $('docsActs'), head = $('docsHead'), cnt = $('docsCnt');
-    S.hidden = filter === 'best' || GUEST; if (S.hidden) return false;
+    if (GUEST) { // 게스트: 문서함 · best 문서 모두 볼 수 없음 — 빈 화면 대신 할 수 있는 일을 안내
+      S.hidden = false; acts.innerHTML = ''; S.querySelector('.hm-head').hidden = true;
+      body.replaceChildren(panel('lock', '<b>게스트 모드에서는 문서함과 best 문서를 볼 수 없습니다.</b> 내 PC 의 .hwpx 파일은 [파일 가져오기]로 열어 읽고 인쇄할 수 있습니다.', '', [['파일 가져오기', 'import', () => U().openDialog()]]));
+      return true;
+    }
+    S.hidden = filter === 'best'; if (S.hidden) return false;
     acts.innerHTML = '';
     // 제목은 "이어서 작업" 아래 나머지일 때만 ("모든 문서" 아래 또 "모든 문서" 가 보이지 않게)
     head.textContent = '다른 문서'; head.hidden = cnt.hidden = !hero;
@@ -276,7 +282,7 @@ const HwpHome = (() => {
       menu: [openA].concat(GUEST ? [] : [newA], [{ label: '구조 · 본문 글 보기', icon: 'list', run: struct }], GUEST ? [] : [{ label: '이름 · 메모 · 꼬리표', icon: 'edit', run: edit }, null, { label: '지우기', icon: 'trash', run: del, danger: true }]) };
   }
   function renderBest(match, q) {
-    const S = $('secBest'); S.hidden = !(filter === 'all' || filter === 'best'); if (S.hidden) return 0;
+    const S = $('secBest'); S.hidden = GUEST || !(filter === 'all' || filter === 'best'); if (S.hidden) return 0;
     const body = $('bestBody'), acts = $('bestActs'), cnt = $('bestCnt');
     acts.innerHTML = ''; cnt.textContent = '';
     if (best.state === 'idle' || (best.state === 'loading' && !best.items.length)) { body.replaceChildren(ghosts(4)); return 0; }
