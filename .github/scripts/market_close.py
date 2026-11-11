@@ -6,7 +6,7 @@
   2. 코스피 종가 · 등락률
   3. 코스피 시가총액 상위 10개 종목의 종가 · 등락률
 
-자료: 네이버 증권(공식 API 가 아님 — 형식이 바뀌면 실패할 수 있음). 장이 열리지 않은 날(주말 · 휴장)은 저장하지 않는다.
+자료: 네이버 증권 모바일 API(공식 API 가 아님 — 형식이 바뀌면 실패하고, 실패하면 그날은 저장하지 않음). 장이 열리지 않은 날(주말 · 휴장)은 저장하지 않는다.
 AI 토큰을 쓰지 않는다. 앱(secret.js)이 이 파일을 읽어 노트에 날짜별로 남긴다.
 """
 import argparse, datetime as dt, json, os, re, sys, time, urllib.request
@@ -51,16 +51,6 @@ def index_mobile():
     return {'close': num(j.get('closePrice')), 'diff': diff, 'chg': chg, 'date': at[:10], 'status': j.get('marketStatus') or '', 'src': 'm.stock.naver.com'}
 
 
-def index_desktop():
-    h = get('https://finance.naver.com/sise/sise_index.naver?code=KOSPI', 'euc-kr', 'text/html')
-    close = num(re.search(r'id="now_value"[^>]*>([\d,.]+)<', h).group(1))
-    m = re.search(r'id="change_value_and_rate"[^>]*>\s*<span>([\d,.]+)</span>\s*([+-]?[\d.]+)%', h)
-    diff, chg = num(m.group(1)), num(m.group(2))
-    if chg is not None and chg < 0: diff = -diff
-    d = re.search(r'id="time"[^>]*>\s*(\d{4})\.(\d{2})\.(\d{2})', h)
-    return {'close': close, 'diff': diff, 'chg': chg, 'date': f'{d.group(1)}-{d.group(2)}-{d.group(3)}' if d else '', 'status': '', 'src': 'finance.naver.com'}
-
-
 # ---------- 코스피 전 종목 (시가총액 순) ----------
 def stocks_mobile():
     out, page, total = [], 1, None
@@ -69,23 +59,13 @@ def stocks_mobile():
         items = j.get('stocks') or []
         total = j.get('totalCount') or total
         for s in items:
+            if s.get('stockEndType') not in (None, 'stock'): continue  # ETF · ETN 제외 (인버스가 넓이를 거꾸로 셈)
             chg = num(s.get('fluctuationsRatio'))
             code = str((s.get('compareToPreviousPrice') or {}).get('code') or '')
             if code in ('4', '5') and chg is not None and chg > 0: chg = -chg
             out.append({'code': s.get('itemCode'), 'name': s.get('stockName'), 'close': num(s.get('closePrice')), 'chg': chg})
-        if not items or (total and len(out) >= int(total)): break
+        if not items or (total and page * 100 >= int(total)): break
         page += 1
-    return out
-
-
-def stocks_desktop():
-    out = []
-    for page in range(1, 50):
-        h = get(f'https://finance.naver.com/sise/sise_market_sum.naver?sosok=0&page={page}', 'euc-kr', 'text/html')
-        rows = re.findall(r'<a href="/item/main\.naver\?code=(\w{6})" class="tltle">([^<]+)</a>.*?<td class="number">([\d,]+)</td>.*?<td class="number">\s*<span class="[^"]*">\s*([+-]?[\d.]+)%', h, re.S)
-        if not rows: break
-        for code, name, close, chg in rows: out.append({'code': code, 'name': name.strip(), 'close': num(close), 'chg': num(chg)})
-        if len(rows) < 50: break
     return out
 
 
@@ -120,7 +100,7 @@ def main():
     a = ap.parse_args(); VERBOSE = a.v
     now = dt.datetime.now(KST); today = now.strftime('%Y-%m-%d')
 
-    idx, e1 = first_ok(index_mobile, index_desktop)
+    idx, e1 = first_ok(index_mobile)
     if not idx or idx.get('chg') is None: sys.exit('코스피 지수를 받지 못했습니다: ' + '; '.join(e1))
     log('index', idx)
     if idx['date'] and idx['date'] != today and not a.force:
@@ -137,7 +117,7 @@ def main():
         except Exception:
             pass
 
-    st, e2 = first_ok(stocks_mobile, stocks_desktop)
+    st, e2 = first_ok(stocks_mobile)
     st = [s for s in (st or []) if s.get('name') and s.get('chg') is not None]
     up = sum(1 for s in st if s['chg'] > 0); down = sum(1 for s in st if s['chg'] < 0); flat = len(st) - up - down
     top = st[:10]
@@ -150,7 +130,7 @@ def main():
         'breadth': {'up': up, 'down': down, 'flat': flat, 'total': len(st)} if st else None,
         'temp': temperature(idx['chg'], up, down),
         'top10': [{'rank': i + 1, 'code': s['code'], 'name': s['name'], 'close': s['close'], 'chgPct': s['chg']} for i, s in enumerate(top)],
-        'top10Basis': '코스피 시가총액 순위 (네이버 증권, 우선주 포함)',
+        'top10Basis': '코스피 시가총액 순위 · 주식만(ETF · ETN 제외, 우선주 포함) · 네이버 증권',
         'errors': e1 + e2,
     }
     d = os.path.join(a.out, 'market'); os.makedirs(d, exist_ok=True)
