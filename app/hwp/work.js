@@ -599,5 +599,33 @@
   const hn = $id('hmTpl'); if (hn) hn.addEventListener('click', templateDialog);
   const hw = $id('hmWins'); if (hw) hw.addEventListener('click', () => winsDialog());
   if (GUEST) document.querySelectorAll('[data-admin-work]').forEach(x => { x.hidden = true; });
-  window.HwpWork = { templateDialog, openCheck, closeCheck, scan, winsDialog, palette, nextSlot, shiftLevel, wonKo, fillNewDoc, T };
+  /* =====================================================================
+     7. 받은 문서함(inbox): Claude 등이 만든 문서를 저장소에 '일회용 키로 암호화'해 올려 두면,
+        링크(hangul.html?inbox=<id>#k=<키>)로 열어 내 문서함 암호로 다시 저장한다.
+        저장소는 공개라 암호문만 둔다. 키는 # 뒤에만 있어 서버로 가지 않는다.
+        파일: hwp/inbox/<id>.bin = 12바이트 IV + AES-256-GCM 암호문(태그 포함), 평문은 JSON { name, hwpx: base64 }
+     ===================================================================== */
+  async function openInbox() {
+    const q = new URLSearchParams(location.search); const id = q.get('inbox'); if (!id || !/^[\w-]{4,64}$/.test(id)) return;
+    const k = new URLSearchParams(location.hash.slice(1)).get('k');
+    if (!k) { U.tell('열 수 없습니다', '링크에 열쇠(#k=…)가 빠져 있습니다. 받은 링크 전체를 그대로 여세요.'); return; }
+    try {
+      const b64 = x => Uint8Array.from(atob(x.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      const r = await fetch(`hwp/inbox/${id}.bin`, { cache: 'no-store' }); if (!r.ok) throw new Error('문서가 아직 올라오지 않았거나 지워졌습니다 (' + r.status + ')');
+      const buf = new Uint8Array(await r.arrayBuffer());
+      const key = await crypto.subtle.importKey('raw', b64(k), 'AES-GCM', false, ['decrypt']);
+      const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(0, 12) }, key, buf.slice(12));
+      const j = JSON.parse(new TextDecoder().decode(plain));
+      if (!(await U.confirmDiscard())) return;
+      if (!(await U.openBytes(b64(j.hwpx).buffer, { name: j.name, dirty: true }))) return;
+      history.replaceState(null, '', location.pathname); // 주소창에서 열쇠를 지움
+      if (GUEST) return;
+      U.dialog(icon('import') + '받은 문서를 열었습니다', `<p class="dlg-desc"><b>${escH(j.name)}</b>${j.note ? '<br>' + escH(j.note) : ''}</p><p class="dlg-desc">아직 어디에도 저장되지 않았습니다. <b>문서함에 저장</b>하면 내 문서함 암호로 잠가 보관합니다.</p>`,
+        { foot: '<button class="tb" data-x="cancel">나중에</button><button class="tb" id="ibPc">내 PC 에 저장</button><button class="tb primary" id="ibBox">문서함에 저장</button>', noEnter: true, noFocus: true,
+          init: (q, close) => { q('#ibBox').onclick = () => { close(false); U.save('boxNew'); }; q('#ibPc').onclick = () => { close(false); U.save('pc'); }; setTimeout(() => q('#ibBox').focus(), 0); } });
+    } catch (e) { console.error(e); U.tell('받은 문서를 열지 못했습니다', e.name === 'OperationError' ? '열쇠가 맞지 않습니다. 받은 링크 전체를 그대로 여세요.' : e.message); }
+  }
+  if (/[?&]inbox=/.test(location.search)) setTimeout(openInbox, 0);
+
+  window.HwpWork = { openInbox, templateDialog, openCheck, closeCheck, scan, winsDialog, palette, nextSlot, shiftLevel, wonKo, fillNewDoc, T };
 })();
