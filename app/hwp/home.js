@@ -13,13 +13,14 @@ const HwpHome = (() => {
   const U = () => window.__hwp; // ui.js: 문서 열기 · 저장 · 창 · 문서함 암호 …
   const GUEST = Access.isGuest;
   const root = $('home');
-  const FILTERS = { all: '모든 문서', box: '문서함', week: '최근 7일', draft: '저장 안 한 작업본', best: 'best 문서' };
+  const FILTERS = { all: '모든 문서', box: '문서함', week: '최근 7일', draft: '저장 안 한 작업본', best: 'best 문서', shared: '올린 문서' };
   const PREF = 'hwp:home'; // 이 기기에 기억하는 보기 설정
   const pref = (() => { try { return Object.assign({ view: 'grid', sort: 'recent' }, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { return { view: 'grid', sort: 'recent' }; } })();
   const savePref = () => { try { localStorage.setItem(PREF, JSON.stringify(pref)); } catch (e) { } };
   let filter = 'all', kw = '';
   const box = { state: 'idle', items: [], err: '' };  // noconn(GitHub 연결 없음) · locked(암호) · loading · ok · err
   const best = { state: 'idle', items: [], err: '' }; // locked(GitHub 암호) · loading · ok · err
+  const shared = { state: 'idle', items: [] };       // 올린 문서: documents/*.hwpx + documents/index.json (교안의 decks/ 와 같은 방식 — 잠그지 않은 공개 파일, 관리자 화면에만 보임)
   let drafts = [], draftsLoaded = false, inited = false;
 
   /* ---------- 보이기 / 숨기기 ---------- */
@@ -37,7 +38,13 @@ const HwpHome = (() => {
   async function refresh() {
     await BestDocs.init(); // API.init(): 내 PC 서버인지 · GitHub 인지
     railGh(); render();
-    loadDrafts(); loadBox(); loadBest();
+    loadDrafts(); loadBox(); loadBest(); loadShared();
+  }
+  async function loadShared() {
+    if (GUEST) return;
+    try { const r = await fetch('documents/index.json', { cache: 'no-store' }); shared.items = r.ok ? ((await r.json()).items || []) : []; shared.state = 'ok'; }
+    catch (e) { shared.items = []; shared.state = 'ok'; }
+    render();
   }
   async function loadDrafts() {
     drafts = GUEST ? [] : await HwpStore.drafts.list();
@@ -222,7 +229,7 @@ const HwpHome = (() => {
       body.replaceChildren(panel('lock', '<b>게스트 모드에서는 문서함과 best 문서를 볼 수 없습니다.</b> 내 PC 의 .hwpx 파일은 [파일 가져오기]로 열어 읽고 인쇄할 수 있습니다.', '', [['파일 가져오기', 'import', () => U().openDialog()]]));
       return true;
     }
-    S.hidden = filter === 'best'; if (S.hidden) return false;
+    S.hidden = filter === 'best' || filter === 'shared'; if (S.hidden) return false;
     acts.innerHTML = '';
     // 제목은 "이어서 작업" 아래 나머지일 때만 ("모든 문서" 아래 또 "모든 문서" 가 보이지 않게)
     head.textContent = '다른 문서'; head.hidden = cnt.hidden = !hero;
@@ -248,6 +255,7 @@ const HwpHome = (() => {
     if (filter === 'box') { const bp = boxPanel(); body.replaceChildren(bp || panel('folder', '<b>문서함이 비어 있습니다.</b>', '편집 중인 문서를 문서함에 저장하거나 위의 [파일 올리기] 로 PC 의 hwpx 파일을 올리면, 다른 기기에서도 같은 문서를 엽니다.')); return !!bp; }
     if (filter === 'all') {
       if (box.state === 'locked' || box.state === 'err') { body.replaceChildren(boxPanel()); return true; }
+      if (shared.items.length && !q) { body.innerHTML = ''; S.hidden = true; return false; } // 올린 문서가 있으면 '첫 문서를 만들어 보세요' 대신 그 목록이 보이게
       const e = empty(`${W.doc ? '<b>문서함과 이 기기에 남은 문서가 없습니다</b><span>지금 문서를 문서함에 저장하면 다른 기기에서도 여기에 보입니다.</span>' : '<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나 PC 의 .hwpx 파일을 이 화면에 끌어다 놓으세요.</span>'}<div class="hub-empty-cta"><button class="btn${$('hmNew').getClientRects().length ? '' : ' ink'}" id="emNew">${icon('plus')}새 문서</button><button class="btn ghost" id="emOpen">${icon('import')}파일 가져오기</button></div>`);
       body.replaceChildren(e);
       e.querySelector('#emNew').onclick = () => U().newDoc(); e.querySelector('#emOpen').onclick = () => U().openDialog();
@@ -299,6 +307,26 @@ const HwpHome = (() => {
     return list.length;
   }
 
+  /* ---------- 올린 문서 (documents/) ---------- */
+  async function sharedBuf(it) { const r = await fetch('documents/' + encodeURIComponent(it.file), { cache: 'no-store' }); if (!r.ok) throw new Error('파일을 받지 못했습니다 (' + r.status + ')'); return r.arrayBuffer(); }
+  async function sharedOpen(it) { if (!(await U().confirmDiscard())) return false; toast('여는 중…', 20000); return U().openBytes(await sharedBuf(it), { name: it.name }); } // 저장소에 이미 있는 문서라 '고친 내용 없음'으로 연다
+  function sharedCard(it) {
+    const open = { label: '열기', icon: 'eye', run: () => sharedOpen(it) };
+    const toBox = { label: '문서함에 저장', icon: 'lock', run: async () => { const W = U().W; if ((W.doc && W.name === it.name && !W.boxId) || await sharedOpen(it)) U().save('boxNew'); } }; // 이미 열려 있으면 다시 받지 않음
+    const down = { label: '내려받기', icon: 'download', run: async () => { const b = new Blob([await sharedBuf(it)]); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = it.name + '.hwpx'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); } };
+    return { id: 'sh-' + it.file, title: it.name, preview: it.preview, badge: it.ver || 'NEW', note: it.note,
+      meta: [it.pages ? it.pages + '쪽' : '', it.size ? Math.max(1, Math.round(it.size / 1024)) + ' KB' : '', relTime(it.added)],
+      click: open, actions: [open, toBox], menu: [open, toBox, down] };
+  }
+  function renderShared(match) {
+    const S = $('secShared'); S.hidden = GUEST || !(filter === 'all' || filter === 'shared') || !shared.items.length; if (S.hidden) return 0;
+    const list = sorted(shared.items.map(it => Object.assign({ time: Date.parse(it.added) || 0 }, it))).filter(it => match(it.name, it.note, it.preview));
+    $('sharedCnt').textContent = list.length + '개 · 잠그지 않은 공개 파일';
+    if (!list.length) { S.hidden = true; return 0; }
+    const g = grid(); for (const it of list) g.appendChild(card(sharedCard(it))); $('sharedBody').replaceChildren(g);
+    return list.length;
+  }
+
   /* ---------- 그리기 ---------- */
   function render() {
     if (root.hidden) return;
@@ -306,20 +334,20 @@ const HwpHome = (() => {
     const match = (...xs) => !q || xs.some(x => (x || '').toLowerCase().includes(q));
     const all = docs();
     $('cAll').textContent = all.length || ''; $('cBox').textContent = box.items.length || ''; $('cWeek').textContent = all.filter(inWeek).length || '';
-    $('cDraft').textContent = drafts.length || ''; $('cBest').textContent = best.items.length || '';
+    $('cDraft').textContent = drafts.length || ''; $('cBest').textContent = best.items.length || ''; $('cShared').textContent = shared.items.length || '';
     $('dDraft').hidden = !drafts.length; // 노란 점: 저장 안 한 작업본이 있을 때만
     $('hmTitle').textContent = q ? '검색 결과' : FILTERS[filter];
     let list = all.filter(x => match(x.name, x.preview));
     if (filter === 'box') list = list.filter(x => x.kind === 'box');
     if (filter === 'week') list = list.filter(inWeek);
     if (filter === 'draft') list = list.filter(x => x.draft);
-    if (filter === 'best' || GUEST) list = [];
+    if (filter === 'best' || filter === 'shared' || GUEST) list = [];
     list = sorted(list);
     const hero = filter === 'all' && !q && pref.sort === 'recent' && list.length ? list[0] : null;
     renderHero(hero); banner(hero);
     const rest = hero ? list.slice(1) : list;
     notice(renderDocs(rest, hero, q));
-    const nb = renderBest(match, q);
+    const nb = renderBest(match, q) + renderShared(match);
     const shown = list.length + nb;
     $('hmSub').textContent = (q || filter !== 'all') ? `${shown}개` : (all.length ? `문서 ${all.length}개` : '');
   }
