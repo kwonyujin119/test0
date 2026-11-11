@@ -51,31 +51,45 @@ const HwpHome = (() => {
   }
   /* 예전 잠긴 문서함(hwp/*.bin)에 남은 문서 → 공통 저장소로 옮기기 (관리자 · GitHub 연결 · 한 번만 암호) */
   const legacy = { n: 0, busy: false };
+  const movedIds = () => new Set(box.items.map(x => x.legacy).filter(Boolean).concat(HwpStore.box.folder.skipped() || []));
   async function checkLegacy() {
     if (GUEST || !HwpStore.box.canWrite() || legacy.checked) return; legacy.checked = true;
     try {
       if (!(await HwpStore.legacy.exists())) return;
-      const moved = new Set(box.items.map(x => x.legacy).filter(Boolean));
+      const moved = movedIds();
       if (await HwpStore.legacy.restoreKey()) { const old = await HwpStore.legacy.list(); legacy.n = old.filter(x => !moved.has(x.id)).length; }
       else legacy.n = moved.size ? 0 : -1; // 암호를 모르면 개수는 모름 (-1: 옮길 것이 있을 수 있음)
     } catch (e) { console.warn('legacy', e); }
     render();
   }
+  /* 옮기기: 문서마다 따로 꺼내고, 파일이 없거나 못 푼 문서는 건너뛰고 나머지는 옮긴다 (한 개 때문에 전부 멈추지 않게) */
   async function migrate() {
     if (legacy.busy) return; legacy.busy = true;
     try {
       if (!(await U().legacyEnsure())) return;
-      const moved = new Set(box.items.map(x => x.legacy).filter(Boolean));
+      const moved = movedIds();
       const old = (await U().boxRun(() => HwpStore.legacy.list())).filter(x => !moved.has(x.id));
       if (!old.length) { legacy.n = 0; toast('옮길 문서가 없습니다 — 모두 옮겨져 있습니다', 2400); render(); return; }
-      const docs = [];
-      for (const [k, x] of old.entries()) { toast(`잠긴 문서함에서 꺼내는 중… ${k + 1}/${old.length}`, 20000); docs.push({ name: x.name, data: await HwpStore.legacy.load(x.id), created: x.created, modified: x.modified, device: x.device, preview: x.preview, legacy: x.id }); }
-      toast('공통 저장소에 올리는 중…', 30000);
-      const n = await U().boxRun(() => HwpStore.box.importMany(docs));
-      legacy.n = 0; toast(`${n}개 문서를 옮겼습니다 — 이제 어느 기기에서나 보입니다 (잠긴 원본은 그대로 둠)`, 4000); loadBox();
+      const docs = [], missing = [], failed = [];
+      for (const [k, x] of old.entries()) {
+        toast(`잠긴 문서함에서 꺼내는 중… ${k + 1}/${old.length}`, 20000);
+        try { docs.push({ name: x.name, data: await U().boxRun(() => HwpStore.legacy.load(x.id)), created: x.created, modified: x.modified, device: x.device, preview: x.preview, legacy: x.id }); }
+        catch (e) { console.warn('옮기기', x, e); (/찾지 못했습니다/.test(e.message) ? missing : failed).push(x); }
+      }
+      toast(`공통 저장소에 올리는 중… (${docs.length}개)`, 30000);
+      const n = docs.length || missing.length ? await U().boxRun(() => HwpStore.box.importMany(docs, missing.map(x => x.id))) : 0;
+      legacy.n = failed.length; legacy.checked = false;
+      const li = xs => xs.map(x => `<li>${esc(x.name)}</li>`).join('');
+      if (!missing.length && !failed.length) toast(`${n}개 문서를 옮겼습니다 — 이제 어느 기기에서나 보입니다 (잠긴 원본은 그대로 둠)`, 4000);
+      else U().dialog(icon('info', 16) + `${n}개를 옮겼습니다`, `<p class="dlg-desc">${n}개 문서를 공통 저장소로 옮겼습니다.</p>`
+        + (missing.length ? `<p class="dlg-desc"><b>파일이 없는 문서 ${missing.length}개는 건너뛰었습니다.</b> 예전 문서함 목록에만 이름이 남고 실제 파일은 이미 지워진 것입니다 (예전에 두 기기에서 거의 동시에 저장 · 삭제할 때 생긴 문제 — 새 저장 방식에서는 생기지 않게 고쳤습니다). 다시 알리지 않습니다.</p><ul>${li(missing)}</ul>` : '')
+        + (failed.length ? `<p class="dlg-desc"><b>꺼내지 못한 문서 ${failed.length}개</b> — 잠시 뒤 알림의 [옮기기]를 다시 누르면 이것만 다시 시도합니다.</p><ul>${li(failed)}</ul>` : ''),
+        { foot: '<button class="tb primary" data-x="cancel">확인</button>', noEnter: true, noFocus: true });
+      loadBox();
     } catch (e) { console.error(e); U().tell('옮기지 못했습니다', e.message); }
     finally { legacy.busy = false; }
   }
+
 
   async function loadBest() {
     if (GUEST) return; // 게스트에게는 best 문서 목록을 받지도 않음
