@@ -515,7 +515,9 @@
   $id('btnBar1More').addEventListener('click', e => {
     const dark = UiTheme.get() === 'dark';
     const items = (GUEST ? [] : [{ icon: 'filePlus', label: '새 문서', kbd: 'Alt+N', run: () => act('new') }, { icon: 'export', label: '다른 이름으로 저장', kbd: 'Alt+V', run: () => act('saveAs') }, { icon: 'lock', label: '문서함', run: () => act('box') }])
-      .concat([{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null, { icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
+      .concat([{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null])
+      .concat(window.HwpWork ? [{ icon: 'check', label: '문서 점검', kbd: 'F8', run: () => HwpWork.openCheck() }].concat(GUEST ? [] : [{ icon: 'filePlus', label: '서식으로 새 문서', run: () => HwpWork.templateDialog() }, { icon: 'star', label: '실적 기록장', run: () => HwpWork.winsDialog() }]).concat([{ icon: 'search', label: '명령 찾기', kbd: 'Ctrl+K', run: () => HwpWork.palette() }, null]) : [])
+      .concat([{ icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
     popMenu(e.currentTarget, items, { alignRight: true, keyboard: viaKey(e) });
   });
 
@@ -1146,7 +1148,8 @@
     </div><div>
       ${sec('글자 · 문단', [['Alt+L', '글자 모양'], ['Alt+T', '문단 모양'], ['F6', '스타일'], ['Ctrl+1 ~ 9', '바탕글 · 본문 · 개요 1~7'], ['Ctrl+B / Ctrl+I / Ctrl+U', '진하게 · 기울임 · 밑줄'], ['Alt+Shift+B / I / U', '진하게 · 기울임 · 밑줄 (한글 방식)'], ['Alt+Shift+E / Alt+Shift+R', '글자 크게 · 작게 (1pt)'], ['Ctrl+] / Ctrl+[', '글자 크게 · 작게 (1pt)'], ['Alt+Shift+W / Alt+Shift+N', '자간 넓게 · 좁게'], ['Alt+Shift+K / Alt+Shift+J', '장평 넓게 · 좁게'], ['Alt+Shift+Z / Alt+Shift+A', '줄 간격 넓게 · 좁게'], ['Ctrl+Shift+L / C / R', '왼쪽 · 가운데 · 오른쪽 정렬'], ['Ctrl+Shift+M', '양쪽 정렬'], ['Ctrl+Shift+T / Ctrl+Alt+T', '배분 정렬']])}
       ${sec('표', [['Tab / Shift+Tab', '다음 · 앞 셀 (마지막 셀에서 Tab: 줄 추가)'], ['Ctrl+Enter', '아래에 줄 추가'], ['Alt+Insert', '줄/칸 추가하기'], ['Alt+Delete', '줄/칸 지우기'], ['F5', '셀 블록 (한 번 더: 방향키로 넓히기, 세 번: 표 전체)'], ['Shift+방향키', '셀 블록 넓히기'], ['M / S', '셀 합치기 · 나누기 (셀 블록에서)'], ['W / H', '셀 너비 · 높이 같게'], ['L / C', '셀 테두리/배경'], ['Ctrl+방향키', '셀 크기 조절 (셀 블록에서)'], ['Delete', '셀 내용 지우기 (셀 블록에서)'], ['Enter / Esc', '셀 블록 풀기']])}
-      ${sec('보기', [['Ctrl+마우스 휠', '확대 · 축소'], ['Esc', '찾기 창 닫기'], ['F1', '이 도움말']])}
+      ${sec('업무 도구 (이 앱에만 있는 키)', [['Ctrl+K', '명령 찾기 — 이름이나 초성(ㅈㅈ=저장)으로 모든 기능'], ['F8', '문서 점검 — 공문서 표기 · 쉬운 말 · 띄어쓰기 · 두괄식 (한글의 맞춤법 검사 자리)'], ['Alt+. / Alt+,', '서식의 다음 · 앞 채울 칸 〔 〕'], ['Enter', '□ ○ - · 줄 끝에서: 같은 기호로 다음 줄 (빈 기호 줄에서 Enter: 기호 끝내기)'], ['Alt+Shift+→ / Alt+Shift+←', '개조식 단계 내리기 · 올리기 (□ → ○ → - → ·, 개요 1. → 가.)'], ['Ctrl+Num + / Ctrl+Num -', '위와 같음 (숫자 키패드)']])}
+      ${sec('보기', [['Ctrl+마우스 휠', '확대 · 축소'], ['Esc', '찾기 창 · 점검 판 닫기'], ['F1', '이 도움말']])}
     </div></div>`, { foot: '<button class="tb primary" data-x="cancel">닫기</button>', width: 860, noEnter: true });
   }
 
