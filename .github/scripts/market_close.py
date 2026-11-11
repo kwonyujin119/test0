@@ -130,7 +130,7 @@ def main():
         'breadth': {'up': up, 'down': down, 'flat': flat, 'total': len(st)} if st else None,
         'temp': temperature(idx['chg'], up, down),
         'top10': [{'rank': i + 1, 'code': s['code'], 'name': s['name'], 'close': s['close'], 'chgPct': s['chg']} for i, s in enumerate(top)],
-        'top10Basis': '코스피 시가총액 순위 · 주식만(ETF · ETN 제외, 우선주 포함) · 네이버 증권',
+        'top10Basis': '코스피 시가총액 순위 · 주식만(ETF · ETN 제외, 우선주 포함) · 네이버 증권 당일 종가(20시 이후 값 — 시간외 · 넥스트레이드 거래가 반영돼 한국거래소 15:30 종가와 조금 다를 수 있음)',
         'errors': e1 + e2,
     }
     d = os.path.join(a.out, 'market'); os.makedirs(d, exist_ok=True)
