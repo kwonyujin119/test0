@@ -914,6 +914,7 @@
     T.push({ name: 'get_journal', description: '사용자의 결정 카드(매매 일지): 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트별), 성적표(reportCard: 같은 기간 지수 대비 평균 초과 · 지수를 이긴 비율, 손절 규율 — 손절가에 닿은 수 · 미룬 수 · 미뤄서 더 잃은 R, 체크리스트 · AI 의견 · 감정별 승률 · 평균 R · 지수 대비, 점검일이 된 결정 수)와 최근 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · AI 의견 · 점검일 · 교훈 · 자동 채점 score)을 돌려준다.', input_schema: { type: 'object', properties: { period: { type: 'string', enum: ['all', 'year', '90'], description: '성적표 기간 (기본 all)' } }, additionalProperties: false } });
     T.push({ name: 'get_notes', description: '사용자가 노트 탭에 날짜별로 적은 메모를 돌려준다. company 를 주면 그 기업이 들어간 노트만 (최근 60개).', input_schema: { type: 'object', properties: { company: { type: 'string', description: '기업 이름 (선택, 예: 삼성전자)' } }, additionalProperties: false } });
     T.push({ name: 'save_memory', description: '앞으로의 답에 계속 필요한 사용자 정보 · 선호를 한 문장으로 기억한다. 사용자가 "기억해" 라고 했거나 투자 성향 · 제약을 새로 알았을 때만 쓴다. 시세처럼 금방 바뀌는 정보나 이미 프로필에 있는 내용은 저장하지 않는다. 사용자는 나의 원칙 화면에서 보고 지울 수 있다.', input_schema: { type: 'object', properties: { text: { type: 'string', description: '기억할 한 문장' } }, required: ['text'], additionalProperties: false } });
+    T.push({ name: 'search_records', description: '키워드 추적: 이 앱이 모은 모닝 브리핑 뉴스 · 증권사 전략 리포트(날짜별)와 사용자의 AI 대화 · 노트 · 매매 일지에서 키워드를 찾아 날짜별 건수(byDay)와 최근 기사 · 리포트 문장을 돌려준다. "요즘 ○○ 얘기가 얼마나 나오나", "○○ 관련 증권사 시각이 어떻게 바뀌었나", "예전에 ○○ 에 대해 뭐라고 적었나" 를 물을 때 쓴다. 쉼표로 여러 말을 주면 모두 들어간 것만.', input_schema: { type: 'object', properties: { query: { type: 'string', description: '찾을 키워드 (예: HBM, 금리, 삼성전자)' }, days: { type: 'integer', description: '최근 며칠 (3~60, 기본 14)' } }, required: ['query'], additionalProperties: false } });
     T.push({ name: 'get_profit_engine', description: '수익 엔진 점검: 사용자 보유 · 결정 카드 · 나의 원칙으로 계산한 "지속 수익의 조건" 통과율(score)과 항목별 결과(checks: 핵심 지수 비중 · 한 종목 비중 · 손절가 · 걸린 위험 합계 · 계좌 고점 대비 하락 · 회전율 · 기대값 · 지수 대비 · 체크리스트 준수 · 감정 매매 · 레버리지, 각각 status ok/warn/bad/na · 값 · 근거 · 고칠 것), 오늘의 규칙(rules)과 새 매매 크기 배수(sizeFactor: 1 정상 · 0.5 절반 · 0 중지), 리밸런싱(목표 대비 옮길 금액), 해외 주식 세금(올해 실현 손익 · 250만 원 공제 남은 금액 · 손실/이익 실현 후보). 계좌 전체 · 비중 · 리밸런싱 · 지금 사도 되는지 · 세금을 물을 때 먼저 부른다. sizeFactor 가 1 보다 작으면 수량 계산에 반영한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
@@ -952,6 +953,7 @@
       case 'save_memory': { const t = String(input.text).trim().slice(0, 200); if (!me.notes.some(n => n.text === t)) { me.notes.push({ t: Date.now(), text: t, by: 'AI' }); me.notes = me.notes.slice(-50); saveMe(); } return { saved: t, total: me.notes.length }; }
       case 'get_portfolio': return { items: watch.items, quotes: watch.quotes, note: '수량 · 평균 단가가 0 이면 관심만 있는 종목' };
       case 'get_profit_engine': return engineState();
+      case 'search_records': return await searchRecords(String(input.query).trim(), input.days);
       case 'position_size': return sizePlan({ account: +input.account, risk_percent: +input.risk_percent, entry: +input.entry, stop: +input.stop, target: input.target ? +input.target : 0, win_rate: input.win_rate ? +input.win_rate : 0 });
     }
     throw new Error('알 수 없는 도구');
@@ -1289,6 +1291,7 @@ ${[
      관심 종목 · 보유
      ===================================================================== */
   function renderWatch() {
+    quickAdd($('wQuick'), () => renderWatch());
     const items = watch.items; $('cWatch').textContent = items.length || '';
     let cost = 0, value = 0, priced = 0;
     const rows = items.map((it, i) => {
@@ -1318,16 +1321,19 @@ ${[
     const it = i == null ? Object.assign({ symbol: '', name: '', qty: '', avg: '', stop: '', target: '', alertHi: '', alertLo: '', memo: '' }, preset || {}) : Object.assign({}, watch.items[i]);
     const f = (k, l, t, ph) => `<label>${l}<input ${t === 'n' ? 'type="number" step="any" min="0"' : 'type="text"'} name="${k}" value="${esc(it[k] == null ? '' : it[k])}" placeholder="${ph || ''}"></label>`;
     const d = dialog(`<h3>${i == null ? '종목 추가' : esc(it.symbol) + ' 고치기'}</h3><form class="sc-form">
-      ${f('symbol', '종목 코드', 't', '예: 005930 · 0190G0 · AAPL')}<p class="hint">한국은 6자리 코드(ETF 처럼 영문이 섞인 0190G0 도 그대로), 미국은 AAPL 처럼. 이름은 아래 칸에.</p>
-      ${f('name', '이름 (선택)', 't', '예: 삼성전자')}
+      ${f('symbol', '종목 코드 · 티커 · 이름', 't', '예: 005930 · 0190G0 · AAPL · 삼성전자')}<p class="hint" data-symhint>코드나 티커를 넣으면 이름이 저절로 채워집니다. 이름을 넣으면 고를 수 있게 보여 줍니다.</p>
+      ${f('name', '이름 (저절로 채움 · 고쳐도 됨)', 't', '예: 삼성전자')}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${f('qty', '보유 수량 (관심만 있으면 비움)', 'n')}${f('avg', '평균 단가', 'n')}${f('stop', '손절가', 'n')}${f('target', '목표가', 'n')}${f('alertHi', '알림: 이 가격 이상', 'n')}${f('alertLo', '알림: 이 가격 이하', 'n')}</div>
       <label>메모 · 매수 이유<textarea name="memo" rows="3" placeholder="왜 샀는지 · 무엇이 틀리면 팔지">${esc(it.memo || '')}</textarea></label>
       <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">저장</button></div></form>`);
     const form = d.el.querySelector('form'); setTimeout(() => form.symbol.focus(), 30);
     d.el.querySelector('[data-x]').onclick = d.close;
-    form.onsubmit = e => {
+    stkBind(form.symbol, form.name, d.el.querySelector('[data-symhint]'));
+    form.onsubmit = async e => {
       e.preventDefault(); const o = {}; for (const k of ['symbol', 'name', 'qty', 'avg', 'stop', 'target', 'alertHi', 'alertLo', 'memo']) o[k] = form[k].value.trim();
-      o.symbol = o.symbol.toUpperCase(); if (!o.symbol) { toast('종목 코드를 넣어 주세요', 1800); return; }
+      if (o.symbol && !stkLooksCode(o.symbol)) { const c = (await stkFind(o.symbol, 1).catch(() => []))[0]; if (c) { if (!o.name) o.name = c.name; o.symbol = c.code; } }
+      o.symbol = normSym(o.symbol) || o.symbol.toUpperCase(); if (!o.symbol) { toast('종목 코드를 넣어 주세요', 1800); return; }
+      if (!o.name) { const r = await stkName(o.symbol).catch(() => null); if (r) o.name = r.name; }
       for (const k of ['qty', 'avg', 'stop', 'target', 'alertHi', 'alertLo']) o[k] = o[k] === '' ? '' : +o[k];
       if (i == null) watch.items.push(o); else watch.items[i] = o; saveWatch(); d.close(); renderWatch();
     };
@@ -1708,6 +1714,7 @@ ${[
     checklist: ['매수 이유를 한 문장으로 쓸 수 있다', '손절가와 그 근거를 정했다', '1회 손실이 정한 % 이하다', '손익비가 2 이상이다', '실적 발표 · 큰 일정이 코앞이 아니다', '뉴스를 보고 급하게 사는 것이 아니다 (조급함 아님)'],
     answer: { length: '보통', level: '중급', tone: '존댓말', format: '틀' },
     notes: [],
+    track: [], // 키워드 추적 [{ k, at }]
     prompts: [{ title: '아침 브리핑', text: 'get_portfolio 로 내 종목을 보고, 오늘 시장과 내 종목에 영향을 줄 뉴스 · 일정을 종목마다 3줄 이내로 요약해 줘. 내 규칙을 어기고 있는 종목(손절가 근처 · 비중 초과)이 있으면 맨 위에 알려 줘.' }],
   };
   const me = Object.assign(JSON.parse(JSON.stringify(ME0)), LS.get(K_ME, {}));
@@ -2381,6 +2388,7 @@ ${[
       <section class="sc-card en-rules"><h2>오늘의 규칙</h2><ul>${s.rules.map(r => `<li class="${r.lvl}">${esc(r.text)}</li>`).join('')}</ul>
         ${s.unpriced.length ? `<p class="sub">시세를 아직 안 불러온 종목은 평균 단가로 셌습니다: ${esc(s.unpriced.join(' · '))} — 관심 종목 · 보유에서 [시세 새로 고침]</p>` : ''}
         ${s.fxMissing.length ? `<p class="sub warn">환율이 없어 0 원으로 셌습니다: ${esc(s.fxMissing.join(' · '))} — 아래 설정에서 환율을 넣으세요</p>` : ''}</section>
+      <section class="en-sec" id="engRoutine"></section>
       <section class="en-sec"><h2>지속 수익의 조건 점검</h2><p>예측이 아니라, 오래 살아남은 투자자들의 공통 조건을 내 자료로 확인합니다. 근거는 레퍼런스 화면에 있습니다.</p>
         <div class="en-checks">${s.checks.map(c => `<div class="en-c ${ST[c.status][1]}"><div class="h"><span class="st">${ST[c.status][0]}</span><b>${esc(c.title)}</b><span class="ref">${esc(c.ref)}</span></div><p class="v">${esc(c.value)}</p><p class="why">${esc(c.why)}</p>${c.fix ? `<p class="fix">${esc(c.fix)}</p>` : ''}</div>`).join('')}</div></section>
       <section class="sc-card"><h2>리밸런싱 <small>목표에서 ±${p.band}%p 넘게 벗어나면 옮길 금액</small></h2>
@@ -2440,6 +2448,8 @@ ${[
       if (f) { f.symbol.value = x.symbol; if (x.stop) f.stop.value = x.stop; if (x.target) f.target.value = x.target; f.reason.value = x.reason + (x.premortem ? `\n(실패 가정) ${x.premortem}` : ''); f.symbol.dispatchEvent(new Event('input')); }
       x.status = 'done'; saveEng();
     });
+    paintRoutines();
+    const rt = LS.get(K_RT, null); if (!rtBusy && (dataFor('quote') || dataFor('history')) && (!rt || Date.now() - rt.at > 6 * 36e5)) runRoutines();
   }
   function editIdea() {
     const d = dialog(`<h3>냉각 대기열에 올리기</h3><p class="modal-desc">${eng.plan.coolH}시간 뒤에도 사고 싶으면 결정 카드로 넘깁니다. 실패 가정을 못 쓰면 아직 모르는 것입니다.</p><form class="sc-form">
@@ -2896,17 +2906,43 @@ ${[
   const POS = /반등|상승|급등|매수|회복|호조|최고치|개선|기대|강세|순매수|돌파/;
   const NEG = /급락|폭락|우려|투매|매도|하락|리스크|경계|부담|공포|약세|순매도|침체|쇼크/;
   const WHEN = /일정|발표\s*예정|예정|FOMC|CPI|PCE|고용지표|금통위|실적\s*발표|다음\s*주|내주|주간\s*일정|어닝/;
+  /* 날짜별: 그날의 모닝 브리핑(날짜.json) + 그날의 전략 브리핑(strategy/날짜.json). 위 띠는 날짜별 시장 온도(market/sumtemp.json — 저녁 장 마감 기록이 같은 규칙으로 셈) */
+  const mui = { date: '', dates: [] };
   $('mReload').onclick = () => renderSum(true);
+  $('mDate').onchange = e => { mui.date = e.target.value; renderSum(); };
+  $('mPrev').onclick = () => { const i = mui.dates.indexOf(mui.date); if (i < mui.dates.length - 1) { mui.date = mui.dates[i + 1]; renderSum(); } };
+  $('mNext').onclick = () => { const i = mui.dates.indexOf(mui.date); if (i > 0) { mui.date = mui.dates[i - 1]; renderSum(); } };
+  const dLabel = d => { const x = new Date(d + 'T00:00'); return `${x.getMonth() + 1}월 ${x.getDate()}일 (${'일월화수목금토'[x.getDay()]})${d === ymdLocal(new Date()) ? ' · 오늘' : ''}`; };
+  function sumTempOf(md, sd) {
+    const news = [], seen = new Set();
+    for (const it of ((md && md.items) || []).concat(...((md && md.byFeed) || []).map(f => f.items || []))) { const k = it.link || it.title; if (seen.has(k)) continue; seen.add(k); news.push(it); }
+    const reps = ((sd && sd.daily) || []).concat((sd && sd.weekly) || []);
+    let pos = 0, neg = 0;
+    for (const t of news.map(n => n.title).concat(...reps.map(r => String(r.summary).split('\n')))) { if (POS.test(t)) pos++; if (NEG.test(t)) neg++; }
+    const pp = Math.round(pos / (pos + neg || 1) * 100);
+    return { news, reps, pos, neg, pp, mood: pp >= 60 ? '오름 신호가 우세' : pp <= 40 ? '내림 · 위험 신호가 우세' : '오름 · 내림 신호가 엇갈림' };
+  }
+  async function paintTemps() {
+    const box = $('mTemps'); const st = await getBrief('market/sumtemp.json').catch(() => null);
+    const ds = mui.dates.slice(0, 30).reverse(); if (ds.length < 2) { box.innerHTML = ''; return; }
+    box.innerHTML = `<div class="m-temps" role="group" aria-label="날짜별 시장 온도 (오름 신호 비율)"><span class="lb">날짜별 시장 온도<small>오름 신호 비율 · 누르면 그날</small></span><div class="bars">${ds.map(d => { const t = st && st.dates && st.dates[d]; const v = t ? t.pp : null; return `<button type="button" data-md="${d}" class="${d === mui.date ? 'on' : ''} ${v == null ? 'na' : v >= 60 ? 'up' : v <= 40 ? 'dn' : 'mid'}" title="${dLabel(d)} · ${t ? `${t.mood} (오름 ${t.pos} · 내림 ${t.neg}, ${v}%)` : '아직 셈 안 함 (저녁 장 마감 기록 때 셈)'}"><i style="height:${v == null ? 6 : Math.max(8, v)}%"></i><em>${+d.slice(8)}</em></button>`; }).join('')}</div></div>`;
+    box.querySelectorAll('[data-md]').forEach(b => b.onclick = () => { mui.date = b.dataset.md; renderSum(); });
+  }
   async function renderSum(force) {
     const box = $('mList'); if (force) bui.cache = {};
     box.innerHTML = '<div class="sc-bmsg">뉴스와 리포트를 불러오는 중…</div>';
     let mi = null, si = null;
     try { [mi, si] = await Promise.all([getBrief('index.json'), getBrief('strategy/index.json')]); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
-    const md = mi && (mi.dates || [])[0] ? await getBrief(mi.dates[0] + '.json').catch(() => null) : null;
-    const sd = si && (si.dates || [])[0] ? await getBrief('strategy/' + si.dates[0] + '.json').catch(() => null) : null;
+    const mds = (mi && mi.dates) || [], sds = (si && si.dates) || [];
+    mui.dates = [...new Set(mds.concat(sds))].sort().reverse();
+    if (!mui.date || !mui.dates.includes(mui.date)) mui.date = mui.dates[0] || '';
+    $('mDate').innerHTML = mui.dates.map(d => `<option value="${d}"${d === mui.date ? ' selected' : ''}>${dLabel(d)}</option>`).join('');
+    $('mPrev').disabled = mui.dates.indexOf(mui.date) >= mui.dates.length - 1; $('mNext').disabled = mui.dates.indexOf(mui.date) <= 0;
+    paintTemps();
+    const md = mds.includes(mui.date) ? await getBrief(mui.date + '.json').catch(() => null) : null;
+    const sd = sds.includes(mui.date) ? await getBrief('strategy/' + mui.date + '.json').catch(() => null) : null;
     if (!md && !sd) { box.innerHTML = '<div class="sc-bmsg">아직 모닝 브리핑 · 전략 브리핑이 없습니다. 내일 아침 8시 이후에 다시 열어 보세요.</div>'; return; }
-    const news = [], seen = new Set();
-    for (const it of ((md && md.items) || []).concat(...((md && md.byFeed) || []).map(f => f.items || []))) { const k = it.link || it.title; if (seen.has(k)) continue; seen.add(k); news.push(it); }
+    const T = sumTempOf(md, sd), news = T.news;
     const daily = (sd && sd.daily) || [], weekly = (sd && sd.weekly) || [], reps = daily.concat(weekly);
     const fmtD = s => { if (!s) return ''; const x = new Date(s); return `${x.getMonth() + 1}월 ${x.getDate()}일 ${String(x.getHours()).padStart(2, '0')}:${String(x.getMinutes()).padStart(2, '0')}`; };
     $('mLead').innerHTML = `모닝 브리핑 뉴스 <b>${news.length}건</b>${md ? ` (${fmtD(md.generatedAt)})` : ''} + 증권사 리포트 <b>${reps.length}개</b>${sd ? ` (${fmtD(sd.generatedAt)}, 데일리 ${sd.dailyDate || ''})` : ''}를 합쳐, 둘이 함께 가리키는 것을 규칙으로 골랐습니다. AI 토큰은 쓰지 않습니다.`;
@@ -2915,11 +2951,8 @@ ${[
     const nw = cnt(news.map(n => n.title)), rw = cnt(reps.map(r => r.title + ' ' + r.summary));
     const GEN = new Set(['시장', '미국', '증시', '국내', '주식', '투자', '전망', '한국', '글로벌', '투자자', '종목', '기업']); // 너무 흔한 말은 뺌
     const both = [...nw.keys()].filter(w => !GEN.has(w) && rw.has(w) && nw.get(w) >= 2 && rw.get(w) >= 2).map(w => ({ w, n: nw.get(w), r: rw.get(w), s: nw.get(w) / Math.max(1, news.length) + rw.get(w) / Math.max(1, reps.length) })).sort((a, b) => b.s - a.s).slice(0, 10);
-    /* 2. 시장 온도 */
-    let pos = 0, neg = 0;
-    for (const t of news.map(n => n.title).concat(...reps.map(r => String(r.summary).split('\n')))) { if (POS.test(t)) pos++; if (NEG.test(t)) neg++; }
-    const tot = pos + neg || 1, pp = Math.round(pos / tot * 100);
-    const mood = pp >= 60 ? '오름 신호가 우세' : pp <= 40 ? '내림 · 위험 신호가 우세' : '오름 · 내림 신호가 엇갈림';
+    /* 2. 시장 온도 (sumTempOf — 장 마감 노트도 같은 규칙) */
+    const { pos, neg, pp, mood } = T;
     /* 3. 핵심 이슈 + 증권사 시각 */
     const pool = keyPoints(daily.concat(weekly), 60);
     const issues = ((md && md.items) || []).slice(0, 6).map(it => {
@@ -2944,7 +2977,7 @@ ${[
     const top3 = both.slice(0, 3).map(b => b.w);
     box.innerHTML = `<div class="sc-sum2">
       <section class="sc-card wide"><div class="sc-hero">
-        <div><h2>${top3.length ? `오늘 뉴스와 증권사가 함께 가리키는 것: ${top3.map(esc).join(' · ')}` : '오늘 뉴스와 리포트가 함께 가리키는 말이 뚜렷하지 않습니다'}</h2>
+        <div><h2>${top3.length ? `${mui.date === ymdLocal(new Date()) ? '오늘' : dLabel(mui.date)} 뉴스와 증권사가 함께 가리키는 것: ${top3.map(esc).join(' · ')}` : '뉴스와 리포트가 함께 가리키는 말이 뚜렷하지 않습니다'}</h2>
           <p class="sub">뉴스 제목과 리포트에 둘 다 2번 이상 나온 낱말 (뉴스 건수 / 리포트 수)</p>
           <div class="sc-both">${both.map(b => `<b>${esc(b.w)} <em>${b.n} / ${b.r}</em></b>`).join('') || '<span class="sc-fine">없음</span>'}</div></div>
         <div class="sc-temp"><p class="sub" style="margin:0">시장 온도 — 오름 · 내림 신호가 든 문장 수</p><b class="v">${mood}</b>
@@ -2962,9 +2995,293 @@ ${[
       <div class="wide" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="mNote">${icon('edit', 15)}이 요약을 노트에 남기기</button><button class="btn ghost" id="mAsk">${icon('sparkle', 15)}이 요약으로 오늘 내 대응 묻기 (AI)</button></div>
     </div>`;
     box.querySelectorAll('[data-mco]').forEach(b => b.onclick = () => { nui.co = b.dataset.mco; show('notes'); });
-    const plain = () => [`[전략 요약 ${ymdLocal(new Date())}]`, `함께 가리키는 것: ${both.slice(0, 6).map(b => b.w).join(', ')}`, `시장 온도: ${mood} (오름 ${pos} · 내림 ${neg})`, '핵심 이슈:', ...issues.map(({ it, view }) => `- ${it.title}${view ? ` → [${view.who[0].broker}] ${view.t}` : ''}`), '위험:', ...riskR.map(p => '- ' + p.t), ...riskN.map(n => '- ' + n.title), '대응:', ...act.map(p => '- ' + p.t), `주목 기업: ${cos.map(x => x.c).join(', ')}`].join('\n');
-    $('mNote').onclick = () => editNote(null, ymdLocal(new Date()), plain() + '\n');
+    const plain = () => [`[전략 요약 ${mui.date}]`, `함께 가리키는 것: ${both.slice(0, 6).map(b => b.w).join(', ')}`, `시장 온도: ${mood} (오름 ${pos} · 내림 ${neg})`, '핵심 이슈:', ...issues.map(({ it, view }) => `- ${it.title}${view ? ` → [${view.who[0].broker}] ${view.t}` : ''}`), '위험:', ...riskR.map(p => '- ' + p.t), ...riskN.map(n => '- ' + n.title), '대응:', ...act.map(p => '- ' + p.t), `주목 기업: ${cos.map(x => x.c).join(', ')}`].join('\n');
+    $('mNote').onclick = () => editNote(null, mui.date || ymdLocal(new Date()), plain() + '\n');
     $('mAsk').onclick = () => { show('chat'); send('오늘 모닝 브리핑과 증권사 전략 리포트를 규칙으로 합친 요약이야. 이것을 바탕으로 내 보유 · 관심 종목(get_portfolio), 나의 원칙, 매매 일지(get_journal)에 맞춰 오늘 할 일과 하지 말 일을 짧게 정리해 줘.\n\n' + plain()); };
+  }
+
+  /* =====================================================================
+     종목 코드 ↔ 이름 — 장 마감 기록(market-close.yml)이 하루 한 번 briefing 브랜치에 저장한 목록
+     · market/stocks-kr.json: 코스피 · 코스닥 전 종목(주식 · ETF · ETN) [코드, 이름, P/Q, s/e/n]
+     · market/stocks-us.json: 미국 상장 종목(나스닥 트레이더 목록) [티커, 영문 이름, ETF 여부]
+     · 미국 종목의 한글 이름은 companies.js 의 SEC_ALIAS(AAPL → 애플)를 함께 씀
+     ===================================================================== */
+  const STK = {};
+  const stkLooksCode = q => { const s = normSym(q); return /^\d[0-9A-Z]{5}$/.test(s) || /^[A-Z][A-Z.\-]{0,6}$/.test(s); };
+  function stkLoad(kind) {
+    if (!STK[kind]) STK[kind] = (async () => {
+      let j = null;
+      try { const r = await fetch(briefUrl(`market/stocks-${kind}.json`)); if (r.ok) j = await r.json(); } catch (e) { }
+      const rows = (j && j.rows) || [];
+      if (!rows.length) setTimeout(() => { delete STK[kind]; }, 60000); // 못 받았으면 1분 뒤 다시
+      return { rows, m: new Map(rows.map(x => [String(x[0]).toUpperCase(), x])) };
+    })();
+    return STK[kind];
+  }
+  const KR_ALIAS = () => { const a = window.SEC_ALIAS || {}, m = {}; for (const [k, v] of Object.entries(a)) if (/^[A-Z.]+$/.test(k) && !m[v]) m[v] = k; return m; }; // 애플 → AAPL
+  const stkOut = (x, us) => us ? { code: x[0], name: (window.SEC_ALIAS || {})[x[0]] || x[1], en: x[1], mkt: '미국', etf: !!x[2] } : { code: x[0], name: x[1], mkt: x[2] === 'Q' ? '코스닥' : '코스피', etf: x[3] !== 's', kind: x[3] === 'e' ? 'ETF' : x[3] === 'n' ? 'ETN' : '' };
+  async function stkName(sym) {
+    const s = normSym(sym); if (!s) return null;
+    if (/^\d[0-9A-Z]{5}$/.test(s)) { const x = (await stkLoad('kr')).m.get(s); return x ? stkOut(x) : null; }
+    if (/^[A-Z][A-Z.\-]{0,6}$/.test(s)) { const x = (await stkLoad('us')).m.get(s) || (await stkLoad('us')).m.get(s.replace('.', '-')); return x ? stkOut(x, true) : null; }
+    return null;
+  }
+  async function stkFind(q, n) {
+    q = String(q || '').trim(); n = n || 8; if (!q) return [];
+    const ql = q.toLowerCase().replace(/\s+/g, ''), out = [];
+    const sc = (nm, sym) => { const t = nm.toLowerCase().replace(/\s+/g, ''); return sym && sym.toLowerCase() === ql ? 0 : t === ql ? 0 : t.startsWith(ql) ? 1 : t.includes(ql) ? 2 : 9; };
+    const ka = KR_ALIAS()[q]; if (ka) { const x = (await stkLoad('us')).m.get(ka); out.push([-1, x ? stkOut(x, true) : { code: ka, name: q, mkt: '미국' }]); }
+    (await stkLoad('kr')).rows.forEach((x, i) => { const v = sc(x[1], x[0]); if (v < 9) out.push([v + (x[3] === 's' ? 0 : .5) + i / 1e5, stkOut(x)]); });
+    if (/^[a-z]/i.test(q)) (await stkLoad('us')).rows.forEach(x => { const v = sc(x[1], x[0]); if (v < 9) out.push([v + .3 + (x[2] ? .5 : 0), stkOut(x, true)]); });
+    const seen = new Set();
+    return out.sort((a, b) => a[0] - b[0]).map(x => x[1]).filter(x => !seen.has(x.code) && seen.add(x.code)).slice(0, n);
+  }
+  const stkLabel = r => `${r.name}${r.en && r.en !== r.name ? ` (${r.en})` : ''} · ${r.mkt}${r.kind ? ' ' + r.kind : r.etf ? ' ETF' : ''}`;
+  /* 입력칸에 붙이기: 코드 · 티커 → 이름 채움, 이름 → 고를 목록 */
+  function stkBind(symEl, nameEl, hintEl, onPick) {
+    let tm = 0, seq = 0; const box = document.createElement('div'); box.className = 'sc-sugg'; box.hidden = true; symEl.insertAdjacentElement('afterend', box);
+    const auto = () => !nameEl || !nameEl.value.trim() || nameEl.dataset.auto === '1';
+    const hint = (t, cls) => { if (hintEl) { hintEl.textContent = t; hintEl.className = 'hint ' + (cls || ''); } };
+    const pick = r => { symEl.value = r.code; if (nameEl) { nameEl.value = r.name; nameEl.dataset.auto = '1'; } box.hidden = true; hint('✓ ' + stkLabel(r), 'ok'); if (onPick) onPick(r); };
+    const list = rs => { box.innerHTML = rs.map((r, i) => `<button type="button" data-i="${i}"><b>${esc(r.name)}</b><span>${esc(r.code)} · ${esc(r.mkt)}${r.kind ? ' ' + r.kind : r.etf ? ' ETF' : ''}${r.en && r.en !== r.name ? ' · ' + esc(r.en) : ''}</span></button>`).join(''); box.hidden = !rs.length; box.querySelectorAll('[data-i]').forEach(b => b.onmousedown = e => { e.preventDefault(); pick(rs[+b.dataset.i]); }); };
+    const run = async src => {
+      const my = ++seq, v = src.value.trim(); if (!v) { box.hidden = true; return; }
+      if (src === symEl && stkLooksCode(v)) {
+        const r = await stkName(v).catch(() => null); if (my !== seq) return;
+        if (r) { if (auto() && nameEl) { nameEl.value = r.name; nameEl.dataset.auto = '1'; } hint('✓ ' + stkLabel(r) + ' — ' + normSym(v), 'ok'); box.hidden = true; if (onPick) onPick(r, true); return; }
+        if (/^[A-Z]/i.test(v)) { const rs = await stkFind(v, 6).catch(() => []); if (my !== seq) return; if (rs.length) { list(rs); hint('목록에서 고르세요'); return; } }
+        hint(STK.kr ? '목록에 없는 코드 — 그대로 저장해도 됩니다 (시세 API 로 확인)' : '종목 목록을 받는 중…', 'warn'); box.hidden = true; return;
+      }
+      const rs = await stkFind(v, 8).catch(() => []); if (my !== seq) return;
+      list(rs); hint(rs.length ? '목록에서 고르세요' : '찾지 못했습니다 — 6자리 코드나 티커로 넣어 보세요', rs.length ? '' : 'warn');
+    };
+    const on = src => () => { if (src === nameEl) nameEl.dataset.auto = ''; clearTimeout(tm); tm = setTimeout(() => run(src), 220); };
+    symEl.addEventListener('input', on(symEl)); if (nameEl) nameEl.addEventListener('input', on(nameEl));
+    symEl.addEventListener('keydown', e => { if (e.key === 'Escape') box.hidden = true; if (e.key === 'Enter' && !box.hidden && box.firstChild) { e.preventDefault(); box.firstChild.dispatchEvent(new MouseEvent('mousedown')); } });
+    symEl.addEventListener('blur', () => setTimeout(() => { box.hidden = true; }, 150));
+    if (symEl.value.trim() && nameEl && !nameEl.value.trim()) run(symEl);
+  }
+  /* 빠른 추가 줄 — 오늘 한눈에(레이더) · 관심 종목 · 보유 */
+  function quickAdd(el, after) {
+    if (!el || el.dataset.on) return; el.dataset.on = '1';
+    el.innerHTML = `<form class="sc-quick" autocomplete="off"><div class="in"><input type="text" name="q" placeholder="티커 · 종목코드 · 이름 (예: 005930 · AAPL · 삼성전자)" aria-label="추가할 종목"></div><button class="btn">${icon('plus', 15)}관심 종목에 추가</button><p class="hint" data-h>코드나 티커를 넣으면 종목 이름이 저절로 나옵니다.</p></form>`;
+    const f = el.querySelector('form'); let got = null;
+    stkBind(f.q, null, f.querySelector('[data-h]'), r => { got = r; });
+    f.q.addEventListener('input', () => { got = null; });
+    f.onsubmit = async e => {
+      e.preventDefault(); const v = f.q.value.trim(); if (!v) return;
+      let r = got && got.code === normSym(v) ? got : stkLooksCode(v) ? await stkName(v).catch(() => null) : (await stkFind(v, 1).catch(() => []))[0];
+      const code = r ? r.code : normSym(v);
+      if (!stkLooksCode(code)) { toast('종목을 찾지 못했습니다 — 6자리 코드나 티커로 넣어 주세요', 2600); return; }
+      if (watch.items.some(it => normSym(it.symbol) === code)) { toast(`${r ? r.name : code} 은(는) 이미 있습니다`, 2000); return; }
+      watch.items.push({ symbol: code, name: r ? r.name : '', qty: '', avg: '', stop: '', target: '', alertHi: '', alertLo: '', memo: '' }); saveWatch();
+      $('cWatch').textContent = watch.items.length || '';
+      f.q.value = ''; got = null; f.querySelector('[data-h]').textContent = `${r ? r.name + ' (' + code + ')' : code} 을(를) 더했습니다 — 수량 · 손절가는 관심 종목 · 보유에서`; f.querySelector('[data-h]').className = 'hint ok';
+      if (after) after();
+    };
+  }
+  /* 이름이 비어 있는 관심 종목에 이름 채우기 (한 번) */
+  async function fillNames() {
+    const miss = watch.items.filter(it => it.symbol && !it.name); if (!miss.length) return;
+    let n = 0; for (const it of miss) { const r = await stkName(it.symbol).catch(() => null); if (r && !it.name) { it.name = r.name; n++; } }
+    if (!n) return; saveWatch(); if (!$('vWatch').hidden) renderWatch(); if (td.radar) td.radar.forEach(r => { if (!r.it.name) { const w = watch.items.find(x => x.symbol === r.it.symbol); if (w) r.it.name = w.name; } });
+  }
+
+  /* =====================================================================
+     키워드 추적 — 모닝 브리핑 뉴스 · 증권사 리포트(날짜별 파일) · AI 대화 · 노트 · 매매 일지에서 찾기 (AI 토큰 안 씀)
+     · 지난 날짜 파일은 줄여서 브라우저 Cache Storage(sec-corpus-v1)에 둠 — 다시 받지 않음
+     · 추적 키워드는 me.track (기기끼리 맞춤), 마지막으로 본 건수는 이 기기에만(sec:trackSeen)
+     ===================================================================== */
+  const K_TSEEN = 'sec:trackSeen';
+  if (!Array.isArray(me.track)) me.track = [];
+  const kmem = {};
+  async function briefRaw(f) {
+    const ref = await latestRef();
+    let r = await fetch(briefUrl(f, ref), { cache: 'no-store' }); if (ref && !r.ok && r.status !== 404) r = await fetch(briefUrl(f), { cache: 'no-store' });
+    return r.ok ? r.json() : null;
+  }
+  let kidx = null;
+  async function corpusIdx() {
+    if (kidx && Date.now() - kidx.at < 10 * 60000) return kidx;
+    const [mi, si] = await Promise.all([briefRaw('index.json').catch(() => null), briefRaw('strategy/index.json').catch(() => null)]);
+    kidx = { at: Date.now(), m: (mi && mi.dates) || [], s: (si && si.dates) || [] }; kidx.all = [...new Set(kidx.m.concat(kidx.s))].sort().reverse(); return kidx;
+  }
+  async function corpusDay(d, ix) {
+    if (kmem[d]) return kmem[d];
+    const past = d < ymdLocal(new Date()), key = 'https://sec-corpus.invalid/' + d; let v = null;
+    if (past && window.caches) try { const c = await caches.open('sec-corpus-v1'); const r = await c.match(key); if (r) v = await r.json(); } catch (e) { }
+    if (!v) {
+      const [md, sd] = await Promise.all([ix.m.includes(d) ? briefRaw(d + '.json').catch(() => null) : null, ix.s.includes(d) ? briefRaw('strategy/' + d + '.json').catch(() => null) : null]);
+      const T = sumTempOf(md, sd);
+      v = { news: T.news.map(n => ({ t: n.title, s: n.source, l: n.link, c: n.category || '' })), reps: T.reps.map(r => ({ t: r.title, b: r.broker, l: r.link, k: r.kindName || '', x: String(r.summary || '') })), temp: { pos: T.pos, neg: T.neg, pp: T.pp } };
+      if (past && (md || sd) && window.caches) try { const c = await caches.open('sec-corpus-v1'); await c.put(key, new Response(JSON.stringify(v), { headers: { 'content-type': 'application/json' } })); } catch (e) { }
+    }
+    kmem[d] = v; return v;
+  }
+  const kTerms = q => String(q || '').split(/[,，]/).map(x => x.trim().toLowerCase()).filter(Boolean);
+  const kHit = (txt, terms) => { const t = String(txt || '').toLowerCase(); return terms.length && terms.every(w => t.includes(w)); };
+  const kSnip = (txt, terms) => { const s = String(txt || ''); const ln = s.split('\n').find(l => kHit(l, terms.slice(0, 1))) || s; const i = ln.toLowerCase().indexOf(terms[0]); return (i > 60 ? '…' : '') + ln.slice(Math.max(0, i - 60), i + 120).trim(); };
+  async function kSearch(q, days) {
+    const terms = kTerms(q); if (!terms.length) return null;
+    const ix = await corpusIdx(), ds = ix.all.slice(0, days), since = ds[ds.length - 1] || ymdLocal(new Date(Date.now() - days * 864e5));
+    const out = { q, terms, days: ds, byDay: {}, news: [], reps: [], chats: [], notes: [], journal: [] };
+    const bump = (d, k) => { const o = out.byDay[d] || (out.byDay[d] = { news: 0, reps: 0, mine: 0 }); o[k]++; };
+    for (const d of ds) {
+      const v = await corpusDay(d, ix);
+      for (const n of v.news) if (kHit(n.t + ' ' + n.c, terms)) { out.news.push(Object.assign({ d }, n)); bump(d, 'news'); }
+      for (const r of v.reps) if (kHit(r.t + '\n' + r.x, terms)) { out.reps.push(Object.assign({ d, snip: kSnip(r.t + '\n' + r.x, terms) }, r)); bump(d, 'reps'); }
+    }
+    for (const c of chats) for (const m of c.view || []) { if (!m.text || !kHit(m.text, terms)) continue; const d = ymdLocal(new Date(m.t || c.updated || Date.now())); if (d < since) continue; out.chats.push({ id: c.id, title: c.title, role: m.role, d, snip: kSnip(m.text, terms) }); bump(d, 'mine'); }
+    for (const n of notes) if (n.date >= since && kHit(n.text, terms)) { out.notes.push({ id: n.id, d: n.date, snip: kSnip(n.text, terms), auto: !!n.auto }); bump(n.date, 'mine'); }
+    for (const t of journal) { const txt = [t.symbol, t.reason, t.exitReason, t.lesson, t.ai].join('\n'); const d = d10(t.openDate) || ''; if (d >= since && kHit(txt, terms)) { out.journal.push({ symbol: t.symbol, d, snip: kSnip(txt, terms) }); bump(d, 'mine'); } }
+    return out;
+  }
+  const kui = { q: '', days: 14, res: null, busy: false };
+  $('kDays').onchange = e => { kui.days = +e.target.value; if (kui.q) runK(kui.q); };
+  $('kForm').onsubmit = e => { e.preventDefault(); runK($('kQ').value); };
+  $('kTrack').onclick = () => { const k = $('kQ').value.trim(); if (!k) { toast('추적할 키워드를 넣어 주세요', 1800); return; } if (me.track.some(t => t.k === k)) { toast('이미 추적 중입니다', 1600); return; } me.track.push({ k, at: Date.now() }); me.track = me.track.slice(-20); saveMe(); paintTracks(); runK(k); toast(`"${k}" 추적을 시작합니다`, 2000); };
+  async function runK(q) {
+    q = String(q || '').trim(); if (!q) return; kui.q = q; $('kQ').value = q;
+    const box = $('kOut'); box.innerHTML = '<div class="sc-bmsg">뉴스 · 리포트를 찾는 중… (처음엔 날짜별 파일을 받느라 조금 걸립니다)</div>';
+    try { kui.res = await kSearch(q, kui.days); } catch (e) { box.innerHTML = `<div class="sc-bmsg">${esc(e.message)}</div>`; return; }
+    paintK(); paintTracks();
+  }
+  function paintK() {
+    const r = kui.res, box = $('kOut'); if (!r) { box.innerHTML = ''; return; }
+    const tot = r.news.length + r.reps.length + r.chats.length + r.notes.length + r.journal.length;
+    const ds = r.days.slice().reverse(), mx = Math.max(1, ...ds.map(d => { const o = r.byDay[d] || {}; return (o.news || 0) + (o.reps || 0) + (o.mine || 0); }));
+    const sec = (title, sub, items, fn) => `<section class="sc-card k-sec"><h2>${title} <small>${items.length}건</small></h2><p class="sub">${sub}</p>${items.length ? `<ol class="k-list">${items.slice(0, 30).map(fn).join('')}</ol>${items.length > 30 ? `<p class="sc-fine">최근 30건만 보여 줍니다</p>` : ''}` : '<p class="sc-fine" style="text-align:left">없음</p>'}</section>`;
+    const md = d => `${+d.slice(5, 7)}/${+d.slice(8)}`;
+    const hl = t => { let h = esc(t); for (const w of r.terms) h = h.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`); return h; };
+    box.innerHTML = `<section class="sc-card k-head"><h2>"${esc(r.q)}" — ${tot}건 <small>최근 ${r.days.length}일 (브리핑이 있는 날)</small></h2>
+      <div class="k-bars" role="img" aria-label="날짜별 건수">${ds.map(d => { const o = r.byDay[d] || {}, n = (o.news || 0) + (o.reps || 0), m = o.mine || 0; return `<div title="${md(d)} · 뉴스 ${o.news || 0} · 리포트 ${o.reps || 0} · 내 기록 ${m}"><span><i class="n" style="height:${(o.news || 0) / mx * 100}%"></i><i class="r" style="height:${(o.reps || 0) / mx * 100}%"></i><i class="m" style="height:${m / mx * 100}%"></i></span><em>${n + m || ''}</em><small>${md(d)}</small></div>`; }).join('')}</div>
+      <div class="k-lg"><span class="n">뉴스</span><span class="r">증권사 리포트</span><span class="m">내 기록(AI 대화 · 노트 · 일지)</span></div>
+      <div class="row"><button class="btn sm" id="kAsk">${icon('sparkle', 14)}AI 에게 이 키워드 흐름 정리 받기</button>${me.track.some(t => t.k === r.q) ? '' : `<button class="btn sm ghost" id="kTrack2">${icon('eye', 14)}추적에 올리기</button>`}</div></section>
+      <div class="k-grid">
+      ${sec('뉴스', '모닝 브리핑(여러 언론 피드)', r.news, x => `<li><a href="${esc(x.l)}" target="_blank" rel="noopener">${hl(x.t)}</a><span>${md(x.d)} · ${esc(x.s || '')}</span></li>`)}
+      ${sec('증권사 리포트', '전략 브리핑(데일리 · 주간 전략)', r.reps, x => `<li><a href="${esc(x.l)}" target="_blank" rel="noopener">${hl(x.t)}</a><span>${md(x.d)} · ${esc(x.b || '')} ${esc(x.k)}</span><p>${hl(x.snip)}</p></li>`)}
+      ${sec('AI 어시스턴트 대화', '이 기기에 있는 대화 (기기 동기화를 켜면 모든 기기 것)', r.chats, x => `<li><button type="button" class="k-go" data-chat="${esc(x.id)}">${esc(x.title || '대화')}</button><span>${md(x.d)} · ${x.role === 'user' ? '내 질문' : 'AI 답'}</span><p>${hl(x.snip)}</p></li>`)}
+      ${sec('노트', '장 마감 기록 포함', r.notes, x => `<li><button type="button" class="k-go" data-note="${esc(x.d)}">${md(x.d)} 노트${x.auto ? ' (장 마감)' : ''}</button><p>${hl(x.snip)}</p></li>`)}
+      ${sec('매매 일지', '이유 · 청산 이유 · 교훈 · AI 의견', r.journal, x => `<li><button type="button" class="k-go" data-jr="1">${esc(x.symbol)}</button><span>${md(x.d)}</span><p>${hl(x.snip)}</p></li>`)}
+      </div>`;
+    box.querySelectorAll('[data-chat]').forEach(b => b.onclick = () => { openChat(b.dataset.chat); show('chat'); });
+    box.querySelectorAll('[data-note]').forEach(b => b.onclick = () => { nui.day = b.dataset.note; nui.month = null; nui.co = ''; show('notes'); });
+    box.querySelectorAll('[data-jr]').forEach(b => b.onclick = () => show('journal'));
+    const t2 = $('kTrack2'); if (t2) t2.onclick = () => $('kTrack').click();
+    $('kAsk').onclick = () => {
+      const lines = [`키워드 "${r.q}" 를 최근 ${r.days.length}일 동안 추적한 결과야 (뉴스 ${r.news.length} · 리포트 ${r.reps.length} · 내 기록 ${r.chats.length + r.notes.length + r.journal.length}).`, '날짜별 건수: ' + ds.map(d => { const o = r.byDay[d] || {}; return `${md(d)} ${(o.news || 0) + (o.reps || 0)}`; }).join(', '), '최근 뉴스:', ...r.news.slice(0, 8).map(x => `- ${md(x.d)} ${x.t}`), '최근 리포트:', ...r.reps.slice(0, 6).map(x => `- ${md(x.d)} [${x.b}] ${x.t}: ${x.snip}`)];
+      show('chat'); send(lines.join('\n') + '\n\n이 키워드가 언제부터 왜 많이 나왔는지, 증권사 시각이 어떻게 바뀌었는지, 내 보유 · 관심 종목(get_portfolio)에 주는 의미를 짧게 정리해 줘. 근거 없는 전망은 빼고, 확인할 것을 알려 줘.');
+    };
+  }
+  /* 추적 칩: 최근 브리핑 날의 건수 · 지난번에 본 뒤 새로 나온 건수 */
+  async function trackCounts() {
+    if (!me.track.length) return {};
+    const ix = await corpusIdx(), d = ix.all[0]; if (!d) return {};
+    const v = await corpusDay(d, ix), out = {};
+    for (const t of me.track) { const terms = kTerms(t.k); out[t.k] = { d, n: v.news.filter(n => kHit(n.t + ' ' + n.c, terms)).length + v.reps.filter(r => kHit(r.t + '\n' + r.x, terms)).length }; }
+    return out;
+  }
+  let tcount = {};
+  async function paintTracks(refresh) {
+    const box = $('kTracks'); if (refresh || !Object.keys(tcount).length) try { tcount = await trackCounts(); } catch (e) { }
+    const seen = LS.get(K_TSEEN, {}), fresh = t => { const c = tcount[t.k]; if (!c) return 0; const s = seen[t.k]; return s && s.d === c.d ? Math.max(0, c.n - s.n) : c.n; };
+    const totalNew = me.track.reduce((a, t) => a + fresh(t), 0); $('cTrack').textContent = totalNew || '';
+    if (kui.q && tcount[kui.q]) { seen[kui.q] = tcount[kui.q]; LS.set(K_TSEEN, seen); }
+    if (!box) return;
+    box.innerHTML = me.track.length ? '<span class="lb">추적 중</span>' + me.track.map(t => { const c = tcount[t.k], f = fresh(t); return `<span class="k-chip${kui.q === t.k ? ' on' : ''}"><button type="button" data-k="${esc(t.k)}">${esc(t.k)}${c ? ` <em>${c.n}</em>` : ''}${f && kui.q !== t.k ? `<i title="새로 나온 건수">+${f}</i>` : ''}</button><button type="button" class="x" data-kx="${esc(t.k)}" aria-label="${esc(t.k)} 추적 그만" title="추적 그만">${icon('x', 11)}</button></span>`; }).join('') + `<span class="sc-fine">숫자 = ${tcount[me.track[0].k] ? `${+tcount[me.track[0].k].d.slice(5, 7)}월 ${+tcount[me.track[0].k].d.slice(8)}일` : '최근'} 브리핑의 뉴스 · 리포트 건수</span>` : '<span class="sc-fine">추적 중인 키워드가 없습니다. 키워드를 넣고 [추적]을 누르면 매일 몇 번 나왔는지 보여 줍니다.</span>';
+    box.querySelectorAll('[data-k]').forEach(b => b.onclick = () => runK(b.dataset.k));
+    box.querySelectorAll('[data-kx]').forEach(b => b.onclick = () => { me.track = me.track.filter(t => t.k !== b.dataset.kx); saveMe(); paintTracks(); });
+  }
+  function renderTrack() { paintTracks(true); if (kui.res) paintK(); else if (me.track[0]) runK(me.track[0].k); setTimeout(() => $('kQ').focus(), 30); }
+  setTimeout(() => { paintTracks(true).catch(() => { }); }, 4000);
+  /* AI 도구 search_records 가 씀 */
+  async function searchRecords(q, days) {
+    const r = await kSearch(q, Math.max(3, Math.min(60, +days || 14))); if (!r) throw new Error('query 가 비었습니다');
+    const ds = r.days.slice().reverse();
+    return { query: r.q, days: r.days.length, counts: { news: r.news.length, reports: r.reps.length, chats: r.chats.length, notes: r.notes.length, journal: r.journal.length }, byDay: ds.map(d => Object.assign({ date: d }, r.byDay[d] || { news: 0, reps: 0, mine: 0 })),
+      news: r.news.slice(0, 12).map(x => ({ date: x.d, title: x.t, source: x.s, link: x.l })), reports: r.reps.slice(0, 10).map(x => ({ date: x.d, broker: x.b, title: x.t, snippet: x.snip, link: x.l })),
+      myRecords: r.chats.slice(0, 5).map(x => ({ kind: 'AI 대화', date: x.d, title: x.title, snippet: x.snip })).concat(r.notes.slice(0, 5).map(x => ({ kind: '노트', date: x.d, snippet: x.snip })), r.journal.slice(0, 5).map(x => ({ kind: '매매 일지', date: x.d, symbol: x.symbol, snippet: x.snip }))),
+      note: '모닝 브리핑 · 전략 브리핑이 있는 날만 셈. 뉴스 · 리포트 원문은 링크에서 확인' };
+  }
+
+  /* =====================================================================
+     API 수익 루틴 — 등록한 API 를 "규칙 → 오늘 할 일"로 잇는 점검 (수익을 약속하지 않음 · 큰 손실을 피하는 규칙만)
+     1. 추세 필터: KODEX 200(069500) 이 200일선(약 10개월선) 위인지 — 아래면 새 위성 매매 크기를 절반으로 (R29–R35)
+     2. 보유 종목 추세 × 손익: 손실 + 200일선 아래 = 손절 규칙 다시 보기, 이익 + 200일선 위 = 일찍 팔지 않기 (처분 효과 R11 · R49)
+     3. 위험 공시: 보유 한국 종목의 최근 7일 공시 가운데 유상증자 · 전환사채 · 감자 · 소송 등 (OpenDART)
+     4. 가격 경보: 손절가 이탈 · 목표가 도달 (시세 API)
+     결과는 이 기기에 6시간 기억 (API 사용량 아낌)
+     ===================================================================== */
+  const K_RT = 'sec:routine';
+  const RISK_DIS = /유상증자|전환사채|신주인수권|교환사채|감자|관리종목|불성실|횡령|배임|소송|상장폐지|거래정지|감사의견|투자주의|투자경고|최대주주\s*변경|영업정지/;
+  let rtBusy = false;
+  async function runRoutines() {
+    if (rtBusy) return; rtBusy = true; paintRoutines();
+    const H = watch.items.filter(it => +it.qty > 0).slice(0, 12), res = { at: Date.now(), items: [] };
+    const add = (id, o) => res.items.push(Object.assign({ id }, o));
+    try {
+      /* 1 추세 필터 */
+      if (dataFor('history')) {
+        try {
+          const b = await callData('history', '069500', 300), a = b.length > 200 ? analyze(b) : null;
+          if (!a || !a.sma.d200) add('trend', { st: 'na', v: `일봉이 ${b.length}개뿐이라 200일선을 못 셉니다` });
+          else { const up = a.last >= a.sma.d200; add('trend', { st: up ? 'ok' : 'warn', v: `KODEX 200 ${num(a.last)} · 200일선 ${num(a.sma.d200)} (${a.fromSmaPct.d200 > 0 ? '+' : ''}${a.fromSmaPct.d200}%)`, act: up ? '추세 위 — 새 위성 매매는 정한 크기대로. 핵심 지수는 정한 날에만 리밸런싱.' : '추세 아래 — 새 위성 매매 크기를 절반으로. 핵심 지수를 팔라는 뜻은 아닙니다(정한 리밸런싱 날에만 손댐).', half: !up }); }
+        } catch (e) { add('trend', { st: 'na', v: '일봉을 받지 못했습니다: ' + e.message }); }
+      } else add('trend', { st: 'need', need: '일봉(차트) API' });
+      /* 2 보유 추세 × 손익 + 4 가격 경보 */
+      if (!H.length) add('hold', { st: 'na', v: '보유 수량을 적은 종목이 없습니다' });
+      else if (!dataFor('quote')) add('hold', { st: 'need', need: '시세 API' });
+      else {
+        const rows = [];
+        for (const it of H) {
+          const code = normSym(it.symbol), r = { name: it.name || code };
+          try { const q = await callData('quote', code); r.p = q.price; } catch (e) { r.err = '시세'; }
+          if (dataFor('history')) try { const b = await callData('history', code, 260); const a = b.length > 200 ? analyze(b) : null; if (a && a.sma.d200) r.d200 = a.sma.d200; } catch (e) { }
+          if (r.p && +it.avg) r.pl = (r.p / +it.avg - 1) * 100;
+          if (r.p && +it.stop && r.p <= +it.stop) r.flag = ['bad', '손절가 이탈 — 정한 대로 정리할지 오늘 결정'];
+          else if (r.p && +it.target && r.p >= +it.target) r.flag = ['good', '목표가 도달 — 계획대로 일부 실현할지 결정'];
+          else if (r.pl != null && r.d200 && r.pl < 0 && r.p < r.d200) r.flag = ['warn', '손실 + 200일선 아래 — 버티는 이유를 한 문장으로 다시 쓰기(처분 효과)'];
+          else if (r.pl != null && r.d200 && r.pl > 0 && r.p >= r.d200) r.flag = ['ok', '이익 + 추세 위 — 이유 없이 일찍 팔지 않기'];
+          else if (r.p && !+it.stop) r.flag = ['warn', '손절가 없음 — 정하기'];
+          rows.push(r);
+        }
+        const bad = rows.filter(r => r.flag && (r.flag[0] === 'bad' || r.flag[0] === 'warn')).length;
+        add('hold', { st: bad ? 'warn' : 'ok', v: `보유 ${rows.length}종목 · 할 일 ${bad}개`, rows });
+      }
+      /* 3 위험 공시 */
+      const KR = H.filter(it => /^\d[0-9A-Z]{5}$/.test(normSym(it.symbol)));
+      if (!KR.length) add('dis', { st: 'na', v: '보유한 한국 종목이 없습니다' });
+      else if (!dataFor('dart')) add('dis', { st: 'need', need: 'OpenDART API' });
+      else {
+        const hits = [];
+        for (const it of KR) { try { const d = await DATA.dart.disclosures(await keyOf(dataFor('dart')), normSym(it.symbol), 7); for (const x of d.items) if (RISK_DIS.test(x.title)) hits.push({ name: it.name || it.symbol, date: x.date, title: x.title, url: x.url }); } catch (e) { } }
+        add('dis', { st: hits.length ? 'bad' : 'ok', v: hits.length ? `위험 공시 ${hits.length}건` : `최근 7일 위험 공시 없음 (${KR.length}종목)`, hits, act: hits.length ? '공시 원문을 읽기 전에는 그 종목을 더 사지 않습니다.' : '' });
+      }
+    } finally { rtBusy = false; }
+    LS.set(K_RT, res); paintRoutines();
+  }
+  function paintRoutines() {
+    const box = $('engRoutine'); if (!box) return;
+    const r = LS.get(K_RT, null), get = id => r && (r.items || []).find(x => x.id === id);
+    const ST2 = { ok: ['괜찮음', 'ok'], warn: ['할 일', 'warn'], bad: ['먼저 볼 것', 'bad'], na: ['자료 없음', 'na'], need: ['API 필요', 'na'] };
+    const card = (id, title, api, why, ref) => { const x = get(id); const st = x ? ST2[x.st] : null; return `<div class="en-c ${st ? st[1] : 'na'}"><div class="h"><span class="st">${st ? st[0] : '아직 안 봄'}</span><b>${title}</b><span class="ref">${ref}</span></div>
+      <p class="v">${x ? (x.st === 'need' ? `${esc(x.need)} 를 등록하면 자동으로 점검합니다 <button type="button" class="btn sm ghost" data-goapi>API 연결</button>` : esc(x.v || '')) : `쓰는 API: ${api}`}</p>
+      ${x && x.act ? `<p class="fix">${esc(x.act)}</p>` : ''}
+      ${x && x.rows ? `<ul class="en-rt">${x.rows.map(o => `<li class="${o.flag ? o.flag[0] : ''}"><b>${esc(o.name)}</b><span>${o.p ? num(o.p) : '시세 없음'}${o.pl != null ? ` · ${o.pl > 0 ? '+' : ''}${num(o.pl, 1)}%` : ''}${o.d200 ? ` · 200일선 ${o.p >= o.d200 ? '위' : '아래'}` : ''}</span>${o.flag ? `<em>${esc(o.flag[1])}</em>` : ''}</li>`).join('')}</ul>` : ''}
+      ${x && x.hits && x.hits.length ? `<ul class="en-rt">${x.hits.map(h => `<li class="bad"><b>${esc(h.name)}</b><span>${esc(h.date)}</span><em><a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a></em></li>`).join('')}</ul>` : ''}
+      <p class="why">${why}</p></div>`; };
+    const trend = get('trend');
+    box.innerHTML = `<h2>API 수익 루틴 <small>등록한 API → 규칙 → 오늘 할 일</small></h2>
+      <p class="sub">수익을 약속하지 않습니다. 오래 살아남은 투자자들이 지킨 "큰 손실을 피하는 규칙"을, 등록한 API 로 매일 자동 점검합니다. ${r ? `마지막 점검 ${new Date(r.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}` : '아직 점검하지 않았습니다'}${trend && trend.half ? ' · <b class="warn">추세 필터: 새 위성 매매 크기 절반</b>' : ''}</p>
+      <div class="en-checks">
+        ${card('trend', '추세 필터 (10개월선)', '일봉(차트) API', '지수가 약 10개월(200거래일) 이동평균 아래일 때 위험 자산을 줄이는 규칙은 큰 하락장의 낙폭을 줄였다는 연구가 많습니다(수익을 늘린다는 보장은 없음). 이 앱에서는 새 위성 매매 크기를 줄이는 데만 씁니다.', 'R29–R35')}
+        ${card('hold', '보유 종목: 추세 × 손익 · 가격 경보', '시세 API (+ 일봉 API)', '개인은 이익 종목을 일찍 팔고 손실 종목을 오래 드는 경향(처분 효과)이 있습니다. 손실이면서 추세까지 꺾인 종목을 먼저 다시 봅니다.', 'R11 · R49')}
+        ${card('dis', '보유 종목 위험 공시 (최근 7일)', 'OpenDART API', '유상증자 · 전환사채 · 감자 · 소송 · 관리종목 같은 공시는 주가에 큰 영향을 줍니다. 원문을 읽기 전에는 더 사지 않는 규칙.', 'OpenDART')}
+      </div>
+      <div class="sc-add-row"><button class="btn ink" id="rtRun"${rtBusy ? ' disabled' : ''}>${icon('refresh', 15)}${rtBusy ? '점검하는 중…' : '지금 점검'}</button><span class="sub">보유 종목마다 시세 · 일봉 · 공시를 한 번씩 부릅니다 (최대 12종목)</span></div>`;
+    fillIcons(box);
+    const b = $('rtRun'); if (b) b.onclick = () => runRoutines();
+    box.querySelectorAll('[data-goapi]').forEach(x => x.onclick = () => show('apis'));
   }
 
   /* =====================================================================
@@ -3358,6 +3675,7 @@ ${[
   const kstToday = () => new Date(Date.now() + 9 * 36e5);
   function tdTile(label, value, sub, c, src) { return `<div class="td-tile"><span>${esc(label)}</span><b>${value}</b><small class="${c || ''}">${sub || ''}</small>${src ? `<i>${esc(src)}</i>` : ''}</div>`; }
   async function renderToday(force) {
+    quickAdd($('tdQuick'), () => { td.radar = null; tdRadar(true); });
     const k = kstToday(), wd = '일월화수목금토'[k.getUTCDay()];
     $('tdTitle').textContent = `오늘 · ${k.getUTCMonth() + 1}월 ${k.getUTCDate()}일 (${wd})`;
     const have = t => !!dataFor(t), miss = [['index', '지수'], ['macro', '금리 · 환율'], ['usmacro', '미국 지표'], ['dart', '공시'], ['newsKR', '국내 뉴스'], ['quote', '시세']].filter(([t]) => !have(t)).map(([, n]) => n);
@@ -3460,11 +3778,11 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { engine: 'vEngine', today: 'vToday', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack();
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
@@ -3499,17 +3817,17 @@ ${[
   const mktText = r => {
     const p = v => v == null ? '–' : (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%';
     const w = v => v == null ? '–' : Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 2 });
-    const t = r.temp || {}, b = r.breadth, k = r.kospi || {};
+    const t = r.temp, b = r.breadth, k = r.kospi || {};
     return [`[장 마감 ${r.date}]`,
-      `1. 시장 온도: ${t.score ?? '–'} / 100 (${t.label || '–'})${b ? ` — 상승 ${b.up} · 하락 ${b.down} · 보합 ${b.flat} 종목` : ''}`,
-      `2. 코스피: ${w(k.close)} (${p(k.chgPct)}${k.diff != null ? `, ${k.diff > 0 ? '+' : ''}${w(k.diff)}p` : ''})`,
+      t ? `1. 시장 온도: ${t.mood} (오름 ${t.pos} · 내림 ${t.neg}, 오름 비율 ${t.pp}%) — 전략 요약과 같은 규칙` : '1. 시장 온도: 기록 없음 — 이날은 모닝 · 전략 브리핑이 없었습니다',
+      `2. 코스피: ${w(k.close)} (${p(k.chgPct)}${k.diff != null ? `, ${k.diff > 0 ? '+' : ''}${w(k.diff)}p` : ''})${b ? ` · 상승 ${b.up} · 하락 ${b.down} 종목` : ''}`,
       `3. 시가총액 상위 10개 종목`,
-      ...(r.top10 || []).map(s => `  ${s.rank}. ${s.name} ${w(s.close)}원 ${p(s.chgPct)}`),
-      '', `기준: ${r.top10Basis || '네이버 증권'} · ${String(r.at || '').slice(11, 16)} 수집. 온도 = ${t.formula || ''}`].join('\n');
+      ...(r.top10 || []).map(s => `  ${s.rank}. ${s.name} ${s.close == null ? '–' : w(s.close) + '원'} ${p(s.chgPct)}`),
+      '', `기준: ${r.top10Basis || '네이버 증권'}${r.backfill ? '' : ` · ${String(r.at || '').slice(11, 16)} 수집`}`].join('\n');
   };
   let mktAt = 0;
-  async function marketNotes() {
-    if (Date.now() - mktAt < 10 * 60000) return; mktAt = Date.now();
+  async function marketNotes(force) {
+    if (!force && Date.now() - mktAt < 10 * 60000) return; mktAt = Date.now();
     let list = null;
     try {
       const ref = await latestRef();
@@ -3518,18 +3836,26 @@ ${[
       if (r.ok) list = await r.json();
     } catch (e) { }
     if (!Array.isArray(list)) return;
-    let added = 0;
+    let changed = 0;
     for (const m of list) {
       if (!m || !/^\d{4}-\d{2}-\d{2}$/.test(m.date || '') || !m.kospi) continue;
-      const id = 'mkt-' + m.date;
-      if (sy.tomb.notes[id] || notes.some(n => n.id === id)) continue;
+      const id = 'mkt-' + m.date, text = mktText(m), h = hashOf(text);
+      if (sy.tomb.notes[id]) continue; // 사용자가 지운 날
+      const n = notes.find(x => x.id === id);
+      if (n) {
+        /* 손대지 않은 자동 노트만 새 내용으로 (사용자가 고친 노트는 그대로) */
+        const untouched = n.auto === 'market' && (n.autoHash ? hashOf(n.text) === n.autoHash : n.updated === n.created);
+        if (untouched && n.autoHash !== h) { n.text = text; n.autoHash = h; n.updated = Date.now(); changed++; }
+        continue;
+      }
       const ts = Date.parse(m.at) || Date.now();
-      notes.push({ id, created: ts, updated: ts, date: m.date, text: mktText(m), companies: [], auto: 'market' }); added++;
+      notes.push({ id, created: ts, updated: ts, date: m.date, text, companies: [], auto: 'market', autoHash: h }); changed++;
     }
-    if (!added) return;
+    if (!changed) return;
     saveNotes(); if (!$('vNotes').hidden) renderNotes();
   }
   marketNotes();
+  setTimeout(() => { fillNames().catch(() => { }); }, 2500);
   setInterval(() => { if (document.visibilityState === 'visible') marketNotes(); }, 15 * 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') marketNotes(); });
   addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS[v]) show(v); });
