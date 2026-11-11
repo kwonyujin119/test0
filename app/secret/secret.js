@@ -26,6 +26,7 @@
     user: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.4-3.4 4.3-5 7.5-5s6.1 1.6 7.5 5"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7"/>',
     pie: '<path d="M12 3v9h9"/><path d="M20.4 15.5A9 9 0 1 1 8.5 3.7"/>',
+    gauge: '<path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 4-5"/><path d="M12 16h.01"/>',
     calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/>',
   };
   for (const k in ICO) if (!ICONS[k]) ICONS[k] = ICO[k];
@@ -913,10 +914,11 @@
     T.push({ name: 'get_journal', description: '사용자의 결정 카드(매매 일지): 통계(승률 · 평균 이익/손실 R · 기대값 · 손익 합계 · 평균 보유일 · 감정별 · 판 이유별 · 체크리스트별), 성적표(reportCard: 같은 기간 지수 대비 평균 초과 · 지수를 이긴 비율, 손절 규율 — 손절가에 닿은 수 · 미룬 수 · 미뤄서 더 잃은 R, 체크리스트 · AI 의견 · 감정별 승률 · 평균 R · 지수 대비, 점검일이 된 결정 수)와 최근 40건(진입 · 손절 · 목표 · 청산 · 이유 · 감정 · AI 의견 · 점검일 · 교훈 · 자동 채점 score)을 돌려준다.', input_schema: { type: 'object', properties: { period: { type: 'string', enum: ['all', 'year', '90'], description: '성적표 기간 (기본 all)' } }, additionalProperties: false } });
     T.push({ name: 'get_notes', description: '사용자가 노트 탭에 날짜별로 적은 메모를 돌려준다. company 를 주면 그 기업이 들어간 노트만 (최근 60개).', input_schema: { type: 'object', properties: { company: { type: 'string', description: '기업 이름 (선택, 예: 삼성전자)' } }, additionalProperties: false } });
     T.push({ name: 'save_memory', description: '앞으로의 답에 계속 필요한 사용자 정보 · 선호를 한 문장으로 기억한다. 사용자가 "기억해" 라고 했거나 투자 성향 · 제약을 새로 알았을 때만 쓴다. 시세처럼 금방 바뀌는 정보나 이미 프로필에 있는 내용은 저장하지 않는다. 사용자는 나의 원칙 화면에서 보고 지울 수 있다.', input_schema: { type: 'object', properties: { text: { type: 'string', description: '기억할 한 문장' } }, required: ['text'], additionalProperties: false } });
+    T.push({ name: 'get_profit_engine', description: '수익 엔진 점검: 사용자 보유 · 결정 카드 · 나의 원칙으로 계산한 "지속 수익의 조건" 통과율(score)과 항목별 결과(checks: 핵심 지수 비중 · 한 종목 비중 · 손절가 · 걸린 위험 합계 · 계좌 고점 대비 하락 · 회전율 · 기대값 · 지수 대비 · 체크리스트 준수 · 감정 매매 · 레버리지, 각각 status ok/warn/bad/na · 값 · 근거 · 고칠 것), 오늘의 규칙(rules)과 새 매매 크기 배수(sizeFactor: 1 정상 · 0.5 절반 · 0 중지), 리밸런싱(목표 대비 옮길 금액), 해외 주식 세금(올해 실현 손익 · 250만 원 공제 남은 금액 · 손실/이익 실현 후보). 계좌 전체 · 비중 · 리밸런싱 · 지금 사도 되는지 · 세금을 물을 때 먼저 부른다. sizeFactor 가 1 보다 작으면 수량 계산에 반영한다.', input_schema: { type: 'object', properties: {}, additionalProperties: false } });
     T.push({ name: 'position_size', description: '감수할 손실에서 거꾸로 매수 수량을 계산한다: 1주당 위험, 수량, 투입 금액과 계좌 대비 비중, 손익비(R), 손익분기 승률, 승률을 주면 1회 기대값. 비중 · 손절 · 목표를 말할 때 이 도구로 계산한다.', input_schema: { type: 'object', properties: { account: { type: 'number', description: '계좌 금액' }, risk_percent: { type: 'number', description: '한 번에 감수할 손실 % (보통 0.5~2)' }, entry: { type: 'number' }, stop: { type: 'number' }, target: { type: 'number' }, win_rate: { type: 'number', description: '예상 승률 % (선택)' } }, required: ['account', 'risk_percent', 'entry', 'stop'], additionalProperties: false } });
     return T;
   }
-  const LABEL = { get_stock_dossier: '종목 종합', scan_portfolio: '내 종목 점검', compare_stocks: '종목 비교', get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', search_news_kr: '국내 뉴스', get_us_macro: '미국 지표', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', web_search: '웹 검색' };
+  const LABEL = { get_stock_dossier: '종목 종합', scan_portfolio: '내 종목 점검', compare_stocks: '종목 비교', get_quote: '시세', get_price_history: '일봉 · 지표', get_news: '뉴스', fetch_custom_data: '사용자 API', get_ksd_stock_info: '예탁결제원 종목', get_macro: '금리 · 환율', get_briefing: '오늘 브리핑', get_index: '지수', get_disclosures: '공시', get_financials: '재무', search_news_kr: '국내 뉴스', get_us_macro: '미국 지표', query_ksd: '예탁결제원', get_portfolio: '내 종목', get_journal: '매매 일지', get_notes: '노트', save_memory: '기억함', position_size: '수량 계산', get_profit_engine: '수익 엔진', web_search: '웹 검색' };
   function validate(name, input) {
     const def = toolDefs().find(t => t.name === name); if (!def) return '알 수 없는 도구';
     if (!input || typeof input !== 'object') return '입력이 비어 있습니다';
@@ -949,6 +951,7 @@
       case 'get_journal': return { stats: jStats(), reportCard: reportCard(input.period || 'all'), checklist: me.checklist, trades: journal.slice(-40).map(t => Object.assign({}, t, { score: t.score ? Object.assign({}, t.score, { at: undefined }) : undefined })) };
       case 'save_memory': { const t = String(input.text).trim().slice(0, 200); if (!me.notes.some(n => n.text === t)) { me.notes.push({ t: Date.now(), text: t, by: 'AI' }); me.notes = me.notes.slice(-50); saveMe(); } return { saved: t, total: me.notes.length }; }
       case 'get_portfolio': return { items: watch.items, quotes: watch.quotes, note: '수량 · 평균 단가가 0 이면 관심만 있는 종목' };
+      case 'get_profit_engine': return engineState();
       case 'position_size': return sizePlan({ account: +input.account, risk_percent: +input.risk_percent, entry: +input.entry, stop: +input.stop, target: input.target ? +input.target : 0, win_rate: input.win_rate ? +input.win_rate : 0 });
     }
     throw new Error('알 수 없는 도구');
@@ -963,6 +966,7 @@
 
 데이터 지도 (등록된 것만, 도구가 있으면 기억이나 짐작 대신 꼭 도구로)
 ${[
+  ['get_profit_engine', '계좌 전체 · 비중 · 리밸런싱 · "지금 사도 되나" · 세금 → 먼저 이것 (규칙 위반 · 새 매매 크기 · 옮길 금액). 새 매수를 권하기 전에 rules 와 sizeFactor 를 확인'],
   ['get_stock_dossier', '종목 하나를 판단 · 설명 → 먼저 이것 하나 (시세 · 지표 · 신호 · 밸류 · 재무 · 공시 · 뉴스 · 브리핑 · 내 보유 현황). gaps 에 있는 것만 다른 도구로 보충'],
   ['scan_portfolio', '"내 종목 어때 · 오늘 점검 · 뭐부터" → 관심 · 보유 전체를 급한 순으로 (손절 · 목표 거리, 경고, 새 공시)'],
   ['compare_stocks', '두 종목 이상 비교 · 고르기 · 분산 → 수익률 · 위험 · 상관관계를 나란히'],
@@ -1406,6 +1410,18 @@ ${[
       ['증권사 AI 리서치', 'AI 투자분석', '유안타증권 등은 MTS 에 AI 투자분석 · 종목 추천을 넣어 왔습니다. 각 사 공식 자료로 수수료 · 방식 · 책임을 비교하세요.', '추천보다 "왜"를 묻는 대화 방식', 'https://www.myasset.com'],
       ['OpenDART (전자공시 Open API)', '데이터', '금융감독원 전자공시 자료(공시 · 재무제표)를 API 로 받습니다. 국내 종목 근거 자료로 좋습니다.', '다음 단계: 사용자 정의 API 로 연결 검토 (브라우저 접근 허용 여부 확인 필요)', 'https://opendart.fss.or.kr'],
       ['한국투자증권 KIS Developers', '데이터 · 주문', '국내 · 해외 시세와 주문 API. 브라우저에서 바로 부르기 어려워 PC 서버가 필요합니다.', '다음 단계 후보 (주문은 확인 절차와 함께)', 'https://apiportal.koreainvestment.com'],
+    ]],
+    ['지속 수익의 근거', '수익 엔진의 점검 항목이 기대는 연구 — 이기는 법보다 크게 지는 길을 피하는 법이 반복해서 확인됐습니다', [
+      ['SPIVA U.S. Year-End 2025', '연구', '미국 대형주 액티브 펀드가 S&P 500 에 뒤진 비율: 1년 79% · 5년 89%. 상위 펀드가 다음 기간에도 상위에 남는 경우는 극소수.', '핵심(지수) 비중 · 지수 대비 점검', 'https://www.spglobal.com/spdji/en/spiva/article/spiva-us-year-end-2025/'],
+      ['Barber · Odean (2000)', '연구', '6만 6천여 가구: 가장 많이 거래한 20% 의 연 수익 11.4%, 시장 17.9%. 비용 전 수익은 비슷 — 차이는 거래 비용과 빈도.', '회전율 점검 · 냉각 대기열', 'https://faculty.haas.berkeley.edu/odean/papers/returns/Returns.html'],
+      ['Barber · Lee · Liu · Odean (2014)', '연구', '대만 데이트레이더 중 비용을 빼고도 꾸준히 이긴 사람은 1% 미만.', '단타 대신 결정 카드 · 점검일', 'https://econpapers.repec.org/RePEc:eee:finmar:v:18:y:2014:i:c:p:1-24'],
+      ['Bessembinder (2018) · 외 (2023)', '연구', '미국 주식 58% 는 평생 수익이 단기 국채 미만, 상위 4% 종목이 초과 부(富) 전부를 만듦. 전 세계 6만 4천 종목도 같은 결과.', '한 종목 최대 비중 점검', 'https://wpcarey.asu.edu/sites/default/files/2021-10/do-stocks-outperform-treasury-bills.pdf'],
+      ['자본시장연구원 (2021)', '연구', '2020년 이후 신규 개인투자자 62% 손실. 다음 날 이익 종목은 41% 팔고 손실 종목은 22% 만 팜(처분 효과). 1년 거래 이익 약 13조 원, 거래 비용 약 13.7조 원.', '손절가 점검 · 감정 매매 비율', 'https://www.fnnews.com/news/202104131912345956'],
+      ['Morningstar Mind the Gap', '연구', '투자자가 실제로 얻은 수익이 펀드 수익보다 연 약 1.2%p 낮음 — 변동성 큰 상품일수록 차이가 큼(사고파는 시점의 실수).', '정해진 날 리밸런싱 · 냉각 시간', 'https://www.morningstar.com/business/insights/research/mind-the-gap-2025'],
+      ['Thorp · MacLean · Ziemba (켈리 기준)', '연구', '이론상 최적 비중(켈리)으로 걸어도 50% 낙폭을 겪을 확률이 큼. 절반 켈리는 성장률의 약 3/4 을 지키면서 변동은 크게 줄임.', '1회 감수 손실 · 걸린 위험 합계', 'https://www.stat.berkeley.edu/~aldous/157/Papers/Good_Bad_Kelly.pdf'],
+      ['Cheng · Madhavan (2009)', '연구', '레버리지 · 인버스 ETF 는 매일 비율을 맞춰 기간 수익이 지수 × 배수와 달라지고, 변동성이 클수록 손해.', '레버리지 점검', 'https://joim.com/dynamics-leveraged-inverse-exchange-traded-funds'],
+      ['Harvey · Liu · Zhu (2016) · McLean · Pontiff (2016)', '연구', '보고된 팩터 316개 — 우연을 거르려면 t > 3. 예측 변수의 수익은 논문이 나온 뒤 58% 줄어듦.', '백테스트 결과는 할인해서 봄 (다음 단계)', 'https://www.nber.org/papers/w20592.pdf'],
+      ['Gary Klein — 사전 실패 가정 (HBR 2007)', '방법', '"이미 실패했다"고 가정하고 이유를 쓰면 위험 요인을 약 30% 더 찾아냄. 성과를 직접 높인다는 증거는 아직 약함.', '냉각 대기열의 실패 가정 칸', 'https://hbr.org/2007/09/performing-a-project-premortem'],
     ]],
     ['근거 자료', '원칙의 출처', [
       ['SPIVA (S&P Dow Jones Indices)', '연구', '액티브 펀드와 지수의 성과를 해마다 비교합니다. 2025년에는 미국 대형주 액티브 펀드의 79% 가 S&P 500 에 뒤졌습니다.', '원칙 4: 핵심은 지수', 'https://www.spglobal.com/spdji/en/spiva/article/spiva-us-year-end-2025/'],
@@ -2206,6 +2222,238 @@ ${[
   $('bNext').onclick = () => { const i = bui.dates.indexOf(bui.date); if (i > 0) { bui.date = bui.dates[i - 1]; renderBrief(); } };
 
   /* =====================================================================
+     수익 엔진 — "꾸준히 수익을 이어가는 조건"을 내 실제 자료(보유 · 결정 카드 · 원칙)로 매일 점검
+     · 예측이 아니라 규칙: 핵심(지수)/위성 비중 · 한 종목 비중 · 손절 · 열린 위험 · 계좌 낙폭 · 회전율 · 기대값 · 지수 대비 · 체크리스트 · 감정 매매
+     · 낙폭 서킷 브레이커: 고점 대비 하락이 허용치의 절반이면 새 매매 크기를 절반, 허용치면 새 매매 중지
+     · 리밸런싱: 목표 비중에서 허용 폭 이상 벗어나면 얼마를 옮길지
+     · 냉각 대기열: 사고 싶은 종목을 바로 사지 않고 사전 실패 가정(프리모템)과 함께 정한 시간 동안 묵힘
+     · 세금: 해외 주식 실현 손익과 연 250만 원 기본 공제, 절세 계좌 한도
+     근거: 레퍼런스 화면 · docs/secret-super-platform.md
+     ===================================================================== */
+  const K_ENG = 'sec:engine';
+  const ENG0 = { plan: { core: 70, sat: 25, cash: 5, band: 5, heatMax: 6, coolH: 24, turnMax: 100 }, cash: '', fx: { USD: 1400, HKD: 180, CNY: 195 }, coreSyms: [], satSyms: [], equity: [], ideas: [], kisHide: 0 };
+  const eng = Object.assign(JSON.parse(JSON.stringify(ENG0)), LS.get(K_ENG, {}));
+  eng.plan = Object.assign({}, ENG0.plan, eng.plan); eng.fx = Object.assign({}, ENG0.fx, eng.fx);
+  const saveEng = () => { LS.set(K_ENG, eng); SYNCQ.mark('engine'); };
+  /* 세금 · 계좌 상수 (2026년 기준 — 바뀌면 여기만 고침) */
+  const TAX = {
+    overseasRate: 0.22, overseasDeduction: 2500000, // 해외 주식 양도소득세 22%(지방세 포함), 연 250만 원 기본 공제, 해외끼리 손익 통산
+    dividendRate: 0.154, finIncomeThreshold: 20000000, // 배당 · 이자 15.4%, 연 2천만 원 넘으면 금융소득 종합과세
+    isaYear: 20000000, pensionCredit: 9000000, // ISA 연 납입 한도, 연금저축 + IRP 세액공제 대상 한도
+    basis: '2026년 기준 · 세법 개정 시 달라질 수 있음',
+  };
+  const LEV = /레버리지|인버스|곱버스|2X|3X|ULTRA|BULL|BEAR|TQQQ|SQQQ|SOXL|SOXS|UPRO|SPXU|TMF|LABU|FNGU/i;
+  const COREPAT = /^(KODEX|TIGER|ACE|RISE|SOL|HANARO|KOSEF|ARIRANG|PLUS|KIWOOM|1Q|TIME|WON)\b|ETF|^(SPY|VOO|IVV|VTI|VT|QQQ|QQQM|SCHD|VXUS|VEA|VWO|BND|AGG|TLT|IEF|SHY|GLD|IAU|DIA|RSP|SPLG|ITOT|IEFA|IEMG)$/i;
+  const symU = s => String(s || '').trim().toUpperCase();
+  const isLev = it => LEV.test(`${it.symbol || ''} ${it.name || ''}`);
+  function bucketOf(it) {
+    const s = symU(it.symbol);
+    if (eng.coreSyms.includes(s)) return 'core';
+    if (eng.satSyms.includes(s)) return 'sat';
+    return !isLev(it) && (COREPAT.test(s) || COREPAT.test(String(it.name || '').trim())) ? 'core' : 'sat';
+  }
+  const fxOf = s => { const c = curOf(s); return c === 'KRW' ? 1 : (+eng.fx[c] || 0); };
+  function holdings() {
+    return watch.items.filter(it => +it.qty > 0 && it.symbol).map(it => {
+      const s = symU(it.symbol), q = watch.quotes[s], px = q && isFinite(q.price) && q.price > 0 ? +q.price : (+it.avg || 0), fx = fxOf(s);
+      const value = px * (+it.qty) * fx, cost = (+it.avg || 0) * (+it.qty) * fx;
+      const risk = +it.stop > 0 && px > +it.stop ? (px - +it.stop) * (+it.qty) * fx : (+it.stop > 0 ? 0 : null);
+      return { symbol: s, name: it.name || '', qty: +it.qty, price: px, priced: !!(q && q.price), value, cost, pnl: value - cost, stop: +it.stop || 0, risk, bucket: bucketOf(it), lev: isLev(it), cur: curOf(s), fxMissing: !fx };
+    });
+  }
+  /* 월말(또는 아무 때) 평가액 기록 → 고점 대비 하락 */
+  function ddInfo() {
+    const e = eng.equity.filter(x => +x.v > 0).sort((a, b) => a.d.localeCompare(b.d));
+    if (!e.length) return null;
+    let peak = 0, peakD = ''; for (const x of e) if (+x.v > peak) { peak = +x.v; peakD = x.d; }
+    const last = e[e.length - 1], dd = peak ? (+last.v / peak - 1) * 100 : 0;
+    return { peak, peakDate: peakD, last: +last.v, lastDate: last.d, ddPct: R2(dd), points: e.length };
+  }
+  function engineState() {
+    const H = holdings(), cash = parseWon(eng.cash) || 0;
+    const invested = H.reduce((a, h) => a + h.value, 0), total = invested + cash;
+    const coreV = H.filter(h => h.bucket === 'core').reduce((a, h) => a + h.value, 0), satV = invested - coreV;
+    const pct = v => total > 0 ? R2(v / total * 100) : null;
+    const p = eng.plan, maxPos = +me.profile.maxPos || 20, maxDD = +me.profile.maxDD || 20;
+    const st = journal.length ? jStats() : null, rc = journal.length ? reportCard('all') : null;
+    const yearAgo = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
+    const tradedYear = journal.filter(t => +t.entry > 0 && +t.qty > 0 && d10(t.openDate) >= yearAgo);
+    const buyAmt = tradedYear.reduce((a, t) => a + (+t.entry) * (+t.qty) * (curOf(t.symbol) === 'KRW' ? 1 : (+t.fx || fxOf(t.symbol) || 0)), 0);
+    const turnover = total > 0 ? R2(buyAmt / total * 100) : null;
+    const dd = ddInfo();
+    const C = [];
+    const add = (id, title, status, value, why, fix, ref) => C.push({ id, title, status, value, why, fix, ref });
+    // 1 핵심/위성
+    if (!total) add('core', '핵심(지수) 비중', 'na', '보유 종목이 없습니다', '대부분의 액티브 펀드도 15년 넘게 지수를 이기지 못합니다. 계좌의 큰 몫을 낮은 비용의 지수에 두면 종목 선택이 틀려도 계좌가 버팁니다.', '관심 종목 · 보유에 수량 · 평균 단가를 넣으세요', 'SPIVA');
+    else { const c = pct(coreV); add('core', '핵심(지수) 비중', c >= p.core - p.band ? 'ok' : c >= p.core - 2 * p.band ? 'warn' : 'bad', `${c}% (목표 ${p.core}% · 허용 ±${p.band}%p)`, '대부분의 액티브 펀드도 15년 넘게 지수를 이기지 못합니다. 계좌의 큰 몫을 낮은 비용의 지수에 두면 종목 선택이 틀려도 계좌가 버팁니다.', c < p.core - p.band ? `지수 ETF 를 ${Math.round((p.core - c) / 100 * total).toLocaleString('ko-KR')}원어치 늘리면 목표 비중입니다` : '', 'SPIVA'); }
+    // 2 한 종목 비중 (지수 ETF 제외)
+    const big = H.filter(h => h.bucket === 'sat' && total && h.value / total * 100 > maxPos);
+    if (total) add('conc', '한 종목 최대 비중', big.length ? 'bad' : 'ok', big.length ? big.map(h => `${h.name || h.symbol} ${pct(h.value)}%`).join(' · ') + ` (한도 ${maxPos}%)` : `모두 ${maxPos}% 이하`, '주식 수익의 대부분은 극소수 종목이 만들고, 개별 종목의 절반 이상은 단기 국채보다 못했습니다. 한 종목에 크게 걸면 그 극소수를 고를 확률에 계좌를 거는 것입니다.', big.length ? '한도를 넘는 만큼 나눠 줄이거나, 이유를 결정 카드에 적어 두세요' : '', 'Bessembinder');
+    // 3 손절가
+    const sats = H.filter(h => h.bucket === 'sat');
+    if (sats.length) { const noStop = sats.filter(h => !h.stop); add('stops', '개별 종목 손절가', noStop.length ? (noStop.length / sats.length > .5 ? 'bad' : 'warn') : 'ok', noStop.length ? `${noStop.length}/${sats.length} 종목에 손절가 없음 — ${noStop.slice(0, 4).map(h => h.name || h.symbol).join(' · ')}` : `${sats.length} 종목 모두 손절가 있음`, '사람은 이익은 빨리 팔고 손실은 오래 들고 가는 경향(처분 효과)이 있습니다. 미리 정한 손절가가 없으면 내려갈 때 희망으로 판단합니다.', noStop.length ? '관심 종목 · 보유에서 손절가를 넣으세요 (지수 ETF 는 비중으로 관리)' : '', 'Shefrin · Statman'); }
+    // 4 열린 위험(heat)
+    if (sats.length && total) { const r = sats.reduce((a, h) => a + (h.risk || 0), 0), hp = pct(r), unk = sats.some(h => h.risk == null); add('heat', '지금 걸린 위험 합계', hp > p.heatMax ? 'bad' : unk ? 'warn' : 'ok', `손절가까지 모두 닿으면 계좌의 ${hp}%${unk ? ' (손절가 없는 종목은 빠짐 — 실제로는 더 큼)' : ''} · 한도 ${p.heatMax}%`, '한 번의 위험을 작게 해도 동시에 여러 개를 들고 있으면 같이 무너집니다. 손절가까지의 손실 합계를 한도 안에 두면 나쁜 날에도 계좌가 살아남습니다.', hp > p.heatMax ? '새 진입을 멈추고, 손절가를 올리거나(이익 보호) 수량을 줄이세요' : '', 'Van Tharp · Kelly'); }
+    // 5 낙폭 서킷 브레이커
+    if (!dd) add('dd', '계좌 고점 대비 하락', 'na', '평가액 기록이 없습니다', '본전까지 필요한 수익: -20% → +25%, -33% → +50%, -50% → +100%. 큰 낙폭을 피하는 것이 수익을 이어가는 첫 조건입니다.', '아래 [평가액 기록] 에 한 달에 한 번 계좌 총액을 적으세요', '낙폭 회복 수학');
+    else add('dd', '계좌 고점 대비 하락', dd.ddPct <= -maxDD ? 'bad' : dd.ddPct <= -maxDD / 2 ? 'warn' : 'ok', `${dd.ddPct}% (고점 ${dd.peakDate} · 허용 -${maxDD}%)`, '본전까지 필요한 수익: -20% → +25%, -33% → +50%, -50% → +100%. 큰 낙폭을 피하는 것이 수익을 이어가는 첫 조건입니다.', dd.ddPct <= -maxDD ? '새 매매를 멈추고 핵심(지수)만 유지 — 원인을 결정 카드로 돌아본 뒤 다시 시작' : dd.ddPct <= -maxDD / 2 ? '새 매매 크기를 절반으로 (1회 감수 손실 % 를 반으로)' : '', '낙폭 회복 수학');
+    // 6 회전율
+    if (turnover != null && tradedYear.length) add('turn', '1년 회전율 (산 금액 ÷ 계좌)', turnover > 2 * p.turnMax ? 'bad' : turnover > p.turnMax ? 'warn' : 'ok', `${turnover}% · 1년 매수 ${tradedYear.length}건 (한도 ${p.turnMax}%)`, '개인 6만여 가구 연구에서 가장 많이 사고판 20% 는 연 수익이 시장보다 약 6.5%p 낮았습니다. 원인은 거래 비용과 과신이었습니다.', turnover > p.turnMax ? '한 달 매매 횟수 상한을 나의 원칙에 적고, 냉각 대기열을 거쳐 사세요' : '', 'Barber · Odean');
+    // 7 기대값
+    if (st && st.closedTrades) add('exp', '내 매매의 기대값', st.closedTrades < 20 ? 'warn' : st.expectancyR > 0 ? 'ok' : 'bad', `1회 평균 ${st.expectancyR == null ? '?' : st.expectancyR}R · 승률 ${st.winRatePct}% · 끝난 매매 ${st.closedTrades}건${st.closedTrades < 20 ? ' (20건 미만 — 아직 운과 실력을 구분 못 함)' : ''}`, '승률보다 "승률 × 평균 이익 − 패율 × 평균 손실"이 플러스여야 이어갈 수 있습니다. 표본이 적으면 우연일 수 있습니다.', st.closedTrades >= 20 && !(st.expectancyR > 0) ? '위성 비중을 줄이고 핵심(지수)을 늘리세요 — 지금까지 기록으로는 개별 매매가 돈을 벌지 못했습니다' : '', 'Van Tharp · 표본 크기');
+    // 8 지수 대비
+    if (rc && rc.vsIndex.n) { const v = rc.vsIndex; add('bench', '같은 기간 지수 대비', v.n < 10 ? 'warn' : v.avgExcessPct > 0 ? 'ok' : 'bad', `평균 ${v.avgExcessPct > 0 ? '+' : ''}${v.avgExcessPct}%p · 지수를 이긴 비율 ${v.beatPct}% (${v.n}건)`, '개별 종목 매매는 "그냥 지수를 사 둔 것"보다 나아야 의미가 있습니다. 못하면 시간과 위험만 더 쓴 것입니다.', v.n >= 10 && v.avgExcessPct <= 0 ? `위성 비중을 ${Math.max(5, p.sat - 10)}% 로 줄이는 것을 검토하세요` : '', 'SPIVA · DALBAR'); }
+    // 9 체크리스트
+    const ck = journal.filter(t => t.checkTotal);
+    if (ck.length >= 3) { const all = ck.filter(t => (t.checks || []).length >= t.checkTotal).length, r = Math.round(all / ck.length * 100); add('check', '매수 전 체크리스트 준수', r >= 80 ? 'ok' : r >= 50 ? 'warn' : 'bad', `${r}% 를 모두 지킴 (${ck.length}건)`, '체크리스트는 아는 것을 빠뜨리는 실수를 줄입니다. 일지에서 "다 지킨 매매"와 아닌 매매의 승률을 비교해 보세요.', r < 80 ? '체크리스트를 다 못 채우면 사지 않는 규칙을 더하세요' : '', 'Gawande · Pabrai'); }
+    // 10 감정 매매
+    const em = journal.filter(t => t.emotion), hot = em.filter(t => /조급|만회|지루/.test(t.emotion));
+    if (em.length >= 3) { const r = Math.round(hot.length / em.length * 100); add('emo', '감정 매매 비율 (조급 · 만회 · 지루)', r > 30 ? 'bad' : r > 15 ? 'warn' : 'ok', `${r}% (${hot.length}/${em.length})`, '놓칠까 봐, 잃은 것을 되찾으려고, 지루해서 하는 매매는 계획 밖의 매매입니다. 냉각 시간을 두면 상당수가 저절로 걸러집니다.', r > 15 ? `냉각 대기열을 쓰세요 (지금 ${p.coolH}시간)` : '', 'Kahneman · 냉각 시간'); }
+    // 11 레버리지
+    const lv = H.filter(h => h.lev);
+    if (H.length) add('lev', '레버리지 · 인버스', lv.length ? 'bad' : 'ok', lv.length ? lv.map(h => h.name || h.symbol).join(' · ') : '없음', '레버리지 ETF 는 매일 비율을 맞춰서 횡보장에서도 값이 녹아내립니다(변동성 끌림). 오래 들고 있으면 지수 × 배수와 크게 달라집니다.', lv.length ? '단기 목적이 아니면 정리 계획을 세우세요' : '', '변동성 끌림');
+    // 오늘의 규칙
+    const rules = [];
+    const bad = id => C.some(c => c.id === id && c.status === 'bad'), warn = id => C.some(c => c.id === id && c.status === 'warn');
+    let size = 1;
+    if (bad('dd')) { rules.push({ lvl: 'stop', text: '새 매매 중지 — 계좌 낙폭이 허용치에 닿았습니다. 핵심(지수)만 유지하고 결정 카드로 원인부터 돌아보세요.' }); size = 0; }
+    else if (warn('dd')) { rules.push({ lvl: 'half', text: `새 매매 크기 절반 — 1회 감수 손실 ${me.profile.riskTrade || 1}% → ${R2((+me.profile.riskTrade || 1) / 2)}%` }); size = .5; }
+    if (bad('heat')) { rules.push({ lvl: 'stop', text: '새 진입 금지 — 걸린 위험 합계가 한도를 넘었습니다.' }); size = 0; }
+    if (bad('conc')) rules.push({ lvl: 'half', text: '한도를 넘은 종목은 더 사지 않습니다.' });
+    if (bad('exp') || bad('bench')) rules.push({ lvl: 'half', text: '개별 매매가 지수보다 못했습니다 — 위성 비중을 늘리지 않습니다.' });
+    if (bad('turn') || bad('emo')) rules.push({ lvl: 'half', text: `사기 전 ${p.coolH}시간 냉각 — 냉각 대기열에 먼저 올리세요.` });
+    if (!rules.length) rules.push({ lvl: 'ok', text: '규칙 안에 있습니다. 계획대로 하되, 새 매매는 결정 카드부터.' });
+    // 리밸런싱
+    const reb = total > 0 ? [['core', '핵심 (지수)', coreV, p.core], ['sat', '위성 (개별 종목)', satV, p.sat], ['cash', '현금', cash, p.cash]].map(([k, l, v, tg]) => { const now = pct(v), diff = R2(now - tg); return { k, label: l, value: Math.round(v), nowPct: now, targetPct: tg, diffPct: diff, move: Math.abs(diff) > p.band ? Math.round(-diff / 100 * total) : 0 }; }) : [];
+    // 세금 (해외 주식)
+    const yr = todayStr().slice(0, 4);
+    const fxClosed = journal.filter(t => isClosed(t) && curOf(t.symbol) !== 'KRW' && d10(t.closeDate || t.openDate).startsWith(yr) && +t.qty > 0);
+    const realized = Math.round(fxClosed.reduce((a, t) => a + (+t.exit - +t.entry) * (+t.qty) * (+t.fx || fxOf(t.symbol) || 0), 0));
+    const left = Math.max(0, TAX.overseasDeduction - Math.max(0, realized));
+    const fxH = H.filter(h => h.cur !== 'KRW'), uGain = fxH.filter(h => h.pnl > 0), uLoss = fxH.filter(h => h.pnl < 0);
+    const tax = { year: yr, realized, deductionLeft: left, taxIfNow: Math.round(Math.max(0, realized - TAX.overseasDeduction) * TAX.overseasRate), trades: fxClosed.length,
+      harvestLoss: realized > TAX.overseasDeduction ? uLoss.map(h => ({ symbol: h.symbol, name: h.name, loss: Math.round(h.pnl) })) : [],
+      harvestGain: left > 0 ? uGain.map(h => ({ symbol: h.symbol, name: h.name, gain: Math.round(h.pnl) })) : [], basis: TAX.basis };
+    const app = C.filter(c => c.status !== 'na'), ok = app.filter(c => c.status === 'ok').length;
+    return { asOf: new Date().toISOString(), total: Math.round(total), invested: Math.round(invested), cash: Math.round(cash), unpriced: H.filter(h => !h.priced).map(h => h.symbol), fxMissing: H.filter(h => h.fxMissing).map(h => h.symbol), score: app.length ? Math.round(ok / app.length * 100) : null, checks: C, rules, sizeFactor: size, rebalance: reb, band: p.band, drawdown: dd, turnoverPct: turnover, tax, plan: p, holdings: H.map(h => ({ symbol: h.symbol, name: h.name, bucket: h.bucket, valueWon: Math.round(h.value), weightPct: pct(h.value), lev: h.lev || undefined })) };
+  }
+
+  /* ---------- KIS (한국투자증권) Open API 등록 배너 ---------- */
+  const kisNeed = () => !realtimeOn() && !(eng.kisHide && Date.now() - eng.kisHide < 14 * 864e5);
+  function kisBanner() {
+    if (!kisNeed()) return '';
+    const relay = cfg.apis.find(a => a.type === 'kisrelay');
+    const sub = relay ? '중계는 이미 있습니다 — 한국투자증권 앱키를 중계에 넣고, 중계 카드에서 「KIS 실시간 시세도 쓰기」를 켜면 됩니다.' : '지금 국내 시세는 공공데이터포털의 전 영업일 종가입니다. 한국투자증권 Open API 를 등록하면 장중 실시간 현재가 · PER · PBR 로 바뀝니다 (조회만, 주문 기능 없음).';
+    return `<div class="en-kis" role="region" aria-label="한국투자증권 API 등록"><span class="ico-b">${icon('key', 18)}</span><div class="tx"><b>한국투자증권 API 를 등록하면 실시간 시세로 바뀝니다</b><span>${esc(sub)}</span></div><div class="acts"><button class="btn ink" data-kis="go">${icon('key', 15)}등록하기</button><button class="btn ghost" data-kis="later">2주 뒤에</button></div></div>`;
+  }
+  function wireKis(box) {
+    box.querySelectorAll('[data-kis="go"]').forEach(b => b.onclick = () => kisSteps());
+    box.querySelectorAll('[data-kis="later"]').forEach(b => b.onclick = () => { eng.kisHide = Date.now(); saveEng(); box.querySelectorAll('.en-kis').forEach(x => x.remove()); toast('API 연결 화면의 추천 API 에서 언제든 등록할 수 있습니다', 2600); });
+  }
+  function kisSteps() {
+    const relay = cfg.apis.find(a => a.type === 'kisrelay');
+    const d = dialog(`<h3>한국투자증권 Open API 등록 (약 10분)</h3>
+      <p class="modal-desc">한국투자증권은 웹페이지에서 바로 부르는 것을 막아 두어, 내 Cloudflare 중계(무료)에 앱키를 넣고 그 중계를 거쳐 시세만 받습니다. <b>주문 기능은 없습니다.</b> 앱키 · 시크릿은 중계에만 두고 이 화면에는 넣지 않습니다.</p>
+      <ol class="sc-steps">
+        <li class="${relay ? 'done' : ''}"><b>한국투자증권 계좌</b> — 없으면 「한국투자」 앱에서 비대면으로 개설합니다. 연습만 하려면 모의투자 계좌로도 됩니다.</li>
+        <li><b>KIS Developers</b> 에 로그인 → <b>API 신청</b>(KIS Developers 서비스 신청) → 계좌를 고르고 신청하면 <b>앱키(App Key)</b> 와 <b>앱시크릿(App Secret)</b> 이 나옵니다. 실전 · 모의 앱키가 따로 있습니다.</li>
+        <li><b>Cloudflare 중계</b> — ${relay ? '이미 만들어 둔 중계' : '중계를 아직 안 만들었으면 [중계 만드는 법] 대로 한 번 만들고'}의 <b>Settings → Variables and Secrets</b> 에 Secret 으로 <code>KIS_APPKEY</code> · <code>KIS_APPSECRET</code> 을 넣습니다. 모의투자 앱키면 <code>KIS_MOCK</code> = <code>1</code> 도.</li>
+        <li><b>API 연결</b> → 중계 카드 연필 → 「KIS 실시간 시세도 쓰기」를 켜고 [시험]. 처음 시험할 때 KIS 가 접근 토큰 발급 알림을 보낼 수 있습니다 (토큰은 하루 동안 다시 씀).</li>
+      </ol>
+      <div class="actions en-wrap"><a class="btn" href="https://apiportal.koreainvestment.com/" target="_blank" rel="noopener">${icon('link', 15)}KIS Developers 열기</a><button class="btn" data-g>중계 만드는 법</button><button class="btn ink" data-a>${icon('key', 15)}${relay ? '중계 카드 열기' : '중계 추가'}</button></div>`, 'sc-dlg');
+    d.el.querySelector('[data-g]').onclick = () => { d.close(); kisGuide(); };
+    d.el.querySelector('[data-a]').onclick = () => { d.close(); show('apis'); setTimeout(() => openAdd('kisrelay', relay || undefined), 60); };
+  }
+
+  /* ---------- 화면 ---------- */
+  const ST = { ok: ['통과', 'ok'], warn: ['주의', 'warn'], bad: ['위반', 'bad'], na: ['자료 없음', 'na'] };
+  const won = v => v == null ? '–' : Math.round(v).toLocaleString('ko-KR') + '원';
+  function renderEngine() {
+    const s = engineState(), p = eng.plan, box = $('engBox');
+    const ideasDue = eng.ideas.filter(x => x.status === 'wait');
+    box.innerHTML = kisBanner() + `
+      <div class="sc-sum">
+        <div><span>지속 수익 조건 통과</span><b>${s.score == null ? '–' : s.score + '%'}</b></div>
+        <div><span>계좌 평가액 (보유 + 현금)</span><b>${won(s.total)}</b></div>
+        <div><span>고점 대비</span><b class="${s.drawdown && s.drawdown.ddPct < 0 ? 'dn' : ''}">${s.drawdown ? s.drawdown.ddPct + '%' : '–'}</b></div>
+        <div><span>새 매매 크기</span><b>${s.sizeFactor === 0 ? '중지' : s.sizeFactor === .5 ? '절반' : '정상'}</b></div>
+      </div>
+      <section class="sc-card en-rules"><h2>오늘의 규칙</h2><ul>${s.rules.map(r => `<li class="${r.lvl}">${esc(r.text)}</li>`).join('')}</ul>
+        ${s.unpriced.length ? `<p class="sub">시세를 아직 안 불러온 종목은 평균 단가로 셌습니다: ${esc(s.unpriced.join(' · '))} — 관심 종목 · 보유에서 [시세 새로 고침]</p>` : ''}
+        ${s.fxMissing.length ? `<p class="sub warn">환율이 없어 0 원으로 셌습니다: ${esc(s.fxMissing.join(' · '))} — 아래 설정에서 환율을 넣으세요</p>` : ''}</section>
+      <section class="en-sec"><h2>지속 수익의 조건 점검</h2><p>예측이 아니라, 오래 살아남은 투자자들의 공통 조건을 내 자료로 확인합니다. 근거는 레퍼런스 화면에 있습니다.</p>
+        <div class="en-checks">${s.checks.map(c => `<div class="en-c ${ST[c.status][1]}"><div class="h"><span class="st">${ST[c.status][0]}</span><b>${esc(c.title)}</b><span class="ref">${esc(c.ref)}</span></div><p class="v">${esc(c.value)}</p><p class="why">${esc(c.why)}</p>${c.fix ? `<p class="fix">${esc(c.fix)}</p>` : ''}</div>`).join('')}</div></section>
+      <section class="sc-card"><h2>리밸런싱 <small>목표에서 ±${p.band}%p 넘게 벗어나면 옮길 금액</small></h2>
+        ${s.rebalance.length ? `<div class="sc-tablewrap"><table class="sc-table en-reb"><thead><tr><th>구분</th><th>지금</th><th>목표</th><th>차이</th><th>옮길 금액</th></tr></thead><tbody>${s.rebalance.map(r => `<tr><td>${esc(r.label)}</td><td>${r.nowPct}% <small>${won(r.value)}</small></td><td>${r.targetPct}%</td><td class="${Math.abs(r.diffPct) > p.band ? 'warn' : ''}">${r.diffPct > 0 ? '+' : ''}${r.diffPct}%p</td><td>${r.move ? (r.k === 'cash' ? (r.move > 0 ? '현금으로 남기기 ' : '현금에서 쓰기 ') : (r.move > 0 ? '사기 ' : '팔기 ')) + won(Math.abs(r.move)) : '그대로'}</td></tr>`).join('')}</tbody></table></div>
+          <p class="sub">정해진 날(분기 첫 영업일 등)에만 봅니다. 많이 오른 쪽을 덜고 덜 오른 쪽을 채우는 규칙이라, 과열을 쫓는 실수를 저절로 줄입니다. 지수 ETF 판정이 틀린 종목은 아래 설정에서 바꾸세요.</p>` : '<p class="sub">관심 종목 · 보유에 수량과 평균 단가를 넣고, 아래에 현금을 적으면 계산합니다.</p>'}
+      </section>
+      <section class="sc-card"><h2>냉각 대기열 <small>사고 싶을 때 바로 사지 않고 ${p.coolH}시간 묵히기</small></h2>
+        <p class="sub">"6개월 뒤 이 매매가 실패했다면, 이유는?" (사전 실패 가정)을 먼저 적습니다. 시간이 지나도 사고 싶으면 결정 카드로 넘깁니다.</p>
+        <div class="en-ideas">${eng.ideas.length ? eng.ideas.slice().reverse().map(x => { const left = x.t + p.coolH * 36e5 - Date.now(), ready = left <= 0; return `<div class="en-idea ${x.status}"><div class="h"><b>${esc(x.symbol)}</b><span class="tag">${x.status === 'done' ? '결정 카드로 넘김' : x.status === 'drop' ? '안 사기로 함' : ready ? '살 수 있음' : `${Math.ceil(left / 36e5)}시간 남음`}</span></div><p><em>이유</em> ${esc(x.reason)}</p><p><em>실패 가정</em> ${esc(x.premortem)}</p>${x.status === 'wait' ? `<div class="row">${ready ? `<button class="btn sm ink" data-iok="${x.id}">결정 카드 쓰기</button>` : ''}<button class="btn sm" data-idrop="${x.id}">안 사기</button></div>` : ''}</div>`; }).join('') : '<div class="sc-empty-s">비어 있습니다.</div>'}</div>
+        <div class="sc-add-row"><button class="btn" id="engIdea">${icon('plus', 15)}대기열에 올리기</button>${ideasDue.length ? `<span class="sub">기다리는 것 ${ideasDue.length}개</span>` : ''}</div></section>
+      <section class="sc-card"><h2>세금 — 해외 주식 ${s.tax.year}년 <small>${esc(TAX.basis)}</small></h2>
+        <div class="sc-sum"><div><span>올해 실현 손익 (결정 카드 기준)</span><b>${won(s.tax.realized)}</b></div><div><span>기본 공제 ${won(TAX.overseasDeduction)} 중 남음</span><b>${won(s.tax.deductionLeft)}</b></div><div><span>지금 기준 예상 세금 (22%)</span><b>${won(s.tax.taxIfNow)}</b></div></div>
+        ${s.tax.harvestLoss.length ? `<p class="sub">공제를 넘었습니다. 손실 중인 해외 종목을 연말 전에 팔면(다시 사도 됨) 과세 이익이 줄어듭니다: ${esc(s.tax.harvestLoss.map(h => `${h.name || h.symbol} ${won(h.loss)}`).join(' · '))}</p>` : ''}
+        ${s.tax.harvestGain.length ? `<p class="sub">공제가 ${won(s.tax.deductionLeft)} 남았습니다. 이익 중인 해외 종목을 남은 공제만큼 연말 전에 실현하고 다시 사면, 매수 단가가 올라가 다음 해 세금이 줄어듭니다: ${esc(s.tax.harvestGain.map(h => `${h.name || h.symbol} +${won(h.gain)}`).join(' · '))}</p>` : ''}
+        <p class="sub">결제일 기준으로 연도가 나뉘므로 연말 마지막 거래일 2~3일 전까지 체결해야 그해 손익으로 잡힙니다. 국내 상장 해외 ETF 는 배당소득세(15.4%) 대상이라 여기 셈에 넣지 않습니다. 장기 자금은 ISA(연 ${won(TAX.isaYear)} 한도) · 연금저축 · IRP(세액공제 대상 연 ${won(TAX.pensionCredit)})를 먼저 채우는 것이 확실한 수익입니다.</p></section>
+      <section class="sc-card"><h2>평가액 기록 <small>한 달에 한 번 — 고점 대비 하락 계산에 씀</small></h2>
+        <div class="en-eq">${eng.equity.length ? eng.equity.slice().sort((a, b) => b.d.localeCompare(a.d)).slice(0, 12).map(x => `<span>${esc(x.d)} <b>${won(+x.v)}</b><button class="sc-x" data-eqdel="${esc(x.d)}" aria-label="지우기" title="지우기">${icon('x', 12)}</button></span>`).join('') : '<span class="sub">아직 없습니다.</span>'}</div>
+        <div class="sc-add-row"><input type="month" id="engEqD" value="${todayStr().slice(0, 7)}" aria-label="달"><input type="text" id="engEqV" inputmode="numeric" placeholder="계좌 총액 (예: 3200만)" aria-label="계좌 총액"><button class="btn" id="engEqAdd">${icon('plus', 15)}기록</button>${s.total ? `<button class="btn ghost" id="engEqNow">지금 평가액 ${won(s.total)} 넣기</button>` : ''}</div></section>
+      <section class="sc-card"><h2>설정</h2>
+        <div class="sc-form"><div class="sc-grid2">
+          <label>핵심 (지수) 목표 %<input type="number" data-pl="core" value="${p.core}" min="0" max="100"></label>
+          <label>위성 (개별 종목) 목표 %<input type="number" data-pl="sat" value="${p.sat}" min="0" max="100"></label>
+          <label>현금 목표 %<input type="number" data-pl="cash" value="${p.cash}" min="0" max="100"></label>
+          <label>리밸런싱 허용 폭 (%p)<input type="number" data-pl="band" value="${p.band}" min="1" max="30"></label>
+          <label>걸린 위험 합계 한도 (%)<input type="number" data-pl="heatMax" value="${p.heatMax}" min="1" max="30" step="0.5"></label>
+          <label>냉각 시간 (시간)<input type="number" data-pl="coolH" value="${p.coolH}" min="0" max="336"></label>
+          <label>1년 회전율 한도 (%)<input type="number" data-pl="turnMax" value="${p.turnMax}" min="10" max="1000" step="10"></label>
+          <label>현금 (원)<input type="text" id="engCash" value="${esc(eng.cash)}" placeholder="예: 300만"></label>
+          <label>환율 USD (원)<input type="number" data-fx="USD" value="${eng.fx.USD}" min="0" step="any"></label>
+          <label>환율 HKD · CNY (원)<span class="en-fx"><input type="number" data-fx="HKD" value="${eng.fx.HKD}" min="0" step="any" aria-label="HKD"><input type="number" data-fx="CNY" value="${eng.fx.CNY}" min="0" step="any" aria-label="CNY"></span></label>
+        </div>
+        ${p.core + p.sat + p.cash !== 100 ? `<p class="sub warn">목표 합이 ${p.core + p.sat + p.cash}% 입니다 — 100% 가 되게 맞추세요.</p>` : ''}
+        <p class="sub">1회 감수 손실 · 한 종목 최대 비중 · 계좌 최대 하락 허용은 <a href="#me" data-goto="me">나의 원칙</a> 의 값을 씁니다 (지금 ${me.profile.riskTrade || 1}% · ${me.profile.maxPos || 20}% · ${me.profile.maxDD || 20}%).</p>
+        ${s.holdings.length ? `<div class="en-bk"><span class="sub">핵심 / 위성 구분 (눌러서 바꾸기)</span>${s.holdings.map(h => `<button type="button" class="en-b ${h.bucket}" data-bk="${esc(h.symbol)}">${esc(h.name || h.symbol)} · ${h.bucket === 'core' ? '핵심' : '위성'}${h.lev ? ' · 레버리지' : ''}</button>`).join('')}</div>` : ''}
+        </div></section>
+      <p class="sc-fine" style="text-align:left">이 점검은 수익을 보장하지 않습니다. 오래 살아남은 투자자들의 공통 조건(낮은 비용 · 분산 · 손실 통제 · 규칙 · 기록)을 지키고 있는지 보여 줄 뿐이며, 판단과 책임은 사용자에게 있습니다.</p>`;
+    fillIcons(box); wireKis(box);
+    box.querySelectorAll('[data-pl]').forEach(el => el.addEventListener('change', () => { const v = +el.value; if (isFinite(v)) { eng.plan[el.dataset.pl] = v; saveEng(); renderEngine(); } }));
+    box.querySelectorAll('[data-fx]').forEach(el => el.addEventListener('change', () => { eng.fx[el.dataset.fx] = +el.value || 0; saveEng(); renderEngine(); }));
+    $('engCash').addEventListener('change', e => { eng.cash = e.target.value.trim(); saveEng(); renderEngine(); });
+    box.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
+      const sx = b.dataset.bk, it = watch.items.find(x => symU(x.symbol) === sx) || { symbol: sx }, now = bucketOf(it);
+      eng.coreSyms = eng.coreSyms.filter(x => x !== sx); eng.satSyms = eng.satSyms.filter(x => x !== sx);
+      (now === 'core' ? eng.satSyms : eng.coreSyms).push(sx); saveEng(); renderEngine();
+    });
+    box.querySelectorAll('[data-goto]').forEach(a => a.onclick = e => { e.preventDefault(); show(a.dataset.goto); });
+    const addEq = (d, v) => { if (!/^\d{4}-\d{2}$/.test(d) || !(v > 0)) { toast('달과 금액을 넣어 주세요', 1800); return; } eng.equity = eng.equity.filter(x => x.d !== d); eng.equity.push({ d, v: Math.round(v) }); saveEng(); renderEngine(); };
+    $('engEqAdd').onclick = () => addEq($('engEqD').value, parseWon($('engEqV').value));
+    if ($('engEqNow')) $('engEqNow').onclick = () => addEq($('engEqD').value, s.total);
+    box.querySelectorAll('[data-eqdel]').forEach(b => b.onclick = () => { eng.equity = eng.equity.filter(x => x.d !== b.dataset.eqdel); saveEng(); renderEngine(); });
+    $('engIdea').onclick = () => editIdea();
+    box.querySelectorAll('[data-idrop]').forEach(b => b.onclick = () => { const x = eng.ideas.find(y => y.id === b.dataset.idrop); if (x) { x.status = 'drop'; saveEng(); renderEngine(); } });
+    box.querySelectorAll('[data-iok]').forEach(b => b.onclick = () => {
+      const x = eng.ideas.find(y => y.id === b.dataset.iok); if (!x) return;
+      editTrade(null);
+      const f = [...document.querySelectorAll('.sc-dlg form')].pop();
+      if (f) { f.symbol.value = x.symbol; if (x.stop) f.stop.value = x.stop; if (x.target) f.target.value = x.target; f.reason.value = x.reason + (x.premortem ? `\n(실패 가정) ${x.premortem}` : ''); f.symbol.dispatchEvent(new Event('input')); }
+      x.status = 'done'; saveEng();
+    });
+  }
+  function editIdea() {
+    const d = dialog(`<h3>냉각 대기열에 올리기</h3><p class="modal-desc">${eng.plan.coolH}시간 뒤에도 사고 싶으면 결정 카드로 넘깁니다. 실패 가정을 못 쓰면 아직 모르는 것입니다.</p><form class="sc-form">
+      <label>종목<input type="text" name="symbol" required placeholder="예: 005930 · AAPL"></label>
+      <label>사고 싶은 이유 (한두 문장)<textarea name="reason" rows="2" required></textarea></label>
+      <label>6개월 뒤 이 매매가 실패했다면, 이유는?<textarea name="premortem" rows="2" required placeholder="예: 실적이 기대에 못 미치고, 업황 회복이 1년 늦어진다"></textarea></label>
+      <div class="sc-grid2"><label>손절가 (선택)<input type="number" name="stop" step="any" min="0"></label><label>목표가 (선택)<input type="number" name="target" step="any" min="0"></label></div>
+      <div class="actions"><button type="button" class="btn" data-x>취소</button><button class="btn ink">올리기</button></div></form>`, 'sc-dlg');
+    const f = d.el.querySelector('form'); d.el.querySelector('[data-x]').onclick = d.close; setTimeout(() => f.symbol.focus(), 30);
+    f.onsubmit = e => { e.preventDefault(); eng.ideas.push({ id: 'i' + Date.now().toString(36), t: Date.now(), symbol: f.symbol.value.trim().toUpperCase(), reason: f.reason.value.trim(), premortem: f.premortem.value.trim(), stop: +f.stop.value || 0, target: +f.target.value || 0, status: 'wait' }); eng.ideas = eng.ideas.slice(-60); saveEng(); d.close(); renderEngine(); toast(`${eng.plan.coolH}시간 뒤에 다시 보세요`, 2200); };
+  }
+  $('engAsk').onclick = () => { show('chat'); send('get_profit_engine 으로 내 수익 엔진 점검 결과를 보고, 위반 · 주의 항목을 급한 순서로 정리해 줘. 항목마다 왜 문제인지(근거 연구 한 줄)와 이번 주에 할 구체적 행동 하나씩. 리밸런싱이 필요하면 금액까지.'); };
+
+  /* =====================================================================
      기기 사이 동기화 — 비공개 GitHub 저장소(영상과 같은 test0-video)의 secret/ 폴더
      · state.json: 나의 원칙 · 노트 · 매매 일지 · 관심 종목 · 계산기 · API 목록(키 빼고) · 잠근 키 묶음(암호화된 것만) · 대화 목록
      · chats/<id>.json: 대화 하나씩 (개수 제한 없음)
@@ -2223,7 +2471,7 @@ ${[
   const deviceName = () => /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? '휴대폰' : 'PC';
   const hashOf = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h); };
   const sect = {
-    me: () => me, notes: () => notes, journal: () => journal, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
+    me: () => me, engine: () => eng, notes: () => notes, journal: () => journal, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
     cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, deep: cfg.deep, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data, ids: cfg.lock.ids || undefined } : null }), // ids: 어느 API 에 키가 있는지만 (키 값 아님)
   };
   /* 고칠 때마다 부름: 내용이 실제로 바뀌었으면 그 칸의 고친 시각을 기록하고 잠시 뒤 올림 */
@@ -2233,7 +2481,7 @@ ${[
   };
   SYNCQ.tomb = (k, id) => { sy.tomb[k][id] = Date.now(); saveSy(); SYNCQ.mark(k === 'chats' ? 'chats' : k); };
   /* 아직 한 번도 고친 시각이 없는 칸: 내용이 있으면 1(오래된 것), 비어 있으면 0 — 처음 맞출 때 먼저 올라간 쪽을 따르게 */
-  const emptySect = { me: () => hashOf(JSON.stringify(me)) === hashOf(JSON.stringify(ME0)), watch: () => !watch.items.length, calc: () => !Object.keys(LS.get(K_CALC, {})).length, cfg: () => !cfg.apis.length, notes: () => !notes.length, journal: () => !journal.length };
+  const emptySect = { engine: () => hashOf(JSON.stringify(eng)) === hashOf(JSON.stringify(ENG0)), me: () => hashOf(JSON.stringify(me)) === hashOf(JSON.stringify(ME0)), watch: () => !watch.items.length, calc: () => !Object.keys(LS.get(K_CALC, {})).length, cfg: () => !cfg.apis.length, notes: () => !notes.length, journal: () => !journal.length };
   for (const k in sect) { if (!sy.hash[k]) sy.hash[k] = hashOf(JSON.stringify(sect[k]())); if (sy.rev[k] == null) sy.rev[k] = emptySect[k]() ? 0 : 1; }
   saveSy();
 
@@ -2295,6 +2543,7 @@ ${[
     const rr = r.rev || {};
     const take = k => { const a = rr[k] || 0, b = sy.rev[k] || 0; return a > b || (a === b && a === 1); }; // 둘 다 처음이면 먼저 올라간 쪽
     if (take('me') && r.me) { Object.keys(me).forEach(k => delete me[k]); Object.assign(me, JSON.parse(JSON.stringify(ME0)), r.me); me.profile = Object.assign({}, ME0.profile, me.profile); me.answer = Object.assign({}, ME0.answer, me.answer); LS.set(K_ME, me); sy.rev.me = Math.max(rr.me || 0, 2); changed = true; }
+    if (take('engine') && r.engine) { const kh = eng.kisHide; Object.keys(eng).forEach(k => delete eng[k]); Object.assign(eng, JSON.parse(JSON.stringify(ENG0)), r.engine); eng.plan = Object.assign({}, ENG0.plan, eng.plan); eng.fx = Object.assign({}, ENG0.fx, eng.fx); eng.kisHide = Math.max(kh || 0, eng.kisHide || 0); LS.set(K_ENG, eng); sy.rev.engine = Math.max(rr.engine || 0, 2); changed = true; }
     if (take('watch') && r.watch) { watch.items = r.watch.items || []; LS.set(K_WATCH, watch); sy.rev.watch = Math.max(rr.watch || 0, 2); changed = true; }
     if (take('calc') && r.calc) { LS.set(K_CALC, r.calc); calcIds.forEach(id => { if (r.calc[id] != null) $(id).value = r.calc[id]; }); sy.rev.calc = Math.max(rr.calc || 0, 2); changed = true; }
     if (take('cfg') && r.cfg) {
@@ -3115,6 +3364,7 @@ ${[
     $('tdLead').innerHTML = `연결한 API 를 모두 모아 아침에 볼 것만 한 화면에. ${miss.length ? `<span class="td-miss">아직 없는 것: ${esc(miss.join(' · '))} — <button type="button" class="linkish" data-goapi="">API 연결</button></span>` : '모든 자료가 연결되어 있습니다.'}`;
     wireGoApi($('tdLead'));
     if (force) { td.radar = null; for (const kk of Object.keys(ksdCache)) if (/^(idx|ecos|fred):/.test(kk)) delete ksdCache[kk]; LS.set(K_KSDC, ksdCache); }
+    { const kb = $('tdKis'); if (kb) { kb.innerHTML = kisBanner(); fillIcons(kb); wireKis(kb); } }
     tdStrip(); tdBrief(); tdRadar(force);
   }
   /* 1) 시장 띠: 코스피 · 코스닥 · 원/달러 · 국고채 3년 · 미 10년 · 연준 금리 */
@@ -3210,11 +3460,11 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { today: 'vToday', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine();
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
