@@ -16,10 +16,19 @@
   const paint = (c, frame, x, y, w, h) => { if (frame && frame.draw && !frame.nodeType) frame.draw(c, x, y, w, h); else if (frame) c.drawImage(frame, x, y, w, h); };
 
   /* 원본 영상이 화면 어디에 놓이는지 */
-  VE.destRect = (clip, W, H, fw, fh) => {
+  /* src 를 주면 '얼굴 따라가기(reframe)' 클립은 얼굴이 가운데 오게 가로 위치를 정한다 (미리보기와 내보내기가 같은 값) */
+  VE.destRect = (clip, W, H, fw, fh, src) => {
     const s = clip.fit === 'fill' ? Math.max(W / fw, H / fh) : Math.min(W / fw, H / fh);
     const k = s * (clip.zoom || 1), w = fw * k, h = fh * k;
-    return { x: (W - w) / 2 + (clip.px || 0) * W, y: (H - h) / 2 + (clip.py || 0) * H, w, h };
+    let x = (W - w) / 2 + (clip.px || 0) * W;
+    if (clip.reframe && src != null && w > W + 1 && VE.faceX) { const fx = VE.faceX(clip.mid, src); if (fx != null) x = clamp(W / 2 - fx * w, W - w, 0); }
+    return { x, y: (H - h) / 2 + (clip.py || 0) * H, w, h };
+  };
+  /* 얼굴 가로 위치 (0~1): 앞뒤 1초를 평균해 화면이 출렁이지 않게. 얼굴을 못 찾으면 null(가운데) */
+  VE.faceX = (mid, src) => {
+    let s = 0, n = 0;
+    for (let d = -1; d <= 1.001; d += .2) { const ps = VE.poseAt(mid, Math.max(0, src + d)); if (ps && ps[0]) { s += ps[0][0]; n++; } }
+    return n >= 3 ? s / n : null;
   };
 
   /* ---------- 얼굴 위치 보간 ---------- */
@@ -64,22 +73,25 @@
   };
   /* 줄 안에서 낱말 위치를 재며 지금 말하는 낱말을 칠함 */
   const drawCaption = (c, W, H, cap, t) => {
-    const st = VE.p.cap, unit = Math.min(W, H) * .052 * (st.size || 1);
-    c.save(); c.font = `700 ${unit}px ${FONT}`; c.textBaseline = 'middle'; c.lineJoin = 'round';
-    let lines = wrap(c, cap.text, W * .86); const lh = unit * 1.36;
+    /* shorts = 쇼츠형: 아주 큰 굵은 글자 + 두꺼운 테두리 + 말하는 낱말 강조색 */
+    const st = VE.p.cap, shorts = st.style === 'shorts', vertical = H > W * 1.2, unit = Math.min(W, H) * (shorts ? .08 : .052) * (st.size || 1), maxW = W * (shorts ? (vertical ? .76 : .82) : .86); /* 세로는 오른쪽 단추 줄(약 11%)을 피함 */
+    c.save(); c.font = `${shorts ? 900 : 700} ${unit}px ${FONT}`; c.textBaseline = 'middle'; c.lineJoin = 'round';
+    let lines = wrap(c, cap.text, maxW); const lh = unit * (shorts ? 1.22 : 1.36);
     /* 두 줄이면 위아래 길이를 고르게 (한 낱말만 아랫줄에 남지 않게) */
-    if (lines.length === 2) { const ws = cap.text.split(' '); let best = null; for (let k = 1; k < ws.length; k++) { const a = ws.slice(0, k).join(' '), b = ws.slice(k).join(' '), wa = c.measureText(a).width, wb = c.measureText(b).width; if (wa > W * .86 || wb > W * .86) continue; const sc = Math.max(wa, wb); if (!best || sc < best[0]) best = [sc, a, b]; } if (best) lines = [best[1], best[2]]; }
-    const y0 = st.pos === 'top' ? H * .08 + lh / 2 : st.pos === 'middle' ? H / 2 - (lines.length - 1) * lh / 2 : H * .92 - (lines.length - 1) * lh - lh / 2;
+    if (lines.length === 2) { const ws = cap.text.split(' '); let best = null; for (let k = 1; k < ws.length; k++) { const a = ws.slice(0, k).join(' '), b = ws.slice(k).join(' '), wa = c.measureText(a).width, wb = c.measureText(b).width; if (wa > maxW || wb > maxW) continue; const sc = Math.max(wa, wb); if (!best || sc < best[0]) best = [sc, a, b]; } if (best) lines = [best[1], best[2]]; }
+    /* 세로(쇼츠 · 릴스 · 틱톡) 화면은 위 · 아래를 앱 단추와 제목이 덮으므로 안전 영역 안에 둔다 */
+    const y0 = st.pos === 'top' ? H * (vertical ? .16 : .08) + lh / 2 : st.pos === 'middle' ? H / 2 - (lines.length - 1) * lh / 2 : H * (vertical ? .76 : .92) - (lines.length - 1) * lh - lh / 2;
     let wi = 0;
     lines.forEach((ln, i) => {
       const y = y0 + i * lh, w = c.measureText(ln).width, x = (W - w) / 2;
       if (st.style === 'box') { c.fillStyle = 'rgba(12,13,15,.72)'; c.beginPath(); c.roundRect(x - unit * .45, y - lh * .46, w + unit * .9, lh * .92, unit * .22); c.fill(); }
       if (st.style === 'outline' || st.style === 'word') { c.strokeStyle = 'rgba(0,0,0,.92)'; c.lineWidth = unit * .19; c.strokeText(ln, x, y); }
+      if (shorts) { c.strokeStyle = '#000'; c.lineWidth = unit * .3; c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = unit * .25; c.strokeText(ln, x, y); c.shadowColor = 'transparent'; }
       c.textAlign = 'left';
       let px = x; const parts = ln.split(' ');
       parts.forEach((part, k) => {
-        const item = cap.words[wi++]; const on = st.style === 'word' && item && t >= item.s && t < item.e + .04;
-        c.fillStyle = on ? '#ffd84d' : '#fff'; c.fillText(part, px, y);
+        const item = cap.words[wi++]; const on = (st.style === 'word' || shorts) && item && t >= item.s && t < item.e + .04;
+        c.fillStyle = on ? (st.hl || '#ffd84d') : '#fff'; c.fillText(part, px, y);
         px += c.measureText(part + (k < parts.length - 1 ? ' ' : '')).width;
       });
     });
@@ -134,7 +146,7 @@
     c.save(); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
     const clip = f.clip; let usesChar = false, swapped = false;
     if (clip && f.frame && f.fw && f.fh) {
-      const r = VE.destRect(clip, W, H, f.fw, f.fh);
+      const r = VE.destRect(clip, W, H, f.fw, f.fh, f.src);
       const covers = r.x <= 0.5 && r.y <= 0.5 && r.x + r.w >= W - 0.5 && r.y + r.h >= H - 0.5;
       if (!covers && VE.p.bg === 'blur') {
         /* 빈 자리: 같은 장면을 작게 줄였다 키워 흐린 배경으로 */
