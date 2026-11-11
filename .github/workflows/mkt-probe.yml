@@ -1,0 +1,11 @@
+name: mkt probe (temporary)
+on:
+  push:
+    branches: [secret-mkt-probe]
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/scripts/market_close.py --out out -v --force; cat out/market/*.json | head -80
+      - run: python3 -c "import sys;sys.path.insert(0,'.github/scripts');import market_close as m;print(m.index_desktop());s=m.stocks_desktop();print(len(s),s[:3])"
