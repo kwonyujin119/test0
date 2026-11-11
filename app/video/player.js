@@ -137,8 +137,12 @@
     else if (active && active.el && active.el.readyState >= 2) { frame = active.el; fw = active.el.videoWidth; fh = active.el.videoHeight; }
     const pip = syncPip(clip, src);
     VE.drawFrame(ctx, W, H, { t: P.t, clip, media: m, src, frame, fw, fh, pip });
-    drawGuides();
+    lastFrame = { clip, media: m, src, frame, fw, fh };
+    drawGuides(); if (VE.drawOverlay) VE.drawOverlay(ctx, W, H);
   };
+  /* 지금 보이는 장면 (썸네일 만들기용 · 글자와 자막 없이 다시 그릴 수 있게) */
+  let lastFrame = null;
+  P.frameNow = () => lastFrame && lastFrame.frame ? lastFrame : null;
   function drawGuides() {
     const s = VE.sel, o = VE.selObj(); if (!s || !o || s.type !== 'title' || P.t < o.start || P.t >= o.end) return;
     const [W, H] = P.size(), b = VE.titleBox(ctx, W, H, o); ctx.save(); ctx.strokeStyle = '#7aa2ff'; ctx.lineWidth = 2; ctx.setLineDash([8, 6]); ctx.strokeRect(b.x - 8, b.y - 6, b.w + 16, b.h + 12); ctx.restore();

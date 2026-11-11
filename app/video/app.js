@@ -27,6 +27,8 @@
     if (ctrl && (k === 'z' || k === 'Z')) { ev.preventDefault(); ev.shiftKey ? VE.redo() : VE.undo(); return; }
     if (ctrl && (k === 'y' || k === 'Y')) { ev.preventDefault(); VE.redo(); return; }
     if (ctrl && (k === 's' || k === 'S')) { ev.preventDefault(); VE.saveNow(); toast('이 기기에 저장했습니다', 1400); return; }
+    if (ctrl && (k === 'k' || k === 'K')) { ev.preventDefault(); if (!VE.splitAt(VE.player.t)) toast('클립의 맨 앞이나 맨 뒤에서는 자를 수 없습니다', 1800); return; }
+    if (ctrl && ev.shiftKey && (k === 'x' || k === 'X')) { ev.preventDefault(); VE.markClear(); return; }
     if (ctrl) return;
     const fps = VE.p.fps || 30, P = VE.player;
     switch (k) {
@@ -41,7 +43,11 @@
       case '.': case '>': if (VE.moveSel(1, ev.shiftKey ? 1 : .1)) ev.preventDefault(); break;
       case 'q': case 'Q': VE.trimToPlayhead('head'); break;
       case 'w': case 'W': VE.trimToPlayhead('tail'); break;
-      case 'Delete': case 'Backspace': if (VE.sel) { ev.preventDefault(); VE.deleteSel(); } break;
+      case 'Delete': case 'Backspace': if (ev.shiftKey && VE.markRange()) { ev.preventDefault(); VE.cutMarked(); } else if (VE.sel) { ev.preventDefault(); VE.deleteSel(); } break;
+      case 'i': case 'I': VE.markIn(P.t); break;
+      case 'o': case 'O': VE.markOut(P.t); break;
+      case 'x': case 'X': VE.markClip(); break;
+      case 'ArrowUp': case 'ArrowDown': { ev.preventDefault(); P.pause(); const { starts, total } = VE.layout(), pts = [...starts, total]; const to = k === 'ArrowUp' ? pts.filter(x => x < P.t - .01).pop() : pts.find(x => x > P.t + .01); if (to != null) P.seek(to); break; }
       case 'ArrowLeft': ev.preventDefault(); P.pause(); P.seek(P.t - (ev.shiftKey ? 1 : 1 / fps)); break;
       case 'ArrowRight': ev.preventDefault(); P.pause(); P.seek(P.t + (ev.shiftKey ? 1 : 1 / fps)); break;
       case 'Home': ev.preventDefault(); P.seek(0); break;
@@ -59,11 +65,16 @@
     const choices = [[480, '480p', '가볍게'], [720, '720p', '보통'], [1080, '1080p', 'Full HD'], [1440, '1440p', '고화질'], [2160, '4K', '최고화질']].filter(c => c[0] <= Math.max(1080, srcH));
     const bestShort = choices.filter(c => c[0] <= srcH).pop() || choices[Math.min(1, choices.length - 1)];
     const st = { short: bestShort[0], fmt: 'mp4', quality: 'mid', captions: VE.captions().length > 0 && VE.p.cap.on };
+    /* 올릴 곳 프리셋: 화면 비율 · 화질을 한 번에 (YouTube 권장 1080p) */
+    const DEST = [['yt', '16:9', 'YouTube', '가로 16:9'], ['shorts', '9:16', '쇼츠 · 릴스 · 틱톡', '세로 9:16'], ['feed', '4:5', '인스타 피드', '4:5']];
+    const destNow = () => (DEST.find(d => d[1] === VE.p.aspect) || [''])[0];
     const total = VE.total(), bg = document.createElement('div'); bg.className = 'modal-bg'; let ac = null, resultUrl = null;
     const estimate = () => { const [W, H] = VE.frameSize(st.short), mbps = (W * H * VE.p.fps) / 1e6 * ({ low: .055, mid: .1, high: .17 }[st.quality]); return (mbps * 1e6 / 8 + 20e3) * total; };
     const render = () => {
       const [W, H] = VE.frameSize(st.short);
       bg.innerHTML = `<div class="modal ve-export" role="dialog" aria-modal="true" aria-label="내보내기"><h3>영상 파일로 내보내기</h3>
+        <div class="ve-sec"><div class="ve-lab">어디에 올리나요</div><div class="ve-seg wide" id="xTo">${DEST.map(d => `<button type="button" data-v="${d[0]}" class="${destNow() === d[0] ? 'on' : ''}"><b>${d[2]}</b><em>${d[3]}</em></button>`).join('')}</div>
+        ${(VE.pubChecks ? VE.pubChecks() : []).filter(c => c[0] === 'bad' || (c[0] === 'warn' && /가로 영상|3분/.test(c[1]))).map(c => `<div class="ve-note warn" style="margin:8px 0 0">${esc(c[1])}</div>`).join('')}</div>
         <div class="ve-sec"><div class="ve-lab">화질</div><div class="ve-seg wide" id="xRes">${choices.map(c => `<button type="button" data-v="${c[0]}" class="${st.short === c[0] ? 'on' : ''}"><b>${c[1]}</b><em>${c[2]}</em></button>`).join('')}</div></div>
         <div class="ve-sec"><div class="ve-lab">파일 크기와 화질</div><div class="ve-seg" id="xQ"><button type="button" data-v="low" class="${st.quality === 'low' ? 'on' : ''}">작은 파일</button><button type="button" data-v="mid" class="${st.quality === 'mid' ? 'on' : ''}">균형</button><button type="button" data-v="high" class="${st.quality === 'high' ? 'on' : ''}">좋은 화질</button></div></div>
         <div class="ve-sec"><div class="ve-lab">형식</div><div class="ve-seg" id="xF"><button type="button" data-v="mp4" class="${st.fmt === 'mp4' ? 'on' : ''}">MP4 (권장)</button><button type="button" data-v="webm" class="${st.fmt === 'webm' ? 'on' : ''}">WebM</button></div></div>
@@ -72,6 +83,7 @@
         <p class="ve-hint">이 기기에서만 처리합니다. 파일을 밖으로 보내지 않습니다.</p>
         <div class="actions"><button class="btn" id="xClose" data-dismiss>닫기</button>${VE.captions().length ? '<button class="btn" id="xSrt"><i data-ic="fileText"></i>자막 파일만</button>' : ''}<button class="btn ink" id="xGo"><i data-ic="export"></i>내보내기</button></div></div>`;
       fillIcons(bg);
+      bg.querySelector('#xTo').onclick = e => { const b = e.target.closest('button'); if (!b) return; const d = DEST.find(x => x[0] === b.dataset.v); if (d[1] !== VE.p.aspect) { VE.edit(() => { VE.p.aspect = d[1]; }); toast(`화면 비율을 ${d[1]} 로 바꿨습니다 (Ctrl+Z 로 되돌림)`, 2400); } if (choices.some(c => c[0] === 1080)) st.short = 1080; render(); };
       bg.querySelector('#xRes').onclick = e => { const b = e.target.closest('button'); if (b) { st.short = +b.dataset.v; render(); } };
       bg.querySelector('#xQ').onclick = e => { const b = e.target.closest('button'); if (b) { st.quality = b.dataset.v; render(); } };
       bg.querySelector('#xF').onclick = e => { const b = e.target.closest('button'); if (b) { st.fmt = b.dataset.v; render(); } };
@@ -98,8 +110,8 @@
         bg.innerHTML = `<div class="modal ve-export"><h3>다 만들었습니다</h3>${resultUrl ? `<video class="ve-result-v" src="${resultUrl}" controls playsinline></video>` : ''}
           <div class="ve-stat"><div><span>크기</span><b>${res.W}×${res.H}</b></div><div><span>파일</span><b>${res.blob ? VE.fmtSize(res.blob.size) : '저장함'}</b></div><div><span>걸린 시간</span><b>${VE.fmtLen(secs)}</b></div></div>
           ${res.audio === 'opus' && st.fmt === 'mp4' ? '<div class="ve-note warn">이 브라우저는 AAC 소리를 만들 수 없어 Opus 소리를 넣었습니다. 일부 프로그램에서는 소리가 나지 않을 수 있습니다.</div>' : ''}
-          <div class="actions"><button class="btn" id="xClose" data-dismiss>닫기</button>${res.blob ? `<a class="btn ink" id="xSave" href="${resultUrl}" download="${esc(res.name)}"><i data-ic="download"></i>파일 저장</a>` : ''}</div></div>`;
-        fillIcons(bg); bg.querySelector('#xClose').onclick = () => { bg.remove(); if (resultUrl) URL.revokeObjectURL(resultUrl); };
+          <div class="actions"><button class="btn" id="xClose" data-dismiss>닫기</button><button class="btn" id="xPub" type="button"><i data-ic="upload"></i>올리기 전 점검</button>${res.blob ? `<a class="btn ink" id="xSave" href="${resultUrl}" download="${esc(res.name)}"><i data-ic="download"></i>파일 저장</a>` : ''}</div></div>`;
+        fillIcons(bg); bg.querySelector('#xClose').onclick = () => { bg.remove(); if (resultUrl) URL.revokeObjectURL(resultUrl); }; bg.querySelector('#xPub').onclick = () => { bg.querySelector('#xClose').click(); VE.openTab('pub'); };
       } catch (e) {
         if (e.name === 'AbortError' || /cancel/i.test(e.name || '')) { toast('내보내기를 그만뒀습니다', 2200); render(); return; }
         console.error(e); bg.innerHTML = `<div class="modal ve-export"><h3>만들지 못했습니다</h3><div class="ve-note warn">${esc(VE.niceErr(e))}</div><div class="actions"><button class="btn" id="xBack" data-dismiss>돌아가기</button></div></div>`; bg.querySelector('#xBack').onclick = render;

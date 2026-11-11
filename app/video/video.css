@@ -355,3 +355,29 @@ body.ve-full .ve-transport { background: var(--ui-panel); padding-bottom: calc(8
   .ve-del { padding: 8px; }
   .ve-mitem .btn { min-width: 40px; min-height: 40px; }
 }
+
+/* ---------- 올리기 탭 ---------- */
+.ve-swatch { display: flex; gap: 8px; flex-wrap: wrap; }
+.ve-swatch button { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ui-border2); background: var(--sw); cursor: pointer; padding: 0; }
+.ve-swatch button.on { border-color: var(--ui-accent); box-shadow: 0 0 0 2px var(--ui-accent-soft); }
+.ve-meter { position: relative; height: 22px; border-radius: 6px; background: var(--ui-panel2); overflow: hidden; margin-bottom: 10px; }
+.ve-meter i { position: absolute; inset: 0 auto 0 0; background: var(--ui-accent-soft); }
+.ve-meter.over i { background: var(--ui-warn-bg); }
+.ve-meter span { position: relative; display: block; text-align: center; font-size: var(--fs-xs, 12px); line-height: 22px; font-weight: 600; }
+.ve-range { font-size: var(--fs-sm, 13px); margin-bottom: 8px; color: var(--ui-muted); }
+.ve-range b { color: var(--ui-fg); }
+.ve-in { width: 100%; box-sizing: border-box; }
+.ve-chk { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: var(--fs-xs, 12px); line-height: 1.55; }
+.ve-chk li { display: flex; gap: 8px; align-items: flex-start; }
+.ve-chk li > i { flex: none; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 11px; margin-top: 1px; }
+.ve-chk li.ok > i { background: var(--ui-accent-soft); color: var(--ui-accent-fg); }
+.ve-chk li.warn > i, .ve-chk li.bad > i { background: var(--ui-warn-bg); color: var(--ui-warn-fg); }
+.ve-chk li.bad span { color: var(--ui-warn-fg); font-weight: 600; }
+.ve-chk li.ask .ve-check { padding: 0; }
+.ve-thumb { max-width: 560px; }
+.ve-thumb-view { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 8px; }
+.ve-thumb-view > canvas { flex: 1; min-width: 0; max-height: 46vh; object-fit: contain; border-radius: 8px; background: #000; }
+.ve-thumb-mini { flex: none; width: 168px; font-size: 11px; line-height: 1.4; color: var(--ui-muted); }
+.ve-thumb-mini canvas { display: block; border-radius: 6px; margin-bottom: 4px; background: #000; }
+.ve-thumb-nav { flex-wrap: wrap; gap: 6px; }
+@media (max-width: 560px) { .ve-thumb-view { flex-direction: column; align-items: stretch; } .ve-thumb-mini { width: auto; } }

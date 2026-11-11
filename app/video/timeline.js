@@ -137,6 +137,7 @@
     /* 빈 상태 */
     if (!VE.p.clips.length) { const L = lane('main'); c.font = font(400, 13); c.fillStyle = col.muted; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText('영상 파일을 여기로 끌어다 놓으세요', GUT + 14, L.y + L.h / 2); }
     capLane(); titleLane(); musicLane(); mainClips();
+    markRange();
     if (drag && drag.kind === 'reorder' && drag.moved) reorderGhost();
     if (dropAt != null) { const L = lane('main'), x = xOf(dropAt); c.fillStyle = col.accent; c.fillRect(x - 1.5, L.y - 3, 3, L.h + 6); }
     if (snapLine != null) { const x = xOf(snapLine); c.save(); c.strokeStyle = col.accent; c.setLineDash([3, 3]); c.lineWidth = 1; c.beginPath(); c.moveTo(x + .5, RULER); c.lineTo(x + .5, H); c.stroke(); c.restore(); }
@@ -148,6 +149,16 @@
   function reorderGhost() {
     const L = lane('main'), d = drag, w = Math.min(160, VE.clipLen(d.clip) * TL.z); c.save(); c.globalAlpha = .85; rr(d.px - w / 2, L.y - 3, w, L.h + 6, 6); c.fillStyle = col.accent; c.fill(); c.globalAlpha = 1; c.fillStyle = '#fff'; c.font = font(600, 12); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(VE.fmtLen(VE.clipLen(d.clip)), d.px, L.y + L.h / 2); c.restore();
     const { starts, total } = VE.layout(), t = d.insert >= VE.p.clips.length ? total : starts[d.insert]; const x = xOf(t); c.fillStyle = col.accent; c.fillRect(x - 1.5, L.y - 5, 3, L.h + 10);
+  }
+  /* I · O 로 표시한 구간 (Premiere · Resolve 의 시작 · 끝 표시) */
+  function markRange() {
+    const mk = VE.mark; if (!mk || (mk.i == null && mk.o == null)) return;
+    const a = mk.i == null ? 0 : mk.i, b = mk.o == null ? VE.total() : mk.o; const x0 = xOf(a), x1 = xOf(b);
+    c.save(); c.globalAlpha = .12; c.fillStyle = col.accent; c.fillRect(x0, RULER, Math.max(1, x1 - x0), H - RULER); c.globalAlpha = .55; c.fillRect(x0, 0, Math.max(1, x1 - x0), RULER); c.globalAlpha = 1;
+    c.font = font(700, 11); c.textBaseline = 'top'; c.fillStyle = col.accent;
+    if (mk.i != null) { c.fillRect(x0 - 1, 0, 2, H); c.textAlign = 'left'; c.fillText('I', x0 + 3, 2); }
+    if (mk.o != null) { c.fillRect(x1 - 1, 0, 2, H); c.textAlign = 'right'; c.fillText('O', x1 - 3, 2); }
+    c.restore();
   }
   function playhead() {
     const x = xOf(VE.player.t); if (x < GUT - 8 || x > W + 8) return;

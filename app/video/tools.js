@@ -304,6 +304,7 @@
     const jobs = new Map(); const add = (mid, a, b, faces, mesh) => { const j = jobs.get(mid) || { mid, ranges: [], faces: 1, mesh: false }; j.ranges.push([a, b]); j.faces = Math.max(j.faces, faces); j.mesh = j.mesh || !!mesh; jobs.set(mid, j); };
     for (const c of VE.p.clips) {
       if (c.face && c.face.mode) add(c.mid, c.in, c.out, c.face.mode === 'mosaic' ? 4 : 1, c.face.mode === 'char' && c.face.swap && VE.swap && VE.swap.can(c.face.char));
+      if (c.reframe) { const m = VE.media(c.mid); if (m && m.kind === 'video') add(c.mid, c.in, c.out, 1); }
       if (c.pip && c.pip.char) { const off = c.pip.off || 0; add(c.pip.mid, Math.max(0, c.in + off), Math.max(0, c.out + off), 1); }
     }
     const out = [];
