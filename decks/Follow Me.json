@@ -28,7 +28,7 @@
     "gradient": "linear-gradient(135deg,#111318 0%,#1b1f27 60%,#3a1a0c 130%)"
    },
    "transition": "",
-   "notes": "(1분) [0:00] 인사 전에 시작합니다. \"오늘은 제가 하는 걸 보기만 하는 시간이 아닙니다. 제 화면을 따라 하면, 끝날 때 여러분 손에 발표 도구 하나와 교안 하나가 남습니다.\" — 그래서 제목이 Follow Me 입니다.",
+   "notes": "(1분) [0:00] 인사 전에 시작합니다. \"오늘은 제가 하는 걸 보기만 하는 시간이 아닙니다. 제 화면을 따라 하면, 끝날 때 여러분 손에 발표 도구 하나와 교안 하나가 남습니다.\" — 그래서 제목이 Follow Me 입니다.\n\n오른쪽 아래 QR = 이 발표 화면 주소(보기 전용). 친구에게 공유하거나 청중이 자기 휴대폰으로 따라 볼 때 씁니다.",
    "elements": [
     {
      "id": "fm0001",
@@ -244,6 +244,65 @@
      "style": {
       "fontSize": 28,
       "color": "#A9ADB5"
+     }
+    },
+    {
+     "id": "fmqv01",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1480,
+     "y": 560,
+     "w": 340,
+     "h": 440,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": true,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "fmqv02",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1500,
+     "y": 580,
+     "w": 300,
+     "h": 300,
+     "src": "assets/fm-qr-view.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "border": 0,
+     "borderColor": "#D9D2C3"
+    },
+    {
+     "id": "fmqv03",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1480,
+     "y": 890,
+     "w": 340,
+     "h": 90,
+     "role": "text",
+     "html": "<b>찍으면 이 발표를</b><br>바로 볼 수 있습니다",
+     "style": {
+      "fontSize": 26,
+      "color": "#15171C",
+      "align": "center",
+      "valign": "middle",
+      "lineHeight": 1.35
      }
     }
    ],

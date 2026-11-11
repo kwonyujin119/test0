@@ -7,6 +7,8 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
 (async function () {
   const name = qs('deck') || 'deck';
   const role = qs('role') || 'main';
+  /* 공유 링크(…&guest=1, 표지 QR): 처음 온 사람의 기기를 게스트(보기 전용) 모드로 — 이미 관리자 · 게스트를 고른 기기는 그대로 둠 */
+  if (qs('guest') === '1') { try { if (!localStorage.getItem('ws:access')) localStorage.setItem('ws:access', JSON.stringify({ role: 'guest', at: Date.now() })); } catch (e) { } }
   let deck;
   if (window.EMBEDDED_DECK) deck = window.EMBEDDED_DECK;
   else {
