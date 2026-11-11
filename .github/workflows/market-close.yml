@@ -1,0 +1,59 @@
+# SECRET 장 마감 기록 — 매일 저녁 8시(한국 시간) 무렵 시장 온도 · 코스피 등락률 · 시가총액 상위 10개 종목 등락률을
+# briefing 브랜치의 market/ 에 저장한다. 앱이 이 파일을 읽어 노트에 날짜별로 남긴다. AI 토큰을 쓰지 않는다.
+name: Market close note
+
+on:
+  schedule:
+    # 종목 가격은 넥스트레이드 애프터마켓(20:00 까지)이 반영되므로 20시가 지나서 모음. 예약 실행이 밀리거나 실패할 때를 위해 두 번 더
+    - cron: '4 11 * * 1-5'   # 20:04 한국 시간 (평일)
+    - cron: '27 11 * * 1-5'  # 20:27 — 보충
+    - cron: '41 12 * * 1-5'  # 21:41 — 보충
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '장이 열리지 않은 날 · 마감 전이어도 저장 (시험용)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: briefing-branch     # 모닝 · 전략 브리핑과 같은 브랜치에 쓰므로 한 번에 하나씩
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 스크립트만 가져오기
+        uses: actions/checkout@v4
+        with:
+          path: src
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: briefing 브랜치 가져오기 (없으면 새로 만듦)
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          if git ls-remote --exit-code --heads "$REPO_URL" briefing >/dev/null; then
+            git clone --depth 1 --branch briefing "$REPO_URL" pub
+          else
+            mkdir pub && cd pub && git init -b briefing && git remote add origin "$REPO_URL"
+          fi
+
+      - name: 코스피 장 마감 자료 모으기
+        run: python3 src/.github/scripts/market_close.py --out pub -v ${{ inputs.force && '--force' || '' }}
+
+      - name: 저장
+        run: |
+          cd pub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git commit -m "장 마감 기록 $(TZ=Asia/Seoul date '+%F %H:%M')"
+          for i in 1 2 3; do git push origin HEAD:briefing && exit 0; git pull --rebase origin briefing || true; sleep 5; done
+          exit 1
