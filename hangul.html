@@ -33,6 +33,8 @@
     <button class="tb" data-act="saveAs" data-admin title="다른 이름으로 저장 (Alt+V)" aria-label="다른 이름으로 저장"><i data-ic="export"></i><span>다른 이름으로</span></button>
     <button class="tb" data-act="box" data-admin title="문서함 — 암호로 잠가 GitHub 에 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 엽니다" aria-label="문서함"><i data-ic="lock"></i><span>문서함</span></button>
     <button class="tb" data-act="best" title="best 문서 — 잘 만든 문서를 올려 두면 레퍼런스로 쌓입니다" aria-label="best 문서"><i data-ic="bookmark"></i><span>best 문서</span></button>
+    <button class="tb" id="btnCheck" title="문서 점검 — 공문서 표기 · 쉬운 말 · 띄어쓰기 · 두괄식 (F8)" aria-label="문서 점검"><i data-ic="check"></i><span>점검</span></button>
+    <button class="tb" id="btnTools" title="업무 도구 — 서식으로 새 문서 · 실적 기록장 · 명령 찾기 (Ctrl+K)" aria-label="업무 도구" aria-haspopup="menu"><i data-ic="star"></i><span>업무 도구</span><i data-ic="chevronDown"></i></button>
     <button class="tb keep" data-act="print" title="인쇄 · PDF 저장 (Alt+P)" aria-label="인쇄"><i data-ic="print"></i><span>인쇄</span></button>
     <button class="tb icon pc" data-act="help" title="단축키 모음 (F1)" aria-label="단축키"><i data-ic="help"></i></button>
     <button class="tb icon pc" data-ui-theme title="화면을 어둡게"></button>
@@ -119,6 +121,15 @@
   <div class="row" id="fRepRow"><input id="fr" type="text" placeholder="바꿀 내용" spellcheck="false" aria-label="바꿀 내용"><button class="tb" id="fRep">바꾸기</button><button class="tb" id="fRepAll">모두 바꾸기</button></div>
 </div>
 
+<!-- 문서 점검(F8): 오른쪽 판 (휴대폰은 아래에서 올라옴). 내용은 work.js 가 채움 -->
+<aside id="chkPanel" hidden aria-label="문서 점검">
+  <div class="ck-top"><b>문서 점검</b><span class="ck-sum" id="ckSum"></span><span class="grow"></span><button class="tb icon" id="ckRe" title="다시 점검" aria-label="다시 점검"><i data-ic="undo"></i></button><button class="tb icon" id="ckClose" title="닫기 (Esc · F8)" aria-label="닫기"><i data-ic="x"></i></button></div>
+  <div class="ck-chips" id="ckChips"></div>
+  <button class="tb primary ck-all" id="ckFixAll" hidden></button>
+  <ul class="ck-list" id="ckList"></ul>
+  <p class="ck-note">행정안전부 공문서 작성 기준 · 국립국어원 다듬은 말을 바탕으로 한 기계 점검입니다. 고치기 전에 문맥을 보고 고르세요. 되돌리기 Ctrl+Z.</p>
+</aside>
+
 <footer id="status">
   <span id="stPage">1/1 쪽</span><span id="stSec"></span><span id="stChars"></span><span id="stMode">삽입</span><span id="stChord" class="chord"></span>
   <span class="grow"></span>
@@ -137,6 +148,7 @@
     <a class="brand" href="hangul.html"><span class="mark">D</span><b>DOCUMENT</b></a>
     <div class="rail-role" id="roleChip2"></div>
     <button class="btn ink wide" id="hmNew" data-admin title="빈 A4 문서 (Alt+N)"><i data-ic="plus"></i>새 문서</button>
+    <button class="btn wide" id="hmTpl" data-admin title="보고서 · 추진계획 · 공문 · 보도자료 · 적극행정 우수사례 · 자기기술서 서식"><i data-ic="filePlus"></i>서식으로 새 문서</button>
     <nav class="rail-nav" id="hmNav" aria-label="문서 분류">
       <button class="rail-item on" data-filter="all" aria-current="page"><i data-ic="stack"></i><span>모든 문서</span><em id="cAll"></em></button>
       <button class="rail-item" data-filter="box" data-admin title="GitHub 저장소에 암호로 잠가 보관하는 문서 — 집·사무실·휴대폰 어디서나 같은 문서"><i data-ic="lock"></i><span>문서함</span><em id="cBox"></em></button>
@@ -148,6 +160,7 @@
     <nav class="rail-nav quiet" aria-label="도구">
       <button class="rail-item" id="hmOpen" title="내 PC 의 .hwpx 파일 열기 (Ctrl+O) — 이 화면에 끌어다 놓아도 됩니다"><i data-ic="import"></i><span>파일 가져오기</span></button>
       <button class="rail-item" id="hmGh" data-admin style="display:none" title="GitHub 저장소에 문서함·best 문서를 올리도록 토큰 연결"><i data-ic="link"></i><span>GitHub 연결</span></button>
+      <button class="rail-item" id="hmWins" data-admin title="평소 성과를 적어 두고 자기기술서 · 적극행정 사례로 뽑기"><i data-ic="star"></i><span>실적 기록장</span></button>
       <button class="rail-item" id="hmHelp"><i data-ic="help"></i><span>사용 안내</span></button>
       <a class="rail-item" href="index.html"><i data-ic="back"></i><span>DPV로</span></a>
     </nav>
@@ -196,6 +209,7 @@
 <script src="app/access.js"></script>
 <script src="app/hwp/edit.js"></script>
 <script src="app/hwp/ui.js"></script>
+<script src="app/hwp/work.js"></script>
 <script src="app/hwp/home.js"></script>
 <script src="app/pwa.js"></script>
 <script src="app/appnav.js"></script>

@@ -487,3 +487,81 @@ body.reflow #doc { min-width: 100%; }
   .hp[data-pgs] { break-before: page; }
   .isl.draw, .isl.eq { border-color: transparent; background: none; }
 }
+
+/* ---------- 업무 도구 (work.js): 문서 점검 판 · 서식 고르기 · 실적 기록장 · 명령 찾기 ---------- */
+#chkPanel { position: fixed; z-index: 19; top: 112px; right: 12px; bottom: 44px; width: 360px; display: flex; flex-direction: column; background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 12px; box-shadow: var(--ui-shadow); overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
+@media (min-width: 1100px) { body.chk-on #canvas { margin-right: 372px; } }
+.ck-top { display: flex; align-items: center; gap: 6px; padding: 8px 8px 6px 14px; border-bottom: 1px solid var(--ui-border); }
+.ck-top > b { font-size: var(--fs-md, 14px); flex: none; }
+.ck-sum { display: flex; flex-wrap: wrap; gap: 2px 8px; color: var(--ui-muted); font-size: var(--fs-xs, 12px); min-width: 0; }
+.ck-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 12px 4px; }
+.ck-chip { border: 1px solid var(--ui-border); background: none; color: var(--ui-fg); border-radius: 999px; height: 26px; padding: 0 10px; font-size: var(--fs-xs, 12px); cursor: pointer; }
+.ck-chip.on { background: var(--ui-accent-soft); color: var(--ui-accent-fg); border-color: transparent; font-weight: 600; }
+.ck-all { margin: 6px 12px 2px; justify-content: center; }
+.ck-list { list-style: none; margin: 0; padding: 6px 8px; overflow: auto; flex: 1; }
+.ck-list li { display: flex; align-items: flex-start; gap: 4px; border-radius: 8px; }
+.ck-list li:hover { background: var(--ui-hover); }
+.ck-go { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; text-align: left; border: 0; background: none; color: var(--ui-fg); padding: 8px 6px; cursor: pointer; font: inherit; line-height: 1.5; }
+.ck-go em { font-style: normal; font-size: 11px; font-weight: 700; color: var(--ui-muted); }
+.ck-form .ck-go em, .ck-slot .ck-go em { color: var(--ui-danger); }
+.ck-shape .ck-go em { color: var(--ui-accent-fg); }
+.ck-go .f { font-size: var(--fs-xs, 12px); color: var(--ui-muted); background: var(--ui-bg); border-radius: 6px; padding: 2px 6px; }
+.ck-go .f b { color: var(--ui-accent-fg); }
+.ck-fix { flex: none; margin-top: 6px; border-color: var(--ui-border); height: 28px; }
+.ck-list .ck-ok { gap: 8px; padding: 14px 8px; color: var(--ui-muted); line-height: 1.6; }
+.ck-ok .ico { width: 18px; height: 18px; color: var(--ui-accent); flex: none; }
+.ck-note { margin: 0; padding: 8px 14px 10px; border-top: 1px solid var(--ui-border); color: var(--ui-muted); font-size: 11px; line-height: 1.5; }
+@media (max-width: 760px) {
+  #chkPanel { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 52vh; border-radius: 14px 14px 0 0; }
+  body.chk-on #canvas { padding-bottom: 52vh; }
+  .ck-note { display: none; }
+}
+.tp-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.tp-list { display: flex; flex-direction: column; gap: 4px; }
+.tp-card { display: flex; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--ui-border); border-radius: 10px; background: none; padding: 8px 10px; cursor: pointer; color: var(--ui-fg); font: inherit; }
+.tp-card:hover, .tp-card:focus-visible { border-color: var(--ui-accent); background: var(--ui-accent-soft); }
+.tp-ic { width: 32px; height: 32px; border-radius: 8px; background: var(--ui-bg); display: grid; place-items: center; flex: none; }
+.tp-ic .ico { width: 18px; height: 18px; color: var(--ui-muted); }
+.tp-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.tp-tx small { color: var(--ui-muted); font-size: var(--fs-xs, 12px); line-height: 1.45; word-break: keep-all; }
+.tp-tag { font-style: normal; font-size: 11px; color: var(--ui-muted); border: 1px solid var(--ui-border); border-radius: 999px; padding: 1px 7px; flex: none; }
+.tp-tips h4 { margin: 2px 0 6px; font-size: var(--fs-md, 14px); }
+.tp-tips ul { margin: 0 0 10px; padding-left: 18px; line-height: 1.65; word-break: keep-all; }
+.tp-prev { background: #fff; color: #111; border: 1px solid var(--ui-border); border-radius: 6px; padding: 14px 16px; font-family: 'Noto Serif KR', serif; font-size: 11px; line-height: 1.6; }
+.tp-prev .t { text-align: center; font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.tp-prev .r { text-align: right; color: #555; }
+.tp-prev .s, .tp-prev .h { font-weight: 700; }
+.tp-prev .more { color: #888; }
+.tp-foot { margin-right: auto; font-size: var(--fs-xs, 12px); }
+@media (max-width: 760px) { .tp-wrap { grid-template-columns: 1fr; } .tp-tips { display: none; } .tp-foot { display: none; } }
+.wn-form { border: 1px solid var(--ui-border); border-radius: 10px; padding: 10px 12px; margin: 8px 0 12px; }
+.wn-form textarea { resize: vertical; font: inherit; }
+.wn-btns { display: flex; justify-content: flex-end; gap: 6px; margin-top: 8px; }
+.wn-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.wn-head select { width: auto; }
+.wn-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.wn-list li { border: 1px solid var(--ui-border); border-radius: 10px; padding: 8px 10px; word-break: keep-all; overflow-wrap: anywhere; }
+.wn-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.wn-t em { font-style: normal; color: var(--ui-muted); font-size: var(--fs-xs, 12px); font-variant-numeric: tabular-nums; }
+.wn-c { font-size: 11px; border-radius: 999px; padding: 1px 7px; background: var(--ui-accent-soft); color: var(--ui-accent-fg); }
+.wn-r { margin-top: 4px; font-weight: 600; }
+.wn-w { margin-top: 2px; color: var(--ui-muted); line-height: 1.55; }
+.wn-a { display: flex; justify-content: flex-end; gap: 4px; margin-top: 4px; }
+.wn-a .tb.sm { height: 28px; padding: 0 8px; font-size: var(--fs-xs, 12px); }
+.wn-a .tb.sm .ico { width: 14px; height: 14px; }
+.wn-empty { color: var(--ui-muted); text-align: center; padding: 16px !important; }
+.wn-io { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.pal-bg { place-items: start center; padding-top: 12vh; }
+.pal { width: min(620px, 94vw); min-width: 0; overflow: hidden; }
+.pal-in { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--ui-border); }
+.pal-in .ico { width: 18px; height: 18px; color: var(--ui-muted); flex: none; }
+.pal-in input { flex: 1; min-width: 0; border: 0 !important; box-shadow: none !important; background: none; font-size: 16px; height: 34px; outline: none; }
+.pal-list { list-style: none; margin: 0; padding: 6px; max-height: 56vh; overflow: auto; }
+.pal-list li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.pal-list li .ico { width: 16px; height: 16px; color: var(--ui-muted); flex: none; }
+.pal-list li span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pal-list li kbd { color: var(--ui-muted); font-size: var(--fs-xs, 12px); flex: none; }
+.pal-list li.on { background: var(--ui-accent-soft); color: var(--ui-accent-fg); }
+.pal-list li.none { color: var(--ui-muted); cursor: default; }
+@media print { #chkPanel { display: none !important; } body.chk-on #canvas { margin-right: 0; padding-bottom: 0; } }
+@media (min-width: 761px) { .bar1 #btnCheck > span { display: inline; } } /* 가장 자주 쓰는 업무 도구라 좁은 PC 에서도 글자를 남김 */
