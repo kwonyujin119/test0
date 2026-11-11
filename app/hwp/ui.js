@@ -166,9 +166,9 @@
     saving = true; setState('저장 중…');
     const r0 = rev;
     try {
-      if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview())); done('문서함에 저장했습니다'); }
+      if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview())); done('저장했습니다 (모든 기기)'); }
       else if (!as && W.handle) { const blob = await build(); await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
-      else if (as === 'box' || as === 'boxNew') { await boxSaveCurrent(await build(), r0, as === 'boxNew'); }
+      else if (as === 'box' || as === 'boxNew' || (!as && !W.handle)) { await boxSaveCurrent(await build(), r0, as === 'boxNew'); } // 기본 저장 = 공통 저장소(모든 기기). 내 PC 는 [다른 이름으로]
       else {
         // 저장 창을 먼저 열고(클릭 직후여야 브라우저가 막지 않음) 문서는 그다음 만듦 — 큰 문서도 창이 안 뜨는 일이 없게
         const h = await HwpStore.pickSaveHandle(fileName());
@@ -240,7 +240,7 @@
     const id = asNew ? null : W.boxId;
     W.boxId = await boxRun(() => HwpStore.box.save(id, W.name, blob, deviceName(), preview()));
     W.handle = null; savedAt(r0);
-    toast('문서함에 저장했습니다 — 다른 PC 에서도 이 문서를 열 수 있습니다', 3000);
+    toast('저장했습니다 — 어느 기기에서나 이 문서를 엽니다', 3000);
   }
   function connectDialog(opts) {
     opts = opts || {};
@@ -286,14 +286,20 @@
     catch (e) {
       if (!e.badPass) throw e;
       toast('문서함 암호를 다시 입력해 주세요', 2500);
-      if (!(await boxEnsure())) throw new Error('문서함 암호를 입력하지 않아 멈췄습니다');
+      if (!(await legacyEnsure())) throw new Error('문서함 암호를 입력하지 않아 멈췄습니다');
       return gh401(fn);
     }
   }
+  /* 공통 저장소(documents/): 읽기는 누구나, 쓰기는 GitHub 연결(토큰)만 있으면 됨 — 암호 없음 */
   async function boxEnsure() {
-    if (!HwpStore.box.ready()) { if (!(await connectDialog())) return false; }
-    if (HwpStore.box.unlocked || await HwpStore.box.restoreKey()) return true;
-    let exists = false; try { exists = await gh401(() => HwpStore.box.exists()); } catch (e) { tell('문서함을 확인하지 못했습니다', e.message); return false; }
+    if (HwpStore.box.canWrite()) return true;
+    return connectDialog();
+  }
+  /* 예전 잠긴 문서함 · best 문서(암호): 문서함 암호를 묻는다 */
+  async function legacyEnsure() {
+    if (!HwpStore.legacy.ready()) { if (!(await connectDialog())) return false; }
+    if (HwpStore.legacy.unlocked || await HwpStore.legacy.restoreKey()) return true;
+    let exists = false; try { exists = await gh401(() => HwpStore.legacy.exists()); } catch (e) { tell('문서함을 확인하지 못했습니다', e.message); return false; }
     return new Promise(res => {
       dialog(exists ? '문서함 열기' : '문서함 만들기', `${exists ? '<p style="margin-top:0">문서함 암호를 입력하세요.</p>' : `<div class="warn">처음 한 번 문서함 암호를 정합니다. 문서는 이 암호로 <b>브라우저 안에서 암호화</b>된 뒤 올라가므로, 저장소가 공개여도 내용과 파일 이름은 보이지 않습니다.<br><b>암호를 잊으면 누구도(저도) 문서를 되살릴 수 없습니다.</b> 꼭 기억해 두세요.</div>`}
         <div class="grid1" style="margin-top:12px"><label>암호</label><input id="b_p" type="password" autocomplete="off">${exists ? '' : '<label>암호 확인</label><input id="b_p2" type="password" autocomplete="off">'}</div>
@@ -303,9 +309,9 @@
           const p = q('#b_p').value;
           if (p.length < 6) { toast('암호는 6자 이상으로 해 주세요', 2400); return false; }
           if (!exists && p !== q('#b_p2').value) { toast('두 암호가 다릅니다', 2400); return false; }
-          try { await gh401(() => HwpStore.box.unlock(p, q('#b_rm').checked)); } catch (e) { toast(e.message, 3200); return false; }
+          try { await gh401(() => HwpStore.legacy.unlock(p, q('#b_rm').checked)); } catch (e) { toast(e.message, 3200); return false; }
           res(true);
-        }, onClose: () => res(HwpStore.box.unlocked) });
+        }, onClose: () => res(HwpStore.legacy.unlocked) });
     });
   }
   /* ---------- best 문서 (레퍼런스) ---------- */
@@ -315,7 +321,7 @@
     await BestDocs.init();
     if (BestDocs.mode() !== 'github') return true;
     if (GUEST) return false;
-    return boxEnsure();
+    return legacyEnsure();
   }
   async function bestOpen(it, asNew) {
     if (!(await confirmDiscard())) return;
@@ -514,7 +520,7 @@
   /* ---------- 휴대폰 머리 줄: 열기 · 저장 · 인쇄만 두고 나머지는 ⋯ 메뉴 ---------- */
   $id('btnBar1More').addEventListener('click', e => {
     const dark = UiTheme.get() === 'dark';
-    const items = (GUEST ? [] : [{ icon: 'filePlus', label: '새 문서', kbd: 'Alt+N', run: () => act('new') }, { icon: 'export', label: '다른 이름으로 저장', kbd: 'Alt+V', run: () => act('saveAs') }, { icon: 'lock', label: '문서함', run: () => act('box') }])
+    const items = (GUEST ? [] : [{ icon: 'filePlus', label: '새 문서', kbd: 'Alt+N', run: () => act('new') }, { icon: 'export', label: '다른 이름으로 저장', kbd: 'Alt+V', run: () => act('saveAs') }, { icon: 'folder', label: '문서 목록', run: () => act('box') }])
       .concat(GUEST ? [] : [{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null])
       .concat(window.HwpWork ? [{ icon: 'check', label: '문서 점검', kbd: 'F8', run: () => HwpWork.openCheck() }].concat(GUEST ? [] : [{ icon: 'filePlus', label: '서식으로 새 문서', run: () => HwpWork.templateDialog() }, { icon: 'star', label: '실적 기록장', run: () => HwpWork.winsDialog() }]).concat([{ icon: 'search', label: '명령 찾기', kbd: 'Ctrl+K', run: () => HwpWork.palette() }, null]) : [])
       .concat([{ icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
@@ -538,13 +544,13 @@
 
   /* ---------- 명령 ---------- */
   const ALIGN = { alJ: 'JUSTIFY', alL: 'LEFT', alC: 'CENTER', alR: 'RIGHT', alD: 'DISTRIBUTE' };
-  const GUEST_OK = /^(home|open|help|print|find|replace|zoomIn|zoomOut)$/; // best 문서는 관리자만
+  const GUEST_OK = /^(home|box|open|help|print|find|replace|zoomIn|zoomOut)$/; // best 문서는 관리자만
   function act(a) {
     if (GUEST && !GUEST_OK.test(a)) { guestSay(); return; }
     if (a === 'home') return HwpHome.show();
     if (a === 'new') return newDoc();
     if (a === 'open') return openDialog();
-    if (a === 'box') return HwpHome.show('box');
+    if (a === 'box') return HwpHome.show('all');
     if (a === 'best') return HwpHome.show('best');
     if (a === 'help') return helpDialog();
     if (!needDoc()) return;
@@ -1155,7 +1161,7 @@
 
   /* ---------- 시작 ---------- */
   doc.addEventListener('keyup', () => window.onSelChange());
-  window.__hwp = { W, GUEST, act, openBytes, openFile, openDialog, newDoc, loadDoc, save, build, dialog, askConfirm, askText, tell, boxEnsure, boxRun, connectDialog, confirmDiscard, updateState, dropDone, bestReady, bestOpen, bestUpload, bestStructDialog, bestEditDialog, helpDialog, setName, deviceName, fmtKB, popMenu, closePop };
+  window.__hwp = { W, GUEST, act, openBytes, openFile, openDialog, newDoc, loadDoc, save, build, dialog, askConfirm, askText, tell, boxEnsure, legacyEnsure, boxRun, connectDialog, confirmDiscard, updateState, dropDone, bestReady, bestOpen, bestUpload, bestStructDialog, bestEditDialog, helpDialog, setName, deviceName, fmtKB, popMenu, closePop };
   (async () => {
     GH.load();
     $id('selZoom').value = '1';

@@ -17,7 +17,14 @@ function blockOf(n) { if (!n) return null; const e = n.nodeType === 1 ? n : n.pa
 function topOf(n) { let b = blockOf(n); while (b && !b.parentElement.classList.contains('hsec')) b = blockOf(b.parentElement); return b; }
 function cellOf(n) { const e = n && (n.nodeType === 1 ? n : n.parentElement); const td = e && e.closest('td'); return td && inDoc(td) ? td : null; }
 function hostOf(b) { return b.parentElement; } // .hsec 또는 td
-function placeCaret(node, off) { const r = document.createRange(); r.setStart(node, off); r.collapse(true); const s = sel(); s.removeAllRanges(); s.addRange(r); focusFor(node); }
+function placeCaret(node, off) { const r = document.createRange(); r.setStart(node, off); r.collapse(true); const s = sel(); s.removeAllRanges(); s.addRange(r); focusFor(node); markCaret(node); }
+/* 커서가 있는 문단은 늘 그린다: 화면 밖이라 그리기를 건너뛴(content-visibility) 문단에 글을 치면 크롬이 커서를 글 앞에 두어 글자가 거꾸로 들어감 */
+let _cvOn = null;
+function markCaret(n) {
+  const b = n && topOf(n); if (b === _cvOn && (!b || b.classList.contains('cvon'))) return;
+  if (_cvOn) _cvOn.classList.remove('cvon'); _cvOn = b || null; if (b) b.classList.add('cvon');
+}
+document.addEventListener('selectionchange', () => { const r = rng(); if (r && inDoc(r.startContainer)) markCaret(r.startContainer); });
 function focusFor(node) { const e = node.nodeType === 1 ? node : node.parentElement; const host = e.closest('td[contenteditable="true"]') || docEl(); if (document.activeElement !== host) host.focus({ preventScroll: true }); }
 function caretToStart(b) {
   const w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.isl,table') && n.parentElement.closest('.isl,table') !== b ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });

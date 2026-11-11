@@ -103,7 +103,7 @@ const BestDocs = (() => {
   /* ---------- GitHub (문서함 암호로 잠금) ---------- */
   const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
   const G = {
-    box() { if (!HwpStore.box.unlocked) { const e = new Error('best 문서를 GitHub 에 올리려면 먼저 문서함 암호를 열어야 합니다'); e.needBox = true; throw e; } return HwpStore.box; },
+    box() { if (!HwpStore.legacy.unlocked) { const e = new Error('best 문서를 GitHub 에 올리려면 먼저 문서함 암호를 열어야 합니다'); e.needBox = true; throw e; } return HwpStore.box; },
     async readJson(path) { const u = await this.box().read(path); if (!u) return null; return JSON.parse(dec.decode(await this.box().open(u, path))); },
     async list() { return (await this.readJson(DIR + '/index.bin')) || []; },
     async get(id) { const r = await this.readJson(`${DIR}/${id}.json.bin`); if (!r) throw new Error('best 문서를 찾지 못했습니다'); return r; },

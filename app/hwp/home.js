@@ -13,19 +13,18 @@ const HwpHome = (() => {
   const U = () => window.__hwp; // ui.js: 문서 열기 · 저장 · 창 · 문서함 암호 …
   const GUEST = Access.isGuest;
   const root = $('home');
-  const FILTERS = { all: '모든 문서', box: '문서함', week: '최근 7일', draft: '저장 안 한 작업본', best: 'best 문서', shared: '올린 문서' };
+  const FILTERS = { all: '모든 문서', box: '문서함', week: '최근 7일', draft: '저장 안 한 작업본', best: 'best 문서' };
   const PREF = 'hwp:home'; // 이 기기에 기억하는 보기 설정
   const pref = (() => { try { return Object.assign({ view: 'grid', sort: 'recent' }, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { return { view: 'grid', sort: 'recent' }; } })();
   const savePref = () => { try { localStorage.setItem(PREF, JSON.stringify(pref)); } catch (e) { } };
   let filter = 'all', kw = '';
-  const box = { state: 'idle', items: [], err: '' };  // noconn(GitHub 연결 없음) · locked(암호) · loading · ok · err
+  const box = { state: 'idle', items: [], folders: [], err: '' };  // noconn(GitHub 연결 없음) · locked(암호) · loading · ok · err
   const best = { state: 'idle', items: [], err: '' }; // locked(GitHub 암호) · loading · ok · err
-  const shared = { state: 'idle', items: [] };       // 올린 문서: documents/*.hwpx + documents/index.json (교안의 decks/ 와 같은 방식 — 잠그지 않은 공개 파일, 관리자 화면에만 보임)
   let drafts = [], draftsLoaded = false, inited = false;
 
   /* ---------- 보이기 / 숨기기 ---------- */
   function show(which) {
-    if (which && FILTERS[which]) setFilter(GUEST && which === 'best' ? 'all' : which); // 게스트는 best 문서를 볼 수 없음
+    if (which && (FILTERS[which] || /^f:/.test(which))) setFilter(GUEST && which === 'best' ? 'all' : which); // 게스트는 best 문서를 볼 수 없음
     root.hidden = false;
     render();  // 받아 둔 자료로 먼저 그리고
     refresh(); // 새로 받아 다시 그림
@@ -38,45 +37,63 @@ const HwpHome = (() => {
   async function refresh() {
     await BestDocs.init(); // API.init(): 내 PC 서버인지 · GitHub 인지
     railGh(); render();
-    loadDrafts(); loadBox(); loadBest(); loadShared();
-  }
-  async function loadShared() {
-    if (GUEST) return;
-    try { const r = await fetch('documents/index.json', { cache: 'no-store' }); shared.items = r.ok ? ((await r.json()).items || []) : []; shared.state = 'ok'; }
-    catch (e) { shared.items = []; shared.state = 'ok'; }
-    render();
+    loadDrafts(); loadBox(); loadBest();
   }
   async function loadDrafts() {
     drafts = GUEST ? [] : await HwpStore.drafts.list();
     draftsLoaded = true; render();
   }
-  async function loadBox() {
-    if (GUEST) return;
-    if (!GH.cfg) GH.load();
-    if (!HwpStore.box.ready()) { box.state = 'noconn'; render(); return; }
-    if (!HwpStore.box.unlocked && !(await HwpStore.box.restoreKey())) { box.state = 'locked'; render(); return; }
+  async function loadBox() { // 공통 저장소(documents/): 누구나 읽음 — 토큰 · 암호 필요 없음
     box.state = box.items.length ? 'ok' : 'loading'; render(); // 받아 둔 목록이 있으면 그대로 보여 주며 새로 받음
-    try { box.items = await U().boxRun(() => HwpStore.box.list()); box.state = 'ok'; }
+    try { box.items = await U().boxRun(() => HwpStore.box.list()); box.folders = HwpStore.box.folder.list(); box.state = 'ok'; }
     catch (e) { console.error(e); box.state = 'err'; box.err = e.message; }
+    render(); checkLegacy();
+  }
+  /* 예전 잠긴 문서함(hwp/*.bin)에 남은 문서 → 공통 저장소로 옮기기 (관리자 · GitHub 연결 · 한 번만 암호) */
+  const legacy = { n: 0, busy: false };
+  async function checkLegacy() {
+    if (GUEST || !HwpStore.box.canWrite() || legacy.checked) return; legacy.checked = true;
+    try {
+      if (!(await HwpStore.legacy.exists())) return;
+      const moved = new Set(box.items.map(x => x.legacy).filter(Boolean));
+      if (await HwpStore.legacy.restoreKey()) { const old = await HwpStore.legacy.list(); legacy.n = old.filter(x => !moved.has(x.id)).length; }
+      else legacy.n = moved.size ? 0 : -1; // 암호를 모르면 개수는 모름 (-1: 옮길 것이 있을 수 있음)
+    } catch (e) { console.warn('legacy', e); }
     render();
   }
+  async function migrate() {
+    if (legacy.busy) return; legacy.busy = true;
+    try {
+      if (!(await U().legacyEnsure())) return;
+      const moved = new Set(box.items.map(x => x.legacy).filter(Boolean));
+      const old = (await U().boxRun(() => HwpStore.legacy.list())).filter(x => !moved.has(x.id));
+      if (!old.length) { legacy.n = 0; toast('옮길 문서가 없습니다 — 모두 옮겨져 있습니다', 2400); render(); return; }
+      const docs = [];
+      for (const [k, x] of old.entries()) { toast(`잠긴 문서함에서 꺼내는 중… ${k + 1}/${old.length}`, 20000); docs.push({ name: x.name, data: await HwpStore.legacy.load(x.id), created: x.created, modified: x.modified, device: x.device, preview: x.preview, legacy: x.id }); }
+      toast('공통 저장소에 올리는 중…', 30000);
+      const n = await U().boxRun(() => HwpStore.box.importMany(docs));
+      legacy.n = 0; toast(`${n}개 문서를 옮겼습니다 — 이제 어느 기기에서나 보입니다 (잠긴 원본은 그대로 둠)`, 4000); loadBox();
+    } catch (e) { console.error(e); U().tell('옮기지 못했습니다', e.message); }
+    finally { legacy.busy = false; }
+  }
+
   async function loadBest() {
     if (GUEST) return; // 게스트에게는 best 문서 목록을 받지도 않음
     await BestDocs.init();
-    if (BestDocs.mode() === 'github' && !HwpStore.box.unlocked && !(await HwpStore.box.restoreKey())) { best.state = 'locked'; render(); return; }
+    if (BestDocs.mode() === 'github' && !HwpStore.legacy.unlocked && !(await HwpStore.legacy.restoreKey())) { best.state = 'locked'; render(); return; }
     best.state = best.items.length ? 'ok' : 'loading'; render();
     try { best.items = await BestDocs.list(); best.state = 'ok'; }
     catch (e) { console.error(e); best.state = 'err'; best.err = e.message; }
     render();
   }
   /* 문서함 암호(또는 GitHub 연결)를 열고 목록을 받음 — best 문서도 같은 암호 */
-  async function unlock() { if (await U().boxEnsure()) { loadBox(); loadBest(); } }
+  async function unlock() { if (await U().legacyEnsure()) loadBest(); } // best 문서(암호)
   function lock() {
-    HwpStore.box.lock(); box.items = []; box.state = 'locked';
+    HwpStore.legacy.lock();
     if (BestDocs.mode() === 'github') { best.items = []; best.state = 'locked'; }
     render(); toast('문서함을 잠갔습니다 — 이 기기에 기억한 암호를 지웠습니다', 2600);
   }
-  async function connect() { if (await U().connectDialog()) { toast('GitHub 에 연결했습니다'); refresh(); } }
+  async function connect() { if (await U().connectDialog()) { toast('GitHub 에 연결했습니다 — 이제 이 기기에서 저장할 수 있습니다'); legacy.checked = false; refresh(); } }
   function railGh() {
     const b = $('hmGh'); if (GUEST) { b.style.display = 'none'; return; }
     b.style.display = '';
@@ -91,13 +108,14 @@ const HwpHome = (() => {
     const link = (id, label) => `<a href="#" id="${id}">${label}</a>`;
     if (GUEST) { n.className += ' guest'; n.innerHTML = `${icon('eye', 15)}<span>보기 전용입니다. hwpx 문서를 읽고 인쇄할 수 있습니다. <a href="index.html?mode=1">관리자로 입장</a></span>`; return; }
     if (panelShown) { n.hidden = true; return; }
-    if (box.state === 'noconn') n.innerHTML = `${icon('info', 15)}<span>지금은 이 기기에서만 저장됩니다. 집·사무실·휴대폰에서 같은 문서를 열려면 ${link('hmGhOn', 'GitHub 에 연결')}하세요.</span>`;
-    else if (box.state === 'locked') n.innerHTML = `${icon('lock', 15)}<span>문서함이 잠겨 있습니다. ${link('hmUnlock', '문서함 열기')}</span>`;
-    else if (box.state === 'err') n.innerHTML = `${icon('info', 15)}<span>문서함을 읽지 못했습니다. ${esc(box.err)} ${link('hmRetry', '다시 시도')}</span>`;
-    else if (box.state === 'ok' || box.state === 'loading') n.innerHTML = `${icon('link', 15)}<span>GitHub 저장소 <b>${esc(GH.cfg.owner)}/${esc(GH.cfg.repo)}</b> 에 암호로 잠가 보관합니다 · ${link('hmLock', '잠그기')} · ${link('hmGhOff', '연결 해제')}</span>`;
+    const repo = GH.cfg ? `${esc(GH.cfg.owner)}/${esc(GH.cfg.repo)}` : '';
+    if (legacy.n) n.innerHTML = `${icon('lock', 15)}<span>예전 잠긴 문서함에 문서${legacy.n > 0 ? ' ' + legacy.n + '개' : ''}가 남아 있습니다. ${link('hmMigrate', '모두 공통 저장소로 옮기기')} — 한 번만 문서함 암호를 넣으면 어느 기기 · 게스트 화면에서도 보입니다.</span>`;
+    else if (box.state === 'err') n.innerHTML = `${icon('info', 15)}<span>문서 목록을 읽지 못했습니다. ${esc(box.err)} ${link('hmRetry', '다시 시도')}</span>`;
+    else if (!HwpStore.box.canWrite()) n.innerHTML = `${icon('info', 15)}<span>문서는 어느 기기에서나 보입니다. 이 기기에서 <b>저장</b>하려면 ${link('hmGhOn', 'GitHub 에 연결')}하세요 (한 번만).</span>`;
+    else if (box.state === 'ok' || box.state === 'loading') n.innerHTML = `${icon('link', 15)}<span>문서는 GitHub 저장소 <b>${repo}</b> 의 documents/ 에 저장되어 어느 기기에서나 보입니다 (게스트는 읽기만, 잠긴 폴더는 숨김) · ${link('hmGhOff', '연결 해제')}</span>`;
     else { n.hidden = true; return; }
     const on = (id, fn) => { const a = n.querySelector('#' + id); if (a) a.onclick = ev => { ev.preventDefault(); fn(); }; };
-    on('hmGhOn', unlock); on('hmUnlock', unlock); on('hmRetry', loadBox); on('hmLock', lock);
+    on('hmGhOn', connect); on('hmRetry', loadBox); on('hmMigrate', migrate);
     on('hmGhOff', async () => { if (await U().askConfirm('GitHub 연결을 해제할까요?', '이 브라우저에 저장된 GitHub 토큰을 지웁니다. 저장소의 문서는 그대로입니다.', '연결 해제')) { GH.clear(); location.reload(); } });
   }
 
@@ -113,10 +131,44 @@ const HwpHome = (() => {
   const inWeek = x => x.time && Date.now() - x.time < 7 * 864e5;
 
   /* ---------- 문서 목록: 문서함 + 임시본을 한 줄로 ---------- */
+  /* ---------- 폴더: 관리자가 만들고 잠금. 잠긴 폴더는 게스트 화면(목록 · 검색 · 이어서 작업) 어디에도 안 보임 ---------- */
+  const folderOf = id => box.folders.find(f => f.id === id) || null;
+  const hiddenForGuest = it => GUEST && it.folder && (folderOf(it.folder) || {}).locked;
+  const visibleFolders = () => box.folders.filter(f => !(GUEST && f.locked));
+  function renderFolders() {
+    const nav = $('hmFolders'), head = $('hmFoldHead'); const fs = visibleFolders();
+    head.hidden = GUEST && !fs.length;
+    nav.innerHTML = fs.map(f => `<button class="rail-item${filter === 'f:' + f.id ? ' on' : ''}" data-filter="f:${esc(f.id)}" title="${esc(f.name)}${f.locked ? ' — 잠금: 게스트에게 숨김' : ''}">${icon(f.locked ? 'lock' : 'folder')}<span>${esc(f.name)}</span><em>${box.items.filter(x => x.folder === f.id).length || ''}</em></button>`).join('');
+  }
+  async function folderNew() {
+    if (!(await U().boxEnsure())) return;
+    const n = await U().askText('새 폴더', '폴더 이름', '', '만들기'); if (!n) return;
+    try { const id = await U().boxRun(() => HwpStore.box.folder.create(n)); toast(`"${n}" 폴더를 만들었습니다`, 2000); await loadBox(); setFilter('f:' + id); render(); }
+    catch (e) { U().tell('폴더를 만들지 못했습니다', e.message); }
+  }
+  async function folderAct(f, what) {
+    if (!(await U().boxEnsure())) return;
+    const n = box.items.filter(x => x.folder === f.id).length;
+    try {
+      if (what === 'rename') { const v = await U().askText('폴더 이름 바꾸기', '폴더 이름', f.name, '바꾸기'); if (!v || v === f.name) return; await U().boxRun(() => HwpStore.box.folder.rename(f.id, v)); }
+      if (what === 'lock') { if (!(await U().askConfirm(`"${f.name}" 폴더를 잠글까요?`, `게스트(보기 전용) 화면에서는 이 폴더와 안의 문서 ${n}개가 목록 · 검색 어디에도 보이지 않습니다.<br>다만 저장소가 공개라서, 파일 주소를 직접 아는 사람은 받을 수 있습니다.`, '잠그기'))) return; await U().boxRun(() => HwpStore.box.folder.lock(f.id, true)); }
+      if (what === 'unlock') await U().boxRun(() => HwpStore.box.folder.lock(f.id, false));
+      if (what === 'del') { if (!(await U().askConfirm(`"${f.name}" 폴더를 지울까요?`, `폴더만 지웁니다. 안의 문서 ${n}개는 지우지 않고 '모든 문서'로 나옵니다.`, '폴더 지우기', true))) return; await U().boxRun(() => HwpStore.box.folder.remove(f.id)); setFilter('all'); }
+      toast({ rename: '폴더 이름을 바꿨습니다', lock: `"${f.name}" 폴더를 잠갔습니다 — 게스트에게 숨겨집니다`, unlock: `"${f.name}" 폴더 잠금을 풀었습니다`, del: '폴더를 지웠습니다' }[what], 2600);
+    } catch (e) { U().tell('하지 못했습니다', e.message); }
+    loadBox();
+  }
+  function moveDialog(x) {
+    const opts = [['', '폴더 밖으로 (모든 문서)']].concat(box.folders.map(f => [f.id, (f.locked ? '🔒 ' : '') + f.name]));
+    U().dialog(icon('folder', 16) + '폴더로 옮기기', `<p class="dlg-desc"><b>${esc(x.name)}</b></p><div class="grid1"><label>폴더</label><select id="mvF">${opts.map(([v, l]) => `<option value="${esc(v)}"${(x.box.folder || '') === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></div>${box.folders.length ? '' : '<p class="dlg-desc">아직 폴더가 없습니다. 왼쪽 [폴더 ＋] 로 만드세요.</p>'}`,
+      { okText: '옮기기', onOk: async q => { if (!(await U().boxEnsure())) return false; try { await U().boxRun(() => HwpStore.box.folder.move(x.box.id, q('#mvF').value)); toast('옮겼습니다', 1600); loadBox(); } catch (e) { U().tell('옮기지 못했습니다', e.message); } } });
+  }
+
   function docs() {
     const W = U().W, list = [];
     const byBox = new Map(); for (const d of drafts) if (d.boxId && !byBox.has(d.boxId)) byBox.set(d.boxId, d); // 임시본은 최근 것부터
     for (const it of box.items) {
+      if (hiddenForGuest(it)) continue;
       const d = byBox.get(it.id) || null;
       list.push({ kind: 'box', id: it.id, name: it.name, time: Math.max(Date.parse(it.modified) || 0, d ? d.time : 0), size: it.size, device: it.device, preview: (d && d.preview) || it.preview, box: it, draft: d, cur: !!W.doc && (it.id === W.boxId || (d && d.id === W.draftId)) });
     }
@@ -177,30 +229,33 @@ const HwpHome = (() => {
   function docCard(x) {
     const W = U().W;
     const openDraft = async () => { if (!(await U().confirmDiscard())) return; const r = await HwpStore.drafts.get(x.draft.id); if (!r) { toast('임시본이 이미 지워졌습니다'); loadDrafts(); return; } toast('임시본을 여는 중…', 20000); await U().openBytes(await r.blob.arrayBuffer(), { name: r.name, draftId: x.draft.id, boxId: r.boxId || null, dirty: true }); };
-    const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('문서함에서 여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id, savedTime: Date.parse(x.box.modified) || null }); };
+    const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id, savedTime: Date.parse(x.box.modified) || null }); };
     const open = x.cur ? async () => hide() : (x.draft ? openDraft : openBox);
     const print = async () => { await open(); if (U().W.doc && root.hidden) U().act('print'); };
     const dl = async () => { toast('받는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); HwpStore.download(x.box.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); toast('내려받기 폴더에 저장했습니다 (' + x.box.name + '.hwpx)', 2600); };
     const ren = async () => { const n = await U().askText('이름 바꾸기', '이름', x.box.name, '바꾸기'); if (!n || n === x.box.name) return; await U().boxRun(() => HwpStore.box.rename(x.box.id, n)); if (x.box.id === W.boxId) U().setName(n); x.box.name = n; render(); toast('이름을 바꿨습니다'); };
-    const delBox = async () => { if (!(await U().askConfirm(`"${x.name}" 을(를) 문서함에서 지울까요?`, 'GitHub 기록에는 암호화된 상태로 남습니다.' + (x.draft ? ' 이 기기의 임시본은 그대로 둡니다.' : ''), '삭제', true))) return; await U().boxRun(() => HwpStore.box.remove(x.box.id)); if (x.box.id === W.boxId) { W.boxId = null; U().updateState(); } box.items = box.items.filter(b => b.id !== x.box.id); render(); toast('문서함에서 지웠습니다', 2200); };
+    const delBox = async () => { if (!(await U().askConfirm(`"${x.name}" 을(를) 문서함에서 지울까요?`, '저장소에서 지웁니다. Git 기록에는 남습니다.' + (x.draft ? ' 이 기기의 임시본은 그대로 둡니다.' : ''), '삭제', true))) return; await U().boxRun(() => HwpStore.box.remove(x.box.id)); if (x.box.id === W.boxId) { W.boxId = null; U().updateState(); } box.items = box.items.filter(b => b.id !== x.box.id); render(); toast('문서함에서 지웠습니다', 2200); };
     const delDraft = async () => { if (!(await U().askConfirm(`"${x.name}" 임시본을 지울까요?`, x.box ? '문서함에 저장된 문서는 그대로 두고, 이 기기에 남은 저장 안 한 작업본만 지웁니다.' : '지우면 되살릴 수 없습니다.', '지우기', true))) return; await HwpStore.drafts.del(x.draft.id); loadDrafts(); };
     const openLabel = x.cur ? '편집으로 돌아가기' : x.draft ? '이어서 편집' : GUEST ? '열기' : '열어서 편집';
     const o = { id: x.id, cur: x.cur, title: x.name, preview: x.preview,
-      meta: [x.cur ? '지금 편집 중' : '', relTime(x.time) + (x.time ? (x.draft ? ' 임시 저장' : ' 저장') : ''), x.kind === 'box' ? '문서함' : (x.draft.boxId ? '문서함 문서 · 이 기기' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
+      meta: [x.cur ? '지금 편집 중' : '', relTime(x.time) + (x.time ? (x.draft ? ' 임시 저장' : ' 저장') : ''), x.kind === 'box' ? ((folderOf(x.box.folder) || {}).name || '모든 기기') : (x.draft.boxId ? '저장된 문서 · 이 기기 작업본' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
       chip: x.draft ? '저장 안 한 작업본' : '',
       actions: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄', icon: 'print', run: print }],
       menu: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄 · PDF 저장', icon: 'print', run: print }] };
-    if (x.box && x.draft) o.menu.push({ label: '문서함 저장본 열기 (작업본 말고)', icon: 'folder', run: openBox });
-    if (x.box) o.menu.push({ label: 'hwpx 내려받기', icon: 'download', run: dl }, { label: '이름 바꾸기', icon: 'edit', run: ren });
+    if (x.box && x.draft) o.menu.push({ label: '저장본 열기 (작업본 말고)', icon: 'folder', run: openBox });
+    if (x.box) o.menu.push({ label: 'hwpx 내려받기', icon: 'download', run: dl });
+    if (x.box && !GUEST) o.menu.push({ label: '이름 바꾸기', icon: 'edit', run: ren }, { label: '폴더로 옮기기', icon: 'folder', run: () => moveDialog(x) });
     o.menu.push(null);
     if (x.draft) o.menu.push({ label: '임시본 지우기', icon: 'trash', run: delDraft, danger: true });
-    if (x.box) o.menu.push({ label: '문서함에서 삭제', icon: 'trash', run: delBox, danger: true });
+    if (x.box && !GUEST) o.menu.push({ label: '삭제', icon: 'trash', run: delBox, danger: true });
     return o;
   }
   async function boxUpload() {
     const p = await HwpStore.pickOpen().catch(e => { U().tell('파일을 열지 못했습니다', e.message); return null; }); if (!p) return;
-    toast('문서함에 올리는 중…', 20000);
-    try { await U().boxRun(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, U().deviceName())); toast('문서함에 올렸습니다', 2200); }
+    if (!(await U().boxEnsure())) return;
+    toast('올리는 중…', 20000);
+    const fid = filter.startsWith('f:') ? filter.slice(2) : null;
+    try { await U().boxRun(() => HwpStore.box.save(null, p.file.name.replace(/\.hwpx$/i, ''), p.file, U().deviceName(), null, fid ? { folder: fid } : null)); toast('올렸습니다 — 모든 기기에서 보입니다', 2200); }
     catch (e) { console.error(e); U().tell('올리지 못했습니다', e.message); }
     loadBox();
   }
@@ -224,39 +279,30 @@ const HwpHome = (() => {
      돌려주는 값: 문서함 상태(연결 없음 · 잠김 · 오류)를 이 자리의 안내 판으로 보였는지 — 보였으면 위 한 줄 알림은 줄임 */
   function renderDocs(list, hero, q) {
     const S = $('secDocs'), body = $('docsBody'), acts = $('docsActs'), head = $('docsHead'), cnt = $('docsCnt');
-    if (GUEST) { // 게스트: 문서함 · best 문서 모두 볼 수 없음 — 빈 화면 대신 할 수 있는 일을 안내
-      S.hidden = false; acts.innerHTML = ''; S.querySelector('.hm-head').hidden = true;
-      body.replaceChildren(panel('lock', '<b>게스트 모드에서는 문서함과 best 문서를 볼 수 없습니다.</b> 내 PC 의 .hwpx 파일은 [파일 가져오기]로 열어 읽고 인쇄할 수 있습니다.', '', [['파일 가져오기', 'import', () => U().openDialog()]]));
-      return true;
-    }
-    S.hidden = filter === 'best' || filter === 'shared'; if (S.hidden) return false;
+    S.hidden = filter === 'best'; if (S.hidden) return false;
     acts.innerHTML = '';
     // 제목은 "이어서 작업" 아래 나머지일 때만 ("모든 문서" 아래 또 "모든 문서" 가 보이지 않게)
     head.textContent = '다른 문서'; head.hidden = cnt.hidden = !hero;
     cnt.textContent = list.length ? `${list.length}개` : '';
     const W = U().W;
-    if (filter === 'box' && box.state === 'ok') {
-      headBtn(acts, '파일 올리기', 'upload', boxUpload).title = '내 PC 의 .hwpx 파일을 문서함에 올립니다';
-      if (W.doc) headBtn(acts, W.boxId ? '현재 문서 저장' : '현재 문서를 문서함에', 'save', () => { hide(); U().save('box'); });
-      headBtn(acts, '잠그기', 'lock', lock, 'ghost').title = '이 기기에 기억한 문서함 암호를 지웁니다';
-    }
-    $('secDocs').querySelector('.hm-head').hidden = !hero && !acts.children.length;
+    const vf = filter.startsWith('f:') ? folderOf(filter.slice(2)) : null;
+    if (vf && !GUEST) { // 폴더 안: 관리자 도구
+      head.textContent = vf.locked ? '잠긴 폴더 — 게스트에게 숨김' : '폴더'; head.hidden = false;
+      headBtn(acts, '이름 바꾸기', 'edit', () => folderAct(vf, 'rename'), 'ghost');
+      headBtn(acts, vf.locked ? '잠금 풀기' : '잠그기', vf.locked ? 'unlock' : 'lock', () => folderAct(vf, vf.locked ? 'unlock' : 'lock'), 'ghost');
+      headBtn(acts, '폴더 지우기', 'trash', () => folderAct(vf, 'del'), 'ghost');
+    } else if (filter === 'all' && !GUEST && box.state === 'ok') headBtn(acts, '파일 올리기', 'upload', boxUpload).title = '내 PC 의 .hwpx 파일을 올려 모든 기기에서 보이게 합니다';
+    $('secDocs').querySelector('.hm-head').hidden = !hero && !acts.children.length && !vf;
     if (list.length) { const g = grid(); for (const x of list) g.appendChild(card(docCard(x))); body.replaceChildren(g); return false; }
     if (hero) { body.innerHTML = ''; S.hidden = true; return false; } // 문서가 하나뿐이면 "이어서 작업"만
     const loading = !draftsLoaded || box.state === 'idle' || (box.state === 'loading' && filter !== 'draft');
     if (loading) { body.replaceChildren(ghosts(5)); return false; }
     if (q) { body.replaceChildren(empty(`<b>"${esc(kw)}" 이(가) 들어간 문서가 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`)); return false; }
-    const boxPanel = () => {
-      if (box.state === 'noconn') return panel('link', '<b>문서함은 GitHub 연결이 있어야 씁니다.</b>', '토큰을 한 번 넣고 문서함 암호를 정하면, 문서가 암호로 잠겨 보관되고 집·사무실·휴대폰 어디서나 같은 문서를 엽니다 (PRESENTATION과 같은 연결).', [['GitHub 연결', 'link', unlock]]);
-      if (box.state === 'locked') return panel('lock', '<b>문서함이 잠겨 있습니다.</b>', '암호를 입력하면 문서가 여기에 바로 보입니다.', [['문서함 열기', 'unlock', unlock]]);
-      if (box.state === 'err') return panel('info', '<b>문서함을 읽지 못했습니다.</b>', esc(box.err), [['다시 시도', 'redo', loadBox]]);
-      return null;
-    };
-    if (filter === 'box') { const bp = boxPanel(); body.replaceChildren(bp || panel('folder', '<b>문서함이 비어 있습니다.</b>', '편집 중인 문서를 문서함에 저장하거나 위의 [파일 올리기] 로 PC 의 hwpx 파일을 올리면, 다른 기기에서도 같은 문서를 엽니다.')); return !!bp; }
+    const boxPanel = () => box.state === 'err' ? panel('info', '<b>문서 목록을 읽지 못했습니다.</b>', esc(box.err), [['다시 시도', 'redo', loadBox]]) : null;
+    if (vf) { body.replaceChildren(empty(`<b>폴더가 비어 있습니다</b><span>${GUEST ? '' : '문서 카드의 ⋯ → [폴더로 옮기기] 로 넣거나, 이 폴더를 연 채로 [파일 올리기]를 쓰세요.'}</span>`)); return false; }
     if (filter === 'all') {
-      if (box.state === 'locked' || box.state === 'err') { body.replaceChildren(boxPanel()); return true; }
-      if (shared.items.length && !q) { body.innerHTML = ''; S.hidden = true; return false; } // 올린 문서가 있으면 '첫 문서를 만들어 보세요' 대신 그 목록이 보이게
-      const e = empty(`${W.doc ? '<b>문서함과 이 기기에 남은 문서가 없습니다</b><span>지금 문서를 문서함에 저장하면 다른 기기에서도 여기에 보입니다.</span>' : '<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나 PC 의 .hwpx 파일을 이 화면에 끌어다 놓으세요.</span>'}<div class="hub-empty-cta"><button class="btn${$('hmNew').getClientRects().length ? '' : ' ink'}" id="emNew">${icon('plus')}새 문서</button><button class="btn ghost" id="emOpen">${icon('import')}파일 가져오기</button></div>`);
+      if (box.state === 'err') { body.replaceChildren(boxPanel()); return true; }
+      const e = empty(`${W.doc ? '<b>저장된 문서가 없습니다</b><span>지금 문서를 저장(Ctrl+S)하면 어느 기기에서나 여기에 보입니다.</span>' : '<b>첫 문서를 만들어 보세요</b><span>새 문서를 만들거나 PC 의 .hwpx 파일을 이 화면에 끌어다 놓으세요.</span>'}<div class="hub-empty-cta"><button class="btn${$('hmNew').getClientRects().length ? '' : ' ink'}" id="emNew">${icon('plus')}새 문서</button><button class="btn ghost" id="emOpen">${icon('import')}파일 가져오기</button></div>`);
       body.replaceChildren(e);
       e.querySelector('#emNew').onclick = () => U().newDoc(); e.querySelector('#emOpen').onclick = () => U().openDialog();
       return false;
@@ -307,53 +353,36 @@ const HwpHome = (() => {
     return list.length;
   }
 
-  /* ---------- 올린 문서 (documents/) ---------- */
-  async function sharedBuf(it) { const r = await fetch('documents/' + encodeURIComponent(it.file), { cache: 'no-store' }); if (!r.ok) throw new Error('파일을 받지 못했습니다 (' + r.status + ')'); return r.arrayBuffer(); }
-  async function sharedOpen(it) { if (!(await U().confirmDiscard())) return false; toast('여는 중…', 20000); return U().openBytes(await sharedBuf(it), { name: it.name }); } // 저장소에 이미 있는 문서라 '고친 내용 없음'으로 연다
-  function sharedCard(it) {
-    const open = { label: '열기', icon: 'eye', run: () => sharedOpen(it) };
-    const toBox = { label: '문서함에 저장', icon: 'lock', run: async () => { const W = U().W; if ((W.doc && W.name === it.name && !W.boxId) || await sharedOpen(it)) U().save('boxNew'); } }; // 이미 열려 있으면 다시 받지 않음
-    const down = { label: '내려받기', icon: 'download', run: async () => { const b = new Blob([await sharedBuf(it)]); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = it.name + '.hwpx'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); } };
-    return { id: 'sh-' + it.file, title: it.name, preview: it.preview, badge: it.ver || 'NEW', note: it.note,
-      meta: [it.pages ? it.pages + '쪽' : '', it.size ? Math.max(1, Math.round(it.size / 1024)) + ' KB' : '', relTime(it.added)],
-      click: open, actions: [open, toBox], menu: [open, toBox, down] };
-  }
-  function renderShared(match) {
-    const S = $('secShared'); S.hidden = GUEST || !(filter === 'all' || filter === 'shared') || !shared.items.length; if (S.hidden) return 0;
-    const list = sorted(shared.items.map(it => Object.assign({ time: Date.parse(it.added) || 0 }, it))).filter(it => match(it.name, it.note, it.preview));
-    $('sharedCnt').textContent = list.length + '개 · 잠그지 않은 공개 파일';
-    if (!list.length) { S.hidden = true; return 0; }
-    const g = grid(); for (const it of list) g.appendChild(card(sharedCard(it))); $('sharedBody').replaceChildren(g);
-    return list.length;
-  }
-
   /* ---------- 그리기 ---------- */
   function render() {
     if (root.hidden) return;
     const q = kw.toLowerCase();
     const match = (...xs) => !q || xs.some(x => (x || '').toLowerCase().includes(q));
     const all = docs();
-    $('cAll').textContent = all.length || ''; $('cBox').textContent = box.items.length || ''; $('cWeek').textContent = all.filter(inWeek).length || '';
-    $('cDraft').textContent = drafts.length || ''; $('cBest').textContent = best.items.length || ''; $('cShared').textContent = shared.items.length || '';
+    $('cAll').textContent = all.length || ''; $('cWeek').textContent = all.filter(inWeek).length || '';
+    $('cDraft').textContent = drafts.length || ''; $('cBest').textContent = best.items.length || '';
     $('dDraft').hidden = !drafts.length; // 노란 점: 저장 안 한 작업본이 있을 때만
-    $('hmTitle').textContent = q ? '검색 결과' : FILTERS[filter];
+    const vf = filter.startsWith('f:') ? folderOf(filter.slice(2)) : null;
+    if (filter.startsWith('f:') && (!vf || (GUEST && vf.locked))) { filter = 'all'; setFilter('all'); }
+    renderFolders();
+    $('hmTitle').textContent = q ? '검색 결과' : vf ? vf.name : FILTERS[filter];
     let list = all.filter(x => match(x.name, x.preview));
-    if (filter === 'box') list = list.filter(x => x.kind === 'box');
+    if (vf) list = list.filter(x => x.box && x.box.folder === vf.id);
     if (filter === 'week') list = list.filter(inWeek);
     if (filter === 'draft') list = list.filter(x => x.draft);
-    if (filter === 'best' || filter === 'shared' || GUEST) list = [];
+    if (filter === 'best') list = [];
     list = sorted(list);
     const hero = filter === 'all' && !q && pref.sort === 'recent' && list.length ? list[0] : null;
     renderHero(hero); banner(hero);
     const rest = hero ? list.slice(1) : list;
     notice(renderDocs(rest, hero, q));
-    const nb = renderBest(match, q) + renderShared(match);
+    const nb = renderBest(match, q);
     const shown = list.length + nb;
     $('hmSub').textContent = (q || filter !== 'all') ? `${shown}개` : (all.length ? `문서 ${all.length}개` : '');
   }
   function setFilter(k) {
     filter = k;
-    $('hmNav').querySelectorAll('[data-filter]').forEach(b => { const on = b.dataset.filter === k; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    document.querySelectorAll('#hmNav [data-filter], #hmFolders [data-filter]').forEach(b => { const on = b.dataset.filter === k; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   }
   const paintView = () => document.querySelectorAll('#home .seg-b').forEach(b => { const on = b.dataset.view === pref.view; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
 
@@ -369,7 +398,8 @@ const HwpHome = (() => {
   /* ---------- 단추 · 키 ---------- */
   function init() {
     if (inited) return; inited = true;
-    $('hmNav').onclick = e => { const b = e.target.closest('[data-filter]'); if (!b) return; setFilter(b.dataset.filter); render(); root.scrollTop = 0; };
+    $('hmNav').onclick = $('hmFolders').onclick = e => { const b = e.target.closest('[data-filter]'); if (!b) return; setFilter(b.dataset.filter); render(); root.scrollTop = 0; };
+    $('hmFolderNew').onclick = folderNew;
     $('hmQ').oninput = () => { kw = $('hmQ').value.trim(); render(); };
     const sortSel = $('hmSort'); sortSel.value = pref.sort; sortSel.onchange = () => { pref.sort = sortSel.value; savePref(); render(); };
     document.querySelectorAll('#home .seg-b').forEach(b => b.onclick = () => { pref.view = b.dataset.view; savePref(); paintView(); render(); });

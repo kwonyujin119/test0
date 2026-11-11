@@ -31,7 +31,7 @@
     <button class="tb keep" data-act="open" title="파일 가져오기 — 내 PC 의 .hwpx 열기 (Alt+O, Ctrl+O)" aria-label="열기"><i data-ic="folder"></i><span>열기</span></button>
     <button class="tb keep" id="btnSave" data-act="save" data-admin title="저장하기 (Alt+S, Ctrl+S)" aria-label="저장"><i data-ic="save"></i><span>저장</span></button>
     <button class="tb" data-act="saveAs" data-admin title="다른 이름으로 저장 (Alt+V)" aria-label="다른 이름으로 저장"><i data-ic="export"></i><span>다른 이름으로</span></button>
-    <button class="tb" data-act="box" data-admin title="문서함 — 암호로 잠가 GitHub 에 보관합니다. 집·사무실·휴대폰 어디서나 같은 문서를 엽니다" aria-label="문서함"><i data-ic="lock"></i><span>문서함</span></button>
+    <button class="tb" data-act="box" title="문서 목록 — 모든 기기에서 같은 문서 · 폴더" aria-label="문서 목록"><i data-ic="folder"></i><span>문서 목록</span></button>
     <button class="tb" data-act="best" data-admin title="best 문서 — 잘 만든 문서를 올려 두면 레퍼런스로 쌓입니다" aria-label="best 문서"><i data-ic="bookmark"></i><span>best 문서</span></button>
     <button class="tb" id="btnCheck" title="문서 점검 — 공문서 표기 · 쉬운 말 · 띄어쓰기 · 두괄식 (F8)" aria-label="문서 점검"><i data-ic="check"></i><span>점검</span></button>
     <button class="tb" id="btnTools" title="업무 도구 — 서식으로 새 문서 · 실적 기록장 · 명령 찾기 (Ctrl+K)" aria-label="업무 도구" aria-haspopup="menu"><i data-ic="star"></i><span>업무 도구</span><i data-ic="chevronDown"></i></button>
@@ -151,12 +151,12 @@
     <button class="btn wide" id="hmTpl" data-admin title="보고서 · 추진계획 · 공문 · 보도자료 · 적극행정 우수사례 · 자기기술서 서식"><i data-ic="filePlus"></i>서식으로 새 문서</button>
     <nav class="rail-nav" id="hmNav" aria-label="문서 분류">
       <button class="rail-item on" data-filter="all" aria-current="page"><i data-ic="stack"></i><span>모든 문서</span><em id="cAll"></em></button>
-      <button class="rail-item" data-filter="box" data-admin title="GitHub 저장소에 암호로 잠가 보관하는 문서 — 집·사무실·휴대폰 어디서나 같은 문서"><i data-ic="lock"></i><span>문서함</span><em id="cBox"></em></button>
-      <button class="rail-item" data-filter="shared" data-admin title="세션이 만들어 저장소 documents/ 에 올린 문서 — 열거나 문서함에 저장"><i data-ic="import"></i><span>올린 문서</span><em id="cShared"></em></button>
       <button class="rail-item" data-filter="best" data-admin title="잘 만든 문서를 올려 둔 레퍼런스"><i data-ic="bookmark"></i><span>best 문서</span><em id="cBest"></em></button>
       <button class="rail-item" data-filter="week" data-admin><i data-ic="clock"></i><span>최근 7일</span><em id="cWeek"></em></button>
       <button class="rail-item" data-filter="draft" data-admin title="저장하지 않고 닫은 문서 — 이 브라우저에 자동 임시 저장된 작업본"><i data-ic="edit"></i><span>저장 안 한 작업본</span><i class="mark-dot" id="dDraft" hidden></i><em id="cDraft"></em></button>
     </nav>
+    <div class="rail-sec" id="hmFoldHead"><span>폴더</span><button class="rail-add" id="hmFolderNew" data-admin title="새 폴더 만들기" aria-label="새 폴더"><i data-ic="folderPlus"></i></button></div>
+    <nav class="rail-nav rail-folders" id="hmFolders" aria-label="폴더"></nav>
     <div class="rail-grow"></div>
     <nav class="rail-nav quiet" aria-label="도구">
       <button class="rail-item" id="hmOpen" title="내 PC 의 .hwpx 파일 열기 (Ctrl+O) — 이 화면에 끌어다 놓아도 됩니다"><i data-ic="import"></i><span>파일 가져오기</span></button>
@@ -190,10 +190,6 @@
     <section class="hm-sec" id="secDocs">
       <div class="hm-head"><h2 id="docsHead">다른 문서</h2><span class="cnt" id="docsCnt"></span><div class="acts" id="docsActs"></div></div>
       <div class="hm-body" id="docsBody"></div>
-    </section>
-    <section class="hm-sec" id="secShared" data-admin hidden>
-      <div class="hm-head"><h2><i data-ic="import"></i>올린 문서</h2><span class="cnt" id="sharedCnt"></span><div class="acts"></div></div>
-      <div class="hm-body" id="sharedBody"></div>
     </section>
     <section class="hm-sec" id="secBest" data-admin>
       <div class="hm-head"><h2><i data-ic="bookmark"></i>best 문서</h2><span class="cnt" id="bestCnt"></span><div class="acts" id="bestActs"></div></div>

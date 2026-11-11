@@ -125,7 +125,8 @@ html.guest #doc { caret-color: transparent; }
 #doc ::selection { background: rgba(48, 120, 230, .3); }
 .hsec { position: relative; }
 .hp { margin: 0; position: relative; min-height: 1px; }
-#doc.cv .hsec > .hp { content-visibility: auto; } /* 화면 밖 문단은 그리기를 건너뜀 (높이는 기억한 값으로 자리 유지) */
+#doc.cv .hsec > .hp { content-visibility: auto; }
+#doc.cv .hsec > .hp.cvon { content-visibility: visible; } /* 커서가 있는 문단은 늘 그림 (edit.js markCaret) */ /* 화면 밖 문단은 그리기를 건너뜀 (높이는 기억한 값으로 자리 유지) */
 .hp[data-num]::before { content: attr(data-num) "\00a0"; }
 .isl { display: inline; }
 .isl.hid { display: none; }
@@ -565,3 +566,10 @@ body.reflow #doc { min-width: 100%; }
 .pal-list li.none { color: var(--ui-muted); cursor: default; }
 @media print { #chkPanel { display: none !important; } body.chk-on #canvas { margin-right: 0; padding-bottom: 0; } }
 @media (min-width: 761px) { .bar1 #btnCheck > span { display: inline; } } /* 가장 자주 쓰는 업무 도구라 좁은 PC 에서도 글자를 남김 */
+/* 첫 화면 왼쪽 레일: 폴더 (관리자가 만들고 잠금, 잠긴 폴더는 게스트에게 숨김) */
+#home .rail-sec { display: flex; align-items: center; justify-content: space-between; padding: 14px 10px 4px 12px; color: var(--ui-muted); font-size: var(--fs-xs, 12px); font-weight: 600; }
+#home .rail-add { border: 0; background: none; width: 28px; height: 28px; border-radius: 7px; cursor: pointer; color: var(--ui-muted); display: grid; place-items: center; }
+#home .rail-add:hover { background: var(--ui-hover); color: var(--ui-fg); }
+#home .rail-add .ico { width: 16px; height: 16px; }
+#home #hmFolders:empty { display: none; }
+@media (max-width: 820px) { #home .rail-sec { order: 2; padding: 4px 6px; } }
