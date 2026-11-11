@@ -7,5 +7,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 .github/scripts/market_close.py --out out -v --force; cat out/market/*.json | head -80
-      - run: python3 -c "import sys;sys.path.insert(0,'.github/scripts');import market_close as m;print(m.index_desktop());s=m.stocks_desktop();print(len(s),s[:3])"
+      - run: |
+          python3 - <<'PY'
+          import sys, json, re, collections; sys.path.insert(0,'.github/scripts'); import market_close as m
+          j=json.loads(m.get('https://m.stock.naver.com/api/stocks/marketValue/KOSPI?page=1&pageSize=100'))
+          print('KEYS', list(j.keys()), j.get('totalCount')); s=j['stocks']; print('ITEM', json.dumps(s[0],ensure_ascii=False)[:1500])
+          j=json.loads(m.get('https://m.stock.naver.com/api/stocks/marketValue/KOSPI?page=20&pageSize=100'))
+          print('P20', json.dumps(j['stocks'][:2],ensure_ascii=False)[:1500])
+          for k in ('stockEndType','stockType','sosok','tradeStopType'):
+            c=collections.Counter()
+            for p in range(1,26):
+              jj=json.loads(m.get(f'https://m.stock.naver.com/api/stocks/marketValue/KOSPI?page={p}&pageSize=100'))
+              if not jj.get('stocks'): break
+              for x in jj['stocks']: c[str(x.get(k))]+=1
+            print('COUNT',k,dict(c))
+            if len(c)>1: break
+          h=m.get('https://finance.naver.com/sise/sise_index.naver?code=KOSPI','euc-kr','text/html')
+          i=h.find('now_value'); print('IDX', h[i-200:i+700])
+          h=m.get('https://finance.naver.com/sise/sise_market_sum.naver?sosok=0&page=1','euc-kr','text/html')
+          i=h.find('class="tltle"'); print('SUM', h[i-300:i+1200])
+          PY
