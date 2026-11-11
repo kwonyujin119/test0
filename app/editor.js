@@ -11,6 +11,7 @@
   S.name = qs('deck');
   if (!S.name) { location.href = 'gyoan.html'; return; }
   await API.init();
+  if (typeof FolderLock !== 'undefined') { const lk = await FolderLock.blocked(S.name); if (lk) { document.body.className = 'present'; document.body.innerHTML = FolderLock.screen(lk); return; } } // 잠긴 폴더: 관리자만
   try { S.deck = await API.load(S.name); }
   catch (e) { alert(e.message + '\n\n교안 목록으로 돌아갑니다.'); location.href = 'gyoan.html'; return; }
   S.base = S.deck.modified || ''; // 내가 불러온(또는 마지막으로 저장한) 판의 저장 시각
