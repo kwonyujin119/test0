@@ -95,5 +95,10 @@
   }
  ],
  "top10Basis": "코스피 시가총액 순위 · 주식만(ETF · ETN 제외, 우선주 포함) · 네이버 증권",
- "errors": []
+ "errors": [],
+ "kosdaq": {
+  "close": 705.1,
+  "diff": 37.49,
+  "chgPct": 5.62
+ }
 }
