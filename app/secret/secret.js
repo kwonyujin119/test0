@@ -2926,35 +2926,73 @@ ${[
     const box = $('mTemps');
     const [st, rec] = await Promise.all([getBrief('market/sumtemp.json').catch(() => null), getBrief('market/recent.json').catch(() => null)]);
     const ds = mui.dates.slice(0, 30).reverse();
-    const strip = ds.length < 2 ? '<p class="sc-fine" style="text-align:left">날짜가 둘 이상 쌓이면 보여 줍니다.</p>' : `<div class="bars">${ds.map(d => { const t = st && st.dates && st.dates[d]; const v = t ? t.pp : null; return `<button type="button" data-md="${d}" class="${d === mui.date ? 'on' : ''} ${v == null ? 'na' : v >= 60 ? 'up' : v <= 40 ? 'dn' : 'mid'}" title="${dLabel(d)} · ${t ? `${t.mood} (오름 ${t.pos} · 내림 ${t.neg}, ${v}%)` : '아직 셈 안 함 (저녁 장 마감 기록 때 셈)'}"><i style="height:${v == null ? 6 : Math.max(8, v)}%"></i><em>${+d.slice(8)}</em></button>`; }).join('')}</div>`;
-    box.innerHTML = `<div class="m-tgrid"><div class="m-temps" role="group" aria-label="날짜별 시장 온도 (오름 신호 비율)"><span class="lb">날짜별 시장 온도<small>오름 신호 비율 · 누르면 그날</small></span>${strip}</div>${mChart(st, rec)}</div>`;
+    const strip = ds.length < 2 ? '<p class="sc-fine" style="text-align:left;margin:0">날짜가 둘 이상 쌓이면 보여 줍니다.</p>' : `<div class="bars">${ds.map(d => { const t = st && st.dates && st.dates[d]; const v = t ? t.pp : null; return `<button type="button" data-md="${d}" class="${d === mui.date ? 'on' : ''} ${v == null ? 'na' : v >= 60 ? 'up' : v <= 40 ? 'dn' : 'mid'}" title="${dLabel(d)} · ${t ? `${t.mood} (오름 ${t.pos} · 내림 ${t.neg}, ${v}%)` : '아직 셈 안 함 (저녁 장 마감 기록 때 셈)'}"><i style="height:${v == null ? 6 : Math.max(8, v)}%"></i><em>${+d.slice(8)}</em></button>`; }).join('')}</div>`;
+    const rows = mRows(st, rec);
+    box.innerHTML = `<div class="m-half"><div class="m-temps" role="group" aria-label="날짜별 시장 온도 (오름 신호 비율)"><span class="lb">날짜별 시장 온도<small>오름 신호 비율 · 누르면 그날</small></span>${strip}</div>
+      <button type="button" class="m-mini" id="mMini" aria-label="시장 온도 · 코스피 · 코스닥 등락률 추이 크게 보기"${rows.length < 2 ? ' disabled' : ''}><span class="lb">추이<small>${Math.min(20, rows.length)}거래일 · 누르면 크게</small></span>${rows.length < 2 ? '<span class="sc-fine">장 마감 기록이 쌓이면 보여 줍니다</span>' : mMiniSvg(rows.slice(-20))}<span class="mc-lg"><i class="kp"></i>코스피<i class="kq"></i>코스닥<i class="tp"></i>온도</span></button></div>`;
     box.querySelectorAll('[data-md]').forEach(b => b.onclick = () => { mui.date = b.dataset.md; renderSum(); });
-    const tip = box.querySelector('.mc-tip');
-    box.querySelectorAll('.mc-row[data-d]').forEach(r => {
-      const showTip = e => { tip.innerHTML = r.dataset.tip; tip.hidden = false; const wr = r.closest('.m-chart').getBoundingClientRect(), rr = r.getBoundingClientRect(); tip.style.top = (rr.bottom - wr.top + 4) + 'px'; tip.style.left = Math.max(8, Math.min(wr.width - tip.offsetWidth - 8, (e && e.clientX ? e.clientX - wr.left : 60) - tip.offsetWidth / 2)) + 'px'; };
-      r.addEventListener('mousemove', showTip); r.addEventListener('focus', () => showTip()); r.addEventListener('mouseleave', () => { tip.hidden = true; }); r.addEventListener('blur', () => { tip.hidden = true; });
-      if (mui.dates.includes(r.dataset.d)) { r.classList.add('go'); r.onclick = () => { mui.date = r.dataset.d; renderSum(); }; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); r.click(); } }; }
+    const mb = $('mMini'); if (mb && rows.length >= 2) mb.onclick = () => mBig(rows);
+  }
+  /* 장 마감 기록 → 날짜 오름차순 [{ d, tp(온도 오름 비율), kp(코스피 %), kq(코스닥 %) }] */
+  function mRows(st, rec) {
+    return (Array.isArray(rec) ? rec : []).filter(r => r && r.date && r.kospi).sort((a, b) => a.date.localeCompare(b.date)).map(r => {
+      const t = (r.temp && r.temp.pp != null) ? r.temp : (st && st.dates && st.dates[r.date]) || null;
+      return { d: r.date, t, tp: t ? t.pp : null, kp: r.kospi.chgPct, kq: r.kosdaq ? r.kosdaq.chgPct : null, kpc: r.kospi.close, kqc: r.kosdaq && r.kosdaq.close };
     });
   }
-  /* 오른쪽: 날짜(세로) × 시장 온도 · 코스피 · 코스닥 등락률(가로) — 단위가 달라 세 칸으로 나눔(온도는 50% 기준, 두 지수는 같은 눈금) */
-  function mChart(st, rec) {
-    const rows = (Array.isArray(rec) ? rec : []).filter(r => r && r.date && r.kospi).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
-    if (!rows.length) return '<div class="m-chart"><div class="hd"><b>시장 온도 · 지수 등락률</b></div><p class="sc-fine" style="text-align:left">장 마감 기록이 아직 없습니다 (평일 20시 이후 생김).</p></div>';
-    const tOf = r => (r.temp && r.temp.pp != null) ? r.temp : (st && st.dates && st.dates[r.date]) || null;
-    const kq = r => r.kosdaq ? r.kosdaq.chgPct : null, kp = r => r.kospi.chgPct;
-    const M = Math.max(1, Math.ceil(Math.max(...rows.flatMap(r => [kp(r), kq(r)]).filter(v => v != null).map(Math.abs)))); // 두 지수 같은 눈금 (정수 %)
-    const pct = v => v == null ? '–' : (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%';
-    const bar = (v, max, txt, lbl) => v == null ? `<span class="c na" aria-label="${lbl} 자료 없음"><span class="trk"><i class="z"></i></span><em>–</em></span>` : `<span class="c" aria-label="${lbl} ${txt}"><span class="trk"><i class="z"></i><i class="b ${v > 0 ? 'up' : v < 0 ? 'dn' : ''}" style="${v >= 0 ? 'left:50%' : `right:50%`};width:${Math.min(50, Math.abs(v) / max * 50)}%"></i></span><em>${txt}</em></span>`;
-    const md = d => { const x = new Date(d + 'T00:00'); return `${x.getMonth() + 1}/${x.getDate()}<small>${'일월화수목금토'[x.getDay()]}</small>`; };
-    return `<div class="m-chart"><div class="hd"><b>시장 온도 · 지수 등락률</b><small>최근 ${rows.length}거래일 · 행에 올리면 자세히 · 누르면 그날 전략 요약</small></div>
-      <div class="mc" role="table" aria-label="날짜별 시장 온도, 코스피 등락률, 코스닥 등락률">
-        <div class="mc-row mc-h" role="row"><span role="columnheader">날짜</span><span role="columnheader">시장 온도<small>오름 비율 · 50% 기준</small></span><span role="columnheader">코스피<small>등락률</small></span><span role="columnheader">코스닥<small>등락률</small></span></div>
-        ${rows.map(r => { const t = tOf(r); const tipH = `<b>${dLabel(r.date)}</b><br>시장 온도 ${t ? `${t.pp}% · ${esc(t.mood)} (오름 ${t.pos} · 내림 ${t.neg})` : '기록 없음 (브리핑 없던 날)'}<br>코스피 ${pct(kp(r))}${r.kospi.close ? ` · ${num(r.kospi.close)}` : ''}<br>코스닥 ${pct(kq(r))}${r.kosdaq && r.kosdaq.close ? ` · ${num(r.kosdaq.close)}` : ''}`;
-          return `<div class="mc-row${r.date === mui.date ? ' on' : ''}" role="row" data-d="${r.date}" tabindex="0" data-tip="${esc(tipH)}"><span class="d" role="rowheader">${md(r.date)}</span>${bar(t ? t.pp - 50 : null, 50, t ? t.pp + '%' : '–', '시장 온도')}${bar(kp(r), M, pct(kp(r)), '코스피')}${bar(kq(r), M, pct(kq(r)), '코스닥')}</div>`; }).join('')}
-        <div class="mc-row mc-ax" aria-hidden="true"><span></span><span class="c"><span class="ax"><i>0</i><i>50%</i><i>100</i></span></span><span class="c"><span class="ax"><i>−${M}%</i><i>0</i><i>+${M}%</i></span></span><span class="c"><span class="ax"><i>−${M}%</i><i>0</i><i>+${M}%</i></span></span></div>
-      </div>
-      <div class="k-lg mc-lg"><span class="up">오름 (온도 50% 초과 · 상승)</span><span class="dn">내림 (온도 50% 미만 · 하락)</span></div>
-      <div class="mc-tip" hidden role="status"></div></div>`;
+  /* 선 하나: 값이 없는 날은 끊음 */
+  const mPath = (rows, key, x, y) => { let p = '', on = false; rows.forEach((r, i) => { const v = r[key]; if (v == null) { on = false; return; } p += `${on ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`; on = true; }); return p; };
+  const mMax = rows => Math.max(1, Math.ceil(Math.max(...rows.flatMap(r => [r.kp, r.kq]).filter(v => v != null).map(Math.abs))));
+  /* 작게: 위 온도(0~100, 50 기준선) · 아래 두 지수(같은 눈금, 0 기준선). 단위가 달라 한 축에 겹치지 않음 */
+  function mMiniSvg(rows) {
+    const W = 200, n = rows.length, M = mMax(rows), x = i => n < 2 ? W / 2 : 2 + i * (W - 4) / (n - 1);
+    const yt = v => 2 + (100 - v) / 100 * 16, yi = v => 24 + (M - v) / (2 * M) * 34;
+    const ln = (d, c) => d ? `<path d="${d}" class="${c}" vector-effect="non-scaling-stroke"/>` : '';
+    return `<svg viewBox="0 0 ${W} 60" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${W}" y1="${yt(50)}" y2="${yt(50)}" class="base" vector-effect="non-scaling-stroke"/><line x1="0" x2="${W}" y1="${yi(0)}" y2="${yi(0)}" class="base" vector-effect="non-scaling-stroke"/>${ln(mPath(rows, 'tp', x, yt), 'tp')}${ln(mPath(rows, 'kq', x, yi), 'kq')}${ln(mPath(rows, 'kp', x, yi), 'kp')}</svg>`;
+  }
+  /* 크게: 대화상자 — 기간 20 · 60일, 선에 올리면 그날 값, 누르면 그날 전략 요약 */
+  function mBig(all) {
+    const d = dialog(`<div class="m-big"><div class="hd"><h3>시장 온도 · 코스피 · 코스닥 등락률</h3><div class="sc-seg" id="mbRange"><button type="button" data-n="20" class="on">20일</button><button type="button" data-n="60">60일</button></div><button type="button" class="btn icon ghost" data-x aria-label="닫기">${icon('x', 16)}</button></div>
+      <p class="sub">위: 시장 온도(전략 요약 규칙 · 오름 신호 비율, 50% 가 중립) · 아래: 지수 등락률(두 지수 같은 눈금). 온도는 브리핑이 있는 날만 있습니다. 날짜를 누르면 그날 전략 요약으로.</p>
+      <div class="mc-lg"><i class="kp"></i>코스피 등락률<i class="kq"></i>코스닥 등락률<i class="tp"></i>시장 온도</div>
+      <div class="m-plot" id="mbPlot"></div></div>`, 'sc-dlg wide m-dlg');
+    d.el.querySelector('[data-x]').onclick = () => d.close();
+    let n = 20;
+    const draw = () => {
+      const rows = all.slice(-n), box = d.el.querySelector('#mbPlot'), W = Math.max(300, box.clientWidth), L = 44, R = 22, N = rows.length, M = mMax(rows);
+      const T0 = 24, TH = 90, I0 = T0 + TH + 34, IH = 190, B = I0 + IH + 30;
+      const x = i => L + (N < 2 ? 0 : i * (W - L - R) / (N - 1)), yt = v => T0 + (100 - v) / 100 * TH, yi = v => I0 + (M - v) / (2 * M) * IH;
+      const step = Math.max(1, Math.ceil(N / Math.floor((W - L) / 56)));
+      const dots = (key, y, c) => rows.map((r, i) => r[key] == null ? '' : `<circle cx="${x(i)}" cy="${y(r[key])}" r="${N > 30 ? 2.5 : 3.5}" class="${c}"/>`).join('');
+      const iT = [-M, -M / 2, 0, M / 2, M];
+      box.innerHTML = `<svg width="${W}" height="${B}" role="img" aria-label="최근 ${N}거래일 시장 온도와 코스피 · 코스닥 등락률 꺾은선">
+        <text x="${L}" y="${T0 - 10}" class="pt">시장 온도 (%)</text>
+        ${[0, 50, 100].map(v => `<line x1="${L}" x2="${W - R}" y1="${yt(v)}" y2="${yt(v)}" class="${v === 50 ? 'base' : 'grid'}"/><text x="${L - 6}" y="${yt(v)}" class="yl">${v}</text>`).join('')}
+        <path d="${mPath(rows, 'tp', x, yt)}" class="tp"/>${dots('tp', yt, 'tp')}
+        <text x="${L}" y="${I0 - 12}" class="pt">지수 등락률 (%)</text>
+        ${iT.map(v => `<line x1="${L}" x2="${W - R}" y1="${yi(v)}" y2="${yi(v)}" class="${v === 0 ? 'base' : 'grid'}"/><text x="${L - 6}" y="${yi(v)}" class="yl">${v > 0 ? '+' : ''}${+v.toFixed(1)}</text>`).join('')}
+        <path d="${mPath(rows, 'kq', x, yi)}" class="kq"/><path d="${mPath(rows, 'kp', x, yi)}" class="kp"/>${dots('kq', yi, 'kq')}${dots('kp', yi, 'kp')}
+        ${rows.map((r, i) => i % step && i !== N - 1 ? '' : `<text x="${x(i)}" y="${B - 12}" class="xl"${i === N - 1 ? ' text-anchor="end"' : ''}>${+r.d.slice(5, 7)}/${+r.d.slice(8)}</text>`).join('')}
+        <line class="cross" id="mbX" x1="0" x2="0" y1="${T0}" y2="${I0 + IH}" visibility="hidden"/>
+        <rect x="${L}" y="0" width="${W - L - R}" height="${B}" fill="transparent" id="mbHit"/></svg><div class="mc-tip" hidden></div>`;
+      const hit = box.querySelector('#mbHit'), cx = box.querySelector('#mbX'), tip = box.querySelector('.mc-tip');
+      const pc = v => v == null ? '–' : (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%';
+      const at = e => { const r = hit.getBoundingClientRect(); return Math.max(0, Math.min(N - 1, Math.round((e.clientX - r.left) / Math.max(1, r.width) * (N - 1)))); };
+      let cur = -1;
+      hit.onmousemove = e => {
+        const i = at(e); if (i === cur) return; cur = i; const r = rows[i];
+        cx.setAttribute('x1', x(i)); cx.setAttribute('x2', x(i)); cx.setAttribute('visibility', 'visible');
+        tip.innerHTML = `<b>${dLabel(r.d)}</b><br><i class="kp"></i>코스피 ${pc(r.kp)}${r.kpc ? ` · ${num(r.kpc)}` : ''}<br><i class="kq"></i>코스닥 ${pc(r.kq)}${r.kqc ? ` · ${num(r.kqc)}` : ''}<br><i class="tp"></i>시장 온도 ${r.t ? `${r.tp}% · ${esc(r.t.mood)}` : '기록 없음'}${mui.dates.includes(r.d) ? '<br><small>누르면 그날 전략 요약</small>' : ''}`;
+        tip.hidden = false; const tw = tip.offsetWidth; tip.style.left = Math.max(4, Math.min(W - tw - 4, x(i) + (x(i) > W / 2 ? -tw - 12 : 12))) + 'px'; tip.style.top = (I0 - 10) + 'px';
+        hit.style.cursor = mui.dates.includes(r.d) ? 'pointer' : 'default';
+      };
+      hit.onmouseleave = () => { cur = -1; tip.hidden = true; cx.setAttribute('visibility', 'hidden'); };
+      hit.onclick = e => { const r = rows[at(e)]; if (mui.dates.includes(r.d)) { d.close(); mui.date = r.d; renderSum(); } };
+    };
+    d.el.querySelectorAll('#mbRange [data-n]').forEach(b => b.onclick = () => { n = +b.dataset.n; d.el.querySelectorAll('#mbRange button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+    requestAnimationFrame(draw);
+    const onR = () => draw(); addEventListener('resize', onR); d.bg.addEventListener('closed', () => removeEventListener('resize', onR));
+    const c0 = d.close; d.close = () => { removeEventListener('resize', onR); c0(); };
   }
   async function renderSum(force) {
     const box = $('mList'); if (force) bui.cache = {};
