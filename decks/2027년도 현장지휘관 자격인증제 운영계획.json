@@ -14,20 +14,18 @@
  "titleFont": "sans",
  "bodyFont": "sans",
  "colors": {
-  "accent": "#FF6A13",
-  "accent2": "#3FD3F2",
-  "title": "#FFFFFF",
-  "fg": "#C9D3E0",
-  "muted": "#7F8DA3",
-  "surface": "#141E30",
-  "bg": "#0B1220"
+  "accent": "#EA580C",
+  "accent2": "#0891B2",
+  "title": "#0F172A",
+  "fg": "#334155",
+  "muted": "#475569",
+  "surface": "#F1F5F9",
+  "bg": "#FFFFFF"
  },
  "slides": [
   {
    "id": "9glqf00k6",
-   "bg": {
-    "color": "#0B1220"
-   },
+   "bg": null,
    "transition": "",
    "notes": "2027년도 현장지휘관 자격인증제 운영 계획 보고 · 인천소방학교 지휘역량강화센터",
    "elements": [
@@ -59,14 +57,14 @@
      "y": 0,
      "w": 560,
      "h": 1080,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
      "shadow": false,
      "html": "",
      "style": {},
-     "fill2": "#0B1220",
+     "fill2": "#FFFFFF",
      "fill2Op": 0,
      "gAngle": 0
     },
@@ -82,14 +80,14 @@
      "y": 820,
      "w": 1920,
      "h": 260,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
      "shadow": false,
      "html": "",
      "style": {},
-     "fill2": "#0B1220",
+     "fill2": "#FFFFFF",
      "fill2Op": 0,
      "gAngle": 270
     },
@@ -108,7 +106,7 @@
      "html": "INCIDENT COMMAND TRAINING CENTER",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 4
      }
@@ -125,7 +123,7 @@
      "y": 312,
      "w": 90,
      "h": 8,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -241,7 +239,7 @@
      "y": 0,
      "w": 560,
      "h": 1080,
-     "fill": "#141E30",
+     "fill": "#F1F5F9",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -264,7 +262,7 @@
      "html": "CONTENTS",
      "style": {
       "fontSize": 28,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 6
      }
@@ -321,7 +319,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -361,7 +359,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -401,7 +399,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -441,7 +439,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -481,7 +479,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -521,7 +519,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -561,7 +559,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -601,7 +599,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -641,7 +639,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -681,7 +679,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "valign": "middle"
      }
     },
@@ -717,7 +715,7 @@
      "y": 610,
      "w": 1140,
      "h": 3,
-     "fill": "#2A3650",
+     "fill": "#E2E8F0",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -741,7 +739,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#3FD3F2",
+      "color": "#0E7490",
       "letterSpacing": 4
      }
     },
@@ -757,7 +755,7 @@
      "y": 708,
      "w": 76,
      "h": 48,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -765,7 +763,7 @@
      "html": "1",
      "style": {
       "fontSize": 26,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -799,7 +797,7 @@
      "y": 708,
      "w": 76,
      "h": 48,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -807,7 +805,7 @@
      "html": "2",
      "style": {
       "fontSize": 26,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -841,7 +839,7 @@
      "y": 792,
      "w": 76,
      "h": 48,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -849,7 +847,7 @@
      "html": "3",
      "style": {
       "fontSize": 26,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -883,7 +881,7 @@
      "y": 792,
      "w": 76,
      "h": 48,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -891,7 +889,7 @@
      "html": "4",
      "style": {
       "fontSize": 26,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -925,7 +923,7 @@
      "y": 876,
      "w": 76,
      "h": 48,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -933,7 +931,7 @@
      "html": "5",
      "style": {
       "fontSize": 26,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -967,7 +965,7 @@
      "y": 876,
      "w": 76,
      "h": 48,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -975,7 +973,7 @@
      "html": "6",
      "style": {
       "fontSize": 26,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -1021,7 +1019,7 @@
      "html": "SUMMARY · 요약",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -1056,7 +1054,7 @@
      "y": 260,
      "w": 200,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -1064,7 +1062,7 @@
      "html": "개발주제",
      "style": {
       "fontSize": 28,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -1098,7 +1096,7 @@
      "y": 364,
      "w": 200,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -1106,7 +1104,7 @@
      "html": "개발기간",
      "style": {
       "fontSize": 28,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -1121,7 +1119,7 @@
      "y": 364,
      "w": 980,
      "h": 76,
-     "html": "2026. 10. 19.(월) ~ 11. 2.(월) · <b style=\"color:#FF6A13\">15일간</b>",
+     "html": "2026. 10. 19.(월) ~ 11. 2.(월) · <b style=\"color:#C2410C\">15일간</b>",
      "style": {
       "fontSize": 32,
       "color": "$title",
@@ -1140,7 +1138,7 @@
      "y": 468,
      "w": 200,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -1148,7 +1146,7 @@
      "html": "개발자",
      "style": {
       "fontSize": 28,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -1182,7 +1180,7 @@
      "y": 572,
      "w": 200,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -1190,7 +1188,7 @@
      "html": "주요내용",
      "style": {
       "fontSize": 28,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -1322,7 +1320,7 @@
      "style": {
       "fontSize": 26,
       "bold": true,
-      "color": "#FF6A13"
+      "color": "#C2410C"
      }
     },
     {
@@ -1337,7 +1335,7 @@
      "y": 852,
      "w": 128,
      "h": 64,
-     "fill": "#FF6A1333",
+     "fill": "#EA580C33",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1345,7 +1343,7 @@
      "html": "Claude",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#C2410C"
      }
     },
     {
@@ -1360,7 +1358,7 @@
      "y": 852,
      "w": 142,
      "h": 64,
-     "fill": "#FF6A1333",
+     "fill": "#EA580C33",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1368,7 +1366,7 @@
      "html": "ChatGPT",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#C2410C"
      }
     },
     {
@@ -1383,7 +1381,7 @@
      "y": 852,
      "w": 128,
      "h": 64,
-     "fill": "#FF6A1333",
+     "fill": "#EA580C33",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1391,7 +1389,7 @@
      "html": "Gemini",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#C2410C"
      }
     },
     {
@@ -1406,7 +1404,7 @@
      "y": 852,
      "w": 100,
      "h": 64,
-     "fill": "#FF6A1333",
+     "fill": "#EA580C33",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1414,7 +1412,7 @@
      "html": "Groq",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#C2410C"
      }
     },
     {
@@ -1453,7 +1451,7 @@
      "style": {
       "fontSize": 26,
       "bold": true,
-      "color": "#2BC48A"
+      "color": "#047857"
      }
     },
     {
@@ -1468,7 +1466,7 @@
      "y": 852,
      "w": 140,
      "h": 64,
-     "fill": "#2BC48A33",
+     "fill": "#05966933",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1476,7 +1474,7 @@
      "html": "카카오맵",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#047857"
      }
     },
     {
@@ -1491,7 +1489,7 @@
      "y": 852,
      "w": 96,
      "h": 64,
-     "fill": "#2BC48A33",
+     "fill": "#05966933",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1499,7 +1497,7 @@
      "html": "T맵",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#047857"
      }
     },
     {
@@ -1538,7 +1536,7 @@
      "style": {
       "fontSize": 26,
       "bold": true,
-      "color": "#8B7CF6"
+      "color": "#6D28D9"
      }
     },
     {
@@ -1553,7 +1551,7 @@
      "y": 852,
      "w": 128,
      "h": 64,
-     "fill": "#8B7CF633",
+     "fill": "#7C3AED33",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1561,7 +1559,7 @@
      "html": "GitHub",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#6D28D9"
      }
     },
     {
@@ -1576,7 +1574,7 @@
      "y": 852,
      "w": 184,
      "h": 64,
-     "fill": "#8B7CF633",
+     "fill": "#7C3AED33",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1584,7 +1582,7 @@
      "html": "Cloudflare",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#6D28D9"
      }
     },
     {
@@ -1623,7 +1621,7 @@
      "style": {
       "fontSize": 26,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -1638,7 +1636,7 @@
      "y": 852,
      "w": 115,
      "h": 64,
-     "fill": "#3FD3F233",
+     "fill": "#0891B233",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1646,7 +1644,7 @@
      "html": "법제처",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#0E7490"
      }
     },
     {
@@ -1661,7 +1659,7 @@
      "y": 852,
      "w": 215,
      "h": 64,
-     "fill": "#3FD3F233",
+     "fill": "#0891B233",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 32,
@@ -1669,7 +1667,7 @@
      "html": "공공데이터포털",
      "style": {
       "fontSize": 24,
-      "color": "#FFFFFF"
+      "color": "#0E7490"
      }
     }
    ]
@@ -1695,7 +1693,7 @@
      "html": "SUMMARY · 요약",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -1750,7 +1748,7 @@
      "y": 250,
      "w": 540,
      "h": 8,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -1770,7 +1768,7 @@
      "y": 290,
      "w": 116,
      "h": 116,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 24,
@@ -1829,7 +1827,7 @@
      "style": {
       "fontSize": 27,
       "bold": true,
-      "color": "#FF6A13"
+      "color": "#C2410C"
      }
     },
     {
@@ -1883,7 +1881,7 @@
      "y": 250,
      "w": 540,
      "h": 8,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -1903,7 +1901,7 @@
      "y": 290,
      "w": 116,
      "h": 116,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 24,
@@ -1962,7 +1960,7 @@
      "style": {
       "fontSize": 27,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -2016,7 +2014,7 @@
      "y": 250,
      "w": 540,
      "h": 8,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -2036,7 +2034,7 @@
      "y": 290,
      "w": 116,
      "h": 116,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 24,
@@ -2095,7 +2093,7 @@
      "style": {
       "fontSize": 27,
       "bold": true,
-      "color": "#2BC48A"
+      "color": "#047857"
      }
     },
     {
@@ -2149,7 +2147,7 @@
      "y": 610,
      "w": 540,
      "h": 8,
-     "fill": "#8B7CF6",
+     "fill": "#7C3AED",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -2169,7 +2167,7 @@
      "y": 650,
      "w": 116,
      "h": 116,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 24,
@@ -2228,7 +2226,7 @@
      "style": {
       "fontSize": 27,
       "bold": true,
-      "color": "#8B7CF6"
+      "color": "#6D28D9"
      }
     },
     {
@@ -2282,7 +2280,7 @@
      "y": 610,
      "w": 540,
      "h": 8,
-     "fill": "#F5B83D",
+     "fill": "#F59E0B",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -2302,7 +2300,7 @@
      "y": 650,
      "w": 116,
      "h": 116,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 24,
@@ -2361,7 +2359,7 @@
      "style": {
       "fontSize": 27,
       "bold": true,
-      "color": "#F5B83D"
+      "color": "#B45309"
      }
     },
     {
@@ -2415,7 +2413,7 @@
      "y": 610,
      "w": 540,
      "h": 8,
-     "fill": "#F06A8A",
+     "fill": "#E11D48",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 4,
@@ -2435,7 +2433,7 @@
      "y": 650,
      "w": 116,
      "h": 116,
-     "fill": "#0B1220",
+     "fill": "#FFFFFF",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 24,
@@ -2494,7 +2492,7 @@
      "style": {
       "fontSize": 27,
       "bold": true,
-      "color": "#F06A8A"
+      "color": "#BE123C"
      }
     },
     {
@@ -2539,7 +2537,7 @@
      "html": "SUMMARY · 요약",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -2592,7 +2590,7 @@
      "y": 300,
      "w": 580,
      "h": 150,
-     "fill": "#FF6A13",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2634,7 +2632,7 @@
      "y": 300,
      "w": 580,
      "h": 150,
-     "fill": "#E0560A",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2676,7 +2674,7 @@
      "y": 300,
      "w": 580,
      "h": 150,
-     "fill": "#B8460A",
+     "fill": "#9A3412",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2757,7 +2755,7 @@
      "y": 650,
      "w": 10,
      "h": 270,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -2796,11 +2794,11 @@
      "y": 722,
      "w": 450,
      "h": 180,
-     "html": "160<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "160<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -2837,7 +2835,7 @@
      "y": 650,
      "w": 10,
      "h": 270,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -2876,11 +2874,11 @@
      "y": 722,
      "w": 450,
      "h": 180,
-     "html": "160<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "160<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#3FD3F2",
+      "color": "#0E7490",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -2917,7 +2915,7 @@
      "y": 650,
      "w": 10,
      "h": 270,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -2956,11 +2954,11 @@
      "y": 722,
      "w": 490,
      "h": 180,
-     "html": "320<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "320<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#2BC48A",
+      "color": "#047857",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -2988,7 +2986,7 @@
      "html": "01 · 관련 근거",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -3043,7 +3041,7 @@
      "y": 280,
      "w": 540,
      "h": 10,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -3063,7 +3061,7 @@
      "y": 340,
      "w": 160,
      "h": 160,
-     "fill": "#FF6A13",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3106,7 +3104,7 @@
      "y": 690,
      "w": 300,
      "h": 3,
-     "fill": "#2A3650",
+     "fill": "#E2E8F0",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3166,7 +3164,7 @@
      "y": 280,
      "w": 540,
      "h": 10,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -3186,7 +3184,7 @@
      "y": 340,
      "w": 160,
      "h": 160,
-     "fill": "#3FD3F2",
+     "fill": "#0E7490",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3229,7 +3227,7 @@
      "y": 690,
      "w": 300,
      "h": 3,
-     "fill": "#2A3650",
+     "fill": "#E2E8F0",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3289,7 +3287,7 @@
      "y": 280,
      "w": 540,
      "h": 10,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -3309,7 +3307,7 @@
      "y": 340,
      "w": 160,
      "h": 160,
-     "fill": "#2BC48A",
+     "fill": "#047857",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3352,7 +3350,7 @@
      "y": 690,
      "w": 300,
      "h": 3,
-     "fill": "#2A3650",
+     "fill": "#E2E8F0",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3403,7 +3401,7 @@
      "html": "02 · 추진 배경",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -3458,7 +3456,7 @@
      "y": 340,
      "w": 120,
      "h": 120,
-     "fill": "#3FD3F2",
+     "fill": "#0E7490",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3561,7 +3559,7 @@
      "y": 340,
      "w": 120,
      "h": 120,
-     "fill": "#2FA7D6",
+     "fill": "#0284C7",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3664,7 +3662,7 @@
      "y": 340,
      "w": 120,
      "h": 120,
-     "fill": "#E0560A",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3767,7 +3765,7 @@
      "y": 340,
      "w": 120,
      "h": 120,
-     "fill": "#FF6A13",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -3830,7 +3828,7 @@
      "y": 860,
      "w": 1680,
      "h": 96,
-     "fill": "#FF6A13",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 48,
@@ -3841,7 +3839,7 @@
       "padding": 0,
       "lineHeight": 1
      },
-     "fill2": "#B8460A",
+     "fill2": "#9A3412",
      "gAngle": 0
     }
    ]
@@ -3867,7 +3865,7 @@
      "html": "03 · 추진 개요",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -3924,7 +3922,7 @@
      "style": {
       "fontSize": 30,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -3939,7 +3937,7 @@
      "y": 370,
      "w": 1680,
      "h": 24,
-     "fill": "#1B2740",
+     "fill": "#F1F5F9",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
@@ -3959,14 +3957,14 @@
      "y": 370,
      "w": 1680,
      "h": 24,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 12,
      "shadow": false,
      "html": "",
      "style": {},
-     "fill2": "#FFB27A",
+     "fill2": "#FDBA74",
      "gAngle": 0
     },
     {
@@ -3981,8 +3979,8 @@
      "y": 358,
      "w": 48,
      "h": 48,
-     "fill": "#FF6A13",
-     "stroke": "#0B1220",
+     "fill": "#EA580C",
+     "stroke": "#FFFFFF",
      "strokeWidth": 8,
      "radius": 0,
      "shadow": false,
@@ -4001,8 +3999,8 @@
      "y": 358,
      "w": 48,
      "h": 48,
-     "fill": "#FFB27A",
-     "stroke": "#0B1220",
+     "fill": "#FDBA74",
+     "stroke": "#FFFFFF",
      "strokeWidth": 8,
      "radius": 0,
      "shadow": false,
@@ -4060,7 +4058,7 @@
      "y": 300,
      "w": 300,
      "h": 56,
-     "fill": "#FF6A13",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 28,
@@ -4086,7 +4084,7 @@
      "style": {
       "fontSize": 30,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -4121,7 +4119,7 @@
      "y": 600,
      "w": 10,
      "h": 320,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -4145,7 +4143,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#FF6A13"
+      "color": "#C2410C"
      }
     },
     {
@@ -4199,7 +4197,7 @@
      "y": 600,
      "w": 10,
      "h": 320,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -4223,7 +4221,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -4277,7 +4275,7 @@
      "y": 600,
      "w": 10,
      "h": 320,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -4301,7 +4299,7 @@
      "style": {
       "fontSize": 44,
       "bold": true,
-      "color": "#2BC48A"
+      "color": "#047857"
      }
     },
     {
@@ -4346,7 +4344,7 @@
      "html": "04 · 소요 예산",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -4433,7 +4431,7 @@
      "html": "05 · 교육 운영",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -4520,7 +4518,7 @@
      "html": "06 · 평가 운영",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -4607,7 +4605,7 @@
      "html": "07 · 실무 협의 및 비교 행정",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -4694,7 +4692,7 @@
      "html": "08 · 연구 계획",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -4781,7 +4779,7 @@
      "html": "09 · 2026년 추진성과 및 분석",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -4834,7 +4832,7 @@
      "y": 290,
      "w": 180,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -4842,7 +4840,7 @@
      "html": "대회명",
      "style": {
       "fontSize": 27,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -4876,7 +4874,7 @@
      "y": 290,
      "w": 180,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -4884,7 +4882,7 @@
      "html": "대회주제",
      "style": {
       "fontSize": 27,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -4918,7 +4916,7 @@
      "y": 400,
      "w": 180,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -4926,7 +4924,7 @@
      "html": "대회기간",
      "style": {
       "fontSize": 27,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -4960,7 +4958,7 @@
      "y": 400,
      "w": 180,
      "h": 76,
-     "fill": "#1E3A4A",
+     "fill": "#E0F2FE",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 38,
@@ -4968,7 +4966,7 @@
      "html": "참가대상",
      "style": {
       "fontSize": 27,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -5006,7 +5004,7 @@
      "style": {
       "fontSize": 30,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -5021,14 +5019,15 @@
      "y": 610,
      "w": 290,
      "h": 130,
-     "fill": "#3A4A66",
+     "fill": "#CBD5E1",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
      "shadow": false,
      "html": "참가접수",
      "style": {
-      "fontSize": 32
+      "fontSize": 32,
+      "color": "#334155"
      }
     },
     {
@@ -5064,14 +5063,15 @@
      "y": 610,
      "w": 290,
      "h": 130,
-     "fill": "#3A4A66",
+     "fill": "#CBD5E1",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
      "shadow": false,
      "html": "능력검토",
      "style": {
-      "fontSize": 32
+      "fontSize": 32,
+      "color": "#334155"
      }
     },
     {
@@ -5107,7 +5107,7 @@
      "y": 610,
      "w": 290,
      "h": 130,
-     "fill": "#2BC48A",
+     "fill": "#047857",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -5133,7 +5133,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#2BC48A",
+      "color": "#047857",
       "align": "center",
       "step": 3
      }
@@ -5150,7 +5150,7 @@
      "y": 610,
      "w": 290,
      "h": 130,
-     "fill": "#8B7CF6",
+     "fill": "#6D28D9",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -5176,7 +5176,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#8B7CF6",
+      "color": "#6D28D9",
       "align": "center",
       "step": 4
      }
@@ -5193,7 +5193,7 @@
      "y": 610,
      "w": 290,
      "h": 130,
-     "fill": "#8B7CF6",
+     "fill": "#6D28D9",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -5219,7 +5219,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#8B7CF6",
+      "color": "#6D28D9",
       "align": "center",
       "step": 5
      }
@@ -5236,7 +5236,7 @@
      "y": 610,
      "w": 290,
      "h": 130,
-     "fill": "#FF6A13",
+     "fill": "#C2410C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -5262,7 +5262,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "align": "center",
       "step": 6
      }
@@ -5308,7 +5308,7 @@
      "html": "10 · 행정사항",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -5395,7 +5395,7 @@
      "html": "붙임 1",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -5482,7 +5482,7 @@
      "html": "붙임 2",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -5569,7 +5569,7 @@
      "html": "붙임 3",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -5632,10 +5632,10 @@
      },
      "center": "561.6만원",
      "colors": [
-      "#FF6A13",
-      "#3FD3F2",
-      "#2BC48A",
-      "#8B7CF6"
+      "#EA580C",
+      "#0891B2",
+      "#059669",
+      "#7C3AED"
      ]
     },
     {
@@ -5692,8 +5692,8 @@
      "firstCol": false,
      "lines": "rows",
      "headFill": "$surface",
-     "headColor": "#3FD3F2",
-     "lineColor": "#33415A",
+     "headColor": "#0E7490",
+     "lineColor": "#E2E8F0",
      "radius": 18,
      "style": {
       "fontSize": 30
@@ -5706,30 +5706,30 @@
      ],
      "cells": {
       "5,0": {
-       "fill": "#2A1A10",
-       "color": "#FF6A13"
+       "fill": "#FFF1E8",
+       "color": "#C2410C"
       },
       "5,3": {
-       "fill": "#2A1A10",
-       "color": "#FF6A13"
+       "fill": "#FFF1E8",
+       "color": "#C2410C"
       },
       "5,1": {
-       "fill": "#2A1A10"
+       "fill": "#FFF1E8"
       },
       "5,2": {
-       "fill": "#2A1A10"
+       "fill": "#FFF1E8"
       },
       "1,0": {
-       "color": "#FF6A13"
+       "color": "#C2410C"
       },
       "2,0": {
-       "color": "#3FD3F2"
+       "color": "#0E7490"
       },
       "3,0": {
-       "color": "#2BC48A"
+       "color": "#047857"
       },
       "4,0": {
-       "color": "#8B7CF6"
+       "color": "#6D28D9"
       }
      }
     },
@@ -5745,7 +5745,7 @@
      "y": 850,
      "w": 860,
      "h": 60,
-     "html": "액션캠·캠코더가 전체의 <b style=\"color:#FF6A13\">87.6%</b> (영상 기록 장비)",
+     "html": "액션캠·캠코더가 전체의 <b style=\"color:#C2410C\">87.6%</b> (영상 기록 장비)",
      "style": {
       "fontSize": 30,
       "color": "$fg"
@@ -5774,7 +5774,7 @@
      "html": "붙임 4",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -5847,7 +5847,7 @@
      "y": 290,
      "w": 10,
      "h": 230,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -5886,11 +5886,11 @@
      "y": 362,
      "w": 330,
      "h": 140,
-     "html": "3<span style=\"font-size:40px;color:#C9D3E0\"> 개 과정</span>",
+     "html": "3<span style=\"font-size:40px;color:#334155\"> 개 과정</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#3FD3F2",
+      "color": "#0E7490",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -5927,7 +5927,7 @@
      "y": 290,
      "w": 10,
      "h": 230,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -5966,11 +5966,11 @@
      "y": 362,
      "w": 330,
      "h": 140,
-     "html": "11<span style=\"font-size:40px;color:#C9D3E0\"> 기수</span>",
+     "html": "11<span style=\"font-size:40px;color:#334155\"> 기수</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#2BC48A",
+      "color": "#047857",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6007,7 +6007,7 @@
      "y": 290,
      "w": 10,
      "h": 230,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -6046,11 +6046,11 @@
      "y": 362,
      "w": 330,
      "h": 140,
-     "html": "211<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "211<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6087,7 +6087,7 @@
      "y": 290,
      "w": 10,
      "h": 230,
-     "fill": "#8B7CF6",
+     "fill": "#7C3AED",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -6126,11 +6126,11 @@
      "y": 362,
      "w": 332,
      "h": 140,
-     "html": "19.2<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "19.2<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#8B7CF6",
+      "color": "#6D28D9",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6157,9 +6157,9 @@
      },
      "center": "211명",
      "colors": [
-      "#3FD3F2",
-      "#FF6A13",
-      "#8B7CF6"
+      "#0891B2",
+      "#EA580C",
+      "#7C3AED"
      ]
     },
     {
@@ -6210,8 +6210,8 @@
      "firstCol": false,
      "lines": "rows",
      "headFill": "$surface",
-     "headColor": "#3FD3F2",
-     "lineColor": "#33415A",
+     "headColor": "#0E7490",
+     "lineColor": "#E2E8F0",
      "radius": 18,
      "style": {
       "fontSize": 28
@@ -6224,17 +6224,17 @@
      ],
      "cells": {
       "4,0": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "4,1": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "4,2": {
-       "fill": "#1E2A40",
-       "color": "#FF6A13"
+       "fill": "#F1F5F9",
+       "color": "#C2410C"
       },
       "4,3": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       }
      }
     }
@@ -6261,7 +6261,7 @@
      "html": "붙임 4",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -6323,17 +6323,17 @@
       "fontSize": 28
      },
      "pointColors": [
-      "#3FD3F2",
-      "#FF6A13",
-      "#FF6A13",
-      "#3FD3F2",
-      "#3FD3F2",
-      "#3FD3F2",
-      "#FF6A13",
-      "#3FD3F2",
-      "#3FD3F2",
-      "#3FD3F2",
-      "#8B7CF6"
+      "#0891B2",
+      "#EA580C",
+      "#EA580C",
+      "#0891B2",
+      "#0891B2",
+      "#0891B2",
+      "#EA580C",
+      "#0891B2",
+      "#0891B2",
+      "#0891B2",
+      "#7C3AED"
      ],
      "axis": false
     },
@@ -6349,7 +6349,7 @@
      "y": 878,
      "w": 30,
      "h": 30,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 8,
@@ -6388,7 +6388,7 @@
      "y": 878,
      "w": 30,
      "h": 30,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 8,
@@ -6427,7 +6427,7 @@
      "y": 878,
      "w": 30,
      "h": 30,
-     "fill": "#8B7CF6",
+     "fill": "#7C3AED",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 8,
@@ -6497,7 +6497,7 @@
      "html": "붙임 5",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -6570,7 +6570,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -6609,11 +6609,11 @@
      "y": 352,
      "w": 330,
      "h": 120,
-     "html": "5<span style=\"font-size:40px;color:#C9D3E0\"> 회</span>",
+     "html": "5<span style=\"font-size:40px;color:#334155\"> 회</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#3FD3F2",
+      "color": "#0E7490",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6650,7 +6650,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -6689,11 +6689,11 @@
      "y": 352,
      "w": 330,
      "h": 120,
-     "html": "222<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "222<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#2BC48A",
+      "color": "#047857",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6730,7 +6730,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -6769,11 +6769,11 @@
      "y": 352,
      "w": 330,
      "h": 120,
-     "html": "123<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "123<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6810,7 +6810,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#8B7CF6",
+     "fill": "#7C3AED",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -6849,11 +6849,11 @@
      "y": 352,
      "w": 332,
      "h": 120,
-     "html": "55.4<span style=\"font-size:40px;color:#C9D3E0\"> %</span>",
+     "html": "55.4<span style=\"font-size:40px;color:#334155\"> %</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#8B7CF6",
+      "color": "#6D28D9",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -6946,8 +6946,8 @@
      "firstCol": false,
      "lines": "rows",
      "headFill": "$surface",
-     "headColor": "#3FD3F2",
-     "lineColor": "#33415A",
+     "headColor": "#0E7490",
+     "lineColor": "#E2E8F0",
      "radius": 18,
      "style": {
       "fontSize": 28
@@ -6965,41 +6965,41 @@
      "cells": {
       "1,0": {
        "rs": 2,
-       "color": "#FF6A13"
+       "color": "#C2410C"
       },
       "3,0": {
        "rs": 3,
-       "color": "#3FD3F2"
+       "color": "#0E7490"
       },
       "5,7": {
-       "color": "#2BC48A"
+       "color": "#047857"
       },
       "2,7": {
-       "color": "#F06A8A"
+       "color": "#BE123C"
       },
       "6,0": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,1": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,2": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,3": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,4": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,5": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,6": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       },
       "6,7": {
-       "fill": "#1E2A40"
+       "fill": "#F1F5F9"
       }
      }
     }
@@ -7026,7 +7026,7 @@
      "html": "붙임 5",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -7083,7 +7083,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -7107,8 +7107,8 @@
       "fontSize": 26
      },
      "colors": [
-      "#3A5A80",
-      "#FF6A13"
+      "#94A3B8",
+      "#EA580C"
      ]
     },
     {
@@ -7127,7 +7127,7 @@
      "style": {
       "fontSize": 28,
       "bold": true,
-      "color": "#3FD3F2"
+      "color": "#0E7490"
      }
     },
     {
@@ -7151,7 +7151,7 @@
       "fontSize": 26
      },
      "colors": [
-      "#2BC48A"
+      "#059669"
      ]
     },
     {
@@ -7186,7 +7186,7 @@
      "y": 796,
      "w": 590,
      "h": 120,
-     "html": "초급 합격률 <b style=\"color:#2BC48A\">3회 연속 상승</b><br>중급은 2회차 <b style=\"color:#F06A8A\">46.9%로 하락</b>",
+     "html": "초급 합격률 <b style=\"color:#047857\">3회 연속 상승</b><br>중급은 2회차 <b style=\"color:#BE123C\">46.9%로 하락</b>",
      "style": {
       "fontSize": 28,
       "color": "$fg",
@@ -7217,7 +7217,7 @@
      "html": "붙임 6",
      "style": {
       "fontSize": 26,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "bold": true,
       "letterSpacing": 3
      }
@@ -7290,7 +7290,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -7329,11 +7329,11 @@
      "y": 352,
      "w": 450,
      "h": 120,
-     "html": "78<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "78<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#FF6A13",
+      "color": "#C2410C",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -7370,7 +7370,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#3FD3F2",
+     "fill": "#0891B2",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -7409,11 +7409,11 @@
      "y": 352,
      "w": 470,
      "h": 120,
-     "html": "46<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "46<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#3FD3F2",
+      "color": "#0E7490",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -7450,7 +7450,7 @@
      "y": 280,
      "w": 10,
      "h": 210,
-     "fill": "#2BC48A",
+     "fill": "#059669",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
@@ -7489,11 +7489,11 @@
      "y": 352,
      "w": 470,
      "h": 120,
-     "html": "32<span style=\"font-size:40px;color:#C9D3E0\"> 명</span>",
+     "html": "32<span style=\"font-size:40px;color:#334155\"> 명</span>",
      "style": {
       "fontSize": 84,
       "bold": true,
-      "color": "#2BC48A",
+      "color": "#047857",
       "lineHeight": 1.1,
       "valign": "middle"
      }
@@ -7520,11 +7520,11 @@
      },
      "axis": false,
      "pointColors": [
-      "#3FD3F2",
-      "#3FD3F2",
-      "#3FD3F2",
-      "#2BC48A",
-      "#2BC48A"
+      "#0891B2",
+      "#0891B2",
+      "#0891B2",
+      "#059669",
+      "#059669"
      ]
     },
     {
@@ -7549,8 +7549,8 @@
      },
      "center": "78명",
      "colors": [
-      "#3FD3F2",
-      "#2BC48A"
+      "#0891B2",
+      "#059669"
      ]
     }
    ]
@@ -7592,7 +7592,7 @@
      "y": 540,
      "w": 160,
      "h": 10,
-     "fill": "#FF6A13",
+     "fill": "#EA580C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 5,
