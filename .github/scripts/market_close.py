@@ -2,7 +2,7 @@
 """SECRET 장 마감 기록 — 매일 저녁(한국 시간 20시 이후) 그날의 시장을 모아 briefing 브랜치의 market/ 에 저장한다.
 
 저장하는 것 (market/)
-  YYYY-MM-DD.json · recent.json  하루 기록: ① 시장 온도(전략 요약과 같은 규칙) ② 코스피 종가 · 등락률 ③ 코스피 시가총액 상위 10개 종목 등락률
+  YYYY-MM-DD.json · recent.json  하루 기록: ① 시장 온도(전략 요약과 같은 규칙) ② 코스피 · 코스닥 종가 · 등락률 ③ 코스피 시가총액 상위 10개 종목 등락률
                                  지난 거래일도 채움(--backfill, 기본 60거래일). 지난 날의 상위 10개는 "수집한 날의 시총 상위 10개"의 그날 종가 등락률
   sumtemp.json                   전략 요약의 시장 온도를 날짜별로 (모닝 · 전략 브리핑이 있는 날 전부)
   stocks-kr.json · stocks-us.json 종목 코드 ↔ 이름 목록 (앱이 코드를 넣으면 이름을 채우는 데 씀). 하루 한 번만 새로 받음
@@ -70,10 +70,18 @@ def jsave(p, v, indent=1):
 
 
 # ---------- 코스피 지수 ----------
-def index_now():
-    j = json.loads(get(f'{NV}/index/KOSPI/basic'))
+def index_now(code='KOSPI'):
+    j = json.loads(get(f'{NV}/index/{code}/basic'))
     chg, diff = signed(num(j.get('fluctuationsRatio')), num(j.get('compareToPreviousClosePrice')), j.get('compareToPreviousPrice'))
     return {'close': num(j.get('closePrice')), 'diff': diff, 'chg': chg, 'date': (j.get('localTradedAt') or '')[:10]}
+
+
+def kq_now(day):
+    try:
+        k = index_now('KOSDAQ')
+        return {'close': k['close'], 'diff': k['diff'], 'chgPct': k['chg']} if k['date'] == day else None
+    except Exception as e:
+        log('kosdaq fail', e); return None
 
 
 def daily(path, days):
@@ -199,6 +207,7 @@ def main():
             recent[day] = {
                 'date': day, 'at': now.isoformat(timespec='seconds'),
                 'kospi': {'close': idx['close'], 'diff': idx['diff'], 'chgPct': idx['chg']},
+                'kosdaq': kq_now(day),
                 'breadth': {'up': up, 'down': down, 'flat': len(st) - up - down, 'total': len(st)} if st else None,
                 'top10': [{'rank': i + 1, 'code': s['code'], 'name': s['name'], 'close': s['close'], 'chgPct': s['chg']} for i, s in enumerate(st[:10])],
                 'top10Basis': '그날 코스피 시가총액 상위 10 · 주식만(ETF · ETN 제외, 우선주 포함) · 네이버 증권 당일 종가(20시 이후 값 — 시간외 · 넥스트레이드 거래가 반영돼 한국거래소 15:30 종가와 조금 다를 수 있음)',
@@ -231,6 +240,18 @@ def main():
                 print('지난 거래일 채움', len(miss), '일')
         except Exception as e:
             print('지난 거래일 채우기 실패:', e)
+
+    # 2-1) 코스닥 등락률이 빠진 날 채우기 (2026-11-12 부터 모음)
+    if any(not r.get('kosdaq') for r in recent.values()):
+        try:
+            kh = daily('index/KOSDAQ', max(a.backfill, 1) + 1)
+            n = 0
+            for r in recent.values():
+                k = kh.get(r['date'])
+                if not r.get('kosdaq') and k: r['kosdaq'] = {'close': k['close'], 'diff': k['diff'], 'chgPct': k['chg']}; n += 1
+            print('코스닥 채움', n, '일')
+        except Exception as e:
+            print('코스닥 채우기 실패:', e)
 
     # 3) 모든 날의 시장 온도를 전략 요약 규칙으로 다시 붙이고 저장
     for r in recent.values():
