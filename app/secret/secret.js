@@ -2923,10 +2923,38 @@ ${[
     return { news, reps, pos, neg, pp, mood: pp >= 60 ? '오름 신호가 우세' : pp <= 40 ? '내림 · 위험 신호가 우세' : '오름 · 내림 신호가 엇갈림' };
   }
   async function paintTemps() {
-    const box = $('mTemps'); const st = await getBrief('market/sumtemp.json').catch(() => null);
-    const ds = mui.dates.slice(0, 30).reverse(); if (ds.length < 2) { box.innerHTML = ''; return; }
-    box.innerHTML = `<div class="m-temps" role="group" aria-label="날짜별 시장 온도 (오름 신호 비율)"><span class="lb">날짜별 시장 온도<small>오름 신호 비율 · 누르면 그날</small></span><div class="bars">${ds.map(d => { const t = st && st.dates && st.dates[d]; const v = t ? t.pp : null; return `<button type="button" data-md="${d}" class="${d === mui.date ? 'on' : ''} ${v == null ? 'na' : v >= 60 ? 'up' : v <= 40 ? 'dn' : 'mid'}" title="${dLabel(d)} · ${t ? `${t.mood} (오름 ${t.pos} · 내림 ${t.neg}, ${v}%)` : '아직 셈 안 함 (저녁 장 마감 기록 때 셈)'}"><i style="height:${v == null ? 6 : Math.max(8, v)}%"></i><em>${+d.slice(8)}</em></button>`; }).join('')}</div></div>`;
+    const box = $('mTemps');
+    const [st, rec] = await Promise.all([getBrief('market/sumtemp.json').catch(() => null), getBrief('market/recent.json').catch(() => null)]);
+    const ds = mui.dates.slice(0, 30).reverse();
+    const strip = ds.length < 2 ? '<p class="sc-fine" style="text-align:left">날짜가 둘 이상 쌓이면 보여 줍니다.</p>' : `<div class="bars">${ds.map(d => { const t = st && st.dates && st.dates[d]; const v = t ? t.pp : null; return `<button type="button" data-md="${d}" class="${d === mui.date ? 'on' : ''} ${v == null ? 'na' : v >= 60 ? 'up' : v <= 40 ? 'dn' : 'mid'}" title="${dLabel(d)} · ${t ? `${t.mood} (오름 ${t.pos} · 내림 ${t.neg}, ${v}%)` : '아직 셈 안 함 (저녁 장 마감 기록 때 셈)'}"><i style="height:${v == null ? 6 : Math.max(8, v)}%"></i><em>${+d.slice(8)}</em></button>`; }).join('')}</div>`;
+    box.innerHTML = `<div class="m-tgrid"><div class="m-temps" role="group" aria-label="날짜별 시장 온도 (오름 신호 비율)"><span class="lb">날짜별 시장 온도<small>오름 신호 비율 · 누르면 그날</small></span>${strip}</div>${mChart(st, rec)}</div>`;
     box.querySelectorAll('[data-md]').forEach(b => b.onclick = () => { mui.date = b.dataset.md; renderSum(); });
+    const tip = box.querySelector('.mc-tip');
+    box.querySelectorAll('.mc-row[data-d]').forEach(r => {
+      const showTip = e => { tip.innerHTML = r.dataset.tip; tip.hidden = false; const wr = r.closest('.m-chart').getBoundingClientRect(), rr = r.getBoundingClientRect(); tip.style.top = (rr.bottom - wr.top + 4) + 'px'; tip.style.left = Math.max(8, Math.min(wr.width - tip.offsetWidth - 8, (e && e.clientX ? e.clientX - wr.left : 60) - tip.offsetWidth / 2)) + 'px'; };
+      r.addEventListener('mousemove', showTip); r.addEventListener('focus', () => showTip()); r.addEventListener('mouseleave', () => { tip.hidden = true; }); r.addEventListener('blur', () => { tip.hidden = true; });
+      if (mui.dates.includes(r.dataset.d)) { r.classList.add('go'); r.onclick = () => { mui.date = r.dataset.d; renderSum(); }; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); r.click(); } }; }
+    });
+  }
+  /* 오른쪽: 날짜(세로) × 시장 온도 · 코스피 · 코스닥 등락률(가로) — 단위가 달라 세 칸으로 나눔(온도는 50% 기준, 두 지수는 같은 눈금) */
+  function mChart(st, rec) {
+    const rows = (Array.isArray(rec) ? rec : []).filter(r => r && r.date && r.kospi).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
+    if (!rows.length) return '<div class="m-chart"><div class="hd"><b>시장 온도 · 지수 등락률</b></div><p class="sc-fine" style="text-align:left">장 마감 기록이 아직 없습니다 (평일 20시 이후 생김).</p></div>';
+    const tOf = r => (r.temp && r.temp.pp != null) ? r.temp : (st && st.dates && st.dates[r.date]) || null;
+    const kq = r => r.kosdaq ? r.kosdaq.chgPct : null, kp = r => r.kospi.chgPct;
+    const M = Math.max(1, Math.ceil(Math.max(...rows.flatMap(r => [kp(r), kq(r)]).filter(v => v != null).map(Math.abs)))); // 두 지수 같은 눈금 (정수 %)
+    const pct = v => v == null ? '–' : (v > 0 ? '+' : '') + Number(v).toFixed(2) + '%';
+    const bar = (v, max, txt, lbl) => v == null ? `<span class="c na" aria-label="${lbl} 자료 없음"><span class="trk"><i class="z"></i></span><em>–</em></span>` : `<span class="c" aria-label="${lbl} ${txt}"><span class="trk"><i class="z"></i><i class="b ${v > 0 ? 'up' : v < 0 ? 'dn' : ''}" style="${v >= 0 ? 'left:50%' : `right:50%`};width:${Math.min(50, Math.abs(v) / max * 50)}%"></i></span><em>${txt}</em></span>`;
+    const md = d => { const x = new Date(d + 'T00:00'); return `${x.getMonth() + 1}/${x.getDate()}<small>${'일월화수목금토'[x.getDay()]}</small>`; };
+    return `<div class="m-chart"><div class="hd"><b>시장 온도 · 지수 등락률</b><small>최근 ${rows.length}거래일 · 행에 올리면 자세히 · 누르면 그날 전략 요약</small></div>
+      <div class="mc" role="table" aria-label="날짜별 시장 온도, 코스피 등락률, 코스닥 등락률">
+        <div class="mc-row mc-h" role="row"><span role="columnheader">날짜</span><span role="columnheader">시장 온도<small>오름 비율 · 50% 기준</small></span><span role="columnheader">코스피<small>등락률</small></span><span role="columnheader">코스닥<small>등락률</small></span></div>
+        ${rows.map(r => { const t = tOf(r); const tipH = `<b>${dLabel(r.date)}</b><br>시장 온도 ${t ? `${t.pp}% · ${esc(t.mood)} (오름 ${t.pos} · 내림 ${t.neg})` : '기록 없음 (브리핑 없던 날)'}<br>코스피 ${pct(kp(r))}${r.kospi.close ? ` · ${num(r.kospi.close)}` : ''}<br>코스닥 ${pct(kq(r))}${r.kosdaq && r.kosdaq.close ? ` · ${num(r.kosdaq.close)}` : ''}`;
+          return `<div class="mc-row${r.date === mui.date ? ' on' : ''}" role="row" data-d="${r.date}" tabindex="0" data-tip="${esc(tipH)}"><span class="d" role="rowheader">${md(r.date)}</span>${bar(t ? t.pp - 50 : null, 50, t ? t.pp + '%' : '–', '시장 온도')}${bar(kp(r), M, pct(kp(r)), '코스피')}${bar(kq(r), M, pct(kq(r)), '코스닥')}</div>`; }).join('')}
+        <div class="mc-row mc-ax" aria-hidden="true"><span></span><span class="c"><span class="ax"><i>0</i><i>50%</i><i>100</i></span></span><span class="c"><span class="ax"><i>−${M}%</i><i>0</i><i>+${M}%</i></span></span><span class="c"><span class="ax"><i>−${M}%</i><i>0</i><i>+${M}%</i></span></span></div>
+      </div>
+      <div class="k-lg mc-lg"><span class="up">오름 (온도 50% 초과 · 상승)</span><span class="dn">내림 (온도 50% 미만 · 하락)</span></div>
+      <div class="mc-tip" hidden role="status"></div></div>`;
   }
   async function renderSum(force) {
     const box = $('mList'); if (force) bui.cache = {};
