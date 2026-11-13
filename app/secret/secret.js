@@ -3351,6 +3351,70 @@ ${[
   }
 
   /* =====================================================================
+     Man's 브리핑 (Man 모드) — 아침 6시 · 낮 12시 · 저녁 6시(한국 시간)에 새 판이 열림
+     · 글은 app/secret/man.js(SEC_MAN)가 날짜 · 시각으로 골라 조립 — 같은 날 같은 시각이면 어느 기기에서나 같음
+     · 시장 숫자: briefing 브랜치 market/recent.json(마감) · market/intraday.json(장중 · 마감 지수) · 그날 모닝 브리핑 · market/sumtemp.json
+     · 내 숫자: 관심 종목 · 보유(손절가) · 매매 일지(점검일 · 최근 7일 매매 · 감정 매매)
+     ===================================================================== */
+  const K_MANSEEN = 'sec:manSeen';
+  const MAN = window.SEC_MAN;
+  const manNow = () => { const k = kstNow(), h = k.getUTCHours(), d = k.toISOString().slice(0, 10); const s = MAN.SLOTS.filter(x => x.h <= h).pop(); if (s) return d + '-' + s.key; return new Date(k.getTime() - 864e5).toISOString().slice(0, 10) + '-pm'; };
+  /* 지금까지 열린 판 (최근 7일, 새것부터) */
+  const manList = () => { const cur = manNow(), cd = cur.slice(0, 10), ci = MAN.SLOTS.findIndex(s => s.key === cur.slice(11)), out = []; for (let i = 0; i < 7; i++) { const d = new Date(Date.parse(cd) - i * 864e5).toISOString().slice(0, 10); for (let j = MAN.SLOTS.length - 1; j >= 0; j--) if (i > 0 || j <= ci) out.push(d + '-' + MAN.SLOTS[j].key); } return out; };
+  const manLabel = id => { const s = MAN.SLOTS.find(x => x.key === id.slice(11)); return `${dLabel(id.slice(0, 10))} ${s ? s.name : ''}`; };
+  const mnui = { id: '' };
+  $('manPick').onchange = e => { mnui.id = e.target.value; renderMan(); };
+  $('manPrev').onclick = () => { const l = manList(), i = l.indexOf(mnui.id); if (i < l.length - 1) { mnui.id = l[i + 1]; renderMan(); } };
+  $('manNext').onclick = () => { const l = manList(), i = l.indexOf(mnui.id); if (i > 0) { mnui.id = l[i - 1]; renderMan(); } };
+  async function manCtx(id) {
+    const date = id.slice(0, 10), slot = id.slice(11);
+    const [rec, intra, mi, st] = await Promise.all([briefRaw('market/recent.json').catch(() => null), briefRaw('market/intraday.json').catch(() => null), briefRaw('index.json').catch(() => null), getBrief('market/sumtemp.json').catch(() => null)]);
+    const R = Array.isArray(rec) ? rec.slice().sort((a, b) => b.date.localeCompare(a.date)) : [];
+    const prev = R.find(r => r.date < date) || null, same = R.find(r => r.date === date) || null;
+    let it = null;
+    if (slot !== 'am') {
+      if (intra && intra.date === date && (slot === 'pm' || !intra.closed || +String(intra.at).slice(11, 13) < 18)) it = intra;
+      else if (same && slot === 'pm') it = { date, closed: true, kospi: same.kospi, kosdaq: same.kosdaq };
+      else if (same && date < kstNow().toISOString().slice(0, 10)) it = { date, closed: true, kospi: same.kospi, kosdaq: same.kosdaq };
+    }
+    let news = [];
+    if (mi && (mi.dates || []).includes(date)) { const md = await briefRaw(date + '.json').catch(() => null); news = ((md && md.items) || []).slice(0, 3).map(x => x.title); }
+    const temp = st && st.dates && st.dates[date] ? st.dates[date] : null;
+    const today = date, wk = new Date(Date.parse(date) - 7 * 864e5).toISOString().slice(0, 10);
+    const t7 = journal.filter(t => d10(t.openDate) > wk && d10(t.openDate) <= today);
+    const mine = { hold: watch.items.filter(x => +x.qty > 0).length, noStop: watch.items.filter(x => +x.qty > 0 && !+x.stop).length, due: journal.filter(isDue).length, trades7: journal.length ? t7.length : null, emo7: t7.filter(t => t.emotion && t.emotion !== EMO[0]).length };
+    return { date, slot, prev, intra: it, news, temp, mine };
+  }
+  let manSeq = 0;
+  async function renderMan() {
+    const l = manList(); if (!mnui.id || !l.includes(mnui.id)) mnui.id = l[0];
+    $('manPick').innerHTML = l.map(id => `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${manLabel(id)}${id === l[0] ? ' · 지금' : ''}</option>`).join('');
+    const i = l.indexOf(mnui.id); $('manPrev').disabled = i >= l.length - 1; $('manNext').disabled = i <= 0;
+    /* 오늘의 세 판: 지난 것 · 지금 · 아직 */
+    const k = kstNow(), d = k.toISOString().slice(0, 10), h = k.getUTCHours();
+    $('manSlots').innerHTML = MAN.SLOTS.map(s => { const id = d + '-' + s.key, open = s.h <= h; return `<button type="button" class="${id === mnui.id ? 'on' : ''}${open ? '' : ' wait'}" ${open ? `data-mid="${id}"` : 'disabled'}><b>${s.name}</b><span>${open ? (id === l[0] ? '지금' : '지난 판') : `${s.h}시에 열림`}</span></button>`; }).join('');
+    $('manSlots').querySelectorAll('[data-mid]').forEach(b => b.onclick = () => { mnui.id = b.dataset.mid; renderMan(); });
+    const box = $('manBody'), my = ++manSeq; box.innerHTML = '<div class="sc-bmsg">브리핑을 만드는 중…</div>';
+    const ctx = await manCtx(mnui.id); if (my !== manSeq) return;
+    const b = MAN.build(ctx);
+    box.innerHTML = `<header><span class="tag">${esc(b.slot.name)}</span><h2>${esc(b.title)}</h2><p class="sub">${esc(manLabel(mnui.id))} · 약 ${b.chars.toLocaleString()}자</p></header>
+      ${b.parts.map(p => `<section><h3>${esc(p.h)}</h3><p>${esc(p.t)}</p>${p.src ? `<small>출처: ${esc(p.src)}</small>` : ''}</section>`).join('')}
+      <footer>투자 판단의 책임은 본인에게 있습니다. 이 글은 수익을 약속하지 않습니다.</footer>`;
+    if (mnui.id === l[0]) { LS.set(K_MANSEEN, mnui.id); manBadge(); }
+  }
+  function manBadge() { const n = manNow(), seen = LS.get(K_MANSEEN, ''); $('cMan').textContent = seen !== n ? '●' : ''; }
+  let manLast = manNow();
+  setInterval(() => { const n = manNow(); if (n !== manLast) { manLast = n; manBadge(); toast(`새 Man's 브리핑 — ${manLabel(n)}`, 4000); if (!$('vMan').hidden) { mnui.id = ''; renderMan(); } } }, 60000);
+  manBadge();
+  /* Stock · Man 모드 */
+  let stockView = 'today';
+  function setMode(m) {
+    document.body.dataset.secMode = m;
+    document.querySelectorAll('.sc-mode [data-mode]').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  }
+  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? 'man' : stockView));
+
+  /* =====================================================================
      화면 전환 (2)
      ===================================================================== */
   /* =====================================================================
@@ -3844,11 +3908,12 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack();
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan();
+    setMode(v === 'man' ? 'man' : 'stock'); if (v !== 'man') stockView = v;
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
