@@ -383,7 +383,7 @@ const PPTX = (() => {
     const theme = deckTheme(deck), files = [], media = new Map(), exts = new Set(['png', 'jpeg']);
     await prepFonts(deck, theme);
     const say = (m) => { if (opts.progress) opts.progress(m); };
-    const warn = { img: 0, vid: 0, vidLink: 0, math: 0, chart: 0 };
+    const warn = { img: 0, vid: 0, vidLink: 0, online: 0, math: 0, chart: 0 };
     let nImg = 0, nVid = 0;
     const addMedia = (key, data, ext, video) => { // 같은 파일은 한 번만 담음
       if (key && media.has(key)) return media.get(key);
@@ -518,7 +518,8 @@ const PPTX = (() => {
             let posterData = null, posterKey = '';
             const ps = p.kind === 'video' ? embedPoster(e) : p.kind === 'youtube' ? `https://i.ytimg.com/vi/${p.id}/hqdefault.jpg` : '';
             let im = ps ? await image(ps) : null;
-            if (!im) { posterKey = 'poster:' + p.kind; if (!media.has(posterKey)) posterData = await posterPng(p.kind === 'web' ? '웹 페이지' : p.kind === 'video' ? '동영상' : p.kind === 'youtube' ? 'YouTube 영상' : 'Vimeo 영상'); im = Object.assign(addMedia(posterKey, posterData, 'png'), { w: 1280, h: 720 }); }
+            if (!im && p.kind === 'youtube') im = await image(`https://img.youtube.com/vi/${p.id}/hqdefault.jpg`); // 표지 그림을 다른 주소에서 한 번 더
+            if (!im) { posterKey = 'poster:' + p.kind; if (!media.has(posterKey)) posterData = await posterPng(p.kind === 'web' ? '웹 페이지' : p.kind === 'video' ? '동영상' : p.kind === 'youtube' ? (opts.online !== false ? 'YouTube 영상 · 누르면 재생' : 'YouTube 영상') : (opts.online !== false ? 'Vimeo 영상 · 누르면 재생' : 'Vimeo 영상')); im = Object.assign(addMedia(posterKey, posterData, 'png'), { w: 1280, h: 720 }); }
             const pl = placeImage(e.w, e.h, im.w, im.h, 'cover', 50, 50, 1) || { x: 0, y: 0, w: e.w, h: e.h, crop: null };
             const imgRid = rel(REL + 'image', '../media/' + im.name), spPr = xfrm(e.x, e.y, e.w, e.h, e.rotate) + roundGeom(e.radius || 0, e.w, e.h) + (e.shadow ? SHADOW(48, 16, 0.25) : '');
             let done = false;
@@ -537,6 +538,17 @@ const PPTX = (() => {
                 } else warn.vid++;
               }
               if (!done) warn.vidLink++;
+            }
+            /* YouTube · Vimeo: PowerPoint 의 「온라인 비디오」로 넣음 → 슬라이드쇼에서 누르면 슬라이드 안에서 재생 (인터넷 필요).
+               PowerPoint 가 [삽입 → 비디오 → 온라인 비디오] 로 만드는 것과 같은 구조: videoFile 이 외부 주소(embed)를 가리키고, 그림은 표지.
+               opts.online === false 면 예전처럼 표지 그림 + 누르면 웹에서 열리는 링크 */
+            if (!done && (p.kind === 'youtube' || p.kind === 'vimeo') && opts.online !== false) {
+              const r = typeof embedRange === 'function' ? embedRange(e, p) : { start: p.start || 0, end: 0 };
+              const src = p.kind === 'youtube'
+                ? `https://www.youtube.com/embed/${p.id}?feature=oembed${r.start ? '&start=' + Math.round(r.start) : ''}${r.end ? '&end=' + Math.round(r.end) : ''}`
+                : `https://player.vimeo.com/video/${p.id}${r.start ? '#t=' + Math.round(r.start) + 's' : ''}`;
+              id = ++sid; shapes.push(pic(id, name, imgRid, pl.crop, spPr, '', null, `<a:videoFile r:link="${rel(REL + 'video', src, true)}"/>`));
+              warn.online++; done = true;
             }
             if (!done) {
               const url = p.kind === 'youtube' ? `https://www.youtube.com/watch?v=${p.id}${p.start ? '&t=' + p.start : ''}` : p.kind === 'vimeo' ? `https://vimeo.com/${p.id}` : /^https?:/i.test(p.src) && !(typeof BIGV !== 'undefined' && BIGV.parse(p.src)) ? p.src : opts.siteUrl ? opts.siteUrl + '&start=' + si : '';
@@ -636,6 +648,7 @@ const PPTX = (() => {
     if (warn.img) notes.push(`그림 ${warn.img}개는 받지 못해 빠졌습니다`);
     if (warn.vid) notes.push(`동영상 ${warn.vid}개는 받지 못해 표지 그림만 넣었습니다`);
     if (warn.vidLink) notes.push(`동영상 ${warn.vidLink}개는 표지 그림으로 들어갔습니다 (누르면 인터넷에서 열림)`);
+    if (warn.online) notes.push(`YouTube · Vimeo 영상 ${warn.online}개는 온라인 비디오로 넣었습니다 — PowerPoint(Microsoft 365 · 2019 이상)에서 인터넷이 연결돼 있으면 슬라이드 안에서 재생됩니다. 오래된 PowerPoint · Keynote · 한쇼에서는 표지 그림만 보입니다`);
     if (warn.math) notes.push(`수식 ${warn.math}개는 그림으로 만들지 못해 글자로 넣었습니다`);
     if (warn.chart) notes.push(`차트 ${warn.chart}개는 옮기지 못했습니다`);
     return { blob: new Blob([z], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' }), warn: notes };
