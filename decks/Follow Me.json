@@ -5436,6 +5436,574 @@
    "decor": "none"
   },
   {
+   "id": "fmfbcode",
+   "bg": {
+    "gradient": "linear-gradient(180deg,#FBF9F6 0%,#F2EEE7 100%)"
+   },
+   "transition": "morph",
+   "notes": "(2분) [27:00] 앞 장의 \"피드백 네 조각\"을 코드로 옮기면 이렇게 됩니다. 이름이 붙은 칸 네 개(어디서 where · 무엇을 했더니 did · 어떻게 됐고 got · 어떻게 되길 want)를 받는 함수 하나입니다.\n클릭 1: 「안 돼요」처럼 got 하나만 넣으면 함수가 빠진 조각을 알려 주며 받아 주지 않습니다 — AI 도 이때 추측부터 합니다.\n클릭 2: 네 조각을 다 넣으면 문장은 저절로 만들어집니다. 그래서 피드백을 쓸 때는 문장을 다듬기보다 네 칸을 채우는 데 집중하면 됩니다.\n코드를 몰라도 됩니다 — \"빈칸이 있으면 안 된다\"는 것만 보여 주는 장입니다. (화면의 코드는 실제로 돌아가는 JavaScript 입니다.)",
+   "elements": [
+    {
+     "id": "fmcr3a2o2",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 72,
+     "w": 14,
+     "h": 14,
+     "shape": "ellipse",
+     "fill": "#C2410C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmcjoyeqg",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 146,
+     "y": 56,
+     "w": 1060,
+     "h": 46,
+     "role": "caption",
+     "html": "2-2 · 피드백 — 코드로 보기",
+     "style": {
+      "fontSize": 26,
+      "color": "#C2410C",
+      "bold": true,
+      "valign": "middle",
+      "letterSpacing": 1
+     }
+    },
+    {
+     "id": "fmcojxegc",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 58,
+     "w": 150,
+     "h": 44,
+     "shape": "rect",
+     "fill": "#ECE7DF",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "1 준비물",
+     "style": {
+      "fontSize": 24,
+      "color": "#5F636B",
+      "bold": true
+     },
+     "mk": "trk1"
+    },
+    {
+     "id": "fmctl2rgt",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1488,
+     "y": 58,
+     "w": 150,
+     "h": 44,
+     "shape": "rect",
+     "fill": "#C2410C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "2 PT Tool",
+     "style": {
+      "fontSize": 24,
+      "color": "#ffffff",
+      "bold": true
+     },
+     "mk": "trk2"
+    },
+    {
+     "id": "fmcdl2ugl",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1646,
+     "y": 58,
+     "w": 150,
+     "h": 44,
+     "shape": "rect",
+     "fill": "#ECE7DF",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "3 비서",
+     "style": {
+      "fontSize": 24,
+      "color": "#5F636B",
+      "bold": true
+     },
+     "mk": "trk3"
+    },
+    {
+     "id": "fmc46s85w",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 108,
+     "w": 1680,
+     "h": 120,
+     "role": "heading",
+     "html": "앞 장을 코드로 쓰면 — 네 조각을 채우는 함수 하나",
+     "style": {
+      "fontSize": 54,
+      "color": "#14161B",
+      "bold": true,
+      "valign": "middle",
+      "lineHeight": 1.2,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "fmch7f8i7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 100,
+     "y": 240,
+     "w": 1180,
+     "h": 760,
+     "role": "code",
+     "html": "<div style=\"height:18px\"></div><span style=\"color:#9AA3B5\">// 피드백 = 네 조각을 채운 한 문장</span><br><span style=\"color:#FF8A5B\">function</span> feedback({ <span style=\"color:#7CB4FF;font-weight:700\">where</span>, <span style=\"color:#B9A4FF;font-weight:700\">did</span>, <span style=\"color:#FF8C8C;font-weight:700\">got</span>, <span style=\"color:#5EE08F;font-weight:700\">want</span> }) {<br>  <span style=\"color:#FF8A5B\">const</span> missing = Object.entries({ <span style=\"color:#7CB4FF\">where</span>, <span style=\"color:#B9A4FF\">did</span>, <span style=\"color:#FF8C8C\">got</span>, <span style=\"color:#5EE08F\">want</span> })<br>    .filter(([, v]) =&gt; !v).map(([k]) =&gt; k);<br>  <span style=\"color:#FF8A5B\">if</span> (missing.length)<br>    <span style=\"color:#FF8A5B\">return</span> <span style=\"color:#FCD34D\">`빠진 조각: ${missing.join(&#x27;, &#x27;)} — AI 가 추측합니다`</span>;<br>  <span style=\"color:#FF8A5B\">return</span> <span style=\"color:#FCD34D\">`${where}에서 ${did} ${got} ${want}`</span>;<br>}<br><br>feedback({ <span style=\"color:#FF8C8C\">got</span>: <span style=\"color:#FCD34D\">&#x27;안 돼요.&#x27;</span> });<br><span style=\"color:#9AA3B5\">// → &#x27;빠진 조각: where, did, want — AI 가 추측합니다&#x27;</span><br><br>feedback({<br>  <span style=\"color:#7CB4FF\">where</span>: <span style=\"color:#FCD34D\">&#x27;발표 화면&#x27;</span>,<br>  <span style=\"color:#B9A4FF\">did</span>:   <span style=\"color:#FCD34D\">&#x27;B 를 눌렀더니&#x27;</span>,<br>  <span style=\"color:#FF8C8C\">got</span>:   <span style=\"color:#FCD34D\">&#x27;아무 변화가 없습니다.&#x27;</span>,<br>  <span style=\"color:#5EE08F\">want</span>:  <span style=\"color:#FCD34D\">&#x27;누르면 검게, 한 번 더 누르면 원래대로.&#x27;</span>,<br>});<br><span style=\"color:#FF8A5B;font-weight:700\">// → &#x27;발표 화면에서 B 를 눌렀더니 아무 변화가 …&#x27;</span>",
+     "style": {
+      "fontSize": 24,
+      "color": "#E8EAEE",
+      "font": "mono",
+      "bg": "linear-gradient(160deg,#1A1D25 0%,#0E1015 100%)",
+      "padding": 36,
+      "radius": 24,
+      "lineHeight": 1.42,
+      "shadow": true
+     }
+    },
+    {
+     "id": "fmck29irr",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 136,
+     "y": 262,
+     "w": 16,
+     "h": 16,
+     "shape": "ellipse",
+     "fill": "#FF5F57",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmcdhw96c",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 162,
+     "y": 262,
+     "w": 16,
+     "h": 16,
+     "shape": "ellipse",
+     "fill": "#FEBC2E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmcczz9s3",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 188,
+     "y": 262,
+     "w": 16,
+     "h": 16,
+     "shape": "ellipse",
+     "fill": "#28C840",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmc0h1guq",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1330,
+     "y": 240,
+     "w": 470,
+     "h": 50,
+     "role": "text",
+     "html": "같은 색 = 같은 조각",
+     "style": {
+      "fontSize": 30,
+      "color": "#5F636B",
+      "bold": true
+     }
+    },
+    {
+     "id": "fmcp41ckm",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 296,
+     "w": 260,
+     "h": 68,
+     "shape": "rect",
+     "fill": "#2563EB",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 36,
+     "shadow": false,
+     "html": "어디서",
+     "style": {
+      "fontSize": 28,
+      "color": "#ffffff",
+      "bold": true
+     }
+    },
+    {
+     "id": "fmcw51pjz",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1606,
+     "y": 296,
+     "w": 194,
+     "h": 68,
+     "role": "text",
+     "html": "→ <b style=\"font-family:Consolas,monospace\">where</b>",
+     "style": {
+      "fontSize": 30,
+      "color": "#14161B",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "fmcwqawq8",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 380,
+     "w": 260,
+     "h": 68,
+     "shape": "rect",
+     "fill": "#7C3AED",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 36,
+     "shadow": false,
+     "html": "무엇을 했더니",
+     "style": {
+      "fontSize": 28,
+      "color": "#ffffff",
+      "bold": true
+     }
+    },
+    {
+     "id": "fmczh8yga",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1606,
+     "y": 380,
+     "w": 194,
+     "h": 68,
+     "role": "text",
+     "html": "→ <b style=\"font-family:Consolas,monospace\">did</b>",
+     "style": {
+      "fontSize": 30,
+      "color": "#14161B",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "fmcmp93zg",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 464,
+     "w": 260,
+     "h": 68,
+     "shape": "rect",
+     "fill": "#B91C1C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 36,
+     "shadow": false,
+     "html": "어떻게 됐고",
+     "style": {
+      "fontSize": 28,
+      "color": "#ffffff",
+      "bold": true
+     }
+    },
+    {
+     "id": "fmcptjfu8",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1606,
+     "y": 464,
+     "w": 194,
+     "h": 68,
+     "role": "text",
+     "html": "→ <b style=\"font-family:Consolas,monospace\">got</b>",
+     "style": {
+      "fontSize": 30,
+      "color": "#14161B",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "fmc9a8ipp",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 548,
+     "w": 260,
+     "h": 68,
+     "shape": "rect",
+     "fill": "#15803D",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 36,
+     "shadow": false,
+     "html": "어떻게 되길",
+     "style": {
+      "fontSize": 28,
+      "color": "#ffffff",
+      "bold": true
+     }
+    },
+    {
+     "id": "fmco7ld27",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1606,
+     "y": 548,
+     "w": 194,
+     "h": 68,
+     "role": "text",
+     "html": "→ <b style=\"font-family:Consolas,monospace\">want</b>",
+     "style": {
+      "fontSize": 30,
+      "color": "#14161B",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "fmclb1jr9",
+     "step": 1,
+     "anim": "left",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 660,
+     "w": 470,
+     "h": 140,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": true,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmcivx3c5",
+     "step": 1,
+     "anim": "left",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 660,
+     "w": 10,
+     "h": 140,
+     "shape": "rect",
+     "fill": "#5F636B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 5,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmcxoj8ai",
+     "step": 1,
+     "anim": "left",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1366,
+     "y": 668,
+     "w": 420,
+     "h": 124,
+     "role": "text",
+     "html": "<b>조각이 빠지면</b><br>함수는 거절, AI 는 추측",
+     "style": {
+      "fontSize": 28,
+      "color": "#33363D",
+      "valign": "middle",
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "fmchdhd7e",
+     "step": 2,
+     "anim": "left",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 820,
+     "w": 470,
+     "h": 140,
+     "shape": "rect",
+     "fill": "#FFF4EC",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmc2zu7a3",
+     "step": 2,
+     "anim": "left",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1330,
+     "y": 820,
+     "w": 10,
+     "h": 140,
+     "shape": "rect",
+     "fill": "#C2410C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 5,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 32,
+      "color": "#ffffff"
+     }
+    },
+    {
+     "id": "fmcq79l4n",
+     "step": 2,
+     "anim": "left",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1366,
+     "y": 828,
+     "w": 420,
+     "h": 124,
+     "role": "text",
+     "html": "<b style=\"color:#C2410C\">네 조각이 다 있으면</b><br>문장은 저절로 나온다",
+     "style": {
+      "fontSize": 28,
+      "color": "#14161B",
+      "valign": "middle",
+      "lineHeight": 1.45
+     }
+    }
+   ],
+   "decor": "none"
+  },
+  {
    "id": "fmrepeat",
    "bg": {
     "gradient": "linear-gradient(180deg,#FBF9F6 0%,#F2EEE7 100%)"
@@ -8901,5 +9469,5 @@
    "decor": "none"
   }
  ],
- "modified": "2026-11-11T21:48:01.209Z"
+ "modified": "2026-11-13T00:32:43.000Z"
 }
