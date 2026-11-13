@@ -215,6 +215,12 @@ def main():
             print(f"{day} 코스피 {idx['close']} ({idx['chg']:+.2f}%) · 상위 10 {len(st[:10])}개")
     else:
         print(f'오늘 기록은 건너뜀 (장 {"열림" if open_today else "안 열림"} · {now:%H:%M})')
+    # 1-1) 장중 · 마감 지수 (20시 전) — Man's 브리핑(점심 12시 · 저녁 6시)이 씀
+    if open_today and now.hour < 20:
+        kq = index_now('KOSDAQ')
+        jsave(os.path.join(d, 'intraday.json'), {'date': today, 'at': now.isoformat(timespec='seconds'), 'closed': now.hour * 60 + now.minute >= 15 * 60 + 40,
+                                                 'kospi': {'close': idx['close'], 'chgPct': idx['chg']}, 'kosdaq': {'close': kq['close'], 'chgPct': kq['chg']} if kq.get('date') == today else None})
+        print('장중 지수 저장', idx['chg'], kq.get('chg'))
 
     # 2) 지난 거래일 채우기 — 빠진 날만
     if a.backfill > 0:
