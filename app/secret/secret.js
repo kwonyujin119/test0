@@ -3353,8 +3353,8 @@ ${[
   /* =====================================================================
      Man's 브리핑 (Man 모드) — 아침 6시 · 낮 12시 · 저녁 6시(한국 시간)에 새 판이 열림
      · 글은 app/secret/man.js(SEC_MAN)가 날짜 · 시각으로 골라 조립 — 같은 날 같은 시각이면 어느 기기에서나 같음
-     · 시장 숫자: briefing 브랜치 market/recent.json(마감) · market/intraday.json(장중 · 마감 지수) · 그날 모닝 브리핑 · market/sumtemp.json
-     · 내 숫자: 관심 종목 · 보유(손절가) · 매매 일지(점검일 · 최근 7일 매매 · 감정 매매)
+     · 주식과 무관 — 시장 · 보유 자료는 쓰지 않음. [생성]은 고른 주제(또는 무작위)로 한 편 더 (이 기기에 최근 30개)
+     · 나의 목표(선택, 이 기기에만)를 적으면 브리핑마다 인용
      ===================================================================== */
   const K_MANSEEN = 'sec:manSeen';
   const MAN = window.SEC_MAN;
@@ -3364,43 +3364,47 @@ ${[
   const manLabel = id => { const s = MAN.SLOTS.find(x => x.key === id.slice(11)); return `${dLabel(id.slice(0, 10))} ${s ? s.name : ''}`; };
   const mnui = { id: '' };
   $('manPick').onchange = e => { mnui.id = e.target.value; renderMan(); };
-  $('manPrev').onclick = () => { const l = manList(), i = l.indexOf(mnui.id); if (i < l.length - 1) { mnui.id = l[i + 1]; renderMan(); } };
-  $('manNext').onclick = () => { const l = manList(), i = l.indexOf(mnui.id); if (i > 0) { mnui.id = l[i - 1]; renderMan(); } };
-  async function manCtx(id) {
-    const date = id.slice(0, 10), slot = id.slice(11);
-    const [rec, intra, mi, st] = await Promise.all([briefRaw('market/recent.json').catch(() => null), briefRaw('market/intraday.json').catch(() => null), briefRaw('index.json').catch(() => null), getBrief('market/sumtemp.json').catch(() => null)]);
-    const R = Array.isArray(rec) ? rec.slice().sort((a, b) => b.date.localeCompare(a.date)) : [];
-    const prev = R.find(r => r.date < date) || null, same = R.find(r => r.date === date) || null;
-    let it = null;
-    if (slot !== 'am') {
-      if (intra && intra.date === date && (slot === 'pm' || !intra.closed || +String(intra.at).slice(11, 13) < 18)) it = intra;
-      else if (same && slot === 'pm') it = { date, closed: true, kospi: same.kospi, kosdaq: same.kosdaq };
-      else if (same && date < kstNow().toISOString().slice(0, 10)) it = { date, closed: true, kospi: same.kospi, kosdaq: same.kosdaq };
-    }
-    let news = [];
-    if (mi && (mi.dates || []).includes(date)) { const md = await briefRaw(date + '.json').catch(() => null); news = ((md && md.items) || []).slice(0, 3).map(x => x.title); }
-    const temp = st && st.dates && st.dates[date] ? st.dates[date] : null;
-    const today = date, wk = new Date(Date.parse(date) - 7 * 864e5).toISOString().slice(0, 10);
-    const t7 = journal.filter(t => d10(t.openDate) > wk && d10(t.openDate) <= today);
-    const mine = { hold: watch.items.filter(x => +x.qty > 0).length, noStop: watch.items.filter(x => +x.qty > 0 && !+x.stop).length, due: journal.filter(isDue).length, trades7: journal.length ? t7.length : null, emo7: t7.filter(t => t.emotion && t.emotion !== EMO[0]).length };
-    return { date, slot, prev, intra: it, news, temp, mine };
+  const manAll = () => manX.map(x => x.id).concat(manList());
+  $('manPrev').onclick = () => { const l = manAll(), i = l.indexOf(mnui.id); if (i < l.length - 1) { mnui.id = l[i + 1]; renderMan(); } };
+  $('manNext').onclick = () => { const l = manAll(), i = l.indexOf(mnui.id); if (i > 0) { mnui.id = l[i - 1]; renderMan(); } };
+  /* [생성]으로 만든 판: 이 기기에 최근 30개 (id: x-시각) */
+  const K_MANX = 'sec:manExtra', K_MANGOAL = 'sec:manGoal';
+  let manX = LS.get(K_MANX, []), manTheme = '';
+  const manXget = id => manX.find(x => x.id === id);
+  function manCtx(id) {
+    const goal = LS.get(K_MANGOAL, '');
+    const x = manXget(id);
+    if (x) { const k = new Date(x.at + 9 * 36e5); const h = k.getUTCHours(); return { date: k.toISOString().slice(0, 10), slot: h < 12 ? 'am' : h < 18 ? 'noon' : 'pm', goal, extra: { seed: x.seed, theme: x.theme } }; }
+    return { date: id.slice(0, 10), slot: id.slice(11), goal };
   }
-  let manSeq = 0;
+  $('manGoal').value = LS.get(K_MANGOAL, '');
+  $('manGoal').onchange = e => { LS.set(K_MANGOAL, e.target.value.trim()); renderMan(); };
+  function paintThemes() {
+    $('manThemes').innerHTML = [{ key: '', name: '무작위' }].concat(MAN.THEMES).map(t => `<button type="button" role="radio" aria-checked="${t.key === manTheme}" class="${t.key === manTheme ? 'on' : ''}" data-th="${t.key}">${esc(t.name)}</button>`).join('');
+    $('manThemes').querySelectorAll('[data-th]').forEach(b => b.onclick = () => { manTheme = b.dataset.th; paintThemes(); });
+  }
+  $('manGen').onclick = () => {
+    const at = Date.now(), seed = (at ^ Math.floor(Math.random() * 2 ** 31)) >>> 0;
+    const theme = manTheme || MAN.THEMES[seed % MAN.THEMES.length].key;
+    const x = { id: 'x-' + at, at, seed, theme }; manX = [x].concat(manX).slice(0, 30); LS.set(K_MANX, manX);
+    mnui.id = x.id; renderMan(); toast(`새 브리핑 — ${(MAN.THEMES.find(t => t.key === theme) || {}).name}`, 1800);
+  };
+  const manXLabel = x => { const k = new Date(x.at + 9 * 36e5); return `${k.getUTCMonth() + 1}/${k.getUTCDate()} ${String(k.getUTCHours()).padStart(2, '0')}:${String(k.getUTCMinutes()).padStart(2, '0')} 생성 · ${(MAN.THEMES.find(t => t.key === x.theme) || {}).name || ''}`; };
   async function renderMan() {
-    const l = manList(); if (!mnui.id || !l.includes(mnui.id)) mnui.id = l[0];
-    $('manPick').innerHTML = l.map(id => `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${manLabel(id)}${id === l[0] ? ' · 지금' : ''}</option>`).join('');
+    paintThemes();
+    const sched = manList(), l = manX.map(x => x.id).concat(sched); if (!mnui.id || !l.includes(mnui.id)) mnui.id = sched[0];
+    $('manPick').innerHTML = (manX.length ? `<optgroup label="[생성]으로 만든 브리핑">${manX.map(x => `<option value="${x.id}"${x.id === mnui.id ? ' selected' : ''}>${manXLabel(x)}</option>`).join('')}</optgroup><optgroup label="정해진 시각">` : '') + sched.map(id => `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${manLabel(id)}${id === sched[0] ? ' · 지금' : ''}</option>`).join('') + (manX.length ? '</optgroup>' : '');
     const i = l.indexOf(mnui.id); $('manPrev').disabled = i >= l.length - 1; $('manNext').disabled = i <= 0;
     /* 오늘의 세 판: 지난 것 · 지금 · 아직 */
     const k = kstNow(), d = k.toISOString().slice(0, 10), h = k.getUTCHours();
     $('manSlots').innerHTML = MAN.SLOTS.map(s => { const id = d + '-' + s.key, open = s.h <= h; return `<button type="button" class="${id === mnui.id ? 'on' : ''}${open ? '' : ' wait'}" ${open ? `data-mid="${id}"` : 'disabled'}><b>${s.name}</b><span>${open ? (id === l[0] ? '지금' : '지난 판') : `${s.h}시에 열림`}</span></button>`; }).join('');
     $('manSlots').querySelectorAll('[data-mid]').forEach(b => b.onclick = () => { mnui.id = b.dataset.mid; renderMan(); });
-    const box = $('manBody'), my = ++manSeq; box.innerHTML = '<div class="sc-bmsg">브리핑을 만드는 중…</div>';
-    const ctx = await manCtx(mnui.id); if (my !== manSeq) return;
-    const b = MAN.build(ctx);
-    box.innerHTML = `<header><span class="tag">${esc(b.slot.name)}</span><h2>${esc(b.title)}</h2><p class="sub">${esc(manLabel(mnui.id))} · 약 ${b.chars.toLocaleString()}자</p></header>
+    const box = $('manBody'), x = manXget(mnui.id), l0 = sched[0];
+    const b = MAN.build(manCtx(mnui.id));
+    box.innerHTML = `<header><span class="tag">${x ? '생성 · ' + esc(b.theme) : esc(b.slot.name)}</span><h2>${esc(b.title)}</h2><p class="sub">${esc(x ? manXLabel(x) : manLabel(mnui.id))} · 약 ${b.chars.toLocaleString()}자</p></header>
       ${b.parts.map(p => `<section><h3>${esc(p.h)}</h3><p>${esc(p.t)}</p>${p.src ? `<small>출처: ${esc(p.src)}</small>` : ''}</section>`).join('')}
-      <footer>투자 판단의 책임은 본인에게 있습니다. 이 글은 수익을 약속하지 않습니다.</footer>`;
-    if (mnui.id === l[0]) { LS.set(K_MANSEEN, mnui.id); manBadge(); }
+      <footer>${x ? '[생성]으로 만든 브리핑은 이 기기에만 남습니다 (최근 30개).' : '정해진 시각의 브리핑은 어느 기기에서 열어도 같은 글입니다.'} 한 번 더 원하면 [생성].</footer>`;
+    if (mnui.id === l0) { LS.set(K_MANSEEN, mnui.id); manBadge(); }
   }
   function manBadge() { const n = manNow(), seen = LS.get(K_MANSEEN, ''); $('cMan').textContent = seen !== n ? '●' : ''; }
   let manLast = manNow();
