@@ -1068,18 +1068,20 @@ ${[
   }
 
   /* Claude — Messages API 를 브라우저에서 바로 (스트리밍 · 도구 · 웹 검색). 대화 기록은 받은 그대로 덧붙이기만 한다 */
-  async function claudeTurn(api, key, wire, ui, signal) {
-    const webOn = cfg.web !== false;
-    const tools = toolDefs().map(t => Object.assign({}, t, { eager_input_streaming: true }));
-    if (webOn) tools.push({ type: 'web_search_20260209', name: 'web_search', max_uses: cfg.deep !== false ? 10 : 6 });
+  async function claudeTurn(api, key, wire, ui, signal, opt) {
+    opt = opt || {};
+    const webOn = opt.web != null ? opt.web : cfg.web !== false;
+    const tools = opt.system ? [] : toolDefs().map(t => Object.assign({}, t, { eager_input_streaming: true }));
+    if (webOn) tools.push({ type: 'web_search_20260209', name: 'web_search', max_uses: opt.system ? 6 : cfg.deep !== false ? 10 : 6 });
     const body = {
       model: api.model || TYPES.claude.model, max_tokens: 64000, stream: true,
-      system: systemPrompt(webOn), messages: wire, tools,
+      system: opt.system || systemPrompt(webOn), messages: wire, tools,
       thinking: { type: 'adaptive', display: 'summarized' },
-      output_config: { effort: cfg.deep !== false ? 'high' : 'medium' },
+      output_config: { effort: opt.effort || (cfg.deep !== false ? 'high' : 'medium') },
       cache_control: { type: 'ephemeral' },
       fallbacks: 'default',
     };
+    if (!tools.length) delete body.tools;
     /* 이번 시도만의 멈춤 감시: 2분 동안 한 바이트도 안 오면 끊고 다시 받음 (스트림은 몇 초마다 ping 을 보냄) */
     const ac = new AbortController(); let stalled = false, last = Date.now();
     if (signal && signal.aborted) throw abortErr();
@@ -3483,13 +3485,43 @@ ${[
   let manLast = manNow();
   setInterval(() => { const n = manNow(); if (n !== manLast) { manLast = n; manBadge(); toast(`새 Man's 브리핑 — ${manLabel(n)}`, 4000); if (!$('vMan').hidden) { mnui.id = ''; renderMan(); } } }, 60000);
   manBadge();
+  /* 한 번 묻고 글로 받기 (Study 레슨 만들기 · 작문 첨삭) — 대화 기록에 남기지 않음. 끊김에 견디는 withRetry 그대로 */
+  async function aiGenerate(prompt, opt) {
+    opt = opt || {}; const api = activeAI(); if (!api) throw new Error('AI API 를 먼저 등록해 주세요 (Stock → API 연결)');
+    const key = await keyOf(api); if (!key) throw new Error('AI API 키가 비어 있습니다');
+    const ui = { text: '', think: '', steps: [], sources: [] }, sys = '너는 한국 학생을 가르치는 꼼꼼한 외국어 선생님이다. 사실과 숫자는 확인한 것만 쓰고, 저작권이 있는 글을 베끼지 않는다. 요청한 형식만 답한다.';
+    if (api.type === 'claude') {
+      const wire = [{ role: 'user', content: prompt }];
+      for (let i = 0; i < 6; i++) {
+        const res = await withRetry(() => claudeTurn(api, key, wire, ui, null, { system: sys, web: !!opt.web, effort: 'medium' }), ui, null, 'Claude');
+        wire.push({ role: 'assistant', content: res.content });
+        if (res.stop === 'pause_turn') continue;
+        if (res.stop === 'refusal') throw new Error('AI 가 이 요청에 답하지 않았습니다');
+        break;
+      }
+      const last = wire[wire.length - 1].content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+      if (!last) throw new Error('AI 답이 비었습니다'); return last;
+    }
+    const base = String(api.base || TYPES[api.type].base || '').replace(/\/+$/, '');
+    const j = await withRetry(async () => {
+      let r; try { r = await fetch(base + '/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify({ model: api.model, messages: [{ role: 'system', content: sys }, { role: 'user', content: prompt }] }) }); }
+      catch (e) { throw Object.assign(e, { net: true }); }
+      if (!r.ok) { let jj = null; try { jj = await r.json(); } catch (e) { } throw apiErrE(r.status, jj, TYPES[api.type].name, r.headers.get('retry-after')); }
+      return r.json();
+    }, ui, null, TYPES[api.type].name);
+    const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content; if (!t) throw new Error('AI 답이 비었습니다'); return String(t);
+  }
+  window.SEC_STUDY.init({ esc, icon, toast, LS, ai: aiGenerate, aiName: () => { const a = activeAI(); return a ? a.name : ''; } });
   /* Stock · Man 모드 */
   let stockView = 'today';
   function setMode(m) {
     document.body.dataset.secMode = m;
     document.querySelectorAll('.sc-mode [data-mode]').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   }
-  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? 'man' : stockView));
+  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? 'man' : b.dataset.mode === 'study' ? studyView : stockView));
+  /* Study (영어 · 일본어 · 중국어) — app/secret/study.js */
+  const STUDY_V = { en: 'stEn', ja: 'stJa', zh: 'stZh' };
+  let studyView = 'en';
 
   /* =====================================================================
      화면 전환 (2)
@@ -3985,12 +4017,12 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', en: 'vEn', ja: 'vJa', zh: 'vZh', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan();
-    setMode(v === 'man' ? 'man' : 'stock'); if (v !== 'man') stockView = v;
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v]));
+    setMode(v === 'man' ? 'man' : STUDY_V[v] ? 'study' : 'stock'); if (v !== 'man' && !STUDY_V[v]) stockView = v; if (STUDY_V[v]) studyView = v;
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
