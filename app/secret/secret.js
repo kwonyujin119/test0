@@ -1019,6 +1019,46 @@ ${[
   /* =====================================================================
      AI 호출
      ===================================================================== */
+  /* ---------- 끊김 · 혼잡에 견디기 ----------
+     · 휴대폰 화면 꺼짐 · 앱 전환 · 통신 흔들림으로 스트림이 끊기면 브라우저는 "network error" · "Failed to fetch" 등을 냄
+     · 그런 오류와 408 · 429 · 5xx · 529(혼잡), 2분 동안 아무것도 안 오는 멈춤은 같은 단계를 다시 받음
+       (최대 3번, 화면이 켜지고 인터넷이 돌아올 때까지 기다림). 끝내 실패해도 받은 도구 결과는 남겨 [이어서 다시 시도] */
+  const abortErr = () => Object.assign(new Error('멈췄습니다'), { name: 'AbortError' });
+  const isNetErr = e => !!e && e.name !== 'AbortError' && (e.net || e.name === 'TypeError' || /network ?error|failed to fetch|networkerror|load failed|err_|connection|socket|terminated/i.test(String(e.message || '')));
+  const isRetryable = e => !!e && e.name !== 'AbortError' && (e.retry || isNetErr(e));
+  const sleepFor = (ms, signal) => new Promise((res, rej) => { if (signal && signal.aborted) return rej(abortErr()); const t = setTimeout(res, ms); if (signal) signal.addEventListener('abort', () => { clearTimeout(t); rej(abortErr()); }, { once: true }); });
+  const waitFor = (ok, evs, signal, maxMs) => ok() ? Promise.resolve() : new Promise((res, rej) => {
+    let tm = 0; const done = () => { evs.forEach(([t, ev]) => t.removeEventListener(ev, on)); clearTimeout(tm); }, on = () => { if (ok()) { done(); res(); } };
+    evs.forEach(([t, ev]) => t.addEventListener(ev, on)); tm = setTimeout(() => { done(); res(); }, maxMs || 10 * 60000);
+    if (signal) signal.addEventListener('abort', () => { done(); rej(abortErr()); }, { once: true });
+  });
+  /* 답을 받는 동안 화면이 꺼지지 않게 (지원하는 브라우저만) */
+  const WL = { lock: null, want: false };
+  async function wakeOn() { WL.want = true; try { if (navigator.wakeLock && document.visibilityState === 'visible' && !WL.lock) { WL.lock = await navigator.wakeLock.request('screen'); WL.lock.addEventListener('release', () => { WL.lock = null; }); } } catch (e) { } }
+  function wakeOff() { WL.want = false; try { if (WL.lock) WL.lock.release(); } catch (e) { } WL.lock = null; }
+  document.addEventListener('visibilitychange', () => { if (WL.want && document.visibilityState === 'visible') wakeOn(); });
+  /* 한 단계(한 번의 API 요청)를 끊김에 견디게: 실패하면 화면에 받은 만큼을 되돌리고 다시 받음 */
+  async function withRetry(run, ui, signal, who) {
+    const snap = { text: ui.text, think: ui.think, steps: ui.steps.length, sources: ui.sources.length };
+    let rs = null;
+    for (let n = 0; ; n++) {
+      try { const out = await run(); if (rs) { rs.state = 'ok'; rs.label = `끊김 뒤 다시 받음 (${n}번)`; paint(); } return out; }
+      catch (e) {
+        if (!isRetryable(e) || n >= 3 || (signal && signal.aborted)) { if (rs) { ui.steps = ui.steps.filter(x => x !== rs); paint(); } throw e; }
+        ui.text = snap.text; ui.think = snap.think; ui.steps.length = snap.steps; ui.sources.length = snap.sources;
+        const why = document.visibilityState !== 'visible' ? '화면이 꺼져' : navigator.onLine === false ? '인터넷이 끊겨' : e.stall ? '응답이 멈춰' : e.retry ? `${who} 가 바빠` : '연결이 끊겨';
+        rs = { id: 'retry', name: 'retry', label: `${why} 다시 잇는 중 (${n + 1}/3)`, state: 'run' }; ui.steps.push(rs); paint();
+        await waitFor(() => document.visibilityState === 'visible', [[document, 'visibilitychange']], signal);
+        await waitFor(() => navigator.onLine !== false, [[window, 'online']], signal, 120000);
+        await sleepFor(e.wait || [1500, 4000, 9000][n], signal);
+      }
+    }
+  }
+  function apiErrE(status, j, who, ra) {
+    const e = new Error(apiErr(status, j, who));
+    if (status === 408 || status === 429 || status === 529 || status >= 500) { e.retry = true; const w = +ra; if (w > 0 && w <= 30) e.wait = w * 1000; }
+    return e;
+  }
   function apiErr(status, j, who) {
     const m = j && (j.error && (j.error.message || j.error) || j.message);
     if (status === 401 || status === 403) return `${who}: API 키가 맞지 않거나 권한이 없습니다 (${status})`;
@@ -1040,12 +1080,19 @@ ${[
       cache_control: { type: 'ephemeral' },
       fallbacks: 'default',
     };
+    /* 이번 시도만의 멈춤 감시: 2분 동안 한 바이트도 안 오면 끊고 다시 받음 (스트림은 몇 초마다 ping 을 보냄) */
+    const ac = new AbortController(); let stalled = false, last = Date.now();
+    if (signal && signal.aborted) throw abortErr();
+    const onAbort = () => ac.abort(); if (signal) signal.addEventListener('abort', onAbort, { once: true });
+    const wd = setInterval(() => { if (Date.now() - last > 120000) { stalled = true; ac.abort(); } }, 5000);
+    const fail = e => { if (signal && signal.aborted) return abortErr(); if (stalled) return Object.assign(new Error('응답이 2분 동안 멈췄습니다'), { stall: true, net: true }); if (e && e.name === 'AbortError') return Object.assign(new Error('연결이 끊겼습니다'), { net: true }); return e; };
+    try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', signal,
+      method: 'POST', signal: ac.signal,
       headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2026-10-21', 'anthropic-beta': 'server-side-fallback-2026-07-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify(body),
     });
-    if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, 'Claude')); }
+    if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw apiErrE(r.status, j, 'Claude', r.headers.get('retry-after')); }
     const blocks = []; let stop = null, stopDetails = null;
     const reader = r.body.getReader(), td = new TextDecoder(); let buf = '';
     const handle = ev => {
@@ -1076,12 +1123,13 @@ ${[
           break;
         }
         case 'message_delta': stop = ev.delta.stop_reason; stopDetails = ev.delta.stop_details || null; break;
-        case 'error': throw new Error('Claude: ' + ((ev.error && ev.error.message) || '스트림 오류'));
+        case 'error': { const et = (ev.error && ev.error.type) || ''; throw Object.assign(new Error('Claude: ' + ((ev.error && ev.error.message) || '스트림 오류')), { retry: /overloaded|api_error|timeout|rate_limit/.test(et) }); }
       }
       paint();
     };
     for (;;) {
       const { done, value } = await reader.read(); if (done) break;
+      last = Date.now();
       buf += td.decode(value, { stream: true });
       let i; while ((i = buf.indexOf('\n\n')) >= 0) {
         const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
@@ -1089,14 +1137,17 @@ ${[
         if (data) handle(JSON.parse(data));
       }
     }
+    if (!stop) throw Object.assign(new Error('답이 끝나기 전에 연결이 끊겼습니다'), { net: true }); // 끝 신호(message_delta) 없이 닫힌 스트림
     return { content: blocks.filter(Boolean), stop, stopDetails };
+    } catch (e) { throw fail(e); }
+    finally { clearInterval(wd); if (signal) signal.removeEventListener('abort', onAbort); }
   }
 
   async function runClaude(api, chat, ui, signal) {
     const key = await keyOf(api); if (!key) throw new Error('Claude API 키가 비어 있습니다');
     const wire = chat.wire.msgs;
     for (let step = 0; step < 16; step++) {
-      const res = await claudeTurn(api, key, wire, ui, signal);
+      const res = await withRetry(() => claudeTurn(api, key, wire, ui, signal), ui, signal, 'Claude');
       const bad = res.content.filter(b => b._bad); bad.forEach(b => { delete b._bad; });
       wire.push({ role: 'assistant', content: res.content });
       if (res.stop !== 'tool_use' && res.stop !== 'pause_turn' && res.content.some(b => b.type === 'tool_use')) wire.pop(); // 답할 수 없는 도구 호출로 끝난 차례는 기록에 남기지 않음
@@ -1125,10 +1176,13 @@ ${[
     const tools = toolDefs().map(t => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.input_schema } }));
     for (let step = 0; step < 12; step++) {
       ui.steps.push({ id: 'think' + step, name: 'think', label: '생각 중', state: 'run' }); paint();
-      let r; try { r = await fetch(base + '/chat/completions', { method: 'POST', signal, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify({ model: api.model, messages: [{ role: 'system', content: systemPrompt(false) }].concat(wire), tools }) }); }
-      finally { ui.steps = ui.steps.filter(s => s.name !== 'think'); }
-      if (!r.ok) { let j = null; try { j = await r.json(); } catch (e) { } throw new Error(apiErr(r.status, j, TYPES[api.type].name)); }
-      const j = await r.json(); const ch = j.choices && j.choices[0]; if (!ch) throw new Error('빈 답을 받았습니다');
+      const j = await withRetry(async () => {
+        let r; try { r = await fetch(base + '/chat/completions', { method: 'POST', signal, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify({ model: api.model, messages: [{ role: 'system', content: systemPrompt(false) }].concat(wire), tools }) }); }
+        catch (e) { if (signal && signal.aborted) throw abortErr(); throw Object.assign(e, { net: true }); }
+        if (!r.ok) { let jj = null; try { jj = await r.json(); } catch (e) { } throw apiErrE(r.status, jj, TYPES[api.type].name, r.headers.get('retry-after')); }
+        return r.json();
+      }, ui, signal, TYPES[api.type].name).finally(() => { ui.steps = ui.steps.filter(s => s.name !== 'think'); });
+      const ch = j.choices && j.choices[0]; if (!ch) throw new Error('빈 답을 받았습니다');
       const m = ch.message || {}; wire.push(m);
       if (m.content) { ui.text += (ui.text ? '\n\n' : '') + m.content; paint(); }
       if (!(m.tool_calls && m.tool_calls.length)) break;
@@ -1159,7 +1213,7 @@ ${[
       if (u.role !== 'user' || !a || a.role !== 'assistant' || !a.text) continue;
       msgs.push({ role: 'user', content: u.text }, { role: 'assistant', content: a.text });
     }
-    chat.wire = { ai: api.id, msgs };
+    chat.wire = { ai: api.id, msgs }; delete chat.pending;
   }
 
   async function send(text) {
@@ -1169,24 +1223,42 @@ ${[
     if (!cur) { cur = newChat(); chats.unshift(cur); keepCur(); }
     const chat = cur;
     ensureWire(chat, api);
+    /* 끊겨서 멈춘 차례가 있는데 새 질문을 보내면: 그 차례의 기록(도구 결과 등)은 걷어내고 새로 */
+    if (chat.pending) { chat.wire.msgs.length = Math.min(chat.wire.msgs.length, chat.pending.wireLen); const pv = chat.view[chat.view.length - 1]; if (pv && pv.resumable) delete pv.resumable; delete chat.pending; }
     if (!chat.view.length) chat.title = text.replace(/\s+/g, ' ').slice(0, 40);
     chat.view.push({ role: 'user', text, t: Date.now() });
     const ui = { role: 'assistant', text: '', think: '', steps: [], sources: [], ai: api.name, live: true }; chat.view.push(ui);
-    chat.updated = Date.now();
     const wireLen = chat.wire.msgs.length;
     chat.wire.msgs.push({ role: 'user', content: text });
-    const ctrl = new AbortController(); busy = ctrl; setBusy(true);
+    await runTurn(chat, api, ui, wireLen);
+  }
+  /* 끊긴 차례를 이어서: 받은 도구 결과까지는 그대로 두고, 끊긴 단계부터 다시 */
+  async function resumeTurn() {
+    const chat = cur; if (!chat || !chat.pending || busy) return;
+    const api = activeAI(); if (!api) { toast('먼저 AI API 를 등록해 주세요', 2400); return; }
+    if (chat.wire.ai !== api.id) { toast('AI 를 바꿔서 이어 갈 수 없습니다. 질문을 다시 보내 주세요', 3000); return; }
+    const ui = chat.view[chat.view.length - 1]; if (!ui || ui.role !== 'assistant') return;
+    const wireLen = chat.pending.wireLen; delete chat.pending;
+    ui.error = ''; ui.note = ''; delete ui.resumable; ui.live = true; ui.steps = (ui.steps || []).filter(s => s.state === 'ok' && s.name !== 'retry');
+    await runTurn(chat, api, ui, wireLen);
+  }
+  async function runTurn(chat, api, ui, wireLen) {
+    chat.updated = Date.now();
+    const ctrl = new AbortController(); busy = ctrl; setBusy(true); wakeOn();
     renderChat(); renderChatList();
     try {
       if (api.type === 'claude') await runClaude(api, chat, ui, ctrl.signal); else await runCompat(api, chat, ui, ctrl.signal);
     } catch (e) {
+      const last = chat.wire.msgs[chat.wire.msgs.length - 1];
+      /* 이어 갈 수 있으면(기록이 질문 · 도구 결과로 끝남) 받은 것을 남겨 둠 — 도구를 다시 부르지 않아도 됨 */
+      const canResume = e.name !== 'AbortError' && isRetryable(e) && last && (last.role === 'user' || last.role === 'tool');
       if (e.name === 'AbortError') ui.note = '멈췄습니다.';
-      else ui.error = /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? `${api.name} 에 연결하지 못했습니다. 인터넷 연결을 확인하고, 이 API 가 브라우저에서 바로 부르는 것을 허용하는지 확인하세요.` : e.message;
-      /* 실패 · 멈춘 차례는 API 기록에서 통째로 걷어낸다 (뒤에서 덧붙인 것만): 답 없는 도구 호출로 끝나는 기록을 다음 질문에 보내지 않게.
-         화면에는 받은 만큼 남겨 둔다 */
-      chat.wire.msgs.length = wireLen;
+      else if (isNetErr(e)) ui.error = `${api.name} 와의 연결이 끊겼습니다${e.stall ? ' (응답이 2분 동안 멈춤)' : ''}. 휴대폰 화면이 꺼지거나 다른 앱으로 넘어가거나 통신이 흔들리면 생깁니다. 3번 다시 이어 받았지만 실패했습니다.` + (canResume ? ' 받은 자료는 남겨 두었으니 [이어서 다시 시도]를 누르세요.' : ' 인터넷 연결을 확인하고 다시 보내 주세요.') + (/failed to fetch|load failed/i.test(e.message) && !ui.steps.length ? ' 처음부터 연결되지 않았다면 API 키 · 브라우저 차단(광고 차단 앱 등)도 확인하세요.' : '');
+      else ui.error = e.message + (canResume ? ' 받은 자료는 남겨 두었으니 잠시 뒤 [이어서 다시 시도]를 누르세요.' : '');
+      if (canResume) { chat.pending = { wireLen }; ui.resumable = true; }
+      else chat.wire.msgs.length = wireLen; /* 이어 갈 수 없으면 이번 차례 기록을 걷어냄 (답 없는 도구 호출로 끝나는 기록을 다음 질문에 보내지 않게). 화면에는 받은 만큼 남김 */
     } finally {
-      ui.live = false; busy = null; setBusy(false); chat.updated = Date.now(); saveChats(); renderChat(); renderChatList();
+      ui.live = false; busy = null; setBusy(false); wakeOff(); chat.updated = Date.now(); saveChats(); renderChat(); renderChatList();
     }
   }
   function setBusy(on) { $('btnSend').hidden = on; $('btnStop').hidden = !on; }
@@ -1248,10 +1320,11 @@ ${[
         ${m.think ? `<details class="sc-think"${m.live && !m.text ? ' open' : ''}><summary>생각 요약</summary><div>${esc(m.think)}</div></details>` : ''}
         <div class="${m.live ? 'sc-cursor' : ''}">${md(m.text || '')}</div>
         ${m.note ? `<p class="sc-fine" style="text-align:left;margin:6px 0 0">${esc(m.note)}</p>` : ''}
-        ${m.error ? `<div class="sc-err">${esc(m.error)}</div>` : ''}
+        ${m.error ? `<div class="sc-err">${esc(m.error)}${m.resumable && cur.pending && m === cur.view[cur.view.length - 1] ? `<div class="sc-err-act"><button type="button" class="btn sm ink" data-resume>${icon('refresh', 14)}이어서 다시 시도</button></div>` : ''}</div>` : ''}
         ${m.sources && m.sources.length ? `<div class="sc-src">${m.sources.slice(0, 12).map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener" title="${esc(s.title)}">${esc(s.title)}</a>`).join('')}</div>` : ''}
       </div>`;
     }).join('');
+    box.querySelectorAll('[data-resume]').forEach(b => b.onclick = () => resumeTurn());
     if (atBottom || (cur.view[cur.view.length - 1] || {}).live) box.scrollTop = box.scrollHeight;
   }
   function renderChat() {
