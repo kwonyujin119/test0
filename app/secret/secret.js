@@ -3512,6 +3512,7 @@ ${[
     }, ui, null, TYPES[api.type].name);
     const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content; if (!t) throw new Error('AI 답이 비었습니다'); return String(t);
   }
+  window.SEC_AI.init({ esc, icon, toast, LS, brief: briefRaw, show: v => show(v), ask: t => { show('chat'); send(t); } });
   window.SEC_STUDY.init({ esc, icon, toast, LS, brief: briefRaw, ai: aiGenerate, aiName: () => { const a = activeAI(); return a ? a.name : ''; } });
   /* Stock · Man 모드 */
   let stockView = 'today';
@@ -3519,7 +3520,10 @@ ${[
     document.body.dataset.secMode = m;
     document.querySelectorAll('.sc-mode [data-mode]').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   }
-  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? 'man' : b.dataset.mode === 'study' ? studyView : stockView));
+  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? 'man' : b.dataset.mode === 'study' ? studyView : b.dataset.mode === 'ai' ? aiView : stockView));
+  /* AI (날짜별 공부 · 용어) — app/secret/ai.js */
+  const AI_V = { aiday: 'aiDay', aiterm: 'aiTerm' };
+  let aiView = 'aiday';
   /* Study (영어 · 일본어 · 중국어) — app/secret/study.js */
   const STUDY_V = { en: 'stEn', ja: 'stJa', zh: 'stZh' };
   let studyView = 'en';
@@ -4018,12 +4022,12 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', en: 'vEn', ja: 'vJa', zh: 'vZh', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', en: 'vEn', ja: 'vJa', zh: 'vZh', aiday: 'vAiDay', aiterm: 'vAiTerm', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v]));
-    setMode(v === 'man' ? 'man' : STUDY_V[v] ? 'study' : 'stock'); if (v !== 'man' && !STUDY_V[v]) stockView = v; if (STUDY_V[v]) studyView = v;
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v])); if (AI_V[v]) window.SEC_AI.render(v, $(AI_V[v]));
+    setMode(v === 'man' ? 'man' : STUDY_V[v] ? 'study' : AI_V[v] ? 'ai' : 'stock'); if (v !== 'man' && !STUDY_V[v] && !AI_V[v]) stockView = v; if (STUDY_V[v]) studyView = v; if (AI_V[v]) aiView = v;
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
