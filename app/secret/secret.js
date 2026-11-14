@@ -2138,7 +2138,7 @@ ${[
      ===================================================================== */
   const K_NOTES = 'sec:notes';
   let notes = LS.get(K_NOTES, []);
-  /* Mento (Man 모드) — 내가 적는 멘토의 말 · 배움. [{ id, who, head, body, tags[], pin, created, updated }] · 기기 동기화 칸 'mento' */
+  /* Mentor (Man 모드) — 내가 적는 멘토의 말 · 배움. [{ id, who, head, body, tags[], ord(순서, 작을수록 앞), created, updated, pin(예전 것) }] · 기기 동기화 칸 'mento' */
   const K_MENTO = 'sec:mento';
   let mento = LS.get(K_MENTO, []); if (!Array.isArray(mento)) mento = [];
   const saveMento = () => { LS.set(K_MENTO, mento); SYNCQ.mark('mento'); };
@@ -3470,10 +3470,39 @@ ${[
     mnui.id = x.id; renderMan(); toast(`한 판 더 — ${(MAN.THEMES.find(t => t.key === theme) || {}).name}. 읽고, 바로 움직여라`, 2200);
   };
   const manXLabel = x => { const k = new Date(x.at + 9 * 36e5); return `${k.getUTCMonth() + 1}/${k.getUTCDate()} ${String(k.getUTCHours()).padStart(2, '0')}:${String(k.getUTCMinutes()).padStart(2, '0')} 한 판 더 · ${(MAN.THEMES.find(t => t.key === x.theme) || {}).name || ''}`; };
-  /* ---------- Mento — 내가 적고, 한눈에 본다 ---------- */
-  const mtui = { q: '', who: '', tag: '', edit: '', open: {} };
+  /* ---------- Mentor — 내가 적고, 내가 정한 순서로 모두 본다 (저장 키 · 동기화 칸 이름은 호환을 위해 mento 그대로) ---------- */
+  const mtui = { q: '', who: '', tag: '', edit: '', drag: '' };
   const mtTags = s => [...new Set(String(s || '').split(/[,#\s]+/).map(x => x.trim()).filter(Boolean))].slice(0, 8);
   const mtDay = t => { const k = new Date(t + 9 * 36e5); return `${k.getUTCFullYear()}.${k.getUTCMonth() + 1}.${k.getUTCDate()}`; };
+  /* 순서: 칸마다 ord(작을수록 위). 예전 기록(ord 없음)은 고정 → 최근 순으로 한 번 번호를 매김 */
+  function mtOrdered() {
+    if (mento.some(m => typeof m.ord !== 'number')) {
+      mento.slice().sort((a, b) => (typeof a.ord === 'number' ? a.ord : 1e9) - (typeof b.ord === 'number' ? b.ord : 1e9) || (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || (b.created || 0) - (a.created || 0)).forEach((m, i) => { m.ord = i; });
+      LS.set(K_MENTO, mento);
+    }
+    return mento.slice().sort((a, b) => a.ord - b.ord || (b.created || 0) - (a.created || 0));
+  }
+  /* 새 순서를 저장: 자리가 바뀐 기록만 고친 시각을 올림 (기기 동기화가 하나씩 늦은 쪽을 고르므로) */
+  function mtSetOrder(list) {
+    const now = Date.now(); let moved = false;
+    list.forEach((m, i) => { if (m.ord !== i) { m.ord = i; m.updated = now; moved = true; } });
+    if (moved) { saveMento(); renderMento(); }
+  }
+  function mtMove(id, to) { // to: 'up' | 'down' | 'top' | 'bottom' | 다른 기록 id 앞
+    const all = mtOrdered(), i = all.findIndex(m => m.id === id); if (i < 0) return;
+    const [m] = all.splice(i, 1);
+    const vis = mtVisible(all.concat([m])).map(x => x.id).filter(x => x !== id); // 걸러 보는 중이면 보이는 이웃과 자리 바꿈
+    let j;
+    if (to === 'top') j = 0; else if (to === 'bottom') j = all.length;
+    else if (to === 'up' || to === 'down') {
+      const before = vis.filter(x => all.findIndex(y => y.id === x) < i), after = vis.filter(x => all.findIndex(y => y.id === x) >= i);
+      if (to === 'up') { if (!before.length) return; j = all.findIndex(y => y.id === before[before.length - 1]); }
+      else { if (!after.length) return; j = all.findIndex(y => y.id === after[0]) + 1; }
+    } else { j = all.findIndex(y => y.id === to); if (j < 0) return; }
+    all.splice(j, 0, m); mtSetOrder(all);
+  }
+  const mtQ = () => mtui.q.trim().toLowerCase();
+  const mtVisible = all => { const q = mtQ(); return all.filter(m => (!mtui.who || m.who === mtui.who) && (!mtui.tag || (m.tags || []).includes(mtui.tag)) && (!q || [m.who, m.head, m.body, (m.tags || []).join(' ')].join(' ').toLowerCase().includes(q))); };
   function mtForm(m) {
     m = m || {};
     return `<form class="mt-form" data-mtform="${esc(m.id || '')}">
@@ -3481,57 +3510,74 @@ ${[
         <label><span>태그 <small>(쉼표나 띄어쓰기로)</small></span><input name="tags" maxlength="80" value="${esc((m.tags || []).join(', '))}" placeholder="예: 규율, 돈, 관계"></label></div>
       <label><span>한 줄 핵심 <small>(카드에 크게 보임)</small></span><input name="head" maxlength="80" value="${esc(m.head || '')}" placeholder="예: 기분이 아니라 일정이 사람을 만든다" required></label>
       <label><span>내용 <small>(들은 말 · 상황 · 내가 할 일)</small></span><textarea name="body" rows="4" maxlength="4000" placeholder="언제 어떤 상황에서 들었는지, 그래서 나는 무엇을 할지 적어 두세요.">${esc(m.body || '')}</textarea></label>
-      <div class="mt-act"><label class="mt-pin"><input type="checkbox" name="pin"${m.pin ? ' checked' : ''}> 맨 위에 고정</label>${m.id ? '<button type="button" class="btn" data-mtcancel>취소</button>' : ''}<button class="btn ink">${m.id ? '고친 것 저장' : '적어 두기'}</button></div>
+      <div class="mt-act">${m.id ? '' : '<label class="mt-pin"><input type="radio" name="at" value="top" checked> 맨 앞에</label><label class="mt-pin"><input type="radio" name="at" value="bottom"> 맨 뒤에</label>'}${m.id ? '<button type="button" class="btn" data-mtcancel>취소</button>' : ''}<button class="btn ink">${m.id ? '고친 것 저장' : '적어 두기'}</button></div>
     </form>`;
   }
   function renderMento() {
     const el = $('mtBody'); if (!el) return;
-    const all = mento.slice().sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || (b.updated || b.created) - (a.updated || a.created));
+    const all = mtOrdered();
     const whos = [...new Map(all.filter(m => m.who).map(m => [m.who, 0])).keys()];
     const cnt = (k, v) => all.filter(m => k === 'who' ? m.who === v : (m.tags || []).includes(v)).length;
     const tags = [...new Set(all.flatMap(m => m.tags || []))].sort((a, b) => cnt('tag', b) - cnt('tag', a));
-    const q = mtui.q.trim().toLowerCase();
     if (mtui.who && !whos.includes(mtui.who)) mtui.who = ''; if (mtui.tag && !tags.includes(mtui.tag)) mtui.tag = '';
-    const L = all.filter(m => (!mtui.who || m.who === mtui.who) && (!mtui.tag || (m.tags || []).includes(mtui.tag)) && (!q || [m.who, m.head, m.body, (m.tags || []).join(' ')].join(' ').toLowerCase().includes(q)));
-    const day = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
-    const pick = all.length ? all[[...day].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % all.length] : null;
+    const q = mtQ(), L = mtVisible(all), filtered = L.length !== all.length;
     const hl = t => { let h = esc(t); if (q) h = h.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), x => `<mark>${x}</mark>`); return h; };
     const editing = mtui.edit && mento.find(m => m.id === mtui.edit);
+    const pos = id => all.findIndex(m => m.id === id);
     el.innerHTML = `
-      ${pick ? `<section class="mt-today"><span class="lb">오늘 다시 새길 한 마디</span><blockquote>${esc(pick.head)}</blockquote>${pick.who ? `<cite>— ${esc(pick.who)}</cite>` : ''}</section>` : ''}
-      <div class="mt-stat"><b>${all.length}</b>개 · 멘토 ${whos.length}명 · 고정 ${all.filter(m => m.pin).length}</div>
+      <div class="mt-stat"><b>${all.length}</b>개 · 멘토 ${whos.length}명${all.length > 1 ? ` · <span class="hint">↑ ↓ · 맨 앞으로 순서를 바꿉니다${matchMedia('(hover: hover)').matches ? ' · ⠿ 를 끌어 옮길 수도 있습니다' : ''}</span>` : ''}</div>
       ${editing ? '' : `<details class="mt-new"${all.length ? '' : ' open'}><summary>${icon('plus', 16)}새로 적기</summary>${mtForm()}</details>`}
-      ${all.length ? `<div class="mt-filter"><input type="search" data-mtq placeholder="핵심 · 내용 · 멘토 · 태그에서 찾기" value="${esc(mtui.q)}" aria-label="Mento 찾기">
+      ${all.length > 2 ? `<div class="mt-filter"><input type="search" data-mtq placeholder="핵심 · 내용 · 멘토 · 태그에서 찾기" value="${esc(mtui.q)}" aria-label="Mentor 찾기">
         ${whos.length > 1 ? `<div class="ai-cats" aria-label="멘토"><span class="lbl">멘토</span><button type="button" data-mtwho="" class="${mtui.who ? '' : 'on'}">전체</button>${whos.map(w => `<button type="button" data-mtwho="${esc(w)}" class="${mtui.who === w ? 'on' : ''}">${esc(w)} <em>${cnt('who', w)}</em></button>`).join('')}</div>` : ''}
-        ${tags.length ? `<div class="ai-cats" aria-label="태그"><span class="lbl">태그</span><button type="button" data-mttag="" class="${mtui.tag ? '' : 'on'}">전체</button>${tags.map(t => `<button type="button" data-mttag="${esc(t)}" class="${mtui.tag === t ? 'on' : ''}">#${esc(t)} <em>${cnt('tag', t)}</em></button>`).join('')}</div>` : ''}</div>` : ''}
-      <div class="mt-grid">${L.map(m => m.id === mtui.edit ? `<div class="mt-card editing">${mtForm(m)}</div>` : `<article class="mt-card${m.pin ? ' pin' : ''}${mtui.open[m.id] ? ' open' : ''}" data-mtid="${esc(m.id)}">
-          <h3>${m.pin ? '<span class="mt-pinb" title="고정">고정</span>' : ''}${hl(m.head)}</h3>
-          ${m.body ? `<p class="mt-txt">${hl(m.body)}</p>${m.body.length > 120 || m.body.split('\n').length > 4 ? `<button type="button" class="mt-more" data-mtmore>${mtui.open[m.id] ? '접기' : '더 보기'}</button>` : ''}` : ''}
-          <footer>${m.who ? `<span class="who">${hl(m.who)}</span>` : ''}${(m.tags || []).map(t => `<span class="tg">#${hl(t)}</span>`).join('')}<span class="dt">${mtDay(m.updated || m.created)}</span>
-            <span class="mt-tools"><button type="button" class="btn ghost sm mt-pinbtn" data-mtpin title="${m.pin ? '고정 풀기' : '맨 위에 고정'}" aria-pressed="${!!m.pin}">${m.pin ? '고정 풀기' : '고정'}</button><button type="button" class="btn icon ghost sm" data-mtedit title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button type="button" class="btn icon ghost sm" data-mtrm title="지우기" aria-label="지우기">${icon('trash', 15)}</button></span></footer>
-        </article>`).join('') || (all.length ? '<p class="sc-fine">찾는 내용이 없습니다.</p>' : '')}</div>
-      ${all.length ? '' : '<p class="sc-fine mt-empty">멘토에게 들은 말, 책에서 건진 문장, 스스로 정한 원칙을 한 줄 핵심으로 적어 두세요. 모아 두면 여기서 한눈에 보이고, 매일 하나를 골라 맨 위에 보여 줍니다.</p>'}
+        ${tags.length ? `<div class="ai-cats" aria-label="태그"><span class="lbl">태그</span><button type="button" data-mttag="" class="${mtui.tag ? '' : 'on'}">전체</button>${tags.map(t => `<button type="button" data-mttag="${esc(t)}" class="${mtui.tag === t ? 'on' : ''}">#${esc(t)} <em>${cnt('tag', t)}</em></button>`).join('')}</div>` : ''}
+        ${filtered ? `<p class="sc-fine mt-fnote">${L.length} / ${all.length}개만 보는 중 — <button type="button" class="mt-link" data-mtall>모두 보기</button></p>` : ''}</div>` : ''}
+      <ol class="mt-grid">${L.map(m => { const n = pos(m.id); return m.id === mtui.edit ? `<li class="mt-card editing">${mtForm(m)}</li>` : `<li class="mt-card${n === 0 ? ' first' : ''}" data-mtid="${esc(m.id)}">
+          <div class="mt-top"><span class="mt-no">${n + 1}</span><span class="mt-ord"><button type="button" class="btn icon ghost sm mt-grip" draggable="true" data-mtgrip title="끌어서 옮기기" aria-label="끌어서 옮기기">⠿</button><button type="button" class="btn icon ghost sm" data-mtup title="앞으로" aria-label="앞으로"${n === 0 ? ' disabled' : ''}>${icon('arrowUp', 15)}</button><button type="button" class="btn icon ghost sm" data-mtdown title="뒤로" aria-label="뒤로"${n === all.length - 1 ? ' disabled' : ''}>${icon('arrowDown', 15)}</button>${n > 0 ? '<button type="button" class="btn ghost sm mt-topbtn" data-mttop title="맨 앞으로">맨 앞</button>' : ''}</span></div>
+          <h3>${hl(m.head)}</h3>
+          ${m.body ? `<p class="mt-txt">${hl(m.body)}</p>` : ''}
+          <footer>${m.who ? `<span class="who">${hl(m.who)}</span>` : ''}${(m.tags || []).map(t => `<span class="tg">#${hl(t)}</span>`).join('')}<span class="dt">${mtDay(m.created || m.updated)}</span>
+            <span class="mt-tools"><button type="button" class="btn icon ghost sm" data-mtedit title="고치기" aria-label="고치기">${icon('edit', 15)}</button><button type="button" class="btn icon ghost sm" data-mtrm title="지우기" aria-label="지우기">${icon('trash', 15)}</button></span></footer>
+        </li>`; }).join('') || (all.length ? '<li class="sc-fine">찾는 내용이 없습니다.</li>' : '')}</ol>
+      ${all.length ? '' : '<p class="sc-fine mt-empty">멘토에게 들은 말, 책에서 건진 문장, 스스로 정한 원칙을 한 줄 핵심으로 적어 두세요. 적은 것은 모두 쌓여 보이고, 순서는 내가 정합니다.</p>'}
       <datalist id="mtWhoList">${whos.map(w => `<option value="${esc(w)}">`).join('')}</datalist>`;
     el.querySelectorAll('[data-mtform]').forEach(f => {
       f.onsubmit = e => {
         e.preventDefault(); const d = new FormData(f), head = String(d.get('head') || '').trim(); if (!head) return;
-        const now = Date.now(), id = f.dataset.mtform, v = { who: String(d.get('who') || '').trim(), head, body: String(d.get('body') || '').trim(), tags: mtTags(d.get('tags')), pin: !!d.get('pin') };
-        if (id) { const m = mento.find(x => x.id === id); if (m) Object.assign(m, v, { updated: now }); mtui.edit = ''; toast('고쳤습니다', 1400); }
-        else { mento.unshift(Object.assign({ id: 'mt-' + now.toString(36) + Math.random().toString(36).slice(2, 6), created: now, updated: now }, v)); toast('적어 두었습니다', 1400); }
-        saveMento(); renderMento();
+        const now = Date.now(), id = f.dataset.mtform, v = { who: String(d.get('who') || '').trim(), head, body: String(d.get('body') || '').trim(), tags: mtTags(d.get('tags')) };
+        if (id) { const m = mento.find(x => x.id === id); if (m) Object.assign(m, v, { updated: now }); mtui.edit = ''; saveMento(); toast('고쳤습니다', 1400); renderMento(); return; }
+        const m = Object.assign({ id: 'mt-' + now.toString(36) + Math.random().toString(36).slice(2, 6), created: now, updated: now }, v), list = mtOrdered();
+        if (d.get('at') === 'bottom') list.push(m); else list.unshift(m);
+        mento.push(m); mtui.q = ''; mtui.who = ''; mtui.tag = '';
+        list.forEach((x, i) => { if (x.ord !== i) { x.ord = i; x.updated = now; } }); saveMento(); renderMento();
+        toast(d.get('at') === 'bottom' ? '맨 뒤에 적어 두었습니다' : '맨 앞에 적어 두었습니다', 1600);
       };
       const c = f.querySelector('[data-mtcancel]'); if (c) c.onclick = () => { mtui.edit = ''; renderMento(); };
     });
     const qi = el.querySelector('[data-mtq]'); let tm = 0;
-    if (qi) qi.oninput = () => { clearTimeout(tm); tm = setTimeout(() => { mtui.q = qi.value; renderMento(); const n = $('mtBody').querySelector('[data-mtq]'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 200); };
+    if (qi) qi.oninput = () => { clearTimeout(tm); tm = setTimeout(() => { mtui.q = qi.value; renderMento(); const n = $('mtBody').querySelector('[data-mtq]'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 200); };
     el.querySelectorAll('[data-mtwho]').forEach(b => b.onclick = () => { mtui.who = b.dataset.mtwho; renderMento(); });
     el.querySelectorAll('[data-mttag]').forEach(b => b.onclick = () => { mtui.tag = b.dataset.mttag; renderMento(); });
+    const allB = el.querySelector('[data-mtall]'); if (allB) allB.onclick = () => { mtui.q = ''; mtui.who = ''; mtui.tag = ''; renderMento(); };
     el.querySelectorAll('[data-mtid]').forEach(c => {
       const m = mento.find(x => x.id === c.dataset.mtid); if (!m) return;
-      const mo = c.querySelector('[data-mtmore]'); if (mo) mo.onclick = () => { mtui.open[m.id] = !mtui.open[m.id]; renderMento(); };
-      c.querySelector('[data-mtpin]').onclick = () => { m.pin = !m.pin; m.updated = Date.now(); saveMento(); renderMento(); };
+      const keep = sel => { const b = $('mtBody').querySelector(`[data-mtid="${m.id}"] ${sel}`); if (b && !b.disabled) b.focus(); else { const card = $('mtBody').querySelector(`[data-mtid="${m.id}"]`); if (card) card.scrollIntoView({ block: 'nearest' }); } };
+      c.querySelector('[data-mtup]').onclick = () => { mtMove(m.id, 'up'); keep('[data-mtup]'); };
+      c.querySelector('[data-mtdown]').onclick = () => { mtMove(m.id, 'down'); keep('[data-mtdown]'); };
+      const tb = c.querySelector('[data-mttop]'); if (tb) tb.onclick = () => { mtMove(m.id, 'top'); toast('맨 앞으로 옮겼습니다', 1400); };
       c.querySelector('[data-mtedit]').onclick = () => { mtui.edit = m.id; renderMento(); const f = $('mtBody').querySelector(`[data-mtform="${m.id}"]`); if (f) { f.scrollIntoView({ block: 'center', behavior: 'smooth' }); f.querySelector('[name=head]').focus(); } };
       c.querySelector('[data-mtrm]').onclick = async () => { if (!(await confirmBox('이 기록을 지울까요?', `"${m.head}" — 지우면 되돌릴 수 없습니다.`, '지우기'))) return; mento = mento.filter(x => x !== m); SYNCQ.tomb('mento', m.id); saveMento(); renderMento(); };
+      /* 끌어서 옮기기 (마우스) — 놓은 카드의 앞 / 뒤 반쪽에 따라 그 앞 · 뒤로 */
+      const g = c.querySelector('[data-mtgrip]');
+      g.ondragstart = e => { mtui.drag = m.id; c.classList.add('dragging'); try { e.dataTransfer.setData('text/plain', m.id); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setDragImage(c, 20, 20); } catch (er) { } };
+      g.ondragend = () => { mtui.drag = ''; el.querySelectorAll('.mt-card').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after')); };
+      const side = e => { const r = c.getBoundingClientRect(), wide = r.width > r.height * 1.6; return (wide ? e.clientY - r.top < r.height / 2 : e.clientX - r.left < r.width / 2) ? 'before' : 'after'; };
+      c.ondragover = e => { if (!mtui.drag || mtui.drag === m.id) return; e.preventDefault(); const sd = side(e); c.classList.toggle('drop-before', sd === 'before'); c.classList.toggle('drop-after', sd === 'after'); };
+      c.ondragleave = () => c.classList.remove('drop-before', 'drop-after');
+      c.ondrop = e => {
+        e.preventDefault(); const id = mtui.drag; if (!id || id === m.id) return; const sd = side(e);
+        const all2 = mtOrdered(), from = all2.findIndex(x => x.id === id); const [x] = all2.splice(from, 1);
+        let j = all2.findIndex(y => y.id === m.id); if (sd === 'after') j++; all2.splice(j, 0, x); mtui.drag = ''; mtSetOrder(all2);
+      };
     });
   }
   async function renderMan() {
@@ -4091,12 +4137,12 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', mento: 'vMento', en: 'vEn', ja: 'vJa', zh: 'vZh', aiday: 'vAiDay', aiterm: 'vAiTerm', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', mentor: 'vMento', en: 'vEn', ja: 'vJa', zh: 'vZh', aiday: 'vAiDay', aiterm: 'vAiTerm', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (v === 'mento') renderMento(); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v])); if (AI_V[v]) window.SEC_AI.render(v, $(AI_V[v]));
-    setMode(v === 'man' || v === 'mento' ? 'man' : STUDY_V[v] ? 'study' : AI_V[v] ? 'ai' : 'stock'); if (v === 'man' || v === 'mento') manView = v; if (v !== 'man' && v !== 'mento' && !STUDY_V[v] && !AI_V[v]) stockView = v; if (STUDY_V[v]) studyView = v; if (AI_V[v]) aiView = v;
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (v === 'mentor') renderMento(); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v])); if (AI_V[v]) window.SEC_AI.render(v, $(AI_V[v]));
+    setMode(v === 'man' || v === 'mentor' ? 'man' : STUDY_V[v] ? 'study' : AI_V[v] ? 'ai' : 'stock'); if (v === 'man' || v === 'mentor') manView = v; if (v !== 'man' && v !== 'mentor' && !STUDY_V[v] && !AI_V[v]) stockView = v; if (STUDY_V[v]) studyView = v; if (AI_V[v]) aiView = v;
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
@@ -4104,6 +4150,7 @@ ${[
   fillIcons(document);
   $('cWatch').textContent = watch.items.length || ''; $('cApi').textContent = cfg.apis.length || ''; $('cJournal').textContent = journal.length || ''; $('cNotes').textContent = notes.length || '';
   setAuto();
+  if (location.hash === '#mento') history.replaceState(null, '', '#mentor'); // 예전 주소
   show(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'today');
   { const due = journal.filter(isDue).length, k = 'sec:dueToast'; if (due && LS.get(k, '') !== todayStr()) { LS.set(k, todayStr()); setTimeout(() => toast(`점검일이 된 결정 카드 ${due}건 — 매매 일지에서 확인하세요`, 4000), 1500); } }
   paintSync(); renderBanner();
