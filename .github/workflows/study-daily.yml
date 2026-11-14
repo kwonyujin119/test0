@@ -1,0 +1,65 @@
+# SECRET Study — 매일 아침 6시(한국 시간) 전에 그날의 영어(소설 · 경제) · 일본어 · 중국어 레슨을 만들어
+# briefing 브랜치 study/ 에 날짜별로 저장한다. 앱은 모닝 브리핑처럼 불러온다.
+# 저장소 Settings → Secrets and variables → Actions 에 ANTHROPIC_API_KEY 가 있으면 Claude 가 새로 쓰고(사용량 · 요금 발생),
+# 없으면 토큰 없이 앱의 기본 레슨을 날짜로 돌려 저장한다. (.github/scripts/study_daily.py)
+name: Study daily
+
+on:
+  schedule:
+    - cron: '13 20 * * *'   # 05:13 한국 시간 — 6시 전에 완성
+    - cron: '43 20 * * *'   # 05:43 — 늦은 실행 · 실패 보충
+    - cron: '23 22 * * *'   # 07:23 — 보충
+  workflow_dispatch:
+  push:                      # .github/study-run.txt 를 바꿔 main 에 올리면 바로 실행
+    branches: [main]
+    paths: ['.github/study-run.txt']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: briefing-branch     # 모닝 · 전략 브리핑 · 장 마감 기록과 같은 브랜치에 쓰므로 한 번에 하나씩
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 스크립트만 가져오기
+        uses: actions/checkout@v4
+        with:
+          path: src
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: briefing 브랜치 가져오기
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          if git ls-remote --exit-code --heads "$REPO_URL" briefing >/dev/null; then
+            git clone --depth 1 --branch briefing "$REPO_URL" pub
+          else
+            mkdir pub && cd pub && git init -b briefing && git remote add origin "$REPO_URL"
+          fi
+
+      - name: Anthropic SDK 설치 (키가 있을 때만)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: if [ -n "$ANTHROPIC_API_KEY" ]; then pip install --quiet 'anthropic>=1.1.0'; else echo "키 없음 — 기본 레슨을 날짜로 돌려 저장"; fi
+
+      - name: 오늘의 레슨 만들기
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 src/.github/scripts/study_daily.py --out pub
+
+      - name: 저장
+        run: |
+          cd pub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git commit -m "Study 레슨 $(TZ=Asia/Seoul date '+%F %H:%M')"
+          for i in 1 2 3; do git push origin HEAD:briefing && exit 0; git pull --rebase origin briefing || true; sleep 5; done
+          exit 1

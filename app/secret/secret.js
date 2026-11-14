@@ -3511,7 +3511,7 @@ ${[
     }, ui, null, TYPES[api.type].name);
     const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content; if (!t) throw new Error('AI 답이 비었습니다'); return String(t);
   }
-  window.SEC_STUDY.init({ esc, icon, toast, LS, ai: aiGenerate, aiName: () => { const a = activeAI(); return a ? a.name : ''; } });
+  window.SEC_STUDY.init({ esc, icon, toast, LS, brief: briefRaw, ai: aiGenerate, aiName: () => { const a = activeAI(); return a ? a.name : ''; } });
   /* Stock · Man 모드 */
   let stockView = 'today';
   function setMode(m) {
