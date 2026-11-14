@@ -3462,13 +3462,13 @@ ${[
     const at = Date.now(), seed = (at ^ Math.floor(Math.random() * 2 ** 31)) >>> 0;
     const theme = manTheme || MAN.THEMES[seed % MAN.THEMES.length].key;
     const x = { id: 'x-' + at, at, seed, theme }; manX = [x].concat(manX).slice(0, 30); LS.set(K_MANX, manX);
-    mnui.id = x.id; renderMan(); toast(`새 브리핑 — ${(MAN.THEMES.find(t => t.key === theme) || {}).name}`, 1800);
+    mnui.id = x.id; renderMan(); toast(`한 판 더 — ${(MAN.THEMES.find(t => t.key === theme) || {}).name}. 읽고, 바로 움직여라`, 2200);
   };
-  const manXLabel = x => { const k = new Date(x.at + 9 * 36e5); return `${k.getUTCMonth() + 1}/${k.getUTCDate()} ${String(k.getUTCHours()).padStart(2, '0')}:${String(k.getUTCMinutes()).padStart(2, '0')} 생성 · ${(MAN.THEMES.find(t => t.key === x.theme) || {}).name || ''}`; };
+  const manXLabel = x => { const k = new Date(x.at + 9 * 36e5); return `${k.getUTCMonth() + 1}/${k.getUTCDate()} ${String(k.getUTCHours()).padStart(2, '0')}:${String(k.getUTCMinutes()).padStart(2, '0')} 한 판 더 · ${(MAN.THEMES.find(t => t.key === x.theme) || {}).name || ''}`; };
   async function renderMan() {
     paintThemes();
     const sched = manList(), l = manX.map(x => x.id).concat(sched); if (!mnui.id || !l.includes(mnui.id)) mnui.id = sched[0];
-    $('manPick').innerHTML = (manX.length ? `<optgroup label="[생성]으로 만든 브리핑">${manX.map(x => `<option value="${x.id}"${x.id === mnui.id ? ' selected' : ''}>${manXLabel(x)}</option>`).join('')}</optgroup><optgroup label="정해진 시각">` : '') + sched.map(id => `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${manLabel(id)}${id === sched[0] ? ' · 지금' : ''}</option>`).join('') + (manX.length ? '</optgroup>' : '');
+    $('manPick').innerHTML = (manX.length ? `<optgroup label="[한 판 더]로 만든 브리핑">${manX.map(x => `<option value="${x.id}"${x.id === mnui.id ? ' selected' : ''}>${manXLabel(x)}</option>`).join('')}</optgroup><optgroup label="정해진 시각">` : '') + sched.map(id => `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${manLabel(id)}${id === sched[0] ? ' · 지금' : ''}</option>`).join('') + (manX.length ? '</optgroup>' : '');
     const i = l.indexOf(mnui.id); $('manPrev').disabled = i >= l.length - 1; $('manNext').disabled = i <= 0;
     /* 오늘의 세 판: 지난 것 · 지금 · 아직 */
     const k = kstNow(), d = k.toISOString().slice(0, 10), h = k.getUTCHours();
@@ -3476,9 +3476,10 @@ ${[
     $('manSlots').querySelectorAll('[data-mid]').forEach(b => b.onclick = () => { mnui.id = b.dataset.mid; renderMan(); });
     const box = $('manBody'), x = manXget(mnui.id), l0 = sched[0];
     const b = MAN.build(manCtx(mnui.id));
-    box.innerHTML = `<header><span class="tag">${x ? '생성 · ' + esc(b.theme) : esc(b.slot.name)}</span><h2>${esc(b.title)}</h2><p class="sub">${esc(x ? manXLabel(x) : manLabel(mnui.id))} · 약 ${b.chars.toLocaleString()}자</p></header>
+    box.innerHTML = `<header><span class="tag">${x ? '한 판 더 · ' + esc(b.theme) : esc(b.slot.name)}</span><p class="man-punch">${esc(b.punch)}</p><h2>${esc(b.title)}</h2><p class="sub">${esc(x ? manXLabel(x) : manLabel(mnui.id))} · 약 ${b.chars.toLocaleString()}자</p></header>
       ${b.parts.map(p => `<section><h3>${esc(p.h)}</h3><p>${esc(p.t)}</p>${p.src ? `<small>출처: ${esc(p.src)}</small>` : ''}</section>`).join('')}
-      <footer>${x ? '[생성]으로 만든 브리핑은 이 기기에만 남습니다 (최근 30개).' : '정해진 시각의 브리핑은 어느 기기에서 열어도 같은 글입니다.'} 한 번 더 원하면 [생성].</footer>`;
+      <div class="man-last"><b>${esc(b.last)}</b><span>읽고 끝내면 아무것도 바뀌지 않는다. 지금 첫 번째 명령부터 실행해라.</span></div>
+      <footer>${x ? '[한 판 더]로 만든 브리핑은 이 기기에만 남습니다 (최근 30개).' : '정해진 시각의 브리핑은 어느 기기에서 열어도 같은 글입니다.'} 더 필요하면 [한 판 더].</footer>`;
     if (mnui.id === l0) { LS.set(K_MANSEEN, mnui.id); manBadge(); }
   }
   function manBadge() { const n = manNow(), seen = LS.get(K_MANSEEN, ''); $('cMan').textContent = seen !== n ? '●' : ''; }

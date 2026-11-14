@@ -107,6 +107,16 @@ window.SEC_MAN = (() => {
     noon: ['단백질로 배를 채우고 늘어지지 않는다', '후반전 두 시간은 알림을 끄고 한 놈만 판다', '오전에 미룬 일 하나를 지금 시작한다', '10분 걷고 돌아와 다시 붙는다', '화난 일은 결과로 바꾼다 — 남에게 쏟지 않는다', '아침에 적은 세 개 중 남은 것부터 끝낸다', '오늘 끝낼 일과 내일로 넘길 일을 칼같이 나눈다'],
     pm: ['오늘 부순 것 · 놓친 것 · 내일 노릴 것을 세 줄로 적는다', '퇴근 뒤 일 메시지는 열지 않는다', '내일 기상 시각을 정하고 알람을 맞춘다', '가족 · 가까운 사람과 휴대폰 없이 이야기한다', '스쿼트 · 푸시업 · 걷기 중 하나로 몸을 한 번 더 쓴다', '자기 전 한 시간은 화면을 끈다', '오늘 밤 7시간 이상 잔다'],
   };
+  /* 한 줄 펀치 — 매 판 맨 위에 크게 */
+  const PUNCH = [
+    '변명은 패자의 모국어다.', '편안함이 너를 죽인다.', '오늘 안 하면 내일도 안 한다.', '기분은 핑계다. 해라.', '지는 건 괜찮다. 포기하는 건 안 된다.',
+    '네 인생의 구조대는 너 하나다.', '땀은 거짓말을 안 한다.', '약속을 지키는 남자만 믿을 수 있다. 너 자신도.', '쉬운 길은 늘 붐빈다. 어려운 길로 가라.',
+    '아무도 안 볼 때 하는 것이 너다.', '두려우면 더 가까이 가라.', '어제의 너를 이겨라. 그게 유일한 승부다.', '말은 싸다. 결과로 증명해라.',
+    '피곤한 건 네가 싸우고 있다는 증거다.', '시작이 반이 아니다. 시작이 전부다.', '고통은 지나가고 기록은 남는다.', '물러서는 순간 습관이 된다.',
+    '네가 쉬는 동안 누군가는 장전 중이다.', '거의 이긴 건 진 거다. 끝장을 봐라.', '불편함 쪽으로 걸어가라. 거기서 강해진다.', '참는 놈이 결국 판을 먹는다.',
+    '오늘 흘린 땀이 내일의 갑옷이다.', '기다리지 마라. 가서 가져와라.', '네 몸이 네 첫 번째 무기다. 녹슬게 두지 마라.',
+  ];
+  const LAST = { am: '나가라. 오늘을 사냥해라.', noon: '후반전이다. 끝장을 봐라.', pm: '오늘을 정산하고, 내일을 장전해라.' };
   const pick = (arr, n, seed) => { const out = [], used = new Set(); let k = seed; while (out.length < Math.min(n, arr.length)) { const i = ((k % arr.length) + arr.length) % arr.length; if (!used.has(i)) { used.add(i); out.push(arr[i]); } k += 3; } return out; };
   const dayNo = d => Math.floor(Date.parse(d + 'T00:00:00Z') / 864e5);
   function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -117,7 +127,7 @@ window.SEC_MAN = (() => {
     const yLeft = Math.round((yEnd - t) / 864e5), mLeft = Math.round((mEnd - t) / 864e5), wLeft = (7 - dow) % 7;
     const yDays = Math.round((Date.UTC(y + 1, 0, 1) - Date.UTC(y, 0, 1)) / 864e5), done = Math.round((1 - (yLeft + 1) / yDays) * 100);
     const hrs = slot === 'am' ? '깨어 있는 시간이 16시간쯤 남았다' : slot === 'noon' ? '오늘이 12시간 남았다' : slot === 'pm' ? '오늘이 6시간 남았다' : '';
-    return `${y}년의 ${done}%가 지났다. 올해 남은 날 ${yLeft}일, 이번 달 남은 날 ${mLeft}일, 이번 주 남은 날 ${wLeft}일.${hrs ? ' ' + hrs + '.' : ''} 시계는 너를 기다려 주지 않는다. 남은 날을 세고, 오늘을 씹어 먹어라.`;
+    return `${y}년의 ${done}%가 이미 끝났다. 올해 남은 날 ${yLeft}일 — ${yLeft}번의 싸움이다. 이번 달 ${mLeft}일, 이번 주 ${wLeft}일.${hrs ? ' ' + hrs + '.' : ''} 한 판도 공짜로 넘기지 마라. 시계는 너를 기다리지 않는다. 오늘을 씹어 먹어라.`;
   }
   /* ctx: { date, slot, goal(사용자가 적은 목표, 선택), extra: { seed, theme } — [생성] 판 } */
   function build(ctx) {
@@ -126,7 +136,7 @@ window.SEC_MAN = (() => {
     const R = (n, k) => rnd ? Math.floor(rnd() * n) : ((k % n) + n) % n;
     const th = ex ? (THEMES.find(t => t.key === ex.theme) || THEMES[R(THEMES.length)]) : THEMES[(dn * 3 + si) % THEMES.length];
     const f1 = R(FACT.length, dn * 3 + si), fact = FACT[f1];
-    const goal = ctx.goal ? { h: '네가 적은 목표', t: `「${String(ctx.goal).slice(0, 80)}」 — 오늘 이 목표를 위해 한 일이 하나라도 있는가. 없다면 지금 하나를 하라.` } : null;
+    const goal = ctx.goal ? { h: '네가 내건 깃발', t: `「${String(ctx.goal).slice(0, 80)}」 — 이게 네가 내건 깃발이다. 오늘 이 깃발을 위해 땀 한 방울이라도 흘렸나. 아니라면 이 글을 닫기 전에 하나 해라. 말만 하는 남자의 깃발은 바람에 찢긴다.` } : null;
     let parts;
     if (!ex) {
       parts = [
@@ -165,7 +175,8 @@ window.SEC_MAN = (() => {
     ];
     for (const f of more) { if (len() >= 900) break; f(); }
     for (let g = 1; g <= 6 && len() < 900; g++) { const k = s.key, t = OPEN[k][R(OPEN[k].length, dn * 3 + si + g * 3)]; if (!parts.some(p => p.t === t)) parts.splice(parts.length - 1, 0, { h: '한 번 더 새길 말', t }); }
-    return { slot: s, theme: th.name, title: ex ? `Man's 브리핑 · 추가 — ${th.name}` : `Man's 브리핑 · ${s.name} — ${s.title}`, parts, chars: len() };
+    const punch = PUNCH[R(PUNCH.length, dn * 3 + si * 5)];
+    return { slot: s, theme: th.name, punch, last: LAST[s.key], title: ex ? `Man's 브리핑 · 추가 — ${th.name}` : `Man's 브리핑 · ${s.name} — ${s.title}`, parts, chars: len() };
   }
   return { SLOTS, THEMES: THEMES.map(t => ({ key: t.key, name: t.name })), build };
 })();
