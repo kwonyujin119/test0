@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """SECRET Study — 매일 아침(한국 시간 6시 전) 그날의 학습 레슨을 만들어 briefing 브랜치 study/ 에 날짜별로 저장한다.
 
-  study/YYYY-MM-DD.json  {date, generatedAt, mode, en: [소설, 경제], ja: 레슨, zh: 레슨, errors}
+  study/YYYY-MM-DD.json  {date, generatedAt, mode, en: [소설, 경제], ja: 레슨, zh: 레슨, ai: AI 소식(키가 있을 때만), errors}
   study/index.json       {dates: [...], updated}  — 날짜별 기록(지우지 않음)
 
 두 가지 방식
@@ -104,6 +104,15 @@ def make(client, kind, today, past):
              '고등학생 수준으로 각색한 대화문으로 써라(원문 그대로가 아님을 note 에 밝힐 것). 매일 이어 보고 싶게, 작품 · 장면을 고르고 '
              f'앞서 다룬 것과 겹치지 말 것: {have}\n- sub 에 작품 이름(한국어 · 영어) · 작가 · 발표 연도. sources 는 빈 배열 가능.\n- JSON 형식:\n{EN_SCHEMA}')
         return check_en(parse(ask(client, p, False)))
+    if kind == 'ai':
+        p = (f'오늘은 {today} (한국 시간)이다. 웹 검색으로 최근 7일 안에 나온 AI 분야의 의미 있는 소식 하나(새 모델 · 기능 · 정책 · 연구, 여러 언론이 다룬 것)를 골라 '
+             f'AI 를 배우는 한국 일반인을 위한 짧은 학습 글을 만들어라. 과장 · 홍보 문구 없이, 확인한 사실만, 날짜를 밝힐 것. 앞서 다룬 것과 겹치지 말 것: {have}\n'
+             '- JSON 형식: {"title":"한국어 제목","sub":"한 줄 요약","body":"무슨 일이 있었고 왜 중요한지 한국어 400~600자, 쉬운 말",'
+             '"points":["핵심 3~4개"],"sources":[["기사 제목","https://..."]] (2~3개),"terms":["관련 용어 2~4개(우리말 이름)"],'
+             '"prompt":"이 소식을 더 알아보려고 AI 에게 할 질문 한 개(한국어)","q":"스스로 점검 질문 하나"}')
+        j = parse(ask(client, p, True))
+        if not (j.get('title') and j.get('body') and isinstance(j.get('sources'), list)): raise ValueError('AI 소식 형식이 맞지 않음')
+        return j
     lang = kind
     p = (f'한국 어린이(6~9살)를 위한 {KID_NAME[lang]} 첫걸음 레슨 하나를 만들어라. 아이들이 좋아하는 생활 주제 하나, '
          f'앞서 다룬 주제와 겹치지 말 것: {have}\n- {KID_FMT[lang]}. 뜻은 한국어. 아주 쉬운 말만.\n- JSON 형식:\n'
@@ -124,13 +133,13 @@ def main():
         print('오늘 레슨이 이미 있습니다'); return
     idx = jload(os.path.join(d, 'index.json'), {'dates': []})
     # 최근에 다룬 제목 (겹치지 않게)
-    past = {'en_novel': [], 'en_econ': [], 'ja': [], 'zh': []}
+    past = {'en_novel': [], 'en_econ': [], 'ja': [], 'zh': [], 'ai': []}
     for ds in sorted(idx.get('dates', []))[-60:]:
         r = jload(os.path.join(d, ds + '.json'), {})
         for i, k in enumerate(['en_novel', 'en_econ']):
             x = (r.get('en') or [None, None])[i] if len(r.get('en') or []) > i else None
             if isinstance(x, dict) and x.get('title'): past[k].append(f"{x['title']} ({x.get('sub', '')})")
-        for k in ('ja', 'zh'):
+        for k in ('ja', 'zh', 'ai'):
             x = r.get(k)
             if isinstance(x, dict) and x.get('title'): past[k].append(x['title'])
     rot = lambda k: {'ref': BUILTIN[k][dn % len(BUILTIN[k])]}
@@ -140,7 +149,7 @@ def main():
     if key:
         import anthropic
         client = anthropic.Anthropic(max_retries=4, timeout=600)
-        for k in ('en_econ', 'en_novel', 'ja', 'zh'):
+        for k in ('en_econ', 'en_novel', 'ja', 'zh', 'ai'):
             for attempt in range(2):
                 try:
                     j = make(client, k, today, past)
@@ -154,8 +163,9 @@ def main():
                     if attempt == 1: out['errors'].append(f'{k}: {str(e)[:160]}')
     for k in ('en_novel', 'en_econ', 'ja', 'zh'):
         if k not in res: res[k] = rot(k)
-    if key and len(out['errors']) == 4: out['mode'] = 'rotation'
+    if key and len(out['errors']) >= 4: out['mode'] = 'rotation'
     out.update({'en': [res['en_novel'], res['en_econ']], 'ja': res['ja'], 'zh': res['zh']})
+    if isinstance(res.get('ai'), dict) and res['ai'].get('title'): out['ai'] = res['ai']  # AI 소식은 키가 있을 때만 (기본 레슨 없음)
     jsave(fp, out)
     dates = sorted(set(idx.get('dates', [])) | {today}, reverse=True)
     jsave(os.path.join(d, 'index.json'), {'dates': dates, 'updated': now.isoformat(timespec='seconds')})
