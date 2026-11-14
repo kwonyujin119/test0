@@ -9,15 +9,26 @@ window.SEC_STUDY = (() => {
   const st = () => Object.assign({ done: {}, write: {}, pick: {}, quiz: {} }, H.LS.get(K, {}));
   const save = s => H.LS.set(K, s);
   const aiStore = () => Object.assign({ en: [], ja: [], zh: [] }, H.LS.get(KAI, {}));
-  /* ---------- 날짜별 레슨 (briefing 브랜치 study/ — study-daily.yml 이 매일 6시 전에 만듦) ----------
+  /* ---------- 날짜별 레슨 (briefing 브랜치 study/ — study-daily.yml 이 매일 6시 전에 만듦 · 없으면 앱이 기본 레슨 차례로 채움) ----------
      · 6시 전에는 어제 판, 6시부터 오늘 판 (모닝 브리핑처럼). 지난 날짜도 골라 볼 수 있음
      · {"ref": id} 는 앱에 든 기본 레슨을 가리킴 (토큰을 쓰지 않은 날) */
   const dui = { idx: null, at: 0, cache: {}, date: '', day: null };
   const effToday = () => { const k = new Date(Date.now() + 9 * 36e5); return new Date(k.getTime() - (k.getUTCHours() < 6 ? 864e5 : 0)).toISOString().slice(0, 10); };
+  /* 기본 레슨 차례 — 서버(Actions)가 늦거나 건너뛰어도 매일 6시에 앱이 바로 다음 레슨으로 넘김.
+     study_daily.py 의 BUILTIN 순서 · ROT0 와 같아야 함 (같은 날 같은 레슨) */
+  const ROT0 = '2026-11-14';
+  const dayNo = d => Math.round((Date.parse(d + 'T00:00:00Z') - Date.parse(ROT0 + 'T00:00:00Z')) / 864e5);
+  const pool = { novel: () => D.en.filter(l => l.kind === 'novel'), econ: () => D.en.filter(l => l.kind === 'econ'), ja: () => D.ja, zh: () => D.zh };
+  const pickN = (arr, n) => arr.length ? { ref: arr[((n % arr.length) + arr.length) % arr.length].id } : null;
+  const rotDay = d => { const n = dayNo(d); return { date: d, mode: 'rotation', local: true, errors: [], en: [pickN(pool.novel(), n), pickN(pool.econ(), n)], ja: pickN(pool.ja(), n), zh: pickN(pool.zh(), n) }; };
   async function ensureDay(force) {
     if (force || !dui.idx || Date.now() - dui.at > 10 * 60000) {
       const j = await H.brief('study/index.json').catch(() => null), lim = effToday();
-      dui.idx = ((j && j.dates) || []).filter(d => d <= lim).sort().reverse(); dui.at = Date.now();
+      const srv = new Set(((j && j.dates) || []).filter(d => d <= lim));
+      for (const d in dui.cache) if (dui.cache[d] && dui.cache[d].local && srv.has(d)) delete dui.cache[d]; // 서버 판이 오면 그것으로
+      const all = new Set(srv); for (let d = ROT0; d <= lim; d = new Date(Date.parse(d + 'T00:00:00Z') + 864e5).toISOString().slice(0, 10)) all.add(d); // 빠진 날은 앱이 채움
+      for (const d of all) if (!srv.has(d) && !dui.cache[d]) dui.cache[d] = rotDay(d);
+      dui.idx = [...all].sort().reverse(); dui.at = Date.now();
     }
     if (!dui.date || !dui.idx.includes(dui.date)) dui.date = dui.idx[0] || '';
     if (dui.date && !dui.cache[dui.date]) dui.cache[dui.date] = await H.brief(`study/${dui.date}.json`).catch(() => null);
@@ -34,7 +45,7 @@ window.SEC_STUDY = (() => {
     const d = dui.day, md = s => `${+s.slice(5, 7)}월 ${+s.slice(8)}일`;
     if (!dui.idx || !dui.idx.length) return `<div class="st-day"><span>📅 날짜별 레슨이 아직 없습니다 — 매일 아침 6시 전에 만들어집니다. 그 전까지는 기본 레슨으로 공부하세요.</span></div>`;
     return `<div class="st-day"><label>📅 <select data-day aria-label="레슨 날짜">${dui.idx.map(x => `<option value="${x}"${x === dui.date ? ' selected' : ''}>${md(x)}${x === effToday() ? ' · 오늘' : ''}</option>`).join('')}</select></label>
-      <span>${d ? (d.mode === 'ai' ? 'AI 가 새로 쓴 레슨' : '기본 레슨을 날짜로 돌린 날 (토큰 안 씀)') + (d.errors && d.errors.length ? ` · 일부는 기본 레슨으로 대신함` : '') : '이 날짜의 레슨을 불러오지 못했습니다'} · 매일 아침 6시에 새 판</span></div>`;
+      <span>${d ? (d.mode === 'ai' ? 'AI 가 새로 쓴 레슨' : '기본 레슨 차례 (토큰 안 씀)') + (d.errors && d.errors.length ? ` · 일부는 기본 레슨으로 대신함` : '') : '이 날짜의 레슨을 불러오지 못했습니다'} · 매일 아침 6시에 새 판</span></div>`;
   };
   function bindDay(el, rerender) { const s = el.querySelector('[data-day]'); if (s) s.onchange = async () => { dui.date = s.value; ui.en = ''; kid.ja = ''; kid.zh = ''; await ensureDay(); rerender(); }; }
   const esc = s => H.esc(String(s == null ? '' : s));
