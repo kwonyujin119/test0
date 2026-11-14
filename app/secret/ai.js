@@ -1,4 +1,4 @@
-/* SECRET AI 탭 — ① 날짜별 AI 공부(30일 과정이 하루에 하나씩 열리고 누적 + 키가 있으면 매일 "AI 소식") ② 용어 사전
+/* SECRET AI 탭 — ① 날짜별 AI 공부(60일 과정 = 1차 기초와 활용 30과 + 2차 실전 · 자동화 30과가 하루에 하나씩 열리고 누적 + 키가 있으면 매일 "AI 소식") ② 용어 사전
    · 과정: ai-course.js (start 날짜가 1일차) · 용어: ai-terms.js
    · 그날의 "AI 소식"은 Study 와 같은 study/YYYY-MM-DD.json 의 ai 칸 (study-daily.yml, ANTHROPIC_API_KEY 가 있을 때만)
    · 진행 · 내 답은 이 기기에만 (sec:aiStudy) */
@@ -13,6 +13,8 @@ window.SEC_AI = (() => {
   const kstDate = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
   const addDays = (d, n) => new Date(Date.parse(d + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
   const dayIdx = d => Math.round((Date.parse(d + 'T00:00:00Z') - Date.parse(C.start + 'T00:00:00Z')) / 864e5);
+  const PARTS = C.parts || [{ n: '', t: '', from: 1, to: C.lessons.length }];
+  const partOf = day => PARTS.find(p => day >= p.from && day <= p.to) || PARTS[0];
   const md = d => { const x = new Date(d + 'T00:00:00Z'); return `${x.getUTCMonth() + 1}월 ${x.getUTCDate()}일 (${'일월화수목금토'[x.getUTCDay()]})`; };
 
   /* ---------- 날짜별 목록: 열린 과정 + 그날의 AI 소식 ---------- */
@@ -37,8 +39,14 @@ window.SEC_AI = (() => {
     if (!ui.sel || !E.some(e => e.id === ui.sel)) ui.sel = (E.find(e => !e.news && !s.done[e.id]) || E[0]).id;
     const e = E.find(x => x.id === ui.sel), l = e.l, doneN = E.filter(x => !x.news && s.done[x.id]).length, openN = E.filter(x => !x.news).length;
     const left = C.lessons.length - openN;
-    el.innerHTML = `<div class="ai-top"><div class="ai-prog"><b>${doneN} / ${C.lessons.length}</b><span>과정 진행 · 열린 과 ${openN}${left ? ` · 남은 과 ${left}(하루에 하나씩)` : ' · 과정을 모두 열었습니다'}</span><div class="bar"><i style="width:${doneN / C.lessons.length * 100}%"></i></div></div></div>
-      <div class="ai-list" role="list">${E.map(x => `<button type="button" role="listitem" class="${x.id === e.id ? 'on' : ''}${s.done[x.id] ? ' done' : ''}${x.news ? ' news' : ''}" data-sel="${x.id}"><span>${x.news ? '오늘의 AI 소식' : x.day + '일차'} · ${esc(md(x.date))}</span><b>${s.done[x.id] ? '✓ ' : ''}${esc(x.l.t || x.l.title)}</b></button>`).join('')}</div>
+    const progs = PARTS.map(p => {
+      const len = p.to - p.from + 1, opened = Math.max(0, Math.min(len, openN - p.from + 1));
+      const dn = E.filter(x => !x.news && x.day >= p.from && x.day <= p.to && s.done[x.id]).length;
+      if (!opened) return `<details class="ai-prog ai-next"><summary><b>${esc(p.n)} · ${esc(p.t)}</b><span>${esc(md(addDays(C.start, p.from - 1)))}부터 하루에 하나씩 열립니다 · ${len}과 · 목록 미리 보기</span></summary><ol start="${p.from}">${C.lessons.slice(p.from - 1, p.to).map(l => `<li>${esc(l.t)}</li>`).join('')}</ol></details>`;
+      return `<div class="ai-prog"><b>${p.n ? esc(p.n) + ' ' : ''}${dn} / ${len}</b><span>${p.t ? esc(p.t) + ' · ' : ''}열린 과 ${opened}${opened < len ? ` · 남은 과 ${len - opened}(하루에 하나씩)` : dn === len ? ' · 수료' : ' · 모두 열림'}</span><div class="bar"><i style="width:${dn / len * 100}%"></i></div></div>`;
+    }).join('');
+    el.innerHTML = `<div class="ai-top">${progs}</div>
+      <div class="ai-list" role="list">${E.map(x => `<button type="button" role="listitem" class="${x.id === e.id ? 'on' : ''}${s.done[x.id] ? ' done' : ''}${x.news ? ' news' : ''}" data-sel="${x.id}"><span>${x.news ? '오늘의 AI 소식' : (PARTS.length > 1 ? partOf(x.day).n + ' · ' : '') + x.day + '일차'} · ${esc(md(x.date))}</span><b>${s.done[x.id] ? '✓ ' : ''}${esc(x.l.t || x.l.title)}</b></button>`).join('')}</div>
       <article class="ai-lesson">${e.news ? newsCard(e, s) : lessonCard(e, s)}</article>`;
     el.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { ui.sel = b.dataset.sel; renderDay(el); el.querySelector('.ai-lesson').scrollIntoView({ block: 'start', behavior: 'smooth' }); });
     el.querySelectorAll('[data-term]').forEach(b => b.onclick = () => { tui.q = b.dataset.term; tui.cat = ''; H.show('aiterm'); });
@@ -51,7 +59,7 @@ window.SEC_AI = (() => {
   const termChips = arr => (arr || []).length ? `<div class="ai-terms-in"><span>관련 용어</span>${arr.map(t => `<button type="button" data-term="${esc(t)}">${esc(t)}</button>`).join('')}</div>` : '';
   function lessonCard(e, s) {
     const l = e.l;
-    return `<header><span class="tag">${e.day}일차 · ${esc(md(e.date))}</span><h2>${esc(l.t)}</h2><p class="goal">오늘의 목표 — ${esc(l.goal)}</p></header>
+    return `<header><span class="tag">${PARTS.length > 1 ? `${esc(partOf(e.day).n)} ${esc(partOf(e.day).t)} · ` : ''}${e.day}일차 · ${esc(md(e.date))}</span><h2>${esc(l.t)}</h2><p class="goal">오늘의 목표 — ${esc(l.goal)}</p></header>
       <section><h3>설명</h3><p>${esc(l.body)}</p></section>
       <section><h3>실습</h3><ol class="ai-steps">${l.steps.map((x, i) => `<li><label><input type="checkbox" data-step="${i}"${s.steps[e.id + ':' + i] ? ' checked' : ''}> ${esc(x)}</label></li>`).join('')}</ol>
         <div class="ai-prompt"><div class="lb">Claude 에게 바로 해 볼 질문</div><pre>${esc(l.prompt)}</pre><div class="row"><button type="button" class="btn sm" data-copy>${H.icon('copy', 14)}복사</button><button type="button" class="btn sm ink" data-ask>${H.icon('sparkle', 14)}AI 어시스턴트로 해 보기</button></div><p class="sc-fine" style="text-align:left;margin:4px 0 0">[AI 어시스턴트로 해 보기]는 Stock → AI 어시스턴트로 넘어가 등록한 AI 로 보냅니다(토큰 사용).</p></div></section>
