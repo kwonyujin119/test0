@@ -9,7 +9,34 @@ window.SEC_STUDY = (() => {
   const st = () => Object.assign({ done: {}, write: {}, pick: {}, quiz: {} }, H.LS.get(K, {}));
   const save = s => H.LS.set(K, s);
   const aiStore = () => Object.assign({ en: [], ja: [], zh: [] }, H.LS.get(KAI, {}));
-  const lessons = lang => aiStore()[lang].concat(D[lang]);
+  /* ---------- 날짜별 레슨 (briefing 브랜치 study/ — study-daily.yml 이 매일 6시 전에 만듦) ----------
+     · 6시 전에는 어제 판, 6시부터 오늘 판 (모닝 브리핑처럼). 지난 날짜도 골라 볼 수 있음
+     · {"ref": id} 는 앱에 든 기본 레슨을 가리킴 (토큰을 쓰지 않은 날) */
+  const dui = { idx: null, at: 0, cache: {}, date: '', day: null };
+  const effToday = () => { const k = new Date(Date.now() + 9 * 36e5); return new Date(k.getTime() - (k.getUTCHours() < 6 ? 864e5 : 0)).toISOString().slice(0, 10); };
+  async function ensureDay(force) {
+    if (force || !dui.idx || Date.now() - dui.at > 10 * 60000) {
+      const j = await H.brief('study/index.json').catch(() => null), lim = effToday();
+      dui.idx = ((j && j.dates) || []).filter(d => d <= lim).sort().reverse(); dui.at = Date.now();
+    }
+    if (!dui.date || !dui.idx.includes(dui.date)) dui.date = dui.idx[0] || '';
+    if (dui.date && !dui.cache[dui.date]) dui.cache[dui.date] = await H.brief(`study/${dui.date}.json`).catch(() => null);
+    dui.day = dui.date ? dui.cache[dui.date] : null;
+  }
+  const resolve = (x, lang) => !x ? null : x.ref ? D[lang].find(l => l.id === x.ref) || null : x;
+  function dayLessons(lang) {
+    const d = dui.day; if (!d) return [];
+    const arr = lang === 'en' ? (d.en || []).map(x => resolve(x, 'en')) : [resolve(d[lang], lang)];
+    return arr.filter(Boolean).map(l => Object.assign({}, l, { today: d.date }));
+  }
+  const lessons = lang => { const day = dayLessons(lang), ids = new Set(day.map(l => l.id)); return day.concat(aiStore()[lang].concat(D[lang]).filter(l => !ids.has(l.id))); };
+  const dayBar = () => {
+    const d = dui.day, md = s => `${+s.slice(5, 7)}월 ${+s.slice(8)}일`;
+    if (!dui.idx || !dui.idx.length) return `<div class="st-day"><span>📅 날짜별 레슨이 아직 없습니다 — 매일 아침 6시 전에 만들어집니다. 그 전까지는 기본 레슨으로 공부하세요.</span></div>`;
+    return `<div class="st-day"><label>📅 <select data-day aria-label="레슨 날짜">${dui.idx.map(x => `<option value="${x}"${x === dui.date ? ' selected' : ''}>${md(x)}${x === effToday() ? ' · 오늘' : ''}</option>`).join('')}</select></label>
+      <span>${d ? (d.mode === 'ai' ? 'AI 가 새로 쓴 레슨' : '기본 레슨을 날짜로 돌린 날 (토큰 안 씀)') + (d.errors && d.errors.length ? ` · 일부는 기본 레슨으로 대신함` : '') : '이 날짜의 레슨을 불러오지 못했습니다'} · 매일 아침 6시에 새 판</span></div>`;
+  };
+  function bindDay(el, rerender) { const s = el.querySelector('[data-day]'); if (s) s.onchange = async () => { dui.date = s.value; ui.en = ''; kid.ja = ''; kid.zh = ''; await ensureDay(); rerender(); }; }
   const esc = s => H.esc(String(s == null ? '' : s));
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -44,10 +71,10 @@ window.SEC_STUDY = (() => {
   const ui = { en: '', timer: null, t0: 0, acc: 0 };
   function renderEn(el) {
     const L = lessons('en'), s = st();
-    if (!ui.en || !L.some(x => x.id === ui.en)) ui.en = s.pick.en && L.some(x => x.id === s.pick.en) ? s.pick.en : L.find(x => x.kind === 'novel').id;
+    if (!ui.en || !L.some(x => x.id === ui.en)) { const dl = dayLessons('en'); ui.en = dl.length ? dl[0].id : s.pick.en && L.some(x => x.id === s.pick.en) ? s.pick.en : L.find(x => x.kind === 'novel').id; }
     const x = L.find(l => l.id === ui.en), dn = s.done[x.id] || {};
     const totalMin = x.plan.reduce((a, p) => a + p[1], 0);
-    el.innerHTML = `<div class="st-pick">${L.map(l => `<button type="button" class="${l.id === x.id ? 'on' : ''}" data-l="${l.id}"><span class="k">${l.kind === 'econ' ? '경제 매거진' : '소설 대사'}${l.ai ? ' · AI' : ''}</span><b>${esc(l.title)}</b><small>${esc(l.sub || '')}</small>${Object.keys(s.done[l.id] || {}).length === 4 ? '<em>✓ 끝냄</em>' : ''}</button>`).join('')}</div>
+    el.innerHTML = dayBar() + `<div class="st-pick">${L.map(l => `<button type="button" class="${l.id === x.id ? 'on' : ''}${l.today ? ' day' : ''}" data-l="${l.id}"><span class="k">${l.today ? `${+l.today.slice(5, 7)}/${+l.today.slice(8)} 레슨 · ` : ''}${l.kind === 'econ' ? '경제 매거진' : '소설 대사'}${l.ai ? ' · 내가 만듦' : ''}</span><b>${esc(l.title)}</b><small>${esc(l.sub || '')}</small>${Object.keys(s.done[l.id] || {}).length === 4 ? '<em>✓ 끝냄</em>' : ''}</button>`).join('')}</div>
       <div class="st-make"><button type="button" class="btn sm" data-make="novel">${H.icon('sparkle', 14)}새 소설 레슨 만들기 (AI)</button><button type="button" class="btn sm" data-make="econ">${H.icon('sparkle', 14)}이번 주 경제 기사 만들기 (AI · 웹 검색)</button><span class="sc-fine">${H.aiName() ? `${esc(H.aiName())} 로 만듭니다 · 사용량(토큰)이 듭니다` : 'AI API 를 등록하면 새로 만들 수 있습니다'}</span></div>
       <article class="st-lesson">
         <header><span class="tag">${x.kind === 'econ' ? '경제 매거진' : '소설 대사'} · ${totalMin}분</span><h2>${esc(x.title)}</h2><p class="sub">${esc(x.sub || '')}</p>${x.note ? `<p class="note">${esc(x.note)}</p>` : ''}
@@ -71,7 +98,7 @@ window.SEC_STUDY = (() => {
           <div class="st-tools"><button type="button" class="btn sm ghost" data-model>모범 답안 보기</button><button type="button" class="btn sm" data-fix>${H.icon('sparkle', 14)}AI 첨삭</button></div>
           <p class="st-model" hidden>${esc(x.writing.model)} ${say(x.writing.model, 'en')}</p><div class="st-fixout"></div>${doneBtn(x, 3, dn)}</section>
       </article>`;
-    bindSay(el); bindMcq(el);
+    bindSay(el); bindMcq(el); bindDay(el, () => renderEn(el));
     el.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { ui.en = b.dataset.l; const s2 = st(); s2.pick.en = ui.en; save(s2); stopTimer(); ui.acc = 0; renderEn(el); });
     el.querySelectorAll('[data-flip]').forEach(c => { const f = () => c.classList.toggle('on'); c.onclick = f; c.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } }; });
     el.querySelector('[data-ko]').onclick = e => { const on = e.target.textContent.includes('보기'); el.querySelectorAll('.st-pass .ko').forEach(k => { k.hidden = !on; }); e.target.textContent = on ? '해석 숨기기' : '해석 모두 보기'; };
@@ -139,10 +166,10 @@ window.SEC_STUDY = (() => {
   const kid = { ja: '', zh: '' };
   function renderKid(el, lang) {
     const L = lessons(lang), s = st(), today = Math.floor((Date.now() + 9 * 36e5) / 864e5);
-    if (!kid[lang] || !L.some(x => x.id === kid[lang])) kid[lang] = (s.pick[lang] && L.some(x => x.id === s.pick[lang])) ? s.pick[lang] : D[lang][today % D[lang].length].id;
+    if (!kid[lang] || !L.some(x => x.id === kid[lang])) { const dl = dayLessons(lang); kid[lang] = dl.length ? dl[0].id : (s.pick[lang] && L.some(x => x.id === s.pick[lang])) ? s.pick[lang] : D[lang][today % D[lang].length].id; }
     const x = L.find(l => l.id === kid[lang]), name = lang === 'ja' ? '일본어' : '중국어', rd = lang === 'ja' ? '로마자' : '병음';
     const stars = (s.quiz[x.id] || 0);
-    el.innerHTML = `<div class="kd-pick">${L.map(l => `<button type="button" class="${l.id === x.id ? 'on' : ''}" data-l="${l.id}"><span>${l.emoji || '⭐'}</span>${esc(l.title)}${l.ai ? ' · AI' : ''}${(s.quiz[l.id] || 0) >= 5 ? ' ⭐' : ''}</button>`).join('')}</div>
+    el.innerHTML = dayBar() + `<div class="kd-pick">${L.map(l => `<button type="button" class="${l.id === x.id ? 'on' : ''}${l.today ? ' day' : ''}" data-l="${l.id}"><span>${l.emoji || '⭐'}</span>${l.today ? `<small>${+l.today.slice(5, 7)}/${+l.today.slice(8)}</small>` : ''}${esc(l.title)}${l.ai ? ' · 내가 만듦' : ''}${(s.quiz[l.id] || 0) >= 5 ? ' ⭐' : ''}</button>`).join('')}</div>
       <div class="st-make"><button type="button" class="btn sm" data-make>${H.icon('sparkle', 14)}새 ${name} 레슨 만들기 (AI)</button><span class="sc-fine">${H.aiName() ? '사용량(토큰)이 듭니다' : 'AI API 를 등록하면 새로 만들 수 있습니다'}</span></div>
       <article class="kd">
         <header><span class="big">${x.emoji || '⭐'}</span><h2>${esc(x.title)}</h2><p class="sub">그림을 누르면 읽어 줘요 · ${rd}와 뜻도 함께 · 오늘의 최고 점수 ${'⭐'.repeat(Math.min(5, stars))}${stars ? '' : '없음'}</p></header>
@@ -154,7 +181,7 @@ window.SEC_STUDY = (() => {
         <ul class="kd-dl">${x.dialog.map(d => `<li class="${d[0] === 'A' ? 'a' : 'b'}">${say(d[1], lang)}<div><b>${esc(d[1])}</b><span class="r">${esc(d[2])}</span><span class="m">${esc(d[3])}</span></div></li>`).join('')}</ul>
         <h3>4. 퀴즈 — 그림에 맞는 말을 골라요</h3><div class="kd-quiz" data-quiz></div>
       </article>`;
-    bindSay(el);
+    bindSay(el); bindDay(el, () => renderKid(el, lang));
     el.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { kid[lang] = b.dataset.l; const s2 = st(); s2.pick[lang] = kid[lang]; save(s2); renderKid(el, lang); });
     el.querySelector('[data-make]').onclick = e => makeKid(lang, el, e.currentTarget);
     quiz(el.querySelector('[data-quiz]'), x, lang);
@@ -190,8 +217,17 @@ window.SEC_STUDY = (() => {
     }, l => { kid[lang] = l.id; renderKid(el, lang); });
   }
 
+  /* 열어 둔 채 6시가 지나면 새 판으로 */
+  const last = { view: '', el: null, eff: '' };
+  setInterval(() => { const e = effToday(); if (!last.eff) last.eff = e; if (e === last.eff) return; last.eff = e; dui.idx = null; dui.date = ''; ui.en = ''; kid.ja = ''; kid.zh = ''; if (last.el && last.el.offsetParent) window.SEC_STUDY.render(last.view, last.el).then(() => H.toast('오늘의 새 레슨이 도착했습니다', 3000)); }, 5 * 60000);
   return {
     init(h) { H = h; if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => { }; } catch (e) { } } },
-    render(view, el) { if (view === 'en') renderEn(el); else renderKid(el, view); },
+    async render(view, el) {
+      const go = () => { if (view === 'en') renderEn(el); else renderKid(el, view); };
+      last.view = view; last.el = el;
+      if (!dui.idx) el.innerHTML = '<div class="sc-bmsg">오늘의 레슨을 불러오는 중…</div>';
+      try { await ensureDay(); } catch (e) { }
+      go();
+    },
   };
 })();
