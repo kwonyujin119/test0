@@ -73,24 +73,29 @@ window.SEC_AI = (() => {
   }
 
   /* ---------- 용어 사전 ---------- */
-  const tui = { q: '', cat: '' };
+  const tui = { q: '', cat: '', fq: 0 };
+  const FQ = {}; Object.entries(window.SEC_AI_FREQ || {}).forEach(([k, a]) => a.forEach(n => { FQ[n] = +k; }));
+  const fqOf = t => FQ[t[0]] || 3, FQN = { 1: '매일 쓰는 말', 2: '자주 쓰는 말', 3: '알아두면 좋은 말' };
   const CATS = [...new Set(TERMS.map(t => t[2]))];
   function renderTerms(el) {
     el.innerHTML = `<div class="ai-tsearch"><input type="search" data-tq placeholder="용어 · 영어 · 설명으로 찾기 (예: 토큰, RAG, 환각)" value="${esc(tui.q)}" aria-label="용어 찾기"></div>
       <div class="ai-cats" role="tablist"><button type="button" data-cat="" class="${tui.cat ? '' : 'on'}">전체 <em>${TERMS.length}</em></button>${CATS.map(c => `<button type="button" data-cat="${esc(c)}" class="${tui.cat === c ? 'on' : ''}">${esc(c)} <em>${TERMS.filter(t => t[2] === c).length}</em></button>`).join('')}</div>
+      <div class="ai-cats ai-fq" role="tablist" aria-label="사용빈도"><span class="lbl">사용빈도</span>${[0, 1, 2, 3].map(f => `<button type="button" data-fq="${f}" class="${tui.fq === f ? 'on' : ''}">${f ? `<i class="ai-dot f${f}"></i>${FQN[f]}` : '전체'} <em>${f ? TERMS.filter(t => fqOf(t) === f).length : TERMS.length}</em></button>`).join('')}</div>
       <p class="sc-fine ai-cnt" style="text-align:left"></p><dl class="ai-dict"></dl>`;
     const box = el.querySelector('.ai-dict'), cnt = el.querySelector('.ai-cnt'), inp = el.querySelector('[data-tq]');
     const paint = () => {
       const q = tui.q.trim().toLowerCase(), opened = Math.min(C.lessons.length, dayIdx(kstDate()) + 1);
-      let L = TERMS.filter(t => (!tui.cat || t[2] === tui.cat) && (!q || (t[0] + ' ' + t[1] + ' ' + t[3]).toLowerCase().includes(q)));
+      let L = TERMS.filter(t => (!tui.cat || t[2] === tui.cat) && (!tui.fq || fqOf(t) === tui.fq) && (!q || (t[0] + ' ' + t[1] + ' ' + t[3]).toLowerCase().includes(q)));
+      L = L.map((t, i) => [t, i]).sort((a, b) => fqOf(a[0]) - fqOf(b[0]) || a[1] - b[1]).map(x => x[0]);
       if (q) L = L.sort((a, b) => (b[0].toLowerCase() === q) - (a[0].toLowerCase() === q) || (b[0].toLowerCase().includes(q)) - (a[0].toLowerCase().includes(q)));
       const hl = s => { let h = esc(s); if (q) h = h.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`); return h; };
-      cnt.textContent = `${L.length}개${q ? ` · "${tui.q}"` : ''}${tui.cat ? ` · ${tui.cat}` : ''}`;
-      box.innerHTML = L.map(t => `<div class="ai-term"><dt>${hl(t[0])}<small>${hl(t[1])}</small><span class="cat">${esc(t[2])}</span></dt><dd>${hl(t[3])}${(C.lessons.map((l, i) => l.terms.includes(t[0]) ? i + 1 : 0).filter(Boolean)).slice(0, 4).map(n => n <= opened ? `<button type="button" class="ai-go" data-go="c${n}">${n}일차에서 배움</button>` : `<span class="ai-go off">${n}일차에 배움 (예정)</span>`).join('')}</dd></div>`).join('') || '<p class="sc-fine">찾는 용어가 없습니다.</p>';
+      cnt.textContent = `${L.length}개${q ? ` · "${tui.q}"` : ''}${tui.cat ? ` · ${tui.cat}` : ''}${tui.fq ? ` · ${FQN[tui.fq]}` : ''} · 자주 쓰는 순`;
+      box.innerHTML = L.map(t => `<div class="ai-term f${fqOf(t)}"><dt>${fqOf(t) < 3 ? `<i class="ai-dot f${fqOf(t)}" title="${FQN[fqOf(t)]}"></i>` : ''}${hl(t[0])}<small>${hl(t[1])}</small><span class="cat">${fqOf(t) < 3 ? `<b class="fq f${fqOf(t)}">${fqOf(t) === 1 ? '매일' : '자주'}</b>` : ''}${esc(t[2])}</span></dt><dd>${hl(t[3])}${(C.lessons.map((l, i) => l.terms.includes(t[0]) ? i + 1 : 0).filter(Boolean)).slice(0, 4).map(n => n <= opened ? `<button type="button" class="ai-go" data-go="c${n}">${n}일차에서 배움</button>` : `<span class="ai-go off">${n}일차에 배움 (예정)</span>`).join('')}</dd></div>`).join('') || '<p class="sc-fine">찾는 용어가 없습니다.</p>';
       box.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { ui.sel = b.dataset.go; H.show('aiday'); });
     };
     let tm = 0; inp.oninput = () => { clearTimeout(tm); tm = setTimeout(() => { tui.q = inp.value; paint(); }, 120); };
     el.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { tui.cat = b.dataset.cat; el.querySelectorAll('[data-cat]').forEach(x => x.classList.toggle('on', x === b)); paint(); });
+    el.querySelectorAll('[data-fq]').forEach(b => b.onclick = () => { tui.fq = +b.dataset.fq; el.querySelectorAll('[data-fq]').forEach(x => x.classList.toggle('on', x === b)); paint(); });
     paint();
     if (!tui.q) setTimeout(() => inp.focus(), 30);
   }
