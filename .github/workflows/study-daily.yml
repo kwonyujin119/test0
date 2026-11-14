@@ -9,6 +9,7 @@ on:
     - cron: '13 20 * * *'   # 05:13 한국 시간 — 6시 전에 완성
     - cron: '43 20 * * *'   # 05:43 — 늦은 실행 · 실패 보충
     - cron: '23 22 * * *'   # 07:23 — 보충
+    - cron: '17 1 * * *'    # 10:17 — 아침 예약이 모두 건너뛴 날 보충 (앱은 이와 상관없이 6시에 기본 레슨 차례로 넘김)
   workflow_dispatch:
   push:                      # .github/study-run.txt 를 바꿔 main 에 올리면 바로 실행
     branches: [main]

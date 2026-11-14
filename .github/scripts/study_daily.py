@@ -28,8 +28,11 @@ EN_SCHEMA = ('{"title":"영어 제목","sub":"한국어 부제(출처 · 날짜)
              '"writing":{"prompt":"한국어 과제(5~6문장 · 오늘 문법 사용)","guide":["틀 문장 4개"],"model":"모범 답안 English"}}')
 KID_FMT = {'ja': '단어는 히라가나(외래어는 가타카나), 읽기는 헵번식 로마자 소문자', 'zh': '단어는 간체자, 읽기는 성조 표시가 있는 병음'}
 KID_NAME = {'ja': '일본어', 'zh': '중국어'}
-BUILTIN = {'en_novel': ['en-novel-holmes-1'], 'en_econ': ['en-econ-2026-11-13'],
-           'ja': ['ja-1', 'ja-2', 'ja-3', 'ja-4', 'ja-5'], 'zh': ['zh-1', 'zh-2', 'zh-3', 'zh-4', 'zh-5']}
+# 기본 레슨 차례 — app/secret/study.js 의 rotDay 와 같아야 함 (study-data.js 에 든 순서 · ROT0 부터 하루에 하나씩 다음)
+BUILTIN = {'en_novel': ['en-novel-holmes-1', 'en-novel-alice-1', 'en-novel-tomsawyer-1', 'en-novel-carol-1', 'en-novel-treasure-1', 'en-novel-pride-1', 'en-novel-jekyll-1'],
+           'en_econ': ['en-econ-2026-11-13', 'en-econ-basic-inflation', 'en-econ-basic-exchange', 'en-econ-basic-supply', 'en-econ-basic-ai-jobs', 'en-econ-basic-housing', 'en-econ-basic-trade'],
+           'ja': ['ja-1', 'ja-2', 'ja-3', 'ja-4', 'ja-5', 'ja-6', 'ja-7'], 'zh': ['zh-1', 'zh-2', 'zh-3', 'zh-4', 'zh-5', 'zh-6', 'zh-7']}
+ROT0 = dt.date(2026, 11, 14)
 
 
 def jload(p, d):
@@ -126,7 +129,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--force', action='store_true', help='오늘 파일이 있어도 다시 만듦')
     a = ap.parse_args()
-    now = dt.datetime.now(KST); today = now.strftime('%Y-%m-%d'); dn = (now.date() - dt.date(2026, 1, 1)).days
+    now = dt.datetime.now(KST); today = now.strftime('%Y-%m-%d'); dn = (now.date() - ROT0).days
     d = os.path.join(a.out, 'study'); fp = os.path.join(d, today + '.json')
     old = jload(fp, None)
     if old and old.get('mode') == 'ai' and not old.get('errors') and not a.force:
