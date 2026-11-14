@@ -105,7 +105,6 @@ window.SEC_AI = (() => {
     el.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { tui.cat = b.dataset.cat; el.querySelectorAll('[data-cat]').forEach(x => x.classList.toggle('on', x === b)); paint(); });
     el.querySelectorAll('[data-fq]').forEach(b => b.onclick = () => { tui.fq = +b.dataset.fq; el.querySelectorAll('[data-fq]').forEach(x => x.classList.toggle('on', x === b)); paint(); });
     paint();
-    if (!tui.q) setTimeout(() => inp.focus(), 30);
   }
 
   return {
