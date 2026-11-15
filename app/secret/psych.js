@@ -1,5 +1,5 @@
 /* SECRET Psychological — 하루하루 마음 기록(달력) + 내 기록을 분석한 종합 분석
-   · 기록: { 'YYYY-MM-DD': { mood 1~10, stress 0~10, energy 0~10, sleep 시간, emo [감정], act [한 일], good [좋았던 일 3], th {생각 기록}, chk {who5|phq9|gad7: [답]}, memo, updated } } — secret.js 가 저장 · 기기 동기화(칸 psych)
+   · 기록: { 'YYYY-MM-DD': { mood 1~10, stress 0~10, energy 0~10, sleep 시간, emo [감정], act [한 일], good [좋았던 일 3], grat [감사일기 3], th {생각 기록}, chk(예전 자가 점검 — 지금은 쓰지 않지만 지우지 않음), memo, updated } } — secret.js 가 저장 · 기기 동기화(칸 psych)
    · 분석은 이 기기 안에서 계산(토큰 안 씀). [AI 에게 해석 받기]만 등록한 AI 로 최근 기록을 보냄
    · 의학적 진단이 아님. 위험 신호(아주 낮은 기분이 이어짐 · 위험한 낱말)가 보이면 상담 전화를 안내 */
 'use strict';
@@ -21,26 +21,7 @@ window.SEC_PSYCH = (() => {
   const RISK = /죽고\s*싶|자살|사라지고\s*싶|살기\s*싫|끝내고\s*싶|자해/;
   /* 오늘 한 일 — 행동 활성화(활동과 기분의 연결을 스스로 보게 함). +1 은 기분을 돕는 쪽으로 알려진 활동, -1 은 주의할 활동 */
   const ACT = [['운동', 1], ['산책 · 햇빛', 1], ['사람 만남', 1], ['성취한 일', 1], ['즐거운 일 · 취미', 1], ['자연 · 바깥', 1], ['호흡 · 명상', 1], ['일찍 잠', 1], ['음주', -1], ['늦은 밤 화면', -1], ['야근 · 과로', -1], ['혼자 틀어박힘', -1]];
-  /* 표준 자가 점검 — 문구는 널리 쓰이는 한국어 번역을 바탕으로 한 것(공식 한국어판 원문과 표현이 다를 수 있음). 점수 기준은 원저 */
-  const SCALES = {
-    who5: { name: 'WHO-5 웰빙 지수', every: 7, lead: '지난 2주 동안 나는…', opts: ['전혀 없었다', '가끔', '절반 미만', '절반 이상', '대부분', '항상'], vals: [0, 1, 2, 3, 4, 5],
-      items: ['즐겁고 기분이 좋았다', '차분하고 편안했다', '활발하고 활기찼다', '아침에 상쾌하고 개운하게 일어났다', '일상이 내가 관심 있는 것들로 채워져 있었다'],
-      score: a => a.reduce((s, x) => s + x, 0) * 4, max: 100,
-      band: v => v <= 28 ? ['많이 낮음 — 우울 여부를 전문가와 확인해 보세요', 3] : v <= 50 ? ['낮음 — 우울 선별 기준(50 이하)에 해당. PHQ-9 도 해 보세요', 2] : v <= 70 ? ['보통', 1] : ['좋음', 0],
-      src: 'WHO-5 (세계보건기구) · 합×4 = 0~100, 50 이하는 우울 추가 확인 권장' },
-    phq9: { name: 'PHQ-9 우울 자가 점검', every: 14, lead: '지난 2주 동안 다음 문제로 얼마나 자주 불편을 겪었나요?', opts: ['전혀 없음', '여러 날 동안', '일주일 이상', '거의 매일'], vals: [0, 1, 2, 3],
-      items: ['일을 하는 것에 대한 흥미나 재미가 거의 없음', '가라앉은 느낌, 우울감 혹은 절망감', '잠들기 어렵거나 자주 깸, 혹은 너무 많이 잠', '피곤함, 기력이 저하됨', '식욕 저하 혹은 과식', '내가 나쁜 사람이라는 느낌, 실패자라는 느낌, 나 때문에 나나 가족이 불행해졌다는 느낌', '신문을 읽거나 TV 를 볼 때처럼 집중하기 어려움', '남들이 알아챌 만큼 말과 행동이 느려짐, 혹은 반대로 안절부절못해 가만히 있기 어려움', '차라리 죽는 것이 낫겠다는 생각, 혹은 어떤 식으로든 스스로를 해치는 생각'],
-      score: a => a.reduce((s, x) => s + x, 0), max: 27,
-      band: v => v <= 4 ? ['최소(우울 증상 거의 없음)', 0] : v <= 9 ? ['가벼운 우울', 1] : v <= 14 ? ['중간 정도 우울 — 전문가 상담을 권합니다', 2] : v <= 19 ? ['중간~심한 우울 — 전문가 상담이 필요합니다', 3] : ['심한 우울 — 가능한 빨리 전문가와 상담하세요', 3],
-      src: 'PHQ-9 (Kroenke 외, 2001) · 0~4 최소 · 5~9 가벼움 · 10~14 중간 · 15~19 중간~심함 · 20~27 심함' },
-    gad7: { name: 'GAD-7 불안 자가 점검', every: 14, lead: '지난 2주 동안 다음 문제로 얼마나 자주 불편을 겪었나요?', opts: ['전혀 없음', '여러 날 동안', '일주일 이상', '거의 매일'], vals: [0, 1, 2, 3],
-      items: ['초조하거나 불안하거나 조마조마하게 느낀다', '걱정하는 것을 멈추거나 조절할 수가 없다', '여러 가지 것들에 대해 걱정을 너무 많이 한다', '편하게 있기가 어렵다', '너무 안절부절못해서 가만히 있기가 힘들다', '쉽게 짜증이 나거나 쉽게 성을 내게 된다', '마치 끔찍한 일이 생길 것처럼 두렵게 느껴진다'],
-      score: a => a.reduce((s, x) => s + x, 0), max: 21,
-      band: v => v <= 4 ? ['최소', 0] : v <= 9 ? ['가벼운 불안', 1] : v <= 14 ? ['중간 정도 불안 — 전문가 상담을 권합니다', 2] : ['심한 불안 — 전문가 상담이 필요합니다', 3],
-      src: 'GAD-7 (Spitzer 외, 2006) · 0~4 최소 · 5~9 가벼움 · 10~14 중간 · 15~21 심함' },
-  };
-  /* 날짜별 기록에서 각 점검의 결과를 시간순으로 */
-  const checks = (data, k) => Object.keys(data).sort().filter(d => data[d].chk && Array.isArray(data[d].chk[k])).map(d => ({ d, a: data[d].chk[k], v: SCALES[k].score(data[d].chk[k]) }));
+
 
   function pearson(xs, ys) {
     const n = xs.length; if (n < 7) return null;
@@ -63,9 +44,7 @@ window.SEC_PSYCH = (() => {
     // 위험 신호
     const last3 = days.slice(-3).map(d => data[d]);
     if ((last3.length === 3 && last3.every(x => num(x.mood) != null && x.mood <= 2)) || days.slice(-7).some(d => RISK.test([data[d].memo, (data[d].th || {}).auto].join(' ')))) out.risk = true;
-    const ph = checks(data, 'phq9').pop(); if (ph && ph.a[8] > 0 && ph.d >= addD(today, -14)) out.risk = true; // PHQ-9 9번(죽음 · 자해 생각)
-    out.chk = Object.fromEntries(Object.keys(SCALES).map(k => { const c = checks(data, k); return [k, { last: c[c.length - 1] || null, prev: c[c.length - 2] || null }]; }));
-    out.good = days.slice(-7).filter(d => (data[d].good || []).some(Boolean)).length;
+    out.good = days.slice(-7).filter(d => (data[d].good || []).some(Boolean)).length; out.grat = days.slice(-7).filter(d => (data[d].grat || []).some(Boolean)).length;
     if (m.length < 3) return out;
     // 1. 흐름
     if (mood1 != null && mood0 != null) {
@@ -109,6 +88,7 @@ window.SEC_PSYCH = (() => {
     }
     // 6-2. 좋았던 일 세 가지
     if (out.good >= 3) out.ins.push(`최근 7일 중 ${out.good}일, 좋았던 일을 적었습니다. 매일 세 가지를 적는 연습은 행복감을 높인다는 연구가 있습니다.`);
+    if (out.grat >= 3) out.ins.push(`최근 7일 중 ${out.grat}일 감사일기를 썼습니다. 고마운 사람에게 직접 한 마디 전하면 효과가 더 커질 수 있습니다.`);
     // 7. 기록 습관
     if (out.n30 < 15) out.ins.push(`30일 중 ${out.n30}일을 적었습니다. 매일 1분이라도 적으면 분석이 더 정확해집니다.`);
     else if (streak >= 7) out.ins.push(`${streak}일 연속으로 기록했습니다. 꾸준한 기록이 패턴을 보이게 합니다.`);
@@ -130,7 +110,7 @@ window.SEC_PSYCH = (() => {
   function renderTop(el, data) {
     const a = analyze(data), dl = a.mood1 != null && a.mood0 != null ? a.mood1 - a.mood0 : null;
     const kpi = (lb, v, sub) => `<div class="ps-kpi"><span>${lb}</span><b>${v}</b>${sub ? `<small>${sub}</small>` : ''}</div>`;
-    el.innerHTML = `<div class="ps-top-h"><h2>종합 분석</h2><span class="sc-fine">내가 적은 기록만으로 계산 · 의학적 진단 아님</span>${chkLine(a)}${a.n >= 3 ? `<button type="button" class="btn sm ps-aibtn" data-psai title="최근 14일 기록(메모 포함)을 등록한 AI 로 보냅니다 · 토큰 사용">${H.icon('sparkle', 14)}AI 에게 해석 받기</button>` : ''}</div>
+    el.innerHTML = `<div class="ps-top-h"><h2>종합 분석</h2><span class="sc-fine">내가 적은 기록만으로 계산 · 의학적 진단 아님</span>${a.n >= 3 ? `<button type="button" class="btn sm ps-aibtn" data-psai title="최근 14일 기록(메모 포함)을 등록한 AI 로 보냅니다 · 토큰 사용">${H.icon('sparkle', 14)}AI 에게 해석 받기</button>` : ''}</div>
       ${a.risk ? `<div class="ps-risk" role="alert"><b>요즘 많이 힘든 것 같습니다. 혼자 견디지 마세요.</b> 24시간 상담: <a href="tel:109">자살예방상담전화 109</a> · <a href="tel:15770199">정신건강위기상담 1577-0199</a>. 가까운 사람에게 지금 연락하는 것도 큰 도움이 됩니다.</div>` : ''}
         <div class="ps-kpis">
           ${kpi('최근 7일 기분', a.mood1 == null ? '–' : `${f1(a.mood1)}<em>/10</em>`, dl == null ? '' : `지난주 대비 <i class="${dl >= 0 ? 'pu' : 'pd'}">${dl >= 0 ? '+' : ''}${f1(dl)}</i>`)}
@@ -147,19 +127,12 @@ window.SEC_PSYCH = (() => {
       </div>
 `;
     el.querySelectorAll('[data-rg]').forEach(b => b.onclick = () => { ui.range = +b.dataset.rg; renderTop(el, H.get()); });
-    el.querySelectorAll('[data-chk]').forEach(b => b.onclick = () => openCheck(b.dataset.chk));
     const mo = el.querySelector('[data-psmore]'); if (mo) mo.onclick = () => { ui.more = !ui.more; renderTop(el, H.get()); };
     const ai = el.querySelector('[data-psai]'); if (ai) ai.onclick = () => H.ask(aiPrompt(data, a));
   }
-  /* 자가 점검 결과 한 줄 (분석 칸 맨 위) */
-  function chkLine(a) {
-    const it = Object.entries(SCALES).map(([k, S]) => { const c = a.chk && a.chk[k]; if (!c || !c.last) return ''; const b = S.band(c.last.v), dl = c.prev ? c.last.v - c.prev.v : null;
-      return `<button type="button" class="ps-chk lv${b[1]}" data-chk="${k}" title="${esc(S.name)} · ${md(c.last.d)}"><b>${esc(S.name.split(' ')[0])} ${c.last.v}</b><span>${esc(b[0].split(' — ')[0])}${dl != null && dl ? ` · ${dl > 0 ? '+' : ''}${dl}` : ''}</span></button>`; }).filter(Boolean);
-    return it.length ? `<div class="ps-chks">${it.join('')}</div>` : '';
-  }
   function aiPrompt(data, a) {
     const today = kstToday(), rows = [];
-    for (let i = 13; i >= 0; i--) { const d = addD(today, -i), x = data[d]; if (x) rows.push(`${d}(${DOW[dowOf(d)]}) 기분 ${x.mood ?? '-'} · 스트레스 ${x.stress ?? '-'} · 에너지 ${x.energy ?? '-'} · 수면 ${x.sleep ?? '-'}시간 · 감정 ${(x.emo || []).join(', ') || '-'}${(x.act || []).length ? ` · 한 일 ${x.act.join(', ')}` : ''}${(x.good || []).some(Boolean) ? ` · 좋았던 일 ${x.good.filter(Boolean).join(' / ')}` : ''}${x.memo ? ` · 메모: ${x.memo.replace(/\s+/g, ' ').slice(0, 300)}` : ''}`); }
+    for (let i = 13; i >= 0; i--) { const d = addD(today, -i), x = data[d]; if (x) rows.push(`${d}(${DOW[dowOf(d)]}) 기분 ${x.mood ?? '-'} · 스트레스 ${x.stress ?? '-'} · 에너지 ${x.energy ?? '-'} · 수면 ${x.sleep ?? '-'}시간 · 감정 ${(x.emo || []).join(', ') || '-'}${(x.act || []).length ? ` · 한 일 ${x.act.join(', ')}` : ''}${(x.good || []).some(Boolean) ? ` · 좋았던 일 ${x.good.filter(Boolean).join(' / ')}` : ''}${(x.grat || []).some(Boolean) ? ` · 감사 ${x.grat.filter(Boolean).join(' / ')}` : ''}${x.memo ? ` · 메모: ${x.memo.replace(/\s+/g, ' ').slice(0, 300)}` : ''}`); }
     return `아래는 내가 최근 14일 동안 적은 마음 기록이야(기분 · 스트레스 · 에너지는 10점 만점). 의학적 진단은 하지 말고, 따뜻하지만 솔직한 코치처럼 답해 줘.\n1) 이 기간의 흐름을 세 줄로 요약\n2) 기분을 올린 것과 떨어뜨린 것으로 보이는 패턴 (근거가 된 날짜를 함께)\n3) 다음 7일 동안 해 볼 작은 행동 3가지 (구체적으로)\n4) 내가 놓치고 있을 수 있는 점 하나\n위험 신호가 보이면 상담 전화(109, 1577-0199)를 안내해 줘.\n\n앱이 계산한 요약: 최근 7일 기분 ${f1(a.mood1)}, 그 전 7일 ${f1(a.mood0)}, 스트레스 ${f1(a.stress1)}, 수면 ${f1(a.sleep1)}시간.\n\n${rows.join('\n')}`;
   }
 
@@ -184,7 +157,7 @@ window.SEC_PSYCH = (() => {
     const d = ui.sel || kstToday(), x = data[d] || {}, has = !!data[d];
     const sl = (k, lb, mn, mx, v, lo, hi) => `<label class="ps-sl"><span>${lb} <b data-v="${k}">${v ?? '–'}</b></span><input type="range" name="${k}" min="${mn}" max="${mx}" step="1" value="${v ?? Math.round((mn + mx) / 2)}"${v == null ? ' data-unset' : ''}><small><i>${lo}</i><i>${hi}</i></small></label>`;
     el.innerHTML = `<form class="ps-form" data-psform>
-      <div class="ps-ed-h"><h3>${md(d)}${d === kstToday() ? ' · 오늘' : ''}</h3>${has ? `<span class="sc-fine">저장됨 · ${new Date(x.updated + 9 * 36e5).toISOString().slice(5, 16).replace('T', ' ').replace('-', '/')}</span>` : '<span class="sc-fine">아직 기록 없음</span>'}</div>
+      <div class="ps-ed-h"><h2>Daily Log</h2><h3>${md(d)}${d === kstToday() ? ' · 오늘' : ''}</h3>${has ? `<span class="sc-fine">저장됨 · ${new Date(x.updated + 9 * 36e5).toISOString().slice(5, 16).replace('T', ' ').replace('-', '/')}</span>` : '<span class="sc-fine">아직 기록 없음</span>'}</div>
       ${sl('mood', '기분', 1, 10, x.mood, '1 매우 나쁨', '10 매우 좋음')}<p class="ps-mw" data-mw>${x.mood ? MOODW[x.mood] : '막대를 움직여 고르세요'}</p>
       ${sl('stress', '스트레스', 0, 10, x.stress, '0 없음', '10 극심')}
       ${sl('energy', '에너지', 0, 10, x.energy, '0 바닥', '10 넘침')}
@@ -192,6 +165,7 @@ window.SEC_PSYCH = (() => {
       <fieldset class="ps-emo"><legend>오늘 느낀 감정 <small>(여러 개)</small></legend>${EMO.map(([e, s]) => `<label class="${s > 0 ? 'p' : 'n'}"><input type="checkbox" name="emo" value="${e}"${(x.emo || []).includes(e) ? ' checked' : ''}><span>${e}</span></label>`).join('')}</fieldset>
       <fieldset class="ps-emo ps-actf"><legend>오늘 한 일 <small>(기분과 이어지는 활동을 찾아 줍니다)</small></legend>${ACT.map(([a, s]) => `<label class="${s > 0 ? 'p' : 'n'}"><input type="checkbox" name="act" value="${a}"${(x.act || []).includes(a) ? ' checked' : ''}><span>${a}</span></label>`).join('')}</fieldset>
       <fieldset class="ps-good"><legend>오늘 좋았던 일 세 가지 <small>(작은 것도 좋아요 · 왜 좋았는지 한 마디)</small></legend>${[0, 1, 2].map(i => `<input name="good${i}" maxlength="120" value="${esc((x.good || [])[i] || '')}" placeholder="${['예: 점심에 동료가 커피를 사 줌 — 챙겨 주는 마음', '예: 미루던 보고서를 끝냄 — 해냈다', '예: 저녁 노을이 예뻤음'][i]}">`).join('')}</fieldset>
+      <fieldset class="ps-good ps-grat"><legend>감사일기 <small>(누구에게 · 무엇이 고마웠는지 세 줄)</small></legend>${[0, 1, 2].map(i => `<input name="grat${i}" maxlength="160" value="${esc((x.grat || [])[i] || '')}" placeholder="${['예: 퇴근길에 안부를 물어 준 동생에게 고맙다', '예: 오늘도 아프지 않고 일할 수 있어 감사하다', '예: 어려운 일을 같이 맡아 준 팀원에게 고맙다'][i]}">`).join('')}</fieldset>
       <details class="ps-th"${x.th && x.th.auto ? ' open' : ''}><summary>힘든 생각 정리하기 <small>(생각 기록 · 인지행동치료 기법)</small></summary>
         <label><span>① 상황 — 언제 · 어디서 · 무슨 일</span><input name="th_sit" maxlength="200" value="${esc((x.th || {}).sit || '')}" placeholder="예: 회의에서 내 안이 반려됨"></label>
         <label><span>② 그때 든 생각 (자동적 사고)</span><input name="th_auto" maxlength="200" value="${esc((x.th || {}).auto || '')}" placeholder="예: 나는 늘 이 모양이야"></label>
@@ -207,24 +181,21 @@ window.SEC_PSYCH = (() => {
     f.onsubmit = e => {
       e.preventDefault(); const g = n => { const r = f.elements[n]; return r.hasAttribute('data-unset') ? (x[n] ?? null) : +r.value; };
       const sv = f.elements.sleep.value.trim(), memo = f.elements.memo.value.trim(), emo = [...f.querySelectorAll('[name=emo]:checked')].map(c => c.value);
-      const act = [...f.querySelectorAll('[name=act]:checked')].map(c => c.value), good = [0, 1, 2].map(i => f.elements['good' + i].value.trim());
+      const act = [...f.querySelectorAll('[name=act]:checked')].map(c => c.value), good = [0, 1, 2].map(i => f.elements['good' + i].value.trim()), grat = [0, 1, 2].map(i => f.elements['grat' + i].value.trim());
       const tv = n => f.elements[n].value.trim(), ta = f.elements.th_after, th = { sit: tv('th_sit'), auto: tv('th_auto'), ev: tv('th_ev'), alt: tv('th_alt'), after: ta.hasAttribute('data-unset') ? ((x.th || {}).after ?? null) : +ta.value };
-      const rec = Object.assign({}, x, { mood: g('mood'), stress: g('stress'), energy: g('energy'), sleep: sv === '' ? null : Math.max(0, Math.min(16, +sv)), emo, act, good: good.some(Boolean) ? good : [], th: th.sit || th.auto || th.ev || th.alt ? th : null, memo, updated: Date.now() }); // 자가 점검(chk) 등은 그대로 둠
+      const rec = Object.assign({}, x, { mood: g('mood'), stress: g('stress'), energy: g('energy'), sleep: sv === '' ? null : Math.max(0, Math.min(16, +sv)), emo, act, good: good.some(Boolean) ? good : [], grat: grat.some(Boolean) ? grat : [], th: th.sit || th.auto || th.ev || th.alt ? th : null, memo, updated: Date.now() }); // 자가 점검(chk) 등은 그대로 둠
       if (rec.mood == null) { H.toast('기분 막대를 한 번 움직여 골라 주세요', 2000); return; }
       const all = Object.assign({}, H.get()); all[d] = rec; H.set(all); H.toast(`${md(d)} 기록을 저장했습니다`, 1600); paintAll();
       if (RISK.test(memo + ' ' + th.auto) || rec.mood <= 2) H.toast('많이 힘든 날이네요. 24시간 상담 109 · 1577-0199', 4000);
     };
     const del = el.querySelector('[data-psdel]'); if (del) del.onclick = async () => { if (!(await H.confirm(`${md(d)} 기록을 지울까요?`, '지우면 되돌릴 수 없습니다.', '지우기'))) return; const all = Object.assign({}, H.get()); delete all[d]; H.tomb(d); H.set(all); paintAll(); };
   }
-  /* ---------- 마음 도구: 자가 점검 · 호흡 · 도움받을 곳과 근거 ---------- */
-  function renderTools(el, data) {
-    const today = kstToday(), due = Object.entries(SCALES).map(([k, S]) => { const c = checks(data, k).pop(); const left = c ? S.every - Math.round((Date.parse(today) - Date.parse(c.d)) / 864e5) : 0; return [k, S, c, left]; });
+  /* ---------- 마음 도구: 호흡 · 도움받을 곳과 근거 (맨 아래) ---------- */
+  function renderTools(el) {
     el.innerHTML = `<div class="ps-tl">
-        <div class="ps-tcard"><h3>자가 점검</h3><p class="sc-fine">표준 검사로 상태를 숫자로 확인 · 결과는 위 분석에 이어서 보임</p><div class="ps-trow">${due.map(([k, S, c, left]) => `<button type="button" class="btn sm${left <= 0 ? ' ink' : ''}" data-open="${k}">${esc(S.name.split(' ')[0])}<small>${c ? (left <= 0 ? '할 때' : `${left}일 뒤`) : '처음'}</small></button>`).join('')}</div></div>
         <div class="ps-tcard"><h3>5분 호흡</h3><p class="sc-fine">두 번 들이쉬고 길게 내쉬기(주기적 한숨) — 하루 5분</p><div class="ps-trow"><button type="button" class="btn sm" data-breath>시작</button></div></div>
         <div class="ps-tcard"><h3>도움받을 곳 · 근거</h3><p class="sc-fine">24시간 상담 109 · 1577-0199 · 이 탭이 기대는 연구</p><div class="ps-trow"><button type="button" class="btn sm" data-help>보기</button></div></div>
       </div>`;
-    el.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openCheck(b.dataset.open));
     el.querySelector('[data-breath]').onclick = openBreath;
     el.querySelector('[data-help]').onclick = openHelp;
   }
@@ -232,24 +203,6 @@ window.SEC_PSYCH = (() => {
     const d = document.createElement('dialog'); d.className = 'ps-dlg ' + cls; d.innerHTML = `<button type="button" class="btn icon ghost ps-x" data-x aria-label="닫기">${H.icon('x', 18)}</button>${html}`;
     document.body.appendChild(d); d.addEventListener('close', () => d.remove()); d.querySelector('[data-x]').onclick = () => d.close();
     d.addEventListener('click', e => { if (e.target === d) d.close(); }); d.showModal(); return d;
-  }
-  function openCheck(k) {
-    const S = SCALES[k], data = H.get(), hist = checks(data, k).slice(-6);
-    const d = dlg('ps-chkdlg', `<h2>${esc(S.name)}</h2><p class="ps-lead">${esc(S.lead)}</p>
-      <form data-chkf><ol class="ps-items">${S.items.map((t, i) => `<li><p>${esc(t)}</p><div class="ps-opts" role="radiogroup">${S.opts.map((o, j) => `<label><input type="radio" name="q${i}" value="${S.vals[j]}" required><span>${esc(o)}</span></label>`).join('')}</div></li>`).join('')}</ol>
-        <p class="sc-fine" style="text-align:left">${esc(S.src)}. 문항은 널리 쓰이는 한국어 번역을 바탕으로 했고 공식 한국어판 원문과 표현이 다를 수 있습니다. 진단이 아니라 선별용입니다.</p>
-        <div class="ps-act"><button class="btn ink">결과 보기 · 저장</button></div></form>
-      ${hist.length ? `<div class="ps-hist"><h3>지난 결과</h3>${hist.map(c => `<span><b>${c.v}</b> ${+c.d.slice(5, 7)}/${+c.d.slice(8)}</span>`).join('')}</div>` : ''}`);
-    d.querySelector('[data-chkf]').onsubmit = e => {
-      e.preventDefault(); const f = e.target, ans = S.items.map((_, i) => +f.elements['q' + i].value), v = S.score(ans), b = S.band(v), td = kstToday();
-      const all = Object.assign({}, H.get()), x = Object.assign({}, all[td] || {}); x.chk = Object.assign({}, x.chk, { [k]: ans }); x.updated = Date.now(); all[td] = x; H.set(all);
-      const crisis = k === 'phq9' && ans[8] > 0;
-      f.outerHTML = `<div class="ps-res lv${b[1]}"><span>${esc(S.name)}</span><b>${v}<em> / ${S.max}</em></b><p>${esc(b[0])}</p></div>
-        ${crisis ? `<div class="ps-risk" role="alert"><b>9번 문항에 답하셨습니다. 지금 이야기할 사람이 있어야 합니다.</b> 24시간: <a href="tel:109">자살예방상담전화 109</a> · <a href="tel:15770199">정신건강위기상담 1577-0199</a> · 위급하면 119.</div>` : ''}
-        ${b[1] >= 2 && !crisis ? '<p class="sc-fine" style="text-align:left">가까운 정신건강복지센터(1577-0199)나 병 · 의원 정신건강의학과에서 상담받을 수 있습니다. 상담 기록은 본인 동의 없이 직장에 알려지지 않습니다.</p>' : ''}
-        <p class="sc-fine" style="text-align:left">오늘 ${md(td)} 기록에 저장했습니다. ${S.every}일마다 다시 해 보면 변화를 볼 수 있습니다.</p>`;
-      paintAll();
-    };
   }
   function openBreath() {
     const d = dlg('ps-brdlg', `<h2>5분 호흡 — 주기적 한숨</h2><p class="ps-lead">코로 깊게 들이쉬고, 잠깐 한 번 더 들이쉬어 폐를 채운 뒤, 입으로 천천히 길게 내쉽니다. 내쉬는 숨이 들이쉬는 숨보다 길게.</p>
@@ -272,24 +225,24 @@ window.SEC_PSYCH = (() => {
         <li><a href="https://www.mentalhealth.go.kr" target="_blank" rel="noopener">국가정신건강정보포털</a> · <a href="https://www.ncmh.go.kr" target="_blank" rel="noopener">국립정신건강센터</a> — 정보 · 가까운 센터 찾기</li></ul>
       <h2>이 탭이 기대는 근거</h2>
       <ul class="ps-refs">
-        <li><b>자가 점검</b> — PHQ-9(Kroenke 외, 2001) · GAD-7(Spitzer 외, 2006): 지난 2주 기준, 0~3점. 한국인 표본 검증 연구가 있음(PHQ-9 전국 표본 α 0.79, GAD-7 한국어판 타당도 연구). WHO-5: 합×4 = 0~100, 50 이하는 우울 추가 확인 권장. <i>문항 문구는 공식 한국어판 원문을 직접 확인하지 못함.</i></li>
         <li><b>오늘 한 일 · 활동과 기분</b> — 행동 활성화: 기분이 좋아질 때까지 기다리지 않고, 기분을 돕는 활동을 먼저 계획하는 우울 치료 기법(메타분석에서 효과 보고: Cuijpers 외 2007, Ekers 외 2014). <i>이번에 원문은 확인하지 못함.</i></li>
         <li><b>좋았던 일 세 가지</b> — Seligman 외(2005, American Psychologist): 1주 동안 매일 적은 집단에서 행복감 증가 · 우울 증상 감소가 6개월까지 이어짐. 이후 반복 연구 결과는 엇갈림(위약 대조군과 차이가 작다는 연구도 있음).</li>
+        <li><b>감사일기</b> — 매주 감사한 일을 적은 집단에서 삶의 만족감 · 낙관이 높아졌다는 실험(Emmons · McCullough, 2003). 이후 메타분석에서는 효과가 작다는 결과도 있음. <i>원문 확인 못 함.</i></li>
         <li><b>힘든 생각 정리</b> — 인지행동치료의 생각 기록(상황 → 자동적 사고 → 근거 → 균형 잡힌 생각). 혼자 쓰는 연습 도구이며 치료를 대신하지 않음.</li>
         <li><b>감정 고르기 · 메모</b> — 감정을 말로 붙이는 것(정서 명명)이 감정 반응을 누그러뜨린다는 뇌 영상 연구(Lieberman 외, 2007). <i>원문 확인 못 함.</i></li>
         <li><b>5분 호흡</b> — Balban 외(2023, Cell Reports Medicine) 원격 무작위 비교 연구: 하루 5분 주기적 한숨이 마음챙김 명상보다 기분 개선이 큼(p &lt; 0.05). 같은 연구실 연구로 독립 반복 검증은 아직 없음.</li>
-        <li><b>수면 · 위험 신호</b> — 수면과 기분의 관계, 2주 넘는 우울 증상은 전문가 확인 권장(PHQ-9 의 2주 기준).</li>
+        <li><b>수면 · 위험 신호</b> — 수면과 기분의 관계, 2주 넘는 우울 증상은 전문가 확인 권장(우울 선별 검사들이 쓰는 2주 기준).</li>
       </ul><p class="sc-fine" style="text-align:left">확인 기준일 2026-11-15. 이 탭은 진단 · 치료 도구가 아닙니다.</p>`);
   }
   let root = null;
   function paintAll() {
     if (!root) return; const data = H.get();
-    renderTop(root.querySelector('#psTop'), data); renderTools(root.querySelector('#psTools'), data); renderCal(root.querySelector('#psCal'), data); renderEdit(root.querySelector('#psEdit'), data);
+    renderTop(root.querySelector('#psTop'), data); renderTools(root.querySelector('#psTools')); renderCal(root.querySelector('#psCal'), data); renderEdit(root.querySelector('#psEdit'), data);
   }
   return {
     init(h) { H = h; },
     render(el) {
-      if (!el.querySelector('#psTop')) el.innerHTML = '<section class="ps-top" id="psTop"></section><section class="ps-tools" id="psTools"></section><div class="ps-low"><section class="ps-cal" id="psCal"></section><section class="ps-edit" id="psEdit"></section></div>';
+      if (!el.querySelector('#psTop')) el.innerHTML = '<section class="ps-top" id="psTop"></section><div class="ps-low"><section class="ps-cal" id="psCal"></section><section class="ps-edit" id="psEdit"></section></div><section class="ps-tools" id="psTools"></section>';
       root = el; paintAll();
     },
     _analyze: analyze, // 시험용
