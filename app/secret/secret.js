@@ -2142,6 +2142,10 @@ ${[
   const K_MENTO = 'sec:mento';
   let mento = LS.get(K_MENTO, []); if (!Array.isArray(mento)) mento = [];
   const saveMento = () => { LS.set(K_MENTO, mento); SYNCQ.mark('mento'); };
+  /* Psychological — 날짜별 마음 기록 { 'YYYY-MM-DD': { mood, stress, energy, sleep, emo[], memo, updated } } · 화면은 psych.js · 기기 동기화 칸 'psych' (날짜마다 updated 가 늦은 쪽) */
+  const K_PSY = 'sec:psych';
+  let psych = LS.get(K_PSY, {}); if (!psych || typeof psych !== 'object' || Array.isArray(psych)) psych = {};
+  const savePsych = v => { psych = v; LS.set(K_PSY, psych); SYNCQ.mark('psych'); };
   const saveNotes = () => { LS.set(K_NOTES, notes); $('cNotes').textContent = notes.length || ''; SYNCQ.mark('notes'); };
   const ymdLocal = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const nui = { co: '', month: null, day: ymdLocal(new Date()) };
@@ -2552,15 +2556,15 @@ ${[
        암호화는 키가 글자 그대로 보이거나 비밀 값 검사에 걸리지 않게 하는 것). 잠금 암호를 건 기기는 풀려 있을 때(기억 중 포함)만 주고받음
      ===================================================================== */
   const K_SYNC = 'sec:sync';
-  const sy = Object.assign({ on: false, shaState: '', shaChat: {}, tomb: { notes: {}, journal: {}, chats: {}, mento: {} }, rev: {}, hash: {}, pushed: '', at: 0, err: '', keyT: {} }, LS.get(K_SYNC, {}));
+  const sy = Object.assign({ on: false, shaState: '', shaChat: {}, tomb: { notes: {}, journal: {}, chats: {}, mento: {}, psych: {} }, rev: {}, hash: {}, pushed: '', at: 0, err: '', keyT: {} }, LS.get(K_SYNC, {}));
   if (!sy.keyT) sy.keyT = {};
-  sy.tomb = Object.assign({ notes: {}, journal: {}, chats: {}, mento: {} }, sy.tomb);
+  sy.tomb = Object.assign({ notes: {}, journal: {}, chats: {}, mento: {}, psych: {} }, sy.tomb);
   const saveSy = () => LS.set(K_SYNC, sy);
   const SY = { busy: false, state: sy.on ? 'idle' : 'off', msg: '', timer: 0, again: false };
   const deviceName = () => /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? '휴대폰' : 'PC';
   const hashOf = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h); };
   const sect = {
-    me: () => me, engine: () => eng, notes: () => notes, journal: () => journal, mento: () => mento, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
+    me: () => me, engine: () => eng, notes: () => notes, journal: () => journal, mento: () => mento, psych: () => psych, watch: () => ({ items: watch.items }), calc: () => LS.get(K_CALC, {}),
     cfg: () => ({ apis: cfg.apis.map(a => ({ id: a.id, type: a.type, name: a.name, model: a.model || '', base: a.base || '', on: a.on !== false })), ai: cfg.ai, web: cfg.web, deep: cfg.deep, auto: cfg.auto || 0, lock: cfg.lock ? { salt: cfg.lock.salt, iv: cfg.lock.iv, data: cfg.lock.data, ids: cfg.lock.ids || undefined } : null }), // ids: 어느 API 에 키가 있는지만 (키 값 아님)
   };
   /* 고칠 때마다 부름: 내용이 실제로 바뀌었으면 그 칸의 고친 시각을 기록하고 잠시 뒤 올림 */
@@ -2570,7 +2574,7 @@ ${[
   };
   SYNCQ.tomb = (k, id) => { sy.tomb[k][id] = Date.now(); saveSy(); SYNCQ.mark(k === 'chats' ? 'chats' : k); };
   /* 아직 한 번도 고친 시각이 없는 칸: 내용이 있으면 1(오래된 것), 비어 있으면 0 — 처음 맞출 때 먼저 올라간 쪽을 따르게 */
-  const emptySect = { engine: () => hashOf(JSON.stringify(eng)) === hashOf(JSON.stringify(ENG0)), me: () => hashOf(JSON.stringify(me)) === hashOf(JSON.stringify(ME0)), watch: () => !watch.items.length, calc: () => !Object.keys(LS.get(K_CALC, {})).length, cfg: () => !cfg.apis.length, notes: () => !notes.length, journal: () => !journal.length, mento: () => !mento.length };
+  const emptySect = { engine: () => hashOf(JSON.stringify(eng)) === hashOf(JSON.stringify(ENG0)), me: () => hashOf(JSON.stringify(me)) === hashOf(JSON.stringify(ME0)), watch: () => !watch.items.length, calc: () => !Object.keys(LS.get(K_CALC, {})).length, cfg: () => !cfg.apis.length, notes: () => !notes.length, journal: () => !journal.length, mento: () => !mento.length, psych: () => !Object.keys(psych).length };
   for (const k in sect) { if (!sy.hash[k]) sy.hash[k] = hashOf(JSON.stringify(sect[k]())); if (sy.rev[k] == null) sy.rev[k] = emptySect[k]() ? 0 : 1; }
   saveSy();
 
@@ -2621,7 +2625,7 @@ ${[
   /* 받은 것 합치기 */
   async function mergeRemote(r) {
     let changed = false;
-    for (const k of ['notes', 'journal', 'chats', 'mento']) for (const [id, t] of Object.entries((r.tomb || {})[k] || {})) if ((sy.tomb[k][id] || 0) < t) { sy.tomb[k][id] = t; changed = true; }
+    for (const k of ['notes', 'journal', 'chats', 'mento', 'psych']) for (const [id, t] of Object.entries((r.tomb || {})[k] || {})) if ((sy.tomb[k][id] || 0) < t) { sy.tomb[k][id] = t; changed = true; }
     const byId = (loc, rem, ts, kind) => {
       const m = new Map(loc.map(x => [x.id, x]));
       for (const x of rem || []) { const l = m.get(x.id); if (!l || (ts(x) || 0) > (ts(l) || 0)) { m.set(x.id, x); changed = true; } }
@@ -2629,7 +2633,11 @@ ${[
     };
     notes = byId(notes, r.notes, x => x.updated || x.created, 'notes'); LS.set(K_NOTES, notes);
     journal = byId(journal, r.journal, x => x.updated || 0, 'journal'); LS.set(K_JOURNAL, journal);
-    mento = byId(mento, r.mento, x => x.updated || x.created, 'mento'); LS.set(K_MENTO, mento); // 예전 기기의 state.json 에는 없음 → 그대로
+    mento = byId(mento, r.mento, x => x.updated || x.created, 'mento'); LS.set(K_MENTO, mento);
+    { const pm = Object.assign({}, psych); // 마음 기록: 날짜마다 늦게 고친 쪽, 지운 날은 지움 표시가 더 늦으면 지움
+      for (const [d, x] of Object.entries(r.psych || {})) if (x && (x.updated || 0) > ((pm[d] || {}).updated || 0)) { pm[d] = x; changed = true; }
+      for (const d of Object.keys(pm)) { const t = sy.tomb.psych[d]; if (t && t >= (pm[d].updated || 0)) { delete pm[d]; changed = true; } }
+      psych = pm; LS.set(K_PSY, psych); } // 예전 기기의 state.json 에는 없음 → 그대로
     const rr = r.rev || {};
     const take = k => { const a = rr[k] || 0, b = sy.rev[k] || 0; return a > b || (a === b && a === 1); }; // 둘 다 처음이면 먼저 올라간 쪽
     if (take('me') && r.me) { Object.keys(me).forEach(k => delete me[k]); Object.assign(me, JSON.parse(JSON.stringify(ME0)), r.me); me.profile = Object.assign({}, ME0.profile, me.profile); me.answer = Object.assign({}, ME0.answer, me.answer); LS.set(K_ME, me); sy.rev.me = Math.max(rr.me || 0, 2); changed = true; }
@@ -3628,6 +3636,7 @@ ${[
     const t = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content; if (!t) throw new Error('AI 답이 비었습니다'); return String(t);
   }
   window.SEC_AI.init({ esc, icon, toast, LS, brief: briefRaw, show: v => show(v), ask: t => { show('chat'); send(t); } });
+  window.SEC_PSYCH.init({ esc, icon, toast, get: () => psych, set: savePsych, tomb: d => SYNCQ.tomb('psych', d), confirm: confirmBox, ask: t => { show('chat'); send(t); } });
   window.SEC_STUDY.init({ esc, icon, toast, LS, brief: briefRaw, ai: aiGenerate, aiName: () => { const a = activeAI(); return a ? a.name : ''; } });
   /* Stock · Man 모드 */
   let stockView = 'today';
@@ -3635,7 +3644,7 @@ ${[
     document.body.dataset.secMode = m;
     document.querySelectorAll('.sc-mode [data-mode]').forEach(b => { const on = b.dataset.mode === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
   }
-  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? manView : b.dataset.mode === 'study' ? studyView : b.dataset.mode === 'ai' ? aiView : stockView));
+  document.querySelectorAll('.sc-mode [data-mode]').forEach(b => b.onclick = () => show(b.dataset.mode === 'man' ? manView : b.dataset.mode === 'study' ? studyView : b.dataset.mode === 'ai' ? aiView : b.dataset.mode === 'psych' ? 'psych' : stockView));
   /* AI (날짜별 공부 · 용어) — app/secret/ai.js */
   const AI_V = { aiday: 'aiDay', aiterm: 'aiTerm' };
   let aiView = 'aiday', manView = 'man';
@@ -4137,12 +4146,12 @@ ${[
     send(`오늘 아침 리포트를 만들어 줘. 먼저 ${first} 로 시장과 내 종목을 확인하고, 내 종목마다 ${per || 'get_quote'} 로 숫자 · 새 공시(최근 7일) · 오늘 뉴스를 확인해. 순서: ① 시장 한 줄 요약과 지수 · 금리 · 환율 · 미국 지표 숫자 ② 오늘 큰 이슈 3가지와 증권사 시각(엇갈리면 짚기) ③ 내 종목 표: 현재가 · 등락 · 추세 · 새 소식 · 오늘 할 일(유지 / 손절 점검 / 비중 조절 / 대기) ④ 나의 원칙과 어긋나는 점 ⑤ 오늘 · 이번 주 주의할 일정과 위험. 짧은 문장과 표로.`);
   };
 
-  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', mentor: 'vMento', en: 'vEn', ja: 'vJa', zh: 'vZh', aiday: 'vAiDay', aiterm: 'vAiTerm', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
+  const VIEWS = { engine: 'vEngine', today: 'vToday', track: 'vTrack', man: 'vMan', mentor: 'vMento', psych: 'vPsych', en: 'vEn', ja: 'vJa', zh: 'vZh', aiday: 'vAiDay', aiterm: 'vAiTerm', chat: 'vChat', stock: 'vStock', market: 'vMarket', history: 'vHistory', sum: 'vSum', brief: 'vBrief', strat: 'vStrat', notes: 'vNotes', me: 'vMe', watch: 'vWatch', journal: 'vJournal', calc: 'vCalc', refs: 'vRefs', apis: 'vApis' };
   function show(v) {
     for (const [k, id] of Object.entries(VIEWS)) $(id).hidden = k !== v;
     document.querySelectorAll('.rail [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (v === 'mentor') renderMento(); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v])); if (AI_V[v]) window.SEC_AI.render(v, $(AI_V[v]));
-    setMode(v === 'man' || v === 'mentor' ? 'man' : STUDY_V[v] ? 'study' : AI_V[v] ? 'ai' : 'stock'); if (v === 'man' || v === 'mentor') manView = v; if (v !== 'man' && v !== 'mentor' && !STUDY_V[v] && !AI_V[v]) stockView = v; if (STUDY_V[v]) studyView = v; if (AI_V[v]) aiView = v;
+    if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (v === 'mentor') renderMento(); if (v === 'psych') window.SEC_PSYCH.render($('psBody')); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v])); if (AI_V[v]) window.SEC_AI.render(v, $(AI_V[v]));
+    setMode(v === 'man' || v === 'mentor' ? 'man' : STUDY_V[v] ? 'study' : AI_V[v] ? 'ai' : v === 'psych' ? 'psych' : 'stock'); if (v === 'man' || v === 'mentor') manView = v; if (v !== 'man' && v !== 'mentor' && v !== 'psych' && !STUDY_V[v] && !AI_V[v]) stockView = v; if (STUDY_V[v]) studyView = v; if (AI_V[v]) aiView = v;
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
