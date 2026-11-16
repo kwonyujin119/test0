@@ -389,7 +389,7 @@
     const item = (face, label, css, note) => `<button type="button" data-face="${escH(face)}" class="${face === cur ? 'on' : ''}" style="font-family:${escH(css)}">${escH(label)}<span>${escH(note || '')}</span></button>`;
     let h = '';
     const docFaces = H().allFaces().filter(f => hit(f));
-    if (docFaces.length) h += `<h5>이 문서에 쓰인 글꼴</h5>` + docFaces.map(f => item(f, f, fontStack([f]), findFontByFace(f) ? '웹 글꼴' : 'PC 글꼴')).join('');
+    if (docFaces.length) h += `<h5>이 문서에 쓰인 글꼴</h5>` + docFaces.map(f => item(f, f, fontStack([f]), findFontByFace(f) ? '웹 글꼴' : faceInstalled(f) ? 'PC 글꼴 · 이 기기에 있음' : '이 기기에 없음 · 비슷한 글꼴로 보임')).join('');
     for (const [cat, cname] of FONT_CATS) {
       const list = FONTS.filter(f => f.cat === cat && (hit(f.name) || hit(f.face)));
       if (!list.length) continue;
@@ -397,7 +397,7 @@
       h += `<h5>${cname} <small>· 어느 PC 에서나 같은 모양</small></h5>` + list.map(f => item(f.face, f.name, f.css, f.face !== f.name ? f.face : '')).join('');
     }
     const pcs = PC_FONTS.filter(hit);
-    if (pcs.length) h += `<h5>PC 글꼴 <small>· 설치된 PC 에서만 그 모양</small></h5>` + pcs.map(f => item(f, f, fontStack([f]), '')).join('');
+    if (pcs.length) h += `<h5>PC 글꼴 <small>· 설치된 PC 에서만 그 모양</small></h5>` + pcs.map(f => item(f, f, fontStack([f]), faceInstalled(f) ? '이 기기에 있음' : '이 기기에 없음')).join('');
     if (k && !FONTS.some(f => hit(f.name) || hit(f.face)) && !pcs.length && !docFaces.length) h += `<h5>그 밖의 글꼴</h5>` + item(q.trim(), q.trim() + ' (이 이름 그대로)', fontStack([q.trim()]), 'PC 글꼴');
     $id('fontItems').innerHTML = h;
   }
@@ -922,10 +922,20 @@
   function doPrint() {
     const pg = W.doc.page(0); const hf = hfInfo();
     const mm = v => (v / MM).toFixed(2) + 'mm';
-    const box = (x, al) => x && x.text ? `@${al}-${{ CENTER: 'center', RIGHT: 'right' }[x.align] || 'left'}{content:${JSON.stringify(x.text)};font:9pt 'Malgun Gothic',sans-serif;color:#333}` : '';
+    const CTR = { DIGIT: 'decimal', ROMAN_CAPITAL: 'upper-roman', ROMAN_SMALL: 'lower-roman', LATIN_CAPITAL: 'upper-alpha', LATIN_SMALL: 'lower-alpha', CIRCLED_DIGIT: 'decimal', HANGUL_SYLLABLE: 'korean-hangul-formal' };
+    const ctr = (fmt, total) => `counter(${total ? 'pages' : 'page'}, ${CTR[fmt] || 'decimal'})`;
+    const font = it => { const c = it ? H().cp(it.cp) : null; return `font:${c ? c.height / 100 : 9}pt ${fontStack(c ? [c.faceL, c.faceH] : ['맑은 고딕'])};${c && c.bold ? 'font-weight:700;' : ''}color:#000`; };
+    // 머리말·꼬리말: 글 + 자동 쪽 번호(counter)를 그대로 이어 붙임 (여러 줄은 한 줄로)
+    const content = x => x.lines.map(l => l.items.map(it => it.an ? `${JSON.stringify(it.pre)} ${ctr(it.fmt, it.an === 'TOTAL_PAGE')} ${JSON.stringify(it.suf)}` : JSON.stringify(it.t)).join(' ')).join(' " " ');
+    const box = (x, v) => x && x.lines && x.lines.length ? `@${v}-${{ CENTER: 'center', RIGHT: 'right' }[x.align] || 'left'}{content:${content(x)};${font(x.lines[0].items[0])}}` : '';
     let pn = '';
-    if (hf.pageNum && hf.pageNum.pos !== 'NONE') { const pos = hf.pageNum.pos; const v = /^TOP/.test(pos) ? 'top' : 'bottom'; const h = /LEFT/.test(pos) ? 'left' : /RIGHT/.test(pos) ? 'right' : 'center'; const side = hf.pageNum.side ? JSON.stringify(hf.pageNum.side + ' ') : '""'; pn = `@${v}-${h}{content:${side} counter(page) ${hf.pageNum.side ? JSON.stringify(' ' + hf.pageNum.side) : '""'};font:9pt 'Malgun Gothic',sans-serif}`; }
-    $id('printCss').textContent = `@page{size:${mm(pg.w)} ${mm(pg.h)};margin:${mm(pg.top + pg.header)} 0 ${mm(pg.bottom + pg.footer)} 0;${box(hf.header, 'top')}${box(hf.footer, 'bottom')}${pn}}`;
+    if (hf.pageNum && hf.pageNum.pos !== 'NONE') { const pos = hf.pageNum.pos; const v = /^TOP/.test(pos) ? 'top' : 'bottom'; const h = /LEFT/.test(pos) ? 'left' : /RIGHT/.test(pos) ? 'right' : 'center'; const sd = hf.pageNum.side; pn = `@${v}-${h}{content:${sd ? JSON.stringify(sd + ' ') : '""'} ${ctr(hf.pageNum.fmt)} ${sd ? JSON.stringify(' ' + sd) : '""'};font:10pt ${fontStack(['함초롬바탕'])}}`; }
+    // 첫 쪽에 [현재 쪽만 감추기]가 있으면 표지처럼 첫 쪽에서 뺌
+    const hide0 = new Set(); hf.list.filter(v => v.kind === 'pageHiding' && v.page === 0).forEach(v => v.hide.forEach(h => hide0.add(h)));
+    const off = sel => `@${sel}{content:none}`;
+    let first = '';
+    if (hide0.size) { const xs = []; const at = (x, v) => x && `${v}-${{ CENTER: 'center', RIGHT: 'right' }[x.align] || 'left'}`; if (hide0.has('Header') && hf.header) xs.push(at(hf.header, 'top')); if (hide0.has('Footer') && hf.footer) xs.push(at(hf.footer, 'bottom')); if (hide0.has('PageNum') && hf.pageNum) { const pos = hf.pageNum.pos; xs.push(`${/^TOP/.test(pos) ? 'top' : 'bottom'}-${/LEFT/.test(pos) ? 'left' : /RIGHT/.test(pos) ? 'right' : 'center'}`); } first = `@page :first{${xs.filter(Boolean).map(off).join('')}}`; }
+    $id('printCss').textContent = `@page{size:${mm(pg.w)} ${mm(pg.h)};margin:${mm(pg.top + pg.header)} 0 ${mm(pg.bottom + pg.footer)} 0;${box(hf.header, 'top')}${box(hf.footer, 'bottom')}${pn}}${first}`;
     clearCells(); hidePic();
     setTimeout(() => window.print(), 50);
   }
@@ -1038,6 +1048,12 @@
       } });
   }
   /* ---------- 편집 용지 (F7) ---------- */
+  // [이름, 여백(mm), 설명] — 한글 기본값과 공공기관 보고서에서 흔히 쓰는 값
+  const PAGE_PRESETS = [
+    ['한글 기본', { t: 20, b: 15, l: 30, r: 30, hd: 15, ft: 15, g: 0 }, '위 20 · 아래 15 · 왼쪽/오른쪽 30 · 머리말/꼬리말 15'],
+    ['보고서 (좁은 좌우)', { t: 15, b: 15, l: 20, r: 20, hd: 10, ft: 10, g: 0 }, '위 15 · 아래 15 · 왼쪽/오른쪽 20 · 머리말/꼬리말 10 — 행안부 보도자료와 같은 값'],
+    ['좁게', { t: 10, b: 10, l: 12, r: 12, hd: 8, ft: 8, g: 0 }, '모든 여백을 좁게 — 표가 많은 붙임용'],
+  ];
   const PAPERS = [['A4', 210, 297], ['A3', 297, 420], ['B4', 257, 364], ['B5', 182, 257], ['A5', 148, 210], ['Letter', 215.9, 279.4], ['Legal', 215.9, 355.6]];
   function pageDialog() {
     const r = rng(); const sec = r && blockOf(r.startContainer) ? +blockOf(r.startContainer).closest('.hsec').dataset.s : 0;
@@ -1054,13 +1070,33 @@
         <label>왼쪽</label><input id="g_l" type="number" step="0.1" value="${m(p.left)}"><label>오른쪽</label><input id="g_r" type="number" step="0.1" value="${m(p.right)}">
         <label>제본</label><input id="g_g" type="number" step="0.1" value="${m(p.gutter)}"><label>꼬리말</label><input id="g_ft" type="number" step="0.1" value="${m(p.footer)}">
         <label>아래쪽</label><input id="g_b" type="number" step="0.1" value="${m(p.bottom)}"><span></span><span></span>
-      </div></fieldset>${W.doc.sections.length > 1 ? `<div class="muted" style="font-size:12px">구역 ${sec + 1} 에 적용됩니다.</div>` : ''}`, {
-      width: 520,
-      init: q => q('#g_pp').addEventListener('change', () => { const x = PAPERS.find(y => y[0] === q('#g_pp').value); if (x) { q('#g_w').value = x[1]; q('#g_h').value = x[2]; } }),
+      </div><div class="pg-pre">${PAGE_PRESETS.map((x, i) => `<button type="button" class="tb" data-pre="${i}" title="${x[2]}">${x[0]}</button>`).join('')}</div></fieldset>
+      <div class="pg-prev" id="g_prev" aria-hidden="true"><div class="pg-paper"><div class="pg-body"></div></div></div>
+      ${W.doc.sections.length > 1 ? `<label class="chk" style="font-size:13px"><input type="checkbox" id="g_all"> 모든 구역(${W.doc.sections.length}개)에 적용 — 끄면 구역 ${sec + 1} 에만</label>` : ''}`, {
+      width: 540,
+      init: q => {
+        const prev = () => { // 용지·여백 미리 보기 (비율 그대로)
+          const land = q('input[name=g_o]:checked').value === 'l'; let w = num(q, '#g_w', 210), h = num(q, '#g_h', 297); if (land !== w > h) [w, h] = [h, w];
+          const k = 110 / Math.max(w, h); const pp = q('.pg-paper'), bd = q('.pg-body');
+          pp.style.width = w * k + 'px'; pp.style.height = h * k + 'px';
+          bd.style.left = num(q, '#g_l', 0) * k + num(q, '#g_g', 0) * k + 'px'; bd.style.right = num(q, '#g_r', 0) * k + 'px';
+          bd.style.top = (num(q, '#g_t', 0) + num(q, '#g_hd', 0)) * k + 'px'; bd.style.bottom = (num(q, '#g_b', 0) + num(q, '#g_ft', 0)) * k + 'px';
+        };
+        q('#g_pp').addEventListener('change', () => { const x = PAPERS.find(y => y[0] === q('#g_pp').value); if (x) { q('#g_w').value = x[1]; q('#g_h').value = x[2]; } prev(); });
+        q('.pg-pre').addEventListener('click', e => { const b = e.target.closest('[data-pre]'); if (!b) return; const m = PAGE_PRESETS[+b.dataset.pre][1]; for (const [k, v] of Object.entries(m)) q('#g_' + k).value = v; prev(); toast(PAGE_PRESETS[+b.dataset.pre][0] + ' 여백을 채웠습니다 — [설정]을 눌러야 바뀝니다', 1800); });
+        q('.body').addEventListener('input', prev); q('.body').addEventListener('change', prev); prev();
+      },
       onOk: q => {
         const u = s => Math.round(num(q, s, 0) * MM);
-        W.doc.setPage(sec, { w: u('#g_w'), h: u('#g_h'), land: q('input[name=g_o]:checked').value === 'l', top: u('#g_t'), bottom: u('#g_b'), left: u('#g_l'), right: u('#g_r'), header: u('#g_hd'), footer: u('#g_ft'), gutter: u('#g_g') });
-        const sp = doc.querySelector(`.hsec[data-s="${sec}"] .isl[data-ctrl="secPr"]`); if (sp) sp.dataset.touch = Date.now(); // 구역 설정이 바뀐 문단은 새로 저장
+        const v = { w: u('#g_w'), h: u('#g_h'), land: q('input[name=g_o]:checked').value === 'l', top: u('#g_t'), bottom: u('#g_b'), left: u('#g_l'), right: u('#g_r'), header: u('#g_hd'), footer: u('#g_ft'), gutter: u('#g_g') };
+        if (v.w < 50 * MM || v.h < 50 * MM) { tell('용지 크기를 확인해 주세요', '폭과 길이는 50mm 이상이어야 합니다.'); return false; }
+        const bodyW = (v.land ? Math.max(v.w, v.h) : Math.min(v.w, v.h)) - v.left - v.right - v.gutter, bodyH = (v.land ? Math.min(v.w, v.h) : Math.max(v.w, v.h)) - v.top - v.bottom - v.header - v.footer;
+        if (bodyW < 30 * MM || bodyH < 30 * MM) { tell('여백이 너무 큽니다', '본문이 들어갈 자리가 30mm 보다 좁아집니다. 여백을 줄여 주세요.'); return false; }
+        const all = q('#g_all') && q('#g_all').checked;
+        for (const si of all ? W.doc.sections.map((_, i) => i) : [sec]) {
+          W.doc.setPage(si, v);
+          const sp = doc.querySelector(`.hsec[data-s="${si}"] .isl[data-ctrl="secPr"]`); if (sp) sp.dataset.touch = Date.now(); // 구역 설정이 바뀐 문단은 새로 저장
+        }
         window.onDocChanged(); Track.full = true; layout(); // 구역 설정은 원본 XML 을 직접 고치므로 저장 때 그대로 반영됨
       } });
   }
@@ -1123,23 +1159,54 @@
   }
   /* ---------- 문자표 ---------- */
   const SYMS = {
-    '기호': '※○●◎◇◆□■△▲▽▼◁◀▷▶☆★♤♠♡♥♧♣⊙◈▣◐◑▒▤▥▨▧▦▩♨☏☎☜☞¶†‡↕↗↙↖↘♭♩♪♬㉿㈜№㏇™㏂㏘℡®ª',
-    '화살표': '→←↑↓↔⇒⇔⇐⇑⇓↗↘↙↖⇄⇆➔➜➝➞➡⬅⬆⬇',
-    '원·괄호 숫자': '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⒜⒝⒞⒟⒠ⓐⓑⓒⓓⓔⓕ㉠㉡㉢㉣㉤㉥㉦㉧㉨㉩㉮㉯㉰㉱㉲㉳㉴㉵㉶㉷㈎㈏㈐㈑㈒',
-    '로마·그리스': 'ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω',
-    '단위': '℃℉°′″㎜㎝㎞㎡㎢㎥㎦㎖㎗ℓ㎘㏄㎎㎏㎾㎿㎿㏊㎐㎑㎒㎓㎅㎆㎉㎾㎽㎼Ω㏀㏁㎭㎧㎨㎳㎲㎱㎰㎳％‰',
-    '수학': '±×÷≠≤≥∞∴∵∽∝√∫∬∮∑∏∂∇≡≒≪≫⊂⊃⊆⊇∈∋∪∩∧∨¬⇒⇔∀∃∠⊥⌒',
-    '문장 부호': '·‥…「」『』【】〈〉《》〔〕‘’“”〃～ˇ˘˝˚˙¸˛¡¿ː',
+    '공문서': '□○-·※▶◦ㆍ∼〔〕「」『』“”‘’…→⇒①②③④⑤⑥⑦⑧⑨⑩㉮㉯㉰㉱㉲가나다라마ⅠⅡⅢⅣⅤ■◆●◎☞▷▲△▼▽◇＊',
+    '기호': '※○●◎◇◆□■△▲▽▼◁◀▷▶☆★♤♠♡♥♧♣⊙◈▣◐◑▒▤▥▨▧▦▩♨☏☎☜☞¶†‡↕♭♩♪♬㉿㈜№㏇™㏂㏘℡®ª©✓✔✕✗✘❖❍❏❑❒',
+    '화살표': '→←↑↓↔↕⇒⇔⇐⇑⇓↗↘↙↖⇄⇆⇅➔➜➝➞➡⬅⬆⬇↺↻⤴⤵',
+    '원·괄호 숫자': '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑❶❷❸❹❺❻❼❽❾❿⓫⓬⓭⓮⓯',
+    '원·괄호 한글': '㉠㉡㉢㉣㉤㉥㉦㉧㉨㉩㉪㉫㉬㉭㉮㉯㉰㉱㉲㉳㉴㉵㉶㉷㉸㉹㉺㉻㈀㈁㈂㈃㈄㈅㈆㈇㈈㈉㈊㈋㈌㈍㈎㈏㈐㈑㈒㈓㈔㈕㈖㈗㈘㈙㈚㈛',
+    '영문 원·괄호': 'ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ⒜⒝⒞⒟⒠⒡⒢⒣⒤⒥',
+    '로마·그리스': 'ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψω',
+    '단위': '℃℉°′″㎜㎝㎞㎟㎠㎡㎢㎣㎤㎥㎦㎖㎗ℓ㎘㏄㎎㎏㎍㎾㎿㎽㎼㎽㏊㎐㎑㎒㎓㎅㎆㎉Ω㏀㏁㎭㎧㎨㎳㎲㎱㎰％‰㎈㎉㎊㎋㎌㏈㏉㏓㏔㏕㏖',
+    '수학': '±×÷≠≤≥∞∴∵∽∝√∫∬∮∑∏∂∇≡≒≪≫⊂⊃⊆⊇∈∋∪∩∧∨¬∀∃∠⊥⌒½⅓⅔¼¾⅛⅜⅝⅞¹²³⁴ⁿ₁₂₃₄',
+    '문장 부호': '·‥…「」『』【】〈〉《》〔〕‘’“”〃～ˇ˘˝˚˙¸˛¡¿ː、。〓﹏',
+    '통화·전각': '₩$€¥£¢￦＄％＆＃＠！？（）［］｛｝＜＞＝＋－',
   };
+  const SYM_NAME = { '□': '네모 (1단계 항목)', '○': '동그라미 (2단계)', '-': '붙임표 (3단계)', '·': '가운뎃점 (4단계)', 'ㆍ': '아래아 (가운뎃점 대용)', '※': '참고 표시', '∼': '물결표 (기간 — 2026. 1. 1. ∼ 12. 31.)', '〔': '채울 칸 여는 괄호', '〕': '채울 칸 닫는 괄호', '₩': '원화', '℃': '섭씨', '㎡': '제곱미터', '㎥': '세제곱미터', 'ℓ': '리터', '㎏': '킬로그램', '±': '플러스마이너스', '×': '곱하기', '÷': '나누기', '≒': '거의 같음', '→': '오른쪽 화살표', '⇒': '결과 화살표', '▶': '강조 삼각형', '☞': '가리키는 손', '…': '줄임표', '「': '낫표 (법령 이름)', '」': '낫표 닫기', '『': '겹낫표 (책 이름)', '』': '겹낫표 닫기', '“': '큰따옴표 열기', '”': '큰따옴표 닫기', '‘': '작은따옴표 열기', '’': '작은따옴표 닫기' };
+  function symRecent() { try { return JSON.parse(localStorage.getItem('hwp:symrecent') || '[]'); } catch (e) { return []; } }
   function symbolDialog() {
-    const tabs = Object.keys(SYMS); let cur = tabs[0]; try { cur = localStorage.getItem('hwp:symtab') || cur; } catch (e) { } if (!SYMS[cur]) cur = tabs[0];
-    dialog('문자표', `<div class="symtabs">${tabs.map(t => `<button class="tb ${t === cur ? 'on' : ''}" data-t="${t}">${t}</button>`).join('')}</div><div class="sym" id="sy"></div><p class="muted" style="font-size:12px;margin-bottom:0">글자를 누르면 커서 위치에 넣습니다.</p>`, {
-      foot: '<button class="tb" data-x="cancel">닫기</button>', noEnter: true, width: 560,
+    const tabs = ['최근'].concat(Object.keys(SYMS)); let cur = '공문서'; try { cur = localStorage.getItem('hwp:symtab') || cur; } catch (e) { } if (cur !== '최근' && !SYMS[cur]) cur = '공문서';
+    if (cur === '최근' && !symRecent().length) cur = '공문서';
+    dialog('문자표', `<div class="symtabs">${tabs.map(t => `<button class="tb ${t === cur ? 'on' : ''}" data-t="${t}">${t}</button>`).join('')}</div>
+      <div class="sym-find"><input id="syq" placeholder="찾기: 물결 · 원 · 화살표 · U+2460" autocomplete="off"></div>
+      <div class="sym" id="sy"></div>
+      <div class="sym-pick"><label for="syb">넣을 문자</label><input id="syb" autocomplete="off" placeholder="문자를 누르면 여기에 모입니다"><span class="muted" id="syn"></span></div>
+      <p class="muted" style="font-size:12px;margin:6px 0 0">한 번 누르면 모으고, <b>두 번 누르면 바로 넣습니다</b>. 모은 문자는 [넣기] 또는 Enter.</p>`, {
+      foot: '<button class="tb" data-x="cancel">닫기</button><button class="tb primary" data-x="ok">넣기</button>', okText: '넣기', width: 600,
       init: (q, close) => {
-        const draw = () => { q('#sy').innerHTML = Array.from(new Set(Array.from(SYMS[cur]))).map(ch => `<button data-ch="${ch}">${ch}</button>`).join(''); q('.symtabs').querySelectorAll('[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === cur)); };
-        q('.symtabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; cur = b.dataset.t; try { localStorage.setItem('hwp:symtab', cur); } catch (er) { } draw(); });
-        q('#sy').addEventListener('click', e => { const b = e.target.closest('[data-ch]'); if (!b) return; close(); insertText(b.dataset.ch); });
-        draw();
+        const name = ch => SYM_NAME[ch] || ('U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'));
+        const list = () => {
+          const k = q('#syq').value.trim();
+          if (k) {
+            const m = /^(?:u\+|0x|\\u)?([0-9a-f]{4,5})$/i.exec(k); if (m) { const c = parseInt(m[1], 16); return c > 31 && c < 0x110000 ? [String.fromCodePoint(c)] : []; }
+            const hit = new Set(); for (const [ch, n] of Object.entries(SYM_NAME)) if (n.includes(k)) hit.add(ch);
+            for (const t of Object.keys(SYMS)) if (t.includes(k)) Array.from(SYMS[t]).forEach(c => hit.add(c));
+            if (k.length === 1) Object.values(SYMS).forEach(v => { if (v.includes(k)) hit.add(k); });
+            return Array.from(hit);
+          }
+          return cur === '최근' ? symRecent() : Array.from(new Set(Array.from(SYMS[cur])));
+        };
+        const draw = () => { const l = list(); q('#sy').innerHTML = l.length ? l.map(ch => `<button data-ch="${escH(ch)}" title="${escH(name(ch))}">${escH(ch)}</button>`).join('') : '<p class="muted" style="grid-column:1/-1;margin:8px 0">찾는 문자가 없습니다</p>'; q('.symtabs').querySelectorAll('[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === cur && !q('#syq').value.trim())); };
+        q('.symtabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; cur = b.dataset.t; q('#syq').value = ''; try { localStorage.setItem('hwp:symtab', cur); } catch (er) { } draw(); });
+        q('#syq').addEventListener('input', draw);
+        q('#sy').addEventListener('mouseover', e => { const b = e.target.closest('[data-ch]'); if (b) q('#syn').textContent = b.dataset.ch + '  ' + name(b.dataset.ch); });
+        q('#sy').addEventListener('click', e => { const b = e.target.closest('[data-ch]'); if (!b) return; q('#syb').value += b.dataset.ch; q('#syn').textContent = b.dataset.ch + '  ' + name(b.dataset.ch); });
+        q('#sy').addEventListener('dblclick', e => { const b = e.target.closest('[data-ch]'); if (!b) return; const v = q('#syb').value; q('#syb').value = v.endsWith(b.dataset.ch + b.dataset.ch) ? v.slice(0, -2 * b.dataset.ch.length) + b.dataset.ch : v; q('[data-x="ok"]').click(); });
+        draw(); if (matchMedia('(pointer: fine)').matches) setTimeout(() => q('#syq').focus(), 30); // 휴대폰에서는 자판이 올라와 표를 가리므로 바로 누르지 않음
+      },
+      onOk: q => {
+        const v = q('#syb').value; if (!v) return false;
+        const rec = Array.from(new Set(Array.from(v).concat(symRecent()))).slice(0, 48); try { localStorage.setItem('hwp:symrecent', JSON.stringify(rec)); } catch (e) { }
+        backSel(); insertText(v); keepSel(); // 창이 닫힐 때 커서를 넣은 글자 뒤로
       } });
   }
   /* ---------- 도움말 (F1) ---------- */
