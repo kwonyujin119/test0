@@ -175,7 +175,8 @@ const BestDocs = (() => {
     return rec;
   }
   async function remove(id) { await init(); return be().remove(id); }
-  function deviceName() { const ua = navigator.userAgent; return /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : ''; }
+  // iPhone·iPad 의 브라우저 정보에도 'Mac OS X' 가 들어 있어 휴대폰을 Mac 으로 적던 것을 바로잡음 (휴대폰 · 태블릿을 먼저 봄)
+  function deviceName() { const ua = navigator.userAgent; return /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'iPad' : /Android/.test(ua) ? (/Mobile/.test(ua) ? 'Android 폰' : 'Android 태블릿') : /Windows/.test(ua) ? 'Windows PC' : /Mac/.test(ua) ? 'Mac' : /Linux|CrOS/.test(ua) ? 'PC' : ''; }
   /* 레퍼런스 전체를 한 덩어리로 (앞으로 자동 문서 만들기에 넘길 재료) */
   async function exportAll() { const items = await list(); const out = []; for (const it of items) out.push(await get(it.id)); return out; }
 

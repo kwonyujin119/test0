@@ -103,7 +103,7 @@
   function loadDoc(d, meta) {
     meta = meta || {};
     clearCells(true); hidePic();
-    W.doc = d; W.handle = meta.handle || null; W.boxId = meta.boxId || null; W.draftId = meta.draftId || ('d' + Date.now().toString(36));
+    W.doc = d; W.handle = meta.handle || null; W.boxId = meta.boxId || null; W.boxBase = meta.boxBase || null; newerChk = 0; W.draftId = meta.draftId || ('d' + Date.now().toString(36));
     d.header.onAdd = (kind, id) => addRule(kind, id);
     rebuildCss();
     doc.replaceChildren(d.render());
@@ -161,30 +161,34 @@
   const fileName = () => (W.name || '문서').replace(/[\\/:*?"<>|]/g, '_') + '.hwpx';
   /* 첫 화면 카드의 종이 미리보기에 쓸 글: 첫 문단 몇 개 */
   function preview() { const out = []; let n = 0; for (const p of doc.querySelectorAll('.hsec > .hp')) { const t = p.textContent.replace(/[\u200b\ufeff]/g, '').replace(/\s+/g, ' ').trim(); if (!t) continue; out.push(t); n += t.length; if (out.length >= 12 || n > 400) break; } return out.join('\n').slice(0, 400); }
+  /* 저장 — 기본은 늘 공통 저장소(documents/, 모든 기기). 내 PC 파일로 연 문서는 그 파일에도 함께 씀.
+     [다른 이름으로 → 내 PC] 만 PC 에만 저장 */
   async function save(as) {
     if (!W.doc || saving) return;
     saving = true; setState('저장 중…');
     const r0 = rev;
     try {
-      if (!as && W.boxId) { const blob = await build(); await boxRun(() => HwpStore.box.save(W.boxId, W.name, blob, deviceName(), preview())); done('저장했습니다 (모든 기기)'); }
-      else if (!as && W.handle) { const blob = await build(); await HwpStore.writeHandle(W.handle, blob); done('내 PC 파일에 저장했습니다'); }
-      else if (as === 'box' || as === 'boxNew' || (!as && !W.handle)) { await boxSaveCurrent(await build(), r0, as === 'boxNew'); } // 기본 저장 = 공통 저장소(모든 기기). 내 PC 는 [다른 이름으로]
-      else {
+      if (!as || as === 'box' || as === 'boxNew') {
+        const blob = await build();
+        let pcMsg = '';
+        if (!as && W.handle) { try { await HwpStore.writeHandle(W.handle, blob); pcMsg = ' · 내 PC 파일에도'; } catch (e) { console.warn('PC 파일 저장', e); pcMsg = ' · (내 PC 파일에는 못 씀: ' + e.message + ')'; } }
+        const ok = await boxSaveCurrent(blob, r0, as === 'boxNew', pcMsg);
+        if (ok === false && pcMsg && !/못 씀/.test(pcMsg)) { savedAt(r0); toast('내 PC 파일에만 저장했습니다 — 다른 기기에서 보려면 GitHub 연결 후 다시 저장', 4200); }
+      } else {
         // 저장 창을 먼저 열고(클릭 직후여야 브라우저가 막지 않음) 문서는 그다음 만듦 — 큰 문서도 창이 안 뜨는 일이 없게
         const h = await HwpStore.pickSaveHandle(fileName());
         if (h === false) { setState(''); updateState(); return; }
         const blob = await build();
-        if (h) { await HwpStore.writeHandle(h, blob); W.handle = h; W.boxId = null; if (h.name) setName(h.name.replace(/\.hwpx$/i, '')); done('내 PC 에 저장했습니다'); }
-        else { HwpStore.download(fileName(), blob); done('내려받기 폴더에 저장했습니다 (' + fileName() + ')'); }
+        if (h) { await HwpStore.writeHandle(h, blob); W.handle = h; if (h.name) setName(h.name.replace(/\.hwpx$/i, '')); savedAt(r0); toast('내 PC 에 저장했습니다' + (W.boxId ? ' — 모든 기기용 저장본은 [저장]으로 따로 올립니다' : ''), 3200); }
+        else { HwpStore.download(fileName(), blob); savedAt(r0); toast('내려받기 폴더에 저장했습니다 (' + fileName() + ')', 2600); }
       }
     } catch (e) { console.error(e); setState(''); updateState(); tell('저장하지 못했습니다', e.message); }
     finally { saving = false; }
-    function done(msg) { savedAt(r0); toast(msg, 2600); }
   }
   function saveAsMenu() {
     dialog('다른 이름으로 저장', `<div class="grid1"><label>파일 이름</label><input id="sa_nm" value="${escH(W.name)}"></div>
-      <div class="info" style="margin-top:12px">· <b>내 PC</b>: hwpx 파일로 저장합니다. 한글에서 바로 열립니다.<br>· <b>문서함</b>: 암호화해서 GitHub 문서함에 올립니다. 집·사무실 어디서나 엽니다.</div>`, {
-      foot: `<button class="tb" data-x="cancel">취소</button><button class="tb" id="sa_box">${icon('lock', 15)}문서함에 저장</button><button class="tb primary" id="sa_pc">${icon('save', 15)}내 PC 에 저장</button>`,
+      <div class="info" style="margin-top:12px">· <b>모든 기기</b>: 새 이름으로 문서 목록에 올립니다 (원래 문서는 그대로). PC·휴대폰 어디서나 엽니다.<br>· <b>내 PC</b>: hwpx 파일로만 저장합니다. 한글에서 바로 열립니다. 다른 기기에서는 보이지 않습니다.</div>`, {
+      foot: `<button class="tb" data-x="cancel">취소</button><button class="tb" id="sa_box">${icon('folder', 15)}모든 기기에 새 이름으로</button><button class="tb primary" id="sa_pc">${icon('save', 15)}내 PC 에 저장</button>`,
       init: (q, close) => {
         const nm = () => { const v = q('#sa_nm').value.trim(); if (v) setName(v); };
         q('#sa_pc').onclick = () => { nm(); close(false); save('pc'); };
@@ -221,7 +225,7 @@
       const t = performance.now(); const blob = await build(); buildMs = performance.now() - t;
       // 만드는 사이에 저장을 마쳤거나(임시본을 지운 뒤 다시 남기지 않게) 다른 문서를 열었으면(그 문서 자리에 이 글을 쓰지 않게) 그만둠
       if (W.doc !== d || W.draftId !== id || !W.dirty || saving) return;
-      await HwpStore.drafts.put(id, W.name, blob, { boxId: W.boxId, preview: preview() }); drafted = key;
+      await HwpStore.drafts.put(id, W.name, blob, { boxId: W.boxId, boxBase: W.boxBase, preview: preview() }); drafted = key;
     } catch (e) { console.warn('임시 저장 실패', e); }
   }
   /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰은 닫기 전에 beforeunload 가 오지 않기도 함): 기다리지 않고 바로 임시 저장 시작 */
@@ -231,16 +235,52 @@
     if (!draftP) draftP = saveDraft().finally(() => { draftP = null; });
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftNow(); });
+  /* 열어 둔 문서를 다른 기기에서 더 새로 저장했는지: 이 창으로 돌아올 때 확인 (20초에 한 번까지) */
+  let newerChk = 0, newerSaid = '';
+  async function checkNewer() {
+    if (!W.doc || !W.boxId || !W.boxBase || saving || Date.now() - newerChk < 20e3) return; newerChk = Date.now();
+    let it = null; try { it = await HwpStore.box.item(W.boxId); } catch (e) { return; }
+    if (!it || !it.modified || !(it.modified > W.boxBase) || newerSaid === it.modified) return; newerSaid = it.modified;
+    const who = (it.device || '다른 기기') + ' · ' + new Date(it.modified).toLocaleString('ko-KR');
+    if (W.dirty) { tell('다른 기기에서 이 문서를 새로 저장했습니다', `${escH(who)}<br>지금 고친 내용을 저장하면 두 판 중 무엇을 남길지 묻습니다.`); return; }
+    if (await askConfirm('다른 기기에서 이 문서를 새로 저장했습니다', escH(who) + '<br>새 판으로 다시 열까요? (이 화면은 아직 고친 것이 없습니다)', '새 판 열기')) {
+      try { const u = await boxRun(() => HwpStore.box.load(W.boxId)); await openBytes(u.buffer, { name: it.name, boxId: it.id, boxBase: it.modified, savedTime: Date.parse(it.modified) || null }); } catch (e) { tell('열지 못했습니다', e.message); }
+    }
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkNewer(); });
+  window.addEventListener('focus', () => checkNewer());
   window.addEventListener('pagehide', draftNow);
   window.addEventListener('beforeunload', e => { if (W.doc && W.dirty) { draftNow(); e.preventDefault(); e.returnValue = ''; } });
 
   /* ---------- 문서함 ---------- */
-  async function boxSaveCurrent(blob, r0, asNew) {
-    if (!(await boxEnsure())) { setState(''); updateState(); return; }
-    const id = asNew ? null : W.boxId;
-    W.boxId = await boxRun(() => HwpStore.box.save(id, W.name, blob, deviceName(), preview()));
-    W.handle = null; savedAt(r0);
-    toast('저장했습니다 — 어느 기기에서나 이 문서를 엽니다', 3000);
+  async function boxSaveCurrent(blob, r0, asNew, extraMsg) {
+    if (!(await boxEnsure())) { setState(''); updateState(); return false; }
+    const run = (id, force) => boxRun(() => HwpStore.box.save(id, W.name, blob, deviceName(), preview(), null, { base: W.boxBase, force }));
+    let id = asNew ? null : W.boxId;
+    try { W.boxId = await run(id, false); }
+    catch (e) {
+      if (!e.conflict) throw e;
+      const c = await conflictAsk(e);
+      if (c === 'cancel') { setState(''); updateState(); return 'cancel'; }
+      if (c === 'copy') { const t = new Date(); const n = `${W.name} (${deviceName() || '이 기기'} ${t.getMonth() + 1}.${t.getDate()}. ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 판)`; setName(n); W.boxId = await run(null, false); }
+      else W.boxId = await run(id, true);
+    }
+    const ls = HwpStore.box.lastSaved; if (ls && ls.id === W.boxId) W.boxBase = ls.modified;
+    savedAt(r0);
+    toast('저장했습니다 — 어느 기기에서나 이 문서를 엽니다' + (extraMsg || ''), 3000);
+    if (typeof HwpHome !== 'undefined' && HwpHome.invalidate) HwpHome.invalidate();
+    return true;
+  }
+  /* 다른 기기가 더 새로 저장한 문서를 덮어쓰려 할 때 */
+  function conflictAsk(e) {
+    return new Promise(res => {
+      let v = 'cancel';
+      dialog('다른 기기에서 더 새로 저장했습니다', `<p class="dlg-desc">${escH(e.message)}.<br>이대로 저장하면 그 기기에서 고친 내용이 사라집니다 (Git 기록에는 남습니다).</p>
+        <div class="info">· <b>새 이름으로 저장</b>: 두 판을 모두 남깁니다 (권장)<br>· <b>덮어쓰기</b>: 지금 이 화면의 내용으로 바꿉니다</div>`, {
+        foot: '<button class="tb" data-x="cancel">취소</button><button class="tb danger" id="cfOver">덮어쓰기</button><button class="tb primary" id="cfCopy">새 이름으로 저장</button>', noEnter: true,
+        init: (q, close) => { q('#cfCopy').onclick = () => { v = 'copy'; close(); }; q('#cfOver').onclick = () => { v = 'over'; close(); }; },
+        onClose: () => res(v) });
+    });
   }
   function connectDialog(opts) {
     opts = opts || {};
@@ -248,7 +288,8 @@
       let done = false;
       const c = GH.cfg || GH.detect() || { owner: 'kwonyujin119', repo: 'test0', branch: 'main' };
       const linked = !!GH.token && !opts.expired; // 이미 연결됨 → 상태를 보여 주고, 토큰 칸은 바꿀 때만
-      dialog(linked ? '문서함 연결 (GitHub) — 연결되어 있습니다' : '문서함 연결 (GitHub)', `${linked ? `<div class="info" style="margin-bottom:10px"><b>이 기기는 GitHub 저장소 ${escH(c.owner)}/${escH(c.repo)} 에 연결되어 있습니다.</b> PRESENTATION과 같은 연결입니다. 토큰을 바꿀 때만 아래에 새 토큰을 넣고 [바꾸기], 그대로 두려면 [취소].</div>` : ''}${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서함은 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>hwp/</code> 폴더에 <b>암호화된 파일</b>로 보관합니다. 토큰은 <b>이 기기에만</b> 기억되고 PRESENTATION과 함께 씁니다 (PRESENTATION에서 이미 연결했다면 같은 브라우저에서는 다시 할 필요가 없습니다).</div>
+      dialog(linked ? '문서함 연결 (GitHub) — 연결되어 있습니다' : '문서함 연결 (GitHub)', `${linked ? `<div class="info" style="margin-bottom:10px"><b>이 기기는 GitHub 저장소 ${escH(c.owner)}/${escH(c.repo)} 에 연결되어 있습니다.</b> PRESENTATION과 같은 연결입니다. 토큰을 바꿀 때만 아래에 새 토큰을 넣고 [바꾸기], 그대로 두려면 [취소].</div>` : ''}${opts.expired ? '<div class="warn" style="margin-bottom:10px"><b>GitHub 토큰의 사용 기간이 끝났거나 올바르지 않습니다.</b><br>새 토큰을 붙여넣고 <b>연결</b>을 누르면 하던 일을 이어서 합니다.</div>' : ''}<div class="info">문서는 GitHub 저장소 <b>${escH(c.owner)}/${escH(c.repo)}</b> 의 <code>documents/</code> 폴더에 저장되어 PC·휴대폰 어디서나 열립니다. 저장하려면 기기마다 한 번 연결이 필요합니다 (PRESENTATION과 같은 연결).</div>
+        ${linked ? '<button class="tb" id="g_give" style="margin-top:10px">' + icon('phone', 15) + ' 다른 기기로 이 연결 넘겨주기 (QR · 링크)</button>' : '<div class="info" style="margin-top:8px"><b>이미 연결된 기기가 있으면 토큰을 새로 만들 필요가 없습니다.</b> 그 기기의 DOCUMENT에서 [저장소 연결 → 다른 기기로 이 연결 넘겨주기]를 눌러 나온 QR을 이 기기로 찍고 코드 8자리를 넣으세요.</div>'}
         <div class="grid1" style="margin-top:12px"><label>저장소</label><div style="display:flex;gap:6px;align-items:center"><input id="g_o" value="${escH(c.owner)}" aria-label="사용자"><span>/</span><input id="g_r" value="${escH(c.repo)}" aria-label="저장소"></div>
         <label for="g_t">토큰</label><input id="g_t" type="password" placeholder="${linked ? '바꿀 때만: 새 토큰 붙여넣기' : 'github_pat_… 붙여넣기'}" autocomplete="off"></div>
         <details class="howto"${opts.expired || !GH.token ? ' open' : ''}><summary>토큰 만드는 법</summary><ol>
@@ -257,7 +298,7 @@
           <li><b>Permissions</b> → <b>Contents</b> → <i>Read and write</i></li>
           <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
         </ol>${opts.expired ? '<p>기간이 끝난 토큰은 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 목록</a>에서 그 토큰을 열고 <i>Regenerate token</i> 을 누르면 같은 권한으로 새 문자열을 받습니다.</p>' : ''}</details>`, {
-        okText: linked ? '바꾸기' : '연결', noFocus: true, init: q => setTimeout(() => { if (!linked) q('#g_t').focus(); }, 0),
+        okText: linked ? '바꾸기' : '연결', noFocus: true, init: (q, close) => { setTimeout(() => { if (!linked) q('#g_t').focus(); }, 0); const g = q('#g_give'); if (g) g.onclick = () => { res(false); close(); giveDialog(); }; // 연결은 그대로 — 넘겨주기 창으로 },
         onOk: async (q) => {
           const cfg = { owner: q('#g_o').value.trim(), repo: q('#g_r').value.trim(), branch: c.branch || 'main', token: q('#g_t').value.trim() };
           if (linked && !cfg.token && cfg.owner === c.owner && cfg.repo === c.repo) { done = true; res(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
@@ -270,6 +311,32 @@
           done = true; res(true);
         }, onClose: () => res(done || (!opts.expired && !!(GH.cfg && GH.token))) });
     });
+  }
+  /* 이 기기의 GitHub 연결을 다른 기기로: QR(또는 링크) + 코드 8자리 — 토큰을 새로 만들지 않아도 됨 */
+  async function giveDialog() {
+    let g; try { g = await GHX.make(location.origin + location.pathname); } catch (e) { tell('만들지 못했습니다', e.message); return; }
+    dialog('다른 기기로 연결 넘겨주기', `<div class="ghx"><div class="ghx-qr" id="gx_qr"><span class="muted">QR 만드는 중…</span></div>
+      <div class="ghx-r"><ol><li>새 기기(휴대폰)의 카메라로 QR을 찍거나, 아래 링크를 새 기기로 보내 엽니다.</li><li>새 기기에 이 <b>코드</b>를 넣습니다.</li></ol>
+      <div class="ghx-code" aria-label="코드">${escH(g.code)}</div><p class="muted" style="font-size:12px;margin:4px 0 0">15분 동안만 쓸 수 있습니다. 링크와 코드를 같은 곳(같은 메시지)에 함께 보내지 마세요.</p></div></div>
+      <div class="ghx-link"><input id="gx_l" readonly value="${escH(g.link)}"><button class="tb" id="gx_c">${icon('copy', 15)}링크 복사</button>${navigator.share ? `<button class="tb" id="gx_s">보내기</button>` : ''}</div>`, {
+      foot: '<button class="tb primary" data-x="cancel">닫기</button>', width: 560, noEnter: true,
+      init: async q => {
+        q('#gx_c').onclick = async () => { try { await navigator.clipboard.writeText(g.link); toast('링크를 복사했습니다 — 코드는 따로 알려 주세요', 2400); } catch (e) { q('#gx_l').select(); } };
+        if (q('#gx_s')) q('#gx_s').onclick = () => navigator.share({ title: 'DOCUMENT 연결', url: g.link }).catch(() => { });
+        const svg = await GHX.qrSvg(g.link); const box = q('#gx_qr'); if (box) box.innerHTML = svg || '<span class="muted">QR을 만들지 못했습니다 — 링크를 보내 주세요</span>';
+      } });
+  }
+  /* 넘겨받은 링크(#ghx=…)로 열렸을 때: 코드를 물어 연결 */
+  async function takeLink() {
+    const pay = GHX.pending(); if (!pay) return;
+    GHX.clear();
+    if (GUEST && typeof Access !== 'undefined') { toast('먼저 관리자로 입장합니다', 2000); if (!(await Access.prompt())) { tell('연결하지 않았습니다', '관리자로 입장해야 이 기기에서 저장할 수 있습니다. 링크를 다시 열어 주세요.'); return; } try { sessionStorage.setItem('ghx', pay); } catch (e) { } location.reload(); return; }
+    for (let i = 0; i < 5; i++) {
+      const code = await askText('다른 기기에서 넘겨받은 연결', '넘겨준 기기 화면의 코드 8자리', '', '연결');
+      if (!code) return;
+      try { toast('확인하는 중…', 8000); await GHX.take(pay, code); toast('연결했습니다 — 이제 이 기기에서도 저장하면 모든 기기에 보입니다', 3200); if (typeof HwpHome !== 'undefined') HwpHome.refresh(); return; }
+      catch (e) { if (!e.badCode) { tell('연결하지 못했습니다', e.message); return; } toast('코드가 맞지 않습니다 — 다시 넣어 주세요', 2400); }
+    }
   }
   /* 문서함 작업: 토큰이 만료되면(401) 연결 창을 바로 다시 띄우고, 연결되면 같은 일을 한 번 더 시도 */
   async function gh401(fn) {
@@ -1232,6 +1299,8 @@
   (async () => {
     GH.load();
     $id('selZoom').value = '1';
+    try { const p = sessionStorage.getItem('ghx'); if (p) { sessionStorage.removeItem('ghx'); history.replaceState(null, '', location.pathname + '#ghx=' + p); } } catch (e) { }
+    setTimeout(() => takeLink(), 400); window.addEventListener('hashchange', () => takeLink()); // 이미 열린 창에서 링크를 열어도
     const q = new URLSearchParams(location.search);
     // 앱으로 설치한 뒤 탐색기에서 hwpx 를 더블클릭하면 여기로 파일이 넘어옴 (같은 파일에 바로 저장됨)
     let launched = false;
