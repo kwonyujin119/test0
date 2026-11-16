@@ -35,15 +35,34 @@ function cssStr(s) { return '"' + String(s).replace(/["\\\n\r\f<>{};]/g, '') + '
 function hexColor(c) { return c && /^#[0-9a-f]{6}$/i.test(c) ? c : null; }
 function mmW(s) { const m = /([\d.]+)\s*mm/.exec(s || ''); return m ? parseFloat(m[1]) : 0.12; }
 
+/* 한글 문서에 흔한 글꼴의 영문 이름(같은 글꼴이 PC 에 있으면 그대로 씀)과, 없는 기기(휴대폰·맥)에서 쓸 비슷한 웹 글꼴 */
+const FACE_ALIAS = {
+  '함초롬바탕': ['HCR Batang', 'HCRBatang'], '함초롬돋움': ['HCR Dotum', 'HCRDotum'], '한컴바탕': ['Haansoft Batang'], '한컴돋움': ['Haansoft Dotum'],
+  '바탕': ['Batang'], '바탕체': ['BatangChe'], '돋움': ['Dotum'], '돋움체': ['DotumChe'], '굴림': ['Gulim'], '굴림체': ['GulimChe'], '궁서': ['Gungsuh'], '궁서체': ['GungsuhChe'],
+  '맑은 고딕': ['Malgun Gothic'], '나눔고딕': ['NanumGothic', 'Nanum Gothic'], '나눔명조': ['NanumMyeongjo', 'Nanum Myeongjo'], '나눔바른고딕': ['NanumBarunGothic'], '나눔스퀘어': ['NanumSquare'],
+  'HY헤드라인M': ['HYHeadLine M', 'HYHeadLine-Medium'], 'HY견고딕': ['HYGothic-Extra'], 'HY중고딕': ['HYGothic-Medium'], 'HY견명조': ['HYMyeongJo-Extra'], 'HY신명조': ['HYSinMyeongJo-Medium'], 'HY그래픽': ['HYGraphic-Medium'], 'HY울릉도M': ['HYUlleungDo-Medium'],
+  '휴먼명조': ['HumanMyeongjo'], '휴먼고딕': ['HumanGothic'], '한양신명조': ['HYSinMyeongJo-Medium'], '한양견명조': ['HYMyeongJo-Extra'], '한양중고딕': ['HYGothic-Medium'], '한양견고딕': ['HYGothic-Extra'],
+};
+const HEAVY_FACE = /헤드라인|견고딕|견명조|태고딕|굵은|Black|ExtraBold|Heavy|윤고딕2[3-9]0|중고딕|그래픽/i; // 글꼴 자체가 굵은 이름
+const _faceOk = new Map();
+function faceInstalled(face) { // 글자 폭을 재서 그 글꼴이 PC 에 있는지 봄 (웹 글꼴 목록에 있으면 있다고 봄)
+  if (!face) return false; if (_faceOk.has(face)) return _faceOk.get(face);
+  let ok = typeof findFontByFace === 'function' && !!findFontByFace(face);
+  try { if (!ok) { const cx = document.createElement('canvas').getContext('2d'); const t = 'mmmWWiil가나다라1234'; const names = [face].concat(FACE_ALIAS[face] || []);
+    for (const base of ['monospace', 'serif']) { cx.font = `40px ${base}`; const w0 = cx.measureText(t).width; for (const n of names) { cx.font = `40px ${cssStr(n)}, ${base}`; if (Math.abs(cx.measureText(t).width - w0) > 0.5) { ok = true; break; } } if (ok) break; } } } catch (e) { }
+  _faceOk.set(face, ok); return ok;
+}
 function fontStack(faces) {
   faces = faces.filter(Boolean);
   // 무료 웹 글꼴 목록(FONTS)에 있는 이름이면 그 글꼴을 불러와 앞에 둠 — PC 에 없어도 같은 모양으로 보임
   const web = [];
   if (typeof findFontByFace === 'function') for (const f of faces) { const w = findFontByFace(f); if (w && w.fam) { if (w.gf) loadFont(w.id); web.push(cssStr(w.fam)); } }
   if (web.length) faces = faces.filter(f => !findFontByFace(f));
-  const serif = faces.some(f => /바탕|명조|궁서|batang|myeong|serif|times|신명|그래픽/i.test(f));
+  const names = []; for (const f of faces) { names.push(f); const k = f.replace(/^[-@]/, '').trim(); for (const a of FACE_ALIAS[k] || []) names.push(a); if (k !== f) names.push(k); }
+  const serif = faces.some(f => /바탕|명조|궁서|batang|myeong|serif|times|신명|그래픽|가는안상수|궁체|solmi/i.test(f));
+  // 한글은 1em 폭 글꼴(노토)을 먼저 — 나눔명조처럼 좁은 글꼴은 줄바꿈이 한글과 달라짐
   const base = serif ? ['Batang', "'바탕'", "'Noto Serif KR'", "'Nanum Myeongjo'", 'serif'] : ["'Malgun Gothic'", "'Noto Sans KR'", "'Pretendard Variable'", 'sans-serif'];
-  return Array.from(new Set(web.concat(faces.map(cssStr)))).concat(base).join(',');
+  return Array.from(new Set(web.concat(names.map(cssStr)))).concat(base).join(',');
 }
 
 const NUM_FMT = {
@@ -102,7 +121,7 @@ class HwpHeader {
     r.offset = xint(xkid(e, 'offset'), 'hangul', 0);
     r.bold = !!xkid(e, 'bold'); r.italic = !!xkid(e, 'italic');
     const u = xkid(e, 'underline'); r.underline = u && u.getAttribute('type') !== 'NONE' ? u.getAttribute('type') : ''; r.ulColor = u && u.getAttribute('color');
-    const s = xkid(e, 'strikeout'); r.strike = !!(s && s.getAttribute('shape') && s.getAttribute('shape') !== 'NONE');
+    const s = xkid(e, 'strikeout'); const ss = s && s.getAttribute('shape'); r.strike = !!ss && !/^(NONE|3D)$/i.test(ss); // 한글은 취소선이 없을 때 shape="3D" 로 저장
     r.sup = !!xkid(e, 'supscript'); r.sub = !!xkid(e, 'subscript');
     const sh = xkid(e, 'shadow'); r.shadow = !!(sh && sh.getAttribute('type') && sh.getAttribute('type') !== 'NONE');
     const ol = xkid(e, 'outline'); r.outline = !!(ol && ol.getAttribute('type') && ol.getAttribute('type') !== 'NONE');
@@ -116,9 +135,13 @@ class HwpHeader {
     s += `text-decoration:${dec.length ? dec.join(' ') : 'none'};`;
     if (c.underline && hexColor(c.ulColor) && c.ulColor !== '#000000') s += `text-decoration-color:${c.ulColor};`;
     s += `background-color:${hexColor(c.shade) && c.shade.toUpperCase() !== '#FFFFFF' ? c.shade : 'transparent'};`;
-    s += `letter-spacing:${c.spacing ? (c.spacing / 100).toFixed(3) + 'em' : 'normal'};`;
+    // 자간(%) + 장평: 웹 글꼴은 장평을 못 바꾸므로 글자 폭 차이만큼 자간으로 메워 줄바꿈 위치를 한글과 맞춤
+    const ls = c.spacing / 100 + (c.ratio !== 100 ? (Math.max(50, Math.min(200, c.ratio)) - 100) / 100 * 0.8 : 0);
+    s += `letter-spacing:${ls ? ls.toFixed(3) + 'em' : 'normal'};`;
     s += `vertical-align:${c.sup ? 'super' : c.sub ? 'sub' : c.offset ? (-c.offset / 100).toFixed(2) + 'em' : 'baseline'};`;
-    if (c.ratio !== 100) s += `font-stretch:${c.ratio}%;`;
+    if (c.ratio !== 100) s += `font-stretch:${Math.max(50, Math.min(200, c.ratio))}%;`;
+    // HY헤드라인M 같은 굵은 글꼴이 이 기기에 없으면 대체 글꼴을 진하게 (제목이 가늘게 보이지 않게)
+    if (!c.bold && HEAVY_FACE.test(c.faceH || '') && !faceInstalled(c.faceH)) s = s.replace('font-weight:400', 'font-weight:800');
     s += c.shadow ? 'text-shadow:1px 1px 0 #b2b2b2;' : 'text-shadow:none;';
     if (c.outline) s += '-webkit-text-stroke:.6px currentColor;color:transparent;';
     return s;
@@ -411,7 +434,12 @@ class HwpxDoc {
       const k = el.firstElementChild ? el.firstElementChild.localName : '';
       s.dataset.ctrl = k;
       if (k === 'footNote' || k === 'endNote') { s.classList.add('note'); s.textContent = k === 'footNote' ? '주' : '미주'; s.title = (k === 'footNote' ? '각주: ' : '미주: ') + el.textContent.trim().slice(0, 200); return s; }
-      if (k === 'autoNum') { s.classList.add('cp-' + cp); s.textContent = '#'; s.title = '자동 번호'; return s; }
+      if (k === 'autoNum') {
+        const a = el.firstElementChild, f = xkid(a, 'autoNumFormat'), ty = a.getAttribute('numType') || 'PAGE';
+        s.classList.add('cp-' + cp, 'anum'); s.dataset.ant = ty; s.dataset.fmt = f ? f.getAttribute('type') || 'DIGIT' : 'DIGIT'; s.dataset.pre = f ? f.getAttribute('prefixChar') || '' : ''; s.dataset.suf = f ? f.getAttribute('suffixChar') || '' : '';
+        s.dataset.num = s.dataset.pre + (NUM_FMT[s.dataset.fmt] || NUM_FMT.DIGIT)(xint(a, 'num', 1)) + s.dataset.suf;
+        s.title = { PAGE: '쪽 번호', TOTAL_PAGE: '전체 쪽 수', TABLE: '표 번호', FIGURE: '그림 번호', EQUATION: '수식 번호', FOOTNOTE: '각주 번호', ENDNOTE: '미주 번호' }[ty] || '자동 번호'; return s;
+      }
       s.classList.add('hid'); return s;
     }
     if (n === 'secPr') { s.classList.add('hid'); s.dataset.ctrl = 'secPr'; return s; }

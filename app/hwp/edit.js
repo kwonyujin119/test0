@@ -221,49 +221,109 @@ function layout() {
 }
 const _ppBreak = new Map();
 function ppBreak(pp) { if (!_ppBreak.has(pp)) _ppBreak.set(pp, W.doc.header.pp(pp).pageBreakBefore); return _ppBreak.get(pp); }
+/* 머리말·꼬리말 한 줄씩: [{cp, t}|{cp, an:'PAGE'|'TOTAL_PAGE', fmt, pre, suf}] — 쪽 번호(자동 번호)도 쪽마다 바꿔 그림 */
+function hfLines(inner) {
+  return xdesc(inner, 'p').map(p => {
+    const out = [];
+    for (const run of xkids(p, 'run')) {
+      const cp = run.getAttribute('charPrIDRef') || '0';
+      for (const c of xkids(run)) {
+        if (c.localName === 't') { const t = c.textContent; if (t) out.push({ cp, t }); }
+        else if (c.localName === 'ctrl') { const a = c.firstElementChild; if (a && a.localName === 'autoNum') { const f = xkid(a, 'autoNumFormat'); out.push({ cp, an: a.getAttribute('numType') || 'PAGE', fmt: f ? f.getAttribute('type') || 'DIGIT' : 'DIGIT', pre: f ? f.getAttribute('prefixChar') || '' : '', suf: f ? f.getAttribute('suffixChar') || '' : '' }); } }
+        else if (c.localName === 'tab') out.push({ cp, t: '\u2003' });
+      }
+    }
+    return { pp: p.getAttribute('paraPrIDRef') || '0', items: out };
+  }).filter(l => l.items.length);
+}
 function hfInfo() {
-  const r = { header: null, footer: null, pageNum: null };
+  const r = { header: null, footer: null, pageNum: null, list: [] };
   for (const s of docEl().querySelectorAll('.isl[data-ctrl]')) {
-    const k = s.dataset.ctrl; if (!/^(header|footer|pageNum)$/.test(k) || r[k]) continue;
+    const k = s.dataset.ctrl; if (!/^(header|footer|pageNum|pageHiding|newNum)$/.test(k)) continue;
     const isl = W.doc.islands[s.dataset.i]; const inner = isl && isl.el.firstElementChild; if (!inner) continue;
-    if (k === 'pageNum') r.pageNum = { pos: inner.getAttribute('pos') || 'BOTTOM_CENTER', fmt: inner.getAttribute('formatType') || 'DIGIT', side: inner.getAttribute('sideChar') || '', el: inner };
+    const tb = topOf(s); const L = tb && Lay.get(tb); const page = L && L.page != null ? L.page : 0;
+    let v;
+    if (k === 'pageNum') v = { pos: inner.getAttribute('pos') || 'BOTTOM_CENTER', fmt: inner.getAttribute('formatType') || 'DIGIT', side: inner.getAttribute('sideChar') || '', el: inner };
+    else if (k === 'pageHiding') v = { el: inner, hide: ['Header', 'Footer', 'PageNum', 'MasterPage', 'Border', 'Fill'].filter(n => inner.getAttribute('hide' + n) === '1') };
+    else if (k === 'newNum') v = { el: inner, type: inner.getAttribute('numType') || 'PAGE', num: xint(inner, 'num', 1) };
     else {
       const ps = xdesc(inner, 'p'); const al = ps[0] ? W.doc.header.pp(ps[0].getAttribute('paraPrIDRef') || '0').align : 'LEFT';
-      r[k] = { text: ps.map(p => xdesc(p, 't').map(t => t.textContent).join('')).join(' '), align: al, el: inner };
+      const sl = xkid(inner, 'subList'); v = { text: ps.map(p => xdesc(p, 't').map(t => t.textContent).join('')).join(' '), align: al, el: inner, apply: inner.getAttribute('applyPageType') || 'BOTH', va: sl && sl.getAttribute('vertAlign') || (k === 'header' ? 'BOTTOM' : 'TOP'), lines: hfLines(inner) };
     }
+    v.page = page; v.kind = k; r.list.push(v);
+    if (/^(header|footer|pageNum)$/.test(k) && !r[k]) r[k] = v;
   }
   return r;
+}
+/* 쪽마다 실제로 찍을 머리말·꼬리말·쪽 번호와 쪽 번호 값 (새 번호로 시작 · 현재 쪽만 감추기 반영) */
+function pagePlan(hf, count) {
+  const out = []; const cur = { header: {}, footer: {}, pageNum: null }; let no = 0;
+  const byPage = new Map(); for (const v of hf.list) { if (!byPage.has(v.page)) byPage.set(v.page, []); byPage.get(v.page).push(v); }
+  for (let i = 0; i < count; i++) {
+    const evs = byPage.get(i) || []; const hide = new Set();
+    no++;
+    for (const v of evs) {
+      if (v.kind === 'header' || v.kind === 'footer') cur[v.kind][v.apply] = v;
+      else if (v.kind === 'pageNum') cur.pageNum = v;
+      else if (v.kind === 'newNum' && v.type === 'PAGE') no = v.num;
+      else if (v.kind === 'pageHiding') v.hide.forEach(h => hide.add(h));
+    }
+    const pick = k => { const c = cur[k]; return (no % 2 ? c.ODD : c.EVEN) || c.BOTH || null; };
+    out.push({ no, header: hide.has('Header') ? null : pick('header'), footer: hide.has('Footer') ? null : pick('footer'), pageNum: hide.has('PageNum') ? null : cur.pageNum });
+  }
+  return out;
+}
+function hfFill(el, v, no, total) {
+  const ta = a => ({ CENTER: 'center', RIGHT: 'right', JUSTIFY: 'left', DISTRIBUTE: 'center' }[a] || 'left');
+  el.style.textAlign = ta(v.align);
+  for (const l of v.lines) {
+    const line = document.createElement('div'); line.style.textAlign = ta(W.doc.header.pp(l.pp).align);
+    for (const it of l.items) {
+      const s = document.createElement('span'); s.className = 'cp-' + it.cp;
+      s.textContent = it.an ? it.pre + (NUM_FMT[it.fmt] || NUM_FMT.DIGIT)(it.an === 'TOTAL_PAGE' ? total : no) + it.suf : it.t;
+      line.appendChild(s);
+    }
+    el.appendChild(line);
+  }
 }
 let _pagesKey = '';
 function drawPages(maxW, total) {
   const box = $id('pages'), sheet = $id('sheet');
   const hf = hfInfo();
-  const key = JSON.stringify([hf.header && [hf.header.text, hf.header.align], hf.footer && [hf.footer.text, hf.footer.align], hf.pageNum && [hf.pageNum.pos, hf.pageNum.fmt, hf.pageNum.side], W.pages.map(p => p.w + 'x' + p.h + ':' + p.pg.header + ',' + p.pg.footer + ',' + p.pg.left + ',' + p.pg.right).join('|')]);
+  const plan = pagePlan(hf, W.pages.length);
+  const key = JSON.stringify([plan.map(p => [p.no, p.header && p.header.text, p.footer && p.footer.text, p.pageNum && [p.pageNum.pos, p.pageNum.fmt, p.pageNum.side]]), hf.list.map(v => v.kind + (v.lines ? JSON.stringify(v.lines) : '')).join(), W.pages.map(p => p.w + 'x' + p.h + ':' + p.pg.header + ',' + p.pg.footer + ',' + p.pg.left + ',' + p.pg.right).join('|')]);
   if (key === _pagesKey && box.children.length === W.pages.length) { // 쪽 수·머리말이 그대로면 위치만 맞춤
     W.pages.forEach((p, i) => { const el = box.children[i]; const t = p.top + 'px'; if (el.style.top !== t) el.style.top = t; });
   } else {
     _pagesKey = key;
-    const frag = document.createDocumentFragment();
+    const frag = document.createDocumentFragment(); const total = W.pages.length;
     W.pages.forEach((p, i) => {
       const el = document.createElement('div'); el.className = 'page';
       el.style.cssText = `top:${p.top}px;width:${p.w}px;height:${p.h}px`;
-      const pg = p.pg, n = i + 1;
-      const ta = a => ({ CENTER: 'center', RIGHT: 'right' }[a] || 'left');
-      if (hf.header && hf.header.text) { const h = document.createElement('div'); h.className = 'pg-hd'; h.style.cssText = `top:${pg.header / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${ta(hf.header.align)}`; h.textContent = hf.header.text; el.appendChild(h); }
-      if (hf.footer && hf.footer.text) { const f = document.createElement('div'); f.className = 'pg-ft'; f.style.cssText = `bottom:${pg.footer / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${ta(hf.footer.align)}`; f.textContent = hf.footer.text; el.appendChild(f); }
-      if (hf.pageNum && hf.pageNum.pos !== 'NONE') {
+      const pg = p.pg, pl = plan[i], n = pl.no;
+      const side = `left:${(pg.left + pg.gutter) / HU}px;right:${pg.right / HU}px;`;
+      if (pl.header && pl.header.lines.length) { const h = document.createElement('div'); h.className = 'pg-hd'; h.style.cssText = `top:${pg.top / HU}px;height:${pg.header / HU}px;${side}justify-content:${{ TOP: 'flex-start', CENTER: 'center' }[pl.header.va] || 'flex-end'}`; hfFill(h, pl.header, n, total); el.appendChild(h); }
+      if (pl.footer && pl.footer.lines.length) { const f = document.createElement('div'); f.className = 'pg-ft'; f.style.cssText = `top:${(pg.h - pg.bottom - pg.footer) / HU}px;height:${pg.footer / HU}px;${side}justify-content:${{ BOTTOM: 'flex-end', CENTER: 'center' }[pl.footer.va] || 'flex-start'}`; hfFill(f, pl.footer, n, total); el.appendChild(f); }
+      if (pl.pageNum && pl.pageNum.pos !== 'NONE') {
         const pn = document.createElement('div'); pn.className = 'pg-num';
-        const pos = hf.pageNum.pos; const top = /^TOP/.test(pos);
+        const pos = pl.pageNum.pos; const top = /^TOP/.test(pos);
         const al = /LEFT/.test(pos) ? 'left' : /RIGHT/.test(pos) ? 'right' : 'center';
-        const s = (NUM_FMT[hf.pageNum.fmt] || NUM_FMT.DIGIT)(n);
-        pn.textContent = hf.pageNum.side ? `${hf.pageNum.side} ${s} ${hf.pageNum.side}` : s;
-        pn.style.cssText = `${top ? 'top' : 'bottom'}:${(top ? pg.header : pg.footer) / HU}px;left:${pg.left / HU}px;right:${pg.right / HU}px;text-align:${al}`;
+        const s = (NUM_FMT[pl.pageNum.fmt] || NUM_FMT.DIGIT)(n);
+        pn.textContent = pl.pageNum.side ? `${pl.pageNum.side} ${s} ${pl.pageNum.side}` : s;
+        pn.style.cssText = `${top ? 'top' : 'bottom'}:${(top ? pg.top : pg.bottom) / HU}px;${side}text-align:${al}`; // 한글: 쪽 번호는 머리말·꼬리말 영역 안 (위·아래 여백 바로 안쪽)
         el.appendChild(pn);
       }
-      const lab = document.createElement('div'); lab.className = 'pg-lab'; lab.textContent = n; el.appendChild(lab);
+      const lab = document.createElement('div'); lab.className = 'pg-lab'; lab.textContent = i + 1; el.appendChild(lab);
       frag.appendChild(el);
     });
     box.replaceChildren(frag);
+  }
+  W.plan = plan;
+  // 본문 속 쪽 번호 자동 번호도 실제 쪽에 맞춤
+  for (const s of docEl().querySelectorAll('.isl[data-ant="PAGE"], .isl[data-ant="TOTAL_PAGE"]')) {
+    const tb = topOf(s); const L = tb && Lay.get(tb); const pl = plan[L && L.page != null ? L.page : 0]; if (!pl) continue;
+    const v = (NUM_FMT[s.dataset.fmt] || NUM_FMT.DIGIT)(s.dataset.ant === 'TOTAL_PAGE' ? W.pages.length : pl.no);
+    const t = (s.dataset.pre || '') + v + (s.dataset.suf || ''); if (s.dataset.num !== t) s.dataset.num = t;
   }
   const w = maxW + 'px', h = total + 'px';
   if (sheet.style.width !== w || sheet.style.height !== h) { sheet.style.width = w; sheet.style.height = h; applyZoom(); }
