@@ -170,8 +170,15 @@ const HwpStore = (() => {
     if (!r.ok) throw new Error('문서를 받지 못했습니다 (' + r.status + ')');
     return new Uint8Array(await r.arrayBuffer());
   }
+  /* 읽기 순서: ① GitHub API — 토큰이 없어도 공개 저장소는 읽힘(시간당 60번). 방금 다른 기기에서 저장한 것까지 바로 보임
+     ② 막히면(횟수 초과·네트워크) 이 사이트(GitHub Pages) 사본 — 저장 후 배포가 끝나야(보통 1분 안) 새것이 보임 */
+  let apiBlockedUntil = 0;
   async function readP(path) {
-    if (ready()) { try { return await ghBin(path); } catch (e) { if (e.status !== 401) throw e; } }
+    if (!GH.cfg) GH.load();
+    if (GH.cfg && (ready() || Date.now() > apiBlockedUntil)) {
+      try { const u = await ghBin(path); if (u || ready()) return u; } // 토큰 없이 404 = 비공개 저장소일 수 있음 → 사이트 사본으로
+      catch (e) { if (ready() && e.status && e.status !== 401 && e.status !== 403 && e.status !== 429) throw e; if (!ready()) apiBlockedUntil = Date.now() + 10 * 60e3; }
+    }
     return pagesGet(path);
   }
   const fileOf = n => (String(n || '').replace(/[\\/:*?"<>|#%\x00-\x1f]/g, '_').replace(/^\.+/, '').trim().slice(0, 100) || '문서') + '.hwpx';
@@ -213,10 +220,14 @@ const HwpStore = (() => {
   }
   const uniq = (items, name) => { let f = fileOf(name), k = 2; while (items.some(x => x.id === f)) f = fileOf(name + ' (' + k++ + ')'); return f; };
   async function pload(id) { const u = await readP(`${PDIR}/${id}`); if (!u) throw new Error('문서 파일을 찾지 못했습니다: ' + id); return u; }
-  async function psave(id, name, blob, device, preview, extra) {
-    needWrite();
+  /* base: 이 기기가 문서를 열었을(또는 마지막으로 저장한) 때의 저장 시각. 그 사이 다른 기기가 더 새로 저장했으면 덮어쓰지 않고 알림 (force 면 덮어씀) */
+  let lastSaved = null;
+  function conflictErr(it) { const e = new Error(`다른 기기${it.device ? '(' + it.device + ')' : ''}에서 ${new Date(it.modified).toLocaleString('ko-KR')} 에 이 문서를 더 새로 저장했습니다`); e.conflict = true; e.item = it; return e; }
+  async function psave(id, name, blob, device, preview, extra, opts) {
+    needWrite(); opts = opts || {};
     const data = new Uint8Array(await blob.arrayBuffer());
     if (!id) id = uniq((await idxGet()).data.items, name);
+    else if (opts.base && !opts.force) { const it = (await idxGet()).data.items.find(x => x.id === id); if (it && it.modified && it.modified !== opts.base && it.modified > opts.base) throw conflictErr(it); }
     // 1) 파일 먼저, 2) 목록 — 목록에 있는데 파일이 없는 일이 생기지 않게
     await GH.commit('문서 저장: ' + name, [{ path: `${PDIR}/${id}`, base64: b64(data) }]);
     const now = new Date().toISOString();
@@ -225,6 +236,7 @@ const HwpStore = (() => {
       if (preview != null) rec.preview = String(preview).slice(0, 400);
       if (i >= 0) d.items[i] = Object.assign(d.items[i], rec); else d.items.push(Object.assign({ created: now }, rec));
     });
+    lastSaved = { id, modified: now };
     return id;
   }
   /* 여러 문서를 한 번에 (이전 잠긴 문서함에서 옮길 때) — docs: [{ name, data, modified, device, preview, legacy }], skipped: 파일이 없어 못 옮긴 예전 id */
@@ -265,7 +277,7 @@ const HwpStore = (() => {
     canFS, pickOpen, pickSave, pickSaveHandle, writeHandle, download, drafts,
     /* 공통 저장소 — ui.js · home.js 는 예전 '문서함'과 같은 이름으로 부른다 (잠금 관련 함수는 늘 열림) */
     box: { ready: () => true, canWrite: ready, unlock: async () => true, restoreKey: async () => true, lock() { }, exists: async () => true,
-      list: plist, load: pload, save: psave, remove: premove, rename: prename, importMany: pimport, folder, get unlocked() { return true; } },
+      list: plist, load: pload, save: psave, get lastSaved() { return lastSaved; }, item: async id => (await readIdx()).items.find(x => x.id === id) || null, remove: premove, rename: prename, importMany: pimport, folder, get unlocked() { return true; } },
     /* 예전 잠긴 문서함(hwp/*.bin) — 옮기기와 best 문서(암호)에만 씀 */
     legacy: { ready, unlock, restoreKey, lock, exists, list, load, get unlocked() { return !!key; },
       read: ghBin, seal: (u8, path) => seal(u8, path), open: (u8, path) => open(u8, path) },

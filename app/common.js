@@ -1300,6 +1300,48 @@ const GH = {
     return { ok: true, push: !!(repo.permissions && repo.permissions.push), name: repo.full_name, private: !!repo.private };
   },
 };
+/* GitHub 연결 넘겨주기 — 연결된 기기에서 링크(QR)를 만들고, 새 기기에서 열어 8자리 코드를 넣으면 같은 연결이 됨.
+   토큰은 코드로 암호화(PBKDF2 60만 번 + AES-GCM)해 링크의 # 뒤에만 실어 보냄 — # 뒤는 서버로 전송되지 않고, 저장소에도 남지 않음.
+   코드는 링크에 들어 있지 않으므로 화면을 본 사람만 씀. 15분이 지나면 열리지 않음. */
+const GHX = {
+  ABC: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
+  ITER: 600000,
+  b64u: u8 => { let s = ''; u8.forEach(b => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); },
+  unb64u: t => { const b = atob(t.replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); },
+  norm: c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''),
+  async key(code, salt) {
+    const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(this.norm(code)), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: this.ITER, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  },
+  async make(page) {
+    if (!GH.cfg || !GH.token) throw new Error('이 기기에 GitHub 연결이 없습니다');
+    const r = crypto.getRandomValues(new Uint8Array(8)); const code = Array.from(r, b => this.ABC[b % 32]).join('');
+    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    const body = new TextEncoder().encode(JSON.stringify({ o: GH.cfg.owner, r: GH.cfg.repo, b: GH.cfg.branch || 'main', t: GH.token, x: Date.now() + 15 * 60e3 }));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await this.key(code, salt), body));
+    const all = new Uint8Array(28 + ct.length); all.set(salt, 0); all.set(iv, 16); all.set(ct, 28);
+    const u = new URL(page || location.href); u.search = ''; u.hash = 'ghx=' + this.b64u(all);
+    return { link: u.href, code: code.slice(0, 4) + '-' + code.slice(4) };
+  },
+  pending() { const m = /[#&]ghx=([A-Za-z0-9_-]+)/.exec(location.hash); return m ? m[1] : ''; },
+  clear() { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } },
+  async take(payload, code) {
+    const all = this.unb64u(payload); if (all.length < 40) throw new Error('링크가 잘렸습니다. 링크 전체를 다시 열어 주세요');
+    let j; try { j = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: all.slice(16, 28) }, await this.key(code, all.slice(0, 16)), all.slice(28)))); }
+    catch (e) { const er = new Error('코드가 맞지 않습니다'); er.badCode = true; throw er; }
+    if (!(j.x > Date.now())) throw new Error('15분이 지난 링크입니다. 연결된 기기에서 다시 만들어 주세요');
+    const prev = GH.cfg; GH.cfg = { owner: j.o, repo: j.r, branch: j.b || 'main', token: j.t };
+    try { const c = await GH.check(); if (!c.push) throw new Error('이 연결로는 저장소에 쓸 수 없습니다'); }
+    catch (e) { GH.cfg = prev; throw e; }
+    GH.save(GH.cfg); return GH.cfg;
+  },
+  /* QR 그림 (app/vendor/qrcode.js 를 쓸 때만 불러옴). 못 불러오면 null */
+  async qrSvg(text) {
+    if (!window.qrcode) await new Promise(res => { setTimeout(res, 6000); const sc = document.createElement('script'); sc.src = new URL('app/vendor/qrcode.js', document.baseURI).href; /* qrcode-generator 1.4.4 (MIT, Kazuhiko Arase) — 사이트에 함께 둠 */ sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
+    if (!window.qrcode) return null;
+    try { const q = window.qrcode(0, 'L'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return null; }
+  },
+};
 function encPath(p) { return p.split('/').map(encodeURIComponent).join('/'); }
 function blobToBase64(blob) {
   return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(blob); });

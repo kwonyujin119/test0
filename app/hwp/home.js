@@ -184,7 +184,8 @@ const HwpHome = (() => {
     for (const it of box.items) {
       if (hiddenForGuest(it)) continue;
       const d = byBox.get(it.id) || null;
-      list.push({ kind: 'box', id: it.id, name: it.name, time: Math.max(Date.parse(it.modified) || 0, d ? d.time : 0), size: it.size, device: it.device, preview: (d && d.preview) || it.preview, box: it, draft: d, cur: !!W.doc && (it.id === W.boxId || (d && d.id === W.draftId)) });
+      const stale = !!d && !!it.modified && (d.boxBase ? it.modified > d.boxBase : (Date.parse(it.modified) || 0) > d.time); // 작업본이 기준으로 삼은 판보다 저장본이 새것
+      list.push({ kind: 'box', id: it.id, name: it.name, stale, time: stale ? (Date.parse(it.modified) || 0) : Math.max(Date.parse(it.modified) || 0, d ? d.time : 0), size: it.size, device: it.device, preview: (d && !stale && d.preview) || it.preview, box: it, draft: d, cur: !!W.doc && (it.id === W.boxId || (d && d.id === W.draftId)) });
     }
     const boxIds = new Set(box.items.map(x => x.id));
     for (const d of drafts) { if (d.boxId && boxIds.has(d.boxId)) continue; list.push({ kind: 'draft', id: 'd:' + d.id, name: d.name, time: d.time, preview: d.preview, draft: d, cur: !!W.doc && d.id === W.draftId }); }
@@ -242,18 +243,25 @@ const HwpHome = (() => {
   /* ---------- 문서(문서함 · 임시본) 카드 ---------- */
   function docCard(x) {
     const W = U().W;
-    const openDraft = async () => { if (!(await U().confirmDiscard())) return; const r = await HwpStore.drafts.get(x.draft.id); if (!r) { toast('임시본이 이미 지워졌습니다'); loadDrafts(); return; } toast('임시본을 여는 중…', 20000); await U().openBytes(await r.blob.arrayBuffer(), { name: r.name, draftId: x.draft.id, boxId: r.boxId || null, dirty: true }); };
-    const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id, savedTime: Date.parse(x.box.modified) || null }); };
+    const openDraftNow = async () => { if (!(await U().confirmDiscard())) return; const r = await HwpStore.drafts.get(x.draft.id); if (!r) { toast('임시본이 이미 지워졌습니다'); loadDrafts(); return; } toast('임시본을 여는 중…', 20000); await U().openBytes(await r.blob.arrayBuffer(), { name: r.name, draftId: x.draft.id, boxId: r.boxId || null, boxBase: r.boxBase || null, dirty: true }); };
+    const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id, boxBase: x.box.modified || null, savedTime: Date.parse(x.box.modified) || null }); };
+    // 이 기기 작업본보다 다른 기기의 저장본이 더 새것이면, 묻지 않고 예전 작업본을 열지 않음
+    const openDraft = async () => {
+      if (!x.stale) return openDraftNow();
+      const v = await new Promise(res => { let c = ''; U().dialog('다른 기기에서 더 새로 저장한 문서입니다', `<p class="dlg-desc"><b>${esc(x.box.device || '다른 기기')}</b>에서 ${esc(new Date(x.box.modified).toLocaleString('ko-KR'))} 에 저장한 판이 있습니다.<br>이 기기에 남은 작업본(${esc(new Date(x.draft.time).toLocaleString('ko-KR'))})은 그보다 예전 내용에서 고친 것입니다.</p>`,
+        { foot: '<button class="tb" id="sdOld">이 기기 작업본 열기</button><button class="tb primary" id="sdNew">새 저장본 열기</button>', noEnter: true, init: (q, close) => { q('#sdNew').onclick = () => { c = 'new'; close(); }; q('#sdOld').onclick = () => { c = 'old'; close(); }; }, onClose: () => res(c) }); });
+      if (v === 'new') return openBox(); if (v === 'old') return openDraftNow();
+    };
     const open = x.cur ? async () => hide() : (x.draft ? openDraft : openBox);
     const print = async () => { await open(); if (U().W.doc && root.hidden) U().act('print'); };
     const dl = async () => { toast('받는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); HwpStore.download(x.box.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); toast('내려받기 폴더에 저장했습니다 (' + x.box.name + '.hwpx)', 2600); };
     const ren = async () => { const n = await U().askText('이름 바꾸기', '이름', x.box.name, '바꾸기'); if (!n || n === x.box.name) return; await U().boxRun(() => HwpStore.box.rename(x.box.id, n)); if (x.box.id === W.boxId) U().setName(n); x.box.name = n; render(); toast('이름을 바꿨습니다'); };
     const delBox = async () => { if (!(await U().askConfirm(`"${x.name}" 을(를) 문서함에서 지울까요?`, '저장소에서 지웁니다. Git 기록에는 남습니다.' + (x.draft ? ' 이 기기의 임시본은 그대로 둡니다.' : ''), '삭제', true))) return; await U().boxRun(() => HwpStore.box.remove(x.box.id)); if (x.box.id === W.boxId) { W.boxId = null; U().updateState(); } box.items = box.items.filter(b => b.id !== x.box.id); render(); toast('문서함에서 지웠습니다', 2200); };
     const delDraft = async () => { if (!(await U().askConfirm(`"${x.name}" 임시본을 지울까요?`, x.box ? '문서함에 저장된 문서는 그대로 두고, 이 기기에 남은 저장 안 한 작업본만 지웁니다.' : '지우면 되살릴 수 없습니다.', '지우기', true))) return; await HwpStore.drafts.del(x.draft.id); loadDrafts(); };
-    const openLabel = x.cur ? '편집으로 돌아가기' : x.draft ? '이어서 편집' : GUEST ? '열기' : '열어서 편집';
+    const openLabel = x.cur ? '편집으로 돌아가기' : x.stale ? '열기 (새 판 있음)' : x.draft ? '이어서 편집' : GUEST ? '열기' : '열어서 편집';
     const o = { id: x.id, cur: x.cur, title: x.name, preview: x.preview,
-      meta: [x.cur ? '지금 편집 중' : '', relTime(x.time) + (x.time ? (x.draft ? ' 임시 저장' : ' 저장') : ''), x.kind === 'box' ? ((folderOf(x.box.folder) || {}).name || '모든 기기') : (x.draft.boxId ? '저장된 문서 · 이 기기 작업본' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
-      chip: x.draft ? '저장 안 한 작업본' : '',
+      meta: [x.cur ? '지금 편집 중' : '', relTime(x.time) + (x.time ? (x.draft && !x.stale ? ' 임시 저장' : ' 저장') : ''), x.kind === 'box' ? ((folderOf(x.box.folder) || {}).name || '모든 기기') : (x.draft.boxId ? '저장된 문서 · 이 기기 작업본' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
+      chip: x.stale ? '다른 기기에서 새로 저장됨' : x.draft ? '저장 안 한 작업본' : '',
       actions: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄', icon: 'print', run: print }],
       menu: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄 · PDF 저장', icon: 'print', run: print }] };
     if (x.box && x.draft) o.menu.push({ label: '저장본 열기 (작업본 말고)', icon: 'folder', run: openBox });
@@ -435,5 +443,8 @@ const HwpHome = (() => {
     });
   }
   init();
-  return { show, hide, refresh, render, get visible() { return !root.hidden; } };
+  // 다른 기기에서 저장한 것을 바로 보이게: 목록을 띄운 채 다른 앱에 갔다 돌아오면 다시 받음
+  let lastPull = 0;
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !root.hidden && Date.now() - lastPull > 15000) { lastPull = Date.now(); loadDrafts(); loadBox(); } });
+  return { show, hide, refresh, render, invalidate() { if (!root.hidden) loadBox(); }, get visible() { return !root.hidden; } };
 })();
