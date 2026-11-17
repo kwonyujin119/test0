@@ -1904,6 +1904,7 @@
         <button class="btn sm" data-act="layout">레이아웃 적용…</button>
         <button class="btn sm" data-act="moveUp" title="이 슬라이드를 한 칸 앞으로 (Ctrl+Shift+↑)">${icon('arrowUp', 15)}위로</button>
         <button class="btn sm" data-act="moveDown" title="이 슬라이드를 한 칸 뒤로 (Ctrl+Shift+↓)">${icon('arrowDown', 15)}아래로</button>
+        <button class="btn sm" data-act="importSlides" title="PowerPoint(.pptx)나 교안 파일(.json)의 슬라이드를 지금 슬라이드 뒤에">가져오기…</button>
         <button class="btn sm" data-act="outline">개요로 만들기…</button>
         <button class="btn sm" data-act="album">사진 앨범…</button>
         <button class="btn sm danger" data-act="delSlide" style="grid-column:1/-1">슬라이드 삭제</button>
@@ -2342,6 +2343,7 @@
       case 'openEmbed': if (e) { const q = parseEmbed(e.url); window.open(q.kind === 'youtube' ? `https://www.youtube.com/watch?v=${q.id}` : q.kind === 'video' ? API.resolveSrc(e.url) : e.url, '_blank', 'noopener'); } break;
       case 'design': showDesign(); break;
       case 'outline': showOutline(); break;
+      case 'importSlides': pickImportFile(); break;
       case 'album': $('fileAlbum').click(); break;
       case 'group': groupSel(); break;
       case 'ungroup': ungroupSel(); break;
@@ -2516,6 +2518,71 @@
     } catch (e) { toast('PPT 파일을 만들지 못했습니다'); alert('PPT 파일을 만들지 못했습니다: ' + (e && e.message || e)); }
     finally { pptBusy = false; }
   }
+
+  /* ---------- 슬라이드 가져오기 (PowerPoint .pptx · 교안 파일 .json) → 지금 교안에 ----------
+     교안 목록의 [파일 가져오기] 와 같은 변환기(app/pptin.js)를 써서, 새 교안을 만들지 않고 열어 둔 교안에 슬라이드를 넣음.
+     지금 슬라이드 뒤에 넣고, 새 교안(처음 한 장만 있는 그대로)이면 그 한 장을 가져온 슬라이드로 바꿈. Ctrl+Z 로 한 번에 되돌림 */
+  let slideImporting = false;
+  function pickImportFile() { $('fileImportSlides').click(); }
+  function isStarterDeck() { // 새로 만든 그대로: 한 장, 기본 제목 · 부제목만
+    const d = S.deck; if (!d || d.slides.length !== 1) return false;
+    const els = d.slides[0].elements || [];
+    return els.every(e => e.type === 'text' && (e.role === 'title' || e.role === 'subtitle') && (!stripHtml(e.html) || stripHtml(e.html) === d.title || /부제목 · 강의자 이름 · 날짜/.test(stripHtml(e.html))));
+  }
+  function remapIds(slides) { // 가져온 슬라이드 · 개체에 새 이름표 (이 교안의 것과 겹치지 않게) + 슬라이드 링크도 새 이름으로
+    const map = new Map(); for (const s of slides) { const n = uid(); map.set(s.id, n); s.id = n; }
+    for (const s of slides) for (const e of s.elements || []) {
+      e.id = uid();
+      if (typeof e.link === 'string' && e.link.startsWith('slide:')) { const t = map.get(e.link.slice(6)); e.link = t ? 'slide:' + t : ''; if (!e.link) delete e.link; }
+    }
+    return slides;
+  }
+  async function importSlides(file) {
+    if (!file) return;
+    if (typeof Access !== 'undefined' && Access.isGuest) { toast('게스트(보기 전용) 모드에서는 가져올 수 없습니다'); return; }
+    if (slideImporting) { toast('다른 파일을 가져오는 중입니다'); return; }
+    if (/\.(ppt|pps|pot)$/i.test(file.name || '')) { alert(`"${file.name}" 은 옛 형식(.ppt) 파일이라 읽지 못합니다.\nPowerPoint 에서 [파일 → 다른 이름으로 저장] 으로 "PowerPoint 프레젠테이션(.pptx)" 으로 저장한 뒤 다시 가져오세요.`); return; }
+    const isJson = /\.json$/i.test(file.name || '') || file.type === 'application/json';
+    if (!isJson && !isPptFile(file)) { toast('PowerPoint 파일(.pptx)이나 교안 파일(.json)만 가져올 수 있습니다', 4000); return; }
+    if (S.editing) endEdit(); flushNudge();
+    slideImporting = true;
+    try {
+      let src, stats = null, warnings = [];
+      if (isJson) {
+        let d = null; try { d = JSON.parse(await file.text()); } catch (e) { }
+        if (!d || !Array.isArray(d.slides) || !d.slides.length) throw new Error('교안 파일(.json) 형식이 아닙니다');
+        normalizeDeck(d); src = d;
+      } else {
+        toast('PPT 파일을 읽는 중…', 60000);
+        await loadScript('app/pptsym.js'); await loadScript('app/pptin.js');
+        const canVideo = API.mode === 'server' || (API.mode === 'github' && !!GH.token);
+        const r = await PPTIN.toDeck(file, {
+          stage: (blob, name) => API.stage(blob, name),
+          progress: (m) => toast(m, 60000),
+          video: canVideo ? async (f, name, poster) => { if (f.size > BIGV.MAX) throw new Error('1GB 가 넘는 동영상'); const vsrc = API.mode === 'github' && f.size > BIGV.LIMIT ? API.stageBig(f, name) : await API.stage(f, name); return { src: vsrc, poster: poster ? await API.stage(poster, name.replace(/\.[^.]+$/, '') + '-poster.png') : '' }; } : null,
+        });
+        src = r.deck; stats = r.stats; warnings = r.warnings || [];
+      }
+      const slides = remapIds(clone(src.slides));
+      const replace = isStarterDeck();
+      if (replace) {
+        S.deck.slides = slides; S.cur = 0;
+        if (!S.deck.colors && src.colors) S.deck.colors = clone(src.colors); // 새 교안이면 PPT 의 테마 색도 함께 (글머리 · 차트 기본 색)
+      } else {
+        S.deck.slides.splice(S.cur + 1, 0, ...slides); S.cur = S.cur + 1;
+      }
+      S.sel = []; S.ssel = [S.deck.slides[S.cur].id];
+      commit({ all: true }); renderAll();
+      thumbsEl.children[S.cur]?.scrollIntoView({ block: 'nearest' });
+      const parts = [`슬라이드 ${slides.length}장`];
+      if (stats) { if (stats.image) parts.push(`그림 ${stats.image}`); if (stats.table) parts.push(`표 ${stats.table}`); if (stats.chart) parts.push(`차트 ${stats.chart}`); if (stats.video) parts.push(`동영상 ${stats.video}`); }
+      toast(`${replace ? '새 교안을 가져온 슬라이드로 채웠습니다' : '지금 슬라이드 뒤에 넣었습니다'} — ${parts.join(' · ')} · 되돌리기 Ctrl+Z · [저장] 을 눌러 저장하세요`, 6000);
+      if (warnings.length) setTimeout(() => alert('가져오면서 확인할 점\n\n· ' + warnings.join('\n· ')), 400);
+    } catch (e) { toast('가져오지 못했습니다'); alert('슬라이드를 가져오지 못했습니다: ' + (e && e.message || e)); }
+    finally { slideImporting = false; }
+  }
+  $('fileImportSlides').onchange = async (ev) => { const f = ev.target.files[0]; ev.target.value = ''; if (f) await importSlides(f); };
+  $('btnImportSlides').onclick = pickImportFile;
   async function exportHtml() {
     if (S.editing) endEdit();
     toast('HTML 만드는 중…', 5000);
@@ -2564,7 +2631,15 @@
     }
     const ph = document.elementFromPoint(ev.clientX, ev.clientY); const slot = ph && ph.closest ? ph.closest('.el-image.img-empty') : null;
     const files = Array.from(ev.dataTransfer.files);
-    const ppt = files.find(isPptFile); if (ppt) { await openPpt(ppt); return; }              // PPT 파일 → 그 안의 동영상 고르기
+    const ppt = files.find(isPptFile);
+    if (ppt) { // PPT 파일 → 슬라이드로 가져오기 · 그 안의 그림 · 영상 고르기 중에서
+      showMenu(ev.clientX, ev.clientY, [
+        { label: `<b>슬라이드로 가져오기</b> — ${esc(ppt.name)}`, fn: () => importSlides(ppt) },
+        { label: '그림 · 도형 · 동영상만 골라 넣기…', fn: () => openPpt(ppt) },
+      ]);
+      return;
+    }
+    const jdeck = files.find(f => /\.json$/i.test(f.name || '')); if (jdeck) { await importSlides(jdeck); return; } // 교안 파일 → 슬라이드 가져오기
     const box = ph && ph.closest ? ph.closest('.mode-edit .el[data-id]') : null;              // 상자 위에 놓으면 그 상자에
     let n = 0; for (const f of files) {
       const p = { x: at.x + n * 40, y: at.y + n * 40, into: n === 0 && slot ? slot.dataset.id : null };
@@ -3714,6 +3789,7 @@
       { label: 'PPT 에서 영상 가져오기…', fn: () => showPptVideos() },
       { label: 'PPT 에서 심벌·그림 가져오기…', fn: () => showPptSyms() },
       { sep: true },
+      { label: '슬라이드 가져오기 (PPT · 교안 파일)…', fn: pickImportFile },
       { label: '개요로 슬라이드 만들기…', fn: showOutline },
       { label: '사진 앨범 (사진마다 한 장씩)…', fn: () => $('fileAlbum').click() },
     ]);
