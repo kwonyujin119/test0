@@ -298,7 +298,7 @@
           <li><b>Permissions</b> → <b>Contents</b> → <i>Read and write</i></li>
           <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
         </ol>${opts.expired ? '<p>기간이 끝난 토큰은 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 목록</a>에서 그 토큰을 열고 <i>Regenerate token</i> 을 누르면 같은 권한으로 새 문자열을 받습니다.</p>' : ''}</details>`, {
-        okText: linked ? '바꾸기' : '연결', noFocus: true, init: (q, close) => { setTimeout(() => { if (!linked) q('#g_t').focus(); }, 0); const g = q('#g_give'); if (g) g.onclick = () => { res(false); close(); giveDialog(); }; // 연결은 그대로 — 넘겨주기 창으로 },
+        okText: linked ? '바꾸기' : '연결', noFocus: true, init: (q, close) => { setTimeout(() => { if (!linked) q('#g_t').focus(); }, 0); const g = q('#g_give'); if (g) g.onclick = () => { res(false); close(); giveDialog(); }; /* 연결은 그대로 — 넘겨주기 창으로 */ },
         onOk: async (q) => {
           const cfg = { owner: q('#g_o').value.trim(), repo: q('#g_r').value.trim(), branch: c.branch || 'main', token: q('#g_t').value.trim() };
           if (linked && !cfg.token && cfg.owner === c.owner && cfg.repo === c.repo) { done = true; res(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
