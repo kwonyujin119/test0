@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-17T09:15:20.000Z",
- "modified": "2026-11-17T09:15:20.000Z",
+ "created": "2026-11-17T09:20:52.000Z",
+ "modified": "2026-11-17T09:20:52.000Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#374151",
@@ -150,7 +150,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "결론",
@@ -169,9 +169,9 @@
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -194,9 +194,9 @@
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -219,9 +219,9 @@
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -244,9 +244,9 @@
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -269,9 +269,34 @@
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0012",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -285,10 +310,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0012",
+     "id": "fs0013",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -310,7 +335,7 @@
      }
     },
     {
-     "id": "fs0013",
+     "id": "fs0014",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -333,7 +358,7 @@
      }
     },
     {
-     "id": "fs0014",
+     "id": "fs0015",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -352,7 +377,7 @@
      }
     },
     {
-     "id": "fs0015",
+     "id": "fs0016",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -373,7 +398,7 @@
      }
     },
     {
-     "id": "fs0016",
+     "id": "fs0017",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -392,7 +417,7 @@
      }
     },
     {
-     "id": "fs0017",
+     "id": "fs0018",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -416,7 +441,7 @@
      }
     },
     {
-     "id": "fs0018",
+     "id": "fs0019",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -439,7 +464,7 @@
      }
     },
     {
-     "id": "fs0019",
+     "id": "fs0020",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -458,7 +483,7 @@
      }
     },
     {
-     "id": "fs0020",
+     "id": "fs0021",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -479,7 +504,7 @@
      }
     },
     {
-     "id": "fs0021",
+     "id": "fs0022",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -498,7 +523,7 @@
      }
     },
     {
-     "id": "fs0022",
+     "id": "fs0023",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -522,7 +547,7 @@
      }
     },
     {
-     "id": "fs0023",
+     "id": "fs0024",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -545,7 +570,7 @@
      }
     },
     {
-     "id": "fs0024",
+     "id": "fs0025",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -564,7 +589,7 @@
      }
     },
     {
-     "id": "fs0025",
+     "id": "fs0026",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -585,7 +610,7 @@
      }
     },
     {
-     "id": "fs0026",
+     "id": "fs0027",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -604,7 +629,7 @@
      }
     },
     {
-     "id": "fs0027",
+     "id": "fs0028",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -628,7 +653,7 @@
      }
     },
     {
-     "id": "fs0028",
+     "id": "fs0029",
      "step": 4,
      "anim": "up",
      "rotate": 0,
@@ -648,7 +673,7 @@
      }
     },
     {
-     "id": "fs0029",
+     "id": "fs0030",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -675,7 +700,7 @@
    "notes": "화재 건수입니다. 2017년 44,178건이 가장 많았고, 2021년 36,267건까지 줄었습니다. 그런데 2022년 40,113건으로 10% 넘게 다시 늘었고, 2025년에도 38,341건으로 전년보다 727건 늘었습니다. 10년 평균은 약 39,988건입니다.\n\"추세는 감소, 하지만 바닥을 다진 것이 아니라 오르내리고 있다\"는 점을 강조.\n※ 2025년 건수는 소방청 「2025년 소방활동 분석」을 인용한 보도 기준. 통계연보 확정치와 다를 수 있음.",
    "elements": [
     {
-     "id": "fs0030",
+     "id": "fs0031",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -683,7 +708,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "① 화재 건수",
@@ -696,15 +721,15 @@
      }
     },
     {
-     "id": "fs0031",
+     "id": "fs0032",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -721,15 +746,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0032",
+     "id": "fs0033",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -746,15 +771,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0033",
+     "id": "fs0034",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -771,15 +796,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0034",
+     "id": "fs0035",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -796,15 +821,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0035",
+     "id": "fs0036",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0037",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -818,10 +868,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0036",
+     "id": "fs0038",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -843,7 +893,7 @@
      }
     },
     {
-     "id": "fs0037",
+     "id": "fs0039",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -878,7 +928,7 @@
      "axis": false
     },
     {
-     "id": "fs0038",
+     "id": "fs0040",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -901,7 +951,7 @@
      }
     },
     {
-     "id": "fs0039",
+     "id": "fs0041",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -920,7 +970,7 @@
      }
     },
     {
-     "id": "fs0040",
+     "id": "fs0042",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -939,7 +989,7 @@
      }
     },
     {
-     "id": "fs0041",
+     "id": "fs0043",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -962,7 +1012,7 @@
      }
     },
     {
-     "id": "fs0042",
+     "id": "fs0044",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -981,7 +1031,7 @@
      }
     },
     {
-     "id": "fs0043",
+     "id": "fs0045",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1001,7 +1051,7 @@
      }
     },
     {
-     "id": "fs0044",
+     "id": "fs0046",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1028,7 +1078,7 @@
    "notes": "숫자가 크면 잘 와닿지 않습니다. 하루로 나누면 105건, 14분에 한 번입니다. 이 강의 한 시간 동안에도 전국에서 네 건 이상 불이 납니다. (평균값이므로 실제로는 계절 · 시간대에 따라 다름. 봄철이 가장 많음)",
    "elements": [
     {
-     "id": "fs0045",
+     "id": "fs0047",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1036,7 +1086,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "① 화재 건수",
@@ -1049,15 +1099,15 @@
      }
     },
     {
-     "id": "fs0046",
+     "id": "fs0048",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1074,15 +1124,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0047",
+     "id": "fs0049",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -1099,15 +1149,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0048",
+     "id": "fs0050",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1124,15 +1174,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0049",
+     "id": "fs0051",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1149,15 +1199,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0050",
+     "id": "fs0052",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0053",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1171,10 +1246,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0051",
+     "id": "fs0054",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1196,7 +1271,7 @@
      }
     },
     {
-     "id": "fs0052",
+     "id": "fs0055",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1217,7 +1292,7 @@
      }
     },
     {
-     "id": "fs0053",
+     "id": "fs0056",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1236,7 +1311,7 @@
      }
     },
     {
-     "id": "fs0054",
+     "id": "fs0057",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1254,7 +1329,7 @@
      }
     },
     {
-     "id": "fs0055",
+     "id": "fs0058",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1273,7 +1348,7 @@
      }
     },
     {
-     "id": "fs0056",
+     "id": "fs0059",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1291,7 +1366,7 @@
      }
     },
     {
-     "id": "fs0057",
+     "id": "fs0060",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1310,7 +1385,7 @@
      }
     },
     {
-     "id": "fs0058",
+     "id": "fs0061",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1334,7 +1409,7 @@
      }
     },
     {
-     "id": "fs0059",
+     "id": "fs0062",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1361,7 +1436,7 @@
    "notes": "재산피해입니다. 2016년 4,207억 원에서 2022년 1조 2,040억 원까지 늘었습니다. 2021년과 2022년, 두 해 연속 1조 원을 넘었습니다.\n2021년에는 쿠팡 덕평 물류센터 화재 한 건이 약 4,743억 원으로, 그해 전체의 44%를 차지했습니다. 물류창고 · 공장 같은 대형 시설 화재가 한 번 나면 그해 통계가 바뀝니다.\n※ 2016년 값은 자료마다 다름(국민안전처 3,697억 · 서문시장 제외 / 보험개발원 4,207억). 2020년도 5,903억(초기 발표)과 6,005억(통계연보)이 있음 → 여기서는 뒤의 값을 씀.\n※ 2017 · 2025년 전국 재산피해는 원자료를 확인하지 못해 비워 둠. 강의 전 국가화재정보시스템(nfds.go.kr)에서 채울 것.",
    "elements": [
     {
-     "id": "fs0060",
+     "id": "fs0063",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1369,7 +1444,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "② 재산피해",
@@ -1382,15 +1457,15 @@
      }
     },
     {
-     "id": "fs0061",
+     "id": "fs0064",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1407,15 +1482,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0062",
+     "id": "fs0065",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1432,15 +1507,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0063",
+     "id": "fs0066",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -1457,15 +1532,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0064",
+     "id": "fs0067",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1482,15 +1557,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0065",
+     "id": "fs0068",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0069",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1504,10 +1604,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0066",
+     "id": "fs0070",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1529,7 +1629,7 @@
      }
     },
     {
-     "id": "fs0067",
+     "id": "fs0071",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1547,7 +1647,7 @@
      }
     },
     {
-     "id": "fs0068",
+     "id": "fs0072",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1580,7 +1680,7 @@
      "axis": false
     },
     {
-     "id": "fs0069",
+     "id": "fs0073",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1603,7 +1703,7 @@
      }
     },
     {
-     "id": "fs0070",
+     "id": "fs0074",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1622,7 +1722,7 @@
      }
     },
     {
-     "id": "fs0071",
+     "id": "fs0075",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1642,7 +1742,7 @@
      }
     },
     {
-     "id": "fs0072",
+     "id": "fs0076",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1665,7 +1765,7 @@
      }
     },
     {
-     "id": "fs0073",
+     "id": "fs0077",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1684,7 +1784,7 @@
      }
     },
     {
-     "id": "fs0074",
+     "id": "fs0078",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1704,7 +1804,7 @@
      }
     },
     {
-     "id": "fs0075",
+     "id": "fs0079",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1731,7 +1831,7 @@
    "notes": "건수와 재산피해를 함께 보면 의미가 보입니다. 재산피해를 건수로 나누면 2016년 1건당 약 9.7백만 원에서 2022년 약 30.0백만 원으로 커졌습니다. 불은 덜 나는데, 한 번 나면 더 크게 탄다는 뜻입니다.\n※ 물가 상승분을 빼지 않은 명목 금액. 대형 화재 몇 건이 평균을 크게 끌어올림을 함께 설명.",
    "elements": [
     {
-     "id": "fs0076",
+     "id": "fs0080",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1739,7 +1839,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "② 재산피해",
@@ -1752,15 +1852,15 @@
      }
     },
     {
-     "id": "fs0077",
+     "id": "fs0081",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1777,15 +1877,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0078",
+     "id": "fs0082",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1802,15 +1902,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0079",
+     "id": "fs0083",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -1827,15 +1927,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0080",
+     "id": "fs0084",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1852,15 +1952,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0081",
+     "id": "fs0085",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0086",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -1874,10 +1999,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0082",
+     "id": "fs0087",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1899,7 +2024,7 @@
      }
     },
     {
-     "id": "fs0083",
+     "id": "fs0088",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1917,7 +2042,7 @@
      }
     },
     {
-     "id": "fs0084",
+     "id": "fs0089",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1943,7 +2068,7 @@
      "axis": false
     },
     {
-     "id": "fs0085",
+     "id": "fs0090",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1966,7 +2091,7 @@
      }
     },
     {
-     "id": "fs0086",
+     "id": "fs0091",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1985,7 +2110,7 @@
      }
     },
     {
-     "id": "fs0087",
+     "id": "fs0092",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2005,7 +2130,7 @@
      }
     },
     {
-     "id": "fs0088",
+     "id": "fs0093",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2028,7 +2153,7 @@
      }
     },
     {
-     "id": "fs0089",
+     "id": "fs0094",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2048,7 +2173,7 @@
      }
     },
     {
-     "id": "fs0090",
+     "id": "fs0095",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2075,7 +2200,7 @@
    "notes": "인명피해입니다. 사망과 부상을 합치면 10년 내내 2천 명 안팎이고, 2025년 2,736명은 10년 중 가장 많습니다. 화재 건수는 줄었는데 다치고 숨지는 사람은 줄지 않았습니다.\n※ 2023 · 2024년은 통계연보 확정치(사망 283 · 308, 부상 2,194 · 2,094). 처음 보도된 값(사망 284 · 303 등)과 조금 다름.\n※ 2025년 3~5월 영남권 대형 산불 사망자(보도 32명)가 이 통계에 포함되는지는 확인 필요 — 산불은 산림청이 따로 집계함.",
    "elements": [
     {
-     "id": "fs0091",
+     "id": "fs0096",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2083,7 +2208,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "③ 인명피해",
@@ -2096,15 +2221,15 @@
      }
     },
     {
-     "id": "fs0092",
+     "id": "fs0097",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2121,15 +2246,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0093",
+     "id": "fs0098",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2146,15 +2271,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0094",
+     "id": "fs0099",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2171,15 +2296,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0095",
+     "id": "fs0100",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -2196,15 +2321,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0096",
+     "id": "fs0101",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0102",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2218,10 +2368,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0097",
+     "id": "fs0103",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2243,7 +2393,7 @@
      }
     },
     {
-     "id": "fs0098",
+     "id": "fs0104",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2261,7 +2411,7 @@
      }
     },
     {
-     "id": "fs0099",
+     "id": "fs0105",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2288,7 +2438,7 @@
      "axis": false
     },
     {
-     "id": "fs0100",
+     "id": "fs0106",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2315,7 +2465,7 @@
    "notes": "사망자만 따로 보겠습니다. 10년 평균 322명, 300명을 넘은 해가 열 번 중 일곱 번입니다. 하루에 거의 한 명꼴입니다. 2025년 346명은 2018년 · 2020년 다음으로 많습니다.\n※ 2016년 기준 사망자의 63%가 주택 화재에서 발생(국민안전처) — 최근 연도 비율은 통계연보에서 확인 후 말할 것.",
    "elements": [
     {
-     "id": "fs0101",
+     "id": "fs0107",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2323,7 +2473,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "③ 인명피해",
@@ -2336,15 +2486,15 @@
      }
     },
     {
-     "id": "fs0102",
+     "id": "fs0108",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2361,15 +2511,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0103",
+     "id": "fs0109",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2386,15 +2536,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0104",
+     "id": "fs0110",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2411,15 +2561,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0105",
+     "id": "fs0111",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -2436,15 +2586,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0106",
+     "id": "fs0112",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0113",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2458,10 +2633,10 @@
       "color": "#475569",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0107",
+     "id": "fs0114",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2483,7 +2658,7 @@
      }
     },
     {
-     "id": "fs0108",
+     "id": "fs0115",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2501,7 +2676,7 @@
      }
     },
     {
-     "id": "fs0109",
+     "id": "fs0116",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2536,7 +2711,7 @@
      "axis": false
     },
     {
-     "id": "fs0110",
+     "id": "fs0117",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2559,7 +2734,7 @@
      }
     },
     {
-     "id": "fs0111",
+     "id": "fs0118",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2578,7 +2753,7 @@
      }
     },
     {
-     "id": "fs0112",
+     "id": "fs0119",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2598,7 +2773,7 @@
      }
     },
     {
-     "id": "fs0113",
+     "id": "fs0120",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2621,7 +2796,7 @@
      }
     },
     {
-     "id": "fs0114",
+     "id": "fs0121",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2641,7 +2816,7 @@
      }
     },
     {
-     "id": "fs0115",
+     "id": "fs0122",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2662,13 +2837,13 @@
    "decor": "none"
   },
   {
-   "id": "fs09",
+   "id": "fs08b",
    "bg": null,
    "transition": "fade",
-   "notes": "앞에서 본 숫자를 한 표에 모았습니다. 질문이 나오면 이 표로 돌아옵니다. 「미확인」 칸은 공식 원자료를 직접 확인하지 못한 값이라 일부러 비웠습니다. 강의 전에 국가화재정보시스템에서 채워 넣으십시오.",
+   "notes": "같은 10년 동안 화재 · 구조 같은 위험한 현장에서 순직한 소방관은 33명입니다. 해마다 2~4명, 많은 해는 7~9명입니다.\n2019년 9명은 10월 독도 인근 해상 소방헬기 추락 사고의 영향이 큽니다. 2024년 2명은 1월 31일 경북 문경 공장 화재로 순직한 두 대원입니다.\n※ 기준: 위험직무 순직(현장 활동 중 사망). 암 · 자살 · 심뇌혈관질환 등 「일반 순직」은 따로 집계되며 2015~2024년 86명(위험직무 순직의 약 2.5배)으로 보도됨 — 이 숫자는 차트에 넣지 않음.\n※ 2025년은 「위험직무 순직 승인 사례 없음」이라는 보도(데일리25)를 따른 값. 승인은 늦게 나기도 하므로 0명으로 단정하지 말고 소방청 순직소방관 추모관 · 통계연보로 확인할 것.\n※ 2024년은 3명으로 보도한 기사도 있음(집계 범위 차이 추정). 2024년 통계연보: 순직 2명 · 공상 1,334명.\n질문: \"화재 사망자는 매년 300명입니다. 그 불을 끄러 들어간 사람도 매년 다치고, 숨집니다.\"",
    "elements": [
     {
-     "id": "fs0116",
+     "id": "fs0123",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2676,10 +2851,10 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
-     "html": "정리",
+     "html": "④ 순직 소방관",
      "style": {
       "fontSize": 26,
       "color": "#C2410C",
@@ -2689,15 +2864,15 @@
      }
     },
     {
-     "id": "fs0117",
+     "id": "fs0124",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2714,15 +2889,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0118",
+     "id": "fs0125",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2739,15 +2914,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0119",
+     "id": "fs0126",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2764,15 +2939,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0120",
+     "id": "fs0127",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -2789,15 +2964,479 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0121",
+     "id": "fs0128",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#111827",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#FFFFFF",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0129",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "정리",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec5"
+    },
+    {
+     "id": "fs0130",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 104,
+     "w": 1680,
+     "h": 96,
+     "role": "heading",
+     "html": "같은 10년, 화재 · 구조 현장에서 소방관 33명이 순직했다",
+     "style": {
+      "fontSize": 50,
+      "color": "#111827",
+      "bold": true,
+      "valign": "middle",
+      "lineHeight": 1.2,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "fs0131",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 196,
+     "w": 1680,
+     "h": 48,
+     "role": "text",
+     "html": "단위: 명 · 위험직무 순직 기준(소방청 집계 인용 보도)",
+     "style": {
+      "fontSize": 28,
+      "color": "#64748B"
+     }
+    },
+    {
+     "id": "fs0132",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "chart",
+     "x": 120,
+     "y": 280,
+     "w": 1300,
+     "h": 650,
+     "kind": "bar",
+     "data": "연도,순직\n2016,2\n2017,2\n2018,7\n2019,9\n2020,2\n2021,3\n2022,4\n2023,2\n2024,2\n2025,0",
+     "values": true,
+     "legend": false,
+     "grid": false,
+     "unit": "",
+     "style": {
+      "fontSize": 24,
+      "color": "#111827"
+     },
+     "pointColors": [
+      "#94A3B8",
+      "#94A3B8",
+      "#C2410C",
+      "#C2410C",
+      "#94A3B8",
+      "#94A3B8",
+      "#94A3B8",
+      "#94A3B8",
+      "#94A3B8",
+      "#E2E8F0"
+     ],
+     "axis": false
+    },
+    {
+     "id": "fs0133",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1480,
+     "y": 300,
+     "w": 320,
+     "h": 250,
+     "shape": "rect",
+     "fill": "#FFF1E8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 30,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "fs0134",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 315,
+     "w": 270,
+     "h": 40,
+     "role": "text",
+     "html": "2019년 9명",
+     "style": {
+      "fontSize": 26,
+      "color": "#9A3412",
+      "bold": true
+     }
+    },
+    {
+     "id": "fs0135",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 360,
+     "w": 280,
+     "h": 180,
+     "role": "text",
+     "html": "독도 해상 소방헬기 추락 등",
+     "style": {
+      "fontSize": 30,
+      "color": "#111827",
+      "bold": true,
+      "lineHeight": 1.4
+     }
+    },
+    {
+     "id": "fs0136",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1480,
+     "y": 580,
+     "w": 320,
+     "h": 170,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 30,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "fs0137",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 595,
+     "w": 270,
+     "h": 40,
+     "role": "text",
+     "html": "2024년 2명",
+     "style": {
+      "fontSize": 26,
+      "color": "#475569",
+      "bold": true
+     }
+    },
+    {
+     "id": "fs0138",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 640,
+     "w": 280,
+     "h": 100,
+     "role": "text",
+     "html": "문경 공장 화재",
+     "style": {
+      "fontSize": 30,
+      "color": "#111827",
+      "bold": true
+     }
+    },
+    {
+     "id": "fs0139",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1480,
+     "y": 780,
+     "w": 320,
+     "h": 150,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 20,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 30,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "fs0140",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 795,
+     "w": 280,
+     "h": 130,
+     "role": "text",
+     "html": "2025년 0명?<br>확인 필요",
+     "style": {
+      "fontSize": 30,
+      "color": "#111827",
+      "bold": true,
+      "lineHeight": 1.4
+     }
+    },
+    {
+     "id": "fs0141",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 950,
+     "w": 1680,
+     "h": 40,
+     "role": "text",
+     "html": "출처: 소방청 집계 인용 보도(시사저널 · 경향신문 · 데일리25) · 소방청 통계연보",
+     "style": {
+      "fontSize": 24,
+      "color": "#64748B"
+     }
+    }
+   ],
+   "decor": "none"
+  },
+  {
+   "id": "fs09",
+   "bg": null,
+   "transition": "fade",
+   "notes": "앞에서 본 숫자를 한 표에 모았습니다. 질문이 나오면 이 표로 돌아옵니다. 「미확인」 칸은 공식 원자료를 직접 확인하지 못한 값이라 일부러 비웠습니다. 강의 전에 국가화재정보시스템에서 채워 넣으십시오.",
+   "elements": [
+    {
+     "id": "fs0142",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 50,
+     "w": 480,
+     "h": 44,
+     "role": "caption",
+     "html": "정리",
+     "style": {
+      "fontSize": 26,
+      "color": "#C2410C",
+      "bold": true,
+      "valign": "middle",
+      "letterSpacing": 1
+     }
+    },
+    {
+     "id": "fs0143",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 620,
+     "y": 52,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "결론",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec0"
+    },
+    {
+     "id": "fs0144",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 817,
+     "y": 52,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "① 화재 건수",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec1"
+    },
+    {
+     "id": "fs0145",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1014,
+     "y": 52,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "② 재산피해",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec2"
+    },
+    {
+     "id": "fs0146",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1211,
+     "y": 52,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "③ 인명피해",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec3"
+    },
+    {
+     "id": "fs0147",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1408,
+     "y": 52,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0148",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -2811,10 +3450,10 @@
       "color": "#FFFFFF",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0122",
+     "id": "fs0149",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2836,7 +3475,7 @@
      }
     },
     {
-     "id": "fs0123",
+     "id": "fs0150",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2852,77 +3491,88 @@
        "화재 건수",
        "재산피해(억 원)",
        "사망(명)",
-       "부상(명)"
+       "부상(명)",
+       "순직 소방관(명)"
       ],
       [
        "2016",
        "43,413",
        "4,207",
        "306",
-       "1,718"
+       "1,718",
+       "2"
       ],
       [
        "2017",
        "44,178",
        "미확인",
        "345",
-       "1,852"
+       "1,852",
+       "2"
       ],
       [
        "2018",
        "42,338",
        "5,597",
        "369",
-       "2,225"
+       "2,225",
+       "7"
       ],
       [
        "2019",
        "40,103",
        "8,059",
        "285",
-       "2,230"
+       "2,230",
+       "9"
       ],
       [
        "2020",
        "38,659",
        "6,005",
        "365",
-       "1,915"
+       "1,915",
+       "2"
       ],
       [
        "2021",
        "36,267",
        "10,878",
        "276",
-       "1,854"
+       "1,854",
+       "3"
       ],
       [
        "2022",
        "40,113",
        "12,040",
        "341",
-       "2,321"
+       "2,321",
+       "4"
       ],
       [
        "2023",
        "38,857",
        "9,529",
        "283",
-       "2,194"
+       "2,194",
+       "2"
       ],
       [
        "2024",
        "37,614",
        "7,839",
        "308",
-       "2,094"
+       "2,094",
+       "2"
       ],
       [
        "2025",
        "38,341",
        "미확인",
        "346",
-       "2,390"
+       "2,390",
+       "0*"
       ]
      ],
      "header": true,
@@ -2954,6 +3604,10 @@
        "fill": "#FFF1E8",
        "color": "#111827"
       },
+      "10,5": {
+       "fill": "#FFF1E8",
+       "color": "#111827"
+      },
       "2,2": {
        "color": "#C2410C"
       }
@@ -2965,7 +3619,7 @@
      }
     },
     {
-     "id": "fs0124",
+     "id": "fs0151",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2976,7 +3630,7 @@
      "w": 1680,
      "h": 40,
      "role": "text",
-     "html": "출처: 소방청 통계연보 · 연간 화재통계 보도 · 국민 삶의 질 지표 · 보험개발원(2016 재산피해). 「미확인」은 원자료를 확인하지 못한 칸",
+     "html": "출처: 소방청 통계연보 · 연간 화재통계 보도 · 국민 삶의 질 지표 · 보험개발원(2016 재산피해). 「미확인」은 원자료 미확인 · *2025 순직은 확인 필요",
      "style": {
       "fontSize": 24,
       "color": "#64748B"
@@ -2992,7 +3646,7 @@
    "notes": "통계를 발표할 때 가장 흔한 실수는 숫자가 말하지 않는 것까지 말하는 것입니다. 왼쪽은 이 자료로 말할 수 있는 것, 오른쪽은 말하면 안 되는 것입니다. 특히 2025년은 재산피해 확정치가 아직 없으니 「최악」 같은 표현은 피하십시오.",
    "elements": [
     {
-     "id": "fs0125",
+     "id": "fs0152",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3000,7 +3654,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "정리",
@@ -3013,15 +3667,15 @@
      }
     },
     {
-     "id": "fs0126",
+     "id": "fs0153",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3038,15 +3692,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0127",
+     "id": "fs0154",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3063,15 +3717,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0128",
+     "id": "fs0155",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3088,15 +3742,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0129",
+     "id": "fs0156",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3113,15 +3767,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0130",
+     "id": "fs0157",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0158",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -3135,10 +3814,10 @@
       "color": "#FFFFFF",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0131",
+     "id": "fs0159",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3160,7 +3839,7 @@
      }
     },
     {
-     "id": "fs0132",
+     "id": "fs0160",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3184,7 +3863,7 @@
      }
     },
     {
-     "id": "fs0133",
+     "id": "fs0161",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3208,7 +3887,7 @@
      }
     },
     {
-     "id": "fs0134",
+     "id": "fs0162",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3233,7 +3912,7 @@
      }
     },
     {
-     "id": "fs0135",
+     "id": "fs0163",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3258,7 +3937,7 @@
      }
     },
     {
-     "id": "fs0136",
+     "id": "fs0164",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3283,7 +3962,7 @@
      }
     },
     {
-     "id": "fs0137",
+     "id": "fs0165",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3308,7 +3987,7 @@
      }
     },
     {
-     "id": "fs0138",
+     "id": "fs0166",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3333,7 +4012,7 @@
      }
     },
     {
-     "id": "fs0139",
+     "id": "fs0167",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3367,7 +4046,7 @@
    "notes": "이 교안의 숫자는 소방청 원자료 사이트에 직접 접속하지 못해, 소방청 발표를 인용한 언론 보도와 통계연보 요약 기사로 모았습니다. 같은 해라도 처음 발표값과 통계연보 확정치가 몇 명 · 몇 억 원씩 다릅니다. 정식 발표 전에는 국가화재정보시스템에서 한 번 더 맞춰 보십시오.",
    "elements": [
     {
-     "id": "fs0140",
+     "id": "fs0168",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3375,7 +4054,7 @@
      "type": "text",
      "x": 120,
      "y": 50,
-     "w": 600,
+     "w": 480,
      "h": 44,
      "role": "caption",
      "html": "정리",
@@ -3388,15 +4067,15 @@
      }
     },
     {
-     "id": "fs0141",
+     "id": "fs0169",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 780,
+     "x": 620,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3413,15 +4092,15 @@
      "mk": "sec0"
     },
     {
-     "id": "fs0142",
+     "id": "fs0170",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 986,
+     "x": 817,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3438,15 +4117,15 @@
      "mk": "sec1"
     },
     {
-     "id": "fs0143",
+     "id": "fs0171",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1192,
+     "x": 1014,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3463,15 +4142,15 @@
      "mk": "sec2"
     },
     {
-     "id": "fs0144",
+     "id": "fs0172",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1398,
+     "x": 1211,
      "y": 52,
-     "w": 196,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#F1F5F9",
@@ -3488,15 +4167,40 @@
      "mk": "sec3"
     },
     {
-     "id": "fs0145",
+     "id": "fs0173",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 1604,
+     "x": 1408,
      "y": 52,
-     "w": 196,
+     "w": 187,
+     "h": 42,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 21,
+     "shadow": false,
+     "html": "④ 순직",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     },
+     "mk": "sec4"
+    },
+    {
+     "id": "fs0174",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1605,
+     "y": 52,
+     "w": 187,
      "h": 42,
      "shape": "rect",
      "fill": "#111827",
@@ -3510,10 +4214,10 @@
       "color": "#FFFFFF",
       "bold": true
      },
-     "mk": "sec4"
+     "mk": "sec5"
     },
     {
-     "id": "fs0146",
+     "id": "fs0175",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3535,7 +4239,7 @@
      }
     },
     {
-     "id": "fs0147",
+     "id": "fs0176",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3546,7 +4250,7 @@
      "w": 1680,
      "h": 680,
      "role": "text",
-     "html": "<b>기준</b> 전국 · 소방청 집계(국가화재정보시스템). 산불(산림청 집계)은 따로일 수 있음<br><b>건수 · 사망 · 부상</b> 소방청 연간 화재통계 보도(2017~2025) · 소방청 통계연보 2025(FPN 보도) · 국민 삶의 질 지표 「화재 사망자」<br><b>2025년</b> 소방청 「2025년 소방활동 분석」 인용 보도(세이프코리아뉴스) — 통계연보 확정 전 값<br><b>재산피해</b> 소방청 통계연보 · 연간 보도 · 보험개발원(2016) · 쿠팡 물류센터 피해는 보도 기준<br><b>확인 못 한 값</b> 2017 · 2025 재산피해(전국), 2020 부상(±2명)<br><b>다시 확인할 곳</b> 국가화재정보시스템 nfds.go.kr · 공공데이터포털 「소방청_연간화재통계」",
+     "html": "<b>기준</b> 전국 · 소방청 집계(국가화재정보시스템). 산불(산림청 집계)은 따로일 수 있음<br><b>건수 · 사망 · 부상</b> 소방청 연간 화재통계 보도(2017~2025) · 소방청 통계연보 2025(FPN 보도) · 국민 삶의 질 지표 「화재 사망자」<br><b>2025년</b> 소방청 「2025년 소방활동 분석」 인용 보도(세이프코리아뉴스) — 통계연보 확정 전 값<br><b>재산피해</b> 소방청 통계연보 · 연간 보도 · 보험개발원(2016) · 쿠팡 물류센터 피해는 보도 기준<br><b>순직 소방관</b> 위험직무 순직 기준, 소방청 집계 인용 보도(시사저널 · 경향신문 · 데일리25). 일반 순직 별도<br><b>확인 못 한 값</b> 2017 · 2025 재산피해(전국), 2020 부상(±2명), 2025 순직<br><b>다시 확인할 곳</b> 국가화재정보시스템 nfds.go.kr · 공공데이터포털 「소방청_연간화재통계」",
      "style": {
       "fontSize": 30,
       "color": "#374151",
