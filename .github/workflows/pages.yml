@@ -24,6 +24,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      # 화면 스크립트에 문법 오류가 있으면 배포하지 않음 → 사이트는 마지막으로 잘 되던 판 그대로 (한 줄 실수로 앱이 통째로 안 열리는 일 방지)
+      - name: Check JavaScript syntax
+        run: |
+          bad=0
+          for f in $(git ls-files '*.js'); do node --check "$f" || bad=1; done
+          exit $bad
       - uses: actions/configure-pages@v5
         with:
           enablement: true

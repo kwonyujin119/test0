@@ -69,6 +69,8 @@
         busy = true; const btn = q('[data-x="ok"]'); if (btn) btn.disabled = true;
         let r; try { r = await opts.onOk(q, close); } finally { busy = false; if (btn) btn.disabled = false; }
         if (r === false) return;
+        // 설정 중에 커서를 옮겼으면(표 만들기 → 첫 칸 등) 창이 닫힐 때 예전 자리로 되돌리지 않음
+        const cr = rng(); if (cr && inDoc(cr.startContainer)) keepSel();
       }
       close();
     };
@@ -94,6 +96,10 @@
   function askText(title, label, value, okText, desc) {
     return new Promise(res => { let v = null; dialog(escH(title), `${desc ? `<p class="dlg-desc">${desc}</p>` : ''}<div class="grid1"><label>${escH(label)}</label><input id="ak_v" value="${escH(value || '')}"></div>`, { okText: okText || '확인', onOk: q => { const t = q('#ak_v').value.trim(); if (!t) { q('#ak_v').focus(); return false; } v = t; }, onClose: () => res(v) }); });
   }
+  /* 고르기 창: opts [[값, 글, 주 단추?]] → 고른 값 (닫으면 null) */
+  function choose(title, desc, opts) {
+    return new Promise(res => { let v = null; dialog(escH(title), desc ? `<p class="dlg-desc">${desc}</p>` : '', { noEnter: true, foot: '<button class="tb" data-x="cancel">취소</button>' + opts.map(([k, t, pri], i) => `<button class="tb${pri ? ' primary' : ''}" data-ch="${i}">${escH(t)}</button>`).join(''), init: (q, close) => q('.foot').addEventListener('click', e => { const b = e.target.closest('[data-ch]'); if (!b) return; v = opts[+b.dataset.ch][0]; close(); }), onClose: () => res(v) }); });
+  }
   function tell(title, desc) {
     return new Promise(res => dialog(escH(title), `<p class="dlg-desc">${escH(desc || '').replace(/\n/g, '<br>')}</p>`, { foot: `<button class="tb primary" data-x="ok">확인</button>`, onClose: () => res(true), noFocus: true, init: q => setTimeout(() => { const b = q('[data-x="ok"]'); if (b) b.focus(); }, 0) }));
   }
@@ -103,7 +109,7 @@
   function loadDoc(d, meta) {
     meta = meta || {};
     clearCells(true); hidePic();
-    W.doc = d; W.handle = meta.handle || null; W.boxId = meta.boxId || null; W.boxBase = meta.boxBase || null; newerChk = 0; W.draftId = meta.draftId || ('d' + Date.now().toString(36));
+    W.doc = d; W.handle = meta.handle || null; W.boxId = meta.boxId || null; W.boxBase = meta.boxBase || null; W.pcOnly = meta.boxId ? false : null; newerChk = 0; newerSaid = ''; W.draftId = meta.draftId || ('d' + Date.now().toString(36));
     d.header.onAdd = (kind, id) => addRule(kind, id);
     rebuildCss();
     doc.replaceChildren(d.render());
@@ -169,11 +175,17 @@
     const r0 = rev;
     try {
       if (!as || as === 'box' || as === 'boxNew') {
+        // 내 PC 파일로 연 문서: 공통 저장소(공개)에 올릴지 문서마다 한 번 물음 — 개인정보가 든 파일이 말없이 올라가지 않게
+        if (!as && W.handle && !W.boxId && W.pcOnly == null) {
+          const c = await choose('이 문서를 모든 기기에서 보이게 할까요?', '공통 저장소(<b>documents/</b>)는 <b>공개 GitHub 저장소</b>입니다. 개인정보·비공개 내용이 있으면 이 PC 파일에만 저장하세요.', [['pc', '이 PC 파일에만'], ['box', '모든 기기 + PC 파일', true]]);
+          if (!c) { setState(''); updateState(); return; }
+          W.pcOnly = c === 'pc';
+        }
         const blob = await build();
-        let pcMsg = '';
-        if (!as && W.handle) { try { await HwpStore.writeHandle(W.handle, blob); pcMsg = ' · 내 PC 파일에도'; } catch (e) { console.warn('PC 파일 저장', e); pcMsg = ' · (내 PC 파일에는 못 씀: ' + e.message + ')'; } }
-        const ok = await boxSaveCurrent(blob, r0, as === 'boxNew', pcMsg);
-        if (ok === false && pcMsg && !/못 씀/.test(pcMsg)) { savedAt(r0); toast('내 PC 파일에만 저장했습니다 — 다른 기기에서 보려면 GitHub 연결 후 다시 저장', 4200); }
+        const writePc = async () => { if (!(!as && W.handle)) return ''; try { await HwpStore.writeHandle(W.handle, blob); return 'ok'; } catch (e) { console.warn('PC 파일 저장', e); return e.message || '실패'; } };
+        if (!as && W.handle && W.pcOnly) { const w = await writePc(); if (w !== 'ok') throw new Error('내 PC 파일에 쓰지 못했습니다: ' + w); savedAt(r0); toast('내 PC 파일에 저장했습니다 (이 문서는 다른 기기에 올리지 않음 — [다른 이름으로 → 모든 기기]로 올릴 수 있음)', 3600); return; }
+        const ok = await boxSaveCurrent(blob, r0, as === 'boxNew', () => writePc().then(w => w === 'ok' ? ' · 내 PC 파일에도' : w ? ' · (내 PC 파일에는 못 씀: ' + w + ')' : ''));
+        if (ok === false && !as && W.handle) { const w = await writePc(); if (w === 'ok') { savedAt(r0); toast('내 PC 파일에만 저장했습니다 — 다른 기기에서 보려면 GitHub 연결 후 다시 저장', 4200); } }
       } else {
         // 저장 창을 먼저 열고(클릭 직후여야 브라우저가 막지 않음) 문서는 그다음 만듦 — 큰 문서도 창이 안 뜨는 일이 없게
         const h = await HwpStore.pickSaveHandle(fileName());
@@ -239,8 +251,11 @@
   let newerChk = 0, newerSaid = '';
   async function checkNewer() {
     if (!W.doc || !W.boxId || !W.boxBase || saving || Date.now() - newerChk < 20e3) return; newerChk = Date.now();
-    let it = null; try { it = await HwpStore.box.item(W.boxId); } catch (e) { return; }
-    if (!it || !it.modified || !(it.modified > W.boxBase) || newerSaid === it.modified) return; newerSaid = it.modified;
+    const d0 = W.doc, id0 = W.boxId, base0 = W.boxBase;
+    let it = null; try { it = await HwpStore.box.item(id0); } catch (e) { return; }
+    if (W.doc !== d0 || W.boxId !== id0 || W.boxBase !== base0 || saving) return; // 기다리는 사이 다른 문서를 열었거나 저장함
+    const newer = it && it.modified && (HwpStore.box.canWrite() ? it.modified !== base0 : it.modified > base0);
+    if (!newer || newerSaid === it.modified) return; newerSaid = it.modified;
     const who = (it.device || '다른 기기') + ' · ' + new Date(it.modified).toLocaleString('ko-KR');
     if (W.dirty) { tell('다른 기기에서 이 문서를 새로 저장했습니다', `${escH(who)}<br>지금 고친 내용을 저장하면 두 판 중 무엇을 남길지 묻습니다.`); return; }
     if (await askConfirm('다른 기기에서 이 문서를 새로 저장했습니다', escH(who) + '<br>새 판으로 다시 열까요? (이 화면은 아직 고친 것이 없습니다)', '새 판 열기')) {
@@ -253,21 +268,23 @@
   window.addEventListener('beforeunload', e => { if (W.doc && W.dirty) { draftNow(); e.preventDefault(); e.returnValue = ''; } });
 
   /* ---------- 문서함 ---------- */
-  async function boxSaveCurrent(blob, r0, asNew, extraMsg) {
+  async function boxSaveCurrent(blob, r0, asNew, after) {
     if (!(await boxEnsure())) { setState(''); updateState(); return false; }
-    const run = (id, force) => boxRun(() => HwpStore.box.save(id, W.name, blob, deviceName(), preview(), null, { base: W.boxBase, force }));
+    const run = (id, force, name) => boxRun(() => HwpStore.box.save(id, name || W.name, blob, deviceName(), preview(), null, { base: W.boxBase, force }));
     let id = asNew ? null : W.boxId;
     try { W.boxId = await run(id, false); }
     catch (e) {
       if (!e.conflict) throw e;
       const c = await conflictAsk(e);
       if (c === 'cancel') { setState(''); updateState(); return 'cancel'; }
-      if (c === 'copy') { const t = new Date(); const n = `${W.name} (${deviceName() || '이 기기'} ${t.getMonth() + 1}.${t.getDate()}. ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 판)`; setName(n); W.boxId = await run(null, false); }
+      if (c === 'copy') { const t = new Date(); const n = `${W.name} (${deviceName() || '이 기기'} ${t.getMonth() + 1}.${t.getDate()}. ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 판)`; W.boxId = await run(null, false, n); setName(n); } // 올린 뒤에 이름을 바꿈 (실패하면 원래 이름·문서 그대로)
       else W.boxId = await run(id, true);
     }
     const ls = HwpStore.box.lastSaved; if (ls && ls.id === W.boxId) W.boxBase = ls.modified;
+    W.pcOnly = false;
+    const more = typeof after === 'function' ? await after() : (after || '');
     savedAt(r0);
-    toast('저장했습니다 — 어느 기기에서나 이 문서를 엽니다' + (extraMsg || ''), 3000);
+    toast('저장했습니다 — 어느 기기에서나 이 문서를 엽니다' + more, 3000);
     if (typeof HwpHome !== 'undefined' && HwpHome.invalidate) HwpHome.invalidate();
     return true;
   }
@@ -1156,9 +1173,9 @@
       onOk: q => {
         const u = s => Math.round(num(q, s, 0) * MM);
         const v = { w: u('#g_w'), h: u('#g_h'), land: q('input[name=g_o]:checked').value === 'l', top: u('#g_t'), bottom: u('#g_b'), left: u('#g_l'), right: u('#g_r'), header: u('#g_hd'), footer: u('#g_ft'), gutter: u('#g_g') };
-        if (v.w < 50 * MM || v.h < 50 * MM) { tell('용지 크기를 확인해 주세요', '폭과 길이는 50mm 이상이어야 합니다.'); return false; }
+        if (v.w < 50 * MM || v.h < 50 * MM) { toast('용지 폭과 길이는 50mm 이상이어야 합니다', 2600); q('#g_w').focus(); return false; }
         const bodyW = (v.land ? Math.max(v.w, v.h) : Math.min(v.w, v.h)) - v.left - v.right - v.gutter, bodyH = (v.land ? Math.min(v.w, v.h) : Math.max(v.w, v.h)) - v.top - v.bottom - v.header - v.footer;
-        if (bodyW < 30 * MM || bodyH < 30 * MM) { tell('여백이 너무 큽니다', '본문이 들어갈 자리가 30mm 보다 좁아집니다. 여백을 줄여 주세요.'); return false; }
+        if (bodyW < 30 * MM || bodyH < 30 * MM) { toast('여백이 너무 큽니다 — 본문 자리가 30mm 보다 좁아집니다', 2800); q('#g_l').focus(); return false; }
         const all = q('#g_all') && q('#g_all').checked;
         for (const si of all ? W.doc.sections.map((_, i) => i) : [sec]) {
           W.doc.setPage(si, v);
@@ -1248,7 +1265,7 @@
       <div class="sym" id="sy"></div>
       <div class="sym-pick"><label for="syb">넣을 문자</label><input id="syb" autocomplete="off" placeholder="문자를 누르면 여기에 모입니다"><span class="muted" id="syn"></span></div>
       <p class="muted" style="font-size:12px;margin:6px 0 0">한 번 누르면 모으고, <b>두 번 누르면 바로 넣습니다</b>. 모은 문자는 [넣기] 또는 Enter.</p>`, {
-      foot: '<button class="tb" data-x="cancel">닫기</button><button class="tb primary" data-x="ok">넣기</button>', okText: '넣기', width: 600,
+      foot: '<button class="tb" data-x="cancel">닫기</button><button class="tb primary" data-x="ok">넣기</button>', okText: '넣기', width: 600, noFocus: true,
       init: (q, close) => {
         const name = ch => SYM_NAME[ch] || ('U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'));
         const list = () => {

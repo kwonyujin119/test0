@@ -227,7 +227,7 @@ const HwpStore = (() => {
     needWrite(); opts = opts || {};
     const data = new Uint8Array(await blob.arrayBuffer());
     if (!id) id = uniq((await idxGet()).data.items, name);
-    else if (opts.base && !opts.force) { const it = (await idxGet()).data.items.find(x => x.id === id); if (it && it.modified && it.modified !== opts.base && it.modified > opts.base) throw conflictErr(it); }
+    else if (opts.base && !opts.force) { const it = (await idxGet()).data.items.find(x => x.id === id); if (it && it.modified && it.modified !== opts.base) throw conflictErr(it); } // 기기마다 시계가 달라 '나중 시각'으로 비교하면 놓침 — 판이 다르면 충돌
     // 1) 파일 먼저, 2) 목록 — 목록에 있는데 파일이 없는 일이 생기지 않게
     await GH.commit('문서 저장: ' + name, [{ path: `${PDIR}/${id}`, base64: b64(data) }]);
     const now = new Date().toISOString();
