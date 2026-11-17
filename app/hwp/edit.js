@@ -263,7 +263,7 @@ function pagePlan(hf, count) {
     const evs = byPage.get(i) || []; const hide = new Set();
     no++;
     for (const v of evs) {
-      if (v.kind === 'header' || v.kind === 'footer') cur[v.kind][v.apply] = v;
+      if (v.kind === 'header' || v.kind === 'footer') { if (v.apply === 'BOTH') cur[v.kind] = { BOTH: v }; else cur[v.kind][v.apply] = v; }
       else if (v.kind === 'pageNum') cur.pageNum = v;
       else if (v.kind === 'newNum' && v.type === 'PAGE') no = v.num;
       else if (v.kind === 'pageHiding') v.hide.forEach(h => hide.add(h));
@@ -988,6 +988,39 @@ function htmlTableRows(html) {
   const t = tpl.content.querySelector('table'); if (!t) return null;
   return Array.from(t.rows).map(r => Array.from(r.cells).map(c => (c.innerText || c.textContent || '').replace(/\s+/g, ' ').trim()));
 }
+/* HTML → [{t: 글} | {rows: 표}] 차례대로. 표가 없으면 null */
+function htmlSegments(html) {
+  const tpl = document.createElement('template'); tpl.innerHTML = html;
+  for (const e of tpl.content.querySelectorAll('style,script,meta,link,title')) e.remove();
+  const tables = Array.from(tpl.content.querySelectorAll('table')).filter(t => !t.parentElement || !t.parentElement.closest('table')); // 표 안의 표는 바깥 표로
+  if (!tables.length) return null;
+  const rowsOf = t => Array.from(t.rows).filter(r => r.closest('table') === t).map(r => Array.from(r.cells).map(c => (c.innerText || c.textContent || '').replace(/\s+/g, ' ').trim()));
+  const grids = tables.map(rowsOf);
+  tables.forEach((t, i) => t.replaceWith(document.createTextNode('\n\u0001' + i + '\u0001\n')));
+  // 블록 경계를 줄바꿈으로 (화면에 붙이지 않고 글만 뽑기)
+  for (const e of tpl.content.querySelectorAll('p,div,li,h1,h2,h3,h4,h5,h6,tr,blockquote,pre,section,article')) e.append(document.createTextNode('\n'));
+  for (const e of tpl.content.querySelectorAll('br')) e.replaceWith(document.createTextNode('\n'));
+  const all = (tpl.content.textContent || '').replace(/\r\n?/g, '\n').replace(/[ \t ]+\n/g, '\n');
+  const out = [];
+  all.split(/\u0001(\d+)\u0001/).forEach((part, i) => {
+    if (i % 2) { const g = grids[+part]; if (g && g.length) out.push({ rows: g }); return; }
+    const t = part.replace(/\n{2,}/g, '\n').replace(/^\n+|\n+$/g, '').replace(/[ \t]{2,}/g, ' ');
+    if (t.trim()) out.push({ t });
+  });
+  return out;
+}
+function pasteSegments(segs) {
+  for (const sg of segs) {
+    const r = rng(); const b = r && blockOf(r.startContainer); if (!b) return;
+    if (sg.t) { const blocks = plainToBlocks(sg.t, b); if (blocks.length === 1 && !/\t/.test(sg.t)) insertText(sg.t); else pasteBlocks(blocks); }
+    else {
+      tableFromRows(sg.rows);
+      const c = rng(); const t = c && c.startContainer && (c.startContainer.nodeType === 1 ? c.startContainer : c.startContainer.parentElement).closest('table.htb');
+      const top = t && topOf(t); const nx = top && top.nextElementSibling;
+      if (nx && nx.classList.contains('hp')) caretToStart(nx); // 다음 글은 표 아래 문단에
+    }
+  }
+}
 function onPaste(e) {
   if (!inDoc(e.target)) return;
   e.preventDefault();
@@ -1003,6 +1036,8 @@ function onPaste(e) {
     return;
   }
   if (img && !text) { const f = img.getAsFile(); if (f) insertImageFile(f); return; }
+  // 웹·엑셀에서 온 HTML 에 표와 글이 섞여 있으면: 글 → 표 → 글 순서 그대로 (예전에는 표만 넣고 앞뒤 글을 버렸음)
+  if (html && !td) { const segs = htmlSegments(html); if (segs && segs.some(x => x.t) && segs.some(x => x.rows)) { pasteSegments(segs); return; } }
   const rows = html ? htmlTableRows(html) : null;
   const tsv = text && /\t/.test(text) ? text.replace(/\r\n?/g, '\n').replace(/\n$/, '').split('\n').map(l => l.split('\t')) : null;
   const grid = rows || (tsv && tsv.length > 1 ? tsv : null);

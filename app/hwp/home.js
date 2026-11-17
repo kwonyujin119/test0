@@ -184,7 +184,7 @@ const HwpHome = (() => {
     for (const it of box.items) {
       if (hiddenForGuest(it)) continue;
       const d = byBox.get(it.id) || null;
-      const stale = !!d && !!it.modified && (d.boxBase ? it.modified > d.boxBase : (Date.parse(it.modified) || 0) > d.time); // 작업본이 기준으로 삼은 판보다 저장본이 새것
+      const stale = !!d && !!it.modified && (d.boxBase ? (HwpStore.box.canWrite() ? it.modified !== d.boxBase : it.modified > d.boxBase) : (Date.parse(it.modified) || 0) > d.time); // 작업본이 기준으로 삼은 판보다 저장본이 새것
       list.push({ kind: 'box', id: it.id, name: it.name, stale, time: stale ? (Date.parse(it.modified) || 0) : Math.max(Date.parse(it.modified) || 0, d ? d.time : 0), size: it.size, device: it.device, preview: (d && !stale && d.preview) || it.preview, box: it, draft: d, cur: !!W.doc && (it.id === W.boxId || (d && d.id === W.draftId)) });
     }
     const boxIds = new Set(box.items.map(x => x.id));
@@ -243,7 +243,7 @@ const HwpHome = (() => {
   /* ---------- 문서(문서함 · 임시본) 카드 ---------- */
   function docCard(x) {
     const W = U().W;
-    const openDraftNow = async () => { if (!(await U().confirmDiscard())) return; const r = await HwpStore.drafts.get(x.draft.id); if (!r) { toast('임시본이 이미 지워졌습니다'); loadDrafts(); return; } toast('임시본을 여는 중…', 20000); await U().openBytes(await r.blob.arrayBuffer(), { name: r.name, draftId: x.draft.id, boxId: r.boxId || null, boxBase: r.boxBase || null, dirty: true }); };
+    const openDraftNow = async () => { if (!(await U().confirmDiscard())) return; const r = await HwpStore.drafts.get(x.draft.id); if (!r) { toast('임시본이 이미 지워졌습니다'); loadDrafts(); return; } toast('임시본을 여는 중…', 20000); await U().openBytes(await r.blob.arrayBuffer(), { name: r.name, draftId: x.draft.id, boxId: r.boxId || null, boxBase: r.boxBase || (x.box && !x.stale ? x.box.modified : null), dirty: true }); };
     const openBox = async () => { if (!(await U().confirmDiscard())) return; toast('여는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); await U().openBytes(u.buffer, { name: x.box.name, boxId: x.box.id, boxBase: x.box.modified || null, savedTime: Date.parse(x.box.modified) || null }); };
     // 이 기기 작업본보다 다른 기기의 저장본이 더 새것이면, 묻지 않고 예전 작업본을 열지 않음
     const openDraft = async () => {
