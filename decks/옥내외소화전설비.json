@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-18T07:52:47.000Z",
- "modified": "2026-11-18T07:52:47.000Z",
+ "created": "2026-11-18T08:03:07.000Z",
+ "modified": "2026-11-18T08:03:07.000Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#334155",
@@ -5711,7 +5711,7 @@
      "w": 760,
      "h": 160,
      "role": "text",
-     "html": "펌프 → 개폐밸브 → 유량계 → 유량조절밸브 순서. 2교시 펌프성능시험(17장)에서 이 밸브들을 ① ② ③ 번호로 다룹니다.",
+     "html": "펌프와 토출측 개폐밸브 사이에서 갈라져 개폐밸브 → 유량계 → 유량조절밸브 순서. 2교시 펌프성능시험(17장)에서 이 밸브들을 ① ② ③ 번호로 다룹니다.",
      "style": {
       "fontSize": 28,
       "color": "#334155",
@@ -6248,7 +6248,7 @@
    "id": "hy11",
    "bg": null,
    "transition": "fade",
-   "notes": "[0:50~0:54] 소화전함 주변 기준. 숫자: 수평거리 25 m 이하, 높이 1.5 m 이하, 호스 40 mm(호스릴 25 mm).\n빨간 불 두 개: 위치표시등(함 상부)과 펌프 기동표시등(적색, 함 상부 또는 그 직근 — 펌프가 돌면 켜짐).\n관창: 직사형은 봉상, 방사형은 봉상과 분무 둘 다. 방수압을 잴 때는 반드시 직사형.\n사진(생성 이미지): 함 위 큰 등 = 위치표시등, 그 옆 작은 등 = 펌프 기동표시등 — 수강생에게 먼저 \"두 등의 차이?\"를 물어보세요. 문의 「소화전」 표시와 사용요령 그림도 짚어 주세요. 단, 사진 속 사용요령 그림은 밸브가 호스보다 먼저 그려져 있음 — 실제 순서는 5장처럼 호스를 편 뒤 밸브 개방.",
+   "notes": "[0:50~0:54] 소화전함 주변 기준. 숫자: 수평거리 25 m 이하, 높이 1.5 m 이하, 호스 40 mm(호스릴 25 mm).\n빨간 불 두 개: 위치표시등(함 상부)과 펌프 기동표시등(적색, 함 상부 또는 그 직근 — 펌프가 돌면 켜짐).\n관창: 직사형은 봉상, 방사형은 봉상과 분무 둘 다. 방수압을 잴 때는 반드시 직사형.\n사진(생성 이미지): 함 위 큰 등 = 위치표시등, 그 옆 작은 등 = 펌프 기동표시등 — 수강생에게 먼저 \"두 등의 차이?\"를 물어보세요. 문의 「소화전」 표시와 사용요령 그림도 짚어 주세요. 사진 속 사용요령 그림 순서(문 → 호스 → 밸브 → 방수)는 5장 4동작과 같습니다.",
    "elements": [
     {
      "id": "hy0279",
@@ -7308,7 +7308,7 @@
      "w": 770,
      "h": 190,
      "role": "text",
-     "html": "수원 = N(최대 2) × <b>5.2 m³</b> · 비상전원 <b>40분 이상</b> 작동 · 상시 근무 · 동결 우려 없으면 압력스위치를 함 안에 둘 수 있는 단서 미적용",
+     "html": "수원 = N(최대 2) × <b>5.2 m³</b> · 비상전원 <b>40분 이상</b> 작동 · 상시 근무 · 동결 우려 없는 물류창고 등은 「기동스위치를 함 안에 둘 수 있는」 단서 미적용",
      "style": {
       "fontSize": 28,
       "color": "#0F172A",
@@ -8430,7 +8430,7 @@
    "id": "hy15",
    "bg": null,
    "transition": "fade",
-   "notes": "[1:03~1:13] 사진(생성 이미지): 직사형 관창 끝 바로 앞(D/2 ≈ 6.5 mm)에 피토게이지 날을 물줄기와 직각으로 넣은 모습. 실제로는 날 끝의 작은 구멍이 노즐 쪽을 향해야 합니다.\n측정 방법: 호스를 결속한 상태에서 노즐 끝에서 노즐 구경의 절반(D/2) 떨어진 곳에 피토게이지를 직각으로 대고 압력을 읽습니다. 그 층에 2개 이상이면 2개를 동시에 열고(1개면 1개) 측정.\n방수량 = 2.065 × D² × √p. 옥내 D = 13 mm, 옥외 D = 19 mm.\n예 ①: p = 0.17 → 143.9 L/min(합격). 예 ②: p = 0.13 → 125.8 L/min(불합격) — 수강생에게 계산기로 직접 해 보게 하세요.\n주의: 직사형 관창, 이물질 · 공기 배출 후, 직각으로.",
+   "notes": "[1:03~1:13] 왼쪽 도식(클릭 3번): 물줄기 → 피토게이지 날 → D/2 간격과 직각 표시. 크기는 과장해서 그렸습니다(실제 D/2 ≈ 6.5 mm). 날 끝의 작은 구멍이 노즐 쪽을 향하게 댑니다.\n측정 방법: 호스를 결속한 상태에서 노즐 끝에서 노즐 구경의 절반(D/2) 떨어진 곳에 피토게이지를 직각으로 대고 압력을 읽습니다. 그 층에 2개 이상이면 2개를 동시에 열고(1개면 1개) 측정.\n방수량 = 2.065 × D² × √p. 옥내 D = 13 mm, 옥외 D = 19 mm.\n예 ①: p = 0.17 → 143.9 L/min(합격). 예 ②: p = 0.13 → 125.8 L/min(불합격) — 수강생에게 계산기로 직접 해 보게 하세요.\n주의: 직사형 관창, 이물질 · 공기 배출 후, 직각으로.",
    "elements": [
     {
      "id": "hy0374",
@@ -8686,70 +8686,377 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "image",
+     "type": "shape",
      "x": 140,
      "y": 260,
      "w": 780,
-     "h": 439,
-     "src": "assets/hyd-pitot.jpg",
-     "fit": "cover",
-     "radius": 16,
-     "shadow": true
+     "h": 440,
+     "shape": "rect",
+     "fill": "#F1F5F9",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
     },
     {
      "id": "hy0385",
-     "step": 1,
+     "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
-     "x": 160,
-     "y": 630,
-     "w": 300,
-     "h": 50,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 25,
-     "shadow": false,
-     "html": "① 직사형 관창",
+     "type": "text",
+     "x": 170,
+     "y": 274,
+     "w": 720,
+     "h": 40,
+     "role": "text",
+     "html": "측정 위치 (크기는 과장해서 그림)",
      "style": {
-      "fontSize": 26,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
      }
     },
     {
      "id": "hy0386",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 170,
+     "y": 470,
+     "w": 150,
+     "h": 56,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#94A3B8",
+     "strokeWidth": 3,
+     "radius": 10,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0387",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 320,
+     "y": 462,
+     "w": 220,
+     "h": 72,
+     "shape": "rect",
+     "fill": "#CBD5E1",
+     "stroke": "#64748B",
+     "strokeWidth": 3,
+     "radius": 10,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0388",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 540,
+     "y": 478,
+     "w": 60,
+     "h": 40,
+     "shape": "rect",
+     "fill": "#CBD5E1",
+     "stroke": "#64748B",
+     "strokeWidth": 3,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0389",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 290,
+     "y": 548,
+     "w": 340,
+     "h": 70,
+     "role": "text",
+     "html": "직사형 관창<br>(옥내 D = 13 mm)",
+     "style": {
+      "fontSize": 26,
+      "color": "#0F172A",
+      "bold": true,
+      "align": "center",
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "hy0390",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 560,
-     "y": 630,
-     "w": 340,
-     "h": 50,
+     "x": 600,
+     "y": 478,
+     "w": 300,
+     "h": 40,
+     "shape": "rect",
+     "fill": "#1D4ED8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF",
+      "opacity": 0.85
+     }
+    },
+    {
+     "id": "hy0391",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 720,
+     "y": 528,
+     "w": 190,
+     "h": 34,
+     "role": "text",
+     "html": "봉상 주수 →",
+     "style": {
+      "fontSize": 24,
+      "color": "#1D4ED8",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0392",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 579,
+     "y": 326,
+     "w": 92,
+     "h": 92,
+     "shape": "ellipse",
+     "fill": "#FFFFFF",
+     "stroke": "#0F172A",
+     "strokeWidth": 4,
+     "radius": 0,
+     "shadow": false,
+     "html": "P",
+     "style": {
+      "fontSize": 40,
+      "color": "#0F172A",
+      "bold": true,
+      "valign": "middle",
+      "padding": 6
+     }
+    },
+    {
+     "id": "hy0393",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 619,
+     "y": 418,
+     "w": 12,
+     "h": 112,
+     "shape": "rect",
+     "fill": "#334155",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 2,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0394",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 690,
+     "y": 330,
+     "w": 220,
+     "h": 80,
+     "role": "text",
+     "html": "피토게이지 날<br>구멍은 노즐 쪽",
+     "style": {
+      "fontSize": 24,
+      "color": "#0F172A",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "hy0395",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 600,
+     "y": 448,
+     "w": 20,
+     "h": 3,
      "shape": "rect",
      "fill": "#C81E1E",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 25,
+     "radius": 0,
      "shadow": false,
-     "html": "② 노즐 끝 D/2 · 직각",
+     "html": "",
      "style": {
-      "fontSize": 26,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "fontSize": 28,
+      "color": "#FFFFFF"
      }
     },
     {
-     "id": "hy0387",
+     "id": "hy0396",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 599,
+     "y": 438,
+     "w": 3,
+     "h": 24,
+     "shape": "rect",
+     "fill": "#C81E1E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0397",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 618,
+     "y": 438,
+     "w": 3,
+     "h": 24,
+     "shape": "rect",
+     "fill": "#C81E1E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0398",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 470,
+     "y": 426,
+     "w": 120,
+     "h": 40,
+     "role": "text",
+     "html": "D/2",
+     "style": {
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true,
+      "align": "right"
+     }
+    },
+    {
+     "id": "hy0399",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 631,
+     "y": 460,
+     "w": 18,
+     "h": 18,
+     "shape": "rect",
+     "fill": "none",
+     "stroke": "#C81E1E",
+     "strokeWidth": 3,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0400",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 170,
+     "y": 636,
+     "w": 730,
+     "h": 50,
+     "role": "text",
+     "html": "D/2 ≈ 6.5 mm · 날은 물줄기와 직각",
+     "style": {
+      "fontSize": 28,
+      "color": "#C81E1E",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0401",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8775,7 +9082,7 @@
      }
     },
     {
-     "id": "hy0388",
+     "id": "hy0402",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8794,7 +9101,7 @@
      }
     },
     {
-     "id": "hy0389",
+     "id": "hy0403",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8817,7 +9124,7 @@
      }
     },
     {
-     "id": "hy0390",
+     "id": "hy0404",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8836,7 +9143,7 @@
      }
     },
     {
-     "id": "hy0391",
+     "id": "hy0405",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8855,7 +9162,7 @@
      }
     },
     {
-     "id": "hy0392",
+     "id": "hy0406",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8878,7 +9185,7 @@
      }
     },
     {
-     "id": "hy0393",
+     "id": "hy0407",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8897,7 +9204,7 @@
      }
     },
     {
-     "id": "hy0394",
+     "id": "hy0408",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8916,7 +9223,7 @@
      }
     },
     {
-     "id": "hy0395",
+     "id": "hy0409",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8942,7 +9249,7 @@
      }
     },
     {
-     "id": "hy0396",
+     "id": "hy0410",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8965,7 +9272,7 @@
      }
     },
     {
-     "id": "hy0397",
+     "id": "hy0411",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8984,7 +9291,7 @@
      }
     },
     {
-     "id": "hy0398",
+     "id": "hy0412",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -9003,7 +9310,7 @@
      }
     },
     {
-     "id": "hy0399",
+     "id": "hy0413",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -9023,7 +9330,7 @@
      }
     },
     {
-     "id": "hy0400",
+     "id": "hy0414",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9047,10 +9354,10 @@
    "id": "hy16",
    "bg": null,
    "transition": "fade",
-   "notes": "[1:13~1:23] 펌프성능시험 순서(클릭할 때마다 한 단계).\n준비: 제어반에서 주 · 충압펌프 정지(감시제어반 선택스위치 정지, 동력제어반 수동), 펌프토출측 밸브 ① 폐쇄, 펌프 현황(토출량 · 양정)으로 표 작성, 유량계에 100% · 150% 표시.\n체절운전(무부하): 토출량 0 상태로 기동 → 체절압력이 정격토출압력의 140% 이하인지, 체절압력 미만에서 릴리프밸브가 작동하는지.\n정격부하운전: ② 완전 개방, ③을 서서히 열어 유량 100%일 때 정격압력 이상인지(명판 · 설계치와 비교).\n최대운전(피크부하): 유량 150%일 때 정격토출압의 65% 이상인지.\n복구: ② · ③ 폐쇄, ① 개방, 선택스위치 자동(충압펌프 자동 전환 후 주펌프 자동 전환).",
+   "notes": "[1:13~1:23] 펌프성능시험 순서(클릭할 때마다 한 단계). 위 도식: 성능시험배관은 펌프와 ① 사이에서 갈라짐 — ①을 닫고 ②를 열면 물이 소화전 쪽이 아니라 시험배관(유량계)으로 흐릅니다.\n준비: 제어반에서 주 · 충압펌프 정지(감시제어반 선택스위치 정지, 동력제어반 수동), 펌프토출측 밸브 ① 폐쇄, 펌프 현황(토출량 · 양정)으로 표 작성, 유량계에 100% · 150% 표시.\n체절운전(무부하): 토출량 0 상태로 기동 → 체절압력이 정격토출압력의 140% 이하인지, 체절압력 미만에서 릴리프밸브가 작동하는지.\n정격부하운전: ② 완전 개방, ③을 서서히 열어 유량 100%일 때 정격압력 이상인지(명판 · 설계치와 비교).\n최대운전(피크부하): 유량 150%일 때 정격토출압의 65% 이상인지.\n복구: ② · ③ 폐쇄, ① 개방, 선택스위치 자동(충압펌프 자동 전환 후 주펌프 자동 전환).",
    "elements": [
     {
-     "id": "hy0401",
+     "id": "hy0415",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9076,7 +9383,7 @@
      }
     },
     {
-     "id": "hy0402",
+     "id": "hy0416",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9096,7 +9403,7 @@
      }
     },
     {
-     "id": "hy0403",
+     "id": "hy0417",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9123,7 +9430,7 @@
      "mk": "flow0"
     },
     {
-     "id": "hy0404",
+     "id": "hy0418",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9150,7 +9457,7 @@
      "mk": "flow1"
     },
     {
-     "id": "hy0405",
+     "id": "hy0419",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9177,7 +9484,7 @@
      "mk": "flow2"
     },
     {
-     "id": "hy0406",
+     "id": "hy0420",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9204,7 +9511,7 @@
      "mk": "flow3"
     },
     {
-     "id": "hy0407",
+     "id": "hy0421",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9231,7 +9538,7 @@
      "mk": "flow4"
     },
     {
-     "id": "hy0408",
+     "id": "hy0422",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9258,7 +9565,7 @@
      "mk": "flow5"
     },
     {
-     "id": "hy0409",
+     "id": "hy0423",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9280,7 +9587,7 @@
      }
     },
     {
-     "id": "hy0410",
+     "id": "hy0424",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9298,16 +9605,16 @@
      }
     },
     {
-     "id": "hy0411",
+     "id": "hy0425",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 120,
-     "y": 290,
-     "w": 1680,
-     "h": 14,
+     "x": 230,
+     "y": 280,
+     "w": 1570,
+     "h": 12,
      "shape": "rect",
      "fill": "#1D4ED8",
      "stroke": "",
@@ -9321,200 +9628,16 @@
      }
     },
     {
-     "id": "hy0412",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 260,
-     "y": 262,
-     "w": 70,
-     "h": 70,
-     "shape": "ellipse",
-     "fill": "#FFFFFF",
-     "stroke": "#0F172A",
-     "strokeWidth": 4,
-     "radius": 0,
-     "shadow": false,
-     "html": "①",
-     "style": {
-      "fontSize": 30,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "hy0413",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 200,
-     "y": 340,
-     "w": 190,
-     "h": 34,
-     "role": "text",
-     "html": "펌프토출측",
-     "style": {
-      "fontSize": 24,
-      "color": "#475569",
-      "bold": true,
-      "align": "center"
-     }
-    },
-    {
-     "id": "hy0414",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 760,
-     "y": 262,
-     "w": 70,
-     "h": 70,
-     "shape": "ellipse",
-     "fill": "#FFFFFF",
-     "stroke": "#0F172A",
-     "strokeWidth": 4,
-     "radius": 0,
-     "shadow": false,
-     "html": "②",
-     "style": {
-      "fontSize": 30,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "hy0415",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 700,
-     "y": 340,
-     "w": 190,
-     "h": 34,
-     "role": "text",
-     "html": "개폐밸브",
-     "style": {
-      "fontSize": 24,
-      "color": "#475569",
-      "bold": true,
-      "align": "center"
-     }
-    },
-    {
-     "id": "hy0416",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1100,
-     "y": 262,
-     "w": 70,
-     "h": 70,
-     "shape": "ellipse",
-     "fill": "#EFF6FF",
-     "stroke": "#1D4ED8",
-     "strokeWidth": 4,
-     "radius": 0,
-     "shadow": false,
-     "html": "F",
-     "style": {
-      "fontSize": 30,
-      "color": "#1D4ED8",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "hy0417",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1040,
-     "y": 340,
-     "w": 190,
-     "h": 34,
-     "role": "text",
-     "html": "유량계",
-     "style": {
-      "fontSize": 24,
-      "color": "#475569",
-      "bold": true,
-      "align": "center"
-     }
-    },
-    {
-     "id": "hy0418",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1440,
-     "y": 262,
-     "w": 70,
-     "h": 70,
-     "shape": "ellipse",
-     "fill": "#FFFFFF",
-     "stroke": "#0F172A",
-     "strokeWidth": 4,
-     "radius": 0,
-     "shadow": false,
-     "html": "③",
-     "style": {
-      "fontSize": 30,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "hy0419",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1380,
-     "y": 340,
-     "w": 190,
-     "h": 34,
-     "role": "text",
-     "html": "유량조절",
-     "style": {
-      "fontSize": 24,
-      "color": "#475569",
-      "bold": true,
-      "align": "center"
-     }
-    },
-    {
-     "id": "hy0420",
+     "id": "hy0426",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 130,
-     "y": 252,
+     "y": 250,
      "w": 100,
-     "h": 90,
+     "h": 72,
      "shape": "rect",
      "fill": "#F1F5F9",
      "stroke": "#0F172A",
@@ -9531,16 +9654,299 @@
      }
     },
     {
-     "id": "hy0421",
+     "id": "hy0427",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1440,
+     "y": 256,
+     "w": 60,
+     "h": 60,
+     "shape": "ellipse",
+     "fill": "#FFFFFF",
+     "stroke": "#0F172A",
+     "strokeWidth": 4,
+     "radius": 0,
+     "shadow": false,
+     "html": "①",
+     "style": {
+      "fontSize": 28,
+      "color": "#0F172A",
+      "bold": true,
+      "valign": "middle",
+      "padding": 6
+     }
+    },
+    {
+     "id": "hy0428",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 236,
+     "w": 300,
+     "h": 36,
+     "role": "text",
+     "html": "펌프토출측 밸브",
+     "style": {
+      "fontSize": 24,
+      "color": "#0F172A",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0429",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1510,
+     "y": 300,
+     "w": 300,
+     "h": 36,
+     "role": "text",
+     "html": "→ 소화전(입상관)",
+     "style": {
+      "fontSize": 24,
+      "color": "#1D4ED8",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0430",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 380,
+     "y": 286,
+     "w": 12,
+     "h": 104,
+     "shape": "rect",
+     "fill": "#1D4ED8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0431",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 380,
+     "y": 384,
+     "w": 1010,
+     "h": 12,
+     "shape": "rect",
+     "fill": "#1D4ED8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "hy0432",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 404,
+     "y": 300,
+     "w": 320,
+     "h": 36,
+     "role": "text",
+     "html": "성능시험배관(분기)",
+     "style": {
+      "fontSize": 24,
+      "color": "#1D4ED8",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0433",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 560,
+     "y": 362,
+     "w": 56,
+     "h": 56,
+     "shape": "ellipse",
+     "fill": "#FFFFFF",
+     "stroke": "#0F172A",
+     "strokeWidth": 4,
+     "radius": 0,
+     "shadow": false,
+     "html": "②",
+     "style": {
+      "fontSize": 26,
+      "color": "#0F172A",
+      "bold": true,
+      "valign": "middle",
+      "padding": 6
+     }
+    },
+    {
+     "id": "hy0434",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 622,
+     "y": 400,
+     "w": 230,
+     "h": 36,
+     "role": "text",
+     "html": "개폐밸브",
+     "style": {
+      "fontSize": 24,
+      "color": "#0F172A",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0435",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 860,
+     "y": 362,
+     "w": 56,
+     "h": 56,
+     "shape": "ellipse",
+     "fill": "#EFF6FF",
+     "stroke": "#1D4ED8",
+     "strokeWidth": 4,
+     "radius": 0,
+     "shadow": false,
+     "html": "F",
+     "style": {
+      "fontSize": 26,
+      "color": "#1D4ED8",
+      "bold": true,
+      "valign": "middle",
+      "padding": 6
+     }
+    },
+    {
+     "id": "hy0436",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 922,
+     "y": 400,
+     "w": 230,
+     "h": 36,
+     "role": "text",
+     "html": "유량계",
+     "style": {
+      "fontSize": 24,
+      "color": "#0F172A",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0437",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1160,
+     "y": 362,
+     "w": 56,
+     "h": 56,
+     "shape": "ellipse",
+     "fill": "#FFFFFF",
+     "stroke": "#0F172A",
+     "strokeWidth": 4,
+     "radius": 0,
+     "shadow": false,
+     "html": "③",
+     "style": {
+      "fontSize": 26,
+      "color": "#0F172A",
+      "bold": true,
+      "valign": "middle",
+      "padding": 6
+     }
+    },
+    {
+     "id": "hy0438",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1222,
+     "y": 400,
+     "w": 230,
+     "h": 36,
+     "role": "text",
+     "html": "유량조절밸브",
+     "style": {
+      "fontSize": 24,
+      "color": "#0F172A",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0439",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1400,
+     "y": 372,
+     "w": 200,
+     "h": 36,
+     "role": "text",
+     "html": "→ 배수",
+     "style": {
+      "fontSize": 24,
+      "color": "#475569",
+      "bold": true
+     }
+    },
+    {
+     "id": "hy0440",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 410,
+     "y": 450,
      "w": 260,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#475569",
      "stroke": "",
@@ -9557,16 +9963,16 @@
      }
     },
     {
-     "id": "hy0422",
+     "id": "hy0441",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 400,
-     "y": 410,
+     "y": 450,
      "w": 1400,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#F1F5F9",
      "stroke": "",
@@ -9580,16 +9986,16 @@
      }
     },
     {
-     "id": "hy0423",
+     "id": "hy0442",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 430,
-     "y": 410,
+     "y": 450,
      "w": 1350,
-     "h": 96,
+     "h": 92,
      "role": "text",
      "html": "주 · 충압펌프 정지(감시반 「정지」, 동력반 「수동」) · ① 폐쇄 · 유량계에 100% · 150% 표시",
      "style": {
@@ -9600,16 +10006,16 @@
      }
     },
     {
-     "id": "hy0424",
+     "id": "hy0443",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 522,
+     "y": 556,
      "w": 260,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#C81E1E",
      "stroke": "",
@@ -9626,16 +10032,16 @@
      }
     },
     {
-     "id": "hy0425",
+     "id": "hy0444",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 400,
-     "y": 522,
+     "y": 556,
      "w": 1400,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#FEF2F2",
      "stroke": "",
@@ -9649,16 +10055,16 @@
      }
     },
     {
-     "id": "hy0426",
+     "id": "hy0445",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 430,
-     "y": 522,
+     "y": 556,
      "w": 1350,
-     "h": 96,
+     "h": 92,
      "role": "text",
      "html": "① ② ③ 닫은 채 기동 → 체절압력이 정격의 <b>140% 이하</b> · 그 미만에서 릴리프밸브 작동",
      "style": {
@@ -9669,16 +10075,16 @@
      }
     },
     {
-     "id": "hy0427",
+     "id": "hy0446",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 634,
+     "y": 662,
      "w": 260,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#1D4ED8",
      "stroke": "",
@@ -9695,16 +10101,16 @@
      }
     },
     {
-     "id": "hy0428",
+     "id": "hy0447",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 400,
-     "y": 634,
+     "y": 662,
      "w": 1400,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#EFF6FF",
      "stroke": "",
@@ -9718,16 +10124,16 @@
      }
     },
     {
-     "id": "hy0429",
+     "id": "hy0448",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 430,
-     "y": 634,
+     "y": 662,
      "w": 1350,
-     "h": 96,
+     "h": 92,
      "role": "text",
      "html": "② 완전 개방, ③ 서서히 → 유량 100%일 때 압력이 <b>정격 이상</b>",
      "style": {
@@ -9738,16 +10144,16 @@
      }
     },
     {
-     "id": "hy0430",
+     "id": "hy0449",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 746,
+     "y": 768,
      "w": 260,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#1D4ED8",
      "stroke": "",
@@ -9764,16 +10170,16 @@
      }
     },
     {
-     "id": "hy0431",
+     "id": "hy0450",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 400,
-     "y": 746,
+     "y": 768,
      "w": 1400,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#EFF6FF",
      "stroke": "",
@@ -9787,16 +10193,16 @@
      }
     },
     {
-     "id": "hy0432",
+     "id": "hy0451",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 430,
-     "y": 746,
+     "y": 768,
      "w": 1350,
-     "h": 96,
+     "h": 92,
      "role": "text",
      "html": "③ 더 개방 → 유량 150%일 때 압력이 정격의 <b>65% 이상</b>",
      "style": {
@@ -9807,16 +10213,16 @@
      }
     },
     {
-     "id": "hy0433",
+     "id": "hy0452",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 858,
+     "y": 874,
      "w": 260,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#047857",
      "stroke": "",
@@ -9833,16 +10239,16 @@
      }
     },
     {
-     "id": "hy0434",
+     "id": "hy0453",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 400,
-     "y": 858,
+     "y": 874,
      "w": 1400,
-     "h": 96,
+     "h": 92,
      "shape": "rect",
      "fill": "#ECFDF5",
      "stroke": "",
@@ -9856,16 +10262,16 @@
      }
     },
     {
-     "id": "hy0435",
+     "id": "hy0454",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 430,
-     "y": 858,
+     "y": 874,
      "w": 1350,
-     "h": 96,
+     "h": 92,
      "role": "text",
      "html": "② ③ 폐쇄 · ① 개방 · 선택스위치 「자동」(충압펌프 먼저, 주펌프 다음)",
      "style": {
@@ -9876,7 +10282,7 @@
      }
     },
     {
-     "id": "hy0436",
+     "id": "hy0455",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9903,7 +10309,7 @@
    "notes": "[1:23~1:31] 성능곡선은 세 점만 보면 됩니다. 체절(0%) 140% 이하 · 정격(100%) 100% 이상 · 최대(150%) 65% 이상.\n결과표: 「이론치」 칸은 시험 전에 펌프 명판으로 미리 적고, 「실측치」 칸을 시험하며 채웁니다(점검표에는 이론치 칸이 없지만 현장에선 판정 기준이 되므로 미리 작성).\n함께 확인: 가압송수장치 작동, 표시 · 경보, 전동기 운전전류, 불규칙한 소음 · 진동 · 발열.",
    "elements": [
     {
-     "id": "hy0437",
+     "id": "hy0456",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9929,7 +10335,7 @@
      }
     },
     {
-     "id": "hy0438",
+     "id": "hy0457",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9949,7 +10355,7 @@
      }
     },
     {
-     "id": "hy0439",
+     "id": "hy0458",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9976,7 +10382,7 @@
      "mk": "flow0"
     },
     {
-     "id": "hy0440",
+     "id": "hy0459",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10003,7 +10409,7 @@
      "mk": "flow1"
     },
     {
-     "id": "hy0441",
+     "id": "hy0460",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10030,7 +10436,7 @@
      "mk": "flow2"
     },
     {
-     "id": "hy0442",
+     "id": "hy0461",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10057,7 +10463,7 @@
      "mk": "flow3"
     },
     {
-     "id": "hy0443",
+     "id": "hy0462",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10084,7 +10490,7 @@
      "mk": "flow4"
     },
     {
-     "id": "hy0444",
+     "id": "hy0463",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10111,7 +10517,7 @@
      "mk": "flow5"
     },
     {
-     "id": "hy0445",
+     "id": "hy0464",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10133,7 +10539,7 @@
      }
     },
     {
-     "id": "hy0446",
+     "id": "hy0465",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10151,7 +10557,7 @@
      }
     },
     {
-     "id": "hy0447",
+     "id": "hy0466",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10177,7 +10583,7 @@
      ]
     },
     {
-     "id": "hy0448",
+     "id": "hy0467",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10203,7 +10609,7 @@
      }
     },
     {
-     "id": "hy0449",
+     "id": "hy0468",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10226,7 +10632,7 @@
      }
     },
     {
-     "id": "hy0450",
+     "id": "hy0469",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10245,7 +10651,7 @@
      }
     },
     {
-     "id": "hy0451",
+     "id": "hy0470",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10264,7 +10670,7 @@
      }
     },
     {
-     "id": "hy0452",
+     "id": "hy0471",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10287,7 +10693,7 @@
      }
     },
     {
-     "id": "hy0453",
+     "id": "hy0472",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10306,7 +10712,7 @@
      }
     },
     {
-     "id": "hy0454",
+     "id": "hy0473",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10325,7 +10731,7 @@
      }
     },
     {
-     "id": "hy0455",
+     "id": "hy0474",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10348,7 +10754,7 @@
      }
     },
     {
-     "id": "hy0456",
+     "id": "hy0475",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10367,7 +10773,7 @@
      }
     },
     {
-     "id": "hy0457",
+     "id": "hy0476",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10386,7 +10792,7 @@
      }
     },
     {
-     "id": "hy0458",
+     "id": "hy0477",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10404,7 +10810,7 @@
      }
     },
     {
-     "id": "hy0459",
+     "id": "hy0478",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10431,7 +10837,7 @@
    "notes": "[1:31~1:38] 평소 점검 체크리스트 4가지 — 동력제어반 자동, 감시제어반 자동, 표시등 소등(펌프 압력스위치 · 저수위 감시), 소화전함 앞 장애물 · 표지 · 호스.\n강조: 선택스위치가 정지에 있으면 화재 때 밸브를 열어도 펌프가 돌지 않습니다. 저수위 감시 표시등이 켜져 있으면 물이 없다는 뜻입니다.\n시험 주의 6가지는 오른쪽 — 특히 수격(급개폐 금지)과 복명복창.\n사진 두 장(생성 이미지): 함 앞에 쌓인 물건 → 바닥 표시선 안을 비워 둔 모습. 「정지」 위치 하나 · 상자 하나 때문에 불이 나도 물이 안 나올 수 있다 — 점검의 1순위.",
    "elements": [
     {
-     "id": "hy0460",
+     "id": "hy0479",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10457,7 +10863,7 @@
      }
     },
     {
-     "id": "hy0461",
+     "id": "hy0480",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10477,7 +10883,7 @@
      }
     },
     {
-     "id": "hy0462",
+     "id": "hy0481",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10504,7 +10910,7 @@
      "mk": "flow0"
     },
     {
-     "id": "hy0463",
+     "id": "hy0482",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10531,7 +10937,7 @@
      "mk": "flow1"
     },
     {
-     "id": "hy0464",
+     "id": "hy0483",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10558,7 +10964,7 @@
      "mk": "flow2"
     },
     {
-     "id": "hy0465",
+     "id": "hy0484",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10585,7 +10991,7 @@
      "mk": "flow3"
     },
     {
-     "id": "hy0466",
+     "id": "hy0485",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10612,7 +11018,7 @@
      "mk": "flow4"
     },
     {
-     "id": "hy0467",
+     "id": "hy0486",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10639,7 +11045,7 @@
      "mk": "flow5"
     },
     {
-     "id": "hy0468",
+     "id": "hy0487",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10661,7 +11067,7 @@
      }
     },
     {
-     "id": "hy0469",
+     "id": "hy0488",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10679,7 +11085,7 @@
      }
     },
     {
-     "id": "hy0470",
+     "id": "hy0489",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10705,7 +11111,7 @@
      }
     },
     {
-     "id": "hy0471",
+     "id": "hy0490",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10725,7 +11131,7 @@
      }
     },
     {
-     "id": "hy0472",
+     "id": "hy0491",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10745,7 +11151,7 @@
      }
     },
     {
-     "id": "hy0473",
+     "id": "hy0492",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10771,7 +11177,7 @@
      }
     },
     {
-     "id": "hy0474",
+     "id": "hy0493",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10791,7 +11197,7 @@
      }
     },
     {
-     "id": "hy0475",
+     "id": "hy0494",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10811,7 +11217,7 @@
      }
     },
     {
-     "id": "hy0476",
+     "id": "hy0495",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10837,7 +11243,7 @@
      }
     },
     {
-     "id": "hy0477",
+     "id": "hy0496",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10857,7 +11263,7 @@
      }
     },
     {
-     "id": "hy0478",
+     "id": "hy0497",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10868,7 +11274,7 @@
      "w": 660,
      "h": 80,
      "role": "text",
-     "html": "펌프 압력스위치 · 저수위 감시 표시등 <b>소등</b> — 켜져 있으면 고장 · 물 없음",
+     "html": "펌프 압력스위치 · 저수위 감시 표시등 <b>소등</b> — 켜져 있으면 압력 저하 · 물 부족, 원인 확인",
      "style": {
       "fontSize": 24,
       "color": "#0F172A",
@@ -10877,7 +11283,7 @@
      }
     },
     {
-     "id": "hy0479",
+     "id": "hy0498",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10903,7 +11309,7 @@
      }
     },
     {
-     "id": "hy0480",
+     "id": "hy0499",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10923,7 +11329,7 @@
      }
     },
     {
-     "id": "hy0481",
+     "id": "hy0500",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10943,7 +11349,7 @@
      }
     },
     {
-     "id": "hy0482",
+     "id": "hy0501",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10966,7 +11372,7 @@
      }
     },
     {
-     "id": "hy0483",
+     "id": "hy0502",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10985,7 +11391,7 @@
      }
     },
     {
-     "id": "hy0484",
+     "id": "hy0503",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11004,7 +11410,7 @@
      }
     },
     {
-     "id": "hy0485",
+     "id": "hy0504",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -11020,7 +11426,7 @@
      "shadow": true
     },
     {
-     "id": "hy0486",
+     "id": "hy0505",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -11036,7 +11442,7 @@
      "shadow": true
     },
     {
-     "id": "hy0487",
+     "id": "hy0506",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -11062,7 +11468,7 @@
      }
     },
     {
-     "id": "hy0488",
+     "id": "hy0507",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -11088,7 +11494,7 @@
      }
     },
     {
-     "id": "hy0489",
+     "id": "hy0508",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11115,7 +11521,7 @@
    "notes": "[1:38~1:46] 실습. 2인 1조. 발신기 누름 → 함 개방 → 화점으로 이동 → (A가 \"밸브 개방!\") B가 밸브 개방 → 방수 → \"밸브 폐쇄!\" → 동력제어반에서 펌프 정지 → 음지에서 호스 건조 → 정리.\n유의: 호스 꼬임 금지, 밸브는 시계 반대 방향(ON-OFF식은 스위치), 관창 선단과 결합부를 잡고 몸에 밀착, 폐쇄 구령도 크게.\n실습 장소가 없으면 이 장으로 동작만 따라 하게 하세요.",
    "elements": [
     {
-     "id": "hy0490",
+     "id": "hy0509",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11141,7 +11547,7 @@
      }
     },
     {
-     "id": "hy0491",
+     "id": "hy0510",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11161,7 +11567,7 @@
      }
     },
     {
-     "id": "hy0492",
+     "id": "hy0511",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11188,7 +11594,7 @@
      "mk": "flow0"
     },
     {
-     "id": "hy0493",
+     "id": "hy0512",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11215,7 +11621,7 @@
      "mk": "flow1"
     },
     {
-     "id": "hy0494",
+     "id": "hy0513",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11242,7 +11648,7 @@
      "mk": "flow2"
     },
     {
-     "id": "hy0495",
+     "id": "hy0514",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11269,7 +11675,7 @@
      "mk": "flow3"
     },
     {
-     "id": "hy0496",
+     "id": "hy0515",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11296,7 +11702,7 @@
      "mk": "flow4"
     },
     {
-     "id": "hy0497",
+     "id": "hy0516",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11323,7 +11729,7 @@
      "mk": "flow5"
     },
     {
-     "id": "hy0498",
+     "id": "hy0517",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11345,7 +11751,7 @@
      }
     },
     {
-     "id": "hy0499",
+     "id": "hy0518",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11363,7 +11769,7 @@
      }
     },
     {
-     "id": "hy0500",
+     "id": "hy0519",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11386,7 +11792,7 @@
      }
     },
     {
-     "id": "hy0501",
+     "id": "hy0520",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11412,7 +11818,7 @@
      }
     },
     {
-     "id": "hy0502",
+     "id": "hy0521",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11433,7 +11839,7 @@
      }
     },
     {
-     "id": "hy0503",
+     "id": "hy0522",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11456,7 +11862,7 @@
      }
     },
     {
-     "id": "hy0504",
+     "id": "hy0523",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11482,7 +11888,7 @@
      }
     },
     {
-     "id": "hy0505",
+     "id": "hy0524",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11503,7 +11909,7 @@
      }
     },
     {
-     "id": "hy0506",
+     "id": "hy0525",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11526,7 +11932,7 @@
      }
     },
     {
-     "id": "hy0507",
+     "id": "hy0526",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11552,7 +11958,7 @@
      }
     },
     {
-     "id": "hy0508",
+     "id": "hy0527",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11573,7 +11979,7 @@
      }
     },
     {
-     "id": "hy0509",
+     "id": "hy0528",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11596,7 +12002,7 @@
      }
     },
     {
-     "id": "hy0510",
+     "id": "hy0529",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11622,7 +12028,7 @@
      }
     },
     {
-     "id": "hy0511",
+     "id": "hy0530",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11643,7 +12049,7 @@
      }
     },
     {
-     "id": "hy0512",
+     "id": "hy0531",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11666,7 +12072,7 @@
      }
     },
     {
-     "id": "hy0513",
+     "id": "hy0532",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11692,7 +12098,7 @@
      }
     },
     {
-     "id": "hy0514",
+     "id": "hy0533",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11713,7 +12119,7 @@
      }
     },
     {
-     "id": "hy0515",
+     "id": "hy0534",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11736,7 +12142,7 @@
      }
     },
     {
-     "id": "hy0516",
+     "id": "hy0535",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11762,7 +12168,7 @@
      }
     },
     {
-     "id": "hy0517",
+     "id": "hy0536",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11783,7 +12189,7 @@
      }
     },
     {
-     "id": "hy0518",
+     "id": "hy0537",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11806,7 +12212,7 @@
      }
     },
     {
-     "id": "hy0519",
+     "id": "hy0538",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11832,7 +12238,7 @@
      }
     },
     {
-     "id": "hy0520",
+     "id": "hy0539",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11853,7 +12259,7 @@
      }
     },
     {
-     "id": "hy0521",
+     "id": "hy0540",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11876,7 +12282,7 @@
      }
     },
     {
-     "id": "hy0522",
+     "id": "hy0541",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11902,7 +12308,7 @@
      }
     },
     {
-     "id": "hy0523",
+     "id": "hy0542",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11923,7 +12329,7 @@
      }
     },
     {
-     "id": "hy0524",
+     "id": "hy0543",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11946,7 +12352,7 @@
      }
     },
     {
-     "id": "hy0525",
+     "id": "hy0544",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11972,7 +12378,7 @@
      }
     },
     {
-     "id": "hy0526",
+     "id": "hy0545",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11993,7 +12399,7 @@
      }
     },
     {
-     "id": "hy0527",
+     "id": "hy0546",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12009,7 +12415,7 @@
      "shadow": true
     },
     {
-     "id": "hy0528",
+     "id": "hy0547",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12032,7 +12438,7 @@
      }
     },
     {
-     "id": "hy0529",
+     "id": "hy0548",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12051,7 +12457,7 @@
      }
     },
     {
-     "id": "hy0530",
+     "id": "hy0549",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12070,7 +12476,7 @@
      }
     },
     {
-     "id": "hy0531",
+     "id": "hy0550",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -12089,7 +12495,7 @@
      }
     },
     {
-     "id": "hy0532",
+     "id": "hy0551",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12116,7 +12522,7 @@
    "notes": "[1:46~1:53 — 시간이 부족하면 표만 보고 1분 요약] 옥외소화전: 건물 밖에서 소화하고 인접 건물로 번지는 것을 막는 설비. 350 L/min, 0.25~0.7 MPa(2개 동시, 1개면 1개), 수원 N(최대 2) × 7 m³, 호스접결구까지 수평거리 40 m 이하, 호스 65 mm(토출구 안지름 63.5 mm).\n소화전함은 소화전에서 5 m 이내: 10개 이하는 소화전마다, 11~30개는 11개 이상 분산, 31개 이상은 3개마다 1개 이상.\n점검은 옥내와 같고 기준값만 다름 — 방수량 계산 때 D = 19 mm.\n사진(생성 이미지): 지상식 옥외소화전과 5 m 이내의 옥외소화전함 — 함 위 적색 표시등, 문의 「옥외소화전」 표시까지 표의 기준과 일치.",
    "elements": [
     {
-     "id": "hy0533",
+     "id": "hy0552",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12142,7 +12548,7 @@
      }
     },
     {
-     "id": "hy0534",
+     "id": "hy0553",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12162,7 +12568,7 @@
      }
     },
     {
-     "id": "hy0535",
+     "id": "hy0554",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12184,7 +12590,7 @@
      }
     },
     {
-     "id": "hy0536",
+     "id": "hy0555",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12202,7 +12608,7 @@
      }
     },
     {
-     "id": "hy0537",
+     "id": "hy0556",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12228,7 +12634,7 @@
      }
     },
     {
-     "id": "hy0538",
+     "id": "hy0557",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12254,7 +12660,7 @@
      }
     },
     {
-     "id": "hy0539",
+     "id": "hy0558",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12280,7 +12686,7 @@
      }
     },
     {
-     "id": "hy0540",
+     "id": "hy0559",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12306,7 +12712,7 @@
      }
     },
     {
-     "id": "hy0541",
+     "id": "hy0560",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12332,7 +12738,7 @@
      }
     },
     {
-     "id": "hy0542",
+     "id": "hy0561",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12358,7 +12764,7 @@
      }
     },
     {
-     "id": "hy0543",
+     "id": "hy0562",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12384,7 +12790,7 @@
      }
     },
     {
-     "id": "hy0544",
+     "id": "hy0563",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12410,7 +12816,7 @@
      }
     },
     {
-     "id": "hy0545",
+     "id": "hy0564",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12436,7 +12842,7 @@
      }
     },
     {
-     "id": "hy0546",
+     "id": "hy0565",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12462,7 +12868,7 @@
      }
     },
     {
-     "id": "hy0547",
+     "id": "hy0566",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12488,7 +12894,7 @@
      }
     },
     {
-     "id": "hy0548",
+     "id": "hy0567",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12514,7 +12920,7 @@
      }
     },
     {
-     "id": "hy0549",
+     "id": "hy0568",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12540,7 +12946,7 @@
      }
     },
     {
-     "id": "hy0550",
+     "id": "hy0569",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12566,7 +12972,7 @@
      }
     },
     {
-     "id": "hy0551",
+     "id": "hy0570",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12592,7 +12998,7 @@
      }
     },
     {
-     "id": "hy0552",
+     "id": "hy0571",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12618,7 +13024,7 @@
      }
     },
     {
-     "id": "hy0553",
+     "id": "hy0572",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12644,7 +13050,7 @@
      }
     },
     {
-     "id": "hy0554",
+     "id": "hy0573",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12670,7 +13076,7 @@
      }
     },
     {
-     "id": "hy0555",
+     "id": "hy0574",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12696,7 +13102,7 @@
      }
     },
     {
-     "id": "hy0556",
+     "id": "hy0575",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12722,7 +13128,7 @@
      }
     },
     {
-     "id": "hy0557",
+     "id": "hy0576",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12748,7 +13154,7 @@
      }
     },
     {
-     "id": "hy0558",
+     "id": "hy0577",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12764,7 +13170,7 @@
      "shadow": true
     },
     {
-     "id": "hy0559",
+     "id": "hy0578",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12790,7 +13196,7 @@
      }
     },
     {
-     "id": "hy0560",
+     "id": "hy0579",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12813,7 +13219,7 @@
      }
     },
     {
-     "id": "hy0561",
+     "id": "hy0580",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12832,7 +13238,7 @@
      }
     },
     {
-     "id": "hy0562",
+     "id": "hy0581",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12851,7 +13257,7 @@
      }
     },
     {
-     "id": "hy0563",
+     "id": "hy0582",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12878,7 +13284,7 @@
    "notes": "[1:53~1:57] 2교시 확인 퀴즈. Q1 13 mm(옥외 19) · Q2 140% 이하 · Q3 65% 이상 · Q4 2개 이상이면 2개 → 14 m³.",
    "elements": [
     {
-     "id": "hy0564",
+     "id": "hy0583",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12904,7 +13310,7 @@
      }
     },
     {
-     "id": "hy0565",
+     "id": "hy0584",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12924,7 +13330,7 @@
      }
     },
     {
-     "id": "hy0566",
+     "id": "hy0585",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12946,7 +13352,7 @@
      }
     },
     {
-     "id": "hy0567",
+     "id": "hy0586",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12972,7 +13378,7 @@
      }
     },
     {
-     "id": "hy0568",
+     "id": "hy0587",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12998,7 +13404,7 @@
      }
     },
     {
-     "id": "hy0569",
+     "id": "hy0588",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13018,7 +13424,7 @@
      }
     },
     {
-     "id": "hy0570",
+     "id": "hy0589",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13044,7 +13450,7 @@
      }
     },
     {
-     "id": "hy0571",
+     "id": "hy0590",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13070,7 +13476,7 @@
      }
     },
     {
-     "id": "hy0572",
+     "id": "hy0591",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13090,7 +13496,7 @@
      }
     },
     {
-     "id": "hy0573",
+     "id": "hy0592",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13116,7 +13522,7 @@
      }
     },
     {
-     "id": "hy0574",
+     "id": "hy0593",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13142,7 +13548,7 @@
      }
     },
     {
-     "id": "hy0575",
+     "id": "hy0594",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13162,7 +13568,7 @@
      }
     },
     {
-     "id": "hy0576",
+     "id": "hy0595",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13188,7 +13594,7 @@
      }
     },
     {
-     "id": "hy0577",
+     "id": "hy0596",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13214,7 +13620,7 @@
      }
     },
     {
-     "id": "hy0578",
+     "id": "hy0597",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13234,7 +13640,7 @@
      }
     },
     {
-     "id": "hy0579",
+     "id": "hy0598",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -13271,7 +13677,7 @@
    "notes": "[1:57~2:00] 정리. 다섯 줄만 기억하면 됩니다. 마지막으로 「점검 1순위는 선택스위치 자동, 함 앞 장애물 없음」을 반복하고 질문을 받습니다.\n복습 팁: 4장의 표를 빈칸으로 만들어 나눠 주고 1분 안에 채우게 하기.",
    "elements": [
     {
-     "id": "hy0580",
+     "id": "hy0599",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13294,7 +13700,7 @@
      }
     },
     {
-     "id": "hy0581",
+     "id": "hy0600",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13320,7 +13726,7 @@
      }
     },
     {
-     "id": "hy0582",
+     "id": "hy0601",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13340,7 +13746,7 @@
      }
     },
     {
-     "id": "hy0583",
+     "id": "hy0602",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13360,7 +13766,7 @@
      }
     },
     {
-     "id": "hy0584",
+     "id": "hy0603",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13386,7 +13792,7 @@
      }
     },
     {
-     "id": "hy0585",
+     "id": "hy0604",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13407,7 +13813,7 @@
      }
     },
     {
-     "id": "hy0586",
+     "id": "hy0605",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13433,7 +13839,7 @@
      }
     },
     {
-     "id": "hy0587",
+     "id": "hy0606",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13454,7 +13860,7 @@
      }
     },
     {
-     "id": "hy0588",
+     "id": "hy0607",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13480,7 +13886,7 @@
      }
     },
     {
-     "id": "hy0589",
+     "id": "hy0608",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13501,7 +13907,7 @@
      }
     },
     {
-     "id": "hy0590",
+     "id": "hy0609",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -13527,7 +13933,7 @@
      }
     },
     {
-     "id": "hy0591",
+     "id": "hy0610",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -13548,7 +13954,7 @@
      }
     },
     {
-     "id": "hy0592",
+     "id": "hy0611",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -13574,7 +13980,7 @@
      }
     },
     {
-     "id": "hy0593",
+     "id": "hy0612",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -13595,7 +14001,7 @@
      }
     },
     {
-     "id": "hy0594",
+     "id": "hy0613",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
