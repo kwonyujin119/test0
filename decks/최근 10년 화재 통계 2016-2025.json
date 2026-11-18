@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-17T09:10:00.000Z",
- "modified": "2026-11-18T06:03:29.000Z",
+ "modified": "2026-11-18T06:16:29.529Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#374151",
@@ -4371,7 +4371,7 @@
      "axis": false,
      "unit": "",
      "style": {
-      "fontSize": 24,
+      "fontSize": 40,
       "color": "#111827"
      },
      "pointColors": [
@@ -4848,7 +4848,7 @@
      "axis": false,
      "unit": "",
      "style": {
-      "fontSize": 24,
+      "fontSize": 40,
       "color": "#111827"
      },
      "colors": [
