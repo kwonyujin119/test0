@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-18T06:58:13.000Z",
- "modified": "2026-11-18T07:01:30.772Z",
+ "modified": "2026-11-18T07:02:16.589Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#334155",
@@ -153,24 +153,6 @@
      }
     },
     {
-     "id": "hy0007",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 550,
-     "w": 860,
-     "h": 46,
-     "role": "text",
-     "html": "구조 · 기준 · 점검 · 실습 — 숫자 8개와 밸브 3개로 끝내기",
-     "style": {
-      "fontSize": 28,
-      "color": "#475569"
-     }
-    },
-    {
      "id": "hy0008",
      "step": 0,
      "anim": "fade",
@@ -224,7 +206,7 @@
      "w": 820,
      "h": 70,
      "role": "text",
-     "html": "소방기술사 김재훈",
+     "html": "<span style=\"font-size: 40px\">소방기술사</span> 김재훈",
      "style": {
       "fontSize": 52,
       "color": "#0F172A",
@@ -283,7 +265,7 @@
      "w": 320,
      "h": 110,
      "role": "text",
-     "html": "인천소방학교",
+     "html": "<span style=\"font-size: 60px\">인천소방학교</span>",
      "style": {
       "fontSize": 40,
       "color": "#0F172A",
@@ -321,8 +303,8 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 612,
-     "y": 878,
+     "x": 602,
+     "y": 868,
      "w": 380,
      "h": 92,
      "src": "assets/kfsi-logo-h.png",
