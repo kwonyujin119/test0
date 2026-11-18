@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-18T08:06:29.000Z",
- "modified": "2026-11-18T08:06:29.000Z",
+ "modified": "2026-11-18T08:14:59.315Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#334155",
@@ -148,7 +148,7 @@
      "w": 880,
      "h": 44,
      "role": "text",
-     "html": "소방안전관리자 2급 강습교육 · 소화설비",
+     "html": "소방안전관리자 2급 강습교육",
      "style": {
       "fontSize": 28,
       "color": "#1D4ED8",
@@ -194,84 +194,6 @@
       "fontSize": 36,
       "color": "#334155",
       "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "hy0009",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 646,
-     "w": 170,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#E2E8F0",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "⏱ 2시간",
-     "style": {
-      "fontSize": 24,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
-     }
-    },
-    {
-     "id": "hy0010",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 304,
-     "y": 646,
-     "w": 230,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#C81E1E",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "1교시 구조 · 기준",
-     "style": {
-      "fontSize": 24,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
-     }
-    },
-    {
-     "id": "hy0011",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 548,
-     "y": 646,
-     "w": 230,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "2교시 점검 · 실습",
-     "style": {
-      "fontSize": 24,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
      }
     },
     {
@@ -468,29 +390,6 @@
      "shadow": false,
      "html": "",
      "style": {}
-    },
-    {
-     "id": "hy0021",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 640,
-     "y": 0,
-     "w": 8,
-     "h": 1080,
-     "shape": "rect",
-     "fill": "#C81E1E",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
     },
     {
      "id": "hy0022",
@@ -6066,9 +5965,9 @@
      "opacity": 1,
      "type": "text",
      "x": 170,
-     "y": 560,
+     "y": 540,
      "w": 200,
-     "h": 60,
+     "h": 118,
      "role": "text",
      "html": "100 L<br>이상",
      "style": {
