@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-19T12:47:01.000Z",
- "modified": "2026-11-19T13:16:06.465Z",
+ "created": "2026-11-19T23:04:56.000Z",
+ "modified": "2026-11-19T23:04:56.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -113,16 +113,16 @@
      }
     },
     {
-     "id": "ed0006",
+     "id": "ed0005",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
-     "x": 120,
-     "y": 120,
-     "w": 96,
-     "h": 8,
+     "x": 1002,
+     "y": 0,
+     "w": 8,
+     "h": 1080,
      "shape": "rect",
      "fill": "#B3261E",
      "stroke": "",
@@ -425,12 +425,12 @@
      "w": 440,
      "h": 40,
      "role": "text",
-     "html": "PROFILE",
+     "html": "강사 소개",
      "style": {
-      "fontSize": 24,
+      "fontSize": 26,
       "color": "#B9BEC5",
       "bold": true,
-      "letterSpacing": 8
+      "letterSpacing": 2
      }
     },
     {
@@ -842,7 +842,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:02 – 0:03] 오늘의 지도. 교재 제1절(개념 · 원칙) → 제2절(실제: 계획 → 준비 · 실시 → 평가 · 기록).\n위쪽 네 칸 막대가 지금 어느 단계인지 알려 줍니다. 마지막 띠: 이 강의 자체가 원칙(한 번에 하나씩, 실습, 경험, 관련성 …)을 따르도록 짰다는 점을 예고 — 수강생이 스스로 찾게 하면 「동기부여」와 「경험의 원칙」이 동시에 작동.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:02 – 0:03] 오늘의 지도. 교재 제1절(개념 · 원칙) → 제2절(실제: 계획 → 준비 · 실시 → 평가 · 기록).\n위쪽 네 칸 막대가 지금 어느 단계인지 알려 줍니다. 마지막 띠: 이 강의 자체가 원칙(한 번에 하나씩, 실습, 경험, 관련성 …)을 따르도록 짰다는 점을 예고 — 수강생이 스스로 찾게 하면 「동기부여」와 「경험의 원칙」이 동시에 작동.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0043",
@@ -885,7 +885,7 @@
      }
     },
     {
-     "id": "ed0810",
+     "id": "ed0824",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1040,7 +1040,7 @@
      }
     },
     {
-     "id": "ed0811",
+     "id": "ed0825",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1195,7 +1195,7 @@
      }
     },
     {
-     "id": "ed0812",
+     "id": "ed0826",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1350,7 +1350,7 @@
      }
     },
     {
-     "id": "ed0813",
+     "id": "ed0827",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1519,7 +1519,7 @@
      "shadow": false,
      "html": "강의 35분: 개념, 원칙 → 계획 → 준비, 실시 → 평가, 기록",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
@@ -1545,7 +1545,7 @@
      "shadow": false,
      "html": "문제 15분",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
@@ -1571,7 +1571,7 @@
      "shadow": false,
      "html": "정리",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
@@ -1587,7 +1587,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:03–0:06] 정의(교재): 소방교육 및 훈련은 「화재를 비롯한 사고와 재난으로부터 인간의 안전을 지키기 위해 안전의식을 고취하고, 이를 실천하여 위험에 적절히 대응할 수 있는 행동능력을 기르기 위해 의도적이고 계획적으로 실시하는 교육」.\n실시근거: 화재예방법 제37조 및 같은 법 시행규칙 제36조.\n질문: \"작년 우리 건물 소방훈련, 끝나고 「할 수 있게 된 것」이 있었나요?\"\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:03–0:06] 정의(교재): 소방교육 및 훈련은 「화재를 비롯한 사고와 재난으로부터 인간의 안전을 지키기 위해 안전의식을 고취하고, 이를 실천하여 위험에 적절히 대응할 수 있는 행동능력을 기르기 위해 의도적이고 계획적으로 실시하는 교육」.\n실시근거: 화재예방법 제37조 및 같은 법 시행규칙 제36조.\n질문: \"작년 우리 건물 소방훈련, 끝나고 「할 수 있게 된 것」이 있었나요?\"\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0072",
@@ -1631,7 +1631,7 @@
      }
     },
     {
-     "id": "ed0814",
+     "id": "ed0828",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1736,7 +1736,7 @@
      }
     },
     {
-     "id": "ed0815",
+     "id": "ed0829",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1841,7 +1841,7 @@
      }
     },
     {
-     "id": "ed0816",
+     "id": "ed0830",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1946,7 +1946,7 @@
      }
     },
     {
-     "id": "ed0817",
+     "id": "ed0831",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2090,7 +2090,7 @@
      }
     },
     {
-     "id": "ed0818",
+     "id": "ed0832",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -2161,10 +2161,10 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:06–0:09] 실시원칙 7가지(교재 학습정리): ① 학습자 중심 ② 동기부여 ③ 목적 ④ 현실 ⑤ 실습 ⑥ 경험 ⑦ 관련성.\n외우는 법: 「학 · 동 · 목 · 현 · 실 · 경 · 관」.\n교재 학습평가 Q2: 실시원칙이 아닌 것 = 「교수자 중심의 원칙」.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:06–0:09] 실시원칙 7가지(교재 학습정리): ① 학습자 중심 ② 동기부여 ③ 목적 ④ 현실 ⑤ 실습 ⑥ 경험 ⑦ 관련성.\n외우는 법: 「학 · 동 · 목 · 현 · 실 · 경 · 관」.\n교재 학습평가 Q2: 실시원칙이 아닌 것 = 「교수자 중심의 원칙」.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
-     "id": "ed0094",
+     "id": "ed0809",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2186,7 +2186,7 @@
      }
     },
     {
-     "id": "ed0095",
+     "id": "ed0810",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2197,7 +2197,7 @@
      "w": 1680,
      "h": 44,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;학, 동, 목, 현, 실, 경, 관",
+     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;학·동·목·현·실·경·관",
      "style": {
       "fontSize": 28,
       "color": "#15181C",
@@ -2205,15 +2205,88 @@
      }
     },
     {
-     "id": "ed0819",
-     "step": 1,
+     "id": "ed0811",
+     "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
+     "type": "table",
      "x": 120,
      "y": 270,
-     "w": 400,
+     "w": 1180,
+     "h": 600,
+     "rows": [
+      [
+       "",
+       "원칙",
+       "핵심"
+      ],
+      [
+       "1",
+       "학습자 중심의 원칙",
+       "한 번에 하나·쉬운 것부터·감동"
+      ],
+      [
+       "2",
+       "동기부여의 원칙",
+       "중요성·시기적절·보상·재미 등 10"
+      ],
+      [
+       "3",
+       "목적의 원칙",
+       "어떤 기술을 어느 정도까지"
+      ],
+      [
+       "4",
+       "현실의 원칙",
+       "학습자 능력을 고려"
+      ],
+      [
+       "5",
+       "실습의 원칙",
+       "해 보면서·정확하게"
+      ],
+      [
+       "6",
+       "경험의 원칙",
+       "겪었던 사례로 현실감"
+      ],
+      [
+       "7",
+       "관련성의 원칙",
+       "실무 접목·현장성"
+      ]
+     ],
+     "header": true,
+     "band": false,
+     "firstCol": false,
+     "lines": "h",
+     "headFill": "#F1EFEA",
+     "headColor": "#15181C",
+     "lineColor": "#D6D3CD",
+     "radius": 0,
+     "cols": [
+      0.08,
+      0.37,
+      0.55
+     ],
+     "style": {
+      "fontSize": 30,
+      "color": "#2A2F35",
+      "align": "left",
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "ed0812",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1380,
+     "y": 270,
+     "w": 420,
      "h": 2,
      "shape": "rect",
      "fill": "#15181C",
@@ -2222,802 +2295,54 @@
      "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0096",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 270,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      }
     },
     {
-     "id": "ed0097",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 148,
-     "y": 296,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "1",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0098",
+     "id": "ed0813",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 148,
-     "y": 378,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "학습자 중심의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0099",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 148,
-     "y": 440,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "한 번에 하나, 쉬운 것부터, 감동",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0820",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 545,
-     "y": 270,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0100",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 545,
-     "y": 270,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0101",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 573,
-     "y": 296,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "2",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0102",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 573,
-     "y": 378,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "동기부여의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0103",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 573,
-     "y": 440,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "중요성, 시기적절, 보상, 재미 등 10",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0821",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 970,
-     "y": 270,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0104",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 970,
-     "y": 270,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0105",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 998,
-     "y": 296,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "3",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0106",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 998,
-     "y": 378,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "목적의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0107",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 998,
-     "y": 440,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "어떤 기술을 어느 정도까지",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0822",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1395,
-     "y": 270,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0108",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1395,
-     "y": 270,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0109",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1423,
-     "y": 296,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "4",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0110",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1423,
-     "y": 378,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "현실의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0111",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1423,
-     "y": 440,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "학습자 능력을 고려",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0823",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 580,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0112",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 580,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0113",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 148,
-     "y": 606,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "5",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0114",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 148,
-     "y": 688,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "실습의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0115",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 148,
-     "y": 750,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "해 보면서·정확하게",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0824",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 545,
-     "y": 580,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0116",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 545,
-     "y": 580,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0117",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 573,
-     "y": 606,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "6",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0118",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 573,
-     "y": 688,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "경험의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0119",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 573,
-     "y": 750,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "겪었던 사례로 현실감",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0825",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 970,
-     "y": 580,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0120",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 970,
-     "y": 580,
-     "w": 400,
-     "h": 280,
-     "shape": "rect",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0121",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 998,
-     "y": 606,
-     "w": 64,
-     "h": 64,
-     "shape": "ellipse",
-     "fill": "",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "7",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "padding": 6
-     }
-    },
-    {
-     "id": "ed0122",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 998,
-     "y": 688,
-     "w": 350,
-     "h": 56,
-     "role": "text",
-     "html": "관련성의 원칙",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0123",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 998,
-     "y": 750,
-     "w": 350,
-     "h": 100,
-     "role": "text",
-     "html": "실무 접목·현장성",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0124",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1395,
-     "y": 580,
-     "w": 405,
-     "h": 280,
-     "shape": "rect",
-     "fill": "#15181C",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0125",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1420,
-     "y": 600,
-     "w": 360,
-     "h": 40,
+     "x": 1380,
+     "y": 290,
+     "w": 420,
+     "h": 44,
      "role": "text",
      "html": "외우는 법",
      "style": {
-      "fontSize": 26,
-      "color": "#B9BEC5",
+      "fontSize": 28,
+      "color": "#5B6168",
       "bold": true
      }
     },
     {
-     "id": "ed0126",
-     "step": 3,
+     "id": "ed0814",
+     "step": 1,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 1420,
-     "y": 650,
-     "w": 360,
-     "h": 200,
+     "x": 1380,
+     "y": 340,
+     "w": 420,
+     "h": 260,
      "role": "text",
-     "html": "학, 동, 목, 현<br>실, 경, 관",
+     "html": "학 동 목 현<br>실 경 관",
      "style": {
-      "fontSize": 44,
-      "color": "#FFFFFF",
+      "fontSize": 72,
+      "color": "#15181C",
       "bold": true,
-      "lineHeight": 1.5
+      "lineHeight": 1.3,
+      "font": "blackhan"
      }
     },
     {
-     "id": "ed0127",
-     "step": 4,
+     "id": "ed0815",
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -3027,15 +2352,14 @@
      "w": 1680,
      "h": 60,
      "role": "text",
-     "html": "시험 함정: <b>교수자 중심의 원칙</b>은 없다: 중심은 언제나 <b>학습자</b>",
+     "html": "<b style=\"color:#B3261E\">시험 함정</b>&nbsp;&nbsp;&nbsp;교수자 중심의 원칙은 없습니다. 중심은 언제나 <b>학습자</b>",
      "style": {
       "fontSize": 30,
-      "color": "#B3261E",
-      "bold": true
+      "color": "#15181C"
      }
     },
     {
-     "id": "ed0128",
+     "id": "ed0816",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3046,7 +2370,7 @@
      "w": 1680,
      "h": 34,
      "role": "text",
-     "html": "교재 제8편 제1장 제1절 02·학습정리",
+     "html": "교재 제8편 제1장 제1절 02, 학습정리",
      "style": {
       "fontSize": 24,
       "color": "#5B6168"
@@ -3061,7 +2385,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:09–0:11] 학습자 중심의 원칙: (1) 한 번에 한 가지씩 습득 가능한 분량 (2) 쉬운 것에서 어려운 것으로, 기능적 이해에 비중 (3) 학습자에게 감동이 있는 교육.\n목적의 원칙: (1) 어떤 기술을 어느 정도까지 익혀야 하는지 명확히 제시 (2) 습득할 기술이 활동 전체에서 어느 위치인지 인식.\n오른쪽 아래 예시는 강사가 만든 예 — 「10초」는 교재 기준이 아니라 목표를 숫자로 말하는 방법을 보여 주는 예시입니다.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:09–0:11] 학습자 중심의 원칙: (1) 한 번에 한 가지씩 습득 가능한 분량 (2) 쉬운 것에서 어려운 것으로, 기능적 이해에 비중 (3) 학습자에게 감동이 있는 교육.\n목적의 원칙: (1) 어떤 기술을 어느 정도까지 익혀야 하는지 명확히 제시 (2) 습득할 기술이 활동 전체에서 어느 위치인지 인식.\n오른쪽 아래 예시는 강사가 만든 예 — 「10초」는 교재 기준이 아니라 목표를 숫자로 말하는 방법을 보여 주는 예시입니다.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0129",
@@ -3105,7 +2429,7 @@
      }
     },
     {
-     "id": "ed0826",
+     "id": "ed0833",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3248,7 +2572,7 @@
      "role": "text",
      "html": "습득 가능한 분량만",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.3
      }
@@ -3335,7 +2659,7 @@
      "role": "text",
      "html": "기능적 이해에 비중",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.3
      }
@@ -3422,7 +2746,7 @@
      "role": "text",
      "html": "학습자에게 감동이 있는 교육",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.3
      }
@@ -3470,7 +2794,7 @@
      }
     },
     {
-     "id": "ed0827",
+     "id": "ed0834",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3603,7 +2927,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:11–0:14] 동기부여의 원칙 10가지(교재): (1) 중요성 전달 (2) 적절한 스케줄 (3) 시기적절하게(Just-in-Time) (4) 핵심사항에 포커스 (5) 보상 (6) 재미 (7) 다양성 (8) 사회적 상호작용 (9) 전문성 공유 (10) 초기성공 격려.\n윗줄/아랫줄 구분은 강사가 묶은 것(교재 구분 아님).\n활용 팁: 「초기성공 격려」 — 실습 첫 시도에서 성공한 사람을 바로 칭찬하면 나머지 참여가 늘어납니다.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:11–0:14] 동기부여의 원칙 10가지(교재): (1) 중요성 전달 (2) 적절한 스케줄 (3) 시기적절하게(Just-in-Time) (4) 핵심사항에 포커스 (5) 보상 (6) 재미 (7) 다양성 (8) 사회적 상호작용 (9) 전문성 공유 (10) 초기성공 격려.\n윗줄/아랫줄 구분은 강사가 묶은 것(교재 구분 아님).\n활용 팁: 「초기성공 격려」 — 실습 첫 시도에서 성공한 사람을 바로 칭찬하면 나머지 참여가 늘어납니다.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0152",
@@ -3647,7 +2971,7 @@
      }
     },
     {
-     "id": "ed0828",
+     "id": "ed0835",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3729,7 +3053,7 @@
      }
     },
     {
-     "id": "ed0829",
+     "id": "ed0836",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3811,7 +3135,7 @@
      }
     },
     {
-     "id": "ed0830",
+     "id": "ed0837",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3893,7 +3217,7 @@
      }
     },
     {
-     "id": "ed0831",
+     "id": "ed0838",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3975,7 +3299,7 @@
      }
     },
     {
-     "id": "ed0832",
+     "id": "ed0839",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4057,7 +3381,7 @@
      }
     },
     {
-     "id": "ed0833",
+     "id": "ed0840",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4139,7 +3463,7 @@
      }
     },
     {
-     "id": "ed0834",
+     "id": "ed0841",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4221,7 +3545,7 @@
      }
     },
     {
-     "id": "ed0835",
+     "id": "ed0842",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4303,7 +3627,7 @@
      }
     },
     {
-     "id": "ed0836",
+     "id": "ed0843",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4385,7 +3709,7 @@
      }
     },
     {
-     "id": "ed0837",
+     "id": "ed0844",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4511,7 +3835,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:14–0:17] 현실의 원칙: 학습자 능력을 고려하지 않은 훈련은 비현실적이고 불완전. 실습의 원칙: 실습으로 지식 습득, 목적을 생각하고 적절한 방법으로 정확하게. 경험의 원칙: 경험했던 사례로 현실감. 관련성의 원칙: 실무적 접목과 현장성.\n교재 학습평가 Q1: 「경험을 했던 사례를 들어 현실감 있게 한다」 = 경험의 원칙.\n각 칸의 「예)」는 이해를 돕는 강사 예시 — ⑤ 설명 25분 + 실습 25분, ⑦ 「우리 회사 소화기 비치 장소」는 교재 교안 작성 예시에서 가져옴.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:14–0:17] 현실의 원칙: 학습자 능력을 고려하지 않은 훈련은 비현실적이고 불완전. 실습의 원칙: 실습으로 지식 습득, 목적을 생각하고 적절한 방법으로 정확하게. 경험의 원칙: 경험했던 사례로 현실감. 관련성의 원칙: 실무적 접목과 현장성.\n교재 학습평가 Q1: 「경험을 했던 사례를 들어 현실감 있게 한다」 = 경험의 원칙.\n각 칸의 「예)」는 이해를 돕는 강사 예시 — ⑤ 설명 25분 + 실습 25분, ⑦ 「우리 회사 소화기 비치 장소」는 교재 교안 작성 예시에서 가져옴.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0186",
@@ -4555,7 +3879,7 @@
      }
     },
     {
-     "id": "ed0838",
+     "id": "ed0845",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4655,14 +3979,14 @@
      "shadow": false,
      "html": "예) 고령 거주자에게 완강기 하강 강요 아님",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#5B6168",
       "valign": "middle",
       "padding": 18
      }
     },
     {
-     "id": "ed0839",
+     "id": "ed0846",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4762,14 +4086,14 @@
      "shadow": false,
      "html": "예) 강의 25분 + 실습 25분(교안 예시)",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#5B6168",
       "valign": "middle",
       "padding": 18
      }
     },
     {
-     "id": "ed0840",
+     "id": "ed0847",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4869,14 +4193,14 @@
      "shadow": false,
      "html": "예) 우리 지역·우리 건물 화재 사례",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#5B6168",
       "valign": "middle",
       "padding": 18
      }
     },
     {
-     "id": "ed0841",
+     "id": "ed0848",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4976,7 +4300,7 @@
      "shadow": false,
      "html": "예) <b>우리 회사 소화기 비치 장소</b>",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#5B6168",
       "valign": "middle",
       "padding": 18
@@ -5009,7 +4333,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:17–0:19] [▶ 2단계 시작 · 인출 30초] 1단계를 한 문장으로 정리 → 「실시원칙 7개 첫 글자?」(학 · 동 · 목 · 현 · 실 · 경 · 관) 두세 명 답 듣고 시작.\n계획의 필요성: 계획을 세운 상태와 그렇지 않은 상태는 효과 · 효율에서 차이가 큼. 연간계획으로 체계적으로 실시하면 더 효율적으로 목표 달성. 대상물 특성을 파악해 일정 · 내용 · 방법 · 교육훈련기자재를 미리 결정하면 적극적 참여를 이끌어 냄.\n계획 수립: 대상물 사정에 따라 먼저 연간계획 → 분기 또는 월별 세부계획. 관계인의 적극적 동참 없이는 시행이 어려우므로, 11~12월경 다음 연도 계획을 세우면 예산 지원과 부서 간 업무협조가 원활.\n계획서 작성: 대상물 특성에 맞는 방법을 모색하고, 모든 인원이 참여할 수 있는 프로그램 — 법령 때문에 어쩔 수 없이가 아니라 자발적으로.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:17–0:19] [▶ 2단계 시작 · 인출 30초] 1단계를 한 문장으로 정리 → 「실시원칙 7개 첫 글자?」(학 · 동 · 목 · 현 · 실 · 경 · 관) 두세 명 답 듣고 시작.\n계획의 필요성: 계획을 세운 상태와 그렇지 않은 상태는 효과 · 효율에서 차이가 큼. 연간계획으로 체계적으로 실시하면 더 효율적으로 목표 달성. 대상물 특성을 파악해 일정 · 내용 · 방법 · 교육훈련기자재를 미리 결정하면 적극적 참여를 이끌어 냄.\n계획 수립: 대상물 사정에 따라 먼저 연간계획 → 분기 또는 월별 세부계획. 관계인의 적극적 동참 없이는 시행이 어려우므로, 11~12월경 다음 연도 계획을 세우면 예산 지원과 부서 간 업무협조가 원활.\n계획서 작성: 대상물 특성에 맞는 방법을 모색하고, 모든 인원이 참여할 수 있는 프로그램 — 법령 때문에 어쩔 수 없이가 아니라 자발적으로.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0226",
@@ -5045,7 +4369,7 @@
      "w": 1680,
      "h": 44,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;11~12월은 다음 해 계획을 <b>세우는</b> 시기: 이유: 예산·부서 협조",
+     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;다음 해 계획은 11~12월에 세운다. 이유는 예산 지원과 부서 간 협조",
      "style": {
       "fontSize": 28,
       "color": "#15181C",
@@ -5108,7 +4432,7 @@
      "role": "text",
      "html": "계획을 세우고 하는 일과 그렇지 않은 일은 <b>효과·효율</b>이 다르다<br>→ 대상물 특성을 파악해 일정, 내용, 방법, 교육훈련기자재를 미리 정하면 <b>적극적 참여</b>를 이끌어 낸다",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.55,
       "valign": "middle"
@@ -5293,7 +4617,7 @@
      }
     },
     {
-     "id": "ed0842",
+     "id": "ed0849",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5402,7 +4726,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:19–0:21] 연간 소방교육 및 훈련 계획서(교재 예시): 1월 소방학(화재이론 · 소화원리) → 2~4월 소방시설 사용(소화기 · 옥내소화전 · 완강기 등 피난기구) → 5월 피난훈련(실별 · 층별 피난동선) → 6월 화재사례 → 7월 화재예방 요령 → 8~9월 자위소방대 활동(반별 임무 숙지 · 반별 훈련) → 10월 자체 소방훈련(모의화재훈련) → 11월 합동 소방훈련(소방관서) → 12월 소방한마음 축제(소방퀴즈대회, 불조심표어 작성).\n읽는 법: 색 = 방법(파랑 이론 · 실습, 빨강 실습, 보라 이론 · 시청각, 주황 직원참여). 쉬운 것 → 어려운 것, 개인 → 팀 → 합동으로 쌓는 구조 = 학습자 중심 원칙(강사 해석).\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:19–0:21] 연간 소방교육 및 훈련 계획서(교재 예시): 1월 소방학(화재이론 · 소화원리) → 2~4월 소방시설 사용(소화기 · 옥내소화전 · 완강기 등 피난기구) → 5월 피난훈련(실별 · 층별 피난동선) → 6월 화재사례 → 7월 화재예방 요령 → 8~9월 자위소방대 활동(반별 임무 숙지 · 반별 훈련) → 10월 자체 소방훈련(모의화재훈련) → 11월 합동 소방훈련(소방관서) → 12월 소방한마음 축제(소방퀴즈대회, 불조심표어 작성).\n읽는 법: 색 = 방법(파랑 이론 · 실습, 빨강 실습, 보라 이론 · 시청각, 주황 직원참여). 쉬운 것 → 어려운 것, 개인 → 팀 → 합동으로 쌓는 구조 = 학습자 중심 원칙(강사 해석).\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0243",
@@ -5446,7 +4770,7 @@
      }
     },
     {
-     "id": "ed0843",
+     "id": "ed0850",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5571,7 +4895,7 @@
      "role": "text",
      "html": "화재이론·소화원리",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -5596,7 +4920,7 @@
      }
     },
     {
-     "id": "ed0844",
+     "id": "ed0851",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5721,7 +5045,7 @@
      "role": "text",
      "html": "소화기 구조원리·사용법",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -5746,7 +5070,7 @@
      }
     },
     {
-     "id": "ed0845",
+     "id": "ed0852",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5871,7 +5195,7 @@
      "role": "text",
      "html": "옥내소화전 구조원리·사용법",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -5896,7 +5220,7 @@
      }
     },
     {
-     "id": "ed0846",
+     "id": "ed0853",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6021,7 +5345,7 @@
      "role": "text",
      "html": "완강기 등 피난기구 사용법",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6046,7 +5370,7 @@
      }
     },
     {
-     "id": "ed0847",
+     "id": "ed0854",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6171,7 +5495,7 @@
      "role": "text",
      "html": "실별·층별 피난동선 확보",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6196,7 +5520,7 @@
      }
     },
     {
-     "id": "ed0848",
+     "id": "ed0855",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6321,7 +5645,7 @@
      "role": "text",
      "html": "각종 화재사례",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6346,7 +5670,7 @@
      }
     },
     {
-     "id": "ed0849",
+     "id": "ed0856",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6471,7 +5795,7 @@
      "role": "text",
      "html": "각종 화재예방 방법",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6496,7 +5820,7 @@
      }
     },
     {
-     "id": "ed0850",
+     "id": "ed0857",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6621,7 +5945,7 @@
      "role": "text",
      "html": "반별 임무·역할 숙지",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6646,7 +5970,7 @@
      }
     },
     {
-     "id": "ed0851",
+     "id": "ed0858",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6771,7 +6095,7 @@
      "role": "text",
      "html": "각 반별 훈련",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6796,7 +6120,7 @@
      }
     },
     {
-     "id": "ed0852",
+     "id": "ed0859",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6921,7 +6245,7 @@
      "role": "text",
      "html": "모의화재훈련",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -6946,7 +6270,7 @@
      }
     },
     {
-     "id": "ed0853",
+     "id": "ed0860",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7071,7 +6395,7 @@
      "role": "text",
      "html": "소방관서 합동훈련",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -7096,7 +6420,7 @@
      }
     },
     {
-     "id": "ed0854",
+     "id": "ed0861",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7221,7 +6545,7 @@
      "role": "text",
      "html": "소방퀴즈대회·불조심표어",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.35
      }
@@ -7440,7 +6764,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:21–0:23] 세부계획 서식(소방계획 작성서식 1.11.2): [  년 제  차] 소방훈련 · 교육 및 자체평가 계획 — 명칭, 일시, 장소, 대상(자위소방대 · 근무자 · 거주자), 종류(실습: 기본 · 부분(기능) · 종합훈련 / 이론: 강의식 · 세미나 · 워크숍), 주관부서, 참여대상, 훈련형태(자체 · 합동 — 참여기관), 시나리오, 교보재, 훈련계획, 교육계획, 평가계획(평가일시 · 평가자 · 평가방법).\n비고: 자위소방대 및 초기대응체계 소방훈련 · 교육, 피난훈련 · 교육은 화재예방법 제37조 소방훈련과 병행 실시 가능.\n연결: 앞 강의(소방계획의 수립)의 「자체평가」가 이 서식의 평가계획 칸입니다.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:21–0:23] 세부계획 서식(소방계획 작성서식 1.11.2): [  년 제  차] 소방훈련 · 교육 및 자체평가 계획 — 명칭, 일시, 장소, 대상(자위소방대 · 근무자 · 거주자), 종류(실습: 기본 · 부분(기능) · 종합훈련 / 이론: 강의식 · 세미나 · 워크숍), 주관부서, 참여대상, 훈련형태(자체 · 합동 — 참여기관), 시나리오, 교보재, 훈련계획, 교육계획, 평가계획(평가일시 · 평가자 · 평가방법).\n비고: 자위소방대 및 초기대응체계 소방훈련 · 교육, 피난훈련 · 교육은 화재예방법 제37조 소방훈련과 병행 실시 가능.\n연결: 앞 강의(소방계획의 수립)의 「자체평가」가 이 서식의 평가계획 칸입니다.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0326",
@@ -7502,7 +6826,7 @@
      "shadow": false,
      "html": "명칭, 일시, 장소",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7528,7 +6852,7 @@
      "shadow": false,
      "html": "　",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -7553,7 +6877,7 @@
      "shadow": false,
      "html": "대상",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7579,7 +6903,7 @@
      "shadow": false,
      "html": "자위소방대, 근무자, 거주자",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -7604,7 +6928,7 @@
      "shadow": false,
      "html": "종류",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7655,7 +6979,7 @@
      "shadow": false,
      "html": "주관부서·참여대상",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7681,7 +7005,7 @@
      "shadow": false,
      "html": "　",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -7706,7 +7030,7 @@
      "shadow": false,
      "html": "훈련형태",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7732,7 +7056,7 @@
      "shadow": false,
      "html": "자체훈련·합동훈련(참여기관)",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -7757,7 +7081,7 @@
      "shadow": false,
      "html": "시나리오·교보재",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7783,7 +7107,7 @@
      "shadow": false,
      "html": "　",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -7808,7 +7132,7 @@
      "shadow": false,
      "html": "훈련계획·교육계획",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7834,7 +7158,7 @@
      "shadow": false,
      "html": "　",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -7859,7 +7183,7 @@
      "shadow": false,
      "html": "평가계획",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -7885,7 +7209,7 @@
      "shadow": false,
      "html": "평가일시, 평가자(서명), 평가방법",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "valign": "middle",
       "padding": 16
@@ -8042,7 +7366,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:23–0:25] 시나리오 작성방법(교재): 소방훈련은 많은 인원과 장비가 동원되므로 진행에 필요한 시나리오가 있어야 함. 사전계획에 의한 것이므로 실제상황과 근접할수록 효과가 높음. 정상적인 업무의 지장을 최소화하는 범위 내에서 다양한 상황을 가정. 화재신고부터 초기대응, 피난 및 피난유도, 소방대에 의한 진압, 사후복구 등 단계에 따라 작성하며, 평상시 훈련된 자위소방대 활동을 총망라.\n연결: 「소방계획의 수립」 3장의 화재대응 6단계가 시나리오의 뼈대가 됩니다.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:23–0:25] 시나리오 작성방법(교재): 소방훈련은 많은 인원과 장비가 동원되므로 진행에 필요한 시나리오가 있어야 함. 사전계획에 의한 것이므로 실제상황과 근접할수록 효과가 높음. 정상적인 업무의 지장을 최소화하는 범위 내에서 다양한 상황을 가정. 화재신고부터 초기대응, 피난 및 피난유도, 소방대에 의한 진압, 사후복구 등 단계에 따라 작성하며, 평상시 훈련된 자위소방대 활동을 총망라.\n연결: 「소방계획의 수립」 3장의 화재대응 6단계가 시나리오의 뼈대가 됩니다.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0351",
@@ -8410,7 +7734,7 @@
      "role": "text",
      "html": "많은 인원과 장비가 동원: 진행에 필요한 시나리오가 있어야 한다",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.55,
       "valign": "middle"
@@ -8472,7 +7796,7 @@
      "role": "text",
      "html": "사전계획에 의한 것이므로 <b>실제상황에 근접할수록</b> 효과가 높다",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.55,
       "valign": "middle"
@@ -8534,7 +7858,7 @@
      "role": "text",
      "html": "<b>정상적인 업무의 지장을 최소화</b>하는 범위에서 다양한 상황을 가정",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.55,
       "valign": "middle"
@@ -8596,7 +7920,7 @@
      "role": "text",
      "html": "평상시 훈련된 <b>자위소방대의 활동</b>을 총망라",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.55,
       "valign": "middle"
@@ -8629,7 +7953,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:25–0:28] [▶ 3단계 시작] 준비(교재): 연간계획이 수립되면 전 사원 또는 모든 거주자에게 공지해 사전에 충분히 알리고 적극 참여를 유도. 연간계획에 따라 세부계획(교보재, 강사 선정, 소방관서 합동훈련 계획 등)을 수립. 교수자는 교안을 미리 준비하고 연습.\n교안 작성 예시(교재): 소방시설사용(1) - 소화기, 2026. 2. 2. 13:00~13:50, 3층 회의실, 강의 25분 · 실습 25분, 훈련용 소화기 5대, 담당 소방안전관리자, 보조요원 훈련반 3명.\n13:00~13:05 교육안내 · 필요성(자위소방대장) / 13:05~13:25 소화기 원리 · 작동방법 · 관리요령 · 우리 회사 비치 장소(소방안전관리자) / 13:25~13:48 조별 분리편성 · 조별 사용실습(훈련반) / 13:48~13:50 마무리 · 평가(소방안전관리자).\n원칙 찾기: 「우리 회사 비치 장소」 = 관련성, 조별 실습 = 실습 · 사회적 상호작용, 마지막 평가 = 효과 측정.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:25–0:28] [▶ 3단계 시작] 준비(교재): 연간계획이 수립되면 전 사원 또는 모든 거주자에게 공지해 사전에 충분히 알리고 적극 참여를 유도. 연간계획에 따라 세부계획(교보재, 강사 선정, 소방관서 합동훈련 계획 등)을 수립. 교수자는 교안을 미리 준비하고 연습.\n교안 작성 예시(교재): 소방시설사용(1) - 소화기, 2026. 2. 2. 13:00~13:50, 3층 회의실, 강의 25분 · 실습 25분, 훈련용 소화기 5대, 담당 소방안전관리자, 보조요원 훈련반 3명.\n13:00~13:05 교육안내 · 필요성(자위소방대장) / 13:05~13:25 소화기 원리 · 작동방법 · 관리요령 · 우리 회사 비치 장소(소방안전관리자) / 13:25~13:48 조별 분리편성 · 조별 사용실습(훈련반) / 13:48~13:50 마무리 · 평가(소방안전관리자).\n원칙 찾기: 「우리 회사 비치 장소」 = 관련성, 조별 실습 = 실습 · 사회적 상호작용, 마지막 평가 = 효과 측정.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0377",
@@ -8665,7 +7989,7 @@
      "w": 1680,
      "h": 44,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;50분 배분은 교재의 교안 예시: 법정 기준 아님, 강의 25 = 안내 5 + 설명 20, 실습 25 = 실습 23 + 마무리 2",
+     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;50분 배분은 교재의 교안 예시(법정 기준 아님). 강의 25 = 안내 5 + 설명 20, 실습 25 = 실습 23 + 마무리 2",
      "style": {
       "fontSize": 28,
       "color": "#15181C",
@@ -8673,7 +7997,7 @@
      }
     },
     {
-     "id": "ed0855",
+     "id": "ed0862",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8748,7 +8072,7 @@
      "role": "text",
      "html": "① 연간계획을 전 사원·거주자에게 <b>공지</b><br>② 세부계획: 교보재, <b>강사</b>, 소방관서 합동훈련<br>③ 교수자는 교안을 미리 준비하고 <b>연습</b>",
      "style": {
-      "fontSize": 27,
+      "fontSize": 28,
       "color": "#15181C",
       "lineHeight": 1.6
      }
@@ -9149,7 +8473,7 @@
      "role": "text",
      "html": "교육안내·필요성 설명",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "lineHeight": 1.35
@@ -9169,7 +8493,7 @@
      "role": "text",
      "html": "담당:<br>자위소방대장",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "lineHeight": 1.25
@@ -9234,7 +8558,7 @@
      "role": "text",
      "html": "소화기 원리·작동 방법<br>관리 요령·우리 회사 비치 장소",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "lineHeight": 1.35
@@ -9254,7 +8578,7 @@
      "role": "text",
      "html": "담당: 소방안전관리자",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "lineHeight": 1.25
@@ -9319,7 +8643,7 @@
      "role": "text",
      "html": "조별 분리편성<br>각 조별 소화기 사용실습",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "lineHeight": 1.35
@@ -9339,7 +8663,7 @@
      "role": "text",
      "html": "담당: 훈련반",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#B3261E",
       "bold": true,
       "lineHeight": 1.25
@@ -9391,7 +8715,7 @@
      }
     },
     {
-     "id": "ed0856",
+     "id": "ed0863",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -9429,7 +8753,7 @@
      "shadow": false,
      "html": "2분<br>마무리·평가<br><span style=\"font-size:24px\">소방안전관리자</span>",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#15181C",
       "bold": true,
       "valign": "middle",
@@ -9464,7 +8788,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:28–0:31] 실시 내용(교재): 대상물 교육여건과 자위소방대원으로서 현재 수준에서 이해하고 행동할 수 있는 내용, 기본적으로 숙지할 사항을 중점.\n(1) 소화기 · 옥내소화전 구조원리 및 사용방법 실습 — 종류별 화재 적응성, 구조원리 이해, 실습으로 숙달.\n(2) 화재 시 대피 및 대피유도 실습 — 영상물 시청, 연막탄 등 실습, 토의로 스스로 올바른 대피요령 · 대피유도 방법 도출, 층별 피난동선, 피난유도자(안내자) 역할.\n(3) 피난기구 활용법 훈련 — 완강기, 로프, 구조대, 휴대용비상조명등으로 반복.\n(4) 응급처치 — 대상물 사례 중심, 훈련용 마네킹으로 CPR 반복.\n(5) 소방시설 작동법 및 점검방법 — 자동화재탐지설비, 옥내소화전, 피난구조설비 등.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:28–0:31] 실시 내용(교재): 대상물 교육여건과 자위소방대원으로서 현재 수준에서 이해하고 행동할 수 있는 내용, 기본적으로 숙지할 사항을 중점.\n(1) 소화기 · 옥내소화전 구조원리 및 사용방법 실습 — 종류별 화재 적응성, 구조원리 이해, 실습으로 숙달.\n(2) 화재 시 대피 및 대피유도 실습 — 영상물 시청, 연막탄 등 실습, 토의로 스스로 올바른 대피요령 · 대피유도 방법 도출, 층별 피난동선, 피난유도자(안내자) 역할.\n(3) 피난기구 활용법 훈련 — 완강기, 로프, 구조대, 휴대용비상조명등으로 반복.\n(4) 응급처치 — 대상물 사례 중심, 훈련용 마네킹으로 CPR 반복.\n(5) 소방시설 작동법 및 점검방법 — 자동화재탐지설비, 옥내소화전, 피난구조설비 등.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0413",
@@ -9524,7 +8848,7 @@
      "shadow": false
     },
     {
-     "id": "ed0857",
+     "id": "ed0864",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9662,7 +8986,7 @@
      "role": "text",
      "html": "소화기 종류별 화재 적응성·옥내소화전 구조원리 이해 → 실습으로 <b>숙달</b>",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.4
      }
@@ -9684,7 +9008,7 @@
      "shadow": false
     },
     {
-     "id": "ed0858",
+     "id": "ed0865",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9822,7 +9146,7 @@
      "role": "text",
      "html": "영상 시청 + <b>연막탄</b> 체험 → <b>토의</b>로 스스로 대피요령 도출, 층별 피난동선, 피난유도자 역할",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.4
      }
@@ -9844,7 +9168,7 @@
      "shadow": false
     },
     {
-     "id": "ed0859",
+     "id": "ed0866",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9982,7 +9306,7 @@
      "role": "text",
      "html": "<b>완강기</b>, 로프, 구조대, 휴대용비상조명등으로 탈출을 <b>반복</b>",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.4
      }
@@ -10004,7 +9328,7 @@
      "shadow": false
     },
     {
-     "id": "ed0860",
+     "id": "ed0867",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10142,7 +9466,7 @@
      "role": "text",
      "html": "대상물에서 생길 수 있는 사례 중심·훈련용 <b>마네킹</b>으로 심폐소생술 반복",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.4
      }
@@ -10164,7 +9488,7 @@
      "shadow": false
     },
     {
-     "id": "ed0861",
+     "id": "ed0868",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10302,13 +9626,13 @@
      "role": "text",
      "html": "자동화재탐지설비, 옥내소화전, 피난구조설비 등 <b>작동, 점검</b> 설명과 실습",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.4
      }
     },
     {
-     "id": "ed0862",
+     "id": "ed0869",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -10379,7 +9703,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:31–0:33] [▶ 4단계 시작] 효과 측정(교재): 교육훈련은 실시도 중요하지만 결과 평가활동을 반드시 실시 — 학습자 요구를 차기 교육에 반영하는 기초.\n설문지 예시 10문항(① 전혀 아니다 ~ ⑤ 매우 그렇다): 유익 · 새로 앎 · 쉬운 설명 · 분량 적정 · 질문 답변 · 학습자료 · 학습장 환경 · 현장 적용 능력 · 추가 수강 의향 · 추천 의향.\n강조: 8번(현장 적용 능력)이 교육 정의의 「행동능력」과 직결 — 강사 해석.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:31–0:33] [▶ 4단계 시작] 효과 측정(교재): 교육훈련은 실시도 중요하지만 결과 평가활동을 반드시 실시 — 학습자 요구를 차기 교육에 반영하는 기초.\n설문지 예시 10문항(① 전혀 아니다 ~ ⑤ 매우 그렇다): 유익 · 새로 앎 · 쉬운 설명 · 분량 적정 · 질문 답변 · 학습자료 · 학습장 환경 · 현장 적용 능력 · 추가 수강 의향 · 추천 의향.\n강조: 8번(현장 적용 능력)이 교육 정의의 「행동능력」과 직결 — 강사 해석.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0452",
@@ -10494,7 +9818,7 @@
      "role": "text",
      "html": "실시만큼 중요한 것이 <b>결과 평가</b><br>학습자 요구를 <b>차기 교육에 반영</b><br>교육 후 설문 = 가장 용이하고 정확한 방법 <b>중 하나</b>",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#2A2F35",
       "lineHeight": 1.55,
       "valign": "middle"
@@ -10576,7 +9900,7 @@
      "role": "text",
      "html": "1",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -10596,7 +9920,7 @@
      "role": "text",
      "html": "교육내용이 매우 유익했다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -10768,7 +10092,7 @@
      "role": "text",
      "html": "2",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -10788,7 +10112,7 @@
      "role": "text",
      "html": "새로운 것을 알게 되는 계기가 되었다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -10960,7 +10284,7 @@
      "role": "text",
      "html": "3",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -10980,7 +10304,7 @@
      "role": "text",
      "html": "교관이 이해하기 쉽게 설명했다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -11152,7 +10476,7 @@
      "role": "text",
      "html": "4",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -11172,7 +10496,7 @@
      "role": "text",
      "html": "교육분량(시간)은 적정한 수준이다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -11344,7 +10668,7 @@
      "role": "text",
      "html": "5",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -11364,7 +10688,7 @@
      "role": "text",
      "html": "교관은 질문에 정확히 답변했다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -11536,7 +10860,7 @@
      "role": "text",
      "html": "6",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -11556,7 +10880,7 @@
      "role": "text",
      "html": "학습자료 제공은 적절했다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -11728,7 +11052,7 @@
      "role": "text",
      "html": "7",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -11748,7 +11072,7 @@
      "role": "text",
      "html": "학습장 환경은 지장 없이 양호한 수준이다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -11920,7 +11244,7 @@
      "role": "text",
      "html": "8",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -11940,7 +11264,7 @@
      "role": "text",
      "html": "<b>현장에 적용할 능력이 생겼다고 생각된다</b>",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -12112,7 +11436,7 @@
      "role": "text",
      "html": "9",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -12132,7 +11456,7 @@
      "role": "text",
      "html": "기회가 되면 다른 교육도 받고 싶다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -12304,7 +11628,7 @@
      "role": "text",
      "html": "10",
      "style": {
-      "fontSize": 24,
+      "fontSize": 28,
       "color": "#5B6168",
       "bold": true,
       "valign": "middle"
@@ -12324,7 +11648,7 @@
      "role": "text",
      "html": "다른 사람에게도 추천하고 싶다",
      "style": {
-      "fontSize": 25,
+      "fontSize": 28,
       "color": "#15181C",
       "valign": "middle"
      }
@@ -12478,7 +11802,7 @@
      "shadow": false,
      "html": "8번이 핵심: <b>할 수 있게 됐는가</b> = 교육 정의의 <b>행동능력</b>",
      "style": {
-      "fontSize": 26,
+      "fontSize": 28,
       "color": "#FFFFFF",
       "valign": "middle",
       "padding": 24,
@@ -12512,7 +11836,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[0:33–0:35] [강의 끝 · 여기까지가 문제풀이 범위] 훈련 종료 및 강평(교재): 훈련의 총괄 책임자는 합동훈련 종료 후 훈련 전반에 관한 강평 — 준비과정부터 본 훈련, 종료시점까지 잘된 점, 잘못되거나 개선되어야 할 점 포함. 지속적 개선은 자발적 참여를 유도하고 교육의 질을 높임. 교육 후 설문은 가장 용이하고 정확한 방법 중 하나.\n결과작성(교재): (1) 자위소방대 및 초기대응체계 교육 · 훈련 실시결과 기록부(시행규칙 별지 제13호서식) (2) 소방훈련 · 교육 실시결과 기록부(시행규칙 별지 제28호서식).\n시험 포인트: 서식 번호 13호와 28호를 바꾼 보기 주의.\n[본인 사례: ____ (이 장에 붙일 현장 경험 한 가지)]",
+   "notes": "[0:33–0:35] [강의 끝 · 여기까지가 문제풀이 범위] 훈련 종료 및 강평(교재): 훈련의 총괄 책임자는 합동훈련 종료 후 훈련 전반에 관한 강평 — 준비과정부터 본 훈련, 종료시점까지 잘된 점, 잘못되거나 개선되어야 할 점 포함. 지속적 개선은 자발적 참여를 유도하고 교육의 질을 높임. 교육 후 설문은 가장 용이하고 정확한 방법 중 하나.\n결과작성(교재): (1) 자위소방대 및 초기대응체계 교육 · 훈련 실시결과 기록부(시행규칙 별지 제13호서식) (2) 소방훈련 · 교육 실시결과 기록부(시행규칙 별지 제28호서식).\n시험 포인트: 서식 번호 13호와 28호를 바꾼 보기 주의.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
      "id": "ed0542",
@@ -12671,7 +11995,7 @@
      "w": 820,
      "h": 44,
      "role": "text",
-     "html": "결과작성: <span style=\"color:#B3261E\"><b>함정 :</b> 13호 = 자위소방대, 28호 = 소방훈련, 교육</span>",
+     "html": "결과작성&nbsp;&nbsp;&nbsp;<b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;13호는 자위소방대, 28호는 소방훈련·교육",
      "style": {
       "fontSize": 26,
       "color": "#15181C",
@@ -12679,7 +12003,7 @@
      }
     },
     {
-     "id": "ed0863",
+     "id": "ed0870",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12784,7 +12108,7 @@
      }
     },
     {
-     "id": "ed0864",
+     "id": "ed0871",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12907,7 +12231,7 @@
      }
     },
     {
-     "id": "ed0804",
+     "id": "ed0803",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12930,7 +12254,7 @@
      }
     },
     {
-     "id": "ed0805",
+     "id": "ed0804",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12951,7 +12275,7 @@
      }
     },
     {
-     "id": "ed0806",
+     "id": "ed0805",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12971,7 +12295,7 @@
      }
     },
     {
-     "id": "ed0807",
+     "id": "ed0806",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12994,7 +12318,7 @@
      }
     },
     {
-     "id": "ed0808",
+     "id": "ed0807",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13015,7 +12339,7 @@
      }
     },
     {
-     "id": "ed0809",
+     "id": "ed0808",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -17334,6 +16658,231 @@
    ],
    "decor": "none",
    "noFooter": true
+  },
+  {
+   "id": "ed_tp1",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "[0:50~1:00] 시험 포인트 모음. 줄마다 오른쪽 칸을 손으로 가리고 「무엇이 함정이었죠?」 묻고 확인.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
+   "elements": [
+    {
+     "id": "ed0817",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 92,
+     "w": 1680,
+     "h": 120,
+     "role": "heading",
+     "html": "시험 포인트 모음",
+     "style": {
+      "fontSize": 52,
+      "color": "#15181C",
+      "bold": true,
+      "valign": "middle",
+      "lineHeight": 1.2,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "ed0818",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 210,
+     "w": 1680,
+     "h": 44,
+     "role": "text",
+     "html": "소방안전교육 및 훈련·강의 장의 시험 포인트를 한곳에",
+     "style": {
+      "fontSize": 28,
+      "color": "#5B6168",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "ed0819",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "table",
+     "x": 120,
+     "y": 270,
+     "w": 1680,
+     "h": 594,
+     "rows": [
+      [
+       "주제",
+       "시험 포인트"
+      ],
+      [
+       "실시근거",
+       "화재예방법 제37조, 같은 법 시행규칙 제36조"
+      ],
+      [
+       "실시원칙",
+       "학습자 중심·동기부여·목적·현실·실습·경험·관련성(학·동·목·현·실·경·관)"
+      ],
+      [
+       "함정",
+       "교수자 중심의 원칙은 없음, 중심은 학습자"
+      ],
+      [
+       "계획 시기",
+       "다음 해 계획은 11~12월, 이유는 예산 지원과 부서 간 협조"
+      ],
+      [
+       "교안 예시",
+       "50분 배분(안내 5·설명 20·실습 23·마무리 2)은 교재 예시, 법정 기준 아님"
+      ],
+      [
+       "결과 기록부",
+       "13호 = 자위소방대·초기대응체계, 28호 = 소방훈련·교육"
+      ]
+     ],
+     "header": true,
+     "band": false,
+     "firstCol": true,
+     "lines": "h",
+     "headFill": "#F1EFEA",
+     "headColor": "#15181C",
+     "lineColor": "#D6D3CD",
+     "radius": 0,
+     "cols": [
+      0.2,
+      0.8
+     ],
+     "style": {
+      "fontSize": 28,
+      "color": "#2A2F35",
+      "align": "left",
+      "lineHeight": 1.4
+     }
+    }
+   ],
+   "decor": "none"
+  },
+  {
+   "id": "ed_qb",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "[0:50~1:00] 예상문제 100 안내. 이 과목 범위: Part 4 71 ~ 100번. 교재 본문 기반 예상문항(공식 기출 아님).\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
+   "elements": [
+    {
+     "id": "ed0820",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 92,
+     "w": 1680,
+     "h": 120,
+     "role": "heading",
+     "html": "복습은 예상문제 100으로",
+     "style": {
+      "fontSize": 52,
+      "color": "#15181C",
+      "bold": true,
+      "valign": "middle",
+      "lineHeight": 1.2,
+      "letterSpacing": -1
+     }
+    },
+    {
+     "id": "ed0821",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 210,
+     "w": 1680,
+     "h": 44,
+     "role": "text",
+     "html": "교안 목록의 <b>소방계획과 교육훈련 예상문제 100</b>에서 이 과목 파트만 풀어 보세요",
+     "style": {
+      "fontSize": 28,
+      "color": "#5B6168",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "ed0822",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "table",
+     "x": 120,
+     "y": 270,
+     "w": 1680,
+     "h": 190,
+     "rows": [
+      [
+       "파트",
+       "번호",
+       "범위"
+      ],
+      [
+       "Part 4",
+       "71 ~ 100번",
+       "제8편 제1장 소방안전교육 및 훈련"
+      ]
+     ],
+     "header": true,
+     "band": false,
+     "firstCol": true,
+     "lines": "h",
+     "headFill": "#F1EFEA",
+     "headColor": "#15181C",
+     "lineColor": "#D6D3CD",
+     "radius": 0,
+     "cols": [
+      0.18,
+      0.22,
+      0.6
+     ],
+     "style": {
+      "fontSize": 30,
+      "color": "#2A2F35",
+      "align": "left"
+     }
+    },
+    {
+     "id": "ed0823",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 490,
+     "w": 1680,
+     "h": 160,
+     "role": "text",
+     "html": "1.&nbsp;&nbsp;1분 혼자 풀고 클릭해 정답 확인<br>2.&nbsp;&nbsp;파트 끝 정답표로 채점, 틀린 번호의 풀이와 교재 쪽수를 다시 보기",
+     "style": {
+      "fontSize": 30,
+      "color": "#2A2F35",
+      "lineHeight": 1.6
+     }
+    }
+   ],
+   "decor": "none"
   },
   {
    "id": "ed19",
