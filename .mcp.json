@@ -2,10 +2,22 @@
   "mcpServers": {
     "gpt-image": {
       "command": "python3",
-      "args": ["tools/gpt-image/server.py"],
+      "args": [
+        "tools/gpt-image/server.py"
+      ],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY:-proxy-injected}",
         "OPENAI_IMAGE_MODEL": "${OPENAI_IMAGE_MODEL:-gpt-image-2.6-sunburst}"
+      }
+    },
+    "gemini-image": {
+      "command": "python3",
+      "args": [
+        "tools/gemini-image/server.py"
+      ],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY:-proxy-injected}",
+        "GEMINI_IMAGE_MODEL": "${GEMINI_IMAGE_MODEL:-gemini-3.1-flash-image-preview}"
       }
     }
   }
