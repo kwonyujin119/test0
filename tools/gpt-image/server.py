@@ -8,7 +8,7 @@
 
 환경 변수
   OPENAI_API_KEY      OpenAI API 키(ChatGPT 구독과 별개, 이미지당 과금). 필수.
-  OPENAI_IMAGE_MODEL  기본 gpt-image-1
+  OPENAI_IMAGE_MODEL  기본 gpt-image-2.6-sunburst
   GPT_IMAGE_OUT_DIR   저장 폴더. 기본 ./generated-images
 """
 import base64
@@ -21,10 +21,10 @@ import urllib.error
 import urllib.request
 
 API_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/") + "/images/generations"
-MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1")
+MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-2.6-sunburst")
 OUT_DIR = os.environ.get("GPT_IMAGE_OUT_DIR", os.path.join(os.getcwd(), "generated-images"))
 SIZES = ["1024x1024", "1536x1024", "1024x1536", "auto"]
-QUALITIES = ["low", "medium", "high", "auto"]
+QUALITIES = ["low", "medium", "high", "xhigh", "max", "auto"]
 
 TOOL = {
     "name": "gpt_generate_image",
@@ -35,7 +35,8 @@ TOOL = {
             "prompt": {"type": "string", "description": "만들 그림 설명(한국어 가능)"},
             "size": {"type": "string", "enum": SIZES, "default": "1024x1024"},
             "quality": {"type": "string", "enum": QUALITIES, "default": "medium",
-                        "description": "high 일수록 비싸다"},
+                        "description": "low < medium < high < xhigh < max 순으로 비싸다"},
+            "model": {"type": "string", "description": "생략하면 기본 모델. 예: gpt-image-2.6-sunburst, gpt-image-2.6-flare, gpt-image-2"},
             "n": {"type": "integer", "minimum": 1, "maximum": 4, "default": 1},
             "background": {"type": "string", "enum": ["auto", "transparent", "opaque"], "default": "auto"},
             "filename": {"type": "string", "description": "파일 이름 앞부분(확장자 없이). 생략하면 시각으로"},
@@ -50,7 +51,7 @@ def _ssl_context():
     return ssl.create_default_context(cafile=cafile) if cafile else ssl.create_default_context()
 
 
-def generate(prompt, size="1024x1024", quality="medium", n=1, background="auto", filename=None):
+def generate(prompt, size="1024x1024", quality="medium", n=1, background="auto", filename=None, model=None):
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise RuntimeError("OPENAI_API_KEY 가 없습니다. platform.openai.com 에서 API 키를 만들어 환경 변수로 넣어 주세요.")
@@ -58,7 +59,7 @@ def generate(prompt, size="1024x1024", quality="medium", n=1, background="auto",
         raise ValueError(f"size 는 {SIZES} 중 하나")
     if quality not in QUALITIES:
         raise ValueError(f"quality 는 {QUALITIES} 중 하나")
-    body = {"model": MODEL, "prompt": prompt, "size": size, "quality": quality,
+    body = {"model": model or MODEL, "prompt": prompt, "size": size, "quality": quality,
             "n": max(1, min(int(n), 4)), "background": background}
     req = urllib.request.Request(
         API_URL, data=json.dumps(body).encode(), method="POST",
@@ -69,7 +70,7 @@ def generate(prompt, size="1024x1024", quality="medium", n=1, background="auto",
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:800]
         hint = {401: " (API 키가 틀렸거나 만료)", 403: " (조직 인증 필요 또는 네트워크 차단)",
-                429: " (한도 초과 또는 결제 수단 없음)", 400: " (요청 거절 — 프롬프트·크기 확인)"}.get(e.code, "")
+                429: " (크레딧 부족 또는 한도 초과 — platform.openai.com 결제 화면 확인)", 400: " (요청 거절 — 프롬프트·크기 확인)"}.get(e.code, "")
         raise RuntimeError(f"OpenAI 오류 {e.code}{hint}: {detail}") from None
 
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -143,8 +144,9 @@ def cli(argv):
     p.add_argument("--quality", default="medium", choices=QUALITIES)
     p.add_argument("--n", type=int, default=1)
     p.add_argument("--filename")
+    p.add_argument("--model")
     a = p.parse_args(argv)
-    paths, _, usage = generate(a.prompt, a.size, a.quality, a.n, filename=a.filename)
+    paths, _, usage = generate(a.prompt, a.size, a.quality, a.n, filename=a.filename, model=a.model)
     print("\n".join(paths))
     if usage:
         print("usage:", json.dumps(usage), file=sys.stderr)
