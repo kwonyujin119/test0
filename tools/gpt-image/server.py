@@ -69,7 +69,7 @@ def generate(prompt, size="1024x1024", quality="medium", n=1, background="auto",
             data = json.loads(r.read())
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:800]
-        hint = {401: " (API 키가 틀렸거나 만료)", 403: " (조직 인증 필요 또는 네트워크 차단)",
+        hint = {401: " (API 키가 없거나 틀림 — PC 에서는 OPENAI_API_KEY 를 설정, 클라우드에서는 환경의 api.openai.com 비밀값 확인)", 403: " (조직 인증 필요 또는 네트워크 차단)",
                 429: " (크레딧 부족 또는 한도 초과 — platform.openai.com 결제 화면 확인)", 400: " (요청 거절 — 프롬프트·크기 확인)"}.get(e.code, "")
         raise RuntimeError(f"OpenAI 오류 {e.code}{hint}: {detail}") from None
 
