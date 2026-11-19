@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-19T08:53:54.000Z",
- "modified": "2026-11-19T09:04:24.168Z",
+ "created": "2026-11-19T09:06:48.000Z",
+ "modified": "2026-11-19T09:06:48.000Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#334155",
@@ -446,7 +446,7 @@
      "x": 760,
      "y": 260,
      "w": 1040,
-     "h": 192,
+     "h": 160,
      "role": "heading",
      "html": "입교를 진심으로<br>환영합니다",
      "style": {
@@ -1692,29 +1692,44 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
+     "type": "image",
      "x": 1340,
      "y": 620,
      "w": 460,
-     "h": 280,
-     "shape": "rect",
-     "fill": "#F1F5F9",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 18,
-     "shadow": false,
-     "html": "기동복 · 활동화<br><span style=\"font-size:24px;color:#475569\">동계 기동복 착용</span>",
-     "style": {
-      "fontSize": 34,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "lineHeight": 1.5,
-      "padding": 6
-     }
+     "h": 288,
+     "src": "assets/ip-winter.jpg",
+     "fit": "cover",
+     "radius": 16,
+     "shadow": true
     },
     {
      "id": "ip0074",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1360,
+     "y": 848,
+     "w": 280,
+     "h": 44,
+     "shape": "rect",
+     "fill": "#0B1628",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "동계 기동복 · 활동화",
+     "style": {
+      "fontSize": 24,
+      "color": "#FFFFFF",
+      "bold": true,
+      "valign": "middle",
+      "padding": "0"
+     }
+    },
+    {
+     "id": "ip0075",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1741,7 +1756,7 @@
    "notes": "[1분] 「26년 이상 근무가 12명 — 이 강의실에 300년 넘는 현장 경험이 있습니다.」 서로의 경험이 가장 좋은 교재라는 점을 말하고 넘어갑니다.\n평균연령 47세(최고 55 · 최저 39), 재직 6~10년 1 · 26~30년 5 · 31년 이상 7, 내근 5 · 외근 8(센터 6 · 구조대 2), 소방령 13, 남 12 · 여 1, 12개 관서(특수대응단 2명).\n명단은 강의장에서 교육안내서 3장을 보세요.",
    "elements": [
     {
-     "id": "ip0075",
+     "id": "ip0076",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1767,7 +1782,7 @@
      }
     },
     {
-     "id": "ip0076",
+     "id": "ip0077",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1787,7 +1802,7 @@
      }
     },
     {
-     "id": "ip0077",
+     "id": "ip0078",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1813,7 +1828,7 @@
      }
     },
     {
-     "id": "ip0078",
+     "id": "ip0079",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1839,7 +1854,7 @@
      }
     },
     {
-     "id": "ip0079",
+     "id": "ip0080",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1865,7 +1880,7 @@
      }
     },
     {
-     "id": "ip0080",
+     "id": "ip0081",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1891,7 +1906,7 @@
      }
     },
     {
-     "id": "ip0081",
+     "id": "ip0082",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1917,7 +1932,7 @@
      }
     },
     {
-     "id": "ip0082",
+     "id": "ip0083",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1939,7 +1954,7 @@
      }
     },
     {
-     "id": "ip0083",
+     "id": "ip0084",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1957,7 +1972,7 @@
      }
     },
     {
-     "id": "ip0084",
+     "id": "ip0085",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1980,7 +1995,7 @@
      }
     },
     {
-     "id": "ip0085",
+     "id": "ip0086",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1999,7 +2014,7 @@
      }
     },
     {
-     "id": "ip0086",
+     "id": "ip0087",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2018,7 +2033,7 @@
      }
     },
     {
-     "id": "ip0087",
+     "id": "ip0088",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2036,7 +2051,7 @@
      }
     },
     {
-     "id": "ip0088",
+     "id": "ip0089",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2062,7 +2077,7 @@
      }
     },
     {
-     "id": "ip0089",
+     "id": "ip0090",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2081,7 +2096,7 @@
      }
     },
     {
-     "id": "ip0090",
+     "id": "ip0091",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2104,7 +2119,7 @@
      }
     },
     {
-     "id": "ip0091",
+     "id": "ip0092",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2127,7 +2142,7 @@
      }
     },
     {
-     "id": "ip0092",
+     "id": "ip0093",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2146,7 +2161,7 @@
      }
     },
     {
-     "id": "ip0093",
+     "id": "ip0094",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2167,7 +2182,7 @@
      }
     },
     {
-     "id": "ip0094",
+     "id": "ip0095",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2190,7 +2205,7 @@
      }
     },
     {
-     "id": "ip0095",
+     "id": "ip0096",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2213,7 +2228,7 @@
      }
     },
     {
-     "id": "ip0096",
+     "id": "ip0097",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2232,7 +2247,7 @@
      }
     },
     {
-     "id": "ip0097",
+     "id": "ip0098",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2253,7 +2268,7 @@
      }
     },
     {
-     "id": "ip0098",
+     "id": "ip0099",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2276,7 +2291,7 @@
      }
     },
     {
-     "id": "ip0099",
+     "id": "ip0100",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2299,7 +2314,7 @@
      }
     },
     {
-     "id": "ip0100",
+     "id": "ip0101",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2318,7 +2333,7 @@
      }
     },
     {
-     "id": "ip0101",
+     "id": "ip0102",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2339,7 +2354,7 @@
      }
     },
     {
-     "id": "ip0102",
+     "id": "ip0103",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2362,7 +2377,7 @@
      }
     },
     {
-     "id": "ip0103",
+     "id": "ip0104",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2385,7 +2400,7 @@
      }
     },
     {
-     "id": "ip0104",
+     "id": "ip0105",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2404,7 +2419,7 @@
      }
     },
     {
-     "id": "ip0105",
+     "id": "ip0106",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2425,7 +2440,7 @@
      }
     },
     {
-     "id": "ip0106",
+     "id": "ip0107",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2443,7 +2458,7 @@
      }
     },
     {
-     "id": "ip0107",
+     "id": "ip0108",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2470,7 +2485,7 @@
    "notes": "[1분] 「내일부터 매일 — 09:00 1교시, 17:50 종료.」 늦으면 시간당 3점 감점(5시간 이상은 1일, 20점).\n점심 11:50~13:00, 인재개발원 식당은 12:10 이후 이용.\n첫날만: 11/23(월) 08:50~09:00 본관 2층 A훈련실에서 입교등록부 작성 후 입실.",
    "elements": [
     {
-     "id": "ip0108",
+     "id": "ip0109",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2496,7 +2511,7 @@
      }
     },
     {
-     "id": "ip0109",
+     "id": "ip0110",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2516,7 +2531,7 @@
      }
     },
     {
-     "id": "ip0110",
+     "id": "ip0111",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2542,7 +2557,7 @@
      }
     },
     {
-     "id": "ip0111",
+     "id": "ip0112",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2568,7 +2583,7 @@
      }
     },
     {
-     "id": "ip0112",
+     "id": "ip0113",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2594,7 +2609,7 @@
      }
     },
     {
-     "id": "ip0113",
+     "id": "ip0114",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2620,7 +2635,7 @@
      }
     },
     {
-     "id": "ip0114",
+     "id": "ip0115",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2646,7 +2661,7 @@
      }
     },
     {
-     "id": "ip0115",
+     "id": "ip0116",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2668,7 +2683,7 @@
      }
     },
     {
-     "id": "ip0116",
+     "id": "ip0117",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2686,7 +2701,7 @@
      }
     },
     {
-     "id": "ip0117",
+     "id": "ip0118",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2709,7 +2724,7 @@
      }
     },
     {
-     "id": "ip0118",
+     "id": "ip0119",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2732,7 +2747,7 @@
      }
     },
     {
-     "id": "ip0119",
+     "id": "ip0120",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2751,7 +2766,7 @@
      }
     },
     {
-     "id": "ip0120",
+     "id": "ip0121",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2774,7 +2789,7 @@
      }
     },
     {
-     "id": "ip0121",
+     "id": "ip0122",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2793,7 +2808,7 @@
      }
     },
     {
-     "id": "ip0122",
+     "id": "ip0123",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2812,7 +2827,7 @@
      }
     },
     {
-     "id": "ip0123",
+     "id": "ip0124",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2835,7 +2850,7 @@
      }
     },
     {
-     "id": "ip0124",
+     "id": "ip0125",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2854,7 +2869,7 @@
      }
     },
     {
-     "id": "ip0125",
+     "id": "ip0126",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2877,7 +2892,7 @@
      }
     },
     {
-     "id": "ip0126",
+     "id": "ip0127",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2896,7 +2911,7 @@
      }
     },
     {
-     "id": "ip0127",
+     "id": "ip0128",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2915,7 +2930,7 @@
      }
     },
     {
-     "id": "ip0128",
+     "id": "ip0129",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2938,7 +2953,7 @@
      }
     },
     {
-     "id": "ip0129",
+     "id": "ip0130",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2957,7 +2972,7 @@
      }
     },
     {
-     "id": "ip0130",
+     "id": "ip0131",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2980,7 +2995,7 @@
      }
     },
     {
-     "id": "ip0131",
+     "id": "ip0132",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2999,7 +3014,7 @@
      }
     },
     {
-     "id": "ip0132",
+     "id": "ip0133",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3018,7 +3033,7 @@
      }
     },
     {
-     "id": "ip0133",
+     "id": "ip0134",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3034,7 +3049,7 @@
      "shadow": false
     },
     {
-     "id": "ip0134",
+     "id": "ip0135",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3060,7 +3075,7 @@
      }
     },
     {
-     "id": "ip0135",
+     "id": "ip0136",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3083,7 +3098,7 @@
      }
     },
     {
-     "id": "ip0136",
+     "id": "ip0137",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3102,7 +3117,7 @@
      }
     },
     {
-     "id": "ip0137",
+     "id": "ip0138",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3128,7 +3143,7 @@
      }
     },
     {
-     "id": "ip0138",
+     "id": "ip0139",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3148,7 +3163,7 @@
      }
     },
     {
-     "id": "ip0139",
+     "id": "ip0140",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3174,7 +3189,7 @@
      }
     },
     {
-     "id": "ip0140",
+     "id": "ip0141",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3194,7 +3209,7 @@
      }
     },
     {
-     "id": "ip0141",
+     "id": "ip0142",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3220,7 +3235,7 @@
      }
     },
     {
-     "id": "ip0142",
+     "id": "ip0143",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3240,7 +3255,7 @@
      }
     },
     {
-     "id": "ip0143",
+     "id": "ip0144",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3266,7 +3281,7 @@
      }
     },
     {
-     "id": "ip0144",
+     "id": "ip0145",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3286,7 +3301,7 @@
      }
     },
     {
-     "id": "ip0145",
+     "id": "ip0146",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3312,7 +3327,7 @@
      }
     },
     {
-     "id": "ip0146",
+     "id": "ip0147",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3332,7 +3347,7 @@
      }
     },
     {
-     "id": "ip0147",
+     "id": "ip0148",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3358,7 +3373,7 @@
      }
     },
     {
-     "id": "ip0148",
+     "id": "ip0149",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3378,7 +3393,7 @@
      }
     },
     {
-     "id": "ip0149",
+     "id": "ip0150",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3404,7 +3419,7 @@
      }
     },
     {
-     "id": "ip0150",
+     "id": "ip0151",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3424,7 +3439,7 @@
      }
     },
     {
-     "id": "ip0151",
+     "id": "ip0152",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3450,7 +3465,7 @@
      }
     },
     {
-     "id": "ip0152",
+     "id": "ip0153",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3470,7 +3485,7 @@
      }
     },
     {
-     "id": "ip0153",
+     "id": "ip0154",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3496,7 +3511,7 @@
      }
     },
     {
-     "id": "ip0154",
+     "id": "ip0155",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -3516,7 +3531,7 @@
      }
     },
     {
-     "id": "ip0155",
+     "id": "ip0156",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3543,7 +3558,7 @@
    "notes": "[30초] 공유본으로 다시 볼 장. 「내비에 강화 본교 주소를 찍지 마세요 — 제2캠퍼스 주소로.」\n학교위치: 서해구 심곡로 100번길 8-13(인천소방학교 제2캠퍼스). 대표 연락처 032-930-5931(교육운영팀).",
    "elements": [
     {
-     "id": "ip0156",
+     "id": "ip0157",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3569,7 +3584,7 @@
      }
     },
     {
-     "id": "ip0157",
+     "id": "ip0158",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3589,7 +3604,7 @@
      }
     },
     {
-     "id": "ip0158",
+     "id": "ip0159",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3615,7 +3630,7 @@
      }
     },
     {
-     "id": "ip0159",
+     "id": "ip0160",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3641,7 +3656,7 @@
      }
     },
     {
-     "id": "ip0160",
+     "id": "ip0161",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3667,7 +3682,7 @@
      }
     },
     {
-     "id": "ip0161",
+     "id": "ip0162",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3693,7 +3708,7 @@
      }
     },
     {
-     "id": "ip0162",
+     "id": "ip0163",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3719,7 +3734,7 @@
      }
     },
     {
-     "id": "ip0163",
+     "id": "ip0164",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3741,7 +3756,7 @@
      }
     },
     {
-     "id": "ip0164",
+     "id": "ip0165",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3759,7 +3774,7 @@
      }
     },
     {
-     "id": "ip0165",
+     "id": "ip0166",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3775,7 +3790,7 @@
      "shadow": true
     },
     {
-     "id": "ip0166",
+     "id": "ip0167",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3801,7 +3816,7 @@
      }
     },
     {
-     "id": "ip0167",
+     "id": "ip0168",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3824,7 +3839,7 @@
      }
     },
     {
-     "id": "ip0168",
+     "id": "ip0169",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3847,7 +3862,7 @@
      }
     },
     {
-     "id": "ip0169",
+     "id": "ip0170",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3866,7 +3881,7 @@
      }
     },
     {
-     "id": "ip0170",
+     "id": "ip0171",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3887,7 +3902,7 @@
      }
     },
     {
-     "id": "ip0171",
+     "id": "ip0172",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3910,7 +3925,7 @@
      }
     },
     {
-     "id": "ip0172",
+     "id": "ip0173",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3933,7 +3948,7 @@
      }
     },
     {
-     "id": "ip0173",
+     "id": "ip0174",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3952,7 +3967,7 @@
      }
     },
     {
-     "id": "ip0174",
+     "id": "ip0175",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3973,7 +3988,7 @@
      }
     },
     {
-     "id": "ip0175",
+     "id": "ip0176",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3996,7 +4011,7 @@
      }
     },
     {
-     "id": "ip0176",
+     "id": "ip0177",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4019,7 +4034,7 @@
      }
     },
     {
-     "id": "ip0177",
+     "id": "ip0178",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4038,7 +4053,7 @@
      }
     },
     {
-     "id": "ip0178",
+     "id": "ip0179",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4059,7 +4074,7 @@
      }
     },
     {
-     "id": "ip0179",
+     "id": "ip0180",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4078,7 +4093,7 @@
      }
     },
     {
-     "id": "ip0180",
+     "id": "ip0181",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4105,7 +4120,7 @@
    "notes": "[30초] 준비물 네 가지(교육안내서 4): 기동복 · 활동화 / 필기도구 · 노트 · 개인물컵 / 무전기 2대(UHF, LTE) / 배포된 지휘통제절차 해설 개인별 숙지 — 「해설은 11/23 SOP 수업 전에 한 번 읽어 오시면 좋습니다.」",
    "elements": [
     {
-     "id": "ip0181",
+     "id": "ip0182",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4131,7 +4146,7 @@
      }
     },
     {
-     "id": "ip0182",
+     "id": "ip0183",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4151,7 +4166,7 @@
      }
     },
     {
-     "id": "ip0183",
+     "id": "ip0184",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4177,7 +4192,7 @@
      }
     },
     {
-     "id": "ip0184",
+     "id": "ip0185",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4203,7 +4218,7 @@
      }
     },
     {
-     "id": "ip0185",
+     "id": "ip0186",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4229,7 +4244,7 @@
      }
     },
     {
-     "id": "ip0186",
+     "id": "ip0187",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4255,7 +4270,7 @@
      }
     },
     {
-     "id": "ip0187",
+     "id": "ip0188",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4281,7 +4296,7 @@
      }
     },
     {
-     "id": "ip0188",
+     "id": "ip0189",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4303,7 +4318,7 @@
      }
     },
     {
-     "id": "ip0189",
+     "id": "ip0190",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4321,7 +4336,7 @@
      }
     },
     {
-     "id": "ip0190",
+     "id": "ip0191",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4344,7 +4359,7 @@
      }
     },
     {
-     "id": "ip0191",
+     "id": "ip0192",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4367,7 +4382,7 @@
      }
     },
     {
-     "id": "ip0192",
+     "id": "ip0193",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4386,7 +4401,7 @@
      }
     },
     {
-     "id": "ip0193",
+     "id": "ip0194",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4407,7 +4422,7 @@
      }
     },
     {
-     "id": "ip0194",
+     "id": "ip0195",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4430,7 +4445,7 @@
      }
     },
     {
-     "id": "ip0195",
+     "id": "ip0196",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4453,7 +4468,7 @@
      }
     },
     {
-     "id": "ip0196",
+     "id": "ip0197",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4472,7 +4487,7 @@
      }
     },
     {
-     "id": "ip0197",
+     "id": "ip0198",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4493,7 +4508,7 @@
      }
     },
     {
-     "id": "ip0198",
+     "id": "ip0199",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4516,7 +4531,7 @@
      }
     },
     {
-     "id": "ip0199",
+     "id": "ip0200",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4539,7 +4554,7 @@
      }
     },
     {
-     "id": "ip0200",
+     "id": "ip0201",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4558,7 +4573,7 @@
      }
     },
     {
-     "id": "ip0201",
+     "id": "ip0202",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4579,7 +4594,7 @@
      }
     },
     {
-     "id": "ip0202",
+     "id": "ip0203",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4602,7 +4617,7 @@
      }
     },
     {
-     "id": "ip0203",
+     "id": "ip0204",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4625,7 +4640,7 @@
      }
     },
     {
-     "id": "ip0204",
+     "id": "ip0205",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4644,7 +4659,7 @@
      }
     },
     {
-     "id": "ip0205",
+     "id": "ip0206",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4665,30 +4680,30 @@
      }
     },
     {
-     "id": "ip0206",
+     "id": "ip0207",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 1330,
-     "y": 280,
-     "w": 400,
-     "h": 400,
-     "src": "assets/ip-c13.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
+     "x": 1260,
+     "y": 270,
+     "w": 540,
+     "h": 405,
+     "src": "assets/ip-kit.jpg",
+     "fit": "cover",
+     "radius": 16,
+     "shadow": true
     },
     {
-     "id": "ip0207",
+     "id": "ip0208",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 1260,
-     "y": 740,
+     "y": 720,
      "w": 540,
      "h": 70,
      "shape": "rect",
@@ -4707,7 +4722,7 @@
      }
     },
     {
-     "id": "ip0208",
+     "id": "ip0209",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4734,7 +4749,7 @@
    "notes": "[30초] 운동장 주차 · 본관 앞 금지(위반 3점) · 식당 12:10 이후.\n지난 기수에는 「1 · 2열 주차 후 2 · 3열 사이 통로」 · 차량 2부제를 안내했습니다 — 이번 기수 적용 여부는 현장에서 안내.",
    "elements": [
     {
-     "id": "ip0209",
+     "id": "ip0210",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4760,7 +4775,7 @@
      }
     },
     {
-     "id": "ip0210",
+     "id": "ip0211",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4780,7 +4795,7 @@
      }
     },
     {
-     "id": "ip0211",
+     "id": "ip0212",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4806,7 +4821,7 @@
      }
     },
     {
-     "id": "ip0212",
+     "id": "ip0213",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4832,7 +4847,7 @@
      }
     },
     {
-     "id": "ip0213",
+     "id": "ip0214",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4858,7 +4873,7 @@
      }
     },
     {
-     "id": "ip0214",
+     "id": "ip0215",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4884,7 +4899,7 @@
      }
     },
     {
-     "id": "ip0215",
+     "id": "ip0216",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4910,7 +4925,7 @@
      }
     },
     {
-     "id": "ip0216",
+     "id": "ip0217",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4932,7 +4947,7 @@
      }
     },
     {
-     "id": "ip0217",
+     "id": "ip0218",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4950,7 +4965,7 @@
      }
     },
     {
-     "id": "ip0218",
+     "id": "ip0219",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4966,7 +4981,7 @@
      "shadow": true
     },
     {
-     "id": "ip0219",
+     "id": "ip0220",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4992,7 +5007,7 @@
      }
     },
     {
-     "id": "ip0220",
+     "id": "ip0221",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5015,7 +5030,7 @@
      }
     },
     {
-     "id": "ip0221",
+     "id": "ip0222",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5038,7 +5053,7 @@
      }
     },
     {
-     "id": "ip0222",
+     "id": "ip0223",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5057,7 +5072,7 @@
      }
     },
     {
-     "id": "ip0223",
+     "id": "ip0224",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5078,7 +5093,7 @@
      }
     },
     {
-     "id": "ip0224",
+     "id": "ip0225",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5101,7 +5116,7 @@
      }
     },
     {
-     "id": "ip0225",
+     "id": "ip0226",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5124,7 +5139,7 @@
      }
     },
     {
-     "id": "ip0226",
+     "id": "ip0227",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5143,7 +5158,7 @@
      }
     },
     {
-     "id": "ip0227",
+     "id": "ip0228",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5164,7 +5179,7 @@
      }
     },
     {
-     "id": "ip0228",
+     "id": "ip0229",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5187,7 +5202,7 @@
      }
     },
     {
-     "id": "ip0229",
+     "id": "ip0230",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5210,7 +5225,7 @@
      }
     },
     {
-     "id": "ip0230",
+     "id": "ip0231",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5229,7 +5244,7 @@
      }
     },
     {
-     "id": "ip0231",
+     "id": "ip0232",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5250,7 +5265,7 @@
      }
     },
     {
-     "id": "ip0232",
+     "id": "ip0233",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5277,7 +5292,7 @@
    "notes": "편의시설(지난 기수 교육안내 기준 — 이번 교육안내서에는 없음): 탈의실 남 4층 · 여 3층(비밀번호 별도 공지, 샤워 가능, 세면도구 개인 지참), 화장실 남 2 · 4층 · 여 3층(1층은 교직원용), 흡연 본관동 소 훈련탑 옆 지정구역.\n지정 장소 외 흡연은 감점 3점(생활평가 10-7). 바뀐 것이 있으면 고쳐 말하세요.",
    "elements": [
     {
-     "id": "ip0233",
+     "id": "ip0234",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5303,7 +5318,7 @@
      }
     },
     {
-     "id": "ip0234",
+     "id": "ip0235",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5323,7 +5338,7 @@
      }
     },
     {
-     "id": "ip0235",
+     "id": "ip0236",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5349,7 +5364,7 @@
      }
     },
     {
-     "id": "ip0236",
+     "id": "ip0237",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5375,7 +5390,7 @@
      }
     },
     {
-     "id": "ip0237",
+     "id": "ip0238",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5401,7 +5416,7 @@
      }
     },
     {
-     "id": "ip0238",
+     "id": "ip0239",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5427,7 +5442,7 @@
      }
     },
     {
-     "id": "ip0239",
+     "id": "ip0240",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5453,7 +5468,7 @@
      }
     },
     {
-     "id": "ip0240",
+     "id": "ip0241",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5475,7 +5490,7 @@
      }
     },
     {
-     "id": "ip0241",
+     "id": "ip0242",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5493,7 +5508,7 @@
      }
     },
     {
-     "id": "ip0242",
+     "id": "ip0243",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5516,7 +5531,7 @@
      }
     },
     {
-     "id": "ip0243",
+     "id": "ip0244",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5532,7 +5547,7 @@
      "shadow": true
     },
     {
-     "id": "ip0244",
+     "id": "ip0245",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5551,7 +5566,7 @@
      }
     },
     {
-     "id": "ip0245",
+     "id": "ip0246",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5570,7 +5585,7 @@
      }
     },
     {
-     "id": "ip0246",
+     "id": "ip0247",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5593,7 +5608,7 @@
      }
     },
     {
-     "id": "ip0247",
+     "id": "ip0248",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5609,7 +5624,7 @@
      "shadow": true
     },
     {
-     "id": "ip0248",
+     "id": "ip0249",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5628,7 +5643,7 @@
      }
     },
     {
-     "id": "ip0249",
+     "id": "ip0250",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5647,7 +5662,7 @@
      }
     },
     {
-     "id": "ip0250",
+     "id": "ip0251",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5670,7 +5685,7 @@
      }
     },
     {
-     "id": "ip0251",
+     "id": "ip0252",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5686,7 +5701,7 @@
      "shadow": true
     },
     {
-     "id": "ip0252",
+     "id": "ip0253",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5705,7 +5720,7 @@
      }
     },
     {
-     "id": "ip0253",
+     "id": "ip0254",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5724,7 +5739,7 @@
      }
     },
     {
-     "id": "ip0254",
+     "id": "ip0255",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5751,7 +5766,7 @@
    "notes": "[1분] 「수료와 합격은 다릅니다 — 수료는 출석 80%와 생활평가, 자격은 12/2 · 3 과정평가 70점.」 결강 · 조퇴는 반드시 미리 신청서 + 증빙 → 생활지도교수.\n74시간 × 80% = 59.2시간 이상 수강.\n관련 규정(지난 기수 안내): 소방공무원 교육훈련규정 제17조 · 인천소방학교 학칙 제25조 · 현장지휘관 자격인증제 운영규정 제7조(수료 후 평가 불합격 시 재평가).",
    "elements": [
     {
-     "id": "ip0255",
+     "id": "ip0256",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5777,7 +5792,7 @@
      }
     },
     {
-     "id": "ip0256",
+     "id": "ip0257",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5797,7 +5812,7 @@
      }
     },
     {
-     "id": "ip0257",
+     "id": "ip0258",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5823,7 +5838,7 @@
      }
     },
     {
-     "id": "ip0258",
+     "id": "ip0259",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5849,7 +5864,7 @@
      }
     },
     {
-     "id": "ip0259",
+     "id": "ip0260",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5875,7 +5890,7 @@
      }
     },
     {
-     "id": "ip0260",
+     "id": "ip0261",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5901,7 +5916,7 @@
      }
     },
     {
-     "id": "ip0261",
+     "id": "ip0262",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5927,7 +5942,7 @@
      }
     },
     {
-     "id": "ip0262",
+     "id": "ip0263",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5949,7 +5964,7 @@
      }
     },
     {
-     "id": "ip0263",
+     "id": "ip0264",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5967,7 +5982,7 @@
      }
     },
     {
-     "id": "ip0264",
+     "id": "ip0265",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5983,7 +5998,7 @@
      "shadow": true
     },
     {
-     "id": "ip0265",
+     "id": "ip0266",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6006,7 +6021,7 @@
      }
     },
     {
-     "id": "ip0266",
+     "id": "ip0267",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6029,7 +6044,7 @@
      }
     },
     {
-     "id": "ip0267",
+     "id": "ip0268",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6049,7 +6064,7 @@
      }
     },
     {
-     "id": "ip0268",
+     "id": "ip0269",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6069,7 +6084,7 @@
      }
     },
     {
-     "id": "ip0269",
+     "id": "ip0270",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6092,7 +6107,7 @@
      }
     },
     {
-     "id": "ip0270",
+     "id": "ip0271",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6115,7 +6130,7 @@
      }
     },
     {
-     "id": "ip0271",
+     "id": "ip0272",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6135,7 +6150,7 @@
      }
     },
     {
-     "id": "ip0272",
+     "id": "ip0273",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6155,7 +6170,7 @@
      }
     },
     {
-     "id": "ip0273",
+     "id": "ip0274",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6178,7 +6193,7 @@
      }
     },
     {
-     "id": "ip0274",
+     "id": "ip0275",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6201,7 +6216,7 @@
      }
     },
     {
-     "id": "ip0275",
+     "id": "ip0276",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6221,7 +6236,7 @@
      }
     },
     {
-     "id": "ip0276",
+     "id": "ip0277",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6241,7 +6256,7 @@
      }
     },
     {
-     "id": "ip0277",
+     "id": "ip0278",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6264,7 +6279,7 @@
      }
     },
     {
-     "id": "ip0278",
+     "id": "ip0279",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6287,7 +6302,7 @@
      }
     },
     {
-     "id": "ip0279",
+     "id": "ip0280",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6307,7 +6322,7 @@
      }
     },
     {
-     "id": "ip0280",
+     "id": "ip0281",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6327,7 +6342,7 @@
      }
     },
     {
-     "id": "ip0281",
+     "id": "ip0282",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6354,7 +6369,7 @@
    "notes": "교육생 생활수칙(교육안내서 4): 입교 기간 중 외박 포함 사고 발생 시 생활지도교수 보고 / 교내 지정 흡연장 외 흡연 금지 / 생활평가 점수가 만점의 5할 미만이면 수료 불가 / 폭력 · 음주 · 도박 등 교육질서 문란행위 시 퇴교 / 학생과 교직원 상호 간 경례 · 호칭 · 언어 · 태도 등 예의 준수 / 자율적 학습 참여와 능동적 생활 태도 견지 및 품위 유지. 그 밖의 사항은 인천소방학교 교육생지도규정.",
    "elements": [
     {
-     "id": "ip0282",
+     "id": "ip0283",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6380,7 +6395,7 @@
      }
     },
     {
-     "id": "ip0283",
+     "id": "ip0284",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6400,7 +6415,7 @@
      }
     },
     {
-     "id": "ip0284",
+     "id": "ip0285",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6426,7 +6441,7 @@
      }
     },
     {
-     "id": "ip0285",
+     "id": "ip0286",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6452,7 +6467,7 @@
      }
     },
     {
-     "id": "ip0286",
+     "id": "ip0287",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6478,7 +6493,7 @@
      }
     },
     {
-     "id": "ip0287",
+     "id": "ip0288",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6504,7 +6519,7 @@
      }
     },
     {
-     "id": "ip0288",
+     "id": "ip0289",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6530,7 +6545,7 @@
      }
     },
     {
-     "id": "ip0289",
+     "id": "ip0290",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6552,7 +6567,7 @@
      }
     },
     {
-     "id": "ip0290",
+     "id": "ip0291",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6570,7 +6585,7 @@
      }
     },
     {
-     "id": "ip0291",
+     "id": "ip0292",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6593,7 +6608,7 @@
      }
     },
     {
-     "id": "ip0292",
+     "id": "ip0293",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6619,7 +6634,7 @@
      }
     },
     {
-     "id": "ip0293",
+     "id": "ip0294",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6639,7 +6654,7 @@
      }
     },
     {
-     "id": "ip0294",
+     "id": "ip0295",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6659,7 +6674,7 @@
      }
     },
     {
-     "id": "ip0295",
+     "id": "ip0296",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6682,7 +6697,7 @@
      }
     },
     {
-     "id": "ip0296",
+     "id": "ip0297",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6708,7 +6723,7 @@
      }
     },
     {
-     "id": "ip0297",
+     "id": "ip0298",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6728,7 +6743,7 @@
      }
     },
     {
-     "id": "ip0298",
+     "id": "ip0299",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6748,7 +6763,7 @@
      }
     },
     {
-     "id": "ip0299",
+     "id": "ip0300",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6771,7 +6786,7 @@
      }
     },
     {
-     "id": "ip0300",
+     "id": "ip0301",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6797,7 +6812,7 @@
      }
     },
     {
-     "id": "ip0301",
+     "id": "ip0302",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6817,7 +6832,7 @@
      }
     },
     {
-     "id": "ip0302",
+     "id": "ip0303",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6837,7 +6852,7 @@
      }
     },
     {
-     "id": "ip0303",
+     "id": "ip0304",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6860,7 +6875,7 @@
      }
     },
     {
-     "id": "ip0304",
+     "id": "ip0305",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6886,7 +6901,7 @@
      }
     },
     {
-     "id": "ip0305",
+     "id": "ip0306",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6906,7 +6921,7 @@
      }
     },
     {
-     "id": "ip0306",
+     "id": "ip0307",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6926,7 +6941,7 @@
      }
     },
     {
-     "id": "ip0307",
+     "id": "ip0308",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6949,7 +6964,7 @@
      }
     },
     {
-     "id": "ip0308",
+     "id": "ip0309",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6975,7 +6990,7 @@
      }
     },
     {
-     "id": "ip0309",
+     "id": "ip0310",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6995,7 +7010,7 @@
      }
     },
     {
-     "id": "ip0310",
+     "id": "ip0311",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7015,7 +7030,7 @@
      }
     },
     {
-     "id": "ip0311",
+     "id": "ip0312",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7038,7 +7053,7 @@
      }
     },
     {
-     "id": "ip0312",
+     "id": "ip0313",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7064,7 +7079,7 @@
      }
     },
     {
-     "id": "ip0313",
+     "id": "ip0314",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7084,7 +7099,7 @@
      }
     },
     {
-     "id": "ip0314",
+     "id": "ip0315",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7104,16 +7119,32 @@
      }
     },
     {
-     "id": "ip0315",
+     "id": "ip0316",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1430,
+     "y": 270,
+     "w": 370,
+     "h": 330,
+     "src": "assets/ip-salute.jpg",
+     "fit": "cover",
+     "radius": 16,
+     "shadow": true
+    },
+    {
+     "id": "ip0317",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 1430,
-     "y": 270,
+     "y": 620,
      "w": 370,
-     "h": 630,
+     "h": 290,
      "shape": "rect",
      "fill": "#0B1628",
      "stroke": "",
@@ -7127,66 +7158,66 @@
      }
     },
     {
-     "id": "ip0316",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1460,
-     "y": 300,
-     "w": 320,
-     "h": 40,
-     "role": "text",
-     "html": "결론",
-     "style": {
-      "fontSize": 28,
-      "color": "#FDBA74",
-      "bold": true
-     }
-    },
-    {
-     "id": "ip0317",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1460,
-     "y": 360,
-     "w": 320,
-     "h": 360,
-     "role": "text",
-     "html": "보고하고<br>지정된 곳에서<br>예의 있게",
-     "style": {
-      "fontSize": 44,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.5,
-      "valign": "middle"
-     }
-    },
-    {
      "id": "ip0318",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 1460,
-     "y": 760,
+     "x": 1456,
+     "y": 636,
      "w": 320,
-     "h": 120,
+     "h": 36,
      "role": "text",
-     "html": "그 밖의 사항은<br>교육생지도규정",
+     "html": "결론",
      "style": {
       "fontSize": 26,
-      "color": "#CBD5E1",
-      "lineHeight": 1.5
+      "color": "#FDBA74",
+      "bold": true
      }
     },
     {
      "id": "ip0319",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1456,
+     "y": 676,
+     "w": 330,
+     "h": 130,
+     "role": "text",
+     "html": "보고하고<br>지정된 곳에서<br>예의 있게",
+     "style": {
+      "fontSize": 30,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.35,
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "ip0320",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1456,
+     "y": 818,
+     "w": 330,
+     "h": 76,
+     "role": "text",
+     "html": "그 밖의 사항은<br>교육생지도규정",
+     "style": {
+      "fontSize": 24,
+      "color": "#CBD5E1",
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "ip0321",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7213,7 +7244,7 @@
    "notes": "[1분] 「생활평가 5할 미만이면 수료가 안 됩니다.」 감점 1회 최대 30점(퇴학 항목 제외), 정상참작 사유는 교육운영위원회 의결로 감면 · 조정 가능. 가점 1회 최대 10점(학교 명예 고양 제외), 합계 상한은 배정점수의 20%.",
    "elements": [
     {
-     "id": "ip0320",
+     "id": "ip0322",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7239,7 +7270,7 @@
      }
     },
     {
-     "id": "ip0321",
+     "id": "ip0323",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7259,7 +7290,7 @@
      }
     },
     {
-     "id": "ip0322",
+     "id": "ip0324",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7285,7 +7316,7 @@
      }
     },
     {
-     "id": "ip0323",
+     "id": "ip0325",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7311,7 +7342,7 @@
      }
     },
     {
-     "id": "ip0324",
+     "id": "ip0326",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7337,7 +7368,7 @@
      }
     },
     {
-     "id": "ip0325",
+     "id": "ip0327",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7363,7 +7394,7 @@
      }
     },
     {
-     "id": "ip0326",
+     "id": "ip0328",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7389,7 +7420,7 @@
      }
     },
     {
-     "id": "ip0327",
+     "id": "ip0329",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7411,7 +7442,7 @@
      }
     },
     {
-     "id": "ip0328",
+     "id": "ip0330",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7429,7 +7460,7 @@
      }
     },
     {
-     "id": "ip0329",
+     "id": "ip0331",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7454,7 +7485,7 @@
      }
     },
     {
-     "id": "ip0330",
+     "id": "ip0332",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7477,7 +7508,7 @@
      }
     },
     {
-     "id": "ip0331",
+     "id": "ip0333",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7496,7 +7527,7 @@
      }
     },
     {
-     "id": "ip0332",
+     "id": "ip0334",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7515,7 +7546,7 @@
      }
     },
     {
-     "id": "ip0333",
+     "id": "ip0335",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7538,7 +7569,7 @@
      }
     },
     {
-     "id": "ip0334",
+     "id": "ip0336",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7557,7 +7588,7 @@
      }
     },
     {
-     "id": "ip0335",
+     "id": "ip0337",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7576,7 +7607,7 @@
      }
     },
     {
-     "id": "ip0336",
+     "id": "ip0338",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -7602,7 +7633,7 @@
      }
     },
     {
-     "id": "ip0337",
+     "id": "ip0339",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7629,7 +7660,7 @@
    "notes": "자주 걸리는 감점(교육안내서 5): 입교시간 위반 시간당 3(5시간 이상은 1일, 20), 입교지시사항 위반 3, 무단결강 시간당 10, 승인결강 시간당 1(1일 3), 무단수업시간 위반 20분 이내 2, 수업태도 불량 3, 조례 · 종례 불참 각 2, 용모 · 복장 위반 3, 주차지정장소 위반 3, 지시사항 위반 3, 일과시간 위반 3, 지정된 장소 외 흡연 3.\n큰 감점: 강사 · 교수 등에 대한 불손한 언동 20, 무단외출 · 외박 30, 시험 부정행위 자료소지 20, 허가 없는 주류소지 · 교내음주 20, 언쟁 · 소란 20, 개인 전열 · 가스기구 10.\n퇴학: 음주운전, 음주 추태, 폭력행위, 성희롱 · 성폭력 · 성문란 행위. 품위손상 · 화투 등 사행성 게임은 30~퇴학.\n제32조 제4항 · 특휴 · 공가 · 공무상 정당한 사유는 감점하지 않음(비고).",
    "elements": [
     {
-     "id": "ip0338",
+     "id": "ip0340",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7655,7 +7686,7 @@
      }
     },
     {
-     "id": "ip0339",
+     "id": "ip0341",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7675,7 +7706,7 @@
      }
     },
     {
-     "id": "ip0340",
+     "id": "ip0342",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7701,7 +7732,7 @@
      }
     },
     {
-     "id": "ip0341",
+     "id": "ip0343",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7727,7 +7758,7 @@
      }
     },
     {
-     "id": "ip0342",
+     "id": "ip0344",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7753,7 +7784,7 @@
      }
     },
     {
-     "id": "ip0343",
+     "id": "ip0345",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7779,7 +7810,7 @@
      }
     },
     {
-     "id": "ip0344",
+     "id": "ip0346",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7805,7 +7836,7 @@
      }
     },
     {
-     "id": "ip0345",
+     "id": "ip0347",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7827,7 +7858,7 @@
      }
     },
     {
-     "id": "ip0346",
+     "id": "ip0348",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7845,7 +7876,7 @@
      }
     },
     {
-     "id": "ip0347",
+     "id": "ip0349",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7868,7 +7899,7 @@
      }
     },
     {
-     "id": "ip0348",
+     "id": "ip0350",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7889,7 +7920,7 @@
      }
     },
     {
-     "id": "ip0349",
+     "id": "ip0351",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7915,7 +7946,7 @@
      }
     },
     {
-     "id": "ip0350",
+     "id": "ip0352",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7938,7 +7969,7 @@
      }
     },
     {
-     "id": "ip0351",
+     "id": "ip0353",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7959,7 +7990,7 @@
      }
     },
     {
-     "id": "ip0352",
+     "id": "ip0354",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7985,7 +8016,7 @@
      }
     },
     {
-     "id": "ip0353",
+     "id": "ip0355",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8008,7 +8039,7 @@
      }
     },
     {
-     "id": "ip0354",
+     "id": "ip0356",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8029,7 +8060,7 @@
      }
     },
     {
-     "id": "ip0355",
+     "id": "ip0357",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8055,7 +8086,7 @@
      }
     },
     {
-     "id": "ip0356",
+     "id": "ip0358",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8078,7 +8109,7 @@
      }
     },
     {
-     "id": "ip0357",
+     "id": "ip0359",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8099,7 +8130,7 @@
      }
     },
     {
-     "id": "ip0358",
+     "id": "ip0360",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8125,7 +8156,7 @@
      }
     },
     {
-     "id": "ip0359",
+     "id": "ip0361",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8148,7 +8179,7 @@
      }
     },
     {
-     "id": "ip0360",
+     "id": "ip0362",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8169,7 +8200,7 @@
      }
     },
     {
-     "id": "ip0361",
+     "id": "ip0363",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8195,7 +8226,7 @@
      }
     },
     {
-     "id": "ip0362",
+     "id": "ip0364",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8218,7 +8249,7 @@
      }
     },
     {
-     "id": "ip0363",
+     "id": "ip0365",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8239,7 +8270,7 @@
      }
     },
     {
-     "id": "ip0364",
+     "id": "ip0366",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8265,7 +8296,7 @@
      }
     },
     {
-     "id": "ip0365",
+     "id": "ip0367",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8288,7 +8319,7 @@
      }
     },
     {
-     "id": "ip0366",
+     "id": "ip0368",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8309,7 +8340,7 @@
      }
     },
     {
-     "id": "ip0367",
+     "id": "ip0369",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8335,7 +8366,7 @@
      }
     },
     {
-     "id": "ip0368",
+     "id": "ip0370",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8358,7 +8389,7 @@
      }
     },
     {
-     "id": "ip0369",
+     "id": "ip0371",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8379,7 +8410,7 @@
      }
     },
     {
-     "id": "ip0370",
+     "id": "ip0372",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8405,7 +8436,7 @@
      }
     },
     {
-     "id": "ip0371",
+     "id": "ip0373",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8428,7 +8459,7 @@
      }
     },
     {
-     "id": "ip0372",
+     "id": "ip0374",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8449,7 +8480,7 @@
      }
     },
     {
-     "id": "ip0373",
+     "id": "ip0375",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8475,7 +8506,7 @@
      }
     },
     {
-     "id": "ip0374",
+     "id": "ip0376",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8498,7 +8529,7 @@
      }
     },
     {
-     "id": "ip0375",
+     "id": "ip0377",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8519,7 +8550,7 @@
      }
     },
     {
-     "id": "ip0376",
+     "id": "ip0378",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8545,7 +8576,7 @@
      }
     },
     {
-     "id": "ip0377",
+     "id": "ip0379",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8568,7 +8599,7 @@
      }
     },
     {
-     "id": "ip0378",
+     "id": "ip0380",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8587,7 +8618,7 @@
      }
     },
     {
-     "id": "ip0379",
+     "id": "ip0381",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8607,7 +8638,7 @@
      }
     },
     {
-     "id": "ip0380",
+     "id": "ip0382",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8630,7 +8661,7 @@
      }
     },
     {
-     "id": "ip0381",
+     "id": "ip0383",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8649,7 +8680,7 @@
      }
     },
     {
-     "id": "ip0382",
+     "id": "ip0384",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8676,7 +8707,7 @@
    "notes": "가점(교육안내서 6): 학교의 명예를 고양한 자 10, 화재예방 · 도난방지 유공 5, 응급환자조치 5, 모범생활실(합숙) / 모범사물함관리(비합숙) 5, 환경정리 솔선 2, 교육생 대표 10 · 보조자 8, 그 밖의 선행 및 모범교육생(교수 · 교관 추천) — 교육훈련 · 교육생활 모범 3, 학교 · 교내 · 자치행사 5.\n1회 최대 10점(학교 명예 고양 제외), 가점 합계 상한은 생활평가 배정점수의 20%.\n교육생 대표 · 보조자 선출은 이 시간에 함께 진행해도 좋습니다.",
    "elements": [
     {
-     "id": "ip0383",
+     "id": "ip0385",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8702,7 +8733,7 @@
      }
     },
     {
-     "id": "ip0384",
+     "id": "ip0386",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8722,7 +8753,7 @@
      }
     },
     {
-     "id": "ip0385",
+     "id": "ip0387",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8748,7 +8779,7 @@
      }
     },
     {
-     "id": "ip0386",
+     "id": "ip0388",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8774,7 +8805,7 @@
      }
     },
     {
-     "id": "ip0387",
+     "id": "ip0389",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8800,7 +8831,7 @@
      }
     },
     {
-     "id": "ip0388",
+     "id": "ip0390",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8826,7 +8857,7 @@
      }
     },
     {
-     "id": "ip0389",
+     "id": "ip0391",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8852,7 +8883,7 @@
      }
     },
     {
-     "id": "ip0390",
+     "id": "ip0392",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8874,7 +8905,7 @@
      }
     },
     {
-     "id": "ip0391",
+     "id": "ip0393",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8892,7 +8923,7 @@
      }
     },
     {
-     "id": "ip0392",
+     "id": "ip0394",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8915,7 +8946,7 @@
      }
     },
     {
-     "id": "ip0393",
+     "id": "ip0395",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8941,7 +8972,7 @@
      }
     },
     {
-     "id": "ip0394",
+     "id": "ip0396",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8962,7 +8993,7 @@
      }
     },
     {
-     "id": "ip0395",
+     "id": "ip0397",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8985,7 +9016,7 @@
      }
     },
     {
-     "id": "ip0396",
+     "id": "ip0398",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9011,7 +9042,7 @@
      }
     },
     {
-     "id": "ip0397",
+     "id": "ip0399",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9032,7 +9063,7 @@
      }
     },
     {
-     "id": "ip0398",
+     "id": "ip0400",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9055,7 +9086,7 @@
      }
     },
     {
-     "id": "ip0399",
+     "id": "ip0401",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9081,7 +9112,7 @@
      }
     },
     {
-     "id": "ip0400",
+     "id": "ip0402",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9102,7 +9133,7 @@
      }
     },
     {
-     "id": "ip0401",
+     "id": "ip0403",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9125,7 +9156,7 @@
      }
     },
     {
-     "id": "ip0402",
+     "id": "ip0404",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9151,7 +9182,7 @@
      }
     },
     {
-     "id": "ip0403",
+     "id": "ip0405",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9172,7 +9203,7 @@
      }
     },
     {
-     "id": "ip0404",
+     "id": "ip0406",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9195,7 +9226,7 @@
      }
     },
     {
-     "id": "ip0405",
+     "id": "ip0407",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9221,7 +9252,7 @@
      }
     },
     {
-     "id": "ip0406",
+     "id": "ip0408",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9242,7 +9273,7 @@
      }
     },
     {
-     "id": "ip0407",
+     "id": "ip0409",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9265,7 +9296,7 @@
      }
     },
     {
-     "id": "ip0408",
+     "id": "ip0410",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9291,7 +9322,7 @@
      }
     },
     {
-     "id": "ip0409",
+     "id": "ip0411",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9312,7 +9343,7 @@
      }
     },
     {
-     "id": "ip0410",
+     "id": "ip0412",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9335,7 +9366,7 @@
      }
     },
     {
-     "id": "ip0411",
+     "id": "ip0413",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9361,7 +9392,7 @@
      }
     },
     {
-     "id": "ip0412",
+     "id": "ip0414",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9382,7 +9413,7 @@
      }
     },
     {
-     "id": "ip0413",
+     "id": "ip0415",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9405,7 +9436,7 @@
      }
     },
     {
-     "id": "ip0414",
+     "id": "ip0416",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9431,7 +9462,7 @@
      }
     },
     {
-     "id": "ip0415",
+     "id": "ip0417",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9452,7 +9483,7 @@
      }
     },
     {
-     "id": "ip0416",
+     "id": "ip0418",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9475,7 +9506,7 @@
      }
     },
     {
-     "id": "ip0417",
+     "id": "ip0419",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9501,7 +9532,7 @@
      }
     },
     {
-     "id": "ip0418",
+     "id": "ip0420",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9522,7 +9553,7 @@
      }
     },
     {
-     "id": "ip0419",
+     "id": "ip0421",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9538,7 +9569,7 @@
      "shadow": false
     },
     {
-     "id": "ip0420",
+     "id": "ip0422",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9559,7 +9590,7 @@
      }
     },
     {
-     "id": "ip0421",
+     "id": "ip0423",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9586,7 +9617,7 @@
    "notes": "교수요목(교육안내서 7): 총계 74시간 — 강의 32, 참여 40, 기타 2.\n현장 지휘절차 실습(VR) 및 평가 40(실습 24 + 개인역량 평가 16, 시간표 기준). 전문 강의: 현장지휘론 3, 소방 무전통신 2, 사례연구 3, 화재역학 2, 화재읽기 3, 재난현장 언론대응 3, 전기차 사고대응 3(= 19). 묶음은 강사가 나눈 것.\n센터 강의: 평가표 이해 및 적용 1, XVR 1, SOP 지휘통제절차 해설 2, 소방드론 3, 소방용수 3(= 10). 특강 2. 고급과정 OT 1 · 입교등록 및 수료식 2(기타). 합계 40 + 19 + 10 + 2 + 3 = 74, 강의 32 = 19 + 10 + 2 + 1.",
    "elements": [
     {
-     "id": "ip0422",
+     "id": "ip0424",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9612,7 +9643,7 @@
      }
     },
     {
-     "id": "ip0423",
+     "id": "ip0425",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9632,7 +9663,7 @@
      }
     },
     {
-     "id": "ip0424",
+     "id": "ip0426",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9658,7 +9689,7 @@
      }
     },
     {
-     "id": "ip0425",
+     "id": "ip0427",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9684,7 +9715,7 @@
      }
     },
     {
-     "id": "ip0426",
+     "id": "ip0428",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9710,7 +9741,7 @@
      }
     },
     {
-     "id": "ip0427",
+     "id": "ip0429",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9736,7 +9767,7 @@
      }
     },
     {
-     "id": "ip0428",
+     "id": "ip0430",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9762,7 +9793,7 @@
      }
     },
     {
-     "id": "ip0429",
+     "id": "ip0431",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9784,7 +9815,7 @@
      }
     },
     {
-     "id": "ip0430",
+     "id": "ip0432",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9802,7 +9833,7 @@
      }
     },
     {
-     "id": "ip0431",
+     "id": "ip0433",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9828,7 +9859,7 @@
      }
     },
     {
-     "id": "ip0432",
+     "id": "ip0434",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9851,7 +9882,7 @@
      }
     },
     {
-     "id": "ip0433",
+     "id": "ip0435",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9870,7 +9901,7 @@
      }
     },
     {
-     "id": "ip0434",
+     "id": "ip0436",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9889,7 +9920,7 @@
      }
     },
     {
-     "id": "ip0435",
+     "id": "ip0437",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9912,7 +9943,7 @@
      }
     },
     {
-     "id": "ip0436",
+     "id": "ip0438",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9931,7 +9962,7 @@
      }
     },
     {
-     "id": "ip0437",
+     "id": "ip0439",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9950,7 +9981,7 @@
      }
     },
     {
-     "id": "ip0438",
+     "id": "ip0440",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9973,7 +10004,7 @@
      }
     },
     {
-     "id": "ip0439",
+     "id": "ip0441",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9992,7 +10023,7 @@
      }
     },
     {
-     "id": "ip0440",
+     "id": "ip0442",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10011,23 +10042,49 @@
      }
     },
     {
-     "id": "ip0441",
+     "id": "ip0443",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 700,
-     "y": 600,
-     "w": 240,
-     "h": 240,
-     "src": "assets/ip-c14.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
+     "x": 120,
+     "y": 620,
+     "w": 820,
+     "h": 330,
+     "src": "assets/ip-vr.jpg",
+     "fit": "cover",
+     "radius": 16,
+     "shadow": true
     },
     {
-     "id": "ip0442",
+     "id": "ip0444",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 140,
+     "y": 890,
+     "w": 260,
+     "h": 44,
+     "shape": "rect",
+     "fill": "#C2410C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 22,
+     "shadow": false,
+     "html": "VR 지휘 실습 장면",
+     "style": {
+      "fontSize": 24,
+      "color": "#FFFFFF",
+      "bold": true,
+      "valign": "middle",
+      "padding": "0"
+     }
+    },
+    {
+     "id": "ip0445",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10054,7 +10111,7 @@
    "notes": "[1분 30초] 「오늘은 이 줄 — 다음 시간이 평가표 이해(3교시)입니다.」 첫 사흘 강의, 목요일 오후부터 VR 실습.\n보조강사: 이승철, 이주호, 박치언, 박건훈, 윤상진.\n11/26 · 11/27 8교시는 수업 없음(시간표 빈칸) — 운영 방법은 현장 안내.",
    "elements": [
     {
-     "id": "ip0443",
+     "id": "ip0446",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10080,7 +10137,7 @@
      }
     },
     {
-     "id": "ip0444",
+     "id": "ip0447",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10100,7 +10157,7 @@
      }
     },
     {
-     "id": "ip0445",
+     "id": "ip0448",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10126,7 +10183,7 @@
      }
     },
     {
-     "id": "ip0446",
+     "id": "ip0449",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10152,7 +10209,7 @@
      }
     },
     {
-     "id": "ip0447",
+     "id": "ip0450",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10178,7 +10235,7 @@
      }
     },
     {
-     "id": "ip0448",
+     "id": "ip0451",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10204,7 +10261,7 @@
      }
     },
     {
-     "id": "ip0449",
+     "id": "ip0452",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10230,7 +10287,7 @@
      }
     },
     {
-     "id": "ip0450",
+     "id": "ip0453",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10252,7 +10309,7 @@
      }
     },
     {
-     "id": "ip0451",
+     "id": "ip0454",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10278,7 +10335,7 @@
      }
     },
     {
-     "id": "ip0452",
+     "id": "ip0455",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10304,7 +10361,7 @@
      }
     },
     {
-     "id": "ip0453",
+     "id": "ip0456",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10330,7 +10387,7 @@
      }
     },
     {
-     "id": "ip0454",
+     "id": "ip0457",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10356,7 +10413,7 @@
      }
     },
     {
-     "id": "ip0455",
+     "id": "ip0458",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10382,7 +10439,7 @@
      }
     },
     {
-     "id": "ip0456",
+     "id": "ip0459",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10408,7 +10465,7 @@
      }
     },
     {
-     "id": "ip0457",
+     "id": "ip0460",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10428,7 +10485,7 @@
      }
     },
     {
-     "id": "ip0458",
+     "id": "ip0461",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10454,7 +10511,7 @@
      }
     },
     {
-     "id": "ip0459",
+     "id": "ip0462",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10480,7 +10537,7 @@
      }
     },
     {
-     "id": "ip0460",
+     "id": "ip0463",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10506,7 +10563,7 @@
      }
     },
     {
-     "id": "ip0461",
+     "id": "ip0464",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10532,7 +10589,7 @@
      }
     },
     {
-     "id": "ip0462",
+     "id": "ip0465",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10558,7 +10615,7 @@
      }
     },
     {
-     "id": "ip0463",
+     "id": "ip0466",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10584,7 +10641,7 @@
      }
     },
     {
-     "id": "ip0464",
+     "id": "ip0467",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10610,7 +10667,7 @@
      }
     },
     {
-     "id": "ip0465",
+     "id": "ip0468",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10636,7 +10693,7 @@
      }
     },
     {
-     "id": "ip0466",
+     "id": "ip0469",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10663,7 +10720,7 @@
      }
     },
     {
-     "id": "ip0467",
+     "id": "ip0470",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10690,7 +10747,7 @@
      }
     },
     {
-     "id": "ip0468",
+     "id": "ip0471",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10717,7 +10774,7 @@
      }
     },
     {
-     "id": "ip0469",
+     "id": "ip0472",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10744,7 +10801,7 @@
      }
     },
     {
-     "id": "ip0470",
+     "id": "ip0473",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10771,7 +10828,7 @@
      }
     },
     {
-     "id": "ip0471",
+     "id": "ip0474",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10798,7 +10855,7 @@
      }
     },
     {
-     "id": "ip0472",
+     "id": "ip0475",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10825,7 +10882,7 @@
      }
     },
     {
-     "id": "ip0473",
+     "id": "ip0476",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10852,7 +10909,7 @@
      }
     },
     {
-     "id": "ip0474",
+     "id": "ip0477",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10879,7 +10936,7 @@
      }
     },
     {
-     "id": "ip0475",
+     "id": "ip0478",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10906,7 +10963,7 @@
      }
     },
     {
-     "id": "ip0476",
+     "id": "ip0479",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10933,7 +10990,7 @@
      }
     },
     {
-     "id": "ip0477",
+     "id": "ip0480",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10960,7 +11017,7 @@
      }
     },
     {
-     "id": "ip0478",
+     "id": "ip0481",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10987,7 +11044,7 @@
      }
     },
     {
-     "id": "ip0479",
+     "id": "ip0482",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11014,7 +11071,7 @@
      }
     },
     {
-     "id": "ip0480",
+     "id": "ip0483",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11041,7 +11098,7 @@
      }
     },
     {
-     "id": "ip0481",
+     "id": "ip0484",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11068,7 +11125,7 @@
      }
     },
     {
-     "id": "ip0482",
+     "id": "ip0485",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11095,7 +11152,7 @@
      }
     },
     {
-     "id": "ip0483",
+     "id": "ip0486",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11122,7 +11179,7 @@
      }
     },
     {
-     "id": "ip0484",
+     "id": "ip0487",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11149,7 +11206,7 @@
      }
     },
     {
-     "id": "ip0485",
+     "id": "ip0488",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11176,7 +11233,7 @@
      }
     },
     {
-     "id": "ip0486",
+     "id": "ip0489",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11203,7 +11260,7 @@
      }
     },
     {
-     "id": "ip0487",
+     "id": "ip0490",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11230,7 +11287,7 @@
      }
     },
     {
-     "id": "ip0488",
+     "id": "ip0491",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11257,7 +11314,7 @@
      }
     },
     {
-     "id": "ip0489",
+     "id": "ip0492",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11284,7 +11341,7 @@
    "notes": "2주차(교육안내서 7): 11/30 · 12/1 VR 실습 9~24, 12/2 · 12/3 현장 지휘절차 개인역량 평가(과정평가) 1~16, 12/4 재난현장 언론대응 3h + 수료식.\n보조강사: 이승철, 이주호, 박치언, 박건훈, 윤상진.\n과정평가 70점 이상이 합격기준.",
    "elements": [
     {
-     "id": "ip0490",
+     "id": "ip0493",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11310,7 +11367,7 @@
      }
     },
     {
-     "id": "ip0491",
+     "id": "ip0494",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11330,7 +11387,7 @@
      }
     },
     {
-     "id": "ip0492",
+     "id": "ip0495",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11356,7 +11413,7 @@
      }
     },
     {
-     "id": "ip0493",
+     "id": "ip0496",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11382,7 +11439,7 @@
      }
     },
     {
-     "id": "ip0494",
+     "id": "ip0497",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11408,7 +11465,7 @@
      }
     },
     {
-     "id": "ip0495",
+     "id": "ip0498",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11434,7 +11491,7 @@
      }
     },
     {
-     "id": "ip0496",
+     "id": "ip0499",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11460,7 +11517,7 @@
      }
     },
     {
-     "id": "ip0497",
+     "id": "ip0500",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11482,7 +11539,7 @@
      }
     },
     {
-     "id": "ip0498",
+     "id": "ip0501",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11508,7 +11565,7 @@
      }
     },
     {
-     "id": "ip0499",
+     "id": "ip0502",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11534,7 +11591,7 @@
      }
     },
     {
-     "id": "ip0500",
+     "id": "ip0503",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11560,7 +11617,7 @@
      }
     },
     {
-     "id": "ip0501",
+     "id": "ip0504",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11586,7 +11643,7 @@
      }
     },
     {
-     "id": "ip0502",
+     "id": "ip0505",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11612,7 +11669,7 @@
      }
     },
     {
-     "id": "ip0503",
+     "id": "ip0506",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11638,7 +11695,7 @@
      }
     },
     {
-     "id": "ip0504",
+     "id": "ip0507",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11658,7 +11715,7 @@
      }
     },
     {
-     "id": "ip0505",
+     "id": "ip0508",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11684,7 +11741,7 @@
      }
     },
     {
-     "id": "ip0506",
+     "id": "ip0509",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11710,7 +11767,7 @@
      }
     },
     {
-     "id": "ip0507",
+     "id": "ip0510",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11736,7 +11793,7 @@
      }
     },
     {
-     "id": "ip0508",
+     "id": "ip0511",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11762,7 +11819,7 @@
      }
     },
     {
-     "id": "ip0509",
+     "id": "ip0512",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11788,7 +11845,7 @@
      }
     },
     {
-     "id": "ip0510",
+     "id": "ip0513",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11814,7 +11871,7 @@
      }
     },
     {
-     "id": "ip0511",
+     "id": "ip0514",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11840,7 +11897,7 @@
      }
     },
     {
-     "id": "ip0512",
+     "id": "ip0515",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11866,7 +11923,7 @@
      }
     },
     {
-     "id": "ip0513",
+     "id": "ip0516",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11893,7 +11950,7 @@
      }
     },
     {
-     "id": "ip0514",
+     "id": "ip0517",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11920,7 +11977,7 @@
      }
     },
     {
-     "id": "ip0515",
+     "id": "ip0518",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11947,7 +12004,7 @@
      }
     },
     {
-     "id": "ip0516",
+     "id": "ip0519",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11974,7 +12031,7 @@
      }
     },
     {
-     "id": "ip0517",
+     "id": "ip0520",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12001,7 +12058,7 @@
      }
     },
     {
-     "id": "ip0518",
+     "id": "ip0521",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12028,7 +12085,7 @@
      }
     },
     {
-     "id": "ip0519",
+     "id": "ip0522",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12055,7 +12112,7 @@
      }
     },
     {
-     "id": "ip0520",
+     "id": "ip0523",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12082,7 +12139,7 @@
      }
     },
     {
-     "id": "ip0521",
+     "id": "ip0524",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12109,7 +12166,7 @@
      }
     },
     {
-     "id": "ip0522",
+     "id": "ip0525",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -12136,7 +12193,7 @@
      }
     },
     {
-     "id": "ip0523",
+     "id": "ip0526",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -12163,7 +12220,7 @@
      }
     },
     {
-     "id": "ip0524",
+     "id": "ip0527",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12190,7 +12247,7 @@
    "notes": "문의사항(교육안내서 1): 국번 930-. 행정지원팀 5914(청사용역 · 급식소), 예산장비팀 5919(청사관리 · 급여 · 수당), 기획평가팀 5926(교육기획 · 평가 · 교육생 표창), 교육운영팀 5931(교육운영 · 조퇴 · 외출), 현장훈련팀 5940, 구급훈련팀 5945, 지휘역량팀 5951(ICTC 운영), 시민체험팀 5954.\n지역번호는 032(뒤표지 TEL 032-930-5931).",
    "elements": [
     {
-     "id": "ip0525",
+     "id": "ip0528",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12216,7 +12273,7 @@
      }
     },
     {
-     "id": "ip0526",
+     "id": "ip0529",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12236,7 +12293,7 @@
      }
     },
     {
-     "id": "ip0527",
+     "id": "ip0530",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12262,7 +12319,7 @@
      }
     },
     {
-     "id": "ip0528",
+     "id": "ip0531",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12288,7 +12345,7 @@
      }
     },
     {
-     "id": "ip0529",
+     "id": "ip0532",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12314,7 +12371,7 @@
      }
     },
     {
-     "id": "ip0530",
+     "id": "ip0533",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12340,7 +12397,7 @@
      }
     },
     {
-     "id": "ip0531",
+     "id": "ip0534",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12366,7 +12423,7 @@
      }
     },
     {
-     "id": "ip0532",
+     "id": "ip0535",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12388,7 +12445,7 @@
      }
     },
     {
-     "id": "ip0533",
+     "id": "ip0536",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12406,7 +12463,7 @@
      }
     },
     {
-     "id": "ip0534",
+     "id": "ip0537",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12429,7 +12486,7 @@
      }
     },
     {
-     "id": "ip0535",
+     "id": "ip0538",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12452,7 +12509,7 @@
      }
     },
     {
-     "id": "ip0536",
+     "id": "ip0539",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12471,7 +12528,7 @@
      }
     },
     {
-     "id": "ip0537",
+     "id": "ip0540",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12490,7 +12547,7 @@
      }
     },
     {
-     "id": "ip0538",
+     "id": "ip0541",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12509,7 +12566,7 @@
      }
     },
     {
-     "id": "ip0539",
+     "id": "ip0542",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12529,7 +12586,7 @@
      }
     },
     {
-     "id": "ip0540",
+     "id": "ip0543",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12552,7 +12609,7 @@
      }
     },
     {
-     "id": "ip0541",
+     "id": "ip0544",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12575,7 +12632,7 @@
      }
     },
     {
-     "id": "ip0542",
+     "id": "ip0545",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12594,7 +12651,7 @@
      }
     },
     {
-     "id": "ip0543",
+     "id": "ip0546",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12613,7 +12670,7 @@
      }
     },
     {
-     "id": "ip0544",
+     "id": "ip0547",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12632,7 +12689,7 @@
      }
     },
     {
-     "id": "ip0545",
+     "id": "ip0548",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12652,7 +12709,7 @@
      }
     },
     {
-     "id": "ip0546",
+     "id": "ip0549",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12675,7 +12732,7 @@
      }
     },
     {
-     "id": "ip0547",
+     "id": "ip0550",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12698,7 +12755,7 @@
      }
     },
     {
-     "id": "ip0548",
+     "id": "ip0551",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12717,7 +12774,7 @@
      }
     },
     {
-     "id": "ip0549",
+     "id": "ip0552",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12736,7 +12793,7 @@
      }
     },
     {
-     "id": "ip0550",
+     "id": "ip0553",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12755,7 +12812,7 @@
      }
     },
     {
-     "id": "ip0551",
+     "id": "ip0554",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12775,7 +12832,7 @@
      }
     },
     {
-     "id": "ip0552",
+     "id": "ip0555",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12798,7 +12855,7 @@
      }
     },
     {
-     "id": "ip0553",
+     "id": "ip0556",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12821,7 +12878,7 @@
      }
     },
     {
-     "id": "ip0554",
+     "id": "ip0557",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12840,7 +12897,7 @@
      }
     },
     {
-     "id": "ip0555",
+     "id": "ip0558",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12859,7 +12916,7 @@
      }
     },
     {
-     "id": "ip0556",
+     "id": "ip0559",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12878,7 +12935,7 @@
      }
     },
     {
-     "id": "ip0557",
+     "id": "ip0560",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12898,7 +12955,7 @@
      }
     },
     {
-     "id": "ip0558",
+     "id": "ip0561",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12921,7 +12978,7 @@
      }
     },
     {
-     "id": "ip0559",
+     "id": "ip0562",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12944,7 +13001,7 @@
      }
     },
     {
-     "id": "ip0560",
+     "id": "ip0563",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12963,7 +13020,7 @@
      }
     },
     {
-     "id": "ip0561",
+     "id": "ip0564",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12982,7 +13039,7 @@
      }
     },
     {
-     "id": "ip0562",
+     "id": "ip0565",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13001,7 +13058,7 @@
      }
     },
     {
-     "id": "ip0563",
+     "id": "ip0566",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13021,7 +13078,7 @@
      }
     },
     {
-     "id": "ip0564",
+     "id": "ip0567",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13044,7 +13101,7 @@
      }
     },
     {
-     "id": "ip0565",
+     "id": "ip0568",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13067,7 +13124,7 @@
      }
     },
     {
-     "id": "ip0566",
+     "id": "ip0569",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13086,7 +13143,7 @@
      }
     },
     {
-     "id": "ip0567",
+     "id": "ip0570",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13105,7 +13162,7 @@
      }
     },
     {
-     "id": "ip0568",
+     "id": "ip0571",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13124,7 +13181,7 @@
      }
     },
     {
-     "id": "ip0569",
+     "id": "ip0572",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13144,7 +13201,7 @@
      }
     },
     {
-     "id": "ip0570",
+     "id": "ip0573",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13167,7 +13224,7 @@
      }
     },
     {
-     "id": "ip0571",
+     "id": "ip0574",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13190,7 +13247,7 @@
      }
     },
     {
-     "id": "ip0572",
+     "id": "ip0575",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13209,7 +13266,7 @@
      }
     },
     {
-     "id": "ip0573",
+     "id": "ip0576",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13228,7 +13285,7 @@
      }
     },
     {
-     "id": "ip0574",
+     "id": "ip0577",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13247,7 +13304,7 @@
      }
     },
     {
-     "id": "ip0575",
+     "id": "ip0578",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13267,7 +13324,7 @@
      }
     },
     {
-     "id": "ip0576",
+     "id": "ip0579",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13290,7 +13347,7 @@
      }
     },
     {
-     "id": "ip0577",
+     "id": "ip0580",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13313,7 +13370,7 @@
      }
     },
     {
-     "id": "ip0578",
+     "id": "ip0581",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13332,7 +13389,7 @@
      }
     },
     {
-     "id": "ip0579",
+     "id": "ip0582",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13351,7 +13408,7 @@
      }
     },
     {
-     "id": "ip0580",
+     "id": "ip0583",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13370,7 +13427,7 @@
      }
     },
     {
-     "id": "ip0581",
+     "id": "ip0584",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13390,7 +13447,7 @@
      }
     },
     {
-     "id": "ip0582",
+     "id": "ip0585",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13419,7 +13476,23 @@
    "notes": "[1분] 라벨을 먼저 보여 주고 줄마다 「시간?」처럼 묻고 클릭. 질문을 받은 뒤 교육생 대표(가점 10) · 보조자(8) 선출로 넘어갑니다.",
    "elements": [
     {
-     "id": "ip0583",
+     "id": "ip0586",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/ip-end.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "ip0587",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13427,13 +13500,37 @@
      "type": "shape",
      "x": 0,
      "y": 0,
-     "w": 1920,
+     "w": 1000,
      "h": 1080,
      "shape": "rect",
      "fill": "#0B1628",
-     "fill2": "#1E3A8A",
-     "fill2Op": 1,
-     "gAngle": 135,
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF",
+      "opacity": 0.9
+     }
+    },
+    {
+     "id": "ip0588",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.9,
+     "type": "shape",
+     "x": 1000,
+     "y": 0,
+     "w": 520,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1628",
+     "fill2": "#0B1628",
+     "fill2Op": 0,
+     "gAngle": 0,
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13442,7 +13539,7 @@
      "style": {}
     },
     {
-     "id": "ip0584",
+     "id": "ip0589",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13461,7 +13558,7 @@
      }
     },
     {
-     "id": "ip0585",
+     "id": "ip0590",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13481,7 +13578,7 @@
      }
     },
     {
-     "id": "ip0586",
+     "id": "ip0591",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13507,7 +13604,7 @@
      }
     },
     {
-     "id": "ip0587",
+     "id": "ip0592",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13515,7 +13612,7 @@
      "type": "text",
      "x": 340,
      "y": 290,
-     "w": 980,
+     "w": 900,
      "h": 104,
      "role": "text",
      "html": "매일 09:00 1교시 · 17:50 종료 · 늦으면 시간당 −3",
@@ -13528,7 +13625,7 @@
      }
     },
     {
-     "id": "ip0588",
+     "id": "ip0593",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13554,7 +13651,7 @@
      }
     },
     {
-     "id": "ip0589",
+     "id": "ip0594",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13562,7 +13659,7 @@
      "type": "text",
      "x": 340,
      "y": 418,
-     "w": 980,
+     "w": 900,
      "h": 104,
      "role": "text",
      "html": "기동복 · 활동화 · 무전기 2대 · 지휘통제절차 해설",
@@ -13575,7 +13672,7 @@
      }
     },
     {
-     "id": "ip0590",
+     "id": "ip0595",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13601,7 +13698,7 @@
      }
     },
     {
-     "id": "ip0591",
+     "id": "ip0596",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13609,7 +13706,7 @@
      "type": "text",
      "x": 340,
      "y": 546,
-     "w": 980,
+     "w": 900,
      "h": 104,
      "role": "text",
      "html": "12/2 · 3 개인역량 평가 — 11/26부터 VR 실습으로 준비",
@@ -13622,7 +13719,7 @@
      }
     },
     {
-     "id": "ip0592",
+     "id": "ip0597",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13648,7 +13745,7 @@
      }
     },
     {
-     "id": "ip0593",
+     "id": "ip0598",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -13656,7 +13753,7 @@
      "type": "text",
      "x": 340,
      "y": 674,
-     "w": 980,
+     "w": 900,
      "h": 104,
      "role": "text",
      "html": "수료 = 80% 수강 · 생활평가 5할 / 합격 = 과정평가 70점",
@@ -13669,7 +13766,7 @@
      }
     },
     {
-     "id": "ip0594",
+     "id": "ip0599",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13695,7 +13792,7 @@
      }
     },
     {
-     "id": "ip0595",
+     "id": "ip0600",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -13703,7 +13800,7 @@
      "type": "text",
      "x": 340,
      "y": 802,
-     "w": 980,
+     "w": 900,
      "h": 104,
      "role": "text",
      "html": "결강 · 조퇴는 미리 — 생활지도교수 · 교육운영팀 930-5931",
@@ -13716,53 +13813,14 @@
      }
     },
     {
-     "id": "ip0596",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1340,
-     "y": 290,
-     "w": 500,
-     "h": 500,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 32,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ip0597",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 1370,
-     "y": 320,
-     "w": 440,
-     "h": 440,
-     "src": "assets/ip-c11.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "ip0598",
+     "id": "ip0601",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 1340,
-     "y": 820,
+     "y": 70,
      "w": 500,
      "h": 70,
      "shape": "rect",
@@ -13778,6 +13836,25 @@
       "bold": true,
       "valign": "middle",
       "padding": "0"
+     }
+    },
+    {
+     "id": "ip0602",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1500,
+     "y": 1020,
+     "w": 380,
+     "h": 36,
+     "role": "text",
+     "html": "교육용 생성 이미지",
+     "style": {
+      "fontSize": 24,
+      "color": "#CBD5E1",
+      "align": "right"
      }
     }
    ],
