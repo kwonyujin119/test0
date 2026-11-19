@@ -178,7 +178,46 @@
     $('upStatus').after(c);
   }
   ghChip();
-  window.addEventListener('beforeunload', (ev) => { const typing = draftNow(); if (typing || S.dirty || API.pending.size || API.failed.size) { ev.preventDefault(); ev.returnValue = ''; } });
+  let leaving = false; // [저장하지 않고 나가기] 등으로 나가는 중: 브라우저 경고를 다시 띄우지 않음
+  window.addEventListener('beforeunload', (ev) => { if (leaving) return; const typing = draftNow(); if (typing || S.dirty || API.pending.size || API.failed.size) { ev.preventDefault(); ev.returnValue = ''; } });
+  /* 나가기(교안 목록으로): 저장하지 않은 내용이 있으면 화면 위에 [저장하고 나가기] / [저장하지 않고 나가기] 를 띄움 */
+  const unsavedNow = () => draftNow() || S.dirty || API.pending.size > 0 || API.failed.size > 0;
+  function leaveTo(href) { leaving = true; location.href = href; }
+  function leaveAsk(href) {
+    let box = $('leaveBox');
+    if (box) { box.querySelector('.lv-save').focus(); return; }
+    box = document.createElement('div'); box.id = 'leaveBox'; box.className = 'leave-float';
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'false'); box.setAttribute('aria-labelledby', 'lvTitle');
+    box.innerHTML = `<div class="lv-head"><b id="lvTitle">저장하지 않은 변경이 있습니다</b><button class="btn icon lv-x" title="계속 편집 (Esc)" aria-label="계속 편집">${icon('x', 16)}</button></div>
+      <p class="lv-msg">나가기 전에 어떻게 할까요?</p>
+      <div class="lv-btns"><button class="btn ink lv-save">${icon('save', 16)}저장하고 나가기</button><button class="btn danger lv-drop">저장하지 않고 나가기</button></div>
+      <p class="lv-note">저장하지 않고 나가도 고친 내용은 이 기기의 <b>[내보내기] → [임시 작업본 되살리기]</b> 에 30일 동안 남습니다.</p>`;
+    document.body.appendChild(box);
+    const msg = box.querySelector('.lv-msg'), bs = box.querySelector('.lv-save'), bd = box.querySelector('.lv-drop');
+    const close = () => { box.remove(); document.removeEventListener('keydown', onKey, true); document.removeEventListener('pointerdown', onOut, true); };
+    const onKey = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); ev.preventDefault(); close(); } };
+    const onOut = (ev) => { if (!box.contains(ev.target) && !ev.target.closest('.ed-home') && !ev.target.closest('.modal-bg')) close(); };
+    document.addEventListener('keydown', onKey, true); document.addEventListener('pointerdown', onOut, true);
+    box.querySelector('.lv-x').onclick = close;
+    bs.onclick = async () => {
+      bs.disabled = bd.disabled = true; msg.textContent = API.mode === 'github' ? '저장하는 중입니다… (몇 초)' : '저장하는 중입니다…';
+      try { await save(); } catch (e) { }
+      if (S.dirty || API.failed.size) { bs.disabled = bd.disabled = false; msg.textContent = '저장하지 못했습니다. 다시 [저장하고 나가기] 를 누르거나, 저장하지 않고 나갈 수 있습니다.'; return; }
+      if (API.pending.size) {
+        msg.textContent = '파일을 올리는 중입니다… 다 올라가면 바로 나갑니다.';
+        while (API.pending.size) await new Promise(r => setTimeout(r, 400));
+        if (API.failed.size) { bs.disabled = bd.disabled = false; msg.textContent = '파일 몇 개를 올리지 못했습니다. 다시 [저장하고 나가기] 를 눌러 주세요.'; return; }
+      }
+      leaveTo(href);
+    };
+    bd.onclick = () => { draftNow(); Draft.keep(S.name); leaveTo(href); };
+    bs.focus();
+  }
+  document.querySelector('.ed-home').addEventListener('click', (ev) => {
+    if (ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return; // 새 탭으로 여는 것은 그대로
+    if (!unsavedNow()) return;
+    ev.preventDefault(); leaveAsk(ev.currentTarget.getAttribute('href'));
+  });
   /* 창을 닫거나 다른 앱으로 넘어갈 때(휴대폰): 0.8초 기다리지 않고 바로 임시 작업본을 남김 — 쓰는 중인 글도 함께 (글 편집은 그대로 둠).
      저장하지 않은 내용이 있으면 true */
   function draftNow() {
