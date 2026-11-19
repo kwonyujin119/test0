@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-19T05:17:20.000Z",
- "modified": "2026-11-19T05:17:20.000Z",
+ "created": "2026-11-19T05:31:22.000Z",
+ "modified": "2026-11-19T05:31:22.000Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#334155",
@@ -30,7 +30,7 @@
     "gradient": "linear-gradient(160deg, #FFFFFF 0%, #F1F5F9 100%)"
    },
    "transition": "fade",
-   "notes": "인사 — 강사 소방기술사 김재훈.\n오늘의 한 문장: 「소방교육 · 훈련은 출석부를 채우는 행사가 아니라, 불이 났을 때 사람이 움직이게 만드는 설계다.」\n교재 제8편 제1장: 제1절 개념과 실시원칙 7가지, 제2절 계획 → 준비 · 교안 → 실시 → 효과 측정 → 강평 → 결과 기록.",
+   "notes": "인사 — 강사 소방위 권유진(인천소방학교 지휘역량강화센터).\n오늘의 한 문장: 「소방교육 · 훈련은 출석부를 채우는 행사가 아니라, 불이 났을 때 사람이 움직이게 만드는 설계다.」\n교재 제8편 제1장: 제1절 개념과 실시원칙 7가지, 제2절 계획 → 준비 · 교안 → 실시 → 효과 측정 → 강평 → 결과 기록.",
    "elements": [
     {
      "id": "ed0001",
@@ -518,7 +518,7 @@
      "w": 820,
      "h": 64,
      "role": "text",
-     "html": "<span style=\"font-size: 40px\">소방기술사</span> 김재훈",
+     "html": "<span style=\"font-size: 40px\">소방위</span> 권유진",
      "style": {
       "fontSize": 52,
       "color": "#0F172A",
@@ -634,7 +634,7 @@
     "color": "#FFFFFF"
    },
    "transition": "fade",
-   "notes": "강사 소개 — 인천소방학교 지휘역량강화센터 김재훈(소방공무원 · 소방기술사).\n학력: 경원전문대 소방안전관리과, 경기대 공학대학원 석사과정(소방방재전공).\n경력: 1998.03 소방공무원 임용 → 2024.01 중부소방서 중앙119안전센터장 → 2025.01 송도소방서 예방안전과장 → 2026.10 인천소방학교 지휘역량강화센터장.\n아래 한 줄 소개는 초안 문장 — 실제 경험에 맞게 고쳐 쓰세요.",
+   "notes": "강사 소개 — 인천소방학교 지휘역량강화센터 소방위 권유진(내용은 「소방 용수」 교안 프로필과 같음).\n현장대응단 · 119구조대 경력과 2025 화재대응유공자 특별승진 — 현장에서 자위소방대 · 초기대응이 실제로 어떻게 작동하는지 사례로 연결하세요.",
    "elements": [
     {
      "id": "ed0027",
@@ -689,17 +689,17 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 110,
-     "y": 120,
-     "w": 200,
-     "h": 140,
+     "x": 120,
+     "y": 300,
+     "w": 440,
+     "h": 40,
      "role": "text",
-     "html": "“",
+     "html": "PROFILE",
      "style": {
-      "fontSize": 160,
-      "color": "#93C5FD",
+      "fontSize": 24,
+      "color": "#FCA5A5",
       "bold": true,
-      "lineHeight": 1
+      "letterSpacing": 8
      }
     },
     {
@@ -710,16 +710,16 @@
      "opacity": 1,
      "type": "text",
      "x": 120,
-     "y": 250,
+     "y": 350,
      "w": 480,
-     "h": 100,
-     "role": "heading",
-     "html": "강사 소개",
+     "h": 130,
+     "role": "text",
+     "html": "권유진",
      "style": {
-      "fontSize": 72,
+      "fontSize": 96,
       "color": "#FFFFFF",
       "bold": true,
-      "letterSpacing": -2
+      "letterSpacing": -3
      }
     },
     {
@@ -730,16 +730,14 @@
      "opacity": 1,
      "type": "text",
      "x": 120,
-     "y": 385,
+     "y": 490,
      "w": 480,
-     "h": 100,
+     "h": 50,
      "role": "text",
-     "html": "김재훈",
+     "html": "소방위 · 지휘역량강화센터",
      "style": {
-      "fontSize": 76,
-      "color": "#FFFFFF",
-      "bold": true,
-      "letterSpacing": 6
+      "fontSize": 28,
+      "color": "#CBD5E1"
      }
     },
     {
@@ -750,66 +748,14 @@
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 520,
-     "w": 200,
-     "h": 52,
+     "y": 560,
+     "w": 80,
+     "h": 6,
      "shape": "rect",
      "fill": "#C81E1E",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 26,
-     "shadow": false,
-     "html": "소방공무원",
-     "style": {
-      "fontSize": 26,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
-     }
-    },
-    {
-     "id": "ed0033",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 336,
-     "y": 520,
-     "w": 200,
-     "h": 52,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 26,
-     "shadow": false,
-     "html": "소방기술사",
-     "style": {
-      "fontSize": 26,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
-     }
-    },
-    {
-     "id": "ed0034",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 640,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#334155",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
+     "radius": 3,
      "shadow": false,
      "html": "",
      "style": {
@@ -818,45 +764,7 @@
      }
     },
     {
-     "id": "ed0035",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 670,
-     "w": 480,
-     "h": 120,
-     "role": "text",
-     "html": "28<span style=\"font-size:40px\"> 년+</span>",
-     "style": {
-      "fontSize": 104,
-      "color": "#FFFFFF",
-      "bold": true,
-      "letterSpacing": -3
-     }
-    },
-    {
-     "id": "ed0036",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 800,
-     "w": 480,
-     "h": 44,
-     "role": "text",
-     "html": "소방공무원 경력 (1998.03 ~)",
-     "style": {
-      "fontSize": 28,
-      "color": "#CBD5E1"
-     }
-    },
-    {
-     "id": "ed0037",
+     "id": "ed0033",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -872,7 +780,7 @@
      "shadow": false
     },
     {
-     "id": "ed0038",
+     "id": "ed0034",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -892,29 +800,102 @@
      }
     },
     {
-     "id": "ed0039",
+     "id": "ed0035",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 110,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "2026",
+     "style": {
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
+     }
+    },
+    {
+     "id": "ed0036",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 160,
+     "w": 1060,
+     "h": 180,
+     "role": "text",
+     "html": "(2026. 1) 소방학교 지휘역량강화센터 전입<br>(2026. 7) 제31회 중앙소방 교육혁신 경연대회 연구개발 분야 4위<br><span style=\"font-size:24px;color:#475569\">(피지컬 AI 현장소방활동 도입에 관한 연구)</span>",
+     "style": {
+      "fontSize": 26,
+      "color": "#334155",
+      "lineHeight": 1.6
+     }
+    },
+    {
+     "id": "ed0037",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 760,
-     "y": 130,
-     "w": 170,
-     "h": 52,
+     "y": 344,
+     "w": 1040,
+     "h": 2,
      "shape": "rect",
-     "fill": "#EFF6FF",
+     "fill": "#CBD5E1",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 26,
+     "radius": 0,
      "shadow": false,
-     "html": "소 속",
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "ed0038",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 380,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "2025",
+     "style": {
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
+     }
+    },
+    {
+     "id": "ed0039",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 430,
+     "w": 1060,
+     "h": 100,
+     "role": "text",
+     "html": "(2025) 화재대응유공자 선정 (특별승진)<br>(2025) 소방본부 현장대응과 APEC 2025 KOREA 소방안전대책",
      "style": {
       "fontSize": 26,
-      "color": "#1E3A8A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "color": "#334155",
+      "lineHeight": 1.6
      }
     },
     {
@@ -923,18 +904,21 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "text",
-     "x": 960,
-     "y": 124,
-     "w": 860,
-     "h": 64,
-     "role": "text",
-     "html": "인천소방학교 지휘역량강화센터",
+     "type": "shape",
+     "x": 760,
+     "y": 534,
+     "w": 1040,
+     "h": 2,
+     "shape": "rect",
+     "fill": "#CBD5E1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
      "style": {
-      "fontSize": 38,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle"
+      "fontSize": 28,
+      "color": "#FFFFFF"
      }
     },
     {
@@ -943,24 +927,17 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
+     "type": "text",
      "x": 760,
-     "y": 240,
-     "w": 170,
-     "h": 52,
-     "shape": "rect",
-     "fill": "#EFF6FF",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 26,
-     "shadow": false,
-     "html": "학 력",
+     "y": 560,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "2015 - 2025",
      "style": {
-      "fontSize": 26,
-      "color": "#1E3A8A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
      }
     },
     {
@@ -970,15 +947,15 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 960,
-     "y": 232,
-     "w": 860,
-     "h": 120,
+     "x": 760,
+     "y": 610,
+     "w": 1060,
+     "h": 190,
      "role": "text",
-     "html": "경원전문대 소방안전관리과<br>경기대 공학대학원 석사과정(소방방재전공)",
+     "html": "(2020 ~ 2025) 서부소방서 현장대응단, 검단소방서 현장대응단<br>(2015 ~ 2020) 강화소방서 119구조대, 서부소방서 정서진119수난구조대<br>(2015. 1) 임용 / 구조대원 경력채용 / 특수전사령부 제11공수특전여단 중사 만기 전역",
      "style": {
-      "fontSize": 32,
-      "color": "#0F172A",
+      "fontSize": 26,
+      "color": "#334155",
       "lineHeight": 1.6
      }
     },
@@ -990,22 +967,19 @@
      "opacity": 1,
      "type": "shape",
      "x": 760,
-     "y": 410,
-     "w": 170,
-     "h": 52,
+     "y": 804,
+     "w": 1040,
+     "h": 2,
      "shape": "rect",
-     "fill": "#EFF6FF",
+     "fill": "#CBD5E1",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 26,
+     "radius": 0,
      "shadow": false,
-     "html": "경 력",
+     "html": "",
      "style": {
-      "fontSize": 26,
-      "color": "#1E3A8A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "fontSize": 28,
+      "color": "#FFFFFF"
      }
     },
     {
@@ -1014,21 +988,17 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
-     "x": 800,
-     "y": 563,
-     "w": 830,
-     "h": 6,
-     "shape": "rect",
-     "fill": "#CBD5E1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 3,
-     "shadow": false,
-     "html": "",
+     "type": "text",
+     "x": 760,
+     "y": 830,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "보유자격",
      "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
      }
     },
     {
@@ -1037,310 +1007,17 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
-     "x": 800,
-     "y": 563,
-     "w": 830,
-     "h": 6,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "fill2": "#C81E1E",
-     "fill2Op": 1,
-     "gAngle": 0,
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 3,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "ed0046",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 796,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#1D4ED8",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0047",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
      "type": "text",
-     "x": 796,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "1998.03",
-     "style": {
-      "fontSize": 34,
-      "color": "#1E3A8A",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0048",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 796,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "소방공무원 임용",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0049",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1066,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#1D4ED8",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0050",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1066,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "2024.01",
-     "style": {
-      "fontSize": 34,
-      "color": "#1E3A8A",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0051",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1066,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "중부소방서<br>중앙119안전센터장",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0052",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1336,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#1D4ED8",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0053",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1336,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "2025.01",
-     "style": {
-      "fontSize": 34,
-      "color": "#1E3A8A",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0054",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1336,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "송도소방서<br>예방안전과장",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0055",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1606,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#C81E1E",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0056",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1606,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "2026.10",
-     "style": {
-      "fontSize": 34,
-      "color": "#C81E1E",
-      "bold": true
-     }
-    },
-    {
-     "id": "ed0057",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1606,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "인천소방학교<br>지휘역량강화센터장",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "bold": true,
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "ed0058",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
      "x": 760,
-     "y": 800,
-     "w": 1040,
-     "h": 150,
-     "shape": "rect",
-     "fill": "#F1F5F9",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 20,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "ed0059",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 800,
-     "y": 800,
-     "w": 960,
-     "h": 150,
+     "y": 880,
+     "w": 1060,
+     "h": 100,
      "role": "text",
-     "html": "훈련을 직접 기획하고 받아 본 입장에서 — 오늘은 「출석 확인용 교육」이 아니라 「사람이 실제로 움직이게 되는 교육 · 훈련」을 설계하는 법을 봅니다",
+     "html": "현장지휘관, 화재감식기사, 위험물기능사, 인명구조사, 응급구조사, 화재대응능력 등",
      "style": {
-      "fontSize": 30,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "lineHeight": 1.5
+      "fontSize": 26,
+      "color": "#334155",
+      "lineHeight": 1.6
      }
     }
    ],
@@ -1354,7 +1031,7 @@
    "notes": "오늘의 지도. 교재 제1절(개념 · 원칙) → 제2절(실제: 계획 → 준비 · 실시 → 평가 · 기록).\n위쪽 네 칸 막대가 지금 어느 단계인지 알려 줍니다. 마지막 띠: 이 강의 자체가 원칙(한 번에 하나씩, 실습, 경험, 관련성 …)을 따르도록 짰다는 점을 예고 — 수강생이 스스로 찾게 하면 「동기부여」와 「경험의 원칙」이 동시에 작동.",
    "elements": [
     {
-     "id": "ed0060",
+     "id": "ed0046",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1373,7 +1050,7 @@
      }
     },
     {
-     "id": "ed0061",
+     "id": "ed0047",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1394,7 +1071,7 @@
      }
     },
     {
-     "id": "ed0062",
+     "id": "ed0048",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1417,7 +1094,7 @@
      }
     },
     {
-     "id": "ed0063",
+     "id": "ed0049",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1443,7 +1120,7 @@
      }
     },
     {
-     "id": "ed0064",
+     "id": "ed0050",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1463,7 +1140,7 @@
      }
     },
     {
-     "id": "ed0065",
+     "id": "ed0051",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1486,7 +1163,7 @@
      }
     },
     {
-     "id": "ed0066",
+     "id": "ed0052",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1505,7 +1182,7 @@
      }
     },
     {
-     "id": "ed0067",
+     "id": "ed0053",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1528,7 +1205,7 @@
      }
     },
     {
-     "id": "ed0068",
+     "id": "ed0054",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1551,7 +1228,7 @@
      }
     },
     {
-     "id": "ed0069",
+     "id": "ed0055",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1577,7 +1254,7 @@
      }
     },
     {
-     "id": "ed0070",
+     "id": "ed0056",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1597,7 +1274,7 @@
      }
     },
     {
-     "id": "ed0071",
+     "id": "ed0057",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1620,7 +1297,7 @@
      }
     },
     {
-     "id": "ed0072",
+     "id": "ed0058",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1639,7 +1316,7 @@
      }
     },
     {
-     "id": "ed0073",
+     "id": "ed0059",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1662,7 +1339,7 @@
      }
     },
     {
-     "id": "ed0074",
+     "id": "ed0060",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1685,7 +1362,7 @@
      }
     },
     {
-     "id": "ed0075",
+     "id": "ed0061",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1711,7 +1388,7 @@
      }
     },
     {
-     "id": "ed0076",
+     "id": "ed0062",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1731,7 +1408,7 @@
      }
     },
     {
-     "id": "ed0077",
+     "id": "ed0063",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1754,7 +1431,7 @@
      }
     },
     {
-     "id": "ed0078",
+     "id": "ed0064",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1773,7 +1450,7 @@
      }
     },
     {
-     "id": "ed0079",
+     "id": "ed0065",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1796,7 +1473,7 @@
      }
     },
     {
-     "id": "ed0080",
+     "id": "ed0066",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1819,7 +1496,7 @@
      }
     },
     {
-     "id": "ed0081",
+     "id": "ed0067",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1845,7 +1522,7 @@
      }
     },
     {
-     "id": "ed0082",
+     "id": "ed0068",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1865,7 +1542,7 @@
      }
     },
     {
-     "id": "ed0083",
+     "id": "ed0069",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1888,7 +1565,7 @@
      }
     },
     {
-     "id": "ed0084",
+     "id": "ed0070",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1907,7 +1584,7 @@
      }
     },
     {
-     "id": "ed0085",
+     "id": "ed0071",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1942,7 +1619,7 @@
    "notes": "정의(교재): 소방교육 및 훈련은 「화재를 비롯한 사고와 재난으로부터 인간의 안전을 지키기 위해 안전의식을 고취하고, 이를 실천하여 위험에 적절히 대응할 수 있는 행동능력을 기르기 위해 의도적이고 계획적으로 실시하는 교육」.\n실시근거: 화재예방법 제37조 및 같은 법 시행규칙 제36조.\n질문: \"작년 우리 건물 소방훈련, 끝나고 「할 수 있게 된 것」이 있었나요?\"",
    "elements": [
     {
-     "id": "ed0086",
+     "id": "ed0072",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1968,7 +1645,7 @@
      }
     },
     {
-     "id": "ed0087",
+     "id": "ed0073",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1988,7 +1665,7 @@
      }
     },
     {
-     "id": "ed0088",
+     "id": "ed0074",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2014,7 +1691,7 @@
      }
     },
     {
-     "id": "ed0089",
+     "id": "ed0075",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2040,7 +1717,7 @@
      }
     },
     {
-     "id": "ed0090",
+     "id": "ed0076",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2066,7 +1743,7 @@
      }
     },
     {
-     "id": "ed0091",
+     "id": "ed0077",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2092,7 +1769,7 @@
      }
     },
     {
-     "id": "ed0092",
+     "id": "ed0078",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2114,7 +1791,7 @@
      }
     },
     {
-     "id": "ed0093",
+     "id": "ed0079",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2132,7 +1809,7 @@
      }
     },
     {
-     "id": "ed0094",
+     "id": "ed0080",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2155,7 +1832,7 @@
      }
     },
     {
-     "id": "ed0095",
+     "id": "ed0081",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2174,7 +1851,7 @@
      }
     },
     {
-     "id": "ed0096",
+     "id": "ed0082",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2193,7 +1870,7 @@
      }
     },
     {
-     "id": "ed0097",
+     "id": "ed0083",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2216,7 +1893,7 @@
      }
     },
     {
-     "id": "ed0098",
+     "id": "ed0084",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2239,7 +1916,7 @@
      }
     },
     {
-     "id": "ed0099",
+     "id": "ed0085",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2258,7 +1935,7 @@
      }
     },
     {
-     "id": "ed0100",
+     "id": "ed0086",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2277,7 +1954,7 @@
      }
     },
     {
-     "id": "ed0101",
+     "id": "ed0087",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2300,7 +1977,7 @@
      }
     },
     {
-     "id": "ed0102",
+     "id": "ed0088",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2323,7 +2000,7 @@
      }
     },
     {
-     "id": "ed0103",
+     "id": "ed0089",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2342,7 +2019,7 @@
      }
     },
     {
-     "id": "ed0104",
+     "id": "ed0090",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2361,7 +2038,7 @@
      }
     },
     {
-     "id": "ed0105",
+     "id": "ed0091",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2384,7 +2061,7 @@
      }
     },
     {
-     "id": "ed0106",
+     "id": "ed0092",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2407,7 +2084,7 @@
      }
     },
     {
-     "id": "ed0107",
+     "id": "ed0093",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2426,7 +2103,7 @@
      }
     },
     {
-     "id": "ed0108",
+     "id": "ed0094",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2445,7 +2122,7 @@
      }
     },
     {
-     "id": "ed0109",
+     "id": "ed0095",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2468,7 +2145,7 @@
      }
     },
     {
-     "id": "ed0110",
+     "id": "ed0096",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2487,7 +2164,7 @@
      }
     },
     {
-     "id": "ed0111",
+     "id": "ed0097",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2506,7 +2183,7 @@
      }
     },
     {
-     "id": "ed0112",
+     "id": "ed0098",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -2531,7 +2208,7 @@
      }
     },
     {
-     "id": "ed0113",
+     "id": "ed0099",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2558,7 +2235,7 @@
    "notes": "실시원칙 7가지(교재 학습정리): ① 학습자 중심 ② 동기부여 ③ 목적 ④ 현실 ⑤ 실습 ⑥ 경험 ⑦ 관련성.\n외우는 법: 「학 · 동 · 목 · 현 · 실 · 경 · 관」.\n교재 학습평가 Q2: 실시원칙이 아닌 것 = 「교수자 중심의 원칙」.",
    "elements": [
     {
-     "id": "ed0114",
+     "id": "ed0100",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2584,7 +2261,7 @@
      }
     },
     {
-     "id": "ed0115",
+     "id": "ed0101",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2604,7 +2281,7 @@
      }
     },
     {
-     "id": "ed0116",
+     "id": "ed0102",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2630,7 +2307,7 @@
      }
     },
     {
-     "id": "ed0117",
+     "id": "ed0103",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2656,7 +2333,7 @@
      }
     },
     {
-     "id": "ed0118",
+     "id": "ed0104",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2682,7 +2359,7 @@
      }
     },
     {
-     "id": "ed0119",
+     "id": "ed0105",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2708,7 +2385,7 @@
      }
     },
     {
-     "id": "ed0120",
+     "id": "ed0106",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2730,7 +2407,7 @@
      }
     },
     {
-     "id": "ed0121",
+     "id": "ed0107",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2748,7 +2425,7 @@
      }
     },
     {
-     "id": "ed0122",
+     "id": "ed0108",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2771,7 +2448,7 @@
      }
     },
     {
-     "id": "ed0123",
+     "id": "ed0109",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2797,7 +2474,7 @@
      }
     },
     {
-     "id": "ed0124",
+     "id": "ed0110",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2816,7 +2493,7 @@
      }
     },
     {
-     "id": "ed0125",
+     "id": "ed0111",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2835,7 +2512,7 @@
      }
     },
     {
-     "id": "ed0126",
+     "id": "ed0112",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2858,7 +2535,7 @@
      }
     },
     {
-     "id": "ed0127",
+     "id": "ed0113",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2884,7 +2561,7 @@
      }
     },
     {
-     "id": "ed0128",
+     "id": "ed0114",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2903,7 +2580,7 @@
      }
     },
     {
-     "id": "ed0129",
+     "id": "ed0115",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2922,7 +2599,7 @@
      }
     },
     {
-     "id": "ed0130",
+     "id": "ed0116",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2945,7 +2622,7 @@
      }
     },
     {
-     "id": "ed0131",
+     "id": "ed0117",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2971,7 +2648,7 @@
      }
     },
     {
-     "id": "ed0132",
+     "id": "ed0118",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2990,7 +2667,7 @@
      }
     },
     {
-     "id": "ed0133",
+     "id": "ed0119",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3009,7 +2686,7 @@
      }
     },
     {
-     "id": "ed0134",
+     "id": "ed0120",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3032,7 +2709,7 @@
      }
     },
     {
-     "id": "ed0135",
+     "id": "ed0121",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3058,7 +2735,7 @@
      }
     },
     {
-     "id": "ed0136",
+     "id": "ed0122",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3077,7 +2754,7 @@
      }
     },
     {
-     "id": "ed0137",
+     "id": "ed0123",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3096,7 +2773,7 @@
      }
     },
     {
-     "id": "ed0138",
+     "id": "ed0124",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3119,7 +2796,7 @@
      }
     },
     {
-     "id": "ed0139",
+     "id": "ed0125",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3145,7 +2822,7 @@
      }
     },
     {
-     "id": "ed0140",
+     "id": "ed0126",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3164,7 +2841,7 @@
      }
     },
     {
-     "id": "ed0141",
+     "id": "ed0127",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3183,7 +2860,7 @@
      }
     },
     {
-     "id": "ed0142",
+     "id": "ed0128",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3206,7 +2883,7 @@
      }
     },
     {
-     "id": "ed0143",
+     "id": "ed0129",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3232,7 +2909,7 @@
      }
     },
     {
-     "id": "ed0144",
+     "id": "ed0130",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3251,7 +2928,7 @@
      }
     },
     {
-     "id": "ed0145",
+     "id": "ed0131",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3270,7 +2947,7 @@
      }
     },
     {
-     "id": "ed0146",
+     "id": "ed0132",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3293,7 +2970,7 @@
      }
     },
     {
-     "id": "ed0147",
+     "id": "ed0133",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3319,7 +2996,7 @@
      }
     },
     {
-     "id": "ed0148",
+     "id": "ed0134",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3338,7 +3015,7 @@
      }
     },
     {
-     "id": "ed0149",
+     "id": "ed0135",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3357,7 +3034,7 @@
      }
     },
     {
-     "id": "ed0150",
+     "id": "ed0136",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3380,7 +3057,7 @@
      }
     },
     {
-     "id": "ed0151",
+     "id": "ed0137",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3399,7 +3076,7 @@
      }
     },
     {
-     "id": "ed0152",
+     "id": "ed0138",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3419,7 +3096,7 @@
      }
     },
     {
-     "id": "ed0153",
+     "id": "ed0139",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3438,7 +3115,7 @@
      }
     },
     {
-     "id": "ed0154",
+     "id": "ed0140",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3465,7 +3142,7 @@
    "notes": "학습자 중심의 원칙: (1) 한 번에 한 가지씩 습득 가능한 분량 (2) 쉬운 것에서 어려운 것으로, 기능적 이해에 비중 (3) 학습자에게 감동이 있는 교육.\n목적의 원칙: (1) 어떤 기술을 어느 정도까지 익혀야 하는지 명확히 제시 (2) 습득할 기술이 활동 전체에서 어느 위치인지 인식.\n오른쪽 아래 예시는 강사가 만든 예 — 「10초」는 교재 기준이 아니라 목표를 숫자로 말하는 방법을 보여 주는 예시입니다.",
    "elements": [
     {
-     "id": "ed0155",
+     "id": "ed0141",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3491,7 +3168,7 @@
      }
     },
     {
-     "id": "ed0156",
+     "id": "ed0142",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3511,7 +3188,7 @@
      }
     },
     {
-     "id": "ed0157",
+     "id": "ed0143",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3537,7 +3214,7 @@
      }
     },
     {
-     "id": "ed0158",
+     "id": "ed0144",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3563,7 +3240,7 @@
      }
     },
     {
-     "id": "ed0159",
+     "id": "ed0145",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3589,7 +3266,7 @@
      }
     },
     {
-     "id": "ed0160",
+     "id": "ed0146",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3615,7 +3292,7 @@
      }
     },
     {
-     "id": "ed0161",
+     "id": "ed0147",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3637,7 +3314,7 @@
      }
     },
     {
-     "id": "ed0162",
+     "id": "ed0148",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3655,7 +3332,7 @@
      }
     },
     {
-     "id": "ed0163",
+     "id": "ed0149",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3678,7 +3355,7 @@
      }
     },
     {
-     "id": "ed0164",
+     "id": "ed0150",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3697,7 +3374,7 @@
      }
     },
     {
-     "id": "ed0165",
+     "id": "ed0151",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3720,7 +3397,7 @@
      }
     },
     {
-     "id": "ed0166",
+     "id": "ed0152",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3746,7 +3423,7 @@
      }
     },
     {
-     "id": "ed0167",
+     "id": "ed0153",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3765,7 +3442,7 @@
      }
     },
     {
-     "id": "ed0168",
+     "id": "ed0154",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3784,7 +3461,7 @@
      }
     },
     {
-     "id": "ed0169",
+     "id": "ed0155",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3807,7 +3484,7 @@
      }
     },
     {
-     "id": "ed0170",
+     "id": "ed0156",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3833,7 +3510,7 @@
      }
     },
     {
-     "id": "ed0171",
+     "id": "ed0157",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3852,7 +3529,7 @@
      }
     },
     {
-     "id": "ed0172",
+     "id": "ed0158",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3871,7 +3548,7 @@
      }
     },
     {
-     "id": "ed0173",
+     "id": "ed0159",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3894,7 +3571,7 @@
      }
     },
     {
-     "id": "ed0174",
+     "id": "ed0160",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3920,7 +3597,7 @@
      }
     },
     {
-     "id": "ed0175",
+     "id": "ed0161",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3939,7 +3616,7 @@
      }
     },
     {
-     "id": "ed0176",
+     "id": "ed0162",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3958,7 +3635,7 @@
      }
     },
     {
-     "id": "ed0177",
+     "id": "ed0163",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3974,7 +3651,7 @@
      "shadow": true
     },
     {
-     "id": "ed0178",
+     "id": "ed0164",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4000,7 +3677,7 @@
      }
     },
     {
-     "id": "ed0179",
+     "id": "ed0165",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4023,7 +3700,7 @@
      }
     },
     {
-     "id": "ed0180",
+     "id": "ed0166",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4042,7 +3719,7 @@
      }
     },
     {
-     "id": "ed0181",
+     "id": "ed0167",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4061,7 +3738,7 @@
      }
     },
     {
-     "id": "ed0182",
+     "id": "ed0168",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -4087,7 +3764,7 @@
      }
     },
     {
-     "id": "ed0183",
+     "id": "ed0169",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4114,7 +3791,7 @@
    "notes": "동기부여의 원칙 10가지(교재): (1) 중요성 전달 (2) 적절한 스케줄 (3) 시기적절하게(Just-in-Time) (4) 핵심사항에 포커스 (5) 보상 (6) 재미 (7) 다양성 (8) 사회적 상호작용 (9) 전문성 공유 (10) 초기성공 격려.\n윗줄/아랫줄 구분은 강사가 묶은 것(교재 구분 아님).\n활용 팁: 「초기성공 격려」 — 실습 첫 시도에서 성공한 사람을 바로 칭찬하면 나머지 참여가 늘어납니다.",
    "elements": [
     {
-     "id": "ed0184",
+     "id": "ed0170",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4140,7 +3817,7 @@
      }
     },
     {
-     "id": "ed0185",
+     "id": "ed0171",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4160,7 +3837,7 @@
      }
     },
     {
-     "id": "ed0186",
+     "id": "ed0172",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4186,7 +3863,7 @@
      }
     },
     {
-     "id": "ed0187",
+     "id": "ed0173",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4212,7 +3889,7 @@
      }
     },
     {
-     "id": "ed0188",
+     "id": "ed0174",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4238,7 +3915,7 @@
      }
     },
     {
-     "id": "ed0189",
+     "id": "ed0175",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4264,7 +3941,7 @@
      }
     },
     {
-     "id": "ed0190",
+     "id": "ed0176",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4286,7 +3963,7 @@
      }
     },
     {
-     "id": "ed0191",
+     "id": "ed0177",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4304,7 +3981,7 @@
      }
     },
     {
-     "id": "ed0192",
+     "id": "ed0178",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4327,7 +4004,7 @@
      }
     },
     {
-     "id": "ed0193",
+     "id": "ed0179",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4346,7 +4023,7 @@
      }
     },
     {
-     "id": "ed0194",
+     "id": "ed0180",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4365,7 +4042,7 @@
      }
     },
     {
-     "id": "ed0195",
+     "id": "ed0181",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4388,7 +4065,7 @@
      }
     },
     {
-     "id": "ed0196",
+     "id": "ed0182",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4407,7 +4084,7 @@
      }
     },
     {
-     "id": "ed0197",
+     "id": "ed0183",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4426,7 +4103,7 @@
      }
     },
     {
-     "id": "ed0198",
+     "id": "ed0184",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4449,7 +4126,7 @@
      }
     },
     {
-     "id": "ed0199",
+     "id": "ed0185",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4468,7 +4145,7 @@
      }
     },
     {
-     "id": "ed0200",
+     "id": "ed0186",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4487,7 +4164,7 @@
      }
     },
     {
-     "id": "ed0201",
+     "id": "ed0187",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4510,7 +4187,7 @@
      }
     },
     {
-     "id": "ed0202",
+     "id": "ed0188",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4529,7 +4206,7 @@
      }
     },
     {
-     "id": "ed0203",
+     "id": "ed0189",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4548,7 +4225,7 @@
      }
     },
     {
-     "id": "ed0204",
+     "id": "ed0190",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4571,7 +4248,7 @@
      }
     },
     {
-     "id": "ed0205",
+     "id": "ed0191",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4590,7 +4267,7 @@
      }
     },
     {
-     "id": "ed0206",
+     "id": "ed0192",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4609,7 +4286,7 @@
      }
     },
     {
-     "id": "ed0207",
+     "id": "ed0193",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4632,7 +4309,7 @@
      }
     },
     {
-     "id": "ed0208",
+     "id": "ed0194",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4651,7 +4328,7 @@
      }
     },
     {
-     "id": "ed0209",
+     "id": "ed0195",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4670,7 +4347,7 @@
      }
     },
     {
-     "id": "ed0210",
+     "id": "ed0196",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4693,7 +4370,7 @@
      }
     },
     {
-     "id": "ed0211",
+     "id": "ed0197",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4712,7 +4389,7 @@
      }
     },
     {
-     "id": "ed0212",
+     "id": "ed0198",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4731,7 +4408,7 @@
      }
     },
     {
-     "id": "ed0213",
+     "id": "ed0199",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4754,7 +4431,7 @@
      }
     },
     {
-     "id": "ed0214",
+     "id": "ed0200",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4773,7 +4450,7 @@
      }
     },
     {
-     "id": "ed0215",
+     "id": "ed0201",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4792,7 +4469,7 @@
      }
     },
     {
-     "id": "ed0216",
+     "id": "ed0202",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4815,7 +4492,7 @@
      }
     },
     {
-     "id": "ed0217",
+     "id": "ed0203",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4834,7 +4511,7 @@
      }
     },
     {
-     "id": "ed0218",
+     "id": "ed0204",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4853,7 +4530,7 @@
      }
     },
     {
-     "id": "ed0219",
+     "id": "ed0205",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4876,7 +4553,7 @@
      }
     },
     {
-     "id": "ed0220",
+     "id": "ed0206",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4895,7 +4572,7 @@
      }
     },
     {
-     "id": "ed0221",
+     "id": "ed0207",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4914,7 +4591,7 @@
      }
     },
     {
-     "id": "ed0222",
+     "id": "ed0208",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4932,7 +4609,7 @@
      }
     },
     {
-     "id": "ed0223",
+     "id": "ed0209",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4959,7 +4636,7 @@
    "notes": "현실의 원칙: 학습자 능력을 고려하지 않은 훈련은 비현실적이고 불완전. 실습의 원칙: 실습으로 지식 습득, 목적을 생각하고 적절한 방법으로 정확하게. 경험의 원칙: 경험했던 사례로 현실감. 관련성의 원칙: 실무적 접목과 현장성.\n교재 학습평가 Q1: 「경험을 했던 사례를 들어 현실감 있게 한다」 = 경험의 원칙.\n각 칸의 「예)」는 이해를 돕는 강사 예시 — ⑤ 설명 25분 + 실습 25분, ⑦ 「우리 회사 소화기 비치 장소」는 교재 교안 작성 예시에서 가져옴.",
    "elements": [
     {
-     "id": "ed0224",
+     "id": "ed0210",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4985,7 +4662,7 @@
      }
     },
     {
-     "id": "ed0225",
+     "id": "ed0211",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5005,7 +4682,7 @@
      }
     },
     {
-     "id": "ed0226",
+     "id": "ed0212",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5031,7 +4708,7 @@
      }
     },
     {
-     "id": "ed0227",
+     "id": "ed0213",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5057,7 +4734,7 @@
      }
     },
     {
-     "id": "ed0228",
+     "id": "ed0214",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5083,7 +4760,7 @@
      }
     },
     {
-     "id": "ed0229",
+     "id": "ed0215",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5109,7 +4786,7 @@
      }
     },
     {
-     "id": "ed0230",
+     "id": "ed0216",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5131,7 +4808,7 @@
      }
     },
     {
-     "id": "ed0231",
+     "id": "ed0217",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5149,7 +4826,7 @@
      }
     },
     {
-     "id": "ed0232",
+     "id": "ed0218",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5172,7 +4849,7 @@
      }
     },
     {
-     "id": "ed0233",
+     "id": "ed0219",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5191,7 +4868,7 @@
      }
     },
     {
-     "id": "ed0234",
+     "id": "ed0220",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5210,7 +4887,7 @@
      }
     },
     {
-     "id": "ed0235",
+     "id": "ed0221",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5235,7 +4912,7 @@
      }
     },
     {
-     "id": "ed0236",
+     "id": "ed0222",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5258,7 +4935,7 @@
      }
     },
     {
-     "id": "ed0237",
+     "id": "ed0223",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5277,7 +4954,7 @@
      }
     },
     {
-     "id": "ed0238",
+     "id": "ed0224",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5296,7 +4973,7 @@
      }
     },
     {
-     "id": "ed0239",
+     "id": "ed0225",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5321,7 +4998,7 @@
      }
     },
     {
-     "id": "ed0240",
+     "id": "ed0226",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5344,7 +5021,7 @@
      }
     },
     {
-     "id": "ed0241",
+     "id": "ed0227",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5363,7 +5040,7 @@
      }
     },
     {
-     "id": "ed0242",
+     "id": "ed0228",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5382,7 +5059,7 @@
      }
     },
     {
-     "id": "ed0243",
+     "id": "ed0229",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5407,7 +5084,7 @@
      }
     },
     {
-     "id": "ed0244",
+     "id": "ed0230",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5430,7 +5107,7 @@
      }
     },
     {
-     "id": "ed0245",
+     "id": "ed0231",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5449,7 +5126,7 @@
      }
     },
     {
-     "id": "ed0246",
+     "id": "ed0232",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5468,7 +5145,7 @@
      }
     },
     {
-     "id": "ed0247",
+     "id": "ed0233",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5493,7 +5170,7 @@
      }
     },
     {
-     "id": "ed0248",
+     "id": "ed0234",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5520,7 +5197,7 @@
    "notes": "원칙 확인 퀴즈. Q1 · Q2는 교재 학습평가 문항(정답 ① · ④)과 같은 내용. Q3 · Q4는 강사 추가.",
    "elements": [
     {
-     "id": "ed0249",
+     "id": "ed0235",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5546,7 +5223,7 @@
      }
     },
     {
-     "id": "ed0250",
+     "id": "ed0236",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5566,7 +5243,7 @@
      }
     },
     {
-     "id": "ed0251",
+     "id": "ed0237",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5592,7 +5269,7 @@
      }
     },
     {
-     "id": "ed0252",
+     "id": "ed0238",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5618,7 +5295,7 @@
      }
     },
     {
-     "id": "ed0253",
+     "id": "ed0239",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5644,7 +5321,7 @@
      }
     },
     {
-     "id": "ed0254",
+     "id": "ed0240",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5670,7 +5347,7 @@
      }
     },
     {
-     "id": "ed0255",
+     "id": "ed0241",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5692,7 +5369,7 @@
      }
     },
     {
-     "id": "ed0256",
+     "id": "ed0242",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5718,7 +5395,7 @@
      }
     },
     {
-     "id": "ed0257",
+     "id": "ed0243",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5744,7 +5421,7 @@
      }
     },
     {
-     "id": "ed0258",
+     "id": "ed0244",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5765,7 +5442,7 @@
      }
     },
     {
-     "id": "ed0259",
+     "id": "ed0245",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5792,7 +5469,7 @@
      }
     },
     {
-     "id": "ed0260",
+     "id": "ed0246",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5818,7 +5495,7 @@
      }
     },
     {
-     "id": "ed0261",
+     "id": "ed0247",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5839,7 +5516,7 @@
      }
     },
     {
-     "id": "ed0262",
+     "id": "ed0248",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5866,7 +5543,7 @@
      }
     },
     {
-     "id": "ed0263",
+     "id": "ed0249",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5892,7 +5569,7 @@
      }
     },
     {
-     "id": "ed0264",
+     "id": "ed0250",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5913,7 +5590,7 @@
      }
     },
     {
-     "id": "ed0265",
+     "id": "ed0251",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5940,7 +5617,7 @@
      }
     },
     {
-     "id": "ed0266",
+     "id": "ed0252",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5966,7 +5643,7 @@
      }
     },
     {
-     "id": "ed0267",
+     "id": "ed0253",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5987,7 +5664,7 @@
      }
     },
     {
-     "id": "ed0268",
+     "id": "ed0254",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6023,7 +5700,7 @@
    "notes": "계획의 필요성: 계획을 세운 상태와 그렇지 않은 상태는 효과 · 효율에서 차이가 큼. 연간계획으로 체계적으로 실시하면 더 효율적으로 목표 달성. 대상물 특성을 파악해 일정 · 내용 · 방법 · 교육훈련기자재를 미리 결정하면 적극적 참여를 이끌어 냄.\n계획 수립: 대상물 사정에 따라 먼저 연간계획 → 분기 또는 월별 세부계획. 관계인의 적극적 동참 없이는 시행이 어려우므로, 11~12월경 다음 연도 계획을 세우면 예산 지원과 부서 간 업무협조가 원활.\n계획서 작성: 대상물 특성에 맞는 방법을 모색하고, 모든 인원이 참여할 수 있는 프로그램 — 법령 때문에 어쩔 수 없이가 아니라 자발적으로.",
    "elements": [
     {
-     "id": "ed0269",
+     "id": "ed0255",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6049,7 +5726,7 @@
      }
     },
     {
-     "id": "ed0270",
+     "id": "ed0256",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6069,7 +5746,7 @@
      }
     },
     {
-     "id": "ed0271",
+     "id": "ed0257",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6095,7 +5772,7 @@
      }
     },
     {
-     "id": "ed0272",
+     "id": "ed0258",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6121,7 +5798,7 @@
      }
     },
     {
-     "id": "ed0273",
+     "id": "ed0259",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6147,7 +5824,7 @@
      }
     },
     {
-     "id": "ed0274",
+     "id": "ed0260",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6173,7 +5850,7 @@
      }
     },
     {
-     "id": "ed0275",
+     "id": "ed0261",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6195,7 +5872,7 @@
      }
     },
     {
-     "id": "ed0276",
+     "id": "ed0262",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6213,7 +5890,7 @@
      }
     },
     {
-     "id": "ed0277",
+     "id": "ed0263",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6236,7 +5913,7 @@
      }
     },
     {
-     "id": "ed0278",
+     "id": "ed0264",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6255,7 +5932,7 @@
      }
     },
     {
-     "id": "ed0279",
+     "id": "ed0265",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6274,7 +5951,7 @@
      }
     },
     {
-     "id": "ed0280",
+     "id": "ed0266",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6297,7 +5974,7 @@
      }
     },
     {
-     "id": "ed0281",
+     "id": "ed0267",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6316,7 +5993,7 @@
      }
     },
     {
-     "id": "ed0282",
+     "id": "ed0268",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6335,7 +6012,7 @@
      }
     },
     {
-     "id": "ed0283",
+     "id": "ed0269",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6354,7 +6031,7 @@
      }
     },
     {
-     "id": "ed0284",
+     "id": "ed0270",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6380,7 +6057,7 @@
      }
     },
     {
-     "id": "ed0285",
+     "id": "ed0271",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6403,7 +6080,7 @@
      }
     },
     {
-     "id": "ed0286",
+     "id": "ed0272",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6428,7 +6105,7 @@
      }
     },
     {
-     "id": "ed0287",
+     "id": "ed0273",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6451,7 +6128,7 @@
      }
     },
     {
-     "id": "ed0288",
+     "id": "ed0274",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6476,7 +6153,7 @@
      }
     },
     {
-     "id": "ed0289",
+     "id": "ed0275",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6495,7 +6172,7 @@
      }
     },
     {
-     "id": "ed0290",
+     "id": "ed0276",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6522,7 +6199,7 @@
    "notes": "연간 소방교육 및 훈련 계획서(교재 예시): 1월 소방학(화재이론 · 소화원리) → 2~4월 소방시설 사용(소화기 · 옥내소화전 · 완강기 등 피난기구) → 5월 피난훈련(실별 · 층별 피난동선) → 6월 화재사례 → 7월 화재예방 요령 → 8~9월 자위소방대 활동(반별 임무 숙지 · 반별 훈련) → 10월 자체 소방훈련(모의화재훈련) → 11월 합동 소방훈련(소방관서) → 12월 소방한마음 축제(소방퀴즈대회, 불조심표어 작성).\n읽는 법: 색 = 방법(파랑 이론 · 실습, 빨강 실습, 보라 이론 · 시청각, 주황 직원참여). 쉬운 것 → 어려운 것, 개인 → 팀 → 합동으로 쌓는 구조 = 학습자 중심 원칙.",
    "elements": [
     {
-     "id": "ed0291",
+     "id": "ed0277",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6548,7 +6225,7 @@
      }
     },
     {
-     "id": "ed0292",
+     "id": "ed0278",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6568,7 +6245,7 @@
      }
     },
     {
-     "id": "ed0293",
+     "id": "ed0279",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6594,7 +6271,7 @@
      }
     },
     {
-     "id": "ed0294",
+     "id": "ed0280",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6620,7 +6297,7 @@
      }
     },
     {
-     "id": "ed0295",
+     "id": "ed0281",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6646,7 +6323,7 @@
      }
     },
     {
-     "id": "ed0296",
+     "id": "ed0282",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6672,7 +6349,7 @@
      }
     },
     {
-     "id": "ed0297",
+     "id": "ed0283",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6694,7 +6371,7 @@
      }
     },
     {
-     "id": "ed0298",
+     "id": "ed0284",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6712,7 +6389,7 @@
      }
     },
     {
-     "id": "ed0299",
+     "id": "ed0285",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6735,7 +6412,7 @@
      }
     },
     {
-     "id": "ed0300",
+     "id": "ed0286",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6761,7 +6438,7 @@
      }
     },
     {
-     "id": "ed0301",
+     "id": "ed0287",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6781,7 +6458,7 @@
      }
     },
     {
-     "id": "ed0302",
+     "id": "ed0288",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6800,7 +6477,7 @@
      }
     },
     {
-     "id": "ed0303",
+     "id": "ed0289",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6819,7 +6496,7 @@
      }
     },
     {
-     "id": "ed0304",
+     "id": "ed0290",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6842,7 +6519,7 @@
      }
     },
     {
-     "id": "ed0305",
+     "id": "ed0291",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6868,7 +6545,7 @@
      }
     },
     {
-     "id": "ed0306",
+     "id": "ed0292",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6888,7 +6565,7 @@
      }
     },
     {
-     "id": "ed0307",
+     "id": "ed0293",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6907,7 +6584,7 @@
      }
     },
     {
-     "id": "ed0308",
+     "id": "ed0294",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6926,7 +6603,7 @@
      }
     },
     {
-     "id": "ed0309",
+     "id": "ed0295",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6949,7 +6626,7 @@
      }
     },
     {
-     "id": "ed0310",
+     "id": "ed0296",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6975,7 +6652,7 @@
      }
     },
     {
-     "id": "ed0311",
+     "id": "ed0297",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6995,7 +6672,7 @@
      }
     },
     {
-     "id": "ed0312",
+     "id": "ed0298",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7014,7 +6691,7 @@
      }
     },
     {
-     "id": "ed0313",
+     "id": "ed0299",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7033,7 +6710,7 @@
      }
     },
     {
-     "id": "ed0314",
+     "id": "ed0300",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7056,7 +6733,7 @@
      }
     },
     {
-     "id": "ed0315",
+     "id": "ed0301",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7082,7 +6759,7 @@
      }
     },
     {
-     "id": "ed0316",
+     "id": "ed0302",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7102,7 +6779,7 @@
      }
     },
     {
-     "id": "ed0317",
+     "id": "ed0303",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7121,7 +6798,7 @@
      }
     },
     {
-     "id": "ed0318",
+     "id": "ed0304",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7140,7 +6817,7 @@
      }
     },
     {
-     "id": "ed0319",
+     "id": "ed0305",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7163,7 +6840,7 @@
      }
     },
     {
-     "id": "ed0320",
+     "id": "ed0306",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7189,7 +6866,7 @@
      }
     },
     {
-     "id": "ed0321",
+     "id": "ed0307",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7209,7 +6886,7 @@
      }
     },
     {
-     "id": "ed0322",
+     "id": "ed0308",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7228,7 +6905,7 @@
      }
     },
     {
-     "id": "ed0323",
+     "id": "ed0309",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7247,7 +6924,7 @@
      }
     },
     {
-     "id": "ed0324",
+     "id": "ed0310",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7270,7 +6947,7 @@
      }
     },
     {
-     "id": "ed0325",
+     "id": "ed0311",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7296,7 +6973,7 @@
      }
     },
     {
-     "id": "ed0326",
+     "id": "ed0312",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7316,7 +6993,7 @@
      }
     },
     {
-     "id": "ed0327",
+     "id": "ed0313",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7335,7 +7012,7 @@
      }
     },
     {
-     "id": "ed0328",
+     "id": "ed0314",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7354,7 +7031,7 @@
      }
     },
     {
-     "id": "ed0329",
+     "id": "ed0315",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7377,7 +7054,7 @@
      }
     },
     {
-     "id": "ed0330",
+     "id": "ed0316",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7403,7 +7080,7 @@
      }
     },
     {
-     "id": "ed0331",
+     "id": "ed0317",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7423,7 +7100,7 @@
      }
     },
     {
-     "id": "ed0332",
+     "id": "ed0318",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7442,7 +7119,7 @@
      }
     },
     {
-     "id": "ed0333",
+     "id": "ed0319",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7461,7 +7138,7 @@
      }
     },
     {
-     "id": "ed0334",
+     "id": "ed0320",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7484,7 +7161,7 @@
      }
     },
     {
-     "id": "ed0335",
+     "id": "ed0321",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7510,7 +7187,7 @@
      }
     },
     {
-     "id": "ed0336",
+     "id": "ed0322",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7530,7 +7207,7 @@
      }
     },
     {
-     "id": "ed0337",
+     "id": "ed0323",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7549,7 +7226,7 @@
      }
     },
     {
-     "id": "ed0338",
+     "id": "ed0324",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7568,7 +7245,7 @@
      }
     },
     {
-     "id": "ed0339",
+     "id": "ed0325",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7591,7 +7268,7 @@
      }
     },
     {
-     "id": "ed0340",
+     "id": "ed0326",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7617,7 +7294,7 @@
      }
     },
     {
-     "id": "ed0341",
+     "id": "ed0327",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7637,7 +7314,7 @@
      }
     },
     {
-     "id": "ed0342",
+     "id": "ed0328",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7656,7 +7333,7 @@
      }
     },
     {
-     "id": "ed0343",
+     "id": "ed0329",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7675,7 +7352,7 @@
      }
     },
     {
-     "id": "ed0344",
+     "id": "ed0330",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7698,7 +7375,7 @@
      }
     },
     {
-     "id": "ed0345",
+     "id": "ed0331",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7724,7 +7401,7 @@
      }
     },
     {
-     "id": "ed0346",
+     "id": "ed0332",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7744,7 +7421,7 @@
      }
     },
     {
-     "id": "ed0347",
+     "id": "ed0333",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7763,7 +7440,7 @@
      }
     },
     {
-     "id": "ed0348",
+     "id": "ed0334",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7782,7 +7459,7 @@
      }
     },
     {
-     "id": "ed0349",
+     "id": "ed0335",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7805,7 +7482,7 @@
      }
     },
     {
-     "id": "ed0350",
+     "id": "ed0336",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7831,7 +7508,7 @@
      }
     },
     {
-     "id": "ed0351",
+     "id": "ed0337",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7851,7 +7528,7 @@
      }
     },
     {
-     "id": "ed0352",
+     "id": "ed0338",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7870,7 +7547,7 @@
      }
     },
     {
-     "id": "ed0353",
+     "id": "ed0339",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7889,7 +7566,7 @@
      }
     },
     {
-     "id": "ed0354",
+     "id": "ed0340",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7912,7 +7589,7 @@
      }
     },
     {
-     "id": "ed0355",
+     "id": "ed0341",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7938,7 +7615,7 @@
      }
     },
     {
-     "id": "ed0356",
+     "id": "ed0342",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7958,7 +7635,7 @@
      }
     },
     {
-     "id": "ed0357",
+     "id": "ed0343",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7977,7 +7654,7 @@
      }
     },
     {
-     "id": "ed0358",
+     "id": "ed0344",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7996,7 +7673,7 @@
      }
     },
     {
-     "id": "ed0359",
+     "id": "ed0345",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8019,7 +7696,7 @@
      }
     },
     {
-     "id": "ed0360",
+     "id": "ed0346",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8038,7 +7715,7 @@
      }
     },
     {
-     "id": "ed0361",
+     "id": "ed0347",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8061,7 +7738,7 @@
      }
     },
     {
-     "id": "ed0362",
+     "id": "ed0348",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8080,7 +7757,7 @@
      }
     },
     {
-     "id": "ed0363",
+     "id": "ed0349",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8103,7 +7780,7 @@
      }
     },
     {
-     "id": "ed0364",
+     "id": "ed0350",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8122,7 +7799,7 @@
      }
     },
     {
-     "id": "ed0365",
+     "id": "ed0351",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8145,7 +7822,7 @@
      }
     },
     {
-     "id": "ed0366",
+     "id": "ed0352",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8164,7 +7841,7 @@
      }
     },
     {
-     "id": "ed0367",
+     "id": "ed0353",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8192,7 +7869,7 @@
    "notes": "세부계획 서식(소방계획 작성서식 1.11.2): [  년 제  차] 소방훈련 · 교육 및 자체평가 계획 — 명칭, 일시, 장소, 대상(자위소방대 · 근무자 · 거주자), 종류(실습: 기본 · 부분(기능) · 종합훈련 / 이론: 강의식 · 세미나 · 워크숍), 주관부서, 참여대상, 훈련형태(자체 · 합동 — 참여기관), 시나리오, 교보재, 훈련계획, 교육계획, 평가계획(평가일시 · 평가자 · 평가방법).\n비고: 자위소방대 및 초기대응체계 소방훈련 · 교육, 피난훈련 · 교육은 화재예방법 제37조 소방훈련과 병행 실시 가능.\n연결: 앞 강의(소방계획의 수립)의 「자체평가」가 이 서식의 평가계획 칸입니다.",
    "elements": [
     {
-     "id": "ed0368",
+     "id": "ed0354",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8218,7 +7895,7 @@
      }
     },
     {
-     "id": "ed0369",
+     "id": "ed0355",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8238,7 +7915,7 @@
      }
     },
     {
-     "id": "ed0370",
+     "id": "ed0356",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8264,7 +7941,7 @@
      }
     },
     {
-     "id": "ed0371",
+     "id": "ed0357",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8290,7 +7967,7 @@
      }
     },
     {
-     "id": "ed0372",
+     "id": "ed0358",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8316,7 +7993,7 @@
      }
     },
     {
-     "id": "ed0373",
+     "id": "ed0359",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8342,7 +8019,7 @@
      }
     },
     {
-     "id": "ed0374",
+     "id": "ed0360",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8364,7 +8041,7 @@
      }
     },
     {
-     "id": "ed0375",
+     "id": "ed0361",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8382,7 +8059,7 @@
      }
     },
     {
-     "id": "ed0376",
+     "id": "ed0362",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8408,7 +8085,7 @@
      }
     },
     {
-     "id": "ed0377",
+     "id": "ed0363",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8433,7 +8110,7 @@
      }
     },
     {
-     "id": "ed0378",
+     "id": "ed0364",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8459,7 +8136,7 @@
      }
     },
     {
-     "id": "ed0379",
+     "id": "ed0365",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8484,7 +8161,7 @@
      }
     },
     {
-     "id": "ed0380",
+     "id": "ed0366",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8510,7 +8187,7 @@
      }
     },
     {
-     "id": "ed0381",
+     "id": "ed0367",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8535,7 +8212,7 @@
      }
     },
     {
-     "id": "ed0382",
+     "id": "ed0368",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8561,7 +8238,7 @@
      }
     },
     {
-     "id": "ed0383",
+     "id": "ed0369",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8586,7 +8263,7 @@
      }
     },
     {
-     "id": "ed0384",
+     "id": "ed0370",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8612,7 +8289,7 @@
      }
     },
     {
-     "id": "ed0385",
+     "id": "ed0371",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8637,7 +8314,7 @@
      }
     },
     {
-     "id": "ed0386",
+     "id": "ed0372",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8663,7 +8340,7 @@
      }
     },
     {
-     "id": "ed0387",
+     "id": "ed0373",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8688,7 +8365,7 @@
      }
     },
     {
-     "id": "ed0388",
+     "id": "ed0374",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8714,7 +8391,7 @@
      }
     },
     {
-     "id": "ed0389",
+     "id": "ed0375",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8739,7 +8416,7 @@
      }
     },
     {
-     "id": "ed0390",
+     "id": "ed0376",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8765,7 +8442,7 @@
      }
     },
     {
-     "id": "ed0391",
+     "id": "ed0377",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8790,7 +8467,7 @@
      }
     },
     {
-     "id": "ed0392",
+     "id": "ed0378",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8813,7 +8490,7 @@
      }
     },
     {
-     "id": "ed0393",
+     "id": "ed0379",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8832,7 +8509,7 @@
      }
     },
     {
-     "id": "ed0394",
+     "id": "ed0380",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8851,7 +8528,7 @@
      }
     },
     {
-     "id": "ed0395",
+     "id": "ed0381",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8874,7 +8551,7 @@
      }
     },
     {
-     "id": "ed0396",
+     "id": "ed0382",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8893,7 +8570,7 @@
      }
     },
     {
-     "id": "ed0397",
+     "id": "ed0383",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8912,7 +8589,7 @@
      }
     },
     {
-     "id": "ed0398",
+     "id": "ed0384",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8939,7 +8616,7 @@
    "notes": "시나리오 작성방법(교재): 소방훈련은 많은 인원과 장비가 동원되므로 진행에 필요한 시나리오가 있어야 함. 사전계획에 의한 것이므로 실제상황과 근접할수록 효과가 높음. 정상적인 업무의 지장을 최소화하는 범위 내에서 다양한 상황을 가정. 화재신고부터 초기대응, 피난 및 피난유도, 소방대에 의한 진압, 사후복구 등 단계에 따라 작성하며, 평상시 훈련된 자위소방대 활동을 총망라.\n연결: 「소방계획의 수립」 3장의 화재대응 6단계가 시나리오의 뼈대가 됩니다.",
    "elements": [
     {
-     "id": "ed0399",
+     "id": "ed0385",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8965,7 +8642,7 @@
      }
     },
     {
-     "id": "ed0400",
+     "id": "ed0386",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8985,7 +8662,7 @@
      }
     },
     {
-     "id": "ed0401",
+     "id": "ed0387",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9011,7 +8688,7 @@
      }
     },
     {
-     "id": "ed0402",
+     "id": "ed0388",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9037,7 +8714,7 @@
      }
     },
     {
-     "id": "ed0403",
+     "id": "ed0389",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9063,7 +8740,7 @@
      }
     },
     {
-     "id": "ed0404",
+     "id": "ed0390",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9089,7 +8766,7 @@
      }
     },
     {
-     "id": "ed0405",
+     "id": "ed0391",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9111,7 +8788,7 @@
      }
     },
     {
-     "id": "ed0406",
+     "id": "ed0392",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9129,7 +8806,7 @@
      }
     },
     {
-     "id": "ed0407",
+     "id": "ed0393",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9156,7 +8833,7 @@
      }
     },
     {
-     "id": "ed0408",
+     "id": "ed0394",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9179,7 +8856,7 @@
      }
     },
     {
-     "id": "ed0409",
+     "id": "ed0395",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9206,7 +8883,7 @@
      }
     },
     {
-     "id": "ed0410",
+     "id": "ed0396",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9229,7 +8906,7 @@
      }
     },
     {
-     "id": "ed0411",
+     "id": "ed0397",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9256,7 +8933,7 @@
      }
     },
     {
-     "id": "ed0412",
+     "id": "ed0398",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9279,7 +8956,7 @@
      }
     },
     {
-     "id": "ed0413",
+     "id": "ed0399",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9306,7 +8983,7 @@
      }
     },
     {
-     "id": "ed0414",
+     "id": "ed0400",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9329,7 +9006,7 @@
      }
     },
     {
-     "id": "ed0415",
+     "id": "ed0401",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -9356,7 +9033,7 @@
      }
     },
     {
-     "id": "ed0416",
+     "id": "ed0402",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -9372,7 +9049,7 @@
      "shadow": true
     },
     {
-     "id": "ed0417",
+     "id": "ed0403",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9398,7 +9075,7 @@
      }
     },
     {
-     "id": "ed0418",
+     "id": "ed0404",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9421,7 +9098,7 @@
      }
     },
     {
-     "id": "ed0419",
+     "id": "ed0405",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9440,7 +9117,7 @@
      }
     },
     {
-     "id": "ed0420",
+     "id": "ed0406",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9459,7 +9136,7 @@
      }
     },
     {
-     "id": "ed0421",
+     "id": "ed0407",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9482,7 +9159,7 @@
      }
     },
     {
-     "id": "ed0422",
+     "id": "ed0408",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9501,7 +9178,7 @@
      }
     },
     {
-     "id": "ed0423",
+     "id": "ed0409",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9520,7 +9197,7 @@
      }
     },
     {
-     "id": "ed0424",
+     "id": "ed0410",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9543,7 +9220,7 @@
      }
     },
     {
-     "id": "ed0425",
+     "id": "ed0411",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9562,7 +9239,7 @@
      }
     },
     {
-     "id": "ed0426",
+     "id": "ed0412",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9581,7 +9258,7 @@
      }
     },
     {
-     "id": "ed0427",
+     "id": "ed0413",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9604,7 +9281,7 @@
      }
     },
     {
-     "id": "ed0428",
+     "id": "ed0414",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9623,7 +9300,7 @@
      }
     },
     {
-     "id": "ed0429",
+     "id": "ed0415",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
@@ -9642,7 +9319,7 @@
      }
     },
     {
-     "id": "ed0430",
+     "id": "ed0416",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9669,7 +9346,7 @@
    "notes": "준비(교재): 연간계획이 수립되면 전 사원 또는 모든 거주자에게 공지해 사전에 충분히 알리고 적극 참여를 유도. 연간계획에 따라 세부계획(교보재, 강사 선정, 소방관서 합동훈련 계획 등)을 수립. 교수자는 교안을 미리 준비하고 연습.\n교안 작성 예시(교재): 소방시설사용(1) - 소화기, 2026. 2. 2. 13:00~13:50, 3층 회의실, 강의 25분 · 실습 25분, 훈련용 소화기 5대, 담당 소방안전관리자, 보조요원 훈련반 3명.\n13:00~13:05 교육안내 · 필요성(자위소방대장) / 13:05~13:25 소화기 원리 · 작동방법 · 관리요령 · 우리 회사 비치 장소(소방안전관리자) / 13:25~13:48 조별 분리편성 · 조별 사용실습(훈련반) / 13:48~13:50 마무리 · 평가(소방안전관리자).\n원칙 찾기: 「우리 회사 비치 장소」 = 관련성, 조별 실습 = 실습 · 사회적 상호작용, 마지막 평가 = 효과 측정.",
    "elements": [
     {
-     "id": "ed0431",
+     "id": "ed0417",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9695,7 +9372,7 @@
      }
     },
     {
-     "id": "ed0432",
+     "id": "ed0418",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9715,7 +9392,7 @@
      }
     },
     {
-     "id": "ed0433",
+     "id": "ed0419",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9741,7 +9418,7 @@
      }
     },
     {
-     "id": "ed0434",
+     "id": "ed0420",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9767,7 +9444,7 @@
      }
     },
     {
-     "id": "ed0435",
+     "id": "ed0421",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9793,7 +9470,7 @@
      }
     },
     {
-     "id": "ed0436",
+     "id": "ed0422",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9819,7 +9496,7 @@
      }
     },
     {
-     "id": "ed0437",
+     "id": "ed0423",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9841,7 +9518,7 @@
      }
     },
     {
-     "id": "ed0438",
+     "id": "ed0424",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9859,7 +9536,7 @@
      }
     },
     {
-     "id": "ed0439",
+     "id": "ed0425",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9882,7 +9559,7 @@
      }
     },
     {
-     "id": "ed0440",
+     "id": "ed0426",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9901,7 +9578,7 @@
      }
     },
     {
-     "id": "ed0441",
+     "id": "ed0427",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9920,7 +9597,7 @@
      }
     },
     {
-     "id": "ed0442",
+     "id": "ed0428",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9946,7 +9623,7 @@
      }
     },
     {
-     "id": "ed0443",
+     "id": "ed0429",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9966,7 +9643,7 @@
      }
     },
     {
-     "id": "ed0444",
+     "id": "ed0430",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9992,7 +9669,7 @@
      }
     },
     {
-     "id": "ed0445",
+     "id": "ed0431",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10012,7 +9689,7 @@
      }
     },
     {
-     "id": "ed0446",
+     "id": "ed0432",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10038,7 +9715,7 @@
      }
     },
     {
-     "id": "ed0447",
+     "id": "ed0433",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10058,7 +9735,7 @@
      }
     },
     {
-     "id": "ed0448",
+     "id": "ed0434",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10084,7 +9761,7 @@
      }
     },
     {
-     "id": "ed0449",
+     "id": "ed0435",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10104,7 +9781,7 @@
      }
     },
     {
-     "id": "ed0450",
+     "id": "ed0436",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10130,7 +9807,7 @@
      }
     },
     {
-     "id": "ed0451",
+     "id": "ed0437",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10150,7 +9827,7 @@
      }
     },
     {
-     "id": "ed0452",
+     "id": "ed0438",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10176,7 +9853,7 @@
      }
     },
     {
-     "id": "ed0453",
+     "id": "ed0439",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10196,7 +9873,7 @@
      }
     },
     {
-     "id": "ed0454",
+     "id": "ed0440",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10212,7 +9889,7 @@
      "shadow": true
     },
     {
-     "id": "ed0455",
+     "id": "ed0441",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10238,7 +9915,7 @@
      }
     },
     {
-     "id": "ed0456",
+     "id": "ed0442",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10257,7 +9934,7 @@
      }
     },
     {
-     "id": "ed0457",
+     "id": "ed0443",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10283,7 +9960,7 @@
      }
     },
     {
-     "id": "ed0458",
+     "id": "ed0444",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10302,7 +9979,7 @@
      }
     },
     {
-     "id": "ed0459",
+     "id": "ed0445",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10322,7 +9999,7 @@
      }
     },
     {
-     "id": "ed0460",
+     "id": "ed0446",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10341,7 +10018,7 @@
      }
     },
     {
-     "id": "ed0461",
+     "id": "ed0447",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10367,7 +10044,7 @@
      }
     },
     {
-     "id": "ed0462",
+     "id": "ed0448",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10386,7 +10063,7 @@
      }
     },
     {
-     "id": "ed0463",
+     "id": "ed0449",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10406,7 +10083,7 @@
      }
     },
     {
-     "id": "ed0464",
+     "id": "ed0450",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10425,7 +10102,7 @@
      }
     },
     {
-     "id": "ed0465",
+     "id": "ed0451",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10451,7 +10128,7 @@
      }
     },
     {
-     "id": "ed0466",
+     "id": "ed0452",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10470,7 +10147,7 @@
      }
     },
     {
-     "id": "ed0467",
+     "id": "ed0453",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10490,7 +10167,7 @@
      }
     },
     {
-     "id": "ed0468",
+     "id": "ed0454",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -10509,7 +10186,7 @@
      }
     },
     {
-     "id": "ed0469",
+     "id": "ed0455",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -10535,7 +10212,7 @@
      }
     },
     {
-     "id": "ed0470",
+     "id": "ed0456",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -10554,7 +10231,7 @@
      }
     },
     {
-     "id": "ed0471",
+     "id": "ed0457",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -10581,7 +10258,7 @@
      }
     },
     {
-     "id": "ed0472",
+     "id": "ed0458",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10608,7 +10285,7 @@
    "notes": "실시 내용(교재): 대상물 교육여건과 자위소방대원으로서 현재 수준에서 이해하고 행동할 수 있는 내용, 기본적으로 숙지할 사항을 중점.\n(1) 소화기 · 옥내소화전 구조원리 및 사용방법 실습 — 종류별 화재 적응성, 구조원리 이해, 실습으로 숙달.\n(2) 화재 시 대피 및 대피유도 실습 — 영상물 시청, 연막탄 등 실습, 토의로 스스로 올바른 대피요령 · 대피유도 방법 도출, 층별 피난동선, 피난유도자(안내자) 역할.\n(3) 피난기구 활용법 훈련 — 완강기, 로프, 구조대, 휴대용비상조명등으로 반복.\n(4) 응급처치 — 대상물 사례 중심, 훈련용 마네킹으로 CPR 반복.\n(5) 소방시설 작동법 및 점검방법 — 자동화재탐지설비, 옥내소화전, 피난구조설비 등.",
    "elements": [
     {
-     "id": "ed0473",
+     "id": "ed0459",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10634,7 +10311,7 @@
      }
     },
     {
-     "id": "ed0474",
+     "id": "ed0460",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10654,7 +10331,7 @@
      }
     },
     {
-     "id": "ed0475",
+     "id": "ed0461",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10680,7 +10357,7 @@
      }
     },
     {
-     "id": "ed0476",
+     "id": "ed0462",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10706,7 +10383,7 @@
      }
     },
     {
-     "id": "ed0477",
+     "id": "ed0463",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10732,7 +10409,7 @@
      }
     },
     {
-     "id": "ed0478",
+     "id": "ed0464",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10758,7 +10435,7 @@
      }
     },
     {
-     "id": "ed0479",
+     "id": "ed0465",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10780,7 +10457,7 @@
      }
     },
     {
-     "id": "ed0480",
+     "id": "ed0466",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10798,7 +10475,7 @@
      }
     },
     {
-     "id": "ed0481",
+     "id": "ed0467",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10814,7 +10491,7 @@
      "shadow": true
     },
     {
-     "id": "ed0482",
+     "id": "ed0468",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10837,7 +10514,7 @@
      }
     },
     {
-     "id": "ed0483",
+     "id": "ed0469",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10860,7 +10537,7 @@
      }
     },
     {
-     "id": "ed0484",
+     "id": "ed0470",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10879,7 +10556,7 @@
      }
     },
     {
-     "id": "ed0485",
+     "id": "ed0471",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10899,7 +10576,7 @@
      }
     },
     {
-     "id": "ed0486",
+     "id": "ed0472",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10918,7 +10595,7 @@
      }
     },
     {
-     "id": "ed0487",
+     "id": "ed0473",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10937,7 +10614,7 @@
      }
     },
     {
-     "id": "ed0488",
+     "id": "ed0474",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10953,7 +10630,7 @@
      "shadow": true
     },
     {
-     "id": "ed0489",
+     "id": "ed0475",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10976,7 +10653,7 @@
      }
     },
     {
-     "id": "ed0490",
+     "id": "ed0476",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10999,7 +10676,7 @@
      }
     },
     {
-     "id": "ed0491",
+     "id": "ed0477",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11018,7 +10695,7 @@
      }
     },
     {
-     "id": "ed0492",
+     "id": "ed0478",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11038,7 +10715,7 @@
      }
     },
     {
-     "id": "ed0493",
+     "id": "ed0479",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11057,7 +10734,7 @@
      }
     },
     {
-     "id": "ed0494",
+     "id": "ed0480",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11076,34 +10753,23 @@
      }
     },
     {
-     "id": "ed0495",
+     "id": "ed0481",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
+     "type": "image",
      "x": 800,
      "y": 262,
      "w": 316,
      "h": 200,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "stroke": "",
-     "strokeWidth": 0,
+     "src": "assets/ed-15-3.jpg",
+     "fit": "cover",
      "radius": 16,
-     "shadow": false,
-     "html": "완강기 · 구조대<br><span style=\"font-size:24px\">사진 준비 중</span>",
-     "style": {
-      "fontSize": 30,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "lineHeight": 1.3,
-      "padding": 6
-     }
+     "shadow": true
     },
     {
-     "id": "ed0496",
+     "id": "ed0482",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11126,7 +10792,7 @@
      }
     },
     {
-     "id": "ed0497",
+     "id": "ed0483",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11149,7 +10815,7 @@
      }
     },
     {
-     "id": "ed0498",
+     "id": "ed0484",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11168,7 +10834,7 @@
      }
     },
     {
-     "id": "ed0499",
+     "id": "ed0485",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11188,7 +10854,7 @@
      }
     },
     {
-     "id": "ed0500",
+     "id": "ed0486",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11207,7 +10873,7 @@
      }
     },
     {
-     "id": "ed0501",
+     "id": "ed0487",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11226,7 +10892,7 @@
      }
     },
     {
-     "id": "ed0502",
+     "id": "ed0488",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11242,7 +10908,7 @@
      "shadow": true
     },
     {
-     "id": "ed0503",
+     "id": "ed0489",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11265,7 +10931,7 @@
      }
     },
     {
-     "id": "ed0504",
+     "id": "ed0490",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11288,7 +10954,7 @@
      }
     },
     {
-     "id": "ed0505",
+     "id": "ed0491",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11307,7 +10973,7 @@
      }
     },
     {
-     "id": "ed0506",
+     "id": "ed0492",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11327,7 +10993,7 @@
      }
     },
     {
-     "id": "ed0507",
+     "id": "ed0493",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11346,7 +11012,7 @@
      }
     },
     {
-     "id": "ed0508",
+     "id": "ed0494",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11365,7 +11031,7 @@
      }
     },
     {
-     "id": "ed0509",
+     "id": "ed0495",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11381,7 +11047,7 @@
      "shadow": true
     },
     {
-     "id": "ed0510",
+     "id": "ed0496",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11404,7 +11070,7 @@
      }
     },
     {
-     "id": "ed0511",
+     "id": "ed0497",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11427,7 +11093,7 @@
      }
     },
     {
-     "id": "ed0512",
+     "id": "ed0498",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11446,7 +11112,7 @@
      }
     },
     {
-     "id": "ed0513",
+     "id": "ed0499",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11466,7 +11132,7 @@
      }
     },
     {
-     "id": "ed0514",
+     "id": "ed0500",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11485,7 +11151,7 @@
      }
     },
     {
-     "id": "ed0515",
+     "id": "ed0501",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11504,7 +11170,7 @@
      }
     },
     {
-     "id": "ed0516",
+     "id": "ed0502",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -11529,7 +11195,7 @@
      }
     },
     {
-     "id": "ed0517",
+     "id": "ed0503",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11556,7 +11222,7 @@
    "notes": "효과 측정(교재): 교육훈련은 실시도 중요하지만 결과 평가활동을 반드시 실시 — 학습자 요구를 차기 교육에 반영하는 기초.\n설문지 예시 10문항(① 전혀 아니다 ~ ⑤ 매우 그렇다): 유익 · 새로 앎 · 쉬운 설명 · 분량 적정 · 질문 답변 · 학습자료 · 학습장 환경 · 현장 적용 능력 · 추가 수강 의향 · 추천 의향.\n강조: 8번(현장 적용 능력)이 교육 정의의 「행동능력」과 직결 — 강사 해석.",
    "elements": [
     {
-     "id": "ed0518",
+     "id": "ed0504",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11582,7 +11248,7 @@
      }
     },
     {
-     "id": "ed0519",
+     "id": "ed0505",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11602,7 +11268,7 @@
      }
     },
     {
-     "id": "ed0520",
+     "id": "ed0506",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11628,7 +11294,7 @@
      }
     },
     {
-     "id": "ed0521",
+     "id": "ed0507",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11654,7 +11320,7 @@
      }
     },
     {
-     "id": "ed0522",
+     "id": "ed0508",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11680,7 +11346,7 @@
      }
     },
     {
-     "id": "ed0523",
+     "id": "ed0509",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11706,7 +11372,7 @@
      }
     },
     {
-     "id": "ed0524",
+     "id": "ed0510",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11728,7 +11394,7 @@
      }
     },
     {
-     "id": "ed0525",
+     "id": "ed0511",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11746,7 +11412,7 @@
      }
     },
     {
-     "id": "ed0526",
+     "id": "ed0512",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11762,7 +11428,7 @@
      "shadow": true
     },
     {
-     "id": "ed0527",
+     "id": "ed0513",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11785,7 +11451,7 @@
      }
     },
     {
-     "id": "ed0528",
+     "id": "ed0514",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11804,7 +11470,7 @@
      }
     },
     {
-     "id": "ed0529",
+     "id": "ed0515",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11823,7 +11489,7 @@
      }
     },
     {
-     "id": "ed0530",
+     "id": "ed0516",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11842,7 +11508,7 @@
      }
     },
     {
-     "id": "ed0531",
+     "id": "ed0517",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11862,7 +11528,7 @@
      }
     },
     {
-     "id": "ed0532",
+     "id": "ed0518",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11885,7 +11551,7 @@
      }
     },
     {
-     "id": "ed0533",
+     "id": "ed0519",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11905,7 +11571,7 @@
      }
     },
     {
-     "id": "ed0534",
+     "id": "ed0520",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11924,7 +11590,7 @@
      }
     },
     {
-     "id": "ed0535",
+     "id": "ed0521",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11949,7 +11615,7 @@
      }
     },
     {
-     "id": "ed0536",
+     "id": "ed0522",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11974,7 +11640,7 @@
      }
     },
     {
-     "id": "ed0537",
+     "id": "ed0523",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11999,7 +11665,7 @@
      }
     },
     {
-     "id": "ed0538",
+     "id": "ed0524",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12024,7 +11690,7 @@
      }
     },
     {
-     "id": "ed0539",
+     "id": "ed0525",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12049,7 +11715,7 @@
      }
     },
     {
-     "id": "ed0540",
+     "id": "ed0526",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12072,7 +11738,7 @@
      }
     },
     {
-     "id": "ed0541",
+     "id": "ed0527",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12092,7 +11758,7 @@
      }
     },
     {
-     "id": "ed0542",
+     "id": "ed0528",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12111,7 +11777,7 @@
      }
     },
     {
-     "id": "ed0543",
+     "id": "ed0529",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12136,7 +11802,7 @@
      }
     },
     {
-     "id": "ed0544",
+     "id": "ed0530",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12161,7 +11827,7 @@
      }
     },
     {
-     "id": "ed0545",
+     "id": "ed0531",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12186,7 +11852,7 @@
      }
     },
     {
-     "id": "ed0546",
+     "id": "ed0532",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12211,7 +11877,7 @@
      }
     },
     {
-     "id": "ed0547",
+     "id": "ed0533",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12236,7 +11902,7 @@
      }
     },
     {
-     "id": "ed0548",
+     "id": "ed0534",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12259,7 +11925,7 @@
      }
     },
     {
-     "id": "ed0549",
+     "id": "ed0535",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12279,7 +11945,7 @@
      }
     },
     {
-     "id": "ed0550",
+     "id": "ed0536",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12298,7 +11964,7 @@
      }
     },
     {
-     "id": "ed0551",
+     "id": "ed0537",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12323,7 +11989,7 @@
      }
     },
     {
-     "id": "ed0552",
+     "id": "ed0538",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12348,7 +12014,7 @@
      }
     },
     {
-     "id": "ed0553",
+     "id": "ed0539",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12373,7 +12039,7 @@
      }
     },
     {
-     "id": "ed0554",
+     "id": "ed0540",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12398,7 +12064,7 @@
      }
     },
     {
-     "id": "ed0555",
+     "id": "ed0541",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12423,7 +12089,7 @@
      }
     },
     {
-     "id": "ed0556",
+     "id": "ed0542",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12446,7 +12112,7 @@
      }
     },
     {
-     "id": "ed0557",
+     "id": "ed0543",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12466,7 +12132,7 @@
      }
     },
     {
-     "id": "ed0558",
+     "id": "ed0544",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12485,7 +12151,7 @@
      }
     },
     {
-     "id": "ed0559",
+     "id": "ed0545",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12510,7 +12176,7 @@
      }
     },
     {
-     "id": "ed0560",
+     "id": "ed0546",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12535,7 +12201,7 @@
      }
     },
     {
-     "id": "ed0561",
+     "id": "ed0547",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12560,7 +12226,7 @@
      }
     },
     {
-     "id": "ed0562",
+     "id": "ed0548",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12585,7 +12251,7 @@
      }
     },
     {
-     "id": "ed0563",
+     "id": "ed0549",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12610,7 +12276,7 @@
      }
     },
     {
-     "id": "ed0564",
+     "id": "ed0550",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12633,7 +12299,7 @@
      }
     },
     {
-     "id": "ed0565",
+     "id": "ed0551",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12653,7 +12319,7 @@
      }
     },
     {
-     "id": "ed0566",
+     "id": "ed0552",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12672,7 +12338,7 @@
      }
     },
     {
-     "id": "ed0567",
+     "id": "ed0553",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12697,7 +12363,7 @@
      }
     },
     {
-     "id": "ed0568",
+     "id": "ed0554",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12722,7 +12388,7 @@
      }
     },
     {
-     "id": "ed0569",
+     "id": "ed0555",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12747,7 +12413,7 @@
      }
     },
     {
-     "id": "ed0570",
+     "id": "ed0556",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12772,7 +12438,7 @@
      }
     },
     {
-     "id": "ed0571",
+     "id": "ed0557",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12797,7 +12463,7 @@
      }
     },
     {
-     "id": "ed0572",
+     "id": "ed0558",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12820,7 +12486,7 @@
      }
     },
     {
-     "id": "ed0573",
+     "id": "ed0559",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12840,7 +12506,7 @@
      }
     },
     {
-     "id": "ed0574",
+     "id": "ed0560",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12859,7 +12525,7 @@
      }
     },
     {
-     "id": "ed0575",
+     "id": "ed0561",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12884,7 +12550,7 @@
      }
     },
     {
-     "id": "ed0576",
+     "id": "ed0562",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12909,7 +12575,7 @@
      }
     },
     {
-     "id": "ed0577",
+     "id": "ed0563",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12934,7 +12600,7 @@
      }
     },
     {
-     "id": "ed0578",
+     "id": "ed0564",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12959,7 +12625,7 @@
      }
     },
     {
-     "id": "ed0579",
+     "id": "ed0565",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12984,7 +12650,7 @@
      }
     },
     {
-     "id": "ed0580",
+     "id": "ed0566",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13007,7 +12673,7 @@
      }
     },
     {
-     "id": "ed0581",
+     "id": "ed0567",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13027,7 +12693,7 @@
      }
     },
     {
-     "id": "ed0582",
+     "id": "ed0568",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13046,7 +12712,7 @@
      }
     },
     {
-     "id": "ed0583",
+     "id": "ed0569",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13071,7 +12737,7 @@
      }
     },
     {
-     "id": "ed0584",
+     "id": "ed0570",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13096,7 +12762,7 @@
      }
     },
     {
-     "id": "ed0585",
+     "id": "ed0571",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13121,7 +12787,7 @@
      }
     },
     {
-     "id": "ed0586",
+     "id": "ed0572",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13146,7 +12812,7 @@
      }
     },
     {
-     "id": "ed0587",
+     "id": "ed0573",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13171,7 +12837,7 @@
      }
     },
     {
-     "id": "ed0588",
+     "id": "ed0574",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13194,7 +12860,7 @@
      }
     },
     {
-     "id": "ed0589",
+     "id": "ed0575",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13214,7 +12880,7 @@
      }
     },
     {
-     "id": "ed0590",
+     "id": "ed0576",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13233,7 +12899,7 @@
      }
     },
     {
-     "id": "ed0591",
+     "id": "ed0577",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13258,7 +12924,7 @@
      }
     },
     {
-     "id": "ed0592",
+     "id": "ed0578",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13283,7 +12949,7 @@
      }
     },
     {
-     "id": "ed0593",
+     "id": "ed0579",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13308,7 +12974,7 @@
      }
     },
     {
-     "id": "ed0594",
+     "id": "ed0580",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13333,7 +12999,7 @@
      }
     },
     {
-     "id": "ed0595",
+     "id": "ed0581",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13358,7 +13024,7 @@
      }
     },
     {
-     "id": "ed0596",
+     "id": "ed0582",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13381,7 +13047,7 @@
      }
     },
     {
-     "id": "ed0597",
+     "id": "ed0583",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13401,7 +13067,7 @@
      }
     },
     {
-     "id": "ed0598",
+     "id": "ed0584",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13420,7 +13086,7 @@
      }
     },
     {
-     "id": "ed0599",
+     "id": "ed0585",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13445,7 +13111,7 @@
      }
     },
     {
-     "id": "ed0600",
+     "id": "ed0586",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13470,7 +13136,7 @@
      }
     },
     {
-     "id": "ed0601",
+     "id": "ed0587",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13495,7 +13161,7 @@
      }
     },
     {
-     "id": "ed0602",
+     "id": "ed0588",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13520,7 +13186,7 @@
      }
     },
     {
-     "id": "ed0603",
+     "id": "ed0589",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13545,7 +13211,7 @@
      }
     },
     {
-     "id": "ed0604",
+     "id": "ed0590",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13568,7 +13234,7 @@
      }
     },
     {
-     "id": "ed0605",
+     "id": "ed0591",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13588,7 +13254,7 @@
      }
     },
     {
-     "id": "ed0606",
+     "id": "ed0592",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13607,7 +13273,7 @@
      }
     },
     {
-     "id": "ed0607",
+     "id": "ed0593",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13632,7 +13298,7 @@
      }
     },
     {
-     "id": "ed0608",
+     "id": "ed0594",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13657,7 +13323,7 @@
      }
     },
     {
-     "id": "ed0609",
+     "id": "ed0595",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13682,7 +13348,7 @@
      }
     },
     {
-     "id": "ed0610",
+     "id": "ed0596",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13707,7 +13373,7 @@
      }
     },
     {
-     "id": "ed0611",
+     "id": "ed0597",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13732,7 +13398,7 @@
      }
     },
     {
-     "id": "ed0612",
+     "id": "ed0598",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13758,7 +13424,7 @@
      }
     },
     {
-     "id": "ed0613",
+     "id": "ed0599",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13785,7 +13451,7 @@
    "notes": "훈련 종료 및 강평(교재): 훈련의 총괄 책임자는 합동훈련 종료 후 훈련 전반에 관한 강평 — 준비과정부터 본 훈련, 종료시점까지 잘된 점, 잘못되거나 개선되어야 할 점 포함. 지속적 개선은 자발적 참여를 유도하고 교육의 질을 높임. 교육 후 설문은 가장 용이하고 정확한 방법 중 하나.\n결과작성(교재): (1) 자위소방대 및 초기대응체계 교육 · 훈련 실시결과 기록부(시행규칙 별지 제13호서식) (2) 소방훈련 · 교육 실시결과 기록부(시행규칙 별지 제28호서식).\n시험 포인트: 서식 번호 13호와 28호를 바꾼 보기 주의.",
    "elements": [
     {
-     "id": "ed0614",
+     "id": "ed0600",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13811,7 +13477,7 @@
      }
     },
     {
-     "id": "ed0615",
+     "id": "ed0601",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13831,7 +13497,7 @@
      }
     },
     {
-     "id": "ed0616",
+     "id": "ed0602",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13857,7 +13523,7 @@
      }
     },
     {
-     "id": "ed0617",
+     "id": "ed0603",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13883,7 +13549,7 @@
      }
     },
     {
-     "id": "ed0618",
+     "id": "ed0604",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13909,7 +13575,7 @@
      }
     },
     {
-     "id": "ed0619",
+     "id": "ed0605",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13935,7 +13601,7 @@
      }
     },
     {
-     "id": "ed0620",
+     "id": "ed0606",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13957,7 +13623,7 @@
      }
     },
     {
-     "id": "ed0621",
+     "id": "ed0607",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13975,7 +13641,7 @@
      }
     },
     {
-     "id": "ed0622",
+     "id": "ed0608",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13991,7 +13657,7 @@
      "shadow": true
     },
     {
-     "id": "ed0623",
+     "id": "ed0609",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14017,7 +13683,7 @@
      }
     },
     {
-     "id": "ed0624",
+     "id": "ed0610",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14040,7 +13706,7 @@
      }
     },
     {
-     "id": "ed0625",
+     "id": "ed0611",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14059,7 +13725,7 @@
      }
     },
     {
-     "id": "ed0626",
+     "id": "ed0612",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14078,7 +13744,7 @@
      }
     },
     {
-     "id": "ed0627",
+     "id": "ed0613",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14097,7 +13763,7 @@
      }
     },
     {
-     "id": "ed0628",
+     "id": "ed0614",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14120,7 +13786,7 @@
      }
     },
     {
-     "id": "ed0629",
+     "id": "ed0615",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14143,7 +13809,7 @@
      }
     },
     {
-     "id": "ed0630",
+     "id": "ed0616",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14162,7 +13828,7 @@
      }
     },
     {
-     "id": "ed0631",
+     "id": "ed0617",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14181,7 +13847,7 @@
      }
     },
     {
-     "id": "ed0632",
+     "id": "ed0618",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14204,7 +13870,7 @@
      }
     },
     {
-     "id": "ed0633",
+     "id": "ed0619",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14227,7 +13893,7 @@
      }
     },
     {
-     "id": "ed0634",
+     "id": "ed0620",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14246,7 +13912,7 @@
      }
     },
     {
-     "id": "ed0635",
+     "id": "ed0621",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14265,7 +13931,7 @@
      }
     },
     {
-     "id": "ed0636",
+     "id": "ed0622",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14288,7 +13954,7 @@
      }
     },
     {
-     "id": "ed0637",
+     "id": "ed0623",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14307,7 +13973,7 @@
      }
     },
     {
-     "id": "ed0638",
+     "id": "ed0624",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14333,7 +13999,7 @@
      }
     },
     {
-     "id": "ed0639",
+     "id": "ed0625",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14354,7 +14020,7 @@
      }
     },
     {
-     "id": "ed0640",
+     "id": "ed0626",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14380,7 +14046,7 @@
      }
     },
     {
-     "id": "ed0641",
+     "id": "ed0627",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14401,7 +14067,7 @@
      }
     },
     {
-     "id": "ed0642",
+     "id": "ed0628",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14427,7 +14093,7 @@
      }
     },
     {
-     "id": "ed0643",
+     "id": "ed0629",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14448,7 +14114,7 @@
      }
     },
     {
-     "id": "ed0644",
+     "id": "ed0630",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14474,7 +14140,7 @@
      }
     },
     {
-     "id": "ed0645",
+     "id": "ed0631",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14495,7 +14161,7 @@
      }
     },
     {
-     "id": "ed0646",
+     "id": "ed0632",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14521,7 +14187,7 @@
      }
     },
     {
-     "id": "ed0647",
+     "id": "ed0633",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14548,7 +14214,7 @@
    "notes": "확인 퀴즈. Q1: 예산 지원 · 부서 간 업무협조 때문. Q2: 화재신고 → 초기대응 → 피난 · 피난유도 → 소방대 진압 → 사후복구. Q4: 13호와 28호 구분.",
    "elements": [
     {
-     "id": "ed0648",
+     "id": "ed0634",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14574,7 +14240,7 @@
      }
     },
     {
-     "id": "ed0649",
+     "id": "ed0635",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14594,7 +14260,7 @@
      }
     },
     {
-     "id": "ed0650",
+     "id": "ed0636",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14620,7 +14286,7 @@
      }
     },
     {
-     "id": "ed0651",
+     "id": "ed0637",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14646,7 +14312,7 @@
      }
     },
     {
-     "id": "ed0652",
+     "id": "ed0638",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14672,7 +14338,7 @@
      }
     },
     {
-     "id": "ed0653",
+     "id": "ed0639",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14698,7 +14364,7 @@
      }
     },
     {
-     "id": "ed0654",
+     "id": "ed0640",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14720,7 +14386,7 @@
      }
     },
     {
-     "id": "ed0655",
+     "id": "ed0641",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14746,7 +14412,7 @@
      }
     },
     {
-     "id": "ed0656",
+     "id": "ed0642",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14772,7 +14438,7 @@
      }
     },
     {
-     "id": "ed0657",
+     "id": "ed0643",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14793,7 +14459,7 @@
      }
     },
     {
-     "id": "ed0658",
+     "id": "ed0644",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14820,7 +14486,7 @@
      }
     },
     {
-     "id": "ed0659",
+     "id": "ed0645",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14846,7 +14512,7 @@
      }
     },
     {
-     "id": "ed0660",
+     "id": "ed0646",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14867,7 +14533,7 @@
      }
     },
     {
-     "id": "ed0661",
+     "id": "ed0647",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14894,7 +14560,7 @@
      }
     },
     {
-     "id": "ed0662",
+     "id": "ed0648",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14920,7 +14586,7 @@
      }
     },
     {
-     "id": "ed0663",
+     "id": "ed0649",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14941,7 +14607,7 @@
      }
     },
     {
-     "id": "ed0664",
+     "id": "ed0650",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14968,7 +14634,7 @@
      }
     },
     {
-     "id": "ed0665",
+     "id": "ed0651",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14994,7 +14660,7 @@
      }
     },
     {
-     "id": "ed0666",
+     "id": "ed0652",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15015,7 +14681,7 @@
      }
     },
     {
-     "id": "ed0667",
+     "id": "ed0653",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -15053,7 +14719,7 @@
    "notes": "정리. 다섯 줄: 정의 · 원칙 · 계획 · 실시 · 평가.\n마무리 제안: 실제로 짧은 설문(5문항 정도)을 받아 「효과 측정」을 체험시키기 — 원칙을 강의 자체로 보여 주는 마지막 장면.",
    "elements": [
     {
-     "id": "ed0668",
+     "id": "ed0654",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15076,7 +14742,7 @@
      }
     },
     {
-     "id": "ed0669",
+     "id": "ed0655",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15095,7 +14761,7 @@
      }
     },
     {
-     "id": "ed0670",
+     "id": "ed0656",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15115,7 +14781,7 @@
      }
     },
     {
-     "id": "ed0671",
+     "id": "ed0657",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15141,7 +14807,7 @@
      }
     },
     {
-     "id": "ed0672",
+     "id": "ed0658",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15162,7 +14828,7 @@
      }
     },
     {
-     "id": "ed0673",
+     "id": "ed0659",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15188,7 +14854,7 @@
      }
     },
     {
-     "id": "ed0674",
+     "id": "ed0660",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15209,7 +14875,7 @@
      }
     },
     {
-     "id": "ed0675",
+     "id": "ed0661",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15235,7 +14901,7 @@
      }
     },
     {
-     "id": "ed0676",
+     "id": "ed0662",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15256,7 +14922,7 @@
      }
     },
     {
-     "id": "ed0677",
+     "id": "ed0663",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -15282,7 +14948,7 @@
      }
     },
     {
-     "id": "ed0678",
+     "id": "ed0664",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -15303,7 +14969,7 @@
      }
     },
     {
-     "id": "ed0679",
+     "id": "ed0665",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -15329,7 +14995,7 @@
      }
     },
     {
-     "id": "ed0680",
+     "id": "ed0666",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -15350,7 +15016,7 @@
      }
     },
     {
-     "id": "ed0681",
+     "id": "ed0667",
      "step": 6,
      "anim": "fade",
      "rotate": 0,

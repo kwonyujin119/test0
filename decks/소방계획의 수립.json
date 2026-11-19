@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-19T05:16:37.000Z",
- "modified": "2026-11-19T05:16:37.000Z",
+ "created": "2026-11-19T05:31:22.000Z",
+ "modified": "2026-11-19T05:31:22.000Z",
  "colors": {
   "bg": "#FFFFFF",
   "fg": "#334155",
@@ -30,7 +30,7 @@
     "gradient": "linear-gradient(160deg, #FFFFFF 0%, #F1F5F9 100%)"
    },
    "transition": "fade",
-   "notes": "인사 — 강사 소방기술사 김재훈.\n오늘의 한 문장: 「소방계획은 책상 위 문서가 아니라, 해마다 계획 → 이행 → 점검 · 평가 → 개선으로 도는 건물의 위험관리다.」\n교재 제6편 제1장(소방계획) · 제2장(자위소방대 · 초기대응체계) · 제3장(화재대응 · 피난)을 순서대로 다룹니다.",
+   "notes": "인사 — 강사 소방위 권유진(인천소방학교 지휘역량강화센터).\n오늘의 한 문장: 「소방계획은 책상 위 문서가 아니라, 해마다 계획 → 이행 → 점검 · 평가 → 개선으로 도는 건물의 위험관리다.」\n교재 제6편 제1장(소방계획) · 제2장(자위소방대 · 초기대응체계) · 제3장(화재대응 · 피난)을 순서대로 다룹니다.",
    "elements": [
     {
      "id": "sp0001",
@@ -465,7 +465,7 @@
      "w": 820,
      "h": 64,
      "role": "text",
-     "html": "<span style=\"font-size: 40px\">소방기술사</span> 김재훈",
+     "html": "<span style=\"font-size: 40px\">소방위</span> 권유진",
      "style": {
       "fontSize": 52,
       "color": "#0F172A",
@@ -581,7 +581,7 @@
     "color": "#FFFFFF"
    },
    "transition": "fade",
-   "notes": "강사 소개 — 인천소방학교 지휘역량강화센터 김재훈(소방공무원 · 소방기술사).\n학력: 경원전문대 소방안전관리과, 경기대 공학대학원 석사과정(소방방재전공).\n경력: 1998.03 소방공무원 임용 → 2024.01 중부소방서 중앙119안전센터장 → 2025.01 송도소방서 예방안전과장 → 2026.10 인천소방학교 지휘역량강화센터장.\n아래 한 줄 소개는 초안 문장 — 실제 경험에 맞게 고쳐 쓰세요.",
+   "notes": "강사 소개 — 인천소방학교 지휘역량강화센터 소방위 권유진(내용은 「소방 용수」 교안 프로필과 같음).\n현장대응단 · 119구조대 경력과 2025 화재대응유공자 특별승진 — 현장에서 자위소방대 · 초기대응이 실제로 어떻게 작동하는지 사례로 연결하세요.",
    "elements": [
     {
      "id": "sp0025",
@@ -636,17 +636,17 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 110,
-     "y": 120,
-     "w": 200,
-     "h": 140,
+     "x": 120,
+     "y": 300,
+     "w": 440,
+     "h": 40,
      "role": "text",
-     "html": "“",
+     "html": "PROFILE",
      "style": {
-      "fontSize": 160,
-      "color": "#93C5FD",
+      "fontSize": 24,
+      "color": "#FCA5A5",
       "bold": true,
-      "lineHeight": 1
+      "letterSpacing": 8
      }
     },
     {
@@ -657,16 +657,16 @@
      "opacity": 1,
      "type": "text",
      "x": 120,
-     "y": 250,
+     "y": 350,
      "w": 480,
-     "h": 100,
-     "role": "heading",
-     "html": "강사 소개",
+     "h": 130,
+     "role": "text",
+     "html": "권유진",
      "style": {
-      "fontSize": 72,
+      "fontSize": 96,
       "color": "#FFFFFF",
       "bold": true,
-      "letterSpacing": -2
+      "letterSpacing": -3
      }
     },
     {
@@ -677,16 +677,14 @@
      "opacity": 1,
      "type": "text",
      "x": 120,
-     "y": 385,
+     "y": 490,
      "w": 480,
-     "h": 100,
+     "h": 50,
      "role": "text",
-     "html": "김재훈",
+     "html": "소방위 · 지휘역량강화센터",
      "style": {
-      "fontSize": 76,
-      "color": "#FFFFFF",
-      "bold": true,
-      "letterSpacing": 6
+      "fontSize": 28,
+      "color": "#CBD5E1"
      }
     },
     {
@@ -697,66 +695,14 @@
      "opacity": 1,
      "type": "shape",
      "x": 120,
-     "y": 520,
-     "w": 200,
-     "h": 52,
+     "y": 560,
+     "w": 80,
+     "h": 6,
      "shape": "rect",
      "fill": "#C81E1E",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 26,
-     "shadow": false,
-     "html": "소방공무원",
-     "style": {
-      "fontSize": 26,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
-     }
-    },
-    {
-     "id": "sp0031",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 336,
-     "y": 520,
-     "w": 200,
-     "h": 52,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 26,
-     "shadow": false,
-     "html": "소방기술사",
-     "style": {
-      "fontSize": 26,
-      "color": "#FFFFFF",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
-     }
-    },
-    {
-     "id": "sp0032",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 640,
-     "w": 400,
-     "h": 2,
-     "shape": "rect",
-     "fill": "#334155",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 0,
+     "radius": 3,
      "shadow": false,
      "html": "",
      "style": {
@@ -765,45 +711,7 @@
      }
     },
     {
-     "id": "sp0033",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 670,
-     "w": 480,
-     "h": 120,
-     "role": "text",
-     "html": "28<span style=\"font-size:40px\"> 년+</span>",
-     "style": {
-      "fontSize": 104,
-      "color": "#FFFFFF",
-      "bold": true,
-      "letterSpacing": -3
-     }
-    },
-    {
-     "id": "sp0034",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 800,
-     "w": 480,
-     "h": 44,
-     "role": "text",
-     "html": "소방공무원 경력 (1998.03 ~)",
-     "style": {
-      "fontSize": 28,
-      "color": "#CBD5E1"
-     }
-    },
-    {
-     "id": "sp0035",
+     "id": "sp0031",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -819,7 +727,7 @@
      "shadow": false
     },
     {
-     "id": "sp0036",
+     "id": "sp0032",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -839,29 +747,102 @@
      }
     },
     {
-     "id": "sp0037",
+     "id": "sp0033",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 110,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "2026",
+     "style": {
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
+     }
+    },
+    {
+     "id": "sp0034",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 160,
+     "w": 1060,
+     "h": 180,
+     "role": "text",
+     "html": "(2026. 1) 소방학교 지휘역량강화센터 전입<br>(2026. 7) 제31회 중앙소방 교육혁신 경연대회 연구개발 분야 4위<br><span style=\"font-size:24px;color:#475569\">(피지컬 AI 현장소방활동 도입에 관한 연구)</span>",
+     "style": {
+      "fontSize": 26,
+      "color": "#334155",
+      "lineHeight": 1.6
+     }
+    },
+    {
+     "id": "sp0035",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
      "type": "shape",
      "x": 760,
-     "y": 130,
-     "w": 170,
-     "h": 52,
+     "y": 344,
+     "w": 1040,
+     "h": 2,
      "shape": "rect",
-     "fill": "#EFF6FF",
+     "fill": "#CBD5E1",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 26,
+     "radius": 0,
      "shadow": false,
-     "html": "소 속",
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "sp0036",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 380,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "2025",
+     "style": {
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
+     }
+    },
+    {
+     "id": "sp0037",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 760,
+     "y": 430,
+     "w": 1060,
+     "h": 100,
+     "role": "text",
+     "html": "(2025) 화재대응유공자 선정 (특별승진)<br>(2025) 소방본부 현장대응과 APEC 2025 KOREA 소방안전대책",
      "style": {
       "fontSize": 26,
-      "color": "#1E3A8A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "color": "#334155",
+      "lineHeight": 1.6
      }
     },
     {
@@ -870,18 +851,21 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "text",
-     "x": 960,
-     "y": 124,
-     "w": 860,
-     "h": 64,
-     "role": "text",
-     "html": "인천소방학교 지휘역량강화센터",
+     "type": "shape",
+     "x": 760,
+     "y": 534,
+     "w": 1040,
+     "h": 2,
+     "shape": "rect",
+     "fill": "#CBD5E1",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
      "style": {
-      "fontSize": 38,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle"
+      "fontSize": 28,
+      "color": "#FFFFFF"
      }
     },
     {
@@ -890,24 +874,17 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
+     "type": "text",
      "x": 760,
-     "y": 240,
-     "w": 170,
-     "h": 52,
-     "shape": "rect",
-     "fill": "#EFF6FF",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 26,
-     "shadow": false,
-     "html": "학 력",
+     "y": 560,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "2015 - 2025",
      "style": {
-      "fontSize": 26,
-      "color": "#1E3A8A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
      }
     },
     {
@@ -917,15 +894,15 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 960,
-     "y": 232,
-     "w": 860,
-     "h": 120,
+     "x": 760,
+     "y": 610,
+     "w": 1060,
+     "h": 190,
      "role": "text",
-     "html": "경원전문대 소방안전관리과<br>경기대 공학대학원 석사과정(소방방재전공)",
+     "html": "(2020 ~ 2025) 서부소방서 현장대응단, 검단소방서 현장대응단<br>(2015 ~ 2020) 강화소방서 119구조대, 서부소방서 정서진119수난구조대<br>(2015. 1) 임용 / 구조대원 경력채용 / 특수전사령부 제11공수특전여단 중사 만기 전역",
      "style": {
-      "fontSize": 32,
-      "color": "#0F172A",
+      "fontSize": 26,
+      "color": "#334155",
       "lineHeight": 1.6
      }
     },
@@ -937,22 +914,19 @@
      "opacity": 1,
      "type": "shape",
      "x": 760,
-     "y": 410,
-     "w": 170,
-     "h": 52,
+     "y": 804,
+     "w": 1040,
+     "h": 2,
      "shape": "rect",
-     "fill": "#EFF6FF",
+     "fill": "#CBD5E1",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 26,
+     "radius": 0,
      "shadow": false,
-     "html": "경 력",
+     "html": "",
      "style": {
-      "fontSize": 26,
-      "color": "#1E3A8A",
-      "bold": true,
-      "valign": "middle",
-      "padding": "0"
+      "fontSize": 28,
+      "color": "#FFFFFF"
      }
     },
     {
@@ -961,21 +935,17 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
-     "x": 800,
-     "y": 563,
-     "w": 830,
-     "h": 6,
-     "shape": "rect",
-     "fill": "#CBD5E1",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 3,
-     "shadow": false,
-     "html": "",
+     "type": "text",
+     "x": 760,
+     "y": 830,
+     "w": 400,
+     "h": 46,
+     "role": "text",
+     "html": "보유자격",
      "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
+      "fontSize": 30,
+      "color": "#C81E1E",
+      "bold": true
      }
     },
     {
@@ -984,310 +954,17 @@
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "shape",
-     "x": 800,
-     "y": 563,
-     "w": 830,
-     "h": 6,
-     "shape": "rect",
-     "fill": "#1D4ED8",
-     "fill2": "#C81E1E",
-     "fill2Op": 1,
-     "gAngle": 0,
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 3,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "sp0044",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 796,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#1D4ED8",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "sp0045",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
      "type": "text",
-     "x": 796,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "1998.03",
-     "style": {
-      "fontSize": 34,
-      "color": "#1E3A8A",
-      "bold": true
-     }
-    },
-    {
-     "id": "sp0046",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 796,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "소방공무원 임용",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "sp0047",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1066,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#1D4ED8",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "sp0048",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1066,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "2024.01",
-     "style": {
-      "fontSize": 34,
-      "color": "#1E3A8A",
-      "bold": true
-     }
-    },
-    {
-     "id": "sp0049",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1066,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "중부소방서<br>중앙119안전센터장",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "sp0050",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1336,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#1D4ED8",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "sp0051",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1336,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "2025.01",
-     "style": {
-      "fontSize": 34,
-      "color": "#1E3A8A",
-      "bold": true
-     }
-    },
-    {
-     "id": "sp0052",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1336,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "송도소방서<br>예방안전과장",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "sp0053",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1606,
-     "y": 548,
-     "w": 36,
-     "h": 36,
-     "shape": "ellipse",
-     "fill": "#C81E1E",
-     "stroke": "#FFFFFF",
-     "strokeWidth": 5,
-     "radius": 0,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "sp0054",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1606,
-     "y": 490,
-     "w": 280,
-     "h": 48,
-     "role": "text",
-     "html": "2026.10",
-     "style": {
-      "fontSize": 34,
-      "color": "#C81E1E",
-      "bold": true
-     }
-    },
-    {
-     "id": "sp0055",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1606,
-     "y": 600,
-     "w": 268,
-     "h": 110,
-     "role": "text",
-     "html": "인천소방학교<br>지휘역량강화센터장",
-     "style": {
-      "fontSize": 28,
-      "color": "#0F172A",
-      "bold": true,
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "sp0056",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
      "x": 760,
-     "y": 800,
-     "w": 1040,
-     "h": 150,
-     "shape": "rect",
-     "fill": "#F1F5F9",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 20,
-     "shadow": false,
-     "html": "",
-     "style": {
-      "fontSize": 28,
-      "color": "#FFFFFF"
-     }
-    },
-    {
-     "id": "sp0057",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 800,
-     "y": 800,
-     "w": 960,
-     "h": 150,
+     "y": 880,
+     "w": 1060,
+     "h": 100,
      "role": "text",
-     "html": "예방안전과장 때 매년 받아 본 소방계획서 — 오늘은 「서류」가 아니라 「화재 때 실제로 움직이는 계획」을 세우는 법을 봅니다",
+     "html": "현장지휘관, 화재감식기사, 위험물기능사, 인명구조사, 응급구조사, 화재대응능력 등",
      "style": {
-      "fontSize": 30,
-      "color": "#0F172A",
-      "bold": true,
-      "valign": "middle",
-      "lineHeight": 1.5
+      "fontSize": 26,
+      "color": "#334155",
+      "lineHeight": 1.6
      }
     }
    ],
@@ -1301,7 +978,7 @@
    "notes": "오늘의 지도. 교재 제6편의 세 장을 그대로 따라갑니다.\n1장: 소방계획이 무엇이고 어떤 원리 · 원칙 · 절차로 만드는가. 2장: 그 계획을 실제로 움직이는 사람 조직(자위소방대 · 초기대응체계). 3장: 불이 났을 때의 대응 순서와 피난.\n위쪽 세 칸 막대가 지금 몇 장을 보고 있는지 알려 줍니다.",
    "elements": [
     {
-     "id": "sp0058",
+     "id": "sp0044",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1320,7 +997,7 @@
      }
     },
     {
-     "id": "sp0059",
+     "id": "sp0045",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1341,7 +1018,7 @@
      }
     },
     {
-     "id": "sp0060",
+     "id": "sp0046",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1364,7 +1041,7 @@
      }
     },
     {
-     "id": "sp0061",
+     "id": "sp0047",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1390,7 +1067,7 @@
      }
     },
     {
-     "id": "sp0062",
+     "id": "sp0048",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1411,7 +1088,7 @@
      }
     },
     {
-     "id": "sp0063",
+     "id": "sp0049",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1430,7 +1107,7 @@
      }
     },
     {
-     "id": "sp0064",
+     "id": "sp0050",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1453,7 +1130,7 @@
      }
     },
     {
-     "id": "sp0065",
+     "id": "sp0051",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1472,7 +1149,7 @@
      }
     },
     {
-     "id": "sp0066",
+     "id": "sp0052",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1495,7 +1172,7 @@
      }
     },
     {
-     "id": "sp0067",
+     "id": "sp0053",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1521,7 +1198,7 @@
      }
     },
     {
-     "id": "sp0068",
+     "id": "sp0054",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1542,7 +1219,7 @@
      }
     },
     {
-     "id": "sp0069",
+     "id": "sp0055",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1561,7 +1238,7 @@
      }
     },
     {
-     "id": "sp0070",
+     "id": "sp0056",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1584,7 +1261,7 @@
      }
     },
     {
-     "id": "sp0071",
+     "id": "sp0057",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1603,7 +1280,7 @@
      }
     },
     {
-     "id": "sp0072",
+     "id": "sp0058",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1626,7 +1303,7 @@
      }
     },
     {
-     "id": "sp0073",
+     "id": "sp0059",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1652,7 +1329,7 @@
      }
     },
     {
-     "id": "sp0074",
+     "id": "sp0060",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1673,7 +1350,7 @@
      }
     },
     {
-     "id": "sp0075",
+     "id": "sp0061",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1692,7 +1369,7 @@
      }
     },
     {
-     "id": "sp0076",
+     "id": "sp0062",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1715,7 +1392,7 @@
      }
     },
     {
-     "id": "sp0077",
+     "id": "sp0063",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1734,7 +1411,7 @@
      }
     },
     {
-     "id": "sp0078",
+     "id": "sp0064",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1771,7 +1448,7 @@
    "notes": "제1장 시작. 핵심 질문: \"소방계획서를 해마다 내는데, 그게 정말 화재 때 쓰이나요?\" — 이 장의 답은 「실행 우선」입니다.",
    "elements": [
     {
-     "id": "sp0079",
+     "id": "sp0065",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1787,7 +1464,7 @@
      "shadow": false
     },
     {
-     "id": "sp0080",
+     "id": "sp0066",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1811,7 +1488,7 @@
      }
     },
     {
-     "id": "sp0081",
+     "id": "sp0067",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1834,7 +1511,7 @@
      "style": {}
     },
     {
-     "id": "sp0082",
+     "id": "sp0068",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1854,7 +1531,7 @@
      }
     },
     {
-     "id": "sp0083",
+     "id": "sp0069",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1873,7 +1550,7 @@
      }
     },
     {
-     "id": "sp0084",
+     "id": "sp0070",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1894,7 +1571,7 @@
      }
     },
     {
-     "id": "sp0085",
+     "id": "sp0071",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1912,7 +1589,7 @@
      }
     },
     {
-     "id": "sp0086",
+     "id": "sp0072",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1938,7 +1615,7 @@
      }
     },
     {
-     "id": "sp0087",
+     "id": "sp0073",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1964,7 +1641,7 @@
      }
     },
     {
-     "id": "sp0088",
+     "id": "sp0074",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1990,7 +1667,7 @@
      }
     },
     {
-     "id": "sp0089",
+     "id": "sp0075",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2016,7 +1693,7 @@
      }
     },
     {
-     "id": "sp0090",
+     "id": "sp0076",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2045,7 +1722,7 @@
    "notes": "소방계획의 개념: 소방안전관리대상물의 화재로 인한 재난을 사전에 예방 · 대비하고, 화재 시 신속하고 효율적으로 대응 · 복구해 인명 및 재산 피해를 최소화하기 위해 작성 · 운영하고 유지 · 관리하는 위험관리 계획.\n작성근거: 화재예방법 제24조(피난계획 등이 포함된 소방계획서의 작성 및 시행), 같은 법 시행령 제27조.\n포인트: 정의 안에 이미 「작성」만이 아니라 「운영 · 유지 · 관리」가 들어 있다 — 뒤에 나올 실행우선 원칙의 근거.",
    "elements": [
     {
-     "id": "sp0091",
+     "id": "sp0077",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2071,7 +1748,7 @@
      }
     },
     {
-     "id": "sp0092",
+     "id": "sp0078",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2091,7 +1768,7 @@
      }
     },
     {
-     "id": "sp0093",
+     "id": "sp0079",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2117,7 +1794,7 @@
      }
     },
     {
-     "id": "sp0094",
+     "id": "sp0080",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2143,7 +1820,7 @@
      }
     },
     {
-     "id": "sp0095",
+     "id": "sp0081",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2169,7 +1846,7 @@
      }
     },
     {
-     "id": "sp0096",
+     "id": "sp0082",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2191,7 +1868,7 @@
      }
     },
     {
-     "id": "sp0097",
+     "id": "sp0083",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2209,7 +1886,7 @@
      }
     },
     {
-     "id": "sp0098",
+     "id": "sp0084",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2232,7 +1909,7 @@
      }
     },
     {
-     "id": "sp0099",
+     "id": "sp0085",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2251,7 +1928,7 @@
      }
     },
     {
-     "id": "sp0100",
+     "id": "sp0086",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2271,7 +1948,7 @@
      }
     },
     {
-     "id": "sp0101",
+     "id": "sp0087",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2294,7 +1971,7 @@
      }
     },
     {
-     "id": "sp0102",
+     "id": "sp0088",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2317,7 +1994,7 @@
      }
     },
     {
-     "id": "sp0103",
+     "id": "sp0089",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2336,7 +2013,7 @@
      }
     },
     {
-     "id": "sp0104",
+     "id": "sp0090",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2356,7 +2033,7 @@
      }
     },
     {
-     "id": "sp0105",
+     "id": "sp0091",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2379,7 +2056,7 @@
      }
     },
     {
-     "id": "sp0106",
+     "id": "sp0092",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2402,7 +2079,7 @@
      }
     },
     {
-     "id": "sp0107",
+     "id": "sp0093",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2421,7 +2098,7 @@
      }
     },
     {
-     "id": "sp0108",
+     "id": "sp0094",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2441,7 +2118,7 @@
      }
     },
     {
-     "id": "sp0109",
+     "id": "sp0095",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2459,7 +2136,7 @@
      }
     },
     {
-     "id": "sp0110",
+     "id": "sp0096",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2482,7 +2159,7 @@
      }
     },
     {
-     "id": "sp0111",
+     "id": "sp0097",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2501,7 +2178,7 @@
      }
     },
     {
-     "id": "sp0112",
+     "id": "sp0098",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2520,7 +2197,7 @@
      }
     },
     {
-     "id": "sp0113",
+     "id": "sp0099",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2547,7 +2224,7 @@
    "notes": "책임과 권한 4단계. 대표 · 소유자: 수립 · 실행의 최종적인 책임과 권한. 관리책임자: 관리적 책임과 권한. 안전관리자: 실무적 책임과 권한. 근무 · 거주자: 수립 · 실행에 참여하고 실천하는 책임과 권한.\n아래로 갈수록 넓어지는 모양 = 참여하는 사람이 많아진다는 뜻. 작성원칙 「관계인의 참여(전원 참여)」와 이어집니다.",
    "elements": [
     {
-     "id": "sp0114",
+     "id": "sp0100",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2573,7 +2250,7 @@
      }
     },
     {
-     "id": "sp0115",
+     "id": "sp0101",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2593,7 +2270,7 @@
      }
     },
     {
-     "id": "sp0116",
+     "id": "sp0102",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2619,7 +2296,7 @@
      }
     },
     {
-     "id": "sp0117",
+     "id": "sp0103",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2645,7 +2322,7 @@
      }
     },
     {
-     "id": "sp0118",
+     "id": "sp0104",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2671,7 +2348,7 @@
      }
     },
     {
-     "id": "sp0119",
+     "id": "sp0105",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2693,7 +2370,7 @@
      }
     },
     {
-     "id": "sp0120",
+     "id": "sp0106",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2711,7 +2388,7 @@
      }
     },
     {
-     "id": "sp0121",
+     "id": "sp0107",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2734,7 +2411,7 @@
      }
     },
     {
-     "id": "sp0122",
+     "id": "sp0108",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2754,7 +2431,7 @@
      }
     },
     {
-     "id": "sp0123",
+     "id": "sp0109",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2774,7 +2451,7 @@
      }
     },
     {
-     "id": "sp0124",
+     "id": "sp0110",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2797,7 +2474,7 @@
      }
     },
     {
-     "id": "sp0125",
+     "id": "sp0111",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2817,7 +2494,7 @@
      }
     },
     {
-     "id": "sp0126",
+     "id": "sp0112",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2837,7 +2514,7 @@
      }
     },
     {
-     "id": "sp0127",
+     "id": "sp0113",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2860,7 +2537,7 @@
      }
     },
     {
-     "id": "sp0128",
+     "id": "sp0114",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2880,7 +2557,7 @@
      }
     },
     {
-     "id": "sp0129",
+     "id": "sp0115",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2900,7 +2577,7 @@
      }
     },
     {
-     "id": "sp0130",
+     "id": "sp0116",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2923,7 +2600,7 @@
      }
     },
     {
-     "id": "sp0131",
+     "id": "sp0117",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2943,7 +2620,7 @@
      }
     },
     {
-     "id": "sp0132",
+     "id": "sp0118",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2963,7 +2640,7 @@
      }
     },
     {
-     "id": "sp0133",
+     "id": "sp0119",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -2989,7 +2666,7 @@
      }
     },
     {
-     "id": "sp0134",
+     "id": "sp0120",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3016,7 +2693,7 @@
    "notes": "소방계획서의 주요내용 15가지(교재 순서와 달리 네 묶음으로 다시 배열 — 외우기용).\n① 현황 2: 일반 현황, 시설 현황. ② 예방 · 점검 · 관리 7: 자체점검계획 · 대응대책, 점검 · 정비계획, 방화구획 등 유지 · 관리계획, 관리권원 분리, 공사 중 소방안전관리, 위험물 저장 · 취급, 업무수행 기록 · 유지. ③ 조직 · 훈련 2: 소방훈련 · 교육 계획, 자위소방대 조직 · 임무. ④ 대응 · 피난 4: 피난계획, 소화와 연소 방지, 초기대응, 소방본부장 · 서장 요청 사항.\n강조: 「화재안전취약자」가 피난계획과 자위소방대 임무 두 곳에 다 들어간다.",
    "elements": [
     {
-     "id": "sp0135",
+     "id": "sp0121",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3042,7 +2719,7 @@
      }
     },
     {
-     "id": "sp0136",
+     "id": "sp0122",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3062,7 +2739,7 @@
      }
     },
     {
-     "id": "sp0137",
+     "id": "sp0123",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3088,7 +2765,7 @@
      }
     },
     {
-     "id": "sp0138",
+     "id": "sp0124",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3114,7 +2791,7 @@
      }
     },
     {
-     "id": "sp0139",
+     "id": "sp0125",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3140,7 +2817,7 @@
      }
     },
     {
-     "id": "sp0140",
+     "id": "sp0126",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3162,7 +2839,7 @@
      }
     },
     {
-     "id": "sp0141",
+     "id": "sp0127",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3180,7 +2857,7 @@
      }
     },
     {
-     "id": "sp0142",
+     "id": "sp0128",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3203,7 +2880,7 @@
      }
     },
     {
-     "id": "sp0143",
+     "id": "sp0129",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3222,7 +2899,7 @@
      }
     },
     {
-     "id": "sp0144",
+     "id": "sp0130",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3241,7 +2918,7 @@
      }
     },
     {
-     "id": "sp0145",
+     "id": "sp0131",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3264,7 +2941,7 @@
      }
     },
     {
-     "id": "sp0146",
+     "id": "sp0132",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3283,7 +2960,7 @@
      }
     },
     {
-     "id": "sp0147",
+     "id": "sp0133",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3302,7 +2979,7 @@
      }
     },
     {
-     "id": "sp0148",
+     "id": "sp0134",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3325,7 +3002,7 @@
      }
     },
     {
-     "id": "sp0149",
+     "id": "sp0135",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3344,7 +3021,7 @@
      }
     },
     {
-     "id": "sp0150",
+     "id": "sp0136",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3363,7 +3040,7 @@
      }
     },
     {
-     "id": "sp0151",
+     "id": "sp0137",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3386,7 +3063,7 @@
      }
     },
     {
-     "id": "sp0152",
+     "id": "sp0138",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3405,7 +3082,7 @@
      }
     },
     {
-     "id": "sp0153",
+     "id": "sp0139",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3424,7 +3101,7 @@
      }
     },
     {
-     "id": "sp0154",
+     "id": "sp0140",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3451,7 +3128,7 @@
    "notes": "주요원리 3가지: ① 종합적 안전관리 — 모든 형태의 위험 포괄, 재난 전주기(예방 · 대비 → 대응 → 복구) 위험성 평가. ② 통합적 안전관리 — 외부 거버넌스(정부 – 대상처 – 전문기관)와 안전관리 네트워크, 내부 협력 · 파트너십 · 전원참여. ③ 지속적 발전모델 — PDCA(계획 → 이행/운영 → 모니터링 → 개선).\n한 줄로: 모든 위험을, 모두 함께, 계속 고쳐 가며.",
    "elements": [
     {
-     "id": "sp0155",
+     "id": "sp0141",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3477,7 +3154,7 @@
      }
     },
     {
-     "id": "sp0156",
+     "id": "sp0142",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3497,7 +3174,7 @@
      }
     },
     {
-     "id": "sp0157",
+     "id": "sp0143",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3523,7 +3200,7 @@
      }
     },
     {
-     "id": "sp0158",
+     "id": "sp0144",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3549,7 +3226,7 @@
      }
     },
     {
-     "id": "sp0159",
+     "id": "sp0145",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3575,7 +3252,7 @@
      }
     },
     {
-     "id": "sp0160",
+     "id": "sp0146",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3597,7 +3274,7 @@
      }
     },
     {
-     "id": "sp0161",
+     "id": "sp0147",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3615,7 +3292,7 @@
      }
     },
     {
-     "id": "sp0162",
+     "id": "sp0148",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3638,7 +3315,7 @@
      }
     },
     {
-     "id": "sp0163",
+     "id": "sp0149",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3664,7 +3341,7 @@
      }
     },
     {
-     "id": "sp0164",
+     "id": "sp0150",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3683,7 +3360,7 @@
      }
     },
     {
-     "id": "sp0165",
+     "id": "sp0151",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3701,7 +3378,7 @@
      }
     },
     {
-     "id": "sp0166",
+     "id": "sp0152",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3720,7 +3397,7 @@
      }
     },
     {
-     "id": "sp0167",
+     "id": "sp0153",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3743,7 +3420,7 @@
      }
     },
     {
-     "id": "sp0168",
+     "id": "sp0154",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3769,7 +3446,7 @@
      }
     },
     {
-     "id": "sp0169",
+     "id": "sp0155",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3788,7 +3465,7 @@
      }
     },
     {
-     "id": "sp0170",
+     "id": "sp0156",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3806,7 +3483,7 @@
      }
     },
     {
-     "id": "sp0171",
+     "id": "sp0157",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3825,7 +3502,7 @@
      }
     },
     {
-     "id": "sp0172",
+     "id": "sp0158",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3848,7 +3525,7 @@
      }
     },
     {
-     "id": "sp0173",
+     "id": "sp0159",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3874,7 +3551,7 @@
      }
     },
     {
-     "id": "sp0174",
+     "id": "sp0160",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3893,7 +3570,7 @@
      }
     },
     {
-     "id": "sp0175",
+     "id": "sp0161",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3911,7 +3588,7 @@
      }
     },
     {
-     "id": "sp0176",
+     "id": "sp0162",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3930,7 +3607,7 @@
      }
     },
     {
-     "id": "sp0177",
+     "id": "sp0163",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3956,7 +3633,7 @@
      }
     },
     {
-     "id": "sp0178",
+     "id": "sp0164",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3983,7 +3660,7 @@
    "notes": "작성원칙 4가지: ① 실현가능한 계획(위험요인 관리는 실현 가능하게) ② 관계인의 참여(관계인 · 재실자 · 방문자 전원) ③ 계획수립의 구조화(작성 – 검토 – 승인 3단계) ④ 실행우선(궁극적 목적은 비상시 신속 · 효율적 대응과 복구로 피해 최소화 — 문서로 작성된 계획만으로는 완료되었다고 보기 어렵고, 교육훈련 및 평가 등 이행 과정이 있어야 완성).\n질문 던지기: \"우리 건물 소방계획서, 마지막으로 훈련에 써 본 게 언제인가요?\"",
    "elements": [
     {
-     "id": "sp0179",
+     "id": "sp0165",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4009,7 +3686,7 @@
      }
     },
     {
-     "id": "sp0180",
+     "id": "sp0166",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4029,7 +3706,7 @@
      }
     },
     {
-     "id": "sp0181",
+     "id": "sp0167",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4055,7 +3732,7 @@
      }
     },
     {
-     "id": "sp0182",
+     "id": "sp0168",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4081,7 +3758,7 @@
      }
     },
     {
-     "id": "sp0183",
+     "id": "sp0169",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4107,7 +3784,7 @@
      }
     },
     {
-     "id": "sp0184",
+     "id": "sp0170",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4129,7 +3806,7 @@
      }
     },
     {
-     "id": "sp0185",
+     "id": "sp0171",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4147,7 +3824,7 @@
      }
     },
     {
-     "id": "sp0186",
+     "id": "sp0172",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4170,7 +3847,7 @@
      }
     },
     {
-     "id": "sp0187",
+     "id": "sp0173",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4189,7 +3866,7 @@
      }
     },
     {
-     "id": "sp0188",
+     "id": "sp0174",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4208,7 +3885,7 @@
      }
     },
     {
-     "id": "sp0189",
+     "id": "sp0175",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4231,7 +3908,7 @@
      }
     },
     {
-     "id": "sp0190",
+     "id": "sp0176",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4250,7 +3927,7 @@
      }
     },
     {
-     "id": "sp0191",
+     "id": "sp0177",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4269,7 +3946,7 @@
      }
     },
     {
-     "id": "sp0192",
+     "id": "sp0178",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4292,7 +3969,7 @@
      }
     },
     {
-     "id": "sp0193",
+     "id": "sp0179",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4311,7 +3988,7 @@
      }
     },
     {
-     "id": "sp0194",
+     "id": "sp0180",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4330,7 +4007,7 @@
      }
     },
     {
-     "id": "sp0195",
+     "id": "sp0181",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4353,7 +4030,7 @@
      }
     },
     {
-     "id": "sp0196",
+     "id": "sp0182",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4372,7 +4049,7 @@
      }
     },
     {
-     "id": "sp0197",
+     "id": "sp0183",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4391,7 +4068,7 @@
      }
     },
     {
-     "id": "sp0198",
+     "id": "sp0184",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4407,7 +4084,7 @@
      "shadow": true
     },
     {
-     "id": "sp0199",
+     "id": "sp0185",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4433,7 +4110,7 @@
      }
     },
     {
-     "id": "sp0200",
+     "id": "sp0186",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4453,7 +4130,7 @@
      }
     },
     {
-     "id": "sp0201",
+     "id": "sp0187",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4480,7 +4157,7 @@
    "notes": "수립시기(교재): 특정소방대상물의 소방안전관리자는 소방계획서를 매년 12월 31일까지 작성하고 시행. 1분기부터 3분기까지 소방계획 내 이행계획을 실시하고, 3분기에는 교육훈련 및 자체평가 등으로 이행사항을 측정 · 평가하여 감독하고 개선조치사항을 파악. 파악된 개선 요구사항은 위원회 등 의견수렴을 거쳐 4분기에 실시하는 차기연도 소방계획 수립 시 반영.\n신축 건축물 · 새로 구입한 건축물은 소방안전관리자 선임신고 시 최초 수립하고 이후 같은 일정으로 수립 · 운영.\n연결: 이 1년 주기 자체가 표지의 PDCA 고리입니다.",
    "elements": [
     {
-     "id": "sp0202",
+     "id": "sp0188",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4506,7 +4183,7 @@
      }
     },
     {
-     "id": "sp0203",
+     "id": "sp0189",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4526,7 +4203,7 @@
      }
     },
     {
-     "id": "sp0204",
+     "id": "sp0190",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4552,7 +4229,7 @@
      }
     },
     {
-     "id": "sp0205",
+     "id": "sp0191",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4578,7 +4255,7 @@
      }
     },
     {
-     "id": "sp0206",
+     "id": "sp0192",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4604,7 +4281,7 @@
      }
     },
     {
-     "id": "sp0207",
+     "id": "sp0193",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4626,7 +4303,7 @@
      }
     },
     {
-     "id": "sp0208",
+     "id": "sp0194",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4644,7 +4321,7 @@
      }
     },
     {
-     "id": "sp0209",
+     "id": "sp0195",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4667,7 +4344,7 @@
      }
     },
     {
-     "id": "sp0210",
+     "id": "sp0196",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4690,7 +4367,7 @@
      }
     },
     {
-     "id": "sp0211",
+     "id": "sp0197",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4716,7 +4393,7 @@
      }
     },
     {
-     "id": "sp0212",
+     "id": "sp0198",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4736,7 +4413,7 @@
      }
     },
     {
-     "id": "sp0213",
+     "id": "sp0199",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4759,7 +4436,7 @@
      }
     },
     {
-     "id": "sp0214",
+     "id": "sp0200",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4785,7 +4462,7 @@
      }
     },
     {
-     "id": "sp0215",
+     "id": "sp0201",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4805,7 +4482,7 @@
      }
     },
     {
-     "id": "sp0216",
+     "id": "sp0202",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4828,7 +4505,7 @@
      }
     },
     {
-     "id": "sp0217",
+     "id": "sp0203",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4854,7 +4531,7 @@
      }
     },
     {
-     "id": "sp0218",
+     "id": "sp0204",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4874,7 +4551,7 @@
      }
     },
     {
-     "id": "sp0219",
+     "id": "sp0205",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4897,7 +4574,7 @@
      }
     },
     {
-     "id": "sp0220",
+     "id": "sp0206",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4923,7 +4600,7 @@
      }
     },
     {
-     "id": "sp0221",
+     "id": "sp0207",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4943,7 +4620,7 @@
      }
     },
     {
-     "id": "sp0222",
+     "id": "sp0208",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -4969,7 +4646,7 @@
      }
     },
     {
-     "id": "sp0223",
+     "id": "sp0209",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -4992,7 +4669,7 @@
      }
     },
     {
-     "id": "sp0224",
+     "id": "sp0210",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -5011,7 +4688,7 @@
      }
     },
     {
-     "id": "sp0225",
+     "id": "sp0211",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -5030,7 +4707,7 @@
      }
     },
     {
-     "id": "sp0226",
+     "id": "sp0212",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -5053,7 +4730,7 @@
      }
     },
     {
-     "id": "sp0227",
+     "id": "sp0213",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -5072,7 +4749,7 @@
      }
     },
     {
-     "id": "sp0228",
+     "id": "sp0214",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -5091,7 +4768,7 @@
      }
     },
     {
-     "id": "sp0229",
+     "id": "sp0215",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5118,7 +4795,7 @@
    "notes": "수립절차 4단계(교재 그림을 다시 그림).\n① 사전기획: 임시조직 구성 또는 위원회 개최 → 법적 요구사항과 이해관계자 의견 수렴 → 세부 작성계획 수립(작성준비 → 요구사항 검토 → 작성계획 수립).\n② 위험환경 분석: 물리적 · 인적 위험요인 식별 → 정성적 · 정량적 분석 · 평가 → 대책 수립(식별 → 분석/평가 → 위험경감대책).\n③ 설계 및 개발: 목표 · 전략 수립 → 세부 실행계획 설계 · 개발.\n④ 시행 및 유지관리: 이해관계자 검토 → 최종 승인 → 이행 → 지속적 개선.\n시험 함정: 2단계와 3단계 순서를 바꾼 보기 — 위험을 먼저 분석해야 목표를 세울 수 있다.",
    "elements": [
     {
-     "id": "sp0230",
+     "id": "sp0216",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5144,7 +4821,7 @@
      }
     },
     {
-     "id": "sp0231",
+     "id": "sp0217",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5164,7 +4841,7 @@
      }
     },
     {
-     "id": "sp0232",
+     "id": "sp0218",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5190,7 +4867,7 @@
      }
     },
     {
-     "id": "sp0233",
+     "id": "sp0219",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5216,7 +4893,7 @@
      }
     },
     {
-     "id": "sp0234",
+     "id": "sp0220",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5242,7 +4919,7 @@
      }
     },
     {
-     "id": "sp0235",
+     "id": "sp0221",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5264,7 +4941,7 @@
      }
     },
     {
-     "id": "sp0236",
+     "id": "sp0222",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5282,7 +4959,7 @@
      }
     },
     {
-     "id": "sp0237",
+     "id": "sp0223",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5305,7 +4982,7 @@
      }
     },
     {
-     "id": "sp0238",
+     "id": "sp0224",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5332,7 +5009,7 @@
      }
     },
     {
-     "id": "sp0239",
+     "id": "sp0225",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5358,7 +5035,7 @@
      }
     },
     {
-     "id": "sp0240",
+     "id": "sp0226",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5378,7 +5055,7 @@
      }
     },
     {
-     "id": "sp0241",
+     "id": "sp0227",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5404,7 +5081,7 @@
      }
     },
     {
-     "id": "sp0242",
+     "id": "sp0228",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5424,7 +5101,7 @@
      }
     },
     {
-     "id": "sp0243",
+     "id": "sp0229",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5450,7 +5127,7 @@
      }
     },
     {
-     "id": "sp0244",
+     "id": "sp0230",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5469,7 +5146,7 @@
      }
     },
     {
-     "id": "sp0245",
+     "id": "sp0231",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5492,7 +5169,7 @@
      }
     },
     {
-     "id": "sp0246",
+     "id": "sp0232",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5515,7 +5192,7 @@
      }
     },
     {
-     "id": "sp0247",
+     "id": "sp0233",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5542,7 +5219,7 @@
      }
     },
     {
-     "id": "sp0248",
+     "id": "sp0234",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5568,7 +5245,7 @@
      }
     },
     {
-     "id": "sp0249",
+     "id": "sp0235",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5588,7 +5265,7 @@
      }
     },
     {
-     "id": "sp0250",
+     "id": "sp0236",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5614,7 +5291,7 @@
      }
     },
     {
-     "id": "sp0251",
+     "id": "sp0237",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5634,7 +5311,7 @@
      }
     },
     {
-     "id": "sp0252",
+     "id": "sp0238",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5660,7 +5337,7 @@
      }
     },
     {
-     "id": "sp0253",
+     "id": "sp0239",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5679,7 +5356,7 @@
      }
     },
     {
-     "id": "sp0254",
+     "id": "sp0240",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5702,7 +5379,7 @@
      }
     },
     {
-     "id": "sp0255",
+     "id": "sp0241",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5725,7 +5402,7 @@
      }
     },
     {
-     "id": "sp0256",
+     "id": "sp0242",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5752,7 +5429,7 @@
      }
     },
     {
-     "id": "sp0257",
+     "id": "sp0243",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5778,7 +5455,7 @@
      }
     },
     {
-     "id": "sp0258",
+     "id": "sp0244",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5798,7 +5475,7 @@
      }
     },
     {
-     "id": "sp0259",
+     "id": "sp0245",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5824,7 +5501,7 @@
      }
     },
     {
-     "id": "sp0260",
+     "id": "sp0246",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5843,7 +5520,7 @@
      }
     },
     {
-     "id": "sp0261",
+     "id": "sp0247",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5866,7 +5543,7 @@
      }
     },
     {
-     "id": "sp0262",
+     "id": "sp0248",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5889,7 +5566,7 @@
      }
     },
     {
-     "id": "sp0263",
+     "id": "sp0249",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5916,7 +5593,7 @@
      }
     },
     {
-     "id": "sp0264",
+     "id": "sp0250",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5942,7 +5619,7 @@
      }
     },
     {
-     "id": "sp0265",
+     "id": "sp0251",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5962,7 +5639,7 @@
      }
     },
     {
-     "id": "sp0266",
+     "id": "sp0252",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5988,7 +5665,7 @@
      }
     },
     {
-     "id": "sp0267",
+     "id": "sp0253",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6007,7 +5684,7 @@
      }
     },
     {
-     "id": "sp0268",
+     "id": "sp0254",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6034,7 +5711,7 @@
    "notes": "용도별 소방계획서 도입 배경: 기존 표준 소방계획서는 규모(대형 · 소형)로만 나뉘어 실제 화재 시 현장 특성을 반영하지 못해 활용성이 부족하다는 지적. 특정시설의 대형 인명 · 재산 피해 사례가 이어지면서 용도별 특성에 맞춘 소방계획서가 필요해짐.\n특정소방대상물 31종(공동주택 · 근린생활시설 · 문화 및 집회시설 … 복합건축물, 소방시설법 시행령 별표2).\n용도별 소방계획서 구조: 제1장 소방안전관리계획, 제2장 자위소방대 운영계획, 제3장 피난계획. 서식과 작성매뉴얼을 분리했고, 자위소방대 운영계획과 피난계획을 통합해 활용성을 높임.\n연결: 오늘 강의의 2장 · 3장이 바로 이 계획서의 제2장 · 제3장입니다.",
    "elements": [
     {
-     "id": "sp0269",
+     "id": "sp0255",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6060,7 +5737,7 @@
      }
     },
     {
-     "id": "sp0270",
+     "id": "sp0256",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6080,7 +5757,7 @@
      }
     },
     {
-     "id": "sp0271",
+     "id": "sp0257",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6106,7 +5783,7 @@
      }
     },
     {
-     "id": "sp0272",
+     "id": "sp0258",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6132,7 +5809,7 @@
      }
     },
     {
-     "id": "sp0273",
+     "id": "sp0259",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6158,7 +5835,7 @@
      }
     },
     {
-     "id": "sp0274",
+     "id": "sp0260",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6180,7 +5857,7 @@
      }
     },
     {
-     "id": "sp0275",
+     "id": "sp0261",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6198,7 +5875,7 @@
      }
     },
     {
-     "id": "sp0276",
+     "id": "sp0262",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6221,7 +5898,7 @@
      }
     },
     {
-     "id": "sp0277",
+     "id": "sp0263",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6240,7 +5917,7 @@
      }
     },
     {
-     "id": "sp0278",
+     "id": "sp0264",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6259,7 +5936,7 @@
      }
     },
     {
-     "id": "sp0279",
+     "id": "sp0265",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6282,7 +5959,7 @@
      }
     },
     {
-     "id": "sp0280",
+     "id": "sp0266",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6305,7 +5982,7 @@
      }
     },
     {
-     "id": "sp0281",
+     "id": "sp0267",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6324,7 +6001,7 @@
      }
     },
     {
-     "id": "sp0282",
+     "id": "sp0268",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6343,7 +6020,7 @@
      }
     },
     {
-     "id": "sp0283",
+     "id": "sp0269",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6370,7 +6047,7 @@
      }
     },
     {
-     "id": "sp0284",
+     "id": "sp0270",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6397,7 +6074,7 @@
      }
     },
     {
-     "id": "sp0285",
+     "id": "sp0271",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6424,7 +6101,7 @@
      }
     },
     {
-     "id": "sp0286",
+     "id": "sp0272",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6447,7 +6124,7 @@
      }
     },
     {
-     "id": "sp0287",
+     "id": "sp0273",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6467,7 +6144,7 @@
      }
     },
     {
-     "id": "sp0288",
+     "id": "sp0274",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6494,7 +6171,7 @@
    "notes": "1장 확인 퀴즈. 문제를 읽고 5초 → 클릭하면 정답.\nQ1 함정: 「계획 우선」 · 「문서 완결」은 원리가 아님. Q3: 1 사전기획 → 2 위험환경 분석 → 3 설계 · 개발 → 4 시행 · 유지관리.",
    "elements": [
     {
-     "id": "sp0289",
+     "id": "sp0275",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6520,7 +6197,7 @@
      }
     },
     {
-     "id": "sp0290",
+     "id": "sp0276",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6540,7 +6217,7 @@
      }
     },
     {
-     "id": "sp0291",
+     "id": "sp0277",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6566,7 +6243,7 @@
      }
     },
     {
-     "id": "sp0292",
+     "id": "sp0278",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6592,7 +6269,7 @@
      }
     },
     {
-     "id": "sp0293",
+     "id": "sp0279",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6618,7 +6295,7 @@
      }
     },
     {
-     "id": "sp0294",
+     "id": "sp0280",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6640,7 +6317,7 @@
      }
     },
     {
-     "id": "sp0295",
+     "id": "sp0281",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6666,7 +6343,7 @@
      }
     },
     {
-     "id": "sp0296",
+     "id": "sp0282",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6692,7 +6369,7 @@
      }
     },
     {
-     "id": "sp0297",
+     "id": "sp0283",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6713,7 +6390,7 @@
      }
     },
     {
-     "id": "sp0298",
+     "id": "sp0284",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6740,7 +6417,7 @@
      }
     },
     {
-     "id": "sp0299",
+     "id": "sp0285",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6766,7 +6443,7 @@
      }
     },
     {
-     "id": "sp0300",
+     "id": "sp0286",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6787,7 +6464,7 @@
      }
     },
     {
-     "id": "sp0301",
+     "id": "sp0287",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6814,7 +6491,7 @@
      }
     },
     {
-     "id": "sp0302",
+     "id": "sp0288",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6840,7 +6517,7 @@
      }
     },
     {
-     "id": "sp0303",
+     "id": "sp0289",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6861,7 +6538,7 @@
      }
     },
     {
-     "id": "sp0304",
+     "id": "sp0290",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -6888,7 +6565,7 @@
      }
     },
     {
-     "id": "sp0305",
+     "id": "sp0291",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6914,7 +6591,7 @@
      }
     },
     {
-     "id": "sp0306",
+     "id": "sp0292",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6935,7 +6612,7 @@
      }
     },
     {
-     "id": "sp0307",
+     "id": "sp0293",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -6973,7 +6650,7 @@
    "notes": "제2장 시작. 소방계획서의 제2장(자위소방대 운영계획)에 해당합니다. 질문: \"우리 건물에서 불이 나면, 119에 전화하는 사람은 정해져 있나요?\"",
    "elements": [
     {
-     "id": "sp0308",
+     "id": "sp0294",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6989,7 +6666,7 @@
      "shadow": false
     },
     {
-     "id": "sp0309",
+     "id": "sp0295",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7013,7 +6690,7 @@
      }
     },
     {
-     "id": "sp0310",
+     "id": "sp0296",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7036,7 +6713,7 @@
      "style": {}
     },
     {
-     "id": "sp0311",
+     "id": "sp0297",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7056,7 +6733,7 @@
      }
     },
     {
-     "id": "sp0312",
+     "id": "sp0298",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7075,7 +6752,7 @@
      }
     },
     {
-     "id": "sp0313",
+     "id": "sp0299",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7096,7 +6773,7 @@
      }
     },
     {
-     "id": "sp0314",
+     "id": "sp0300",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7114,7 +6791,7 @@
      }
     },
     {
-     "id": "sp0315",
+     "id": "sp0301",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7140,7 +6817,7 @@
      }
     },
     {
-     "id": "sp0316",
+     "id": "sp0302",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7166,7 +6843,7 @@
      }
     },
     {
-     "id": "sp0317",
+     "id": "sp0303",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7192,7 +6869,7 @@
      }
     },
     {
-     "id": "sp0318",
+     "id": "sp0304",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7218,7 +6895,7 @@
      }
     },
     {
-     "id": "sp0319",
+     "id": "sp0305",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7247,7 +6924,7 @@
    "notes": "자위소방대: 소방안전관리대상물에서 화재 등 재난발생 시 비상연락, 초기소화, 피난유도 및 인명 · 재산피해 최소화를 위해 편성된 자율안전관리 조직. 화재예방법은 관계인과 소방안전관리자가 자위소방대를 구성 · 운영하도록 규정.\n골든타임: 화재 시 5분, CPR은 4~6분 이내 — 초기소화 · 조기피난 · 응급처치를 위해 자위소방대가 필수.\n역사: 1952 직장방공단 규정(방공단 · 소방반) → 1958 행정 지시로 자위소방대 편성 → 1975.12 민방위 발족 직후 직장방공소방대로 통합 → 1979.12 방공법 폐지 → 1983.6 민방위요소종합지침에 의한 직장 내 자위소방대 편성이 오늘의 모태.",
    "elements": [
     {
-     "id": "sp0320",
+     "id": "sp0306",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7273,7 +6950,7 @@
      }
     },
     {
-     "id": "sp0321",
+     "id": "sp0307",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7293,7 +6970,7 @@
      }
     },
     {
-     "id": "sp0322",
+     "id": "sp0308",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7319,7 +6996,7 @@
      }
     },
     {
-     "id": "sp0323",
+     "id": "sp0309",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7345,7 +7022,7 @@
      }
     },
     {
-     "id": "sp0324",
+     "id": "sp0310",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7371,7 +7048,7 @@
      }
     },
     {
-     "id": "sp0325",
+     "id": "sp0311",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7393,7 +7070,7 @@
      }
     },
     {
-     "id": "sp0326",
+     "id": "sp0312",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7411,7 +7088,7 @@
      }
     },
     {
-     "id": "sp0327",
+     "id": "sp0313",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7434,7 +7111,7 @@
      }
     },
     {
-     "id": "sp0328",
+     "id": "sp0314",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7453,7 +7130,7 @@
      }
     },
     {
-     "id": "sp0329",
+     "id": "sp0315",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7472,7 +7149,7 @@
      }
     },
     {
-     "id": "sp0330",
+     "id": "sp0316",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7495,7 +7172,7 @@
      }
     },
     {
-     "id": "sp0331",
+     "id": "sp0317",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7514,7 +7191,7 @@
      }
     },
     {
-     "id": "sp0332",
+     "id": "sp0318",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7534,7 +7211,7 @@
      }
     },
     {
-     "id": "sp0333",
+     "id": "sp0319",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7552,7 +7229,7 @@
      }
     },
     {
-     "id": "sp0334",
+     "id": "sp0320",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7575,7 +7252,7 @@
      }
     },
     {
-     "id": "sp0335",
+     "id": "sp0321",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7594,7 +7271,7 @@
      }
     },
     {
-     "id": "sp0336",
+     "id": "sp0322",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7614,7 +7291,7 @@
      }
     },
     {
-     "id": "sp0337",
+     "id": "sp0323",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7632,7 +7309,7 @@
      }
     },
     {
-     "id": "sp0338",
+     "id": "sp0324",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7651,7 +7328,7 @@
      }
     },
     {
-     "id": "sp0339",
+     "id": "sp0325",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7674,7 +7351,7 @@
      }
     },
     {
-     "id": "sp0340",
+     "id": "sp0326",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7697,7 +7374,7 @@
      }
     },
     {
-     "id": "sp0341",
+     "id": "sp0327",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7716,7 +7393,7 @@
      }
     },
     {
-     "id": "sp0342",
+     "id": "sp0328",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7735,7 +7412,7 @@
      }
     },
     {
-     "id": "sp0343",
+     "id": "sp0329",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7758,7 +7435,7 @@
      }
     },
     {
-     "id": "sp0344",
+     "id": "sp0330",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7777,7 +7454,7 @@
      }
     },
     {
-     "id": "sp0345",
+     "id": "sp0331",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7796,7 +7473,7 @@
      }
     },
     {
-     "id": "sp0346",
+     "id": "sp0332",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7819,7 +7496,7 @@
      }
     },
     {
-     "id": "sp0347",
+     "id": "sp0333",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7838,7 +7515,7 @@
      }
     },
     {
-     "id": "sp0348",
+     "id": "sp0334",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7857,7 +7534,7 @@
      }
     },
     {
-     "id": "sp0349",
+     "id": "sp0335",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7880,7 +7557,7 @@
      }
     },
     {
-     "id": "sp0350",
+     "id": "sp0336",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7899,7 +7576,7 @@
      }
     },
     {
-     "id": "sp0351",
+     "id": "sp0337",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7918,7 +7595,7 @@
      }
     },
     {
-     "id": "sp0352",
+     "id": "sp0338",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7941,7 +7618,7 @@
      }
     },
     {
-     "id": "sp0353",
+     "id": "sp0339",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7960,7 +7637,7 @@
      }
     },
     {
-     "id": "sp0354",
+     "id": "sp0340",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -7979,7 +7656,7 @@
      }
     },
     {
-     "id": "sp0355",
+     "id": "sp0341",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8006,7 +7683,7 @@
    "notes": "자위소방활동의 다섯 기능(화재 발생 시간에 따라 필요한 기능을 포괄적으로 제시).\n비상연락: 상황전파, 119 신고, 통보연락. 초기소화: 초기소화설비로 조기 화재진압. 응급구조: 응급조치, 응급의료소 설치 · 지원. 방호안전: 화재확산방지, 위험물시설 제어, 비상반출. 피난유도: 재실자 · 방문자 피난유도, 피난약자 피난보조.\n법령: 화재예방법 제24조제6항(세부사항 행정안전부령 위임), 시행규칙 제11조(기능 편성 · 연 1회 이상 소집해 편성상태 확인 · 교육 · 훈련).",
    "elements": [
     {
-     "id": "sp0356",
+     "id": "sp0342",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8032,7 +7709,7 @@
      }
     },
     {
-     "id": "sp0357",
+     "id": "sp0343",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8052,7 +7729,7 @@
      }
     },
     {
-     "id": "sp0358",
+     "id": "sp0344",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8078,7 +7755,7 @@
      }
     },
     {
-     "id": "sp0359",
+     "id": "sp0345",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8104,7 +7781,7 @@
      }
     },
     {
-     "id": "sp0360",
+     "id": "sp0346",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8130,7 +7807,7 @@
      }
     },
     {
-     "id": "sp0361",
+     "id": "sp0347",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8152,7 +7829,7 @@
      }
     },
     {
-     "id": "sp0362",
+     "id": "sp0348",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8170,7 +7847,7 @@
      }
     },
     {
-     "id": "sp0363",
+     "id": "sp0349",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8193,7 +7870,7 @@
      }
     },
     {
-     "id": "sp0364",
+     "id": "sp0350",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8216,7 +7893,7 @@
      }
     },
     {
-     "id": "sp0365",
+     "id": "sp0351",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8235,7 +7912,7 @@
      }
     },
     {
-     "id": "sp0366",
+     "id": "sp0352",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8254,7 +7931,7 @@
      }
     },
     {
-     "id": "sp0367",
+     "id": "sp0353",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8273,7 +7950,7 @@
      }
     },
     {
-     "id": "sp0368",
+     "id": "sp0354",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8296,7 +7973,7 @@
      }
     },
     {
-     "id": "sp0369",
+     "id": "sp0355",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8319,7 +7996,7 @@
      }
     },
     {
-     "id": "sp0370",
+     "id": "sp0356",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8338,7 +8015,7 @@
      }
     },
     {
-     "id": "sp0371",
+     "id": "sp0357",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8357,7 +8034,7 @@
      }
     },
     {
-     "id": "sp0372",
+     "id": "sp0358",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8376,7 +8053,7 @@
      }
     },
     {
-     "id": "sp0373",
+     "id": "sp0359",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8399,7 +8076,7 @@
      }
     },
     {
-     "id": "sp0374",
+     "id": "sp0360",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8422,7 +8099,7 @@
      }
     },
     {
-     "id": "sp0375",
+     "id": "sp0361",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8441,7 +8118,7 @@
      }
     },
     {
-     "id": "sp0376",
+     "id": "sp0362",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8460,7 +8137,7 @@
      }
     },
     {
-     "id": "sp0377",
+     "id": "sp0363",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8479,7 +8156,7 @@
      }
     },
     {
-     "id": "sp0378",
+     "id": "sp0364",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8502,7 +8179,7 @@
      }
     },
     {
-     "id": "sp0379",
+     "id": "sp0365",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8525,7 +8202,7 @@
      }
     },
     {
-     "id": "sp0380",
+     "id": "sp0366",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8544,7 +8221,7 @@
      }
     },
     {
-     "id": "sp0381",
+     "id": "sp0367",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8563,7 +8240,7 @@
      }
     },
     {
-     "id": "sp0382",
+     "id": "sp0368",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8582,7 +8259,7 @@
      }
     },
     {
-     "id": "sp0383",
+     "id": "sp0369",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8605,7 +8282,7 @@
      }
     },
     {
-     "id": "sp0384",
+     "id": "sp0370",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8628,7 +8305,7 @@
      }
     },
     {
-     "id": "sp0385",
+     "id": "sp0371",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8647,7 +8324,7 @@
      }
     },
     {
-     "id": "sp0386",
+     "id": "sp0372",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8666,7 +8343,7 @@
      }
     },
     {
-     "id": "sp0387",
+     "id": "sp0373",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -8685,7 +8362,7 @@
      }
     },
     {
-     "id": "sp0388",
+     "id": "sp0374",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8708,7 +8385,7 @@
      }
     },
     {
-     "id": "sp0389",
+     "id": "sp0375",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8727,7 +8404,7 @@
      }
     },
     {
-     "id": "sp0390",
+     "id": "sp0376",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8746,7 +8423,7 @@
      }
     },
     {
-     "id": "sp0391",
+     "id": "sp0377",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8773,7 +8450,7 @@
    "notes": "조직구성 원칙: 대상처의 규모, 소방시설, 편성대원을 고려해 TYPE Ⅰ · Ⅱ · Ⅲ으로 구성(관리 · 이용형태가 특수하면 현장 여건에 따라 달리 적용 가능).\nTYPE Ⅰ: 특급, 1급(연면적 30,000 ㎡ 이상 — 공동주택 제외). TYPE Ⅱ: 1급, 2급(상시 근무인원 50명 이상). TYPE Ⅲ: 2 · 3급(상시 근무인원 50명 이상이면 TYPE Ⅱ 참고).\n비고: 지휘통제팀은 수신반 · 방재실 등을 거점으로 모니터링 · 지휘통제. 현장대응팀은 비상연락 · 초기소화 · 피난유도. 대원편성은 상시 근무 또는 거주 인원 중 자위소방활동이 가능한 인력 기준. 초기대응체계는 이용시간 동안 운영.\n시험 함정: 「50명 초과」가 아니라 「50명 이상」.",
    "elements": [
     {
-     "id": "sp0392",
+     "id": "sp0378",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8799,7 +8476,7 @@
      }
     },
     {
-     "id": "sp0393",
+     "id": "sp0379",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8819,7 +8496,7 @@
      }
     },
     {
-     "id": "sp0394",
+     "id": "sp0380",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8845,7 +8522,7 @@
      }
     },
     {
-     "id": "sp0395",
+     "id": "sp0381",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8871,7 +8548,7 @@
      }
     },
     {
-     "id": "sp0396",
+     "id": "sp0382",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8897,7 +8574,7 @@
      }
     },
     {
-     "id": "sp0397",
+     "id": "sp0383",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8919,7 +8596,7 @@
      }
     },
     {
-     "id": "sp0398",
+     "id": "sp0384",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8937,7 +8614,7 @@
      }
     },
     {
-     "id": "sp0399",
+     "id": "sp0385",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8963,7 +8640,7 @@
      }
     },
     {
-     "id": "sp0400",
+     "id": "sp0386",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8989,7 +8666,7 @@
      }
     },
     {
-     "id": "sp0401",
+     "id": "sp0387",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9015,7 +8692,7 @@
      }
     },
     {
-     "id": "sp0402",
+     "id": "sp0388",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9041,7 +8718,7 @@
      }
     },
     {
-     "id": "sp0403",
+     "id": "sp0389",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9067,7 +8744,7 @@
      }
     },
     {
-     "id": "sp0404",
+     "id": "sp0390",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9093,7 +8770,7 @@
      }
     },
     {
-     "id": "sp0405",
+     "id": "sp0391",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9119,7 +8796,7 @@
      }
     },
     {
-     "id": "sp0406",
+     "id": "sp0392",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9145,7 +8822,7 @@
      }
     },
     {
-     "id": "sp0407",
+     "id": "sp0393",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9171,7 +8848,7 @@
      }
     },
     {
-     "id": "sp0408",
+     "id": "sp0394",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9197,7 +8874,7 @@
      }
     },
     {
-     "id": "sp0409",
+     "id": "sp0395",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9223,7 +8900,7 @@
      }
     },
     {
-     "id": "sp0410",
+     "id": "sp0396",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9249,7 +8926,7 @@
      }
     },
     {
-     "id": "sp0411",
+     "id": "sp0397",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9274,7 +8951,7 @@
      }
     },
     {
-     "id": "sp0412",
+     "id": "sp0398",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9301,7 +8978,7 @@
    "notes": "TYPE Ⅰ: 지휘조직(지휘통제팀) + 현장대응조직(비상연락 · 초기소화 · 피난유도 · 방호안전 · 응급구조팀). 관리 · 이용형태와 위험특성을 고려해 둘 이상의 현장대응조직 운영 가능 — 최초 현장대응조직이 본부대, 추가 편성조직이 지구대. 지구대는 구역(Zone)별 규모 · 편성대원에 따라 필요한 팀 구성.\n구역 설정 4기준: 수직(층 — 단일 층 또는 일부 층 5층 이내를 하나의 구역), 수평(면적 — 한 층이 1,000 ㎡ 초과 시 구역 추가 또는 방화구획 기준), 임차(관리권원별 분할 또는 통합), 용도(비거주용도 — 주차장 · 공장 · 강당 등은 구역설정에서 제외).\n오른쪽 예시(교재): 4F 1 Zone, 33~35F 1 Zone(층) / B1 A구역 · B구역 각 1 Zone(면적) / 2F A사 · B사 각 1 Zone(임차) / B2~B3 주차장 0 Zone(용도).",
    "elements": [
     {
-     "id": "sp0413",
+     "id": "sp0399",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9327,7 +9004,7 @@
      }
     },
     {
-     "id": "sp0414",
+     "id": "sp0400",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9347,7 +9024,7 @@
      }
     },
     {
-     "id": "sp0415",
+     "id": "sp0401",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9373,7 +9050,7 @@
      }
     },
     {
-     "id": "sp0416",
+     "id": "sp0402",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9399,7 +9076,7 @@
      }
     },
     {
-     "id": "sp0417",
+     "id": "sp0403",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9425,7 +9102,7 @@
      }
     },
     {
-     "id": "sp0418",
+     "id": "sp0404",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9447,7 +9124,7 @@
      }
     },
     {
-     "id": "sp0419",
+     "id": "sp0405",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9465,7 +9142,7 @@
      }
     },
     {
-     "id": "sp0420",
+     "id": "sp0406",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9491,7 +9168,7 @@
      }
     },
     {
-     "id": "sp0421",
+     "id": "sp0407",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9514,7 +9191,7 @@
      }
     },
     {
-     "id": "sp0422",
+     "id": "sp0408",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9537,7 +9214,7 @@
      }
     },
     {
-     "id": "sp0423",
+     "id": "sp0409",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9560,7 +9237,7 @@
      }
     },
     {
-     "id": "sp0424",
+     "id": "sp0410",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9586,7 +9263,7 @@
      }
     },
     {
-     "id": "sp0425",
+     "id": "sp0411",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9612,7 +9289,7 @@
      }
     },
     {
-     "id": "sp0426",
+     "id": "sp0412",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9635,7 +9312,7 @@
      }
     },
     {
-     "id": "sp0427",
+     "id": "sp0413",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9661,7 +9338,7 @@
      }
     },
     {
-     "id": "sp0428",
+     "id": "sp0414",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9687,7 +9364,7 @@
      }
     },
     {
-     "id": "sp0429",
+     "id": "sp0415",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9710,7 +9387,7 @@
      }
     },
     {
-     "id": "sp0430",
+     "id": "sp0416",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9736,7 +9413,7 @@
      }
     },
     {
-     "id": "sp0431",
+     "id": "sp0417",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9762,7 +9439,7 @@
      }
     },
     {
-     "id": "sp0432",
+     "id": "sp0418",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9788,7 +9465,7 @@
      }
     },
     {
-     "id": "sp0433",
+     "id": "sp0419",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9814,7 +9491,7 @@
      }
     },
     {
-     "id": "sp0434",
+     "id": "sp0420",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9834,7 +9511,7 @@
      }
     },
     {
-     "id": "sp0435",
+     "id": "sp0421",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9854,7 +9531,7 @@
      }
     },
     {
-     "id": "sp0436",
+     "id": "sp0422",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9880,7 +9557,7 @@
      }
     },
     {
-     "id": "sp0437",
+     "id": "sp0423",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9900,7 +9577,7 @@
      }
     },
     {
-     "id": "sp0438",
+     "id": "sp0424",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9920,7 +9597,7 @@
      }
     },
     {
-     "id": "sp0439",
+     "id": "sp0425",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9946,7 +9623,7 @@
      }
     },
     {
-     "id": "sp0440",
+     "id": "sp0426",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9966,7 +9643,7 @@
      }
     },
     {
-     "id": "sp0441",
+     "id": "sp0427",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9986,7 +9663,7 @@
      }
     },
     {
-     "id": "sp0442",
+     "id": "sp0428",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10012,7 +9689,7 @@
      }
     },
     {
-     "id": "sp0443",
+     "id": "sp0429",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10032,7 +9709,7 @@
      }
     },
     {
-     "id": "sp0444",
+     "id": "sp0430",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10052,7 +9729,7 @@
      }
     },
     {
-     "id": "sp0445",
+     "id": "sp0431",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10071,7 +9748,7 @@
      }
     },
     {
-     "id": "sp0446",
+     "id": "sp0432",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10096,7 +9773,7 @@
      }
     },
     {
-     "id": "sp0447",
+     "id": "sp0433",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10121,7 +9798,7 @@
      }
     },
     {
-     "id": "sp0448",
+     "id": "sp0434",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10141,7 +9818,7 @@
      }
     },
     {
-     "id": "sp0449",
+     "id": "sp0435",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10166,7 +9843,7 @@
      }
     },
     {
-     "id": "sp0450",
+     "id": "sp0436",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10191,7 +9868,7 @@
      }
     },
     {
-     "id": "sp0451",
+     "id": "sp0437",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10211,7 +9888,7 @@
      }
     },
     {
-     "id": "sp0452",
+     "id": "sp0438",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10236,7 +9913,7 @@
      }
     },
     {
-     "id": "sp0453",
+     "id": "sp0439",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10261,7 +9938,7 @@
      }
     },
     {
-     "id": "sp0454",
+     "id": "sp0440",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10281,7 +9958,7 @@
      }
     },
     {
-     "id": "sp0455",
+     "id": "sp0441",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10306,7 +9983,7 @@
      }
     },
     {
-     "id": "sp0456",
+     "id": "sp0442",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10331,7 +10008,7 @@
      }
     },
     {
-     "id": "sp0457",
+     "id": "sp0443",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10351,7 +10028,7 @@
      }
     },
     {
-     "id": "sp0458",
+     "id": "sp0444",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10376,7 +10053,7 @@
      }
     },
     {
-     "id": "sp0459",
+     "id": "sp0445",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -10396,7 +10073,7 @@
      }
     },
     {
-     "id": "sp0460",
+     "id": "sp0446",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10423,7 +10100,7 @@
    "notes": "TYPE Ⅱ: 지휘통제팀 + 현장대응조직(비상연락 · 초기소화 · 피난유도 · 방호안전 · 응급구조) — 여건에 따라 일부 팀 가감.\nTYPE Ⅲ: 지휘조직과 현장대응조직. 편성대원 10인 미만이면 팀 구분 없이 현장대응팀 하나(개인별로 비상연락 · 초기소화 · 피난유도 담당), 10인 이상이면 비상연락 · 초기소화 · 피난유도팀(필요 시 가감).\n초기대응체계: 자위소방대에 포함해 편성(별도 조직이 아님), 이용되는 기간 동안 상시 운영(「24시간」이 아니라 「이용되는 동안」), 구역별 소규모팀.",
    "elements": [
     {
-     "id": "sp0461",
+     "id": "sp0447",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10449,7 +10126,7 @@
      }
     },
     {
-     "id": "sp0462",
+     "id": "sp0448",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10469,7 +10146,7 @@
      }
     },
     {
-     "id": "sp0463",
+     "id": "sp0449",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10495,7 +10172,7 @@
      }
     },
     {
-     "id": "sp0464",
+     "id": "sp0450",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10521,7 +10198,7 @@
      }
     },
     {
-     "id": "sp0465",
+     "id": "sp0451",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10547,7 +10224,7 @@
      }
     },
     {
-     "id": "sp0466",
+     "id": "sp0452",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10569,7 +10246,7 @@
      }
     },
     {
-     "id": "sp0467",
+     "id": "sp0453",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -10587,7 +10264,7 @@
      }
     },
     {
-     "id": "sp0468",
+     "id": "sp0454",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10610,7 +10287,7 @@
      }
     },
     {
-     "id": "sp0469",
+     "id": "sp0455",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10629,7 +10306,7 @@
      }
     },
     {
-     "id": "sp0470",
+     "id": "sp0456",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10655,7 +10332,7 @@
      }
     },
     {
-     "id": "sp0471",
+     "id": "sp0457",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10681,7 +10358,7 @@
      }
     },
     {
-     "id": "sp0472",
+     "id": "sp0458",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10707,7 +10384,7 @@
      }
     },
     {
-     "id": "sp0473",
+     "id": "sp0459",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10733,7 +10410,7 @@
      }
     },
     {
-     "id": "sp0474",
+     "id": "sp0460",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10759,7 +10436,7 @@
      }
     },
     {
-     "id": "sp0475",
+     "id": "sp0461",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -10785,7 +10462,7 @@
      }
     },
     {
-     "id": "sp0476",
+     "id": "sp0462",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10808,7 +10485,7 @@
      }
     },
     {
-     "id": "sp0477",
+     "id": "sp0463",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10827,7 +10504,7 @@
      }
     },
     {
-     "id": "sp0478",
+     "id": "sp0464",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10853,7 +10530,7 @@
      }
     },
     {
-     "id": "sp0479",
+     "id": "sp0465",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10879,7 +10556,7 @@
      }
     },
     {
-     "id": "sp0480",
+     "id": "sp0466",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10902,7 +10579,7 @@
      }
     },
     {
-     "id": "sp0481",
+     "id": "sp0467",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10921,7 +10598,7 @@
      }
     },
     {
-     "id": "sp0482",
+     "id": "sp0468",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10947,7 +10624,7 @@
      }
     },
     {
-     "id": "sp0483",
+     "id": "sp0469",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10973,7 +10650,7 @@
      }
     },
     {
-     "id": "sp0484",
+     "id": "sp0470",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -10999,7 +10676,7 @@
      }
     },
     {
-     "id": "sp0485",
+     "id": "sp0471",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11025,7 +10702,7 @@
      }
     },
     {
-     "id": "sp0486",
+     "id": "sp0472",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11043,7 +10720,7 @@
      }
     },
     {
-     "id": "sp0487",
+     "id": "sp0473",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11061,7 +10738,7 @@
      }
     },
     {
-     "id": "sp0488",
+     "id": "sp0474",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11084,7 +10761,7 @@
      }
     },
     {
-     "id": "sp0489",
+     "id": "sp0475",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11103,7 +10780,7 @@
      }
     },
     {
-     "id": "sp0490",
+     "id": "sp0476",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11122,7 +10799,7 @@
      }
     },
     {
-     "id": "sp0491",
+     "id": "sp0477",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11149,7 +10826,7 @@
    "notes": "인력편성: 대상물 내 상시 근무 · 거주 인원 중 자위소방활동이 가능한 인력. 팀별 최소 2명 이상, 팀별 책임자(팀장) 지정. 인원 부족 시 팀 기능 통합 · 가감 또는 현장대응팀으로 운영.\n대장 · 부대장: 소유주, 법인의 대표 또는 관리기관의 책임자 = 대장, 소방안전관리자 = 부대장. 부재 시 대리자 지정.\n초기대응체계 인원: 소방안전관리보조자, 경비(보안) 근무자, 관리인 등 상시 근무자 중심. 운영책임자 = 보조자(없으면 선임 대원). 1명 이상은 수신반(종합방재실)에 근무하며 모니터링 · 지휘통제. 휴일 · 야간 무인경비시스템이면 무인경비회사와 비상연락체계.\n개별임무: 복수 · 중복 지정 가능. 권원 분리: 본부장 · 서장이 지정한 대상물은 유기적 연계, 필요 시 운영협의회. 다수 대상물: 권원자가 동일하면 하나로 보고(시행령 제25조제3항), 등급이 가장 높은 대상물을 본부대로.\n함정: 부대장 2명 이상 ✕.",
    "elements": [
     {
-     "id": "sp0492",
+     "id": "sp0478",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11175,7 +10852,7 @@
      }
     },
     {
-     "id": "sp0493",
+     "id": "sp0479",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11195,7 +10872,7 @@
      }
     },
     {
-     "id": "sp0494",
+     "id": "sp0480",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11221,7 +10898,7 @@
      }
     },
     {
-     "id": "sp0495",
+     "id": "sp0481",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11247,7 +10924,7 @@
      }
     },
     {
-     "id": "sp0496",
+     "id": "sp0482",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11273,7 +10950,7 @@
      }
     },
     {
-     "id": "sp0497",
+     "id": "sp0483",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11295,7 +10972,7 @@
      }
     },
     {
-     "id": "sp0498",
+     "id": "sp0484",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11313,7 +10990,7 @@
      }
     },
     {
-     "id": "sp0499",
+     "id": "sp0485",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11336,7 +11013,7 @@
      }
     },
     {
-     "id": "sp0500",
+     "id": "sp0486",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11355,7 +11032,7 @@
      }
     },
     {
-     "id": "sp0501",
+     "id": "sp0487",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -11374,7 +11051,7 @@
      }
     },
     {
-     "id": "sp0502",
+     "id": "sp0488",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11397,7 +11074,7 @@
      }
     },
     {
-     "id": "sp0503",
+     "id": "sp0489",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11416,7 +11093,7 @@
      }
     },
     {
-     "id": "sp0504",
+     "id": "sp0490",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -11435,7 +11112,7 @@
      }
     },
     {
-     "id": "sp0505",
+     "id": "sp0491",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11458,7 +11135,7 @@
      }
     },
     {
-     "id": "sp0506",
+     "id": "sp0492",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11477,7 +11154,7 @@
      }
     },
     {
-     "id": "sp0507",
+     "id": "sp0493",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11496,7 +11173,7 @@
      }
     },
     {
-     "id": "sp0508",
+     "id": "sp0494",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11519,7 +11196,7 @@
      }
     },
     {
-     "id": "sp0509",
+     "id": "sp0495",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11538,7 +11215,7 @@
      }
     },
     {
-     "id": "sp0510",
+     "id": "sp0496",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -11557,7 +11234,7 @@
      }
     },
     {
-     "id": "sp0511",
+     "id": "sp0497",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11580,7 +11257,7 @@
      }
     },
     {
-     "id": "sp0512",
+     "id": "sp0498",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11599,7 +11276,7 @@
      }
     },
     {
-     "id": "sp0513",
+     "id": "sp0499",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -11618,7 +11295,7 @@
      }
     },
     {
-     "id": "sp0514",
+     "id": "sp0500",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -11634,7 +11311,7 @@
      "shadow": true
     },
     {
-     "id": "sp0515",
+     "id": "sp0501",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11660,7 +11337,7 @@
      }
     },
     {
-     "id": "sp0516",
+     "id": "sp0502",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11687,7 +11364,7 @@
    "notes": "교육 · 훈련 계획: 자위소방대장이 자위소방대(초기대응체계 포함)의 연간 교육 · 훈련계획을 수립 · 시행. 대상은 대원, 재실자, 종업원, 방문자 등을 포함할 수 있음. 종업원 교육 · 훈련계획을 별도로 작성할 수 있음.\n교육: 대상 · 방법을 정하고 자료 준비, 교육 전 수요조사 · 교육 후 평가 · 설문 가능.\n훈련(교재 참고 예시): 기본훈련(자위소방대, 개별/팀별 임무숙지, 3 · 9월), 피난훈련(자위소방대 + 재실자, 주간 4월 · 야간 10월), 종합훈련(기본 + 피난, 10월), 합동훈련(종합훈련 + 소방관서 공동훈련, 11월).\n주의: 달력의 월은 교재가 「참고할 수 있다」고 제시한 예시 — 법정 시기가 아님.",
    "elements": [
     {
-     "id": "sp0517",
+     "id": "sp0503",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11713,7 +11390,7 @@
      }
     },
     {
-     "id": "sp0518",
+     "id": "sp0504",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11733,7 +11410,7 @@
      }
     },
     {
-     "id": "sp0519",
+     "id": "sp0505",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11759,7 +11436,7 @@
      }
     },
     {
-     "id": "sp0520",
+     "id": "sp0506",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11785,7 +11462,7 @@
      }
     },
     {
-     "id": "sp0521",
+     "id": "sp0507",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11811,7 +11488,7 @@
      }
     },
     {
-     "id": "sp0522",
+     "id": "sp0508",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11833,7 +11510,7 @@
      }
     },
     {
-     "id": "sp0523",
+     "id": "sp0509",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11851,7 +11528,7 @@
      }
     },
     {
-     "id": "sp0524",
+     "id": "sp0510",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11877,7 +11554,7 @@
      }
     },
     {
-     "id": "sp0525",
+     "id": "sp0511",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11903,7 +11580,7 @@
      }
     },
     {
-     "id": "sp0526",
+     "id": "sp0512",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11929,7 +11606,7 @@
      }
     },
     {
-     "id": "sp0527",
+     "id": "sp0513",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11955,7 +11632,7 @@
      }
     },
     {
-     "id": "sp0528",
+     "id": "sp0514",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -11981,7 +11658,7 @@
      }
     },
     {
-     "id": "sp0529",
+     "id": "sp0515",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12007,7 +11684,7 @@
      }
     },
     {
-     "id": "sp0530",
+     "id": "sp0516",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12033,7 +11710,7 @@
      }
     },
     {
-     "id": "sp0531",
+     "id": "sp0517",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12059,7 +11736,7 @@
      }
     },
     {
-     "id": "sp0532",
+     "id": "sp0518",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12085,7 +11762,7 @@
      }
     },
     {
-     "id": "sp0533",
+     "id": "sp0519",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12111,7 +11788,7 @@
      }
     },
     {
-     "id": "sp0534",
+     "id": "sp0520",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12137,7 +11814,7 @@
      }
     },
     {
-     "id": "sp0535",
+     "id": "sp0521",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12163,7 +11840,7 @@
      }
     },
     {
-     "id": "sp0536",
+     "id": "sp0522",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12189,7 +11866,7 @@
      }
     },
     {
-     "id": "sp0537",
+     "id": "sp0523",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12215,7 +11892,7 @@
      }
     },
     {
-     "id": "sp0538",
+     "id": "sp0524",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12241,7 +11918,7 @@
      }
     },
     {
-     "id": "sp0539",
+     "id": "sp0525",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12267,7 +11944,7 @@
      }
     },
     {
-     "id": "sp0540",
+     "id": "sp0526",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12293,7 +11970,7 @@
      }
     },
     {
-     "id": "sp0541",
+     "id": "sp0527",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12319,7 +11996,7 @@
      }
     },
     {
-     "id": "sp0542",
+     "id": "sp0528",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12345,7 +12022,7 @@
      }
     },
     {
-     "id": "sp0543",
+     "id": "sp0529",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12366,7 +12043,7 @@
      }
     },
     {
-     "id": "sp0544",
+     "id": "sp0530",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12386,7 +12063,7 @@
      }
     },
     {
-     "id": "sp0545",
+     "id": "sp0531",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12412,7 +12089,7 @@
      }
     },
     {
-     "id": "sp0546",
+     "id": "sp0532",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12433,7 +12110,7 @@
      }
     },
     {
-     "id": "sp0547",
+     "id": "sp0533",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12453,7 +12130,7 @@
      }
     },
     {
-     "id": "sp0548",
+     "id": "sp0534",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12479,7 +12156,7 @@
      }
     },
     {
-     "id": "sp0549",
+     "id": "sp0535",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12500,7 +12177,7 @@
      }
     },
     {
-     "id": "sp0550",
+     "id": "sp0536",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12520,7 +12197,7 @@
      }
     },
     {
-     "id": "sp0551",
+     "id": "sp0537",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12546,7 +12223,7 @@
      }
     },
     {
-     "id": "sp0552",
+     "id": "sp0538",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12567,7 +12244,7 @@
      }
     },
     {
-     "id": "sp0553",
+     "id": "sp0539",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12587,7 +12264,7 @@
      }
     },
     {
-     "id": "sp0554",
+     "id": "sp0540",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12603,7 +12280,7 @@
      "shadow": true
     },
     {
-     "id": "sp0555",
+     "id": "sp0541",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12629,7 +12306,7 @@
      }
     },
     {
-     "id": "sp0556",
+     "id": "sp0542",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12656,7 +12333,7 @@
    "notes": "실시결과 기록: 화재예방법 시행규칙 [별지 제13호서식] 「자위소방대 및 초기대응체계 교육 · 훈련 실시결과 기록부」 활용 → 교육을 실시한 날부터 2년간 보관. 서식에는 대상물 현황, 소방안전관리자, 자위소방대(총원 · 대장 · 부대장 · 팀별 인원), 초기대응체계, 교육 · 훈련 결과(인원 · 일시/장소 · 주요내용 · 보완사항 · 조치사항)를 적음.\n자체평가: 자위소방대장이 조직편성 및 훈련 결과를 자체 평가하고 미비점 개선. 체크리스트 작성 · 활용 가능, 평가 기록 2년 보관.\n재검토: 운영계획 수립 시 재검토 기한을 설정하고 재검토.\n연결: 1장의 PDCA가 자위소방대 단위에서도 그대로 돈다.",
    "elements": [
     {
-     "id": "sp0557",
+     "id": "sp0543",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12682,7 +12359,7 @@
      }
     },
     {
-     "id": "sp0558",
+     "id": "sp0544",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12702,7 +12379,7 @@
      }
     },
     {
-     "id": "sp0559",
+     "id": "sp0545",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12728,7 +12405,7 @@
      }
     },
     {
-     "id": "sp0560",
+     "id": "sp0546",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12754,7 +12431,7 @@
      }
     },
     {
-     "id": "sp0561",
+     "id": "sp0547",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12780,7 +12457,7 @@
      }
     },
     {
-     "id": "sp0562",
+     "id": "sp0548",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12802,7 +12479,7 @@
      }
     },
     {
-     "id": "sp0563",
+     "id": "sp0549",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12820,7 +12497,7 @@
      }
     },
     {
-     "id": "sp0564",
+     "id": "sp0550",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -12847,7 +12524,7 @@
      }
     },
     {
-     "id": "sp0565",
+     "id": "sp0551",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -12874,7 +12551,7 @@
      }
     },
     {
-     "id": "sp0566",
+     "id": "sp0552",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -12901,7 +12578,7 @@
      }
     },
     {
-     "id": "sp0567",
+     "id": "sp0553",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -12928,7 +12605,7 @@
      }
     },
     {
-     "id": "sp0568",
+     "id": "sp0554",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -12955,7 +12632,7 @@
      }
     },
     {
-     "id": "sp0569",
+     "id": "sp0555",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -12981,7 +12658,7 @@
      }
     },
     {
-     "id": "sp0570",
+     "id": "sp0556",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13004,7 +12681,7 @@
      }
     },
     {
-     "id": "sp0571",
+     "id": "sp0557",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13023,7 +12700,7 @@
      }
     },
     {
-     "id": "sp0572",
+     "id": "sp0558",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13042,7 +12719,7 @@
      }
     },
     {
-     "id": "sp0573",
+     "id": "sp0559",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13065,7 +12742,7 @@
      }
     },
     {
-     "id": "sp0574",
+     "id": "sp0560",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13084,7 +12761,7 @@
      }
     },
     {
-     "id": "sp0575",
+     "id": "sp0561",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13103,7 +12780,7 @@
      }
     },
     {
-     "id": "sp0576",
+     "id": "sp0562",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13130,7 +12807,7 @@
    "notes": "2장 확인 퀴즈. Q1 함정: 50명 「초과」가 아니라 「이상」. Q2: 대장 = 소유주 · 법인 대표 · 관리기관 책임자, 부대장 = 소방안전관리자(1명). Q4: 기록부 · 자체평가 기록 모두 2년.",
    "elements": [
     {
-     "id": "sp0577",
+     "id": "sp0563",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13156,7 +12833,7 @@
      }
     },
     {
-     "id": "sp0578",
+     "id": "sp0564",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13176,7 +12853,7 @@
      }
     },
     {
-     "id": "sp0579",
+     "id": "sp0565",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13202,7 +12879,7 @@
      }
     },
     {
-     "id": "sp0580",
+     "id": "sp0566",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13228,7 +12905,7 @@
      }
     },
     {
-     "id": "sp0581",
+     "id": "sp0567",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13254,7 +12931,7 @@
      }
     },
     {
-     "id": "sp0582",
+     "id": "sp0568",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13276,7 +12953,7 @@
      }
     },
     {
-     "id": "sp0583",
+     "id": "sp0569",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13302,7 +12979,7 @@
      }
     },
     {
-     "id": "sp0584",
+     "id": "sp0570",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13328,7 +13005,7 @@
      }
     },
     {
-     "id": "sp0585",
+     "id": "sp0571",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13349,7 +13026,7 @@
      }
     },
     {
-     "id": "sp0586",
+     "id": "sp0572",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13376,7 +13053,7 @@
      }
     },
     {
-     "id": "sp0587",
+     "id": "sp0573",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13402,7 +13079,7 @@
      }
     },
     {
-     "id": "sp0588",
+     "id": "sp0574",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13423,7 +13100,7 @@
      }
     },
     {
-     "id": "sp0589",
+     "id": "sp0575",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -13450,7 +13127,7 @@
      }
     },
     {
-     "id": "sp0590",
+     "id": "sp0576",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13476,7 +13153,7 @@
      }
     },
     {
-     "id": "sp0591",
+     "id": "sp0577",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13497,7 +13174,7 @@
      }
     },
     {
-     "id": "sp0592",
+     "id": "sp0578",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -13524,7 +13201,7 @@
      }
     },
     {
-     "id": "sp0593",
+     "id": "sp0579",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13550,7 +13227,7 @@
      }
     },
     {
-     "id": "sp0594",
+     "id": "sp0580",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13571,7 +13248,7 @@
      }
     },
     {
-     "id": "sp0595",
+     "id": "sp0581",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -13609,7 +13286,7 @@
    "notes": "제3장 시작. 소방계획서의 제3장(피난계획)에 해당합니다. 질문: \"불을 처음 본 사람이 해야 할 첫 행동은?\" → 「불이야!」 외치고 발신기.",
    "elements": [
     {
-     "id": "sp0596",
+     "id": "sp0582",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13625,7 +13302,7 @@
      "shadow": false
     },
     {
-     "id": "sp0597",
+     "id": "sp0583",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13649,7 +13326,7 @@
      }
     },
     {
-     "id": "sp0598",
+     "id": "sp0584",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13672,7 +13349,7 @@
      "style": {}
     },
     {
-     "id": "sp0599",
+     "id": "sp0585",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13692,7 +13369,7 @@
      }
     },
     {
-     "id": "sp0600",
+     "id": "sp0586",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13711,7 +13388,7 @@
      }
     },
     {
-     "id": "sp0601",
+     "id": "sp0587",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13732,7 +13409,7 @@
      }
     },
     {
-     "id": "sp0602",
+     "id": "sp0588",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13750,7 +13427,7 @@
      }
     },
     {
-     "id": "sp0603",
+     "id": "sp0589",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13776,7 +13453,7 @@
      }
     },
     {
-     "id": "sp0604",
+     "id": "sp0590",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13802,7 +13479,7 @@
      }
     },
     {
-     "id": "sp0605",
+     "id": "sp0591",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13828,7 +13505,7 @@
      }
     },
     {
-     "id": "sp0606",
+     "id": "sp0592",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -13854,7 +13531,7 @@
      }
     },
     {
-     "id": "sp0607",
+     "id": "sp0593",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13883,7 +13560,7 @@
    "notes": "화재대응 6단계(교재 순서).\n1 화재전파 및 접수: 「불이야」 외쳐 알리고 발신기를 누름 → 수신반으로 자동 접수.\n2 화재신고: 침착하게 불이 난 사실, 현재 위치(건물주소 · 명칭), 진행상황 · 피해현황을 119에 — 소방기관에서 알았다고 할 때까지 전화를 끊지 않음.\n3 비상방송: 담당 대원이 비상방송설비(일반방송설비 · 확성기 등)로 화재 사실 전파, 필요 시 즉각 피난개시 명령.\n4 대원소집 및 임무부여: 초기대응체계 구축 → 화세 확대 여부를 고려해 대장 · 부대장이 대원 소집 · 임무부여, 비상연락체계 활용, 지휘통제 · 초기소화 · 응급구조 · 방호안전.\n5 관계기관 통보 · 연락: 유관기관 · 협력업체에 화재사실 전파, 대응준비 지시.\n6 초기소화: 소화기 · 옥내소화전으로 신속히. 화원 종류 · 화세 · 피난경로 확보를 고려해 결정, 어려우면 열 · 연기 확산 방지를 위해 출입문을 닫고 즉시 피난.",
    "elements": [
     {
-     "id": "sp0608",
+     "id": "sp0594",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13909,7 +13586,7 @@
      }
     },
     {
-     "id": "sp0609",
+     "id": "sp0595",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13929,7 +13606,7 @@
      }
     },
     {
-     "id": "sp0610",
+     "id": "sp0596",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13955,7 +13632,7 @@
      }
     },
     {
-     "id": "sp0611",
+     "id": "sp0597",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -13981,7 +13658,7 @@
      }
     },
     {
-     "id": "sp0612",
+     "id": "sp0598",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14007,7 +13684,7 @@
      }
     },
     {
-     "id": "sp0613",
+     "id": "sp0599",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14029,7 +13706,7 @@
      }
     },
     {
-     "id": "sp0614",
+     "id": "sp0600",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14047,7 +13724,7 @@
      }
     },
     {
-     "id": "sp0615",
+     "id": "sp0601",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14070,7 +13747,7 @@
      }
     },
     {
-     "id": "sp0616",
+     "id": "sp0602",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14096,7 +13773,7 @@
      }
     },
     {
-     "id": "sp0617",
+     "id": "sp0603",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14116,7 +13793,7 @@
      }
     },
     {
-     "id": "sp0618",
+     "id": "sp0604",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14135,7 +13812,7 @@
      }
     },
     {
-     "id": "sp0619",
+     "id": "sp0605",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14158,7 +13835,7 @@
      }
     },
     {
-     "id": "sp0620",
+     "id": "sp0606",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14184,7 +13861,7 @@
      }
     },
     {
-     "id": "sp0621",
+     "id": "sp0607",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14204,7 +13881,7 @@
      }
     },
     {
-     "id": "sp0622",
+     "id": "sp0608",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -14223,7 +13900,7 @@
      }
     },
     {
-     "id": "sp0623",
+     "id": "sp0609",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14246,7 +13923,7 @@
      }
     },
     {
-     "id": "sp0624",
+     "id": "sp0610",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14272,7 +13949,7 @@
      }
     },
     {
-     "id": "sp0625",
+     "id": "sp0611",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14292,7 +13969,7 @@
      }
     },
     {
-     "id": "sp0626",
+     "id": "sp0612",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14311,7 +13988,7 @@
      }
     },
     {
-     "id": "sp0627",
+     "id": "sp0613",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14334,7 +14011,7 @@
      }
     },
     {
-     "id": "sp0628",
+     "id": "sp0614",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14360,7 +14037,7 @@
      }
     },
     {
-     "id": "sp0629",
+     "id": "sp0615",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14380,7 +14057,7 @@
      }
     },
     {
-     "id": "sp0630",
+     "id": "sp0616",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -14399,7 +14076,7 @@
      }
     },
     {
-     "id": "sp0631",
+     "id": "sp0617",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -14422,7 +14099,7 @@
      }
     },
     {
-     "id": "sp0632",
+     "id": "sp0618",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -14448,7 +14125,7 @@
      }
     },
     {
-     "id": "sp0633",
+     "id": "sp0619",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -14468,7 +14145,7 @@
      }
     },
     {
-     "id": "sp0634",
+     "id": "sp0620",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -14487,7 +14164,7 @@
      }
     },
     {
-     "id": "sp0635",
+     "id": "sp0621",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -14510,7 +14187,7 @@
      }
     },
     {
-     "id": "sp0636",
+     "id": "sp0622",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -14536,7 +14213,7 @@
      }
     },
     {
-     "id": "sp0637",
+     "id": "sp0623",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -14556,7 +14233,7 @@
      }
     },
     {
-     "id": "sp0638",
+     "id": "sp0624",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -14575,7 +14252,7 @@
      }
     },
     {
-     "id": "sp0639",
+     "id": "sp0625",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14602,7 +14279,7 @@
    "notes": "화재 시 일반적 피난행동 8가지(교재): 1 엘리베이터 절대 금지, 계단으로 옥외 대피 2 아래층 대피 불가 시 옥상 3 아파트는 경량칸막이로 옆 세대 또는 세대 내 대피공간 4 유도등 · 유도표지 따라 5 연기 시 낮은 자세, 젖은 수건으로 코 · 입 6 문 손잡이가 뜨거우면 열지 말고 다른 길 7 옷에 불이 붙으면 얼굴을 가리고 바닥에서 구르기 8 탈출하면 절대 다시 들어가지 않기.\n피난실패 시: 밖으로 통하는 창문이 있는 방으로, 문틈을 커튼 등으로 막고, 물건으로 위치를 알리며 구조를 기다림.",
    "elements": [
     {
-     "id": "sp0640",
+     "id": "sp0626",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14628,7 +14305,7 @@
      }
     },
     {
-     "id": "sp0641",
+     "id": "sp0627",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14648,7 +14325,7 @@
      }
     },
     {
-     "id": "sp0642",
+     "id": "sp0628",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14674,7 +14351,7 @@
      }
     },
     {
-     "id": "sp0643",
+     "id": "sp0629",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14700,7 +14377,7 @@
      }
     },
     {
-     "id": "sp0644",
+     "id": "sp0630",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14726,7 +14403,7 @@
      }
     },
     {
-     "id": "sp0645",
+     "id": "sp0631",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14748,7 +14425,7 @@
      }
     },
     {
-     "id": "sp0646",
+     "id": "sp0632",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14766,7 +14443,7 @@
      }
     },
     {
-     "id": "sp0647",
+     "id": "sp0633",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14789,7 +14466,7 @@
      }
     },
     {
-     "id": "sp0648",
+     "id": "sp0634",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14812,7 +14489,7 @@
      }
     },
     {
-     "id": "sp0649",
+     "id": "sp0635",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14831,7 +14508,7 @@
      }
     },
     {
-     "id": "sp0650",
+     "id": "sp0636",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14850,7 +14527,7 @@
      }
     },
     {
-     "id": "sp0651",
+     "id": "sp0637",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14873,7 +14550,7 @@
      }
     },
     {
-     "id": "sp0652",
+     "id": "sp0638",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14896,7 +14573,7 @@
      }
     },
     {
-     "id": "sp0653",
+     "id": "sp0639",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14915,7 +14592,7 @@
      }
     },
     {
-     "id": "sp0654",
+     "id": "sp0640",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14934,7 +14611,7 @@
      }
     },
     {
-     "id": "sp0655",
+     "id": "sp0641",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14957,7 +14634,7 @@
      }
     },
     {
-     "id": "sp0656",
+     "id": "sp0642",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14980,7 +14657,7 @@
      }
     },
     {
-     "id": "sp0657",
+     "id": "sp0643",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -14999,7 +14676,7 @@
      }
     },
     {
-     "id": "sp0658",
+     "id": "sp0644",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15018,7 +14695,7 @@
      }
     },
     {
-     "id": "sp0659",
+     "id": "sp0645",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15041,7 +14718,7 @@
      }
     },
     {
-     "id": "sp0660",
+     "id": "sp0646",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15064,7 +14741,7 @@
      }
     },
     {
-     "id": "sp0661",
+     "id": "sp0647",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15083,7 +14760,7 @@
      }
     },
     {
-     "id": "sp0662",
+     "id": "sp0648",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15102,7 +14779,7 @@
      }
     },
     {
-     "id": "sp0663",
+     "id": "sp0649",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15125,7 +14802,7 @@
      }
     },
     {
-     "id": "sp0664",
+     "id": "sp0650",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15148,7 +14825,7 @@
      }
     },
     {
-     "id": "sp0665",
+     "id": "sp0651",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15167,7 +14844,7 @@
      }
     },
     {
-     "id": "sp0666",
+     "id": "sp0652",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15186,7 +14863,7 @@
      }
     },
     {
-     "id": "sp0667",
+     "id": "sp0653",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15209,7 +14886,7 @@
      }
     },
     {
-     "id": "sp0668",
+     "id": "sp0654",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15232,7 +14909,7 @@
      }
     },
     {
-     "id": "sp0669",
+     "id": "sp0655",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15251,7 +14928,7 @@
      }
     },
     {
-     "id": "sp0670",
+     "id": "sp0656",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15270,7 +14947,7 @@
      }
     },
     {
-     "id": "sp0671",
+     "id": "sp0657",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15293,7 +14970,7 @@
      }
     },
     {
-     "id": "sp0672",
+     "id": "sp0658",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15316,7 +14993,7 @@
      }
     },
     {
-     "id": "sp0673",
+     "id": "sp0659",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15335,7 +15012,7 @@
      }
     },
     {
-     "id": "sp0674",
+     "id": "sp0660",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15354,7 +15031,7 @@
      }
     },
     {
-     "id": "sp0675",
+     "id": "sp0661",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15377,7 +15054,7 @@
      }
     },
     {
-     "id": "sp0676",
+     "id": "sp0662",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15400,7 +15077,7 @@
      }
     },
     {
-     "id": "sp0677",
+     "id": "sp0663",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15419,7 +15096,7 @@
      }
     },
     {
-     "id": "sp0678",
+     "id": "sp0664",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15438,7 +15115,7 @@
      }
     },
     {
-     "id": "sp0679",
+     "id": "sp0665",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15454,7 +15131,7 @@
      "shadow": true
     },
     {
-     "id": "sp0680",
+     "id": "sp0666",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15480,7 +15157,7 @@
      }
     },
     {
-     "id": "sp0681",
+     "id": "sp0667",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15503,7 +15180,7 @@
      }
     },
     {
-     "id": "sp0682",
+     "id": "sp0668",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15522,7 +15199,7 @@
      }
     },
     {
-     "id": "sp0683",
+     "id": "sp0669",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15541,7 +15218,7 @@
      }
     },
     {
-     "id": "sp0684",
+     "id": "sp0670",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15568,7 +15245,7 @@
    "notes": "일반적 피난계획 수립 5요소(교재).\n1 사전 피난준비: 대상물 특성에 맞는 피난계획 사전 수립, 층 · 구역별 피난경로(동선)가 파악되면 피난안내도 작성 · 부착.\n2 피난개시 명령: 소방안전관리자 또는 피난 담당 대원이 경보방식 기준으로 피난방식 결정 — 붕괴 · 폭발 가능성으로 긴급 피난이 필요하면 재실자 · 방문자 모두 즉시 피난. 피난경보 · 비상방송설비로 명령, 조기피난 독려.\n3 피난유도: 안전구역 · 집결지로, 계단 병목 방지 분산, 양방향 경로 중 막힌 경로는 대체 경로, 패닉 방지 심리적 안정조치.\n4 피난안전구역 활용: 피난요구자 1차 대피유도 → 상황에 따라 추가 피난 유도 · 보조, 구급장비로 응급처치.\n5 집결: 사전 지정 집결 장소로 최종 유도, 재진입(Re-entry) 방지, 부상자 · 실종자 파악 · 응급조치, 정보를 대장 · 소방기관에 통보.\n예시 3번(교재): 판매시설 · 공연장 · 집회장은 방호요원(경비원)에게 구역별 임무를 지정하고 스프레이 소화용구를 허리춤에 차게 하는 것도 바람직.",
    "elements": [
     {
-     "id": "sp0685",
+     "id": "sp0671",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15594,7 +15271,7 @@
      }
     },
     {
-     "id": "sp0686",
+     "id": "sp0672",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15614,7 +15291,7 @@
      }
     },
     {
-     "id": "sp0687",
+     "id": "sp0673",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15640,7 +15317,7 @@
      }
     },
     {
-     "id": "sp0688",
+     "id": "sp0674",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15666,7 +15343,7 @@
      }
     },
     {
-     "id": "sp0689",
+     "id": "sp0675",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15692,7 +15369,7 @@
      }
     },
     {
-     "id": "sp0690",
+     "id": "sp0676",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15714,7 +15391,7 @@
      }
     },
     {
-     "id": "sp0691",
+     "id": "sp0677",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15732,7 +15409,7 @@
      }
     },
     {
-     "id": "sp0692",
+     "id": "sp0678",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15755,7 +15432,7 @@
      }
     },
     {
-     "id": "sp0693",
+     "id": "sp0679",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15781,7 +15458,7 @@
      }
     },
     {
-     "id": "sp0694",
+     "id": "sp0680",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15802,7 +15479,7 @@
      }
     },
     {
-     "id": "sp0695",
+     "id": "sp0681",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15821,7 +15498,7 @@
      }
     },
     {
-     "id": "sp0696",
+     "id": "sp0682",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15844,7 +15521,7 @@
      }
     },
     {
-     "id": "sp0697",
+     "id": "sp0683",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15867,7 +15544,7 @@
      }
     },
     {
-     "id": "sp0698",
+     "id": "sp0684",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15893,7 +15570,7 @@
      }
     },
     {
-     "id": "sp0699",
+     "id": "sp0685",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15914,7 +15591,7 @@
      }
     },
     {
-     "id": "sp0700",
+     "id": "sp0686",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15933,7 +15610,7 @@
      }
     },
     {
-     "id": "sp0701",
+     "id": "sp0687",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15956,7 +15633,7 @@
      }
     },
     {
-     "id": "sp0702",
+     "id": "sp0688",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15979,7 +15656,7 @@
      }
     },
     {
-     "id": "sp0703",
+     "id": "sp0689",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16005,7 +15682,7 @@
      }
     },
     {
-     "id": "sp0704",
+     "id": "sp0690",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16026,7 +15703,7 @@
      }
     },
     {
-     "id": "sp0705",
+     "id": "sp0691",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16045,7 +15722,7 @@
      }
     },
     {
-     "id": "sp0706",
+     "id": "sp0692",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16068,7 +15745,7 @@
      }
     },
     {
-     "id": "sp0707",
+     "id": "sp0693",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16091,7 +15768,7 @@
      }
     },
     {
-     "id": "sp0708",
+     "id": "sp0694",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16117,7 +15794,7 @@
      }
     },
     {
-     "id": "sp0709",
+     "id": "sp0695",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16138,7 +15815,7 @@
      }
     },
     {
-     "id": "sp0710",
+     "id": "sp0696",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16157,7 +15834,7 @@
      }
     },
     {
-     "id": "sp0711",
+     "id": "sp0697",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16180,7 +15857,7 @@
      }
     },
     {
-     "id": "sp0712",
+     "id": "sp0698",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -16203,7 +15880,7 @@
      }
     },
     {
-     "id": "sp0713",
+     "id": "sp0699",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -16229,7 +15906,7 @@
      }
     },
     {
-     "id": "sp0714",
+     "id": "sp0700",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -16250,7 +15927,7 @@
      }
     },
     {
-     "id": "sp0715",
+     "id": "sp0701",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -16269,7 +15946,7 @@
      }
     },
     {
-     "id": "sp0716",
+     "id": "sp0702",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -16292,7 +15969,7 @@
      }
     },
     {
-     "id": "sp0717",
+     "id": "sp0703",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -16311,7 +15988,7 @@
      }
     },
     {
-     "id": "sp0718",
+     "id": "sp0704",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -16330,7 +16007,7 @@
      }
     },
     {
-     "id": "sp0719",
+     "id": "sp0705",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -16346,7 +16023,7 @@
      "shadow": true
     },
     {
-     "id": "sp0720",
+     "id": "sp0706",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16372,7 +16049,7 @@
      }
     },
     {
-     "id": "sp0721",
+     "id": "sp0707",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16399,7 +16076,7 @@
    "notes": "피난약자 피난계획 — 일반원칙: 재배치 또는 수직피난 등 화재상황에 적합한 전략, 피난약자를 우선 피난대상으로 지정해 유도 · 보조 요청, 사전 지정 피난보조자 배치 또는 현장 지정.\n공통사항 5: (1) 건물에 대한 이해 — 비상구(2 이상 피난로), 장애물, 화재경보설비 등 소방시설, 구조대 · 연락장치 위치, 임시 대피공간(1차 피난구역, 계단실 내 휠체어 체류공간, 초고층 피난안전구역)을 피난약자는 물론 전 거주자가 숙지. (2) 유형별 현황파악(장애 유형 · 인원 · 평상 시 위치 · 동선)과 피난보조자 임무 · 보조기구 사용법. (3) 법정 설비 + 음성안내 유도등, 피난보조기구, 나수인 피난장비, 계단난간, 바닥 표지 등 설비보강. (4) 신입직원 오리엔테이션부터 교육, 휠체어 사용자 피난훈련 · 보조기구 사용훈련. (5) 가장 중요한 것은 자위소방대에 의한 화재 초기 대피시스템, 소방 · 경찰 등 협조체계, 전 거주자 합동훈련.",
    "elements": [
     {
-     "id": "sp0722",
+     "id": "sp0708",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16425,7 +16102,7 @@
      }
     },
     {
-     "id": "sp0723",
+     "id": "sp0709",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16445,7 +16122,7 @@
      }
     },
     {
-     "id": "sp0724",
+     "id": "sp0710",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16471,7 +16148,7 @@
      }
     },
     {
-     "id": "sp0725",
+     "id": "sp0711",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16497,7 +16174,7 @@
      }
     },
     {
-     "id": "sp0726",
+     "id": "sp0712",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16523,7 +16200,7 @@
      }
     },
     {
-     "id": "sp0727",
+     "id": "sp0713",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16545,7 +16222,7 @@
      }
     },
     {
-     "id": "sp0728",
+     "id": "sp0714",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16563,7 +16240,7 @@
      }
     },
     {
-     "id": "sp0729",
+     "id": "sp0715",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16586,7 +16263,7 @@
      }
     },
     {
-     "id": "sp0730",
+     "id": "sp0716",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16605,7 +16282,7 @@
      }
     },
     {
-     "id": "sp0731",
+     "id": "sp0717",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -16624,7 +16301,7 @@
      }
     },
     {
-     "id": "sp0732",
+     "id": "sp0718",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -16647,7 +16324,7 @@
      }
     },
     {
-     "id": "sp0733",
+     "id": "sp0719",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -16670,7 +16347,7 @@
      }
     },
     {
-     "id": "sp0734",
+     "id": "sp0720",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -16689,7 +16366,7 @@
      }
     },
     {
-     "id": "sp0735",
+     "id": "sp0721",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -16708,7 +16385,7 @@
      }
     },
     {
-     "id": "sp0736",
+     "id": "sp0722",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -16731,7 +16408,7 @@
      }
     },
     {
-     "id": "sp0737",
+     "id": "sp0723",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -16754,7 +16431,7 @@
      }
     },
     {
-     "id": "sp0738",
+     "id": "sp0724",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -16773,7 +16450,7 @@
      }
     },
     {
-     "id": "sp0739",
+     "id": "sp0725",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -16792,7 +16469,7 @@
      }
     },
     {
-     "id": "sp0740",
+     "id": "sp0726",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16815,7 +16492,7 @@
      }
     },
     {
-     "id": "sp0741",
+     "id": "sp0727",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16838,7 +16515,7 @@
      }
     },
     {
-     "id": "sp0742",
+     "id": "sp0728",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16857,7 +16534,7 @@
      }
     },
     {
-     "id": "sp0743",
+     "id": "sp0729",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -16876,7 +16553,7 @@
      }
     },
     {
-     "id": "sp0744",
+     "id": "sp0730",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16899,7 +16576,7 @@
      }
     },
     {
-     "id": "sp0745",
+     "id": "sp0731",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16922,7 +16599,7 @@
      }
     },
     {
-     "id": "sp0746",
+     "id": "sp0732",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16941,7 +16618,7 @@
      }
     },
     {
-     "id": "sp0747",
+     "id": "sp0733",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -16960,7 +16637,7 @@
      }
     },
     {
-     "id": "sp0748",
+     "id": "sp0734",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -16983,7 +16660,7 @@
      }
     },
     {
-     "id": "sp0749",
+     "id": "sp0735",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17006,7 +16683,7 @@
      }
     },
     {
-     "id": "sp0750",
+     "id": "sp0736",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17025,7 +16702,7 @@
      }
     },
     {
-     "id": "sp0751",
+     "id": "sp0737",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17044,7 +16721,7 @@
      }
     },
     {
-     "id": "sp0752",
+     "id": "sp0738",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17071,7 +16748,7 @@
    "notes": "장애유형별 피난보조(교재): 장애인이 어떤 도움이 필요한지 먼저 파악, 인격을 고려해 업신여기는 말투 · 명령조 · 반말 삼가. 계단 한쪽은 장애인 · 노약자 · 피난보조자 · 구조대가 쓰도록 훈련으로 숙지.\n지체장애: 2인 이상 1조, 보조기구 활용, 계단 · 경사로 균형 주의. 가벼우면 업거나 안고, 비슷하거나 무거우면 앉은 자세에서 팔을 어깨에 걸쳐 부축하거나 2인이 팔목을 맞잡아 들어서 대피(들것 · 담요도 효과적). 휠체어: 평지보다 계단 주의, 일반휠체어는 뒤로 기울여 손잡이를 잡고 뒷바퀴보다 한 계단 아래에서 무게중심, 전동휠체어는 무거우므로 전원을 끈 후 업거나 안아서 피난보조가 가장 효과적.\n청각: 표정 · 제스처 · 조명(손전등 · 전등) · 메모. 시각: 지팡이, 팔과 어깨에 살며시 기대게, 「좌측 1 m, 왼쪽 2 m」처럼 명확하게, 여럿이면 손잡고 질서 있게. 지적: 차분하고 느린 어조, 도움을 주러 왔음을 밝히고 친절한 말투. 노약자: 장애인에 준함, 노인 지병 표시, 어린이는 성장 빠른 1인과 장애정도 적은 1인 유도자를 지정해 줄 서서, 환자 · 임산부 표식, 병원은 의료진 피난보조 능력에 따라 인명피해 규모가 좌우되므로 정기 교육 · 훈련 필수.",
    "elements": [
     {
-     "id": "sp0753",
+     "id": "sp0739",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17097,7 +16774,7 @@
      }
     },
     {
-     "id": "sp0754",
+     "id": "sp0740",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17117,7 +16794,7 @@
      }
     },
     {
-     "id": "sp0755",
+     "id": "sp0741",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17143,7 +16820,7 @@
      }
     },
     {
-     "id": "sp0756",
+     "id": "sp0742",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17169,7 +16846,7 @@
      }
     },
     {
-     "id": "sp0757",
+     "id": "sp0743",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17195,7 +16872,7 @@
      }
     },
     {
-     "id": "sp0758",
+     "id": "sp0744",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17217,7 +16894,7 @@
      }
     },
     {
-     "id": "sp0759",
+     "id": "sp0745",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17235,7 +16912,7 @@
      }
     },
     {
-     "id": "sp0760",
+     "id": "sp0746",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -17258,7 +16935,7 @@
      }
     },
     {
-     "id": "sp0761",
+     "id": "sp0747",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -17281,7 +16958,7 @@
      }
     },
     {
-     "id": "sp0762",
+     "id": "sp0748",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -17300,7 +16977,7 @@
      }
     },
     {
-     "id": "sp0763",
+     "id": "sp0749",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -17319,7 +16996,7 @@
      }
     },
     {
-     "id": "sp0764",
+     "id": "sp0750",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -17342,7 +17019,7 @@
      }
     },
     {
-     "id": "sp0765",
+     "id": "sp0751",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -17365,7 +17042,7 @@
      }
     },
     {
-     "id": "sp0766",
+     "id": "sp0752",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -17384,7 +17061,7 @@
      }
     },
     {
-     "id": "sp0767",
+     "id": "sp0753",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -17403,7 +17080,7 @@
      }
     },
     {
-     "id": "sp0768",
+     "id": "sp0754",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -17426,7 +17103,7 @@
      }
     },
     {
-     "id": "sp0769",
+     "id": "sp0755",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -17449,7 +17126,7 @@
      }
     },
     {
-     "id": "sp0770",
+     "id": "sp0756",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -17468,7 +17145,7 @@
      }
     },
     {
-     "id": "sp0771",
+     "id": "sp0757",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -17487,7 +17164,7 @@
      }
     },
     {
-     "id": "sp0772",
+     "id": "sp0758",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -17510,7 +17187,7 @@
      }
     },
     {
-     "id": "sp0773",
+     "id": "sp0759",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -17533,7 +17210,7 @@
      }
     },
     {
-     "id": "sp0774",
+     "id": "sp0760",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -17552,7 +17229,7 @@
      }
     },
     {
-     "id": "sp0775",
+     "id": "sp0761",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -17571,7 +17248,7 @@
      }
     },
     {
-     "id": "sp0776",
+     "id": "sp0762",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17594,7 +17271,7 @@
      }
     },
     {
-     "id": "sp0777",
+     "id": "sp0763",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17617,7 +17294,7 @@
      }
     },
     {
-     "id": "sp0778",
+     "id": "sp0764",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17636,7 +17313,7 @@
      }
     },
     {
-     "id": "sp0779",
+     "id": "sp0765",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -17655,7 +17332,7 @@
      }
     },
     {
-     "id": "sp0780",
+     "id": "sp0766",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -17671,7 +17348,7 @@
      "shadow": true
     },
     {
-     "id": "sp0781",
+     "id": "sp0767",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17698,7 +17375,7 @@
    "notes": "3장 확인 퀴즈. Q2: 열 · 연기 확산 방지를 위해 문을 닫고 피난. Q3: 집결 후 재진입 방지 · 부상자 · 실종자 파악.",
    "elements": [
     {
-     "id": "sp0782",
+     "id": "sp0768",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17724,7 +17401,7 @@
      }
     },
     {
-     "id": "sp0783",
+     "id": "sp0769",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17744,7 +17421,7 @@
      }
     },
     {
-     "id": "sp0784",
+     "id": "sp0770",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17770,7 +17447,7 @@
      }
     },
     {
-     "id": "sp0785",
+     "id": "sp0771",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17796,7 +17473,7 @@
      }
     },
     {
-     "id": "sp0786",
+     "id": "sp0772",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17822,7 +17499,7 @@
      }
     },
     {
-     "id": "sp0787",
+     "id": "sp0773",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17844,7 +17521,7 @@
      }
     },
     {
-     "id": "sp0788",
+     "id": "sp0774",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17870,7 +17547,7 @@
      }
     },
     {
-     "id": "sp0789",
+     "id": "sp0775",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17896,7 +17573,7 @@
      }
     },
     {
-     "id": "sp0790",
+     "id": "sp0776",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17917,7 +17594,7 @@
      }
     },
     {
-     "id": "sp0791",
+     "id": "sp0777",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -17944,7 +17621,7 @@
      }
     },
     {
-     "id": "sp0792",
+     "id": "sp0778",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17970,7 +17647,7 @@
      }
     },
     {
-     "id": "sp0793",
+     "id": "sp0779",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -17991,7 +17668,7 @@
      }
     },
     {
-     "id": "sp0794",
+     "id": "sp0780",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -18018,7 +17695,7 @@
      }
     },
     {
-     "id": "sp0795",
+     "id": "sp0781",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18044,7 +17721,7 @@
      }
     },
     {
-     "id": "sp0796",
+     "id": "sp0782",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18065,7 +17742,7 @@
      }
     },
     {
-     "id": "sp0797",
+     "id": "sp0783",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -18092,7 +17769,7 @@
      }
     },
     {
-     "id": "sp0798",
+     "id": "sp0784",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18118,7 +17795,7 @@
      }
     },
     {
-     "id": "sp0799",
+     "id": "sp0785",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18139,7 +17816,7 @@
      }
     },
     {
-     "id": "sp0800",
+     "id": "sp0786",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -18177,7 +17854,7 @@
    "notes": "정리. 여섯 줄: 원리 · 원칙 · 절차(1장), 조직 · 훈련(2장), 대응(3장).\n과제 제안: 각자 건물의 소방계획서에서 「올해 실제로 실행한 항목」에 표시해 오기 — 실행우선 원칙의 체감.",
    "elements": [
     {
-     "id": "sp0801",
+     "id": "sp0787",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18200,7 +17877,7 @@
      }
     },
     {
-     "id": "sp0802",
+     "id": "sp0788",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18219,7 +17896,7 @@
      }
     },
     {
-     "id": "sp0803",
+     "id": "sp0789",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -18239,7 +17916,7 @@
      }
     },
     {
-     "id": "sp0804",
+     "id": "sp0790",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -18265,7 +17942,7 @@
      }
     },
     {
-     "id": "sp0805",
+     "id": "sp0791",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -18286,7 +17963,7 @@
      }
     },
     {
-     "id": "sp0806",
+     "id": "sp0792",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -18312,7 +17989,7 @@
      }
     },
     {
-     "id": "sp0807",
+     "id": "sp0793",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -18333,7 +18010,7 @@
      }
     },
     {
-     "id": "sp0808",
+     "id": "sp0794",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -18359,7 +18036,7 @@
      }
     },
     {
-     "id": "sp0809",
+     "id": "sp0795",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -18380,7 +18057,7 @@
      }
     },
     {
-     "id": "sp0810",
+     "id": "sp0796",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -18406,7 +18083,7 @@
      }
     },
     {
-     "id": "sp0811",
+     "id": "sp0797",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -18427,7 +18104,7 @@
      }
     },
     {
-     "id": "sp0812",
+     "id": "sp0798",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -18453,7 +18130,7 @@
      }
     },
     {
-     "id": "sp0813",
+     "id": "sp0799",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -18474,7 +18151,7 @@
      }
     },
     {
-     "id": "sp0814",
+     "id": "sp0800",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -18500,7 +18177,7 @@
      }
     },
     {
-     "id": "sp0815",
+     "id": "sp0801",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -18521,7 +18198,7 @@
      }
     },
     {
-     "id": "sp0816",
+     "id": "sp0802",
      "step": 7,
      "anim": "fade",
      "rotate": 0,
