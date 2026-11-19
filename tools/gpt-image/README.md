@@ -30,7 +30,7 @@ python3 tools/gpt-image/server.py --cli "벚꽃 아래 소풍 가는 어린이�
 | 항목 | 값 |
 |---|---|
 | size | 1024x1024 · 1536x1024(가로) · 1024x1536(세로) · auto |
-| quality | low · medium(기본) · high · auto |
+| quality | low · medium(기본) · high · xhigh · max · auto |
 | n | 1~4 |
 | background | auto · transparent · opaque |
-| 모델 변경 | 환경 변수 `OPENAI_IMAGE_MODEL` |
+| model | 기본 gpt-image-2.6-sunburst. 요청마다 `model` 로 바꾸거나 환경 변수 `OPENAI_IMAGE_MODEL` |
