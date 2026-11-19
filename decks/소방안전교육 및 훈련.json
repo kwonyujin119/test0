@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-19T12:47:01.000Z",
- "modified": "2026-11-19T13:16:00.690Z",
+ "modified": "2026-11-19T13:16:06.465Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -354,26 +354,6 @@
      "fit": "contain",
      "radius": 0,
      "shadow": false
-    },
-    {
-     "id": "ed0803",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 646,
-     "w": 880,
-     "h": 48,
-     "role": "text",
-     "html": "1시간, 강의 35분 + 문제풀이 15분 + 정리 10분, 시험과목",
-     "style": {
-      "fontSize": 26,
-      "color": "#5B6168",
-      "bold": true,
-      "valign": "middle"
-     }
     }
    ],
    "decor": "none",
