@@ -67,6 +67,14 @@
     for (const c of chats) if (savedAt[c.id] !== c.updated) { savedAt[c.id] = c.updated; const o = Object.assign({}, c); delete o.live; IDB.put(o); any = true; }
     if (any) SYNCQ.mark('chats');
   }
+  /* 답을 받는 중 중간 저장 — 이 기기에만(동기화 안 올림). 화면이 꺼져 브라우저가 페이지를 닫아도 다시 열면 여기서 이어 받음 */
+  const uiSnap = ui => ({ text: ui.text || '', think: ui.think || '', steps: (ui.steps || []).filter(s => s.state === 'ok' && s.name !== 'retry').length, sources: (ui.sources || []).length });
+  function checkpoint(chat, ui) {
+    if (!chat.pending) return; const last = chat.wire.msgs[chat.wire.msgs.length - 1];
+    if (!last || (last.role !== 'user' && last.role !== 'tool')) return; // 질문 · 도구 결과로 끝난 때만(그 자리에서 이어 갈 수 있음)
+    chat.pending.ui = uiSnap(ui); chat.updated = Date.now(); savedAt[chat.id] = chat.updated;
+    const o = Object.assign({}, chat); delete o.live; IDB.put(o);
+  }
   const saveWatch = () => { LS.set(K_WATCH, watch); SYNCQ.mark('watch'); };
 
   /* ---------- API 종류 ---------- */
@@ -1167,6 +1175,7 @@ ${[
         } catch (e) { st.state = 'bad'; st.err = e.message; paint(); return { type: 'tool_result', tool_use_id: u.id, content: e.message, is_error: true }; }
       }));
       wire.push({ role: 'user', content: results }); // 도구 결과는 한 번에 한 메시지로
+      checkpoint(chat, ui);
     }
   }
 
@@ -1240,24 +1249,37 @@ ${[
     const api = activeAI(); if (!api) { toast('먼저 AI API 를 등록해 주세요', 2400); return; }
     if (chat.wire.ai !== api.id) { toast('AI 를 바꿔서 이어 갈 수 없습니다. 질문을 다시 보내 주세요', 3000); return; }
     const ui = chat.view[chat.view.length - 1]; if (!ui || ui.role !== 'assistant') return;
-    const wireLen = chat.pending.wireLen; delete chat.pending;
+    const wireLen = chat.pending.wireLen, sn = chat.pending.ui; delete chat.pending;
     ui.error = ''; ui.note = ''; delete ui.resumable; ui.live = true; ui.steps = (ui.steps || []).filter(s => s.state === 'ok' && s.name !== 'retry');
+    if (sn) { ui.text = sn.text; ui.think = sn.think; ui.steps.length = Math.min(ui.steps.length, sn.steps); ui.sources = (ui.sources || []).slice(0, sn.sources); } // 끊긴 단계에서 받다 만 글은 걷어내고 그 단계부터 다시 (글이 두 번 붙지 않게)
     await runTurn(chat, api, ui, wireLen);
   }
+  /* 화면을 다시 켜거나 인터넷이 돌아오면 끊긴 답을 저절로 이어 받음 (한 차례에 두 번까지) */
+  const autoTry = {};
+  function autoResume(why) {
+    const c = cur; if (!c || busy || !c.pending || c.pending.running || document.visibilityState !== 'visible' || navigator.onLine === false) return;
+    if ((autoTry[c.id] || 0) >= 2) return; autoTry[c.id] = (autoTry[c.id] || 0) + 1;
+    toast(`${why || '끊긴'} 답을 이어서 받습니다`, 2200); resumeTurn();
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(() => autoResume('화면이 꺼져 끊긴'), 700); });
+  addEventListener('online', () => setTimeout(() => autoResume('연결이 끊겨 멈춘'), 1200));
   async function runTurn(chat, api, ui, wireLen) {
     chat.updated = Date.now();
     const ctrl = new AbortController(); busy = ctrl; setBusy(true); wakeOn();
+    chat.pending = { wireLen, running: true }; checkpoint(chat, ui); // 페이지가 닫혀도 다시 열면 이어 받을 수 있게
     renderChat(); renderChatList();
     try {
       if (api.type === 'claude') await runClaude(api, chat, ui, ctrl.signal); else await runCompat(api, chat, ui, ctrl.signal);
+      delete chat.pending; delete autoTry[chat.id];
     } catch (e) {
+      const sn = chat.pending && chat.pending.ui; delete chat.pending;
       const last = chat.wire.msgs[chat.wire.msgs.length - 1];
       /* 이어 갈 수 있으면(기록이 질문 · 도구 결과로 끝남) 받은 것을 남겨 둠 — 도구를 다시 부르지 않아도 됨 */
       const canResume = e.name !== 'AbortError' && isRetryable(e) && last && (last.role === 'user' || last.role === 'tool');
       if (e.name === 'AbortError') ui.note = '멈췄습니다.';
       else if (isNetErr(e)) ui.error = `${api.name} 와의 연결이 끊겼습니다${e.stall ? ' (응답이 2분 동안 멈춤)' : ''}. 휴대폰 화면이 꺼지거나 다른 앱으로 넘어가거나 통신이 흔들리면 생깁니다. 3번 다시 이어 받았지만 실패했습니다.` + (canResume ? ' 받은 자료는 남겨 두었으니 [이어서 다시 시도]를 누르세요.' : ' 인터넷 연결을 확인하고 다시 보내 주세요.') + (/failed to fetch|load failed/i.test(e.message) && !ui.steps.length ? ' 처음부터 연결되지 않았다면 API 키 · 브라우저 차단(광고 차단 앱 등)도 확인하세요.' : '');
       else ui.error = e.message + (canResume ? ' 받은 자료는 남겨 두었으니 잠시 뒤 [이어서 다시 시도]를 누르세요.' : '');
-      if (canResume) { chat.pending = { wireLen }; ui.resumable = true; }
+      if (canResume) { chat.pending = { wireLen, ui: sn }; ui.resumable = true; }
       else chat.wire.msgs.length = wireLen; /* 이어 갈 수 없으면 이번 차례 기록을 걷어냄 (답 없는 도구 호출로 끝나는 기록을 다음 질문에 보내지 않게). 화면에는 받은 만큼 남김 */
     } finally {
       ui.live = false; busy = null; setBusy(false); wakeOff(); chat.updated = Date.now(); saveChats(); renderChat(); renderChatList();
@@ -1314,12 +1336,20 @@ ${[
       box.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { const p = PROMPTS[+b.dataset.p][2]; const q = $('q'); q.value = p; grow(); q.focus(); q.setSelectionRange(p.length, p.length); if (!/ $|- $/.test(p)) send(p).then(() => { q.value = ''; grow(); }); });
       return;
     }
-    box.innerHTML = cur.view.map(m => {
+    box.innerHTML = cur.view.map((m, vi) => {
       if (m.role === 'user') return `<div class="sc-user"><div>${esc(m.text)}</div></div>`;
       const steps = (m.steps || []).filter(s => s.name !== 'think' || m.live);
+      /* 도구 사용 — 기본은 한 줄로 접고, 누르면 펼침. 같은 도구는 묶어서 "국내 뉴스 ×9" */
+      let tl = '';
+      if (steps.length) {
+        const g = new Map(); steps.forEach(s => { const k = s.label + '|' + (s.state === 'bad' ? 'bad' : s.state === 'ok' ? 'ok' : 'run'); const x = g.get(k) || { s, n: 0 }; x.n++; g.set(k, x); });
+        const run = steps.filter(s => s.state !== 'ok' && s.state !== 'bad'), bad = steps.filter(s => s.state === 'bad').length, okN = steps.length - run.length - bad;
+        const sum = run.length ? `${icon('refresh', 13)}<b>${esc(run[run.length - 1].label)}</b> 하는 중 · 도구 ${steps.length}번` : `${icon('check', 13)}자료 확인 ${okN}번${bad ? ` · <i>실패 ${bad}</i>` : ''}`;
+        tl = `<details class="sc-tuse${run.length ? ' run' : ''}" data-vi="${vi}"${m.stepsOpen ? ' open' : ''}><summary>${sum}<span class="more">${m.stepsOpen ? '접기' : '자세히'}</span></summary><div class="sc-tsteps">${[...g.values()].map(({ s, n }) => `<span class="sc-step ${s.state === 'ok' ? 'ok' : s.state === 'bad' ? 'bad' : ''}" title="${esc(s.err || '')}">${icon(s.state === 'ok' ? 'check' : s.state === 'bad' ? 'alert' : s.name === 'web_search' ? 'globe' : 'refresh', 13)}${esc(s.label)}${n > 1 ? ` <em>×${n}</em>` : ''}</span>`).join('')}</div></details>`;
+      }
       return `<div class="sc-bot">
-        ${steps.length ? `<div class="sc-steps">${steps.map(s => `<span class="sc-step ${s.state === 'ok' ? 'ok' : s.state === 'bad' ? 'bad' : ''}" title="${esc(s.err || '')}">${icon(s.state === 'ok' ? 'check' : s.state === 'bad' ? 'alert' : s.name === 'web_search' ? 'globe' : 'refresh', 13)}${esc(s.label)}</span>`).join('')}</div>` : ''}
-        ${m.think ? `<details class="sc-think"${m.live && !m.text ? ' open' : ''}><summary>생각 요약</summary><div>${esc(m.think)}</div></details>` : ''}
+        ${tl}
+        ${m.think ? `<details class="sc-think" data-ti="${vi}"${m.thinkOpen != null ? (m.thinkOpen ? ' open' : '') : m.live && !m.text ? ' open' : ''}><summary>생각 요약</summary><div>${esc(m.think)}</div></details>` : ''}
         <div class="${m.live ? 'sc-cursor' : ''}">${md(m.text || '')}</div>
         ${m.note ? `<p class="sc-fine" style="text-align:left;margin:6px 0 0">${esc(m.note)}</p>` : ''}
         ${m.error ? `<div class="sc-err">${esc(m.error)}${m.resumable && cur.pending && m === cur.view[cur.view.length - 1] ? `<div class="sc-err-act"><button type="button" class="btn sm ink" data-resume>${icon('refresh', 14)}이어서 다시 시도</button></div>` : ''}</div>` : ''}
@@ -1327,6 +1357,9 @@ ${[
       </div>`;
     }).join('');
     box.querySelectorAll('[data-resume]').forEach(b => b.onclick = () => resumeTurn());
+    /* 펼침 상태는 사람이 누른 것만 기억 (답이 들어올 때마다 다시 그려도 그대로) */
+    box.querySelectorAll('details[data-vi] > summary').forEach(sm => sm.addEventListener('click', () => { const d = sm.parentNode, m = cur.view[+d.dataset.vi]; if (!m) return; m.stepsOpen = !d.open; const t = sm.querySelector('.more'); if (t) t.textContent = m.stepsOpen ? '접기' : '자세히'; }));
+    box.querySelectorAll('details[data-ti] > summary').forEach(sm => sm.addEventListener('click', () => { const d = sm.parentNode, m = cur.view[+d.dataset.ti]; if (m) m.thinkOpen = !d.open; }));
     if (atBottom || (cur.view[cur.view.length - 1] || {}).live) box.scrollTop = box.scrollHeight;
   }
   function renderChat() {
@@ -4169,8 +4202,16 @@ ${[
     const old = LS.get(K_CHATS, null); // 예전처럼 localStorage 에 있던 대화를 옮김
     if (Array.isArray(old) && old.length) { for (const c of old) if (c && c.id && !chats.some(x => x.id === c.id)) { chats.push(c); await IDB.put(c); } try { localStorage.removeItem(K_CHATS); } catch (e) { } }
     chats.forEach(c => { savedAt[c.id] = c.updated; }); chats.sort((a, b) => (b.updated || 0) - (a.updated || 0));
+    /* 답을 받다가 페이지가 닫힌 대화(화면 꺼짐 · 앱 전환으로 브라우저가 정리함): 이어 받을 수 있게 표시 */
+    for (const c of chats) if (c.pending && c.pending.running) {
+      const last = c.wire && c.wire.msgs[c.wire.msgs.length - 1], ui = c.view[c.view.length - 1];
+      if (ui) ui.live = false;
+      if (last && (last.role === 'user' || last.role === 'tool') && ui && ui.role === 'assistant') { c.pending.running = false; ui.resumable = true; ui.error = '화면이 꺼지거나 다른 앱으로 넘어가 브라우저가 이 화면을 닫았습니다. 받은 자료는 남아 있어 그다음부터 이어 받습니다.'; }
+      else { if (c.wire) c.wire.msgs.length = c.pending.wireLen; delete c.pending; }
+    }
     if (!cur) { let id = null; try { id = localStorage.getItem(K_CUR); } catch (e) { } const c = id && chats.find(x => x.id === id); if (c) cur = c; } // 다시 열면 보던 대화 그대로
     renderChatList(); const v = Object.keys(VIEWS).find(k => !$(VIEWS[k]).hidden); if (v === 'chat' || v === 'history') show(v);
+    setTimeout(() => autoResume('앱이 닫혀 끊긴'), 900);
     if (sy.on) {
       syncNow();
       setInterval(() => { if (document.visibilityState === 'visible') syncNow(); }, 60000);
