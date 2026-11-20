@@ -566,7 +566,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     const edge = (d) => { let j = d > 0 ? 0 : N - 1; while (j >= 0 && j < N && deck.slides[j].hidden) j += d; return j >= 0 && j < N ? j : (d > 0 ? 0 : N - 1); }; // 숨긴 슬라이드를 건너뛴 처음 · 끝
     if (channel) channel.onmessage = (ev) => { const m = ev.data || {}; if (m.type === 'bye') { window.close(); return; } if (m.type === 'state') { s = { idx: m.idx, step: m.step, timerStart: m.timerStart, pausedAt: m.pausedAt || null, mark: m.mark || 0, ended: m.ended, blank: m.blank || '' }; render(); tick(); } };
     $('bNext').onclick = () => send({ cmd: 'next' }); $('bPrev').onclick = () => send({ cmd: 'prev' });
-    $('tReset').onclick = () => { if (s.timerStart && elapsed() > 60 && !confirm('타이머를 0 으로 되돌릴까요? 이번 발표의 장별 시간도 새로 잽니다.')) return; send({ cmd: 'timer', value: Date.now() }); };
+    $('tReset').onclick = async () => { if (s.timerStart && elapsed() > 60 && !(await uiConfirm('타이머를 0 으로 되돌릴까요?', '이번 발표의 장별 시간도 새로 잽니다.', '0 으로'))) return; send({ cmd: 'timer', value: Date.now() }); };
     $('tPause').onclick = () => send({ cmd: 'pause' });
     $('tGoal').onchange = () => { $('tGoal').value = PresTime.setTarget(name, $('tGoal').value) || ''; tick(); };
     $('bBig').onclick = () => $('bBig').classList.toggle('active', $('notes').classList.toggle('big'));

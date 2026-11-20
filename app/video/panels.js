@@ -245,7 +245,7 @@
     onSeg(box, 'fScope', v => { faceUi.scope = v; renderTab(); });
     box.querySelectorAll('[data-char]').forEach(b => { const holder = b.querySelector('[data-pic]'); if (holder && !holder.firstChild) holder.appendChild(VE.charThumb(b.dataset.char, 112)); b.onclick = ev => { if (ev.target.closest('[data-del]')) return; const id = b.dataset.char, can = !!(VE.swap && VE.swap.can(id)); applyFace({ mode: 'char', char: id, scale: cur && cur.scale || 1.25, dy: cur && cur.dy || 0, swap: can && !(cur && cur.mode === 'char' && VE.swap.can(cur.char) && cur.swap === false) }); }; });
     onSeg(box, 'fSwap', v => { const on = v === '1'; applyFace({ ...cur, swap: on }); });
-    box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (confirm('이 그림을 지울까요?')) { await VE.removeCustomChar(b.dataset.del); renderTab(); } });
+    box.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { if (await uiConfirm('이 그림을 지울까요?', '지운 그림은 되돌릴 수 없습니다.', '지우기', true)) { await VE.removeCustomChar(b.dataset.del); renderTab(); } });
     box.querySelector('#fMosaic').onclick = () => applyFace({ mode: 'mosaic' });
     box.querySelector('#fOff').onclick = () => applyFace(null);
     box.querySelector('#fAdd').onclick = () => addCharDialog();
@@ -335,7 +335,7 @@
       const tt = body.querySelector('#vToText'); if (tt) tt.onclick = () => VE.openTab('text');
       const go = body.querySelector('#vDub'); if (go) go.onclick = () => runDub();
       const ao = body.querySelector('#vAiOn'); if (ao) ao.onchange = () => { VE.edit(() => { v.ai = ao.checked; }); VE.player.invalidate(); };
-      const cl = body.querySelector('#vDubClear'); if (cl) cl.onclick = () => { if (confirm('만든 AI 목소리를 모두 지울까요? 원래 목소리로 돌아갑니다. 다시 쓰려면 새로 만들어야 합니다.')) { VE.dub.clear(); renderTab(); } };
+      const cl = body.querySelector('#vDubClear'); if (cl) cl.onclick = async () => { if (await uiConfirm('만든 AI 목소리를 모두 지울까요?', '원래 목소리로 돌아갑니다. 다시 쓰려면 새로 만들어야 합니다.', '모두 지우기', true)) { VE.dub.clear(); renderTab(); } };
     }
     /* 공통: 목소리 · 빠르기 · 품질 · 표시 */
     body.querySelectorAll('[data-voice]').forEach(r => {

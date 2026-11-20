@@ -439,7 +439,7 @@
         <div class="qc-body">${cur === 'quality' ? q : t}</div>
         <div class="actions"><span class="muted" style="flex:1;font-size:12px">줄을 누르면 그 슬라이드(개체)로 갑니다</span><button class="btn" data-close>닫기</button></div></div>`;
       const g = bg.querySelector('#qcGoal'); if (g) g.onchange = () => { g.value = PresTime.setTarget(S.name, g.value) || ''; };
-      const c = bg.querySelector('#qcClear'); if (c) c.onclick = (ev) => { ev.stopPropagation(); if (confirm('이 교안의 발표 기록을 모두 지울까요?')) { PresTime.clearRuns(S.name); draw(); } };
+      const c = bg.querySelector('#qcClear'); if (c) c.onclick = async (ev) => { ev.stopPropagation(); if (await uiConfirm('이 교안의 발표 기록을 모두 지울까요?', '장별 시간 기록이 모두 사라집니다.', '모두 지우기', true)) { PresTime.clearRuns(S.name); draw(); } };
     };
     bg.onclick = (ev) => {
       if (ev.target === bg || ev.target.closest('[data-close]')) { close(); return; }

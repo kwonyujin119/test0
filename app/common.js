@@ -1272,14 +1272,14 @@ const GH = {
       bg.onclick = (ev) => { if (ev.target === bg && !checking()) close(false); };
       bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { if (!checking()) close(false); } else if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') $('ghOk').click(); });
       $('ghCancel').onclick = () => { if (!checking()) close(false); };
-      if ($('ghClear')) $('ghClear').onclick = () => { if (confirm('이 기기에 저장된 GitHub 토큰을 지울까요?')) { this.clear(); close('cleared'); } };
+      if ($('ghClear')) $('ghClear').onclick = async () => { if (await uiConfirm('이 기기에 저장된 GitHub 토큰을 지울까요?', '지우면 이 기기에서는 저장소에 저장하지 못합니다. 다시 쓰려면 토큰을 새로 넣어야 합니다.', '토큰 지우기', true)) { this.clear(); close('cleared'); } };
       if (linked) { // 지금 토큰으로 저장소에 쓸 수 있는지 바로 확인해 보여 줌
         this.check().then(r => { const m = $('ghStateMsg'); if (!m) return; if (r.push) { $('ghState').classList.add('ok'); m.textContent = '확인했습니다 — 저장소에 쓸 수 있습니다.'; } else { $('ghState').classList.add('warn'); m.textContent = '이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요). 새 토큰을 넣어 주세요.'; $('ghToken').placeholder = '새 토큰 붙여넣기'; } })
           .catch(e => { const m = $('ghStateMsg'); if (!m) return; $('ghState').classList.add('warn'); m.textContent = e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣어 주세요.' : '지금은 확인하지 못했습니다 (' + e.message + ').'; if (e.status === 401) $('ghToken').placeholder = '새 토큰 붙여넣기'; });
       }
       $('ghOk').onclick = async () => {
         const cfg = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim().replace(/\s+/g, '') };
-        if (!cfg.owner || !cfg.repo) { alert('저장소 이름을 입력하세요'); return; }
+        if (!cfg.owner || !cfg.repo) { (cfg.owner ? $('ghRepo') : $('ghOwner')).focus(); toast('저장소 이름을 입력하세요'); return; }
         if (!cfg.token && linked && cfg.owner === c.owner && cfg.repo === c.repo) { close(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
         if (!cfg.token) { $('ghToken').focus(); toast(linked ? '바꾸려면 새 토큰을 붙여넣어 주세요' : '토큰을 붙여넣어 주세요'); return; }
         $('ghOk').disabled = true; $('ghOk').textContent = '확인 중…';
@@ -1288,7 +1288,7 @@ const GH = {
           const r = await this.check();
           if (!r.push) throw new Error('이 토큰으로는 저장소에 쓸 수 없습니다. 토큰 권한에서 Contents → Read and write 를 확인하세요.');
           this.save(cfg); toast(linked ? 'GitHub 토큰을 바꿨습니다' : 'GitHub 에 연결했습니다 — 이 기기에서는 다시 넣지 않아도 됩니다', 2600); close(true);
-        } catch (e) { this.cfg = prev; alert('연결 실패: ' + e.message); $('ghOk').disabled = false; $('ghOk').textContent = '연결'; }
+        } catch (e) { this.cfg = prev; $('ghOk').disabled = false; $('ghOk').textContent = '연결'; uiAlert('연결하지 못했습니다', e.message); }
       };
       setTimeout(() => (linked ? $('ghCancel') : $('ghToken')).focus(), 50);
     });
@@ -1704,6 +1704,9 @@ function fmtWhen(iso) {
 }
 
 function qs(k) { return new URLSearchParams(location.search).get(k); }
+/* 확인 · 알림 창: DPV 인터랙션 레이어(motion.js)의 같은 모양 창, 없으면 브라우저 기본 창 */
+function uiConfirm(title, desc, ok, danger) { return window.DPV && DPV.confirm ? DPV.confirm(title, desc, ok, danger) : Promise.resolve(confirm(desc ? title + '\n\n' + desc : title)); }
+function uiAlert(title, desc) { return window.DPV && DPV.alert ? DPV.alert(title, desc) : Promise.resolve(alert(desc ? title + '\n\n' + desc : title)); }
 /* 화면 아래 짧은 알림 (화면 읽기 프로그램도 읽어 줌). act = { label: '되돌리기', run() {} } 를 주면 글자 단추 하나가 붙는다 */
 function toast(msg, ms, act) {
   let t = document.getElementById('toast');
@@ -1716,5 +1719,5 @@ function toast(msg, ms, act) {
     t.appendChild(b);
   }
   t.classList.toggle('has-act', has); t.classList.add('show');
-  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), ms || (has ? 5000 : 1800));
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), ms || (has ? 6000 : 2200));
 }
