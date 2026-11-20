@@ -2491,7 +2491,15 @@ ${[
   /* ---------- 화면 ---------- */
   const ST = { ok: ['통과', 'ok'], warn: ['주의', 'warn'], bad: ['위반', 'bad'], na: ['자료 없음', 'na'] };
   const won = v => v == null ? '–' : Math.round(v).toLocaleString('ko-KR') + '원';
+  /* 수익 엔진 상태 점(닷): 새 매매 크기가 절반 · 중지일 때만 — 숫자 배지(건수)와 구별 */
+  function engDot() {
+    const b = document.querySelector('.rail [data-view="engine"]'); if (!b) return;
+    let f = 1; try { f = engineState().sizeFactor; } catch (e) { }
+    b.classList.toggle('dpv-dot', f < 1); b.classList.toggle('warn', f === .5);
+    if (f < 1) b.setAttribute('data-tip', f === 0 ? '수익 엔진: 새 매매 중지 상태' : '수익 엔진: 새 매매 크기 절반'); else b.removeAttribute('data-tip');
+  }
   function renderEngine() {
+    setTimeout(engDot, 0);
     const s = engineState(), p = eng.plan, box = $('engBox');
     const ideasDue = eng.ideas.filter(x => x.status === 'wait');
     box.innerHTML = kisBanner() + `
@@ -4187,6 +4195,7 @@ ${[
     if (v === 'watch') renderWatch(); if (v === 'history') renderHistory(); if (v === 'journal') renderJournal(); if (v === 'notes') renderNotes(); if (v === 'sum') renderSum(); if (v === 'brief') renderBrief(); if (v === 'strat') renderStrat(); if (v === 'me') renderMe(); if (v === 'calc') renderCalc(); if (v === 'refs') renderRefs(); if (v === 'apis') { renderApis(); renderSyncBox(); } if (v === 'chat') renderChat(); if (v === 'stock') renderStock(); if (v === 'today') renderToday(); if (v === 'market') renderMarket(); if (v === 'engine') renderEngine(); if (v === 'track') renderTrack(); if (v === 'man') renderMan(); if (v === 'mentor') renderMento(); if (v === 'psych') window.SEC_PSYCH.render($('psBody')); if (STUDY_V[v]) window.SEC_STUDY.render(v, $(STUDY_V[v])); if (AI_V[v]) window.SEC_AI.render(v, $(AI_V[v]));
     setMode(v === 'man' || v === 'mentor' ? 'man' : STUDY_V[v] ? 'study' : AI_V[v] ? 'ai' : v === 'psych' ? 'psych' : 'stock'); if (v === 'man' || v === 'mentor') manView = v; if (v !== 'man' && v !== 'mentor' && v !== 'psych' && !STUDY_V[v] && !AI_V[v]) stockView = v; if (STUDY_V[v]) studyView = v; if (AI_V[v]) aiView = v;
     try { history.replaceState(null, '', v === 'today' ? 'secret.html' : 'secret.html#' + v); } catch (e) { }
+    if (window.DPV) { DPV.view($(VIEWS[v])); engDot(); }
   }
   document.querySelectorAll('.rail [data-view]').forEach(b => b.onclick = () => show(b.dataset.view));
 
