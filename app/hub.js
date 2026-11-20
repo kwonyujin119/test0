@@ -473,7 +473,7 @@
       ? [['present', 'play', '발표'], null, ['link', 'link', '발표 링크 복사']]
       : [['edit', 'edit', '편집'], ['present', 'play', '발표'], fine ? ['newtab', 'expand', '새 탭에서 편집'] : null, null,
         ['move', 'folder', fo ? '다른 폴더로 옮기기' : '폴더로 옮기기'], fo ? ['out', 'folderOut', `폴더에서 빼기 (${fo.name})`] : null, null,
-        ['dup', 'copy', '사본 만들기'], ['rename', 'text', '파일 이름 바꾸기'], ['link', 'link', '발표 링크 복사'], ['export', 'export', '파일로 받기 (.json)'], null,
+        ['dup', 'copy', '사본 만들기'], ['rename', 'text', '이름 바꾸기'], ['link', 'link', '발표 링크 복사'], ['export', 'export', '파일로 받기 (.json)'], null,
         ['del', 'trash', '삭제']];
     showMenu(btn, at, d.title, d.slides !== '' ? `슬라이드 ${d.slides}장` + (fo ? ` · ${fo.name} 폴더` : '') : '', items, (a) => act(a, d, host));
   }
@@ -569,18 +569,28 @@
       refresh();
     }
     if (a === 'rename') {
-      const nn = await askText('파일 이름 바꾸기', '교안 파일의 이름입니다. 화면에 보이는 교안 제목은 편집기 맨 위에서 바꿉니다.', d.name, '바꾸기'); if (!nn || nn === d.name) return;
+      const same = !d.title || d.title === d.name; // 제목이 파일 이름과 같으면(보통) 제목도 함께 바꿈
+      const nn = await askText('이름 바꾸기', same ? '목록에 보이는 제목과 교안 파일 이름을 함께 바꿉니다.' : `교안 파일 이름을 바꿉니다. 화면 제목("${d.title}")은 따로 정한 것이라 그대로 둡니다 — 제목은 편집기 맨 위에서 바꿉니다.`, d.name, '바꾸기'); if (!nn || nn.trim() === d.name) return;
       const safe = sanitize(nn); if (!safe) return;
       const done = busy();
       if (!(await freshList())) { done(); return; } // 최신 목록으로 확인 (다른 기기에서 만든 같은 이름의 교안을 덮어쓰지 않게)
       if (decks.some(x => x.name === safe)) { done(); tell('같은 이름의 교안이 있습니다', '다른 이름을 골라 주세요.'); return; }
       if (!decks.some(x => x.name === d.name)) { done(); tell('교안을 찾을 수 없습니다', '이 교안은 이미 지워졌거나 이름이 바뀌었습니다. 목록을 새로 고쳤습니다.'); return; }
-      try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe)); toast('이름을 바꿨습니다'); }
+      try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe)); }
       catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
+      let newTitle = null;
+      let kept = false;
+      try { // 저장된 제목이 옛 파일 이름과 같으면(보통) 제목도 새 이름으로 — 따로 정한 제목은 그대로 (실패해도 파일 이름은 이미 바뀜)
+        const deck = await API.load(safe);
+        if (!deck.title || deck.title === d.name) { deck.title = nn.trim(); await ghTry(() => API.save(safe, deck)); newTitle = deck.title; deckCache.clear(); }
+        else kept = true;
+      } catch (e) { toast('파일 이름은 바꿨지만 화면 제목은 바꾸지 못했습니다 — 편집기 맨 위에서 제목을 고쳐 주세요', 6000); }
+      if (newTitle) toast('이름을 바꿨습니다', 2500);
+      else if (kept) toast('파일 이름을 바꿨습니다 — 화면 제목은 따로 정한 것이라 그대로 두었습니다(편집기 맨 위에서 바꿀 수 있습니다)', 6000);
       Draft.forget(safe); Draft.move(d.name, safe); // 이 기기에 남은 작업본도 새 이름으로
       if (Folders.of(d.name)) Folders.do({ t: 'renameDeck', from: d.name, to: safe }, `이름 바꾼 교안 ${d.name} → ${safe}`); // 폴더도 새 이름으로
       removed.set(d.name, Date.now());
-      if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: safe });
+      if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: safe, title: newTitle });
       refresh();
     }
   }
