@@ -164,7 +164,7 @@
     if (m.type === 'editing-too' && m.tab !== TAB) warnTwin();
     if (m.type === 'saved' && m.tab !== TAB) toast('다른 탭에서 이 교안을 저장했습니다 — 여기서 저장하면 덮어쓸지 물어봅니다', 6000);
     if (m.type === 'deleted') { S.deletedElsewhere = true; toast('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다', 6000); }
-    if (m.type === 'renamed' && m.to) { S.name = m.to; history.replaceState(null, '', 'editor.html?deck=' + encodeURIComponent(m.to)); toast('교안 파일 이름이 "' + m.to + '" 으로 바뀌었습니다', 4000); }
+    if (m.type === 'renamed' && m.to) { S.name = m.to; history.replaceState(null, '', 'editor.html?deck=' + encodeURIComponent(m.to)); if (m.title && S.deck) { S.deck.title = m.title; $('deckTitle').value = m.title; } toast('교안 이름이 "' + (m.title || m.to) + '" 으로 바뀌었습니다', 4000); }
   };
   /* 연결 안 된 기기: 경고 창 대신 위쪽에 작은 표시 하나 (누르면 연결) */
   function ghChip() {
