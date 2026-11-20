@@ -13,6 +13,7 @@
 """
 import base64
 import json
+import mimetypes
 import os
 import ssl
 import sys
@@ -34,7 +35,13 @@ TOOL = {
             "prompt": {"type": "string", "description": "만들 그림 설명(한국어 가능)"},
             "aspect_ratio": {"type": "string", "default": "1:1",
                              "description": "1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9 등"},
-            "resolution": {"type": "string", "description": "1K(기본) · 2K · 4K — 클수록 비싸다. 모델에 따라 무시될 수 있음"},
+            "resolution": {"type": "string", "description": "512px · 1K(기본) · 2K · 4K — 클수록 비싸다. 2K/4K 는 flash-image·pro, 512px 는 flash·flash-lite"},
+            "reference_images": {"type": "array", "items": {"type": "string"},
+                                 "description": "참고 이미지 파일 경로들(flash·pro 최대 14장, lite 3장). 캐릭터·스타일 유지, 합성, 번역"},
+            "thinking_level": {"type": "string", "enum": ["minimal", "low", "high"],
+                               "description": "flash-image·pro 의 사전 구상 강도. 복잡한 구도·인포그래픽은 high"},
+            "google_search": {"type": "boolean", "default": False,
+                              "description": "구글 검색으로 실제 사물·장소·최신 정보 근거 잡기(flash-image·pro)"},
             "model": {"type": "string", "description": "생략하면 기본 모델. 예: gemini-3.1-flash-image, gemini-3-pro-image"},
             "filename": {"type": "string", "description": "파일 이름 앞부분(확장자 없이). 생략하면 시각으로"},
         },
@@ -48,15 +55,28 @@ def _ssl_context():
     return ssl.create_default_context(cafile=cafile) if cafile else ssl.create_default_context()
 
 
-def generate(prompt, aspect_ratio="1:1", resolution=None, model=None, filename=None):
+def generate(prompt, aspect_ratio="1:1", resolution=None, model=None, filename=None,
+             reference_images=None, thinking_level=None, google_search=False):
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY 가 없습니다. aistudio.google.com 에서 API 키를 만들어 환경 변수로 넣어 주세요.")
     image_config = {"aspectRatio": aspect_ratio}
     if resolution:
         image_config["imageSize"] = resolution
-    body = {"contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"responseModalities": ["TEXT", "IMAGE"], "imageConfig": image_config}}
+    parts = [{"text": prompt}]
+    for r in reference_images or []:
+        r = os.path.expanduser(r)
+        if not os.path.isfile(r):
+            raise ValueError(f"참고 이미지가 없습니다: {r}")
+        with open(r, "rb") as f:
+            parts.append({"inlineData": {"mimeType": mimetypes.guess_type(r)[0] or "image/png",
+                                         "data": base64.b64encode(f.read()).decode()}})
+    gen = {"responseModalities": ["TEXT", "IMAGE"], "imageConfig": image_config}
+    if thinking_level:
+        gen["thinkingConfig"] = {"thinkingLevel": thinking_level}
+    body = {"contents": [{"parts": parts}], "generationConfig": gen}
+    if google_search:
+        body["tools"] = [{"googleSearch": {}}]
     url = f"{BASE}/models/{model or MODEL}:generateContent"
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
                                  headers={"x-goog-api-key": key, "Content-Type": "application/json"})
@@ -148,8 +168,11 @@ def cli(argv):
     p.add_argument("--res")
     p.add_argument("--model")
     p.add_argument("--filename")
+    p.add_argument("--ref", action="append", help="참고 이미지(여러 번 가능)")
+    p.add_argument("--thinking", choices=["minimal", "low", "high"])
+    p.add_argument("--search", action="store_true")
     a = p.parse_args(argv)
-    paths, _, usage, note = generate(a.prompt, a.aspect, a.res, a.model, a.filename)
+    paths, _, usage, note = generate(a.prompt, a.aspect, a.res, a.model, a.filename, a.ref, a.thinking, a.search)
     print("\n".join(paths))
     if note:
         print("note:", note, file=sys.stderr)

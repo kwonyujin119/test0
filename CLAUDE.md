@@ -23,3 +23,9 @@ GitHub 로그인이나 `gh` 설치를 사용자에게 부탁하지 않는다.
 - 판 번호는 문서 이름(파일 이름 · 문서함 이름)에 붙이고, 문서 본문 제목에는 붙이지 않는다(결재 문서에 판 번호가 찍히지 않게). 사용자가 본문에도 원하면 따른다.
 - 문서(DOCUMENT)는 교안(`decks/`)과 같은 방식으로 한 곳에 저장한다: `documents/<문서 이름>.hwpx` 로 커밋하고 `documents/index.json` 의 `items` 에 { id(=파일 이름), name, size, modified, created, preview, folder?, ver?, note?, pages? } 를 더한다(`folders` 는 그대로 둔다). 앱에서 저장한 문서도 같은 곳에 쌓인다.
 - `documents/` 는 잠그지 않은 공개 파일이다. 게스트도 읽는다(잠긴 폴더 안 문서는 게스트 화면에서만 숨김). 개인정보 · 비공개 내용이 든 문서는 올리기 전에 사용자에게 묻는다.
+
+## 이미지 생성 (GPT · Gemini)
+
+- 이미지 프롬프트를 쓰거나 `gpt_generate_image` · `gemini_generate_image` 를 부르기 전에 `tools/image-prompting/GUIDE.md` 를 읽고 따른다.
+- 사용자는 Claude 가 준 프롬프트를 그대로 실행한다. 첫 결과물이 바로 쓸 수 있도록 목적·대상·비율을 확인하고, 교육 내용(절차·안전수칙)의 정확성을 Claude 가 먼저 검수한다.
+- 만든 그림은 `generated-images/`(git 제외)에 저장된다. 교안에 넣을 그림만 따로 옮긴다.

@@ -29,8 +29,12 @@ python3 tools/gpt-image/server.py --cli "벚꽃 아래 소풍 가는 어린이�
 
 | 항목 | 값 |
 |---|---|
-| size | 1024x1024 · 1536x1024(가로) · 1024x1536(세로) · auto |
+| size | 자유(16의 배수, 긴 변<3840, 비율≤3:1). 예: 1024x1024 · 1536x864(16:9) · 1024x1536 · 2560x1440(2K) |
 | quality | low · medium(기본) · high · xhigh · max · auto |
 | n | 1~4 |
-| background | auto · transparent · opaque |
+| background | auto · transparent · opaque (투명은 png/webp) |
+| output_format | png(기본) · webp · jpeg |
+| reference_images | 참고 이미지 경로들 → 편집 모드(캐릭터·스타일 유지, 합성). CLI `--ref` |
 | model | 기본 gpt-image-2.6-sunburst. 요청마다 `model` 로 바꾸거나 환경 변수 `OPENAI_IMAGE_MODEL` |
+
+프롬프트 작성법은 [`../image-prompting/GUIDE.md`](../image-prompting/GUIDE.md).
