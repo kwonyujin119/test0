@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-19T23:40:18.000Z",
- "modified": "2026-11-19T23:40:18.000Z",
+ "created": "2026-11-20T00:01:17.000Z",
+ "modified": "2026-11-20T00:01:17.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -42,7 +42,7 @@
      "y": 0,
      "w": 910,
      "h": 1080,
-     "src": "assets/ed-cover.jpg",
+     "src": "assets/ed-cover2.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false
@@ -885,7 +885,7 @@
      }
     },
     {
-     "id": "ed0825",
+     "id": "ed0827",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1040,7 +1040,7 @@
      }
     },
     {
-     "id": "ed0826",
+     "id": "ed0828",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1195,7 +1195,7 @@
      }
     },
     {
-     "id": "ed0827",
+     "id": "ed0829",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1350,7 +1350,7 @@
      }
     },
     {
-     "id": "ed0828",
+     "id": "ed0830",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -1631,7 +1631,7 @@
      }
     },
     {
-     "id": "ed0829",
+     "id": "ed0831",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1736,7 +1736,7 @@
      }
     },
     {
-     "id": "ed0830",
+     "id": "ed0832",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1841,7 +1841,7 @@
      }
     },
     {
-     "id": "ed0831",
+     "id": "ed0833",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1946,7 +1946,7 @@
      }
     },
     {
-     "id": "ed0832",
+     "id": "ed0834",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2036,7 +2036,7 @@
      "type": "shape",
      "x": 120,
      "y": 620,
-     "w": 1680,
+     "w": 1100,
      "h": 2,
      "shape": "rect",
      "fill": "#15181C",
@@ -2059,7 +2059,7 @@
      "type": "text",
      "x": 120,
      "y": 636,
-     "w": 1680,
+     "w": 1100,
      "h": 46,
      "role": "text",
      "html": "실시근거",
@@ -2078,8 +2078,8 @@
      "type": "text",
      "x": 120,
      "y": 688,
-     "w": 1680,
-     "h": 76,
+     "w": 1100,
+     "h": 110,
      "role": "text",
      "html": "「화재의 예방 및 안전관리에 관한 법률」 <b>제37조</b> 및 같은 법 시행규칙 <b>제36조</b>",
      "style": {
@@ -2090,7 +2090,7 @@
      }
     },
     {
-     "id": "ed0833",
+     "id": "ed0835",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -2098,7 +2098,7 @@
      "type": "shape",
      "x": 120,
      "y": 810,
-     "w": 1680,
+     "w": 1100,
      "h": 2,
      "shape": "rect",
      "fill": "#15181C",
@@ -2118,7 +2118,7 @@
      "type": "shape",
      "x": 120,
      "y": 810,
-     "w": 1680,
+     "w": 1100,
      "h": 100,
      "shape": "rect",
      "fill": "",
@@ -2146,11 +2146,27 @@
      "w": 1680,
      "h": 34,
      "role": "text",
-     "html": "교재 제8편 제1장 제1절 01",
+     "html": "교재 제8편 제1장 제1절 01·사진: 교육용 생성 이미지",
      "style": {
       "fontSize": 24,
       "color": "#5B6168"
      }
+    },
+    {
+     "id": "ed0818",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1260,
+     "y": 620,
+     "w": 540,
+     "h": 290,
+     "src": "assets/ed-practice.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
     }
    ],
    "decor": "none"
@@ -2370,11 +2386,27 @@
      "w": 1680,
      "h": 34,
      "role": "text",
-     "html": "교재 제8편 제1장 제1절 02, 학습정리",
+     "html": "교재 제8편 제1장 제1절 02, 학습정리·사진: 교육용 생성 이미지",
      "style": {
       "fontSize": 24,
       "color": "#5B6168"
      }
+    },
+    {
+     "id": "ed0819",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1380,
+     "y": 610,
+     "w": 420,
+     "h": 250,
+     "src": "assets/ed-demo.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
     }
    ],
    "decor": "none"
@@ -2429,7 +2461,7 @@
      }
     },
     {
-     "id": "ed0834",
+     "id": "ed0836",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2794,7 +2826,7 @@
      }
     },
     {
-     "id": "ed0835",
+     "id": "ed0837",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2971,7 +3003,7 @@
      }
     },
     {
-     "id": "ed0836",
+     "id": "ed0838",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3053,7 +3085,7 @@
      }
     },
     {
-     "id": "ed0837",
+     "id": "ed0839",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3135,7 +3167,7 @@
      }
     },
     {
-     "id": "ed0838",
+     "id": "ed0840",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3217,7 +3249,7 @@
      }
     },
     {
-     "id": "ed0839",
+     "id": "ed0841",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3299,7 +3331,7 @@
      }
     },
     {
-     "id": "ed0840",
+     "id": "ed0842",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3381,7 +3413,7 @@
      }
     },
     {
-     "id": "ed0841",
+     "id": "ed0843",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3463,7 +3495,7 @@
      }
     },
     {
-     "id": "ed0842",
+     "id": "ed0844",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3545,7 +3577,7 @@
      }
     },
     {
-     "id": "ed0843",
+     "id": "ed0845",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3627,7 +3659,7 @@
      }
     },
     {
-     "id": "ed0844",
+     "id": "ed0846",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3709,7 +3741,7 @@
      }
     },
     {
-     "id": "ed0845",
+     "id": "ed0847",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3879,7 +3911,7 @@
      }
     },
     {
-     "id": "ed0846",
+     "id": "ed0848",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3986,7 +4018,7 @@
      }
     },
     {
-     "id": "ed0847",
+     "id": "ed0849",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -4093,7 +4125,7 @@
      }
     },
     {
-     "id": "ed0848",
+     "id": "ed0850",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4200,7 +4232,7 @@
      }
     },
     {
-     "id": "ed0849",
+     "id": "ed0851",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -4617,7 +4649,7 @@
      }
     },
     {
-     "id": "ed0850",
+     "id": "ed0852",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -4770,7 +4802,7 @@
      }
     },
     {
-     "id": "ed0851",
+     "id": "ed0853",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4920,7 +4952,7 @@
      }
     },
     {
-     "id": "ed0852",
+     "id": "ed0854",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5070,7 +5102,7 @@
      }
     },
     {
-     "id": "ed0853",
+     "id": "ed0855",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5220,7 +5252,7 @@
      }
     },
     {
-     "id": "ed0854",
+     "id": "ed0856",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5370,7 +5402,7 @@
      }
     },
     {
-     "id": "ed0855",
+     "id": "ed0857",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5520,7 +5552,7 @@
      }
     },
     {
-     "id": "ed0856",
+     "id": "ed0858",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5670,7 +5702,7 @@
      }
     },
     {
-     "id": "ed0857",
+     "id": "ed0859",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5820,7 +5852,7 @@
      }
     },
     {
-     "id": "ed0858",
+     "id": "ed0860",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5970,7 +6002,7 @@
      }
     },
     {
-     "id": "ed0859",
+     "id": "ed0861",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6120,7 +6152,7 @@
      }
     },
     {
-     "id": "ed0860",
+     "id": "ed0862",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6270,7 +6302,7 @@
      }
     },
     {
-     "id": "ed0861",
+     "id": "ed0863",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6420,7 +6452,7 @@
      }
     },
     {
-     "id": "ed0862",
+     "id": "ed0864",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7647,7 +7679,7 @@
      "y": 460,
      "w": 1680,
      "h": 230,
-     "src": "assets/ed-joint.jpg",
+     "src": "assets/ed-joint2.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false
@@ -7997,7 +8029,7 @@
      }
     },
     {
-     "id": "ed0863",
+     "id": "ed0865",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8715,7 +8747,7 @@
      }
     },
     {
-     "id": "ed0864",
+     "id": "ed0866",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -8848,7 +8880,7 @@
      "shadow": false
     },
     {
-     "id": "ed0865",
+     "id": "ed0867",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9008,7 +9040,7 @@
      "shadow": false
     },
     {
-     "id": "ed0866",
+     "id": "ed0868",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9168,7 +9200,7 @@
      "shadow": false
     },
     {
-     "id": "ed0867",
+     "id": "ed0869",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -9328,7 +9360,7 @@
      "shadow": false
     },
     {
-     "id": "ed0868",
+     "id": "ed0870",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -9488,7 +9520,7 @@
      "shadow": false
     },
     {
-     "id": "ed0869",
+     "id": "ed0871",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -9632,7 +9664,7 @@
      }
     },
     {
-     "id": "ed0870",
+     "id": "ed0872",
      "step": 6,
      "anim": "fade",
      "rotate": 0,
@@ -10121,7 +10153,7 @@
      "y": 270,
      "w": 820,
      "h": 225,
-     "src": "assets/ed-debrief.jpg",
+     "src": "assets/ed-debrief2.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false
@@ -10234,7 +10266,7 @@
      }
     },
     {
-     "id": "ed0871",
+     "id": "ed0873",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -10339,7 +10371,7 @@
      }
     },
     {
-     "id": "ed0872",
+     "id": "ed0874",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -14899,7 +14931,7 @@
    "notes": "[0:50~1:00] 시험 포인트 모음. 줄마다 오른쪽 칸을 손으로 가리고 「무엇이 함정이었죠?」 묻고 확인.\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
-     "id": "ed0818",
+     "id": "ed0820",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14921,7 +14953,7 @@
      }
     },
     {
-     "id": "ed0819",
+     "id": "ed0821",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14940,7 +14972,7 @@
      }
     },
     {
-     "id": "ed0820",
+     "id": "ed0822",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15011,7 +15043,7 @@
    "notes": "[0:50~1:00] 예상문제 100 안내. 이 과목 범위: Part 4 71 ~ 100번. 교재 본문 기반 예상문항(공식 기출 아님).\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
    "elements": [
     {
-     "id": "ed0821",
+     "id": "ed0823",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15033,7 +15065,7 @@
      }
     },
     {
-     "id": "ed0822",
+     "id": "ed0824",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15052,7 +15084,7 @@
      }
     },
     {
-     "id": "ed0823",
+     "id": "ed0825",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15094,7 +15126,7 @@
      }
     },
     {
-     "id": "ed0824",
+     "id": "ed0826",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
