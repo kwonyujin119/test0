@@ -3,8 +3,8 @@
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
- "created": "2026-11-19T13:12:16.000Z",
- "modified": "2026-11-19T13:12:16.000Z",
+ "created": "2026-11-20T01:45:59.000Z",
+ "modified": "2026-11-20T01:45:59.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -42,7 +42,7 @@
      "y": 0,
      "w": 910,
      "h": 1080,
-     "src": "assets/sp-cover.jpg",
+     "src": "assets/bq-cover.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false
