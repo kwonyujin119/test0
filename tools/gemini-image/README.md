@@ -27,4 +27,4 @@ python3 tools/gemini-image/server.py --cli "벚꽃 아래 소풍 가는 어린�
 |---|---|
 | aspect_ratio | 1:1(기본) · 16:9 · 9:16 · 4:3 · 3:4 · 3:2 · 2:3 · 21:9 |
 | resolution | 1K(기본) · 2K · 4K — 클수록 비쌈 |
-| model | 기본 gemini-3.1-flash-image-preview. 요청마다 `model` 로 바꾸거나 환경 변수 `GEMINI_IMAGE_MODEL` |
+| model | 기본 gemini-3.1-flash-image. 요청마다 `model` 로 바꾸거나 환경 변수 `GEMINI_IMAGE_MODEL` |

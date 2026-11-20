@@ -8,7 +8,7 @@
 
 환경 변수
   GEMINI_API_KEY      Google AI Studio API 키. 필수(클라우드에서는 프록시가 넣어 준다).
-  GEMINI_IMAGE_MODEL  기본 gemini-3.1-flash-image-preview
+  GEMINI_IMAGE_MODEL  기본 gemini-3.1-flash-image
   GEMINI_IMAGE_OUT_DIR 저장 폴더. 기본 ./generated-images
 """
 import base64
@@ -21,7 +21,7 @@ import urllib.error
 import urllib.request
 
 BASE = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta").rstrip("/")
-MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image-preview")
+MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image")
 OUT_DIR = os.environ.get("GEMINI_IMAGE_OUT_DIR", os.path.join(os.getcwd(), "generated-images"))
 EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp"}
 
@@ -35,7 +35,7 @@ TOOL = {
             "aspect_ratio": {"type": "string", "default": "1:1",
                              "description": "1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9 등"},
             "resolution": {"type": "string", "description": "1K(기본) · 2K · 4K — 클수록 비싸다. 모델에 따라 무시될 수 있음"},
-            "model": {"type": "string", "description": "생략하면 기본 모델. 예: gemini-3.1-flash-image-preview, gemini-3-pro-image-preview"},
+            "model": {"type": "string", "description": "생략하면 기본 모델. 예: gemini-3.1-flash-image, gemini-3-pro-image"},
             "filename": {"type": "string", "description": "파일 이름 앞부분(확장자 없이). 생략하면 시각으로"},
         },
         "required": ["prompt"],
