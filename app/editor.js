@@ -536,6 +536,24 @@
       overlay.appendChild(d);
     }
     if (e.type === 'table' && !e.rotate) renderTableTabs(e);
+    if (e.type === 'image' && e.src) renderXferHandle(e, k);
+  }
+  /* 그림을 다른 교안 창으로 끌어 보내는 손잡이 — 끌기는 브라우저 기본 끌어놓기라 창 밖(다른 편집기 창)까지 갑니다.
+     받는 쪽: 빈 그림 칸 위에 놓으면 그 칸을 채우고, 빈 곳에 놓으면 그 자리에 같은 그림을 만듭니다 */
+  function renderXferHandle(e, k) {
+    const d = document.createElement('div'); d.className = 'xfer-handle'; d.draggable = true;
+    d.innerHTML = '⇱ 끌어서 다른 교안에 넣기'; d.title = '이 손잡이를 끌어 다른 교안 편집 창의 빈 그림 칸(또는 빈 곳)에 놓으세요 · 복사(Ctrl+C) → 그 칸 클릭 → 붙여넣기(Ctrl+V)도 됩니다';
+    d.style.left = e.x * k + 'px'; d.style.top = (e.y + e.h) * k + 8 + 'px';
+    d.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+    d.addEventListener('dragstart', (ev) => {
+      const data = { kind: 'els', items: [xferItem(e)] };
+      ev.dataTransfer.setData(XFER_TYPE, '1');
+      ev.dataTransfer.setData('text/plain', CLIP_TAG + JSON.stringify(data));
+      ev.dataTransfer.effectAllowed = 'copy';
+      const im = nodeOf(e.id) && nodeOf(e.id).querySelector('img');
+      if (im && im.complete && im.naturalWidth) { try { ev.dataTransfer.setDragImage(im, 20, 20); } catch (er) { } }
+    });
+    overlay.appendChild(d);
   }
   /* 표를 잡으면 위·왼쪽에 줄마다 ✕ 손잡이: 누르면 그 열·행을 바로 지움 (올리면 지워질 줄이 빨갛게) · 끝의 ＋ 는 열·행 추가
      한 번 누른 칸은 점선으로 표시 — 속성 창·오른쪽 단추 메뉴의 추가/삭제가 그 칸 기준 */
@@ -2648,13 +2666,24 @@
   /* ---------- 드래그 앤 드롭 / 붙여넣기 ---------- */
   /* 받는 것: 그림·영상·PPT 파일 / PPT 심벌 창의 심벌 / 다른 프로그램에서 끌어온 글자·그림 주소.
      아무 자료도 넘겨주지 않는 프로그램(PowerPoint 의 도형 등)에서 끌어오면 방법을 알려 줌 */
-  const dropKind = (dt) => { const t = Array.from(dt.types || []); return pptDrag ? 'sym' : t.includes('Files') ? 'files' : innerDrag ? '' : (t.includes('text/plain') || t.includes('text/html') || t.includes('text/uri-list')) ? 'data' : !t.length ? 'none' : ''; };
+  const dropKind = (dt) => { const t = Array.from(dt.types || []); return pptDrag ? 'sym' : t.includes(XFER_TYPE) ? 'xfer' : t.includes('Files') ? 'files' : innerDrag ? '' : (t.includes('text/plain') || t.includes('text/html') || t.includes('text/uri-list')) ? 'data' : !t.length ? 'none' : ''; };
   main.addEventListener('dragover', (ev) => { if (dropKind(ev.dataTransfer)) { ev.preventDefault(); if (pptDrag) ev.dataTransfer.dropEffect = 'copy'; main.classList.add('dragover'); } });
   main.addEventListener('dragleave', (ev) => { if (!main.contains(ev.relatedTarget)) main.classList.remove('dragover'); });
   main.addEventListener('drop', async (ev) => {
     main.classList.remove('dragover'); const kind = dropKind(ev.dataTransfer); if (!kind) return; ev.preventDefault();
     const r = overlay.getBoundingClientRect(); const at = { x: (ev.clientX - r.left) / S.k, y: (ev.clientY - r.top) / S.k };
     if (kind === 'sym') { const it = pptDrag; pptDrag = null; if (await placePptSym(it, at)) toast('심벌을 넣었습니다 · 되돌리기 Ctrl+Z'); return; }
+    if (kind === 'xfer') { // 다른 교안 창(또는 이 창)에서 끌어 온 그림
+      let data = null; try { data = JSON.parse((ev.dataTransfer.getData('text/plain') || '').slice(CLIP_TAG.length)); } catch (e) { }
+      if (!data || !data.items || !data.items.length) return;
+      if (S.editing) endEdit();
+      await adoptXfer(data);
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY), box = hit && hit.closest ? hit.closest('.el[data-id]') : null;
+      if (box && fillImageSlot(elById(box.dataset.id), data.items[0])) return;
+      const c = freshCopies(data.items, 0, 0, false)[0];
+      c.x = Math.round(clamp(at.x - c.w / 2, 0, SLIDE_W - c.w)); c.y = Math.round(clamp(at.y - c.h / 2, 0, SLIDE_H - c.h));
+      addElement(c); toast('그림을 넣었습니다 · 빈 그림 칸 위에 놓으면 그 칸을 채웁니다 · 되돌리기 Ctrl+Z', 4000); return;
+    }
     if (kind !== 'files' || !ev.dataTransfer.files.length) {
       const html = ev.dataTransfer.getData('text/html') || '', text = (ev.dataTransfer.getData('text/plain') || '').trim();
       const m = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i.exec(html), url = m ? m[1].replace(/&amp;/g, '&') : /^(https?:\/\/\S+\.(png|jpe?g|gif|svg|webp)(\?\S*)?|data:image\/\S+)$/i.test(text) ? text : '';
@@ -2986,10 +3015,35 @@
       return c;
     });
   }
-  function clipData(kind) { return kind === 'els' ? { kind, items: clone(selEls()) } : { kind: 'slides', items: selSlides().map(clone) }; }
-  function pasteData(data) {
+  /* 이 창에서 넣고 아직 저장(업로드)하지 않은 그림은 다른 창에서 주소만으로는 안 보임 → 이 창의 임시 주소(blob:)를 함께 넘김 */
+  const XFER_TYPE = 'text/x-gyoan-xfer';
+  function xferItem(e) { const c = clone(e); if (c.type === 'image' && c.src && API.blobs[c.src]) c._blob = API.blobs[c.src]; return c; }
+  function clipData(kind) { return kind === 'els' ? { kind, items: selEls().map(xferItem) } : { kind: 'slides', items: selSlides().map(s => { const c = clone(s); c.elements = s.elements.map(xferItem); return c; }) }; }
+  /* 받은 쪽: 다른 창의 임시 그림이면 내려받아 이 창에서 다시 올림 (그래야 이 교안을 저장할 때 그림도 같이 올라감) */
+  async function adoptXfer(data) {
+    const els = data.kind === 'slides' ? data.items.flatMap(s => s.elements || []) : data.items;
+    for (const e of els) {
+      if (!e || !e._blob) continue;
+      const url = e._blob; delete e._blob;
+      if (API.blobs[e.src]) continue; // 같은 창
+      try { const b = await (await fetch(url)).blob(); if (b && b.size) e.src = await API.stage(b, (e.src || 'image.png').replace(/^.*\//, '')); }
+      catch (er) { toast('보낸 쪽 교안을 먼저 저장해야 이 그림이 보입니다 (아직 올라가지 않은 그림)', 6000); }
+    }
+  }
+  /* 그림 한 장을 잡혀 있는(또는 놓은 자리의) 그림 칸에 채움 — 칸의 위치 · 크기 · 맞춤은 그대로 */
+  function fillImageSlot(tgt, item) {
+    if (!tgt || tgt.type !== 'image' || !item || item.type !== 'image' || !item.src) return false;
+    const was = !!tgt.src; tgt.src = item.src; if (!was && !tgt.fit) tgt.fit = 'cover';
+    delete tgt.cropX; delete tgt.cropY; delete tgt.zoom;
+    S.sel = [tgt.id]; commit(); rerenderEl(tgt.id); renderOverlay(); renderProps();
+    toast((was ? '그림을 바꿨습니다' : '빈 칸에 그림을 넣었습니다') + ' · 되돌리기 Ctrl+Z'); return true;
+  }
+  async function pasteData(data) {
     if (!data || !data.items || !data.items.length) return;
     if (S.editing) endEdit();
+    await adoptXfer(data);
+    // 그림 한 장을 복사해 와서 그림 칸 하나를 잡고 붙여넣으면 → 새 그림을 만들지 않고 그 칸을 채움
+    if (data.kind === 'els' && data.items.length === 1 && S.sel.length === 1 && fillImageSlot(elById(S.sel[0]), data.items[0])) return;
     if (data.kind === 'slides') {
       const ss = data.items.map(s => { const c = clone(s); c.id = uid(); c.elements.forEach(e => { e.mk = e.mk || e.id; e.id = uid(); }); return c; });
       const at = Math.max(...selSlides().map(s => S.deck.slides.indexOf(s))) + 1;
