@@ -173,7 +173,10 @@
     const wrap = document.createElement('div'); wrap.id = 'coach'; wrap.innerHTML = '<div class="co-hole"></div><div class="co-pop" role="dialog" aria-live="polite"></div>';
     document.body.appendChild(wrap);
     const hole = wrap.querySelector('.co-hole'), pop = wrap.querySelector('.co-pop');
-    const end = () => { LS.set(key, '1'); coachOn = false; wrap.remove(); removeEventListener('resize', place); document.removeEventListener('keydown', onKey, true); };
+    // 안내 중에 창이 열리면 안내를 닫음 — 안내 층이 창의 단추를 가려 누를 수 없던 문제
+    const mo = new MutationObserver(() => { if (document.querySelector('.modal-bg, .dlg-bg')) end(); });
+    const end = () => { LS.set(key, '1'); coachOn = false; wrap.remove(); mo.disconnect(); removeEventListener('resize', place); document.removeEventListener('keydown', onKey, true); };
+    mo.observe(document.body, { childList: true });
     const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); end(); } else if (e.key === 'Enter' || e.key === 'ArrowRight') { e.preventDefault(); next(); } };
     function place() {
       const s = list[i], el = typeof s.el === 'string' ? document.querySelector(s.el) : s.el; if (!el) return end();
@@ -213,7 +216,7 @@
   };
   const pending = () => (TOURS[PAGE] || []).filter(([id]) => !LS.get('dpv:coach:' + id));
   function tryTours() {
-    if (coachOn || document.querySelector('.modal-bg, .menu')) return;
+    if (coachOn || document.querySelector('.modal-bg, .menu, .dlg-bg')) return; // 창(DOCUMENT 의 .dlg-bg 포함)이 떠 있으면 안내하지 않음
     for (const [id, steps] of pending()) if (coach(id, steps)) return;
   }
   if (TOURS[PAGE]) { let n = 0; const t = setInterval(() => { if (++n > 30 || !pending().length) { clearInterval(t); return; } tryTours(); }, 2500); }

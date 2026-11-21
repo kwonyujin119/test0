@@ -8,6 +8,8 @@ const HNS = {
   opf: 'http://www.idpf.org/2007/opf/',
   unit: 'http://www.hancom.co.kr/hwpml/2016/HwpUnitChar',
 };
+const u32 = v => v > 2147483647 ? v - 4294967296 : v; // 한글은 음수 좌표를 부호 없는 32비트로 적음
+const HWP_SHAPES = new Set(['rect', 'ellipse', 'line', 'polygon', 'curve', 'arc', 'container', 'textart', 'pic', 'connectLine']);
 const H_LANGS = ['hangul', 'latin', 'hanja', 'japanese', 'other', 'symbol', 'user'];
 const H_LANGS_UP = H_LANGS.map(s => s.toUpperCase());
 const HU = 75; // HWPUNIT ÷ 75 = CSS px  (7200 HWPUNIT = 1 inch = 96 px)
@@ -43,7 +45,9 @@ const FACE_ALIAS = {
   'HY헤드라인M': ['HYHeadLine M', 'HYHeadLine-Medium'], 'HY견고딕': ['HYGothic-Extra'], 'HY중고딕': ['HYGothic-Medium'], 'HY견명조': ['HYMyeongJo-Extra'], 'HY신명조': ['HYSinMyeongJo-Medium'], 'HY그래픽': ['HYGraphic-Medium'], 'HY울릉도M': ['HYUlleungDo-Medium'],
   '휴먼명조': ['HumanMyeongjo'], '휴먼고딕': ['HumanGothic'], '한양신명조': ['HYSinMyeongJo-Medium'], '한양견명조': ['HYMyeongJo-Extra'], '한양중고딕': ['HYGothic-Medium'], '한양견고딕': ['HYGothic-Extra'],
 };
-const HEAVY_FACE = /헤드라인|견고딕|견명조|태고딕|굵은|Black|ExtraBold|Heavy|윤고딕2[3-9]0|중고딕|그래픽/i; // 글꼴 자체가 굵은 이름
+const HEAVY_FACE = /헤드라인|견고딕|견명조|태고딕|굵은|Black|ExtraBold|Heavy|윤고딕2[4-9]0/i; // 글꼴 자체가 굵은 이름 (HY중고딕은 보통 굵기)
+/* 한글 글자 하나의 폭(em) — 공공기관 PDF 에서 잰 값. 대신 쓰는 노토 글꼴은 1em 이라, 그 글꼴이 없는 기기에서는 차이만큼 자간으로 맞춤 */
+const FACE_ADV = [[/^(함초롬바탕|HCR ?Batang)/i, 0.966], [/^(함초롬돋움|HCR ?Dotum)/i, 0.97], [/윤고딕\s*2[0-9]0|윤고딕2/, 0.9], [/윤고딕\s*1[0-9]0|윤고딕1/, 0.92]];
 const _faceOk = new Map();
 function faceInstalled(face) { // 글자 폭을 재서 그 글꼴이 PC 에 있는지 봄 (웹 글꼴 목록에 있으면 있다고 봄)
   if (!face) return false; if (_faceOk.has(face)) return _faceOk.get(face);
@@ -51,6 +55,13 @@ function faceInstalled(face) { // 글자 폭을 재서 그 글꼴이 PC 에 있�
   try { if (!ok) { const cx = document.createElement('canvas').getContext('2d'); const t = 'mmmWWiil가나다라1234'; const names = [face].concat(FACE_ALIAS[face] || []);
     for (const base of ['monospace', 'serif']) { cx.font = `40px ${base}`; const w0 = cx.measureText(t).width; for (const n of names) { cx.font = `40px ${cssStr(n)}, ${base}`; if (Math.abs(cx.measureText(t).width - w0) > 0.5) { ok = true; break; } } if (ok) break; } } } catch (e) { }
   _faceOk.set(face, ok); return ok;
+}
+/* 글꼴 모음(font-family 값)에서 실제로 쓰이는 빈칸 폭(em). 웹 글꼴이 아직 안 왔으면 그때 글꼴 기준 — 다 오면 ui.js 가 다시 계산 */
+const _spw = new Map();
+function spaceWidth(fam) {
+  if (_spw.has(fam)) return _spw.get(fam);
+  let v = null; try { const cx = (spaceWidth.cv || (spaceWidth.cv = document.createElement('canvas'))).getContext('2d'); cx.font = `100px ${fam}`; v = cx.measureText(' ').width / 100; if (!(v > 0.05 && v < 1)) v = null; } catch (e) { }
+  _spw.set(fam, v); return v;
 }
 function fontStack(faces) {
   faces = faces.filter(Boolean);
@@ -120,6 +131,7 @@ class HwpHeader {
     r.ratio = xint(xkid(e, 'ratio'), 'hangul', 100); r.spacing = xint(xkid(e, 'spacing'), 'hangul', 0); r.relSz = xint(xkid(e, 'relSz'), 'hangul', 100);
     r.offset = xint(xkid(e, 'offset'), 'hangul', 0);
     r.bold = !!xkid(e, 'bold'); r.italic = !!xkid(e, 'italic');
+    r.fontSpace = !!e && e.getAttribute('useFontSpace') === '1';
     const u = xkid(e, 'underline'); r.underline = u && u.getAttribute('type') !== 'NONE' ? u.getAttribute('type') : ''; r.ulColor = u && u.getAttribute('color');
     const s = xkid(e, 'strikeout'); const ss = s && s.getAttribute('shape'); r.strike = !!ss && !/^(NONE|3D)$/i.test(ss); // 한글은 취소선이 없을 때 shape="3D" 로 저장
     r.sup = !!xkid(e, 'supscript'); r.sub = !!xkid(e, 'subscript');
@@ -129,15 +141,19 @@ class HwpHeader {
   }
   cpCss(id) {
     const c = this.cp(id), sz = c.height / 100 * c.relSz / 100 * (c.sup || c.sub ? 0.68 : 1);
-    let s = `font-size:${+sz.toFixed(2)}pt;font-family:${fontStack([c.faceL, c.faceH])};color:${hexColor(c.color) || '#000'};`;
+    const fam = fontStack([c.faceL, c.faceH]);
+    let s = `font-size:${+sz.toFixed(2)}pt;font-family:${fam};color:${hexColor(c.color) || '#000'};`;
     s += `font-weight:${c.bold ? 700 : 400};font-style:${c.italic ? 'italic' : 'normal'};`;
     const dec = []; if (c.underline === 'BOTTOM') dec.push('underline'); if (c.underline === 'TOP') dec.push('overline'); if (c.strike || c.underline === 'CENTER') dec.push('line-through');
     s += `text-decoration:${dec.length ? dec.join(' ') : 'none'};`;
     if (c.underline && hexColor(c.ulColor) && c.ulColor !== '#000000') s += `text-decoration-color:${c.ulColor};`;
     s += `background-color:${hexColor(c.shade) && c.shade.toUpperCase() !== '#FFFFFF' ? c.shade : 'transparent'};`;
     // 자간(%) + 장평: 웹 글꼴은 장평을 못 바꾸므로 글자 폭 차이만큼 자간으로 메워 줄바꿈 위치를 한글과 맞춤
-    const ls = c.spacing / 100 + (c.ratio !== 100 ? (Math.max(50, Math.min(200, c.ratio)) - 100) / 100 * 0.8 : 0);
+    const adv = (FACE_ADV.find(([re]) => re.test(c.faceH || '')) || [0, 1])[1];
+    const ls = c.spacing / 100 + (c.ratio !== 100 ? (Math.max(50, Math.min(200, c.ratio)) - 100) / 100 : 0) + (adv !== 1 && !faceInstalled(c.faceH) ? adv - 1 : 0);
     s += `letter-spacing:${ls ? ls.toFixed(3) + 'em' : 'normal'};`;
+    // 빈칸: 한글은 '글꼴에 어울리는 빈칸'을 끄면(기본) 빈칸을 글자 폭의 절반(0.5em)으로 둠 — 대신 쓰는 글꼴의 빈칸(보통 0.25em)과 차이만큼 메움
+    if (!c.fontSpace) { const sw = spaceWidth(fam); if (sw != null) s += `word-spacing:calc(var(--hsp, 0.5em) - ${sw.toFixed(3)}em);`; }
     s += `vertical-align:${c.sup ? 'super' : c.sub ? 'sub' : c.offset ? (-c.offset / 100).toFixed(2) + 'em' : 'baseline'};`;
     if (c.ratio !== 100) s += `font-stretch:${Math.max(50, Math.min(200, c.ratio))}%;`;
     // HY헤드라인M 같은 굵은 글꼴이 이 기기에 없으면 대체 글꼴을 진하게 (제목이 가늘게 보이지 않게)
@@ -160,8 +176,10 @@ class HwpHeader {
       intent: mv('intent'), left: mv('left'), right: mv('right'), prev: mv('prev'), next: mv('next'),
       lsType: ls ? ls.getAttribute('type') || 'PERCENT' : 'PERCENT', ls: ls ? xint(ls, 'value', 160) : 160,
       heading: hd ? hd.getAttribute('type') || 'NONE' : 'NONE', headId: xint(hd, 'idRef', 0), level: xint(hd, 'level', 0),
+      breakHangul: br && br.getAttribute('breakNonLatinWord') === 'BREAK_WORD', breakLatin: br && br.getAttribute('breakLatinWord') === 'BREAK_WORD',
       pageBreakBefore: br && br.getAttribute('pageBreakBefore') === '1', keepWithNext: br && br.getAttribute('keepWithNext') === '1',
       bf: bd ? bd.getAttribute('borderFillIDRef') : null,
+      condense: xint(e, 'condense', 0),
     };
   }
   ppCss(id) {
@@ -175,6 +193,11 @@ class HwpHeader {
     else if (p.lsType === 'BETWEEN_LINES') s += `line-height:calc(1.2em + ${(p.ls / HU).toFixed(2)}px);`;
     else if (p.lsType === 'AT_LEAST') s += `line-height:max(1.2em, ${(p.ls / HU).toFixed(2)}px);`;
     else s += `line-height:${Math.max(0.5, p.ls / 100).toFixed(3)};`;
+    s += `--lsx:${p.lsType === 'PERCENT' ? (Math.max(0, p.ls - 100) / 100).toFixed(3) + 'em' : '0px'};`; // 줄 간격으로 늘어난 몫 (한글은 줄 아래에만 둠)
+    // 공백 최소값(condense %): 한글은 줄 끝 낱말이 안 들어가면 빈칸을 그만큼 줄여 넣음 = 줄어든 빈칸으로 줄을 나눈 뒤 양쪽 정렬로 다시 벌림
+    // 줄 나눔 기준: 한글 '글자' 단위면 낱말 중간에서도 나눔 (기본 '어절' 단위는 keep-all)
+    s += `word-break:${p.breakHangul ? 'normal' : 'keep-all'};`; // 영어 낱말 나눔(breakLatinWord)만 켜진 문단에서 한글까지 쪼개지 않게 — CSS 는 둘을 따로 못 정하므로 한글 기준
+    s += `--hsp:${p.condense > 0 ? (0.5 * (1 - Math.min(75, p.condense) / 100)).toFixed(3) : 0.5}em;`; // 안쪽 표 칸 문단이 바깥 값을 물려받지 않게 늘 적음
     if (p.bf && p.bf !== '0') { const b = this.bfCss(p.bf, false); if (b) s += b; }
     return s;
   }
@@ -369,7 +392,17 @@ class HwpxDoc {
     const frag = document.createDocumentFragment();
     this.sections.forEach((s, si) => {
       const box = document.createElement('div'); box.className = 'hsec'; box.dataset.s = si;
-      for (const p of xkids(s.doc.documentElement, 'p')) box.appendChild(this.paraHtml(p));
+      // 한글이 저장한 줄 위치(lineseg vertpos)로 '한글에서 새 쪽이 시작된 문단'을 표시 → 쪽 나누기가 한글과 같게 (edit.js layout)
+      let prevEnd = null;
+      for (const p of xkids(s.doc.documentElement, 'p')) {
+        const d = this.paraHtml(p); box.appendChild(d);
+        const segs = xkids(xkid(p, 'linesegarray'), 'lineseg'); if (!segs.length) { prevEnd = null; continue; }
+        const first = xint(segs[0], 'vertpos', 0), last = xint(segs[segs.length - 1], 'vertpos', 0);
+        if (prevEnd != null && first < prevEnd) d.dataset.hpg = '1';
+        let inner = 0; for (let k = 1; k < segs.length; k++) if (xint(segs[k], 'vertpos', 0) < xint(segs[k - 1], 'vertpos', 0)) inner++;
+        if (inner) d.dataset.hpgi = inner; // 문단 안에서 쪽이 넘어간 횟수
+        prevEnd = last;
+      }
       if (!box.firstChild) box.appendChild(this.newParaHtml('0', '0', '0'));
       frag.appendChild(box);
     });
@@ -447,23 +480,174 @@ class HwpxDoc {
     const w = xint(szEl, 'width', 0), h = xint(szEl, 'height', 0);
     if (n === 'pic') {
       s.classList.add('obj', 'pic');
-      const img = xdesc(el, 'img')[0]; const url = img ? this.binUrl(img.getAttribute('binaryItemIDRef')) : '';
-      if (url) { const im = document.createElement('img'); im.src = url; im.alt = ''; im.draggable = false; s.appendChild(im); }
+      this.picImg(el, s);
       if (w) s.style.width = (w / HU).toFixed(1) + 'px'; if (h) s.style.height = (h / HU).toFixed(1) + 'px';
+      const ls = this.lineOf(el); if (ls) s.style.outline = `${ls.w}px ${ls.st} ${ls.c}`;
+      this.floatize(s, el, w, h);
       return s;
     }
     if (n === 'equation') {
       s.classList.add('obj', 'eq'); const sc = xkid(el, 'script'); s.textContent = sc ? sc.textContent : '수식'; s.title = '수식 (한글에서 편집)'; return s;
     }
     if (n === 'switch') { const def = xkid(el, 'default') || xkid(el, 'case'); const inner = def && def.firstElementChild; if (inner) { const v = this.islandHtml(inner, cp, false); this.islands.pop(); v.dataset.i = i; return v; } s.classList.add('hid'); return s; }
-    // 그리기 개체·묶음·OLE·차트 등: 크기만큼 자리를 잡고 안에 그림/글이 있으면 보여 줌
+    // 그리기 개체(사각형·글상자·타원·선·다각형·곡선·호·묶음·글맵시): 한글과 같은 모양으로 그림. 안의 글은 보기 전용, 저장은 원본 XML 그대로
     s.classList.add('obj', 'draw');
     if (w) s.style.width = (w / HU).toFixed(1) + 'px'; if (h) s.style.height = (h / HU).toFixed(1) + 'px';
-    const img = xdesc(el, 'img')[0]; const url = img ? this.binUrl(img.getAttribute('binaryItemIDRef')) : '';
-    if (url) { const im = document.createElement('img'); im.src = url; im.alt = ''; im.draggable = false; s.appendChild(im); }
-    else { const tx = xdesc(el, 't').map(t => t.textContent).join(' ').trim(); s.textContent = tx || ({ container: '묶음 개체', rect: '사각형', ellipse: '타원', line: '선', ole: 'OLE 개체', chart: '차트', textart: '글맵시', polygon: '다각형', curve: '곡선', arc: '호' }[n] || '개체'); }
-    s.title = '그리기 개체 — 원본 그대로 저장됩니다 (한글에서 편집)';
+    const box = this.shapeEl(el, w, h);
+    if (box) { s.classList.add('shp'); box.style.left = '0'; box.style.top = '0'; s.appendChild(box); }
+    else { const tx = xdesc(el, 't').map(t => t.textContent).join(' ').trim(); s.textContent = tx || ({ ole: 'OLE 개체', chart: '차트' }[n] || '개체'); }
+    s.title = '그리기 개체 — 원본 그대로 저장됩니다 (모양·글은 한글에서 고침)';
+    this.floatize(s, el, w, h);
     return s;
+  }
+  /* 그림 넣기: 한글에서 자른 그림(imgClip)은 잘린 부분만 보이게 */
+  picImg(el, host) {
+    const im = xdesc(el, 'img')[0]; const u = im && this.binUrl(im.getAttribute('binaryItemIDRef')); if (!u) return;
+    const i = document.createElement('img'); i.src = u; i.alt = ''; i.draggable = false;
+    const clip = xkid(el, 'imgClip'), dim = xkid(el, 'imgDim');
+    const dw = xint(dim, 'dimwidth', 0), dh = xint(dim, 'dimheight', 0), L = xint(clip, 'left', 0), R = xint(clip, 'right', dw), T = xint(clip, 'top', 0), B = xint(clip, 'bottom', dh);
+    if (clip && dw > 0 && dh > 0 && R > L && B > T && (L > 0 || T > 0 || R < dw || B < dh)) {
+      host.style.overflow = 'hidden';
+      i.style.cssText = `position:absolute;display:block;max-width:none;width:${(dw / (R - L) * 100).toFixed(3)}%;height:${(dh / (B - T) * 100).toFixed(3)}%;left:${(-L / (R - L) * 100).toFixed(3)}%;top:${(-T / (B - T) * 100).toFixed(3)}%`;
+      i.classList.add('clip');
+    }
+    host.appendChild(i);
+  }
+  /* ---------- 그리기 개체 ---------- */
+  lineOf(el) { // hp:lineShape → {w(px), st, c} (선 없음이면 null)
+    const l = xkid(el, 'lineShape'); if (!l) return null;
+    const st = l.getAttribute('style') || 'SOLID'; if (st === 'NONE') return null;
+    const wu = xint(l, 'width', 33);
+    return { w: Math.max(0.75, wu / HU), st: /DOT|CIRCLE/.test(st) ? 'dotted' : /DASH/.test(st) ? 'dashed' : /DOUBLE/.test(st) ? 'double' : 'solid', c: hexColor(l.getAttribute('color')) || '#000', dash: /DOT|CIRCLE/.test(st) ? '1 2' : /DASH/.test(st) ? '4 3' : '', alpha: xint(l, 'alpha', 0) };
+  }
+  fillOf(el) { // hc:fillBrush → CSS background (없으면 '')
+    const fb = xkid(el, 'fillBrush'); if (!fb) return '';
+    const g = xkid(fb, 'gradation'), wb = xkid(fb, 'winBrush'), ib = xkid(fb, 'imgBrush');
+    if (g) { const cs = xkids(g, 'color').map(c => hexColor(c.getAttribute('value'))).filter(Boolean); if (cs.length > 1) return (g.getAttribute('type') === 'RADIAL' || g.getAttribute('type') === 'SQUARE' || g.getAttribute('type') === 'CONICAL' ? `radial-gradient(${cs.join(',')})` : `linear-gradient(${xint(g, 'angle', 0) + 90}deg,${cs.join(',')})`); }
+    if (ib) { const im = xdesc(ib, 'img')[0]; const u = im && this.binUrl(im.getAttribute('binaryItemIDRef')); if (u) return `center / 100% 100% no-repeat url("${u}")`; }
+    if (wb) { const c = hexColor(wb.getAttribute('faceColor')); if (c) { const a = xint(wb, 'alpha', 0); return a ? `rgba(${parseInt(c.slice(1, 3), 16)},${parseInt(c.slice(3, 5), 16)},${parseInt(c.slice(5, 7), 16)},${(1 - a / 255).toFixed(3)})` : c; } }
+    return '';
+  }
+  shapeEl(el, w, h) {
+    const n = el.localName, W = w / HU, H = h / HU;
+    const org = xkid(el, 'orgSz'), ow = xint(org, 'width', w) || w || 1, oh = xint(org, 'height', h) || h || 1;
+    const kx = W / (ow / HU || 1), ky = H / (oh / HU || 1); // 원래 크기 → 지금 크기
+    const P = e => e ? [xint(e, 'x', 0) / HU * kx, xint(e, 'y', 0) / HU * ky] : null;
+    const box = document.createElement('div'); box.className = 'shape'; box.style.width = W + 'px'; box.style.height = H + 'px';
+    const ls = this.lineOf(el), fill = this.fillOf(el);
+    const rot = xkid(el, 'rotationInfo'), ang = xint(rot, 'angle', 0), flip = xkid(el, 'flip');
+    const tf = []; if (ang) tf.push(`rotate(${ang}deg)`); if (flip && flip.getAttribute('horizontal') === '1') tf.push('scaleX(-1)'); if (flip && flip.getAttribute('vertical') === '1') tf.push('scaleY(-1)');
+    if (tf.length) box.style.transform = tf.join(' ');
+    const sh = xkid(el, 'shadow'); if (sh && sh.getAttribute('type') && sh.getAttribute('type') !== 'NONE') box.style.boxShadow = `${(xint(sh, 'offsetX', 0) / HU).toFixed(1)}px ${(xint(sh, 'offsetY', 0) / HU).toFixed(1)}px 0 ${hexColor(sh.getAttribute('color')) || '#b2b2b2'}`;
+    const svg = (inner) => { box.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;position:absolute;left:0;top:0">${inner}</svg>`; };
+    const stroke = ls ? `stroke="${ls.c}" stroke-width="${ls.w}"${ls.dash ? ` stroke-dasharray="${ls.dash}"` : ''}` : 'stroke="none"';
+    const fillA = fill && /^#|^rgba/.test(fill) ? fill : 'none';
+    if (n === 'rect' || n === 'ellipse' || n === 'textart') {
+      if (ls) box.style.border = `${ls.w}px ${ls.st} ${ls.c}`;
+      if (fill) box.style.background = fill;
+      if (n === 'ellipse') box.style.borderRadius = '50%';
+      else { const r = +(el.getAttribute('ratio') || 0); if (r) box.style.borderRadius = (Math.min(W, H) * r / 200).toFixed(1) + 'px'; }
+      if (n === 'textart') { const t = xkid(el, 'textart') || el; box.textContent = el.getAttribute('text') || xdesc(el, 'textart').map(x => x.getAttribute('text')).join('') || ''; box.classList.add('tart'); box.style.fontSize = Math.max(8, H * 0.7) + 'px'; }
+    } else if (n === 'line' || n === 'connectLine') {
+      const a = P(xkid(el, 'startPt')) || [0, 0], b = P(xkid(el, 'endPt')) || [W, H];
+      const arrow = l => { const x = xkid(el, 'lineShape'); return x && x.getAttribute(l) && !/NORMAL/.test(x.getAttribute(l)); };
+      const mk = ls ? `<defs><marker id="m${this.islands.length}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="${ls.c}"/></marker></defs>` : '';
+      const mid = `url(#m${this.islands.length})`;
+      svg(`${mk}<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" ${ls ? stroke : 'stroke="#000" stroke-width="0.75"'}${ls && arrow('tailStyle') ? ` marker-end="${mid}"` : ''}${ls && arrow('headStyle') ? ` marker-start="${mid}"` : ''}/>`);
+    } else if (n === 'polygon') {
+      const pts = xkids(el, 'pt').map(P).filter(Boolean); svg(`<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${fillA}" ${stroke}/>`);
+    } else if (n === 'curve') {
+      const segs = xkids(el, 'seg'); let d = '';
+      segs.forEach((g, i) => { const x1 = xint(g, 'x1', 0) / HU * kx, y1 = xint(g, 'y1', 0) / HU * ky, x2 = xint(g, 'x2', 0) / HU * kx, y2 = xint(g, 'y2', 0) / HU * ky; if (!i) d += `M${x1},${y1}`; d += `L${x2},${y2}`; });
+      svg(`<path d="${d}" fill="${fillA}" ${stroke}/>`);
+    } else if (n === 'arc') {
+      const c = P(xkid(el, 'center')) || [0, H], a1 = P(xkid(el, 'ax1')) || [W, H], a2 = P(xkid(el, 'ax2')) || [0, 0];
+      const rx = Math.abs(a1[0] - c[0]) || W, ry = Math.abs(a2[1] - c[1]) || H;
+      svg(`<path d="M${a1[0]},${a1[1]} A${rx},${ry} 0 0 0 ${a2[0]},${a2[1]}${el.getAttribute('type') === 'PIE' ? ` L${c[0]},${c[1]}Z` : ''}" fill="${el.getAttribute('type') === 'NORMAL' ? 'none' : fillA}" ${stroke}/>`);
+    } else if (n === 'pic') {
+      this.picImg(el, box); const i = box.querySelector('img'); if (i && !i.classList.contains('clip')) i.style.cssText = 'width:100%;height:100%;display:block;object-fit:fill';
+      if (ls) box.style.outline = `${ls.w}px ${ls.st} ${ls.c}`;
+    } else if (n === 'container') {
+      box.style.overflow = 'visible';
+      for (const c of xkids(el)) {
+        if (!HWP_SHAPES.has(c.localName)) continue;
+        const cs = xkid(c, 'curSz') || xkid(c, 'sz'); const cw = xint(cs, 'width', 0), ch = xint(cs, 'height', 0);
+        const off = xkid(c, 'offset'); const x = u32(xint(off, 'x', 0)) / HU, y = u32(xint(off, 'y', 0)) / HU;
+        const k = this.shapeEl(c, cw, ch); if (!k) continue; k.style.left = x + 'px'; k.style.top = y + 'px'; box.appendChild(k);
+      }
+    } else return null;
+    const dt = xkid(el, 'drawText'); if (dt) box.appendChild(this.roText(dt));
+    return box;
+  }
+  /* 글상자 안의 글: 보기 전용 (편집 대상 문단이 아님 — 저장 때는 원본 XML 그대로) */
+  roText(dt) {
+    const sub = xkid(dt, 'subList'); const tm = xkid(dt, 'textMargin');
+    const d = document.createElement('div'); d.className = 'stext';
+    const va = sub && sub.getAttribute('vertAlign');
+    d.style.justifyContent = va === 'CENTER' ? 'center' : va === 'BOTTOM' ? 'flex-end' : 'flex-start';
+    d.style.padding = ['top', 'right', 'bottom', 'left'].map(k => (xint(tm, k, 283) / HU).toFixed(1) + 'px').join(' ');
+    for (const p of xkids(sub, 'p')) d.appendChild(this.roPara(p));
+    return d;
+  }
+  roPara(p) {
+    const d = document.createElement('div'); const pp = p.getAttribute('paraPrIDRef') || '0';
+    d.className = 'hro pp-' + pp; let any = false;
+    for (const run of xkids(p, 'run')) {
+      const cp = run.getAttribute('charPrIDRef') || '0';
+      for (const c of xkids(run)) {
+        const n = c.localName;
+        if (n === 't') {
+          for (let x = c.firstChild; x; x = x.nextSibling) {
+            if (x.nodeType === 3) { const s = document.createElement('span'); s.className = 'cp-' + cp; s.textContent = x.nodeValue; d.appendChild(s); any = true; }
+            else if (x.localName === 'lineBreak') d.appendChild(document.createElement('br'));
+            else if (x.localName === 'tab') { const s = document.createElement('span'); s.className = 'cp-' + cp + ' rtab'; s.style.width = Math.max(10, xint(x, 'width', 3000) / HU).toFixed(1) + 'px'; d.appendChild(s); }
+            else if (/Space/.test(x.localName)) { const s = document.createElement('span'); s.className = 'cp-' + cp; s.textContent = ' '; d.appendChild(s); }
+          }
+        } else if (n === 'tbl') { d.appendChild(this.roTable(c)); any = true; }
+        else if (HWP_SHAPES.has(n)) {
+          const cs = xkid(c, 'sz') || xkid(c, 'curSz'); const k = this.shapeEl(c, xint(cs, 'width', 0), xint(cs, 'height', 0));
+          if (k) {
+            const w = document.createElement('span'); w.className = 'rshp'; w.style.width = k.style.width; w.style.height = k.style.height; k.style.left = '0'; k.style.top = '0'; w.appendChild(k); d.appendChild(w); any = true;
+            const pos = xkid(c, 'pos'); // 글자처럼 취급 안 함 + 쪽/종이 기준 → 머리말·꼬리말에서 쪽 위 제자리에 (hfFill)
+            if (pos && pos.getAttribute('treatAsChar') !== '1') Object.assign(w.dataset, { vrel: pos.getAttribute('vertRelTo') || 'PARA', hrel: pos.getAttribute('horzRelTo') || 'PARA', va: pos.getAttribute('vertAlign') || 'TOP', ha: pos.getAttribute('horzAlign') || 'LEFT', vo: (u32(xint(pos, 'vertOffset', 0)) / HU).toFixed(1), ho: (u32(xint(pos, 'horzOffset', 0)) / HU).toFixed(1), wrap: c.getAttribute('textWrap') || '' });
+          }
+        }
+        else if (n === 'ctrl') { const a = c.firstElementChild; if (a && a.localName === 'autoNum') { const f = xkid(a, 'autoNumFormat'); const sp = document.createElement('span'); sp.className = 'cp-' + cp + ' ranum'; Object.assign(sp.dataset, { ant: a.getAttribute('numType') || 'PAGE', fmt: f ? f.getAttribute('type') || 'DIGIT' : 'DIGIT', pre: f ? f.getAttribute('prefixChar') || '' : '', suf: f ? f.getAttribute('suffixChar') || '' : '' }); sp.textContent = sp.dataset.pre + xint(a, 'num', 1) + sp.dataset.suf; d.appendChild(sp); any = true; } }
+      }
+    }
+    if (!any) d.appendChild(document.createElement('br'));
+    return d;
+  }
+  roTable(tbl) {
+    const t = document.createElement('table'); t.className = 'rtb'; const body = document.createElement('tbody'); t.appendChild(body);
+    const inM = xkid(tbl, 'inMargin'); let tw = 0;
+    for (const tr of xkids(tbl, 'tr')) {
+      const row = document.createElement('tr'); body.appendChild(row);
+      for (const tc of xkids(tr, 'tc')) {
+        const td = document.createElement('td'); const sp = xkid(tc, 'cellSpan'), sz = xkid(tc, 'cellSz');
+        if (xint(sp, 'colSpan', 1) > 1) td.colSpan = xint(sp, 'colSpan', 1); if (xint(sp, 'rowSpan', 1) > 1) td.rowSpan = xint(sp, 'rowSpan', 1);
+        td.style.width = (xint(sz, 'width', 0) / HU).toFixed(1) + 'px'; td.style.height = (xint(sz, 'height', 0) / HU).toFixed(1) + 'px';
+        const m = tc.getAttribute('hasMargin') === '1' ? xkid(tc, 'cellMargin') : inM; if (m) td.style.padding = ['top', 'right', 'bottom', 'left'].map(k => (xint(m, k, 141) / HU).toFixed(1) + 'px').join(' ');
+        td.className = 'bf-' + (tc.getAttribute('borderFillIDRef') || '1');
+        const sub = xkid(tc, 'subList'); const va = sub && sub.getAttribute('vertAlign'); td.style.verticalAlign = va === 'CENTER' ? 'middle' : va === 'BOTTOM' ? 'bottom' : 'top';
+        for (const p of xkids(sub, 'p')) td.appendChild(this.roPara(p));
+        row.appendChild(td);
+      }
+    }
+    const sz = xkid(tbl, 'sz'); if (sz) t.style.width = (xint(sz, 'width', 0) / HU).toFixed(1) + 'px';
+    return t;
+  }
+  /* 글자처럼 취급하지 않는 개체: 자리·배치 방식을 기록 → 쪽을 나눌 때(edit.js placeFloats) 한글처럼 놓음 */
+  floatize(s, el, w, h) {
+    const pos = xkid(el, 'pos'); if (!pos || pos.getAttribute('treatAsChar') === '1') return;
+    const d = s.dataset; s.classList.add('fl');
+    d.wrap = el.getAttribute('textWrap') || 'TOP_AND_BOTTOM';
+    d.vrel = pos.getAttribute('vertRelTo') || 'PARA'; d.hrel = pos.getAttribute('horzRelTo') || 'PARA';
+    d.va = pos.getAttribute('vertAlign') || 'TOP'; d.ha = pos.getAttribute('horzAlign') || 'LEFT';
+    d.vo = (u32(xint(pos, 'vertOffset', 0)) / HU).toFixed(1); d.ho = (u32(xint(pos, 'horzOffset', 0)) / HU).toFixed(1);
+    d.ow = (w / HU).toFixed(1); d.oh = (h / HU).toFixed(1);
+    const om = xkid(el, 'outMargin'); d.om = om ? ['top', 'right', 'bottom', 'left'].map(k => (xint(om, k, 0) / HU).toFixed(1)).join(',') : '0,0,0,0';
+    s.style.zIndex = d.wrap === 'BEHIND_TEXT' ? '-1' : d.wrap === 'IN_FRONT_OF_TEXT' ? '2' : '';
   }
   tableHtml(tbl, cp) {
     const ti = this.tables.push(tbl) - 1;
@@ -474,6 +658,8 @@ class HwpxDoc {
       const ha = pos.getAttribute('horzAlign'), ho = xint(pos, 'horzOffset', 0);
       if (ha === 'CENTER') t.classList.add('mid'); else if (ha === 'RIGHT') t.classList.add('end'); else if (ho > 0 && ho < 60000) t.style.marginLeft = (ho / HU).toFixed(1) + 'px';
     }
+    if (tbl.getAttribute('pageBreak') === 'NONE') t.dataset.nosplit = '1'; // 한글: 쪽 경계에서 나누지 않는 표
+    if (tbl.getAttribute('repeatHeader') === '1') { let n = 0; for (const tr of xkids(tbl, 'tr')) { if (xkids(tr, 'tc').length && xkids(tr, 'tc').every(tc => tc.getAttribute('header') === '1')) n++; else break; } if (n) t.dataset.hrows = n; }
     const inM = xkid(tbl, 'inMargin');
     const cells = [];
     let cols = xint(tbl, 'colCnt', 0);

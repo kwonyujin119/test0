@@ -96,6 +96,9 @@
   function askText(title, label, value, okText, desc) {
     return new Promise(res => { let v = null; dialog(escH(title), `${desc ? `<p class="dlg-desc">${desc}</p>` : ''}<div class="grid1"><label>${escH(label)}</label><input id="ak_v" value="${escH(value || '')}"></div>`, { okText: okText || '확인', onOk: q => { const t = q('#ak_v').value.trim(); if (!t) { q('#ak_v').focus(); return false; } v = t; }, onClose: () => res(v) }); });
   }
+  /* 투명 선(테두리 없는 표 칸의 안내 점선) — 한글의 [보기 → 투명 선] 과 같음. 기기에 기억 */
+  function ghostLines(on) { document.documentElement.classList.toggle('no-ghost', !on); try { localStorage.setItem('hwp:ghost', on ? '1' : '0'); } catch (e) { } toast(on ? '투명 선을 보입니다' : '투명 선을 감췄습니다 — 인쇄 모양 그대로', 1600); }
+  try { if (localStorage.getItem('hwp:ghost') === '0') document.documentElement.classList.add('no-ghost'); } catch (e) { }
   /* 고르기 창: opts [[값, 글, 주 단추?]] → 고른 값 (닫으면 null) */
   function choose(title, desc, opts) {
     return new Promise(res => { let v = null; dialog(escH(title), desc ? `<p class="dlg-desc">${desc}</p>` : '', { noEnter: true, foot: '<button class="tb" data-x="cancel">취소</button>' + opts.map(([k, t, pri], i) => `<button class="tb${pri ? ' primary' : ''}" data-ch="${i}">${escH(t)}</button>`).join(''), init: (q, close) => q('.foot').addEventListener('click', e => { const b = e.target.closest('[data-ch]'); if (!b) return; v = opts[+b.dataset.ch][0]; close(); }), onClose: () => res(v) }); });
@@ -607,7 +610,7 @@
     const items = (GUEST ? [] : [{ icon: 'filePlus', label: '새 문서', kbd: 'Alt+N', run: () => act('new') }, { icon: 'export', label: '다른 이름으로 저장', kbd: 'Alt+V', run: () => act('saveAs') }, { icon: 'folder', label: '문서 목록', run: () => act('box') }])
       .concat(GUEST ? [] : [{ icon: 'bookmark', label: 'best 문서', run: () => act('best') }, null])
       .concat(window.HwpWork ? [{ icon: 'check', label: '문서 점검', kbd: 'F8', run: () => HwpWork.openCheck() }].concat(GUEST ? [] : [{ icon: 'filePlus', label: '서식으로 새 문서', run: () => HwpWork.templateDialog() }, { icon: 'star', label: '실적 기록장', run: () => HwpWork.winsDialog() }]).concat([{ icon: 'search', label: '명령 찾기', kbd: 'Ctrl+K', run: () => HwpWork.palette() }, null]) : [])
-      .concat([{ icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
+      .concat([{ icon: 'help', label: '단축키 모음', kbd: 'F1', run: () => act('help') }, { icon: 'layout', label: document.documentElement.classList.contains('no-ghost') ? '투명 선 보이기' : '투명 선 감추기 (인쇄 모양 그대로)', run: () => ghostLines(document.documentElement.classList.contains('no-ghost')) }, { icon: dark ? 'sun' : 'moon', label: dark ? '화면을 밝게' : '화면을 어둡게', run: () => UiTheme.set(dark ? 'light' : 'dark') }]);
     popMenu(e.currentTarget, items, { alignRight: true, keyboard: viaKey(e) });
   });
 
