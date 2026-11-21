@@ -4130,6 +4130,161 @@
    "decor": "none"
   },
   {
+   "id": "br0099",
+   "bg": {
+    "color": "#15181C"
+   },
+   "transition": "fade",
+   "notes": "[0:11] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 조끼 입은 이 사람들, 다음 훈련에 또 오고 싶을까요?",
+   "decor": "none",
+   "noFooter": true,
+   "elements": [
+    {
+     "id": "dv0092",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sp-ch2.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "dv0093",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "shape",
+     "x": 0,
+     "y": 690,
+     "w": 1920,
+     "h": 390,
+     "shape": "rect",
+     "fill": "#15181C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0094",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 728,
+     "w": 80,
+     "h": 3,
+     "shape": "rect",
+     "fill": "#FF6B5E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0095",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 748,
+     "w": 1300,
+     "h": 40,
+     "role": "text",
+     "html": "현장 한 장 · 제1절",
+     "style": {
+      "fontSize": 24,
+      "color": "#FF6B5E",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0096",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 796,
+     "w": 1680,
+     "h": 90,
+     "role": "heading",
+     "html": "조끼 입은 이 사람들, 다음 훈련에 또 오고 싶을까요?",
+     "style": {
+      "fontSize": 56,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "dv0097",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 912,
+     "w": 1680,
+     "h": 50,
+     "role": "text",
+     "html": "다음 장 — 동기부여의 원칙 열 가지",
+     "style": {
+      "fontSize": 30,
+      "color": "#D9DCE0",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0098",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1500,
+     "y": 1030,
+     "w": 380,
+     "h": 30,
+     "role": "text",
+     "html": "교육용 생성 이미지",
+     "style": {
+      "fontSize": 20,
+      "color": "#B9BEC5",
+      "bold": false,
+      "lineHeight": 1.3,
+      "align": "right"
+     }
+    }
+   ]
+  },
+  {
    "id": "ed07",
    "bg": {
     "color": "#FAFAF7"
@@ -5577,7 +5732,7 @@
      "w": 1680,
      "h": 44,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;다음 해 계획은 11~12월에 세운다. 이유는 예산 지원과 부서 간 협조",
+     "html": "<b style=\"color:#0F6E6E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;다음 해 계획은 11~12월에 세운다. 이유는 예산 지원과 부서 간 협조",
      "style": {
       "fontSize": 28,
       "color": "#15181C",
@@ -5918,7 +6073,7 @@
      "w": 900,
      "h": 52,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">질문</b>&nbsp;&nbsp;&nbsp;실시원칙 7개, 첫 글자로",
+     "html": "<b style=\"color:#0F6E6E\">질문</b>&nbsp;&nbsp;&nbsp;실시원칙 7개, 첫 글자로",
      "style": {
       "fontSize": 28,
       "color": "#15181C",
@@ -6632,7 +6787,7 @@
      "w": 268,
      "h": 20,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -6655,7 +6810,7 @@
      "w": 268,
      "h": 56,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -6723,7 +6878,7 @@
      "html": "실습",
      "style": {
       "fontSize": 24,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true
      }
     },
@@ -7382,7 +7537,7 @@
      "w": 268,
      "h": 20,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -7405,7 +7560,7 @@
      "w": 268,
      "h": 56,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -7473,7 +7628,7 @@
      "html": "실습",
      "style": {
       "fontSize": 24,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true
      }
     },
@@ -7532,7 +7687,7 @@
      "w": 268,
      "h": 20,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -7555,7 +7710,7 @@
      "w": 268,
      "h": 56,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -7623,7 +7778,7 @@
      "html": "실습",
      "style": {
       "fontSize": 24,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true
      }
     },
@@ -7831,7 +7986,7 @@
      "w": 24,
      "h": 24,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -8629,7 +8784,7 @@
      "w": 310,
      "h": 150,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -8656,7 +8811,7 @@
      "w": 24,
      "h": 40,
      "shape": "chevron",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -9156,6 +9311,161 @@
    "decor": "none"
   },
   {
+   "id": "br0107",
+   "bg": {
+    "color": "#15181C"
+   },
+   "transition": "fade",
+   "notes": "[0:25] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 소방대가 도착하는 이 장면, 시나리오 몇 번째 줄입니까?",
+   "decor": "none",
+   "noFooter": true,
+   "elements": [
+    {
+     "id": "dv0100",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/ed-joint.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "dv0101",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.78,
+     "type": "shape",
+     "x": 0,
+     "y": 690,
+     "w": 1920,
+     "h": 390,
+     "shape": "rect",
+     "fill": "#15181C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0102",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 728,
+     "w": 80,
+     "h": 3,
+     "shape": "rect",
+     "fill": "#4FC1B6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0103",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 748,
+     "w": 1300,
+     "h": 40,
+     "role": "text",
+     "html": "현장 한 장 · 제2절",
+     "style": {
+      "fontSize": 24,
+      "color": "#4FC1B6",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0104",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 796,
+     "w": 1680,
+     "h": 90,
+     "role": "heading",
+     "html": "소방대가 도착하는 이 장면, 시나리오 몇 번째 줄입니까?",
+     "style": {
+      "fontSize": 56,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "dv0105",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 912,
+     "w": 1680,
+     "h": 50,
+     "role": "text",
+     "html": "다음 장 — 50분 수업을 분 단위로 나눕니다.",
+     "style": {
+      "fontSize": 30,
+      "color": "#D9DCE0",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0106",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1500,
+     "y": 1030,
+     "w": 380,
+     "h": 30,
+     "role": "text",
+     "html": "교육용 생성 이미지",
+     "style": {
+      "fontSize": 20,
+      "color": "#B9BEC5",
+      "bold": false,
+      "lineHeight": 1.3,
+      "align": "right"
+     }
+    }
+   ]
+  },
+  {
    "id": "ed14",
    "bg": {
     "color": "#FAFAF7"
@@ -9197,7 +9507,7 @@
      "w": 1680,
      "h": 44,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;50분 배분은 교재의 교안 예시(법정 기준 아님). 강의 25 = 안내 5 + 설명 20, 실습 25 = 실습 23 + 마무리 2",
+     "html": "<b style=\"color:#0F6E6E\">시험 포인트</b>&nbsp;&nbsp;&nbsp;50분 배분은 교재의 교안 예시(법정 기준 아님). 강의 25 = 안내 5 + 설명 20, 실습 25 = 실습 23 + 마무리 2",
      "style": {
       "fontSize": 28,
       "color": "#15181C",
@@ -9804,7 +10114,7 @@
      "w": 768,
      "h": 90,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -9872,7 +10182,7 @@
      "html": "담당: 훈련반",
      "style": {
       "fontSize": 28,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true,
       "lineHeight": 1.25
      }
@@ -10110,7 +10420,7 @@
      "w": 316,
      "h": 10,
      "shape": "rect",
-     "fill": "#B3261E",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -10136,7 +10446,7 @@
      "html": "(1)",
      "style": {
       "fontSize": 26,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true
      }
     },
@@ -10176,7 +10486,7 @@
      "html": "구조원리·사용방법 실습",
      "style": {
       "fontSize": 24,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true
      }
     },
@@ -11210,7 +11520,7 @@
       },
       "8,6": {
        "fill": "#F1EFEA",
-       "color": "#B3261E"
+       "color": "#0F6E6E"
       },
       "0,1": {
        "align": "left"
@@ -11434,7 +11744,7 @@
      "w": 820,
      "h": 44,
      "role": "text",
-     "html": "결과작성&nbsp;&nbsp;&nbsp;<b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;13호는 자위소방대, 28호는 소방훈련·교육",
+     "html": "결과작성&nbsp;&nbsp;&nbsp;<b style=\"color:#0F6E6E\">함정</b>&nbsp;&nbsp;13호는 자위소방대, 28호는 소방훈련·교육",
      "style": {
       "fontSize": 26,
       "color": "#15181C",
@@ -11771,7 +12081,7 @@
      "html": "28",
      "style": {
       "fontSize": 170,
-      "color": "#B3261E",
+      "color": "#0F6E6E",
       "bold": true,
       "lineHeight": 1,
       "font": "blackhan"
@@ -12077,7 +12387,7 @@
   {
    "id": "ed_pb101",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 1번] 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이. 다음 문항부터는 진행 방식을 돌려 가며 씁니다.\n정답 ③ 경험의 원칙\n풀이: 경험의 원칙 — 경험했던 사례를 들어 현실감 있게.\n함정: 「현실」과 헷갈리게 만든 보기 — 「사례」가 나오면 경험\n근거: 교재 제8편 제1장 학습평가 Q1\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -12094,7 +12404,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12117,7 +12427,7 @@
      "w": 240,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12143,7 +12453,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -12162,7 +12472,7 @@
      "html": "1 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -12182,7 +12492,7 @@
      "html": "1.&nbsp;&nbsp;소방교육 및 훈련의 실시원칙 중 「경험을 했던 사례를 들어 현실감 있게 한다」에 해당하는 것은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -12204,7 +12514,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;학습자 중심의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12220,7 +12530,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12246,7 +12556,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;현실의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12262,7 +12572,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12288,7 +12598,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;경험의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12304,7 +12614,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12330,7 +12640,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;목적의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12346,7 +12656,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12369,7 +12679,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12392,7 +12702,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12415,7 +12725,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12438,7 +12748,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12461,7 +12771,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12487,7 +12797,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;경험의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -12507,7 +12817,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -12525,7 +12835,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12548,10 +12858,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;경험의 원칙: 경험했던 사례를 들어 현실감 있게.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;<b>현실</b>과 헷갈리게 만든 보기: <b>사례</b>가 나오면 경험",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;경험의 원칙: 경험했던 사례를 들어 현실감 있게.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;<b>현실</b>과 헷갈리게 만든 보기: <b>사례</b>가 나오면 경험",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -12570,7 +12880,7 @@
      "html": "교재 제8편 제1장 학습평가 Q1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -12580,7 +12890,7 @@
   {
    "id": "ed_pb102",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 2번] 진행: O/X 손가락(정답이라 생각하는 번호를 손가락으로). 클릭 1 정답 → 클릭 2 풀이.\n정답 ① 교수자 중심의 원칙\n풀이: 실시원칙 7가지: 학습자 중심 · 동기부여 · 목적 · 현실 · 실습 · 경험 · 관련성. 중심은 「학습자」.\n함정: 중심은 언제나 학습자\n근거: 교재 제8편 제1장 학습평가 Q2\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -12597,7 +12907,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12620,7 +12930,7 @@
      "w": 480,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12646,7 +12956,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -12665,7 +12975,7 @@
      "html": "2 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -12685,7 +12995,7 @@
      "html": "2.&nbsp;&nbsp;소방교육 및 훈련의 실시원칙이 아닌 것은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -12707,7 +13017,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;교수자 중심의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12723,7 +13033,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12749,7 +13059,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;경험의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12765,7 +13075,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12791,7 +13101,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;목적의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12807,7 +13117,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12833,7 +13143,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;현실의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -12849,7 +13159,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12872,7 +13182,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12895,7 +13205,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12918,7 +13228,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12941,7 +13251,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12964,7 +13274,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -12990,7 +13300,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;교수자 중심의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -13010,7 +13320,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -13028,7 +13338,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13051,10 +13361,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;실시원칙 7가지: 학습자 중심, 동기부여, 목적, 현실, 실습, 경험, 관련성. 중심은 <b>학습자</b>.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;중심은 언제나 학습자",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;실시원칙 7가지: 학습자 중심, 동기부여, 목적, 현실, 실습, 경험, 관련성. 중심은 <b>학습자</b>.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;중심은 언제나 학습자",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -13073,7 +13383,7 @@
      "html": "교재 제8편 제1장 학습평가 Q2",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -13083,7 +13393,7 @@
   {
    "id": "ed_pb103",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 3번] 진행: 짝과 30초 의견 나누기 → 다시 손 들기. 클릭 1 정답 → 클릭 2 풀이.\n정답 ④ 동기부여의 원칙\n풀이: 동기부여의 원칙 10가지 중 (3) 시기적절하게(Just-in-Time).\n함정: Just-in-Time = 동기부여(10가지 중 하나)\n근거: 교재 제8편 제1장 제1절 02 2)\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -13100,7 +13410,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13123,7 +13433,7 @@
      "w": 720,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13149,7 +13459,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -13168,7 +13478,7 @@
      "html": "3 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -13188,7 +13498,7 @@
      "html": "3.&nbsp;&nbsp;「교육은 시기적절하게(Just-in-Time) 이루어져야 한다」는 어느 원칙의 내용인가?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -13210,7 +13520,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;실습의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13226,7 +13536,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13252,7 +13562,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;현실의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13268,7 +13578,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13294,7 +13604,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;관련성의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13310,7 +13620,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13336,7 +13646,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;동기부여의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13352,7 +13662,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13375,7 +13685,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13398,7 +13708,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13421,7 +13731,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13444,7 +13754,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13467,7 +13777,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13493,7 +13803,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;동기부여의 원칙",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -13513,7 +13823,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -13531,7 +13841,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13554,10 +13864,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;동기부여의 원칙 10가지 중 (3) 시기적절하게(Just-in-Time).<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;Just-in-Time = 동기부여(10가지 중 하나)",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;동기부여의 원칙 10가지 중 (3) 시기적절하게(Just-in-Time).<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;Just-in-Time = 동기부여(10가지 중 하나)",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -13576,7 +13886,7 @@
      "html": "교재 제8편 제1장 제1절 02 2)",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -13586,7 +13896,7 @@
   {
    "id": "ed_pb104",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 4번] 진행: 번호별 손 들기. 클릭 1 정답 → 클릭 2 풀이.\n정답 ② 교육훈련을 실시했다면 결과 평가는 생략해도 된다\n풀이: 실시만큼 결과 평가가 중요하다 — 학습자 요구를 차기 교육에 반영하는 기초. 교육 후 설문은 용이하고 정확한 방법 중 하나.\n함정: 「생략해도 된다」 ✕ — 반드시 평가\n근거: 교재 제8편 제1장 제2절 02 3) · 4)(p.378~379)\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -13603,7 +13913,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13626,7 +13936,7 @@
      "w": 960,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13652,7 +13962,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -13671,7 +13981,7 @@
      "html": "4 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -13691,7 +14001,7 @@
      "html": "4.&nbsp;&nbsp;소방교육 · 훈련의 효과 측정에 대한 설명으로 옳지 않은 것은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -13713,7 +14023,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;결과에 대한 평가활동을 반드시 실시해야 한다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13729,7 +14039,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13755,7 +14065,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;교육훈련을 실시했다면 결과 평가는 생략해도 된다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13771,7 +14081,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13797,7 +14107,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;교육이 끝난 후 설문지를 받는 것은 용이하고 정확한 방법 중 하나다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13813,7 +14123,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13839,7 +14149,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;학습자의 요구를 차기 교육에 반영하는 기초가 된다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -13855,7 +14165,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13878,7 +14188,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13901,7 +14211,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13924,7 +14234,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13947,7 +14257,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13970,7 +14280,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -13996,7 +14306,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;교육훈련을 실시했다면 결과 평가는 생략해도 된다",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -14016,7 +14326,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -14034,7 +14344,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14057,10 +14367,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;실시만큼 결과 평가가 중요하다: 학습자 요구를 차기 교육에 반영하는 기초. 교육 후 설문은 용이하고 정확한 방법 중 하나.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;<b>생략해도 된다</b> 아님: 반드시 평가",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;실시만큼 결과 평가가 중요하다: 학습자 요구를 차기 교육에 반영하는 기초. 교육 후 설문은 용이하고 정확한 방법 중 하나.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;<b>생략해도 된다</b> 아님: 반드시 평가",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -14079,7 +14389,7 @@
      "html": "교재 제8편 제1장 제2절 02 3)·4)(p.378~379)",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -14089,7 +14399,7 @@
   {
    "id": "ed_pb105",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 5번] 진행: O/X 손가락(정답이라 생각하는 번호를 손가락으로). 클릭 1 정답 → 클릭 2 풀이.\n정답 ① 11~12월경 — 예산 지원과 부서 간 업무협조가 원활해진다\n풀이: 11~12월경에 다음 연도 계획을 세우면 필요한 예산 지원과 다른 부서와의 업무협조가 원활해진다.\n함정: 「훈련 직전」 ✕ — 11~12월에 다음 해\n근거: 교재 제8편 제1장 제2절 01 2)\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -14106,7 +14416,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14129,7 +14439,7 @@
      "w": 1200,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14155,7 +14465,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -14174,7 +14484,7 @@
      "html": "5 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -14194,7 +14504,7 @@
      "html": "5.&nbsp;&nbsp;다음 연도 소방교육 및 훈련 계획을 세우는 시기와 그 이유로 가장 알맞은 것은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -14216,7 +14526,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;11~12월경 — 예산 지원과 부서 간 업무협조가 원활해진다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14232,7 +14542,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14258,7 +14568,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;1월 초 — 인사이동이 끝난 뒤라서",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14274,7 +14584,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14300,7 +14610,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;훈련 직전 — 최신 상황을 반영하기 위해",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14316,7 +14626,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14342,7 +14652,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;6월 — 상반기 결과를 반영하기 위해",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14358,7 +14668,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14381,7 +14691,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14404,7 +14714,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14427,7 +14737,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14450,7 +14760,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14473,7 +14783,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14499,7 +14809,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;11~12월경 — 예산 지원과 부서 간 업무협조가 원활해진다",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -14519,7 +14829,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -14537,7 +14847,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14560,10 +14870,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;11~12월경에 다음 연도 계획을 세우면 필요한 예산 지원과 다른 부서와의 업무협조가 원활해진다.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;<b>훈련 직전</b> 아님: 11~12월에 다음 해",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;11~12월경에 다음 연도 계획을 세우면 필요한 예산 지원과 다른 부서와의 업무협조가 원활해진다.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;<b>훈련 직전</b> 아님: 11~12월에 다음 해",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -14582,7 +14892,7 @@
      "html": "교재 제8편 제1장 제2절 01 2)",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -14592,7 +14902,7 @@
   {
    "id": "ed_pb106",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 6번] 진행: 짝과 30초 의견 나누기 → 다시 손 들기. 클릭 1 정답 → 클릭 2 풀이.\n정답 ③ 실제 상황과 다르게 단순화할수록 효과가 높다\n풀이: 시나리오는 사전계획이므로 실제상황과 근접할수록 효과가 높다.\n함정: 단순화 ✕ — 실제상황에 근접할수록 효과\n근거: 교재 제8편 제1장 제2절 01 「시나리오 작성방법」\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -14609,7 +14919,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14632,7 +14942,7 @@
      "w": 1440,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14658,7 +14968,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -14677,7 +14987,7 @@
      "html": "6 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -14697,7 +15007,7 @@
      "html": "6.&nbsp;&nbsp;훈련 시나리오 작성 방법으로 옳지 않은 것은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -14719,7 +15029,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;정상적인 업무의 지장을 최소화하는 범위에서 다양한 상황을 가정한다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14735,7 +15045,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14761,7 +15071,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;평상시 훈련된 자위소방대의 활동을 총망라한다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14777,7 +15087,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14803,7 +15113,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;실제 상황과 다르게 단순화할수록 효과가 높다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14819,7 +15129,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14845,7 +15155,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;화재신고부터 초기대응 · 피난 · 진압 · 사후복구까지 단계에 따라 작성한다",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -14861,7 +15171,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14884,7 +15194,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14907,7 +15217,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14930,7 +15240,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14953,7 +15263,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -14976,7 +15286,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15002,7 +15312,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;실제 상황과 다르게 단순화할수록 효과가 높다",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -15022,7 +15332,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -15040,7 +15350,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15063,10 +15373,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;시나리오는 사전계획이므로 실제상황과 근접할수록 효과가 높다.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;단순화 아님: 실제상황에 근접할수록 효과",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;시나리오는 사전계획이므로 실제상황과 근접할수록 효과가 높다.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;단순화 아님: 실제상황에 근접할수록 효과",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -15085,7 +15395,7 @@
      "html": "교재 제8편 제1장 제2절 01 「시나리오 작성방법」",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -15095,7 +15405,7 @@
   {
    "id": "ed_pb107",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 7번] 진행: 번호별 손 들기. 클릭 1 정답 → 클릭 2 풀이.\n정답 ② 훈련의 총괄 책임자\n풀이: 훈련의 총괄 책임자가 준비과정부터 종료시점까지 잘된 점, 개선할 점을 강평한다.\n함정: 소방서장 ✕ — 훈련의 총괄 책임자\n근거: 교재 제8편 제1장 제2절 02 4)\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -15112,7 +15422,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15135,7 +15445,7 @@
      "w": 1680,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15161,7 +15471,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -15180,7 +15490,7 @@
      "html": "7 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -15200,7 +15510,7 @@
      "html": "7.&nbsp;&nbsp;합동훈련 종료 후 훈련 전반에 관한 강평을 실시하는 사람은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -15222,7 +15532,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;참여 근무자 대표",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15238,7 +15548,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15264,7 +15574,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;훈련의 총괄 책임자",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15280,7 +15590,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15306,7 +15616,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;한국소방안전원장",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15322,7 +15632,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15348,7 +15658,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;관할 소방서장",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15364,7 +15674,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15387,7 +15697,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15410,7 +15720,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15433,7 +15743,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15456,7 +15766,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15479,7 +15789,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15505,7 +15815,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;훈련의 총괄 책임자",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -15525,7 +15835,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -15543,7 +15853,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15566,10 +15876,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;훈련의 총괄 책임자가 준비과정부터 종료시점까지 잘된 점, 개선할 점을 강평한다.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;소방서장 아님: 훈련의 총괄 책임자",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;훈련의 총괄 책임자가 준비과정부터 종료시점까지 잘된 점, 개선할 점을 강평한다.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;소방서장 아님: 훈련의 총괄 책임자",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -15588,7 +15898,7 @@
      "html": "교재 제8편 제1장 제2절 02 4)",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -15598,7 +15908,7 @@
   {
    "id": "ed_pb108",
    "bg": {
-    "color": "#FAFAF7"
+    "color": "#15181C"
    },
    "transition": "fade",
    "notes": "[문제풀이 1 · 8번] 진행: O/X 손가락(정답이라 생각하는 번호를 손가락으로). 클릭 1 정답 → 클릭 2 풀이.\n정답 ④ 화재예방법 시행규칙 별지 제28호서식\n풀이: 제28호 = 소방훈련 · 교육 실시결과 기록부, 제13호 = 자위소방대 및 초기대응체계 교육 · 훈련 실시결과 기록부.\n함정: 13호(자위소방대)와 28호(소방훈련 · 교육)를 바꾼 보기\n근거: 교재 제8편 제1장 제2절 02 5)\n많이 틀렸을 때 되묻기: \"왜 그 보기를 골랐나요?\"",
@@ -15615,7 +15925,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15638,7 +15948,7 @@
      "w": 1920,
      "h": 6,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#FF6B5E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15664,7 +15974,7 @@
      "html": "문제풀이 1",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true
      }
     },
@@ -15683,7 +15993,7 @@
      "html": "8 / 8",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168",
+      "color": "#B9BEC5",
       "bold": true,
       "align": "right"
      }
@@ -15703,7 +16013,7 @@
      "html": "8.&nbsp;&nbsp;「소방훈련 · 교육 실시결과 기록부」의 서식으로 옳은 것은?",
      "style": {
       "fontSize": 40,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "bold": true,
       "valign": "middle",
       "lineHeight": 1.3,
@@ -15725,7 +16035,7 @@
      "html": "①&nbsp;&nbsp;&nbsp;화재예방법 시행규칙 별지 제1호서식",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15741,7 +16051,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15767,7 +16077,7 @@
      "html": "②&nbsp;&nbsp;&nbsp;화재예방법 시행령 별표 4",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15783,7 +16093,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15809,7 +16119,7 @@
      "html": "③&nbsp;&nbsp;&nbsp;화재예방법 시행규칙 별지 제13호서식",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15825,7 +16135,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15851,7 +16161,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;화재예방법 시행규칙 별지 제28호서식",
      "style": {
       "fontSize": 34,
-      "color": "#15181C",
+      "color": "#FFFFFF",
       "valign": "middle"
      }
     },
@@ -15867,7 +16177,7 @@
      "w": 1680,
      "h": 1,
      "shape": "rect",
-     "fill": "#D6D3CD",
+     "fill": "#3A3F46",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15890,7 +16200,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15913,7 +16223,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15936,7 +16246,7 @@
      "w": 1680,
      "h": 102,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15959,7 +16269,7 @@
      "w": 1676,
      "h": 100,
      "shape": "rect",
-     "fill": "#FAFAF7",
+     "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -15982,7 +16292,7 @@
      "w": 8,
      "h": 70,
      "shape": "rect",
-     "fill": "#1F3A5F",
+     "fill": "#8FB4E3",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -16008,7 +16318,7 @@
      "html": "④&nbsp;&nbsp;&nbsp;화재예방법 시행규칙 별지 제28호서식",
      "style": {
       "fontSize": 34,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "valign": "middle"
      }
@@ -16028,7 +16338,7 @@
      "html": "정답",
      "style": {
       "fontSize": 28,
-      "color": "#1F3A5F",
+      "color": "#8FB4E3",
       "bold": true,
       "align": "right",
       "valign": "middle"
@@ -16046,7 +16356,7 @@
      "w": 1680,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#5B6168",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -16069,10 +16379,10 @@
      "w": 1680,
      "h": 170,
      "role": "text",
-     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;제28호 = 소방훈련, 교육 실시결과 기록부, 제13호 = 자위소방대 및 초기대응체계 교육, 훈련 실시결과 기록부.<br><b style=\"color:#B3261E\">함정</b>&nbsp;&nbsp;&nbsp;13호(자위소방대)와 28호(소방훈련·교육)를 바꾼 보기",
+     "html": "<b>풀이</b>&nbsp;&nbsp;&nbsp;제28호 = 소방훈련, 교육 실시결과 기록부, 제13호 = 자위소방대 및 초기대응체계 교육, 훈련 실시결과 기록부.<br><b style=\"color:#FF6B5E\">함정</b>&nbsp;&nbsp;&nbsp;13호(자위소방대)와 28호(소방훈련·교육)를 바꾼 보기",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
+      "color": "#D9DCE0",
       "lineHeight": 1.45
      }
     },
@@ -16091,7 +16401,7 @@
      "html": "교재 제8편 제1장 제2절 02 5)",
      "style": {
       "fontSize": 24,
-      "color": "#5B6168"
+      "color": "#B9BEC5"
      }
     }
    ],
@@ -16148,63 +16458,516 @@
      }
     },
     {
-     "id": "ed0822",
+     "id": "dv0108",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "table",
+     "type": "shape",
      "x": 120,
-     "y": 270,
-     "w": 1680,
-     "h": 594,
-     "rows": [
-      [
-       "주제",
-       "시험 포인트"
-      ],
-      [
-       "실시근거",
-       "화재예방법 제37조, 같은 법 시행규칙 제36조"
-      ],
-      [
-       "실시원칙",
-       "학습자 중심·동기부여·목적·현실·실습·경험·관련성(학·동·목·현·실·경·관)"
-      ],
-      [
-       "함정",
-       "교수자 중심의 원칙은 없음, 중심은 학습자"
-      ],
-      [
-       "계획 시기",
-       "다음 해 계획은 11~12월, 이유는 예산 지원과 부서 간 협조"
-      ],
-      [
-       "교안 예시",
-       "50분 배분(안내 5·설명 20·실습 23·마무리 2)은 교재 예시, 법정 기준 아님"
-      ],
-      [
-       "결과 기록부",
-       "13호 = 자위소방대·초기대응체계, 28호 = 소방훈련·교육"
-      ]
-     ],
-     "header": true,
-     "band": false,
-     "firstCol": true,
-     "lines": "h",
-     "headFill": "#F1EFEA",
-     "headColor": "#15181C",
-     "lineColor": "#D6D3CD",
+     "y": 280,
+     "w": 830,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#F1EFEA",
+     "stroke": "",
+     "strokeWidth": 0,
      "radius": 0,
-     "cols": [
-      0.2,
-      0.8
-     ],
+     "shadow": false,
+     "html": "",
      "style": {
       "fontSize": 28,
-      "color": "#2A2F35",
-      "align": "left",
-      "lineHeight": 1.4
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0109",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 280,
+     "w": 6,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#B3261E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0110",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 152,
+     "y": 294,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "실시근거",
+     "style": {
+      "fontSize": 26,
+      "color": "#B3261E",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0111",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 152,
+     "y": 332,
+     "w": 766,
+     "h": 170,
+     "role": "text",
+     "html": "<b style=\"color:#B3261E\">정답</b>&nbsp;&nbsp;화재예방법 제37조, 같은 법 시행규칙 제36조",
+     "style": {
+      "fontSize": 28,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0112",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 970,
+     "y": 280,
+     "w": 830,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#F1EFEA",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0113",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 970,
+     "y": 280,
+     "w": 6,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#B3261E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0114",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 294,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "실시원칙",
+     "style": {
+      "fontSize": 26,
+      "color": "#B3261E",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0115",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 332,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "<b>함정</b>&nbsp;&nbsp;<s>교수자 중심의 원칙</s>",
+     "style": {
+      "fontSize": 24,
+      "color": "#5B6168",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0116",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 368,
+     "w": 766,
+     "h": 134,
+     "role": "text",
+     "html": "<b style=\"color:#B3261E\">정답</b>&nbsp;&nbsp;학습자 중심 · 동기부여 · 목적 · 현실 · 실습 · 경험 · 관련성 (학·동·목·현·실·경·관)",
+     "style": {
+      "fontSize": 28,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0117",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 530,
+     "w": 830,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#F1EFEA",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0118",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 530,
+     "w": 6,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#0F6E6E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0119",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 152,
+     "y": 544,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "계획 시기",
+     "style": {
+      "fontSize": 26,
+      "color": "#0F6E6E",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0120",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 152,
+     "y": 582,
+     "w": 766,
+     "h": 170,
+     "role": "text",
+     "html": "<b style=\"color:#0F6E6E\">정답</b>&nbsp;&nbsp;다음 해 계획은 11~12월 — 예산 지원과 부서 간 협조 때문",
+     "style": {
+      "fontSize": 28,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0121",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 970,
+     "y": 530,
+     "w": 830,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#F1EFEA",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0122",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 970,
+     "y": 530,
+     "w": 6,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#0F6E6E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0123",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 544,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "교안 예시",
+     "style": {
+      "fontSize": 26,
+      "color": "#0F6E6E",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0124",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 582,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "<b>함정</b>&nbsp;&nbsp;<s>50분 배분 = 법정 기준</s>",
+     "style": {
+      "fontSize": 24,
+      "color": "#5B6168",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0125",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 618,
+     "w": 766,
+     "h": 134,
+     "role": "text",
+     "html": "<b style=\"color:#0F6E6E\">정답</b>&nbsp;&nbsp;안내 5 · 설명 20 · 실습 23 · 마무리 2는 교재 예시",
+     "style": {
+      "fontSize": 28,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0126",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 780,
+     "w": 830,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#F1EFEA",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0127",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 780,
+     "w": 6,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#0F6E6E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0128",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 152,
+     "y": 794,
+     "w": 766,
+     "h": 34,
+     "role": "text",
+     "html": "결과 기록부",
+     "style": {
+      "fontSize": 26,
+      "color": "#0F6E6E",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0129",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 152,
+     "y": 832,
+     "w": 766,
+     "h": 170,
+     "role": "text",
+     "html": "<b style=\"color:#0F6E6E\">정답</b>&nbsp;&nbsp;13호 = 자위소방대·초기대응체계, 28호 = 소방훈련·교육",
+     "style": {
+      "fontSize": 28,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "dv0130",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 970,
+     "y": 780,
+     "w": 830,
+     "h": 230,
+     "shape": "rect",
+     "fill": "#15181C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "dv0131",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1002,
+     "y": 800,
+     "w": 766,
+     "h": 190,
+     "role": "text",
+     "html": "<b>색 = 절</b><br><span style=\"color:#FF6B5E\">■</span> 제1절 개념·원칙<br><span style=\"color:#4FC1B6\">■</span> 제2절 계획·실시·평가<br>줄 그은 보기 = 함정",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.45
      }
     }
    ],
@@ -16640,7 +17403,7 @@
      "w": 900,
      "h": 52,
      "role": "text",
-     "html": "<b style=\"color:#B3261E\">질문</b>&nbsp;&nbsp;&nbsp;오늘 강의에 쓰인 실시원칙 3가지 찾기",
+     "html": "<b style=\"color:#FF6B5E\">질문</b>&nbsp;&nbsp;&nbsp;오늘 강의에 쓰인 실시원칙 3가지 찾기",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF",
