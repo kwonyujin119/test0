@@ -199,6 +199,8 @@ kbd { display: inline-block; padding: 0 5px; border-radius: 4px; background: var
 .stage .el.step-badge::after { content: attr(data-step); position: absolute; left: -4px; top: -4px; transform: translate(-100%, -40%); background: #f59e0b; color: #000; font-size: 22px; font-weight: 700; padding: 2px 10px; border-radius: 999px; font-family: var(--ui-font); }
 .overlay { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 5; }
 .handle { position: absolute; width: 11px; height: 11px; background: #fff; border: 1.5px solid var(--ui-accent); border-radius: 2px; pointer-events: auto; transform: translate(-50%, -50%); z-index: 6; }
+.xfer-handle { position: absolute; pointer-events: auto; z-index: 6; cursor: grab; padding: 3px 9px; border-radius: 999px; background: var(--ui-accent); color: #fff; font-size: 12px; line-height: 1.5; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.25); user-select: none; }
+.xfer-handle:active { cursor: grabbing; }
 .handle.rot { border-radius: 50%; cursor: grab; background: var(--ui-accent); border-color: #fff; }
 .handle.nw, .handle.se { cursor: nwse-resize; } .handle.ne, .handle.sw { cursor: nesw-resize; }
 .handle.n, .handle.s { cursor: ns-resize; } .handle.e, .handle.w { cursor: ew-resize; }
