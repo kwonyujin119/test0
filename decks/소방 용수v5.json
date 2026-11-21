@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-21T11:27:41.039Z",
+ "modified": "2026-11-21T11:29:09.946Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -1365,7 +1365,7 @@
     },
     {
      "id": "wz6pattta",
-     "step": 1,
+     "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -1375,7 +1375,7 @@
      "w": 1680,
      "h": 50,
      "role": "text",
-     "html": "손을 들어 답해 주십시오 — 1등? 2등? 3등?",
+     "html": "손을 들어 답해 주십시오.",
      "style": {
       "fontSize": 30,
       "color": "#6E7787",
