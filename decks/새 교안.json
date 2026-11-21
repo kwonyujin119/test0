@@ -5,48 +5,106 @@
  "slides": [
   {
    "id": "992u73df7",
-   "bg": null,
+   "bg": {},
    "transition": "",
    "notes": "",
    "elements": [
     {
-     "id": "wwn9tadf7",
+     "id": "wunecxfp5",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "text",
-     "role": "title",
-     "x": 120,
-     "y": 330,
-     "w": 1680,
-     "h": 220,
-     "html": "새 교안",
-     "style": {
-      "align": "center",
-      "valign": "middle"
-     }
+     "type": "image",
+     "x": 960,
+     "y": 635,
+     "w": 740,
+     "h": 352,
+     "src": "assets/clipboard-1795226415619-gfp1acm.jpg",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
     },
     {
-     "id": "1h4x5ddf7",
+     "id": "4ro7nnl9a",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
-     "type": "text",
-     "role": "subtitle",
-     "x": 120,
-     "y": 570,
-     "w": 1680,
-     "h": 120,
-     "html": "부제목 · 강의자 이름 · 날짜",
-     "style": {
-      "align": "center",
-      "valign": "top"
-     }
+     "type": "image",
+     "x": 58,
+     "y": 12,
+     "w": 914,
+     "h": 543,
+     "src": "assets/clipboard-1795230995208-6l997t0.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
     }
-   ]
+   ],
+   "decor": "none"
+  },
+  {
+   "id": "45mxnt1q8",
+   "bg": {},
+   "transition": "",
+   "notes": "",
+   "elements": [
+    {
+     "id": "njsstr30n",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1016,
+     "y": 640,
+     "w": 811,
+     "h": 380,
+     "src": "assets/clipboard-1795226492575-i30mi5e.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "su418ip92",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 88,
+     "y": -30,
+     "w": 1191,
+     "h": 570,
+     "src": "assets/clipboard-1795231093694-8p91ua4.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "nw1gcn2e7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 120,
+     "y": 586,
+     "w": 810,
+     "h": 453,
+     "src": "assets/clipboard-1795231204044-b2e6fu5.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
+    }
+   ],
+   "decor": "none"
   }
  ],
- "modified": "2026-11-21T01:57:52.820Z"
+ "modified": "2026-11-21T07:02:11.613Z",
+ "colors": {
+  "bg": "#ffffff"
+ },
+ "transition": "fade"
 }
