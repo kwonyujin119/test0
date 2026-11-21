@@ -1,0 +1,52 @@
+{
+ "title": "새 교안",
+ "theme": "clean",
+ "created": "2026-11-21T01:57:52.813Z",
+ "slides": [
+  {
+   "id": "992u73df7",
+   "bg": null,
+   "transition": "",
+   "notes": "",
+   "elements": [
+    {
+     "id": "wwn9tadf7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 330,
+     "w": 1680,
+     "h": 220,
+     "html": "새 교안",
+     "style": {
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "1h4x5ddf7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 570,
+     "w": 1680,
+     "h": 120,
+     "html": "부제목 · 강의자 이름 · 날짜",
+     "style": {
+      "align": "center",
+      "valign": "top"
+     }
+    }
+   ]
+  }
+ ],
+ "modified": "2026-11-21T01:57:52.820Z"
+}
