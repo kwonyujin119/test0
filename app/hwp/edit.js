@@ -126,7 +126,7 @@ function secPage(si) { return W.doc.page(si); }
 /* ---------- 변경 추적: 어느 문단이 바뀌었는지 실시간으로 기록 (저장·쪽 계산이 바뀐 곳만 다시 하도록) ---------- */
 const Track = {
   dirty: new WeakSet(), tops: new Set(), num: true, full: true, mo: null,
-  IGN: new Set(['data-num', 'data-pgs', 'data-px', 'data-pxw', 'data-fit', 'style', 'class', 'contenteditable']), // 화면 표시용 속성은 무시
+  IGN: new Set(['data-num', 'data-fm', 'data-fx', 'data-ed', 'data-pt0', 'data-split', 'data-pgs', 'data-px', 'data-pxw', 'data-fit', 'style', 'class', 'contenteditable']), // 화면 표시용 속성은 무시
   start() {
     if (this.mo) this.mo.disconnect();
     this.dirty = new WeakSet(); this.tops = new Set(); this.num = true; this.full = true;
@@ -141,7 +141,7 @@ const Track = {
     }
   },
   isTop(e) { return e.classList.contains('hp') && e.parentElement && e.parentElement.classList.contains('hsec'); },
-  up(n) { const root = docEl(); let e = n.nodeType === 1 ? n : n.parentElement; while (e && e !== root) { if (e.classList.contains('hp') || e.tagName === 'TABLE') { this.dirty.add(e); if (this.isTop(e)) this.tops.add(e); } e = e.parentElement; } },
+  up(n) { const root = docEl(); let e = n.nodeType === 1 ? n : n.parentElement; while (e && e !== root) { if (e.classList.contains('hp') || e.tagName === 'TABLE') { this.dirty.add(e); if (this.isTop(e)) { this.tops.add(e); if (!e.dataset.ed) e.dataset.ed = '1'; } } e = e.parentElement; } }, // ed: 한 번이라도 고친 문단 (그 뒤로는 한글의 쪽 나눔 위치를 따르지 않음)
   down(el) { if (el.classList.contains('hp') || el.tagName === 'TABLE') { this.dirty.add(el); if (this.isTop(el)) this.tops.add(el); } for (const x of el.querySelectorAll('.hp,table')) this.dirty.add(x); },
   flush() { if (this.mo) this.take(this.mo.takeRecords()); },
   clean(el) { return !this.dirty.has(el); },
@@ -155,6 +155,118 @@ function blockPad(b) { // 문단 위·아래 안쪽 여백+테두리 (문단 모
   const cs = getComputedStyle(b); const v = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'].reduce((a, p) => a + (parseFloat(cs[p]) || 0), 0);
   _padCache.set(k, v); return v;
 }
+/* 글자처럼 취급하지 않는 그림·그리기 개체 (hwpx.js floatize 가 자리 정보를 data- 에 남김)
+   · 글 뒤로 · 글 앞으로 · 쪽/종이 기준 → 문단 위에 겹쳐 놓음(abs)   · 자리 차지 → 그 줄을 비우고 블록으로(tb)   · 어울림 → 글이 옆으로 비켜 흐름(fl-l/fl-r) */
+function placeFloats(root, all) {
+  for (const s of root.querySelectorAll(all ? '.isl.fl' : '.isl.fl:not([data-fx])')) {
+    const d = s.dataset, host = s.closest('.hp'); if (!host) continue;
+    const td = s.closest('td'), sec = s.closest('.hsec'); const pg = secPage(sec ? +sec.dataset.s : 0);
+    const ow = +d.ow, oh = +d.oh, ho = +d.ho, vo = +d.vo; const om = (d.om || '0,0,0,0').split(',').map(Number);
+    let areaW, base;
+    if (td) { areaW = Math.max(ow, (+td.dataset.w || 0) / HU - (parseFloat(td.style.paddingLeft) || 0) - (parseFloat(td.style.paddingRight) || 0)); base = 0; }
+    else if (d.hrel === 'PAPER') { areaW = pg.w / HU; base = -(pg.left + pg.gutter) / HU; }
+    else { areaW = (pg.w - pg.left - pg.right - pg.gutter) / HU; base = 0; }
+    const x = /CENTER/.test(d.ha) ? base + (areaW - ow) / 2 + ho : /RIGHT|OUTSIDE/.test(d.ha) ? base + areaW - ow - ho : base + ho;
+    const cs = getComputedStyle(host); const padL = parseFloat(cs.paddingLeft) || 0, padR = parseFloat(cs.paddingRight) || 0;
+    const abs = /BEHIND_TEXT|IN_FRONT_OF_TEXT/.test(d.wrap) || (!td && d.vrel !== 'PARA' && d.vrel !== 'LINE');
+    const st = s.style; st.position = ''; st.left = st.top = st.marginLeft = st.marginRight = st.marginTop = st.marginBottom = ''; st.float = ''; st.display = '';
+    if (abs) {
+      d.fm = 'abs'; st.position = 'absolute'; st.left = x.toFixed(1) + 'px'; st.top = vo.toFixed(1) + 'px'; // 쪽·종이 기준이면 쪽을 나눈 뒤 placeAbs 가 다시 맞춤
+      host.classList.add('flhost'); if (d.wrap === 'BEHIND_TEXT') host.classList.add('flback'); if (d.wrap === 'IN_FRONT_OF_TEXT') host.classList.add('flfront');
+    } else if (d.wrap === 'TOP_AND_BOTTOM') {
+      d.fm = 'tb'; st.display = 'block'; st.marginLeft = Math.max(-padL, x - padL).toFixed(1) + 'px'; st.marginTop = Math.max(0, vo + om[0]).toFixed(1) + 'px'; st.marginBottom = om[2].toFixed(1) + 'px';
+    } else { // 어울림: 가까운 쪽으로 띄움
+      const left = x + ow / 2 <= base + areaW / 2;
+      d.fm = left ? 'fl-l' : 'fl-r'; st.float = left ? 'left' : 'right'; st.marginTop = Math.max(0, vo).toFixed(1) + 'px';
+      if (left) { st.marginLeft = Math.max(-padL, x - padL).toFixed(1) + 'px'; st.marginRight = Math.max(2, om[1]).toFixed(1) + 'px'; }
+      else { st.marginRight = Math.max(-padR, base + areaW - x - ow - padR).toFixed(1) + 'px'; st.marginLeft = Math.max(2, om[3]).toFixed(1) + 'px'; }
+      st.marginBottom = om[2].toFixed(1) + 'px';
+    }
+    d.fx = '1';
+  }
+}
+/* 나뉜 표의 머리 행을 다음 쪽 위에 다시 그림 (보기 전용 사본, 문서 밖 층 — 저장·편집과 무관) */
+function drawHeadRepeats() {
+  const sheet = $id('sheet'); if (!sheet) return; let lay = $id('pgOver'); if (!lay) { lay = document.createElement('div'); lay.id = 'pgOver'; sheet.appendChild(lay); }
+  const s0 = sheet.getBoundingClientRect(), z = W.zoom || 1; const frag = document.createDocumentFragment();
+  for (const t of docEl().querySelectorAll('table.htb[data-split]')) {
+    if (!t._rhd || !t._rhd.length) continue; const hr = +t.dataset.hrows || 0; if (!hr) continue;
+    const r = t.getBoundingClientRect(); const left = (r.left - s0.left) / z;
+    for (const o of t._rhd) {
+      const c = document.createElement('table'); c.className = 'htb rhd'; c.style.cssText = `left:${left}px;top:${o.y}px;width:${r.width / z}px`;
+      const cg = t.querySelector('colgroup'); if (cg) c.appendChild(cg.cloneNode(true));
+      const tb = document.createElement('tbody'); for (let k = 0; k < hr; k++) { const tr = t.rows[k].cloneNode(true); for (const e of tr.querySelectorAll('[contenteditable]')) e.removeAttribute('contenteditable'); tb.appendChild(tr); } c.appendChild(tb);
+      frag.appendChild(c);
+    }
+  }
+  lay.replaceChildren(frag);
+}
+/* 쪽·종이 기준 개체: 쪽을 나눈 뒤 그 쪽의 위치로 */
+function placeAbs() {
+  const sheet = $id('sheet'); if (!sheet) return; const s0 = sheet.getBoundingClientRect(), z = W.zoom || 1;
+  for (const s of docEl().querySelectorAll('.isl.fl[data-fm="abs"]')) {
+    const d = s.dataset; if (d.vrel === 'PARA' || d.vrel === 'LINE' || s.closest('td')) continue;
+    const host = s.closest('.hp'), tb = topOf(s); const L = tb && Lay.get(tb); const P = W.pages[L && L.page != null ? L.page : 0]; if (!P || !host) continue;
+    const pg = P.pg, PH = P.h, oh = +d.oh, vo = +d.vo;
+    let aTop = P.top, aH = PH; if (d.vrel === 'PAGE') { aTop = P.top + (pg.top + pg.header) / HU; aH = PH - (pg.top + pg.header + pg.bottom + pg.footer) / HU; }
+    const y = d.va === 'CENTER' ? aTop + (aH - oh) / 2 + vo : d.va === 'BOTTOM' ? aTop + aH - oh - vo : aTop + vo;
+    const hostTop = (host.getBoundingClientRect().top - s0.top) / z;
+    const t = (y - hostTop).toFixed(1) + 'px'; if (s.style.top !== t) s.style.top = t;
+  }
+}
+/* 문단 끝의 '들어가지 않아도 되는' 몫: 마지막 줄의 줄 간격 여유 + 문단 아래 간격 — 한글은 글자 줄만 쪽 안에 들면 그 쪽에 둠 */
+const _trail = new Map();
+function trailOf(b) {
+  const k = (b.dataset.pp || '0') + ':' + (b.dataset.dcp || '0'); if (_trail.has(k)) return _trail.get(k);
+  const cs = getComputedStyle(b); const lx = cs.getPropertyValue('--lsx').trim(); const fs = parseFloat(cs.fontSize) || 13;
+  const v = (/em$/.test(lx) ? parseFloat(lx) * fs : parseFloat(lx) || 0) + (parseFloat(cs.paddingBottom) || 0);
+  _trail.set(k, v); return v;
+}
+/* 쪽보다 긴 표: 한글처럼 줄(행) 단위로 다음 쪽에 이어 그림.
+   쪽 끝에 걸린 행의 칸들에 '위 여백'을 더해 다음 쪽으로 내리고, 앞 쪽에 남는 부분은 잘라(clip) 보이지 않게 — 표 구조(DOM)는 그대로 둠 */
+function firstRowBottom(b, t) { // 문단 위에서 표의 첫 행(머리 행 포함) 아래까지
+  const cvv = b.style.contentVisibility; b.style.contentVisibility = 'visible';
+  const z = W.zoom || 1, bt = b.getBoundingClientRect().top; let k = 0; const hr = +t.dataset.hrows || 0;
+  const r = t.rows[Math.min(t.rows.length - 1, hr)].getBoundingClientRect(); k = (r.bottom - bt) / z;
+  b.style.contentVisibility = cvv; return k;
+}
+function unsplitTable(t) {
+  t._rhd = []; t._holes = []; t.style.clipPath = '';
+  for (const td of t.querySelectorAll(':scope > tbody > tr > td[data-pt0]')) { td.style.paddingTop = td.dataset.pt0; td.style.clipPath = ''; td.style.backgroundImage = ''; td.style.backgroundSize = ''; td.style.backgroundRepeat = ''; td.style.backgroundPosition = ''; delete td.dataset.pt0; }
+  delete t.dataset.split;
+}
+function splitTable(b, t, y0, pageAt) { // pageAt(y) → {cTop, cBot, next}
+  const z = W.zoom || 1; let any = false;
+  for (const row of t.rows) {
+    const bt = b.getBoundingClientRect().top, rr = row.getBoundingClientRect();
+    const top = y0 + (rr.top - bt) / z, hgt = rr.height / z;
+    const pg = pageAt(top);
+    if (top + hgt <= pg.cBot + 0.5 || top <= pg.cTop + 1 || hgt > pg.cBot - pg.cTop) continue;
+    const hr = +t.dataset.hrows || 0; if (row.rowIndex < hr) continue; // 머리 행은 나누지 않음
+    let headH = 0; for (let k = 0; k < hr; k++) headH += t.rows[k].getBoundingClientRect().height / z; if (hr) headH += 2; // 다시 그린 머리 행의 테두리 몫
+    const extra = pg.next - top + headH; if (extra <= 0) continue;
+    if (hr) (t._rhd || (t._rhd = [])).push({ y: pg.next, h: headH }); // 다음 쪽 맨 위에 머리 행을 다시 그림 (drawHeadRepeats)
+    (t._holes || (t._holes = [])).push([top + 1 - y0 - (t.getBoundingClientRect().top - b.getBoundingClientRect().top) / z, pg.next - y0 - (t.getBoundingClientRect().top - b.getBoundingClientRect().top) / z]); // 표 기준: 앞 쪽 끝 ~ 다음 쪽 본문 시작
+    for (const td of row.cells) {
+      const cs = getComputedStyle(td); const pt = td.style.paddingTop || cs.paddingTop;
+      td.dataset.pt0 = pt; td.style.paddingTop = (parseFloat(pt) + extra).toFixed(1) + 'px';
+      td.style.clipPath = `inset(${extra.toFixed(1)}px -2px -2px -2px)`;
+      // 다음 쪽에서 시작하는 행의 위 테두리를 다시 그림 (원래 위 테두리는 앞 쪽에 남아 잘림)
+      const bw = parseFloat(cs.borderTopWidth) || 0;
+      if (bw > 0 && cs.borderTopStyle !== 'none') { td.style.backgroundImage = `linear-gradient(${cs.borderTopColor},${cs.borderTopColor})`; td.style.backgroundSize = `100% ${Math.max(1, bw)}px`; td.style.backgroundRepeat = 'no-repeat'; td.style.backgroundPosition = `0 ${(extra - bw).toFixed(1)}px`; }
+    }
+    any = true;
+  }
+  if (any) {
+    t.dataset.split = '1';
+    // 여러 행을 합친 칸이 쪽 사이로 이어져 보이지 않게, 쪽 사이 구간을 표에서 오려 냄 (구멍 뚫린 다각형)
+    const W2 = t.offsetWidth + 8, H2 = t.offsetHeight + 8; let poly = `-4px -4px, ${W2}px -4px, ${W2}px ${H2}px, -4px ${H2}px, -4px -4px`;
+    for (const [a, c] of t._holes || []) poly += `, -4px ${a.toFixed(1)}px, ${W2}px ${a.toFixed(1)}px, ${W2}px ${c.toFixed(1)}px, -4px ${c.toFixed(1)}px, -4px ${a.toFixed(1)}px, -4px -4px`;
+    t.style.clipPath = `polygon(evenodd, ${poly})`;
+  }
+  return any;
+}
+let _pass = 0;
 function measureBlocks(all, full) {
   const d = docEl();
   const need = full ? all : all.filter(b => !Hs.has(b) || Track.tops.has(b));
@@ -164,7 +276,7 @@ function measureBlocks(all, full) {
   need.forEach((b, i) => {
     if (!full) b.style.contentVisibility = '';
     Hs.set(b, hs[i]);
-    const L = Lay.get(b) || {}; L.brk = b.dataset.pb === '1' || ppBreak(b.dataset.pp); Lay.set(b, L);
+    const L = Lay.get(b) || {}; L.mz = _pass; // 이번에 다시 잰 문단 L.brk = b.dataset.pb === '1' || ppBreak(b.dataset.pp); Lay.set(b, L);
     const v = `auto ${Math.max(0, hs[i] - blockPad(b)).toFixed(1)}px`;
     if (b.style.containIntrinsicSize !== v) b.style.containIntrinsicSize = v;
   });
@@ -177,7 +289,9 @@ function layout() {
   if (Track.num) { numbering(); Track.num = false; }
   fitTables(!!W.reflow);
   const full = Track.full; Track.full = false;
-  if (full) _padCache.clear();
+  if (full) { _padCache.clear(); _trail.clear(); }
+  _pass++;
+  placeFloats(d, full);
   const pages = []; let pageTop = 0, maxW = 0;
   secs.forEach((sec, k) => {
     const si = +sec.dataset.s, pg = secPage(si);
@@ -192,11 +306,18 @@ function layout() {
     const first = pages.length;
     pages.push({ top, w: PW, h: PH, si, pg });
     const next = () => { top += PH + GAP; cTop = top + mt; cBot = top + PH - mb; pages.push({ top, w: PW, h: PH, si, pg }); };
+    let hintOK = true, hPage = 0; // hPage: 한글에서 이 구역의 몇 번째 쪽인지 (0부터)
     for (let i = 0; i < blocks.length; i++) {
-      const b = blocks[i], h = Hs.get(b) || 0, L = Lay.get(b) || {};
+      const b = blocks[i], L = Lay.get(b) || {}; let h = Hs.get(b) || 0;
       let push = 0, pgs = false;
-      const force = i > 0 && L.brk;
-      if (force || (y + h > cBot + 0.5 && y > cTop + 0.5)) { next(); push = cTop - y; y = cTop; pgs = true; }
+      if (b.dataset.ed) hintOK = false; // 고친 문단부터는 글 양이 달라졌으므로 한글의 쪽 시작 위치를 쓰지 않음
+      if (b.dataset.hpg === '1') hPage++;
+      // 한글에서 이 문단이 새 쪽의 시작인데 우리는 아직 앞 쪽에 있으면 → 쪽을 넘김 (이미 넘어갔으면 더 넘기지 않음)
+      const force = i > 0 && y > cTop + 0.5 && (L.brk || (hintOK && b.dataset.hpg === '1' && pages.length - 1 - first < hPage)); // 이미 새 쪽 맨 위면 또 넘기지 않음 (빈 쪽 방지)
+      // 표·그림은 다 들어가야 함 — 다만 행 단위로 나눌 수 있는 표(한글의 '셀 단위로 나눔')는 첫 행만 들어가면 이 쪽에서 시작
+      const stb = b.querySelector(':scope > table.htb:not([data-nosplit])');
+      const fitH = y + h <= cBot + 0.5 ? h : stb && stb.rows.length > 1 ? Math.min(h, (L.frb != null && L.mz !== _pass) ? L.frb : (L.frb = firstRowBottom(b, stb))) : b.querySelector('table, .isl.obj') ? h : Math.max(0, h - trailOf(b)); // 다 들어가면 잴 필요 없음 (입력 때마다 재지 않게)
+      if (force || (y + fitH > cBot + 0.5 && y > cTop + 0.5)) { next(); push = cTop - y; y = cTop; pgs = true; }
       else if (y < cTop - 0.5) { push = cTop - y; y = cTop; pgs = true; }
       const had = L.pgs === undefined ? !!b.dataset.pgs : L.pgs; // 되돌리기로 새로 생긴 문단은 실제 속성을 봄
       if (pgs !== had) { if (pgs) b.dataset.pgs = '1'; else delete b.dataset.pgs; }
@@ -206,7 +327,22 @@ function layout() {
       L.mv = mv;
       L.page = pages.length - 1;
       Lay.set(b, L);
+      const skey = y.toFixed(1) + ':' + cBot.toFixed(1);
+      const tb = (y + h > cBot + 0.5 || L.split) && !(L.split && L.skey === skey && L.mz !== _pass) && b.querySelector(':scope > table.htb'); // 자리·내용이 그대로인 나뉜 표는 다시 나누지 않음
+      L.skey = skey;
+      if (tb) { // 쪽에 걸친 표 → 행 단위로 나눔 (다시 잴 때는 나눈 것을 풀고 잼)
+        const cvv = b.style.contentVisibility; b.style.contentVisibility = 'visible';
+        const setH = () => { Hs.set(b, h); const v = `auto ${Math.max(0, h - blockPad(b)).toFixed(1)}px`; if (b.style.containIntrinsicSize !== v) b.style.containIntrinsicSize = v; };
+        if (tb.dataset.split) { unsplitTable(tb); h = b.offsetHeight; setH(); } // 나눴던 표를 풀면 높이도 다시 (예전 높이가 남아 쪽이 밀리던 문제)
+        let k = pages.length - 1;
+        const pageAt = yy => { while (yy > pages[k].top + PH - mb + 0.5 && k + 1 < pages.length) k++; const P = pages[k]; while (yy > P.top + PH - mb + 0.5 && k === pages.length - 1) { next(); return pageAt(yy); } const nTop = P.top + PH + GAP + mt; return { cTop: P.top + mt, cBot: P.top + PH - mb, next: nTop }; };
+        L.split = splitTable(b, tb, y, pageAt);
+        if (L.split) { h = b.offsetHeight; setH(); }
+        b.style.contentVisibility = cvv;
+      }
       y += h;
+      if (b.dataset.hpgi) hPage += +b.dataset.hpgi;
+      L.hp = hPage; // 진단용: 한글 기준 쪽 (구역 안)
       while (y > cBot + 0.5) next();
     }
     const pb = Math.max(0, top + PH - y);
@@ -217,6 +353,8 @@ function layout() {
   Track.tops.clear();
   W.pages = pages;
   drawPages(maxW, pageTop);
+  placeAbs();
+  drawHeadRepeats();
   if (window.onLayout) window.onLayout();
 }
 const _ppBreak = new Map();
@@ -273,17 +411,18 @@ function pagePlan(hf, count) {
   }
   return out;
 }
-function hfFill(el, v, no, total) {
-  const ta = a => ({ CENTER: 'center', RIGHT: 'right', JUSTIFY: 'left', DISTRIBUTE: 'center' }[a] || 'left');
-  el.style.textAlign = ta(v.align);
-  for (const l of v.lines) {
-    const line = document.createElement('div'); line.style.textAlign = ta(W.doc.header.pp(l.pp).align);
-    for (const it of l.items) {
-      const s = document.createElement('span'); s.className = 'cp-' + it.cp;
-      s.textContent = it.an ? it.pre + (NUM_FMT[it.fmt] || NUM_FMT.DIGIT)(it.an === 'TOTAL_PAGE' ? total : no) + it.suf : it.t;
-      line.appendChild(s);
-    }
-    el.appendChild(line);
+function hfFill(el, v, no, total, pg) {
+  // 머리말·꼬리말의 원래 내용(글·그림·글상자·쪽 번호)을 글자 모양째 그대로 — 고치는 곳이 아니므로 보기 전용
+  const sub = xkid(v.el, 'subList');
+  for (const p of xkids(sub, 'p')) el.appendChild(W.doc.roPara(p));
+  for (const s of el.querySelectorAll('.ranum')) s.textContent = s.dataset.pre + (NUM_FMT[s.dataset.fmt] || NUM_FMT.DIGIT)(s.dataset.ant === 'TOTAL_PAGE' ? total : no) + s.dataset.suf;
+  // 띄운 그림·글상자: 한글은 머리말·꼬리말 안의 개체를 (종이 기준이라도) 머리말 영역을 기준으로 놓음 — 원본 PDF 와 맞춰 확인
+  const bw = (pg.w - pg.left - pg.right - pg.gutter) / HU, bh = (el.classList.contains('pg-hd') ? pg.header : pg.footer) / HU;
+  for (const w of el.querySelectorAll('.rshp[data-vrel]')) {
+    const d = w.dataset; const ow = parseFloat(w.style.width) || 0, oh = parseFloat(w.style.height) || 0;
+    const x = /CENTER/.test(d.ha) ? (bw - ow) / 2 + +d.ho : /RIGHT|OUTSIDE/.test(d.ha) ? bw - ow - +d.ho : +d.ho;
+    const y = d.va === 'CENTER' ? (bh - oh) / 2 + +d.vo : d.va === 'BOTTOM' ? bh - oh - +d.vo : +d.vo;
+    w.style.position = 'absolute'; w.style.left = x + 'px'; w.style.top = y + 'px';
   }
 }
 let _pagesKey = '';
@@ -302,8 +441,8 @@ function drawPages(maxW, total) {
       el.style.cssText = `top:${p.top}px;width:${p.w}px;height:${p.h}px`;
       const pg = p.pg, pl = plan[i], n = pl.no;
       const side = `left:${(pg.left + pg.gutter) / HU}px;right:${pg.right / HU}px;`;
-      if (pl.header && pl.header.lines.length) { const h = document.createElement('div'); h.className = 'pg-hd'; h.style.cssText = `top:${pg.top / HU}px;height:${pg.header / HU}px;${side}justify-content:${{ TOP: 'flex-start', CENTER: 'center' }[pl.header.va] || 'flex-end'}`; hfFill(h, pl.header, n, total); el.appendChild(h); }
-      if (pl.footer && pl.footer.lines.length) { const f = document.createElement('div'); f.className = 'pg-ft'; f.style.cssText = `top:${(pg.h - pg.bottom - pg.footer) / HU}px;height:${pg.footer / HU}px;${side}justify-content:${{ BOTTOM: 'flex-end', CENTER: 'center' }[pl.footer.va] || 'flex-start'}`; hfFill(f, pl.footer, n, total); el.appendChild(f); }
+      if (pl.header && pl.header.el) { const h = document.createElement('div'); h.className = 'pg-hd'; h.style.cssText = `top:${pg.top / HU}px;height:${pg.header / HU}px;${side}justify-content:${{ TOP: 'flex-start', CENTER: 'center' }[pl.header.va] || 'flex-end'}`; hfFill(h, pl.header, n, total, pg); el.appendChild(h); }
+      if (pl.footer && pl.footer.el) { const f = document.createElement('div'); f.className = 'pg-ft'; f.style.cssText = `top:${(pg.h - pg.bottom - pg.footer) / HU}px;height:${pg.footer / HU}px;${side}justify-content:${{ BOTTOM: 'flex-end', CENTER: 'center' }[pl.footer.va] || 'flex-start'}`; hfFill(f, pl.footer, n, total, pg); el.appendChild(f); }
       if (pl.pageNum && pl.pageNum.pos !== 'NONE') {
         const pn = document.createElement('div'); pn.className = 'pg-num';
         const pos = pl.pageNum.pos; const top = /^TOP/.test(pos);
@@ -319,6 +458,10 @@ function drawPages(maxW, total) {
     box.replaceChildren(frag);
   }
   W.plan = plan;
+  // 쪽 사이 틈: 문서 글·표가 틈으로 비져 나와 보이지 않게 그 위를 바탕색으로 덮음 (한글 쪽 보기처럼)
+  let gp = $id('pgGaps'); if (!gp) { gp = document.createElement('div'); gp.id = 'pgGaps'; $id('sheet').appendChild(gp); }
+  const gk = W.pages.map(p => p.top + ':' + p.h + ':' + p.w).join('|');
+  if (gp.dataset.k !== gk) { gp.dataset.k = gk; gp.replaceChildren(...W.pages.slice(1).map((p, i) => { const q = W.pages[i], g = document.createElement('div'); g.style.cssText = `top:${q.top + q.h}px;height:${p.top - q.top - q.h}px;width:${Math.max(p.w, q.w) + 40}px`; return g; })); }
   // 본문 속 쪽 번호 자동 번호도 실제 쪽에 맞춤
   for (const s of docEl().querySelectorAll('.isl[data-ant="PAGE"], .isl[data-ant="TOTAL_PAGE"]')) {
     const tb = topOf(s); const L = tb && Lay.get(tb); const pl = plan[L && L.page != null ? L.page : 0]; if (!pl) continue;
@@ -370,7 +513,9 @@ function numbering() {
 }
 
 /* ---------- 모양 CSS ---------- */
-function rebuildCss() { $id('docCss').textContent = W.doc.header.css(); _ppBreak.clear(); W.doc.header._hcache = null; }
+/* 웹 글꼴(노토 등)이 늦게 도착하면 빈칸 폭·쪽 나누기를 그 글꼴 기준으로 다시 */
+if (document.fonts) document.fonts.addEventListener('loadingdone', () => { if (!W.doc) return; clearTimeout(rebuildCss.t); rebuildCss.t = setTimeout(() => { rebuildCss(); Track.full = true; layout(); }, 120); });
+function rebuildCss() { _spw.clear(); $id('docCss').textContent = W.doc.header.css(); _ppBreak.clear(); W.doc.header._hcache = null; }
 function addRule(kind, id) { const s = $id('docCss').sheet; try { s.insertRule(W.doc.header.ruleFor(kind, id), s.cssRules.length); } catch (e) { $id('docCss').textContent += '\n' + W.doc.header.ruleFor(kind, id); } }
 
 /* ---------- 글자 모양 적용 ---------- */
@@ -513,7 +658,7 @@ function splitBlock(opts) {
     const cp = cpAtCaret();
     const tail = document.createRange(); tail.setStart(r.startContainer, r.startOffset); tail.setEnd(b, b.childNodes.length);
     const frag = tail.extractContents();
-    const nb = b.cloneNode(false); nb.removeAttribute('data-k'); nb.removeAttribute('style'); delete nb.dataset.pgs; delete nb.dataset.num;
+    const nb = b.cloneNode(false); nb.removeAttribute('data-k'); nb.removeAttribute('style'); delete nb.dataset.pgs; delete nb.dataset.num; delete nb.dataset.hpg;
     if (!opts.keepBreak) delete nb.dataset.pb;
     nb.appendChild(frag);
     // 문단 맨 앞에서 나눠도 조판 부호(구역 설정 등)는 원래 문단에 남김
@@ -945,7 +1090,7 @@ function pasteBlocks(blocks) { // 여러 문단 붙여넣기
   const e = record('op', b, b);
   const tail = document.createRange(); tail.setStart(r.startContainer, r.startOffset); tail.setEnd(b, b.childNodes.length);
   const frag = tail.extractContents();
-  const nb = b.cloneNode(false); nb.removeAttribute('data-k'); nb.removeAttribute('style'); delete nb.dataset.pb; nb.appendChild(frag);
+  const nb = b.cloneNode(false); nb.removeAttribute('data-k'); nb.removeAttribute('style'); delete nb.dataset.pb; delete nb.dataset.hpg; nb.appendChild(frag);
   ensureBr(b); ensureBr(nb);
   let last = b;
   const inserted = [];

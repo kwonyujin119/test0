@@ -30,6 +30,9 @@ jobs:
           bad=0
           for f in $(git ls-files '*.js'); do node --check "$f" || bad=1; done
           exit $bad
+      # 한 화면이 불러오는 스크립트끼리 같은 이름을 두 번 선언하면 뒤 스크립트가 멈춤 (문법 검사로는 안 잡힘)
+      - name: Check duplicate top-level names
+        run: node tools/check-globals.js
       - uses: actions/configure-pages@v5
         with:
           enablement: true
