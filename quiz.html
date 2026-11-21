@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>문제 풀이</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+/* 문제 풀이 · 채점 — 교안(decks/*.json)의 문항 장을 그대로 읽어 풉니다. 문항은 교안에서 고치면 여기도 바뀝니다. */
+:root { --bg:#f6f6f3; --card:#fff; --ink:#15181c; --body:#2a2f35; --sub:#5b6168; --line:#dcd9d3; --acc:#b3261e; --ok:#1f7a4d; --okbg:#e8f5ee; --bad:#b3261e; --badbg:#fdeceb; --sel:#1f3a5f; --selbg:#e9eef6; }
+:root[data-theme="dark"] { --bg:#111317; --card:#1b1e23; --ink:#f1f2f4; --body:#d3d6db; --sub:#9aa1aa; --line:#2e333a; --acc:#ff6b5e; --ok:#5ccf91; --okbg:#173326; --bad:#ff6b5e; --badbg:#3a1d1b; --sel:#9cc0ff; --selbg:#1c2a40; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--body); font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif; font-size:17px; line-height:1.55; word-break:keep-all; }
+.wrap { max-width:860px; margin:0 auto; padding:20px 16px 120px; }
+header { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+header a { color:var(--sub); text-decoration:none; font-size:15px; }
+h1 { font-size:26px; color:var(--ink); margin:6px 0 4px; letter-spacing:-.5px; }
+.lead { color:var(--sub); font-size:15px; margin:0 0 16px; }
+.bar { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 18px; }
+.chip { border:1px solid var(--line); background:var(--card); color:var(--body); border-radius:999px; padding:7px 14px; font:inherit; font-size:15px; cursor:pointer; }
+.chip.on { background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.mode { margin-left:auto; }
+.q { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px 14px; margin:0 0 14px; }
+.q .meta { color:var(--sub); font-size:13px; margin-bottom:4px; }
+.q .stem { color:var(--ink); font-weight:700; font-size:18px; margin:0 0 12px; }
+.opt { display:flex; gap:10px; width:100%; text-align:left; border:1px solid var(--line); background:transparent; color:var(--body); border-radius:10px; padding:10px 12px; margin:6px 0; font:inherit; cursor:pointer; }
+.opt b { flex:none; width:22px; color:var(--sub); }
+.opt.sel { border-color:var(--sel); background:var(--selbg); color:var(--ink); }
+.opt.sel b { color:var(--sel); }
+.done .opt { cursor:default; }
+.opt.right { border-color:var(--ok); background:var(--okbg); color:var(--ink); }
+.opt.wrong { border-color:var(--bad); background:var(--badbg); }
+.mark { float:right; font-weight:800; font-size:15px; }
+.mark.ok { color:var(--ok); } .mark.no { color:var(--bad); } .mark.skip { color:var(--sub); }
+.exp { margin-top:10px; padding:12px 14px; border-left:4px solid var(--line); background:var(--bg); border-radius:8px; font-size:15px; }
+.exp p { margin:2px 0; } .exp .k { font-weight:700; color:var(--ink); margin-right:6px; }
+.exp .trap .k { color:var(--acc); }
+.foot { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line); padding:10px 16px calc(10px + env(safe-area-inset-bottom)); }
+.foot .in { max-width:860px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+.prog { flex:1; } .prog .t { font-size:14px; color:var(--sub); } .prog .b { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:4px; } .prog .b i { display:block; height:100%; background:var(--ink); width:0; }
+.btn { border:0; border-radius:10px; padding:11px 18px; font:inherit; font-weight:700; cursor:pointer; background:var(--ink); color:var(--bg); }
+.btn.ghost { background:transparent; color:var(--body); border:1px solid var(--line); }
+.result { background:var(--card); border:2px solid var(--ink); border-radius:16px; padding:20px; margin:0 0 18px; }
+.result .big { font-size:44px; font-weight:800; color:var(--ink); letter-spacing:-1px; }
+.result table { width:100%; border-collapse:collapse; margin:12px 0; font-size:15px; }
+.result td { border-top:1px solid var(--line); padding:7px 4px; } .result td:last-child { text-align:right; font-weight:700; }
+.result .acts { display:flex; flex-wrap:wrap; gap:8px; }
+.note { color:var(--sub); font-size:13px; }
+.err { padding:30px; text-align:center; color:var(--sub); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><a href="gyoan.html">← 교안 목록</a></header>
+  <h1 id="ttl">문제 풀이</h1>
+  <p class="lead" id="lead">불러오는 중…</p>
+  <div class="bar" id="parts"></div>
+  <div id="result"></div>
+  <div id="list"></div>
+</div>
+<div class="foot"><div class="in">
+  <div class="prog"><div class="t" id="pt">0 / 0 풀었음</div><div class="b"><i id="pb"></i></div></div>
+  <button class="btn ghost" id="reset">처음부터</button>
+  <button class="btn" id="grade">채점하기</button>
+</div></div>
+<script>
+'use strict';
+const P = new URLSearchParams(location.search), DECK = P.get('deck') || '';
+const KEY = 'quiz:' + DECK;
+const $ = (id) => document.getElementById(id);
+const CIRC = ['①', '②', '③', '④', '⑤'];
+const plain = (h) => { const d = document.createElement('div'); d.innerHTML = String(h || '').replace(/<br\s*\/?>/gi, ' '); return d.textContent.replace(/ /g, ' ').replace(/\s+/g, ' ').trim(); };
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let Q = [], st = { ans: {}, graded: false, part: 'all', only: null };
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.ans) st = Object.assign(st, s); } catch (e) { }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { } };
+
+/* 교안의 문항 장 → 문제. 노트 첫 줄이 「[n번 · …] 정답 ①」인 장만 문제로 본다 */
+function parse(deck) {
+  const out = [];
+  for (const s of deck.slides || []) {
+    if (s.hidden) continue;
+    const notes = String(s.notes || ''), m = /^\[(\d+)번[^\]]*\]\s*정답\s*([①②③④⑤])/m.exec(notes);
+    if (!m) continue;
+    const els = (s.elements || []).filter(e => e.type === 'text');
+    const step0 = els.filter(e => !e.step);
+    const stemEl = step0.filter(e => e.y >= 60 && e.y < 290).sort((a, b) => (b.style && b.style.fontSize || 0) - (a.style && a.style.fontSize || 0))[0];
+    const opts = step0.filter(e => /^[①②③④⑤]/.test(plain(e.html))).sort((a, b) => a.y - b.y).map(e => plain(e.html).replace(/^[①②③④⑤]\s*/, ''));
+    if (!stemEl || opts.length < 2) continue;
+    const head = step0.find(e => e.y < 60 && /Part/i.test(plain(e.html)));
+    const part = head ? plain(head.html).replace(/\s*\d+\s*\/\s*\d+\s*$/, '').trim() : '';
+    const line = (k) => { const r = new RegExp('^' + k + ':\\s*(.+)$', 'm').exec(notes); return r ? r[1].trim() : ''; };
+    out.push({ n: +m[1], stem: plain(stemEl.html).replace(/^\d+\.\s*/, ''), opts, ans: CIRC.indexOf(m[2]), part, exp: line('풀이'), trap: line('함정'), ref: line('근거') });
+  }
+  return out.sort((a, b) => a.n - b.n);
+}
+async function load() {
+  if (!DECK) throw new Error('교안 이름이 없습니다');
+  for (const u of ['decks/' + encodeURIComponent(DECK) + '.json', 'api/decks/' + encodeURIComponent(DECK)]) {
+    try { const r = await fetch(u, { cache: 'no-store' }); if (r.ok) return r.json(); } catch (e) { }
+  }
+  throw new Error('교안을 불러오지 못했습니다: ' + DECK);
+}
+const parts = () => Array.from(new Set(Q.map(q => q.part))).filter(Boolean);
+const shown = () => Q.filter(q => (st.part === 'all' || q.part === st.part) && (!st.only || st.only.includes(q.n)));
+function render() {
+  const P2 = parts(), box = $('parts'); box.innerHTML = '';
+  const chip = (id, label) => { const b = document.createElement('button'); b.className = 'chip' + (st.part === id ? ' on' : ''); b.textContent = label; b.onclick = () => { st.part = id; st.only = null; st.graded = false; save(); render(); scrollTo(0, 0); }; box.appendChild(b); };
+  chip('all', `전체 ${Q.length}문항`); P2.forEach(p => chip(p, `${p} (${Q.filter(q => q.part === p).length})`));
+  const qs = shown(), list = $('list'); list.innerHTML = '';
+  for (const q of qs) {
+    const d = document.createElement('div'); d.className = 'q' + (st.graded ? ' done' : ''); d.id = 'q' + q.n;
+    const a = st.ans[q.n];
+    let mark = '';
+    if (st.graded) mark = a == null ? '<span class="mark skip">안 풂</span>' : a === q.ans ? '<span class="mark ok">○ 정답</span>' : '<span class="mark no">✕ 오답</span>';
+    d.innerHTML = `<div class="meta">${esc(q.part)} · ${q.n}번${mark}</div><p class="stem">${q.n}. ${esc(q.stem)}</p>` +
+      q.opts.map((o, i) => { let c = 'opt'; if (a === i) c += ' sel'; if (st.graded && i === q.ans) c += ' right'; if (st.graded && a === i && a !== q.ans) c += ' wrong'; return `<button class="${c}" data-i="${i}"><b>${CIRC[i]}</b><span>${esc(o)}</span></button>`; }).join('') +
+      (st.graded ? `<div class="exp"><p><span class="k">정답 ${CIRC[q.ans]}</span>${esc(q.exp)}</p>${q.trap ? `<p class="trap"><span class="k">함정</span>${esc(q.trap)}</p>` : ''}${q.ref ? `<p class="note">근거: ${esc(q.ref)}</p>` : ''}</div>` : '');
+    if (!st.graded) d.querySelectorAll('.opt').forEach(b => b.onclick = () => { const i = +b.dataset.i; if (st.ans[q.n] === i) delete st.ans[q.n]; else st.ans[q.n] = i; save(); render(); });
+    list.appendChild(d);
+  }
+  const done = qs.filter(q => st.ans[q.n] != null).length;
+  $('pt').textContent = `${done} / ${qs.length} 풀었음`; $('pb').style.width = (qs.length ? done / qs.length * 100 : 0) + '%';
+  $('grade').textContent = st.graded ? '다시 풀기' : '채점하기';
+  renderResult(qs);
+}
+function renderResult(qs) {
+  const r = $('result'); if (!st.graded) { r.innerHTML = ''; return; }
+  const ok = qs.filter(q => st.ans[q.n] === q.ans).length, wrong = qs.filter(q => st.ans[q.n] !== q.ans);
+  const rows = (st.part === 'all' && !st.only ? parts() : []).map(p => { const a = qs.filter(q => q.part === p); return `<tr><td>${esc(p)}</td><td>${a.filter(q => st.ans[q.n] === q.ans).length} / ${a.length}</td></tr>`; }).join('');
+  r.innerHTML = `<div class="result"><div class="note">채점 결과${st.only ? ' · 틀린 문제 다시 풀기' : ''}</div><div class="big">${ok} / ${qs.length} <span style="font-size:24px">(${Math.round(ok / Math.max(1, qs.length) * 100)}점)</span></div>` +
+    (rows ? `<table>${rows}</table>` : '') +
+    `<div class="acts">${wrong.length ? `<button class="btn" id="retryWrong">틀린 ${wrong.length}문항만 다시 풀기</button><button class="btn ghost" id="toWrong">첫 오답으로</button>` : '<span>모두 맞혔습니다.</span>'}</div>` +
+    `<p class="note">교재 본문을 바탕으로 만든 예상문항입니다. 공식 기출문제가 아닙니다.</p></div>`;
+  const rw = $('retryWrong'); if (rw) rw.onclick = () => { const ns = wrong.map(q => q.n); ns.forEach(n => delete st.ans[n]); st.only = ns; st.graded = false; save(); render(); scrollTo(0, 0); };
+  const tw = $('toWrong'); if (tw) tw.onclick = () => { const e = $('q' + wrong[0].n); if (e) e.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+}
+$('grade').onclick = () => {
+  if (st.graded) { st.graded = false; save(); render(); scrollTo(0, 0); return; }
+  const qs = shown(), left = qs.filter(q => st.ans[q.n] == null).length;
+  if (left && !confirm(`아직 ${left}문항을 풀지 않았습니다. 그래도 채점할까요? (안 푼 문항은 오답)`)) return;
+  st.graded = true; save(); render(); scrollTo(0, 0);
+};
+$('reset').onclick = () => { if (!confirm('고른 답을 모두 지우고 처음부터 풀까요?')) return; st = { ans: {}, graded: false, part: st.part, only: null }; save(); render(); scrollTo(0, 0); };
+load().then(d => {
+  Q = parse(d); document.title = (d.title || DECK) + ' · 문제 풀이'; $('ttl').textContent = (d.title || DECK) + ' · 문제 풀이';
+  if (!Q.length) throw new Error('이 교안에서 문항을 찾지 못했습니다');
+  $('lead').textContent = `${Q.length}문항 · 답을 고르고 [채점하기] — 고른 답은 이 기기에 저장되어 나갔다 와도 이어집니다.`;
+  if (st.part !== 'all' && !parts().includes(st.part)) st.part = 'all';
+  render();
+}).catch(e => { $('lead').textContent = ''; $('list').innerHTML = `<div class="err">${esc(e.message)}</div>`; });
+</script>
+</body>
+</html>

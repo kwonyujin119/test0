@@ -449,7 +449,7 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
     if (l.startsWith('slide:')) { const i = deck.slides.findIndex(s => s.id === l.slice(6)); if (i >= 0) goto(i, 0); return; }
     if (l === 'next') return next(); if (l === 'prev') return prev();
     if (l === 'first') return goto(firstVisible(), 0); if (l === 'last') return goto(lastVisible(), 0);
-    const u = l.replace(/^url:/, ''); if (/^https?:\/\//i.test(u)) window.open(u, '_blank', 'noopener');
+    const u = l.replace(/^url:/, ''); if (/^https?:\/\//i.test(u) || /^[\w-]+\.html(\?|#|$)/i.test(u)) window.open(u, '_blank', 'noopener'); // 같은 사이트의 페이지(예: quiz.html)도 열기
   }
   /* 동영상(YouTube 등)을 누른 뒤에도 리모컨·키보드가 계속 발표기를 조작하도록 포커스를 되돌림 */
   window.addEventListener('blur', () => setTimeout(() => { const a = document.activeElement; if (a && a.tagName === 'IFRAME' && /youtube|vimeo/i.test(a.src || '')) { a.blur(); window.focus(); } }, 0));
