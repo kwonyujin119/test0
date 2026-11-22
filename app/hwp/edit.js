@@ -158,9 +158,9 @@ function blockPad(b) { // 문단 위·아래 안쪽 여백+테두리 (문단 모
 /* 글자처럼 취급하지 않는 그림·그리기 개체 (hwpx.js floatize 가 자리 정보를 data- 에 남김)
    · 글 뒤로 · 글 앞으로 · 쪽/종이 기준 → 문단 위에 겹쳐 놓음(abs)   · 자리 차지 → 그 줄을 비우고 블록으로(tb)   · 어울림 → 글이 옆으로 비켜 흐름(fl-l/fl-r) */
 function placeFloats(root, all) {
-  for (const s of root.querySelectorAll(all ? '.isl.fl' : '.isl.fl:not([data-fx])')) {
-    const d = s.dataset, host = s.closest('.hp'); if (!host) continue;
-    const td = s.closest('td'), sec = s.closest('.hsec'); const pg = secPage(sec ? +sec.dataset.s : 0);
+  for (const s of root.querySelectorAll(all ? '.isl.fl, table.htb.fl' : '.isl.fl:not([data-fx]), table.htb.fl:not([data-fx])')) {
+    const d = s.dataset, host = s.tagName === 'TABLE' ? s.parentElement.closest('.hp') : s.closest('.hp'); if (!host) continue;
+    const td = (s.tagName === 'TABLE' ? s.parentElement : s).closest('td'), sec = s.closest('.hsec'); const pg = secPage(sec ? +sec.dataset.s : 0);
     const ow = +d.ow, oh = +d.oh, ho = +d.ho, vo = +d.vo; const om = (d.om || '0,0,0,0').split(',').map(Number);
     let areaW, base;
     if (td) { areaW = Math.max(ow, (+td.dataset.w || 0) / HU - (parseFloat(td.style.paddingLeft) || 0) - (parseFloat(td.style.paddingRight) || 0)); base = 0; }
@@ -169,7 +169,7 @@ function placeFloats(root, all) {
     const x = /CENTER/.test(d.ha) ? base + (areaW - ow) / 2 + ho : /RIGHT|OUTSIDE/.test(d.ha) ? base + areaW - ow - ho : base + ho;
     const cs = getComputedStyle(host); const padL = parseFloat(cs.paddingLeft) || 0, padR = parseFloat(cs.paddingRight) || 0;
     const abs = /BEHIND_TEXT|IN_FRONT_OF_TEXT/.test(d.wrap) || (!td && d.vrel !== 'PARA' && d.vrel !== 'LINE');
-    const st = s.style; st.position = ''; st.left = st.top = st.marginLeft = st.marginRight = st.marginTop = st.marginBottom = ''; st.float = ''; st.display = '';
+    const st = s.style; st.position = ''; st.left = st.top = st.marginLeft = st.marginRight = st.marginTop = st.marginBottom = ''; st.float = ''; st.display = ''; st.shapeOutside = '';
     if (abs) {
       d.fm = 'abs'; st.position = 'absolute'; st.left = x.toFixed(1) + 'px'; st.top = vo.toFixed(1) + 'px'; // 쪽·종이 기준이면 쪽을 나눈 뒤 placeAbs 가 다시 맞춤
       host.classList.add('flhost'); if (d.wrap === 'BEHIND_TEXT') host.classList.add('flback'); if (d.wrap === 'IN_FRONT_OF_TEXT') host.classList.add('flfront');
@@ -181,6 +181,9 @@ function placeFloats(root, all) {
       if (left) { st.marginLeft = Math.max(-padL, x - padL).toFixed(1) + 'px'; st.marginRight = Math.max(2, om[1]).toFixed(1) + 'px'; }
       else { st.marginRight = Math.max(-padR, base + areaW - x - ow - padR).toFixed(1) + 'px'; st.marginLeft = Math.max(2, om[3]).toFixed(1) + 'px'; }
       st.marginBottom = om[2].toFixed(1) + 'px';
+      // 문단 아래로 한참 내려 놓은 개체(세로 위치 > 0): 위쪽 빈 여백까지 비켜 흐르면 첫 줄(글자처럼 넣은 표 등)이 개체 아래로 밀림
+      // → 비켜 흐르는 영역은 개체가 실제로 있는 곳부터 (한글: 개체 위쪽 줄은 폭을 다 씀)
+      if (vo > 0) st.shapeOutside = `inset(${Math.max(0, vo - om[0]).toFixed(1)}px 0 0 0)`;
     }
     d.fx = '1';
   }
@@ -201,10 +204,61 @@ function drawHeadRepeats() {
   }
   lay.replaceChildren(frag);
 }
+/* 오른쪽 탭(목차의 '제목 ……… 쪽')은 한글이 계산한 폭 그대로면 글꼴 폭 차이로 쪽 번호가 다음 줄로 밀림
+   → 탭 뒤 글이 탭 자리(없으면 줄 끝)에서 끝나도록 폭을 다시 잼. 점선·파선 채움도 그림 */
+function fitTabs(root) {
+  const z = W.zoom || 1;
+  for (const t of root.querySelectorAll('.isl.tab[data-tt="R"], .rtab[data-tt="R"]')) {
+    const p = t.closest('.hp, .hro'); if (!p) continue;
+    const cs = getComputedStyle(p), pr = p.getBoundingClientRect();
+    const left = pr.left / z + (parseFloat(cs.paddingLeft) || 0), right = pr.right / z - (parseFloat(cs.paddingRight) || 0);
+    const pos = W.doc.tabStop(p.dataset.pp || (p.className.match(/pp-(\d+)/) || [])[1]);
+    const stop = pos ? Math.min(right, left + pos / HU) : right;
+    t.style.width = '0px';
+    const tl = t.getBoundingClientRect().left / z;
+    const rg = document.createRange(); rg.setStartAfter(t); rg.setEndAfter(p.lastChild); let tw = 0, top0 = null;
+    for (const r of rg.getClientRects()) { if (r.width <= 0) continue; if (top0 == null) top0 = r.top; if (Math.abs(r.top - top0) < 2) tw += r.width / z; }
+    t.style.width = Math.max(4, stop - tl - tw - 1).toFixed(1) + 'px';
+  }
+}
+/* 줄 수 맞추기: 한글이 저장한 줄 수(lineseg)와 우리 줄 수가 다르면, 고치지 않은 문단에 한해 자간을 아주 조금(±0.05em까지) 조정해 같게.
+   글꼴이 달라 생기는 몇 px 차이로 줄이 하나 더 생기면 표·쪽이 통째로 밀리므로 (줄 위치 자체는 한글 쪽이 정답) */
+const _segN = new WeakMap();
+function hwpLines(d) {
+  if (_segN.has(d)) return _segN.get(d);
+  const px = W.doc.paras[d.dataset.k]; let n = 0;
+  if (px) { const la = Array.from(px.children).find(c => c.localName === 'linesegarray'); n = la ? la.children.length : 0; }
+  _segN.set(d, n); return n;
+}
+function lineCount(d) {
+  const rg = document.createRange(); rg.selectNodeContents(d);
+  const rs = Array.from(rg.getClientRects()).filter(r => r.width > 0.5 && r.height > 1).sort((a, b) => a.top - b.top);
+  let n = 0, bot = -1e9; for (const r of rs) { if (r.top >= bot - 2) { n++; bot = r.bottom; } else bot = Math.max(bot, r.bottom); }
+  return n;
+}
+function fitLines(root) {
+  const cand = [];
+  for (const d of root.querySelectorAll('.hp[data-k]')) {
+    if (d.dataset.ed || d.closest('[data-ed]') || d.closest('.isl')) continue;
+    if (d.querySelector('table, .isl.obj, .isl.tab, br[data-lb]')) continue;
+    const n = hwpLines(d); if (!n || !d.textContent.trim()) continue;
+    d.style.removeProperty('--fit'); cand.push([d, n]);
+  }
+  let todo = cand.map(([d, n]) => ({ d, n, f: 0 }));
+  for (let step = 0; step < 6 && todo.length; step++) {
+    const res = todo.map(o => ({ o, c: lineCount(o.d) })); // 읽기만 모아서
+    todo = [];
+    for (const { o, c } of res) {
+      if (c === o.n) continue;
+      const f = o.f + (c > o.n ? -0.01 : 0.01); if (Math.abs(f) > 0.05) { o.d.style.removeProperty('--fit'); continue; }
+      o.f = f; o.d.style.setProperty('--fit', f.toFixed(2) + 'em'); todo.push(o); // 쓰기는 그다음
+    }
+  }
+}
 /* 쪽·종이 기준 개체: 쪽을 나눈 뒤 그 쪽의 위치로 */
 function placeAbs() {
   const sheet = $id('sheet'); if (!sheet) return; const s0 = sheet.getBoundingClientRect(), z = W.zoom || 1;
-  for (const s of docEl().querySelectorAll('.isl.fl[data-fm="abs"]')) {
+  for (const s of docEl().querySelectorAll('.isl.fl[data-fm="abs"], table.htb.fl[data-fm="abs"]')) {
     const d = s.dataset; if (d.vrel === 'PARA' || d.vrel === 'LINE' || s.closest('td')) continue;
     const host = s.closest('.hp'), tb = topOf(s); const L = tb && Lay.get(tb); const P = W.pages[L && L.page != null ? L.page : 0]; if (!P || !host) continue;
     const pg = P.pg, PH = P.h, oh = +d.oh, vo = +d.vo;
@@ -291,7 +345,9 @@ function layout() {
   const full = Track.full; Track.full = false;
   if (full) { _padCache.clear(); _trail.clear(); }
   _pass++;
+  if (full) { d.classList.remove('cv'); fitLines(d); } // 문서를 열 때 · 글꼴이 다 왔을 때 (measureBlocks 가 cv 를 되돌림)
   placeFloats(d, full);
+  for (const b of (full ? d.querySelectorAll('.hsec > .hp') : Track.tops)) if (b.querySelector && b.querySelector('[data-tt="R"]')) { const cvv = b.style.contentVisibility; b.style.contentVisibility = 'visible'; fitTabs(b); b.style.contentVisibility = cvv; }
   const pages = []; let pageTop = 0, maxW = 0;
   secs.forEach((sec, k) => {
     const si = +sec.dataset.s, pg = secPage(si);
@@ -317,7 +373,11 @@ function layout() {
       // 표·그림은 다 들어가야 함 — 다만 행 단위로 나눌 수 있는 표(한글의 '셀 단위로 나눔')는 첫 행만 들어가면 이 쪽에서 시작
       const stb = b.querySelector(':scope > table.htb:not([data-nosplit])');
       const fitH = y + h <= cBot + 0.5 ? h : stb && stb.rows.length > 1 ? Math.min(h, (L.frb != null && L.mz !== _pass) ? L.frb : (L.frb = firstRowBottom(b, stb))) : b.querySelector('table, .isl.obj') ? h : Math.max(0, h - trailOf(b)); // 다 들어가면 잴 필요 없음 (입력 때마다 재지 않게)
-      if (force || (y + fitH > cBot + 0.5 && y > cTop + 0.5)) { next(); push = cTop - y; y = cTop; pgs = true; }
+      // 고치지 않은 한글 문단·표는 글꼴 폭 차이로 몇 px 넘쳐도 이 쪽에 둠 (아래 여백 안, 40px 까지) — 한글에서는 이 쪽에 들어간 것이므로
+      //  (다음 문단이 한글에서 같은 쪽이면 아래 여백의 90% 까지)
+      const nb = blocks[i + 1], clean = hintOK && !b.dataset.ed && hwpLines(b) > 0;
+      const tol = !clean ? 0 : (nb && nb.dataset.hpg !== '1' && !nb.dataset.ed ? Math.min(mb * 0.9, 60) : Math.min(mb * 0.9, 40));
+      if (force || (y + fitH > cBot + 0.5 + tol && y > cTop + 0.5)) { next(); push = cTop - y; y = cTop; pgs = true; }
       else if (y < cTop - 0.5) { push = cTop - y; y = cTop; pgs = true; }
       const had = L.pgs === undefined ? !!b.dataset.pgs : L.pgs; // 되돌리기로 새로 생긴 문단은 실제 속성을 봄
       if (pgs !== had) { if (pgs) b.dataset.pgs = '1'; else delete b.dataset.pgs; }
@@ -328,7 +388,7 @@ function layout() {
       L.page = pages.length - 1;
       Lay.set(b, L);
       const skey = y.toFixed(1) + ':' + cBot.toFixed(1);
-      const tb = (y + h > cBot + 0.5 || L.split) && !(L.split && L.skey === skey && L.mz !== _pass) && b.querySelector(':scope > table.htb'); // 자리·내용이 그대로인 나뉜 표는 다시 나누지 않음
+      const tb = (y + h > cBot + 0.5 + tol || L.split) && !(L.split && L.skey === skey && L.mz !== _pass) && b.querySelector(':scope > table.htb'); // 자리·내용이 그대로인 나뉜 표는 다시 나누지 않음
       L.skey = skey;
       if (tb) { // 쪽에 걸친 표 → 행 단위로 나눔 (다시 잴 때는 나눈 것을 풀고 잼)
         const cvv = b.style.contentVisibility; b.style.contentVisibility = 'visible';
@@ -343,7 +403,7 @@ function layout() {
       y += h;
       if (b.dataset.hpgi) hPage += +b.dataset.hpgi;
       L.hp = hPage; // 진단용: 한글 기준 쪽 (구역 안)
-      while (y > cBot + 0.5) next();
+      while (y > cBot + 0.5 + tol) next();
     }
     const pb = Math.max(0, top + PH - y);
     set('paddingBottom', pb.toFixed(2) + 'px');
@@ -456,6 +516,7 @@ function drawPages(maxW, total) {
       frag.appendChild(el);
     });
     box.replaceChildren(frag);
+    fitTabs(box);
   }
   W.plan = plan;
   // 쪽 사이 틈: 문서 글·표가 틈으로 비져 나와 보이지 않게 그 위를 바탕색으로 덮음 (한글 쪽 보기처럼)

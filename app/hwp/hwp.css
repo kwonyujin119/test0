@@ -1,3 +1,5 @@
+/* 한컴 고유 기호(PUA: U+F02B1 = ① 등)를 화면에서 보이게 — 글자는 그대로, 모양만 (app/fonts/README.md) */
+@font-face { font-family: 'HWP PUA'; src: url('../fonts/hwp-pua.woff2') format('woff2'); unicode-range: U+F000-F0FF, U+F0000-F0FFF; font-display: block; }
 /* DOCUMENT — 화면
    꾸밈은 app/ui.css 의 토큰(--ui-*)만 쓴다: 무채색 바탕 · 먹색 주 단추 · 파란 강조색 하나(선택·초점) · 노랑은 저장 안 됨 · 빨강은 지우기 · 선 아이콘.
    글자 크기는 ui.css 의 단계(--fs-*)를 따르고, 아직 없을 때를 위해 같은 값을 뒤에 적어 둔다.
@@ -152,10 +154,14 @@ body.reflow #pgGaps { display: none; }
 /* 그리기 개체: 한글과 같은 모양 (선·채우기·글상자 글) — 자리 표시용 점선 상자 대신 */
 .isl.draw.shp { border: 0; background: none; overflow: visible; display: inline-block; text-align: left; line-height: normal; font: inherit; color: inherit; white-space: normal; }
 .shape { position: absolute; box-sizing: border-box; }
-.shape > .stext { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; text-indent: 0; }
+.shape > .stext { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: visible; text-indent: 0; }
 .shape.tart { display: flex; align-items: center; justify-content: center; font-weight: 800; white-space: nowrap; }
 .hro { margin: 0; }
-.rtab { display: inline-block; }
+.rtab { display: inline-block; height: 1em; vertical-align: -0.12em; }
+/* 탭 채움 (목차 점선 등) */
+.isl.tab[data-tl="dot"], .rtab[data-tl="dot"] { background: radial-gradient(circle, currentColor 0.9px, transparent 1.2px) 0 78% / 5px 4px repeat-x; }
+.isl.tab[data-tl="dash"], .rtab[data-tl="dash"] { background: linear-gradient(90deg, currentColor 60%, transparent 60%) 0 78% / 6px 1px repeat-x; }
+.isl.tab[data-tl="solid"], .rtab[data-tl="solid"] { background: linear-gradient(currentColor, currentColor) 0 78% / 100% 1px no-repeat; }
 .rshp { display: inline-block; position: relative; vertical-align: bottom; }
 table.rtb { border-collapse: collapse; table-layout: fixed; }
 table.rtb td { box-sizing: border-box; overflow: hidden; }
