@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T00:54:32.000Z",
- "modified": "2026-11-22T22:00:53.827Z",
+ "modified": "2026-11-22T22:10:00.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -11807,6 +11807,65 @@
    ],
    "decor": "none",
    "noFooter": true
+  },
+  {
+   "id": "zx8ql0pw0",
+   "bg": null,
+   "transition": "",
+   "notes": "⏱ 1분\n환류 — 주의집중. 자갈밭에서 흰색 이어버드 찾기. 3단: 사진 → 정답 → GPT 화면.",
+   "elements": [
+    {
+     "id": "nfe1dkd96",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793953612871-nurjyd5.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "l7hlo6zft",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793954098412-y9f5nnl.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "ivzvmafnl",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793954167606-zqrolni.png",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    }
+   ],
+   "decor": "none",
+   "noFooter": true,
+   "hidden": false
   },
   {
    "id": "sp14",
