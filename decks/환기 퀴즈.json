@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-22T12:00:00.000Z",
- "modified": "2026-11-22T21:47:49.701Z",
+ "modified": "2026-11-22T22:10:00.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -592,6 +592,65 @@
     }
    ],
    "notes": "⏱ 2분\n[환기 · 넌센스 퀴즈] 세 문제를 한 번에 보여 주고 하나씩 묻는다. 답이 나오기 전에 3초 기다린다.\n클릭 1: \"꺼져!\" — 강사가 크게 외친다. 야유가 나오면 성공.\n클릭 2: 소화불량 — \"그럼 소방관이 늘 챙기는 약은?\" 하고 바로 물으면 '소화제'가 나온다(덤 문제).\n클릭 3: 천도복숭아 — \"천 도(1,000℃)라서\". \n세 문제에서 끊는다. 더 하면 웃음이 피로로 바뀐다.\n[그림] 교육용 생성 이미지(AI low 시안) — 세 정답을 모두 보여 주므로 마지막 정답(클릭 3)과 함께 나온다. 미리 보이면 답이 새어 나간다."
+  },
+  {
+   "id": "zymjqhx3d",
+   "bg": null,
+   "transition": "",
+   "notes": "⏱ 1분\n환류 — 주의집중. 자갈밭에서 흰색 이어버드 찾기. 3단: 사진 → 정답 → GPT 화면.",
+   "elements": [
+    {
+     "id": "xk4g0mygz",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793953612871-nurjyd5.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "4z7jg74bl",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793954098412-y9f5nnl.jpg",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "qac0340bk",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/clipboard-1793954167606-zqrolni.png",
+     "fit": "fill",
+     "radius": 0,
+     "shadow": false
+    }
+   ],
+   "decor": "none",
+   "noFooter": true,
+   "hidden": false
   }
  ]
 }
