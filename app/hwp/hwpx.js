@@ -73,7 +73,7 @@ function fontStack(faces) {
   const serif = faces.some(f => /바탕|명조|궁서|batang|myeong|serif|times|신명|그래픽|가는안상수|궁체|solmi/i.test(f));
   // 한글은 1em 폭 글꼴(노토)을 먼저 — 나눔명조처럼 좁은 글꼴은 줄바꿈이 한글과 달라짐
   const base = serif ? ['Batang', "'바탕'", "'Noto Serif KR'", "'Nanum Myeongjo'", 'serif'] : ["'Malgun Gothic'", "'Noto Sans KR'", "'Pretendard Variable'", 'sans-serif'];
-  return Array.from(new Set(web.concat(names.map(cssStr)))).concat(base).join(',');
+  return ["'HWP PUA'"].concat(Array.from(new Set(web.concat(names.map(cssStr))))).concat(base).join(','); // 한컴 고유 기호는 맨 앞 글꼴이 맡음 (그 밖의 글자는 이 글꼴에 없어 다음 글꼴로)
 }
 
 const NUM_FMT = {
@@ -151,7 +151,7 @@ class HwpHeader {
     // 자간(%) + 장평: 웹 글꼴은 장평을 못 바꾸므로 글자 폭 차이만큼 자간으로 메워 줄바꿈 위치를 한글과 맞춤
     const adv = (FACE_ADV.find(([re]) => re.test(c.faceH || '')) || [0, 1])[1];
     const ls = c.spacing / 100 + (c.ratio !== 100 ? (Math.max(50, Math.min(200, c.ratio)) - 100) / 100 : 0) + (adv !== 1 && !faceInstalled(c.faceH) ? adv - 1 : 0);
-    s += `letter-spacing:${ls ? ls.toFixed(3) + 'em' : 'normal'};`;
+    s += `letter-spacing:calc(${ls ? ls.toFixed(3) : 0}em + var(--fit, 0em));`; // --fit: 한글 줄 수에 맞추려는 미세 조정 (edit.js fitLines)
     // 빈칸: 한글은 '글꼴에 어울리는 빈칸'을 끄면(기본) 빈칸을 글자 폭의 절반(0.5em)으로 둠 — 대신 쓰는 글꼴의 빈칸(보통 0.25em)과 차이만큼 메움
     if (!c.fontSpace) { const sw = spaceWidth(fam); if (sw != null) s += `word-spacing:calc(var(--hsp, 0.5em) - ${sw.toFixed(3)}em);`; }
     s += `vertical-align:${c.sup ? 'super' : c.sub ? 'sub' : c.offset ? (-c.offset / 100).toFixed(2) + 'em' : 'baseline'};`;
@@ -397,11 +397,14 @@ class HwpxDoc {
       for (const p of xkids(s.doc.documentElement, 'p')) {
         const d = this.paraHtml(p); box.appendChild(d);
         const segs = xkids(xkid(p, 'linesegarray'), 'lineseg'); if (!segs.length) { prevEnd = null; continue; }
-        const first = xint(segs[0], 'vertpos', 0), last = xint(segs[segs.length - 1], 'vertpos', 0);
-        if (prevEnd != null && first < prevEnd) d.dataset.hpg = '1';
-        let inner = 0; for (let k = 1; k < segs.length; k++) if (xint(segs[k], 'vertpos', 0) < xint(segs[k - 1], 'vertpos', 0)) inner++;
+        // 앞 문단 마지막 줄의 아래(위치+높이)보다 위에서 시작하면 한글에서 새 쪽 (표처럼 높은 줄 다음에 0 에서 다시 시작하는 경우 포함)
+        // 앞 줄보다 위에서 시작하거나, 높이가 있는 앞 줄과 같은 위치(둘 다 쪽 맨 위, 예: 표지 표 다음)에서 시작하면 한글에서 새 쪽
+        const vp = g => xint(g, 'vertpos', 0), vs = g => xint(g, 'vertsize', 0);
+        const newPage = (a, b) => vp(b) < vp(a) || (vp(b) === vp(a) && vs(a) > 0);
+        if (prevEnd && newPage(prevEnd, segs[0])) d.dataset.hpg = '1';
+        let inner = 0; for (let k = 1; k < segs.length; k++) if (newPage(segs[k - 1], segs[k])) inner++;
         if (inner) d.dataset.hpgi = inner; // 문단 안에서 쪽이 넘어간 횟수
-        prevEnd = last;
+        prevEnd = segs[segs.length - 1];
       }
       if (!box.firstChild) box.appendChild(this.newParaHtml('0', '0', '0'));
       frag.appendChild(box);
@@ -458,7 +461,7 @@ class HwpxDoc {
     const i = this.islands.push({ el, inT }) - 1;
     const s = document.createElement('span'); s.className = 'isl'; s.contentEditable = 'false'; s.dataset.i = i; s.dataset.cp = cp;
     const n = el.localName;
-    if (n === 'tab') { s.classList.add('tab', 'cp-' + cp); s.style.width = Math.max(10, xint(el, 'width', 3000) / HU).toFixed(1) + 'px'; s.textContent = ' '; return s; }
+    if (n === 'tab') { s.classList.add('tab', 'cp-' + cp); s.style.width = Math.max(10, xint(el, 'width', 3000) / HU).toFixed(1) + 'px'; s.textContent = ' '; this.tabMeta(s, el); return s; }
     if (n === 'nbSpace') { s.classList.add('cp-' + cp); s.textContent = ' '; return s; }
     if (n === 'fwSpace') { s.classList.add('cp-' + cp); s.textContent = '　'; return s; }
     if (n === 'hyphen') { s.classList.add('cp-' + cp); s.textContent = '-'; return s; }
@@ -500,6 +503,15 @@ class HwpxDoc {
     this.floatize(s, el, w, h);
     return s;
   }
+  /* 탭: 종류(type 1 왼쪽 · 2 오른쪽 · 3 가운데 · 4 소수점)와 채울 모양(leader 0 없음 · 1 실선 · 2 파선 · 3 점선 …) — 오른쪽 탭은 edit.js fitTabs 가 줄 끝까지 맞춤 */
+  tabMeta(s, el) { const t = el.getAttribute('type'), l = el.getAttribute('leader'); if (t && t !== '1' && t !== 'LEFT') s.dataset.tt = /RIGHT|2/.test(t) ? 'R' : /CENTER|3/.test(t) ? 'C' : 'L'; if (l && l !== '0' && l !== 'NONE') s.dataset.tl = { 1: 'solid', 2: 'dash', 3: 'dot', SOLID: 'solid', DASH: 'dash', DOT: 'dot' }[l] || 'dot'; }
+  /* 문단 모양의 오른쪽 탭 자리 (HWPUNIT, 문단 왼쪽 여백 기준) */
+  tabStop(ppId) {
+    const e = this.header.paraPr.get(String(ppId)); if (!e) return null; const tid = e.getAttribute('tabPrIDRef');
+    const tp = tid != null && xdesc(this.header.doc, 'tabPr').find(x => x.getAttribute('id') === tid); if (!tp) return null;
+    const items = xdesc(tp, 'tabItem'); const it = items.find(x => (x.getAttribute('unit') === 'HWPUNIT' || !x.getAttribute('unit')) && x.getAttribute('type') === 'RIGHT') || items.find(x => x.getAttribute('type') === 'RIGHT');
+    return it ? xint(it, 'pos', 0) : null;
+  }
   /* 그림 넣기: 한글에서 자른 그림(imgClip)은 잘린 부분만 보이게 */
   picImg(el, host) {
     const im = xdesc(el, 'img')[0]; const u = im && this.binUrl(im.getAttribute('binaryItemIDRef')); if (!u) return;
@@ -527,6 +539,17 @@ class HwpxDoc {
     if (ib) { const im = xdesc(ib, 'img')[0]; const u = im && this.binUrl(im.getAttribute('binaryItemIDRef')); if (u) return `center / 100% 100% no-repeat url("${u}")`; }
     if (wb) { const c = hexColor(wb.getAttribute('faceColor')); if (c) { const a = xint(wb, 'alpha', 0); return a ? `rgba(${parseInt(c.slice(1, 3), 16)},${parseInt(c.slice(3, 5), 16)},${parseInt(c.slice(5, 7), 16)},${(1 - a / 255).toFixed(3)})` : c; } }
     return '';
+  }
+  /* renderingInfo 의 행렬(trans · sca · rot …)을 곱해 원래 크기(orgSz) 사각형이 놓이는 자리 (HWPUNIT). 없으면 null */
+  matBox(el) {
+    const ri = xkid(el, 'renderingInfo'); if (!ri) return null;
+    const ms = xkids(ri).map(m => [1, 2, 3, 4, 5, 6].map(i => parseFloat(m.getAttribute('e' + i)) || 0)); if (!ms.length) return null;
+    const mul = (a, b) => [a[0] * b[0] + a[1] * b[3], a[0] * b[1] + a[1] * b[4], a[0] * b[2] + a[1] * b[5] + a[2], a[3] * b[0] + a[4] * b[3], a[3] * b[1] + a[4] * b[4], a[3] * b[2] + a[4] * b[5] + a[5]];
+    let M = ms[0]; for (let i = 1; i < ms.length; i++) M = mul(M, ms[i]);
+    const og = xkid(el, 'orgSz'); const W0 = xint(og, 'width', 0), H0 = xint(og, 'height', 0); if (!W0 && !H0) return null;
+    const pts = [[0, 0], [W0, 0], [0, H0], [W0, H0]].map(([x, y]) => [M[0] * x + M[1] * y + M[2], M[3] * x + M[4] * y + M[5]]);
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const x = Math.min(...xs), y = Math.min(...ys); return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
   }
   shapeEl(el, w, h) {
     const n = el.localName, W = w / HU, H = h / HU;
@@ -569,11 +592,15 @@ class HwpxDoc {
       if (ls) box.style.outline = `${ls.w}px ${ls.st} ${ls.c}`;
     } else if (n === 'container') {
       box.style.overflow = 'visible';
-      for (const c of xkids(el)) {
-        if (!HWP_SHAPES.has(c.localName)) continue;
-        const cs = xkid(c, 'curSz') || xkid(c, 'sz'); const cw = xint(cs, 'width', 0), ch = xint(cs, 'height', 0);
-        const off = xkid(c, 'offset'); const x = u32(xint(off, 'x', 0)) / HU, y = u32(xint(off, 'y', 0)) / HU;
-        const k = this.shapeEl(c, cw, ch); if (!k) continue; k.style.left = x + 'px'; k.style.top = y + 'px'; box.appendChild(k);
+      // 묶음 안의 개체: 한글이 저장한 변환 행렬(renderingInfo: 이동 · 크기 · 회전을 묶음 단계마다)을 차례로 곱해 묶음 기준 자리·크기를 구함
+      //  (curSz·offset 은 묶음을 늘리거나 줄이기 전 값이라 그대로 쓰면 글상자가 작게·엉뚱한 자리에 그려짐)
+      const top = this.matBox(el); const ox = top ? top.x : 0, oy = top ? top.y : 0;
+      const leaves = []; (function walk(e) { for (const c of xkids(e)) { if (c.localName === 'container') walk(c); else if (HWP_SHAPES.has(c.localName)) leaves.push(c); } })(el);
+      for (const c of leaves) {
+        const mb = this.matBox(c); let x, y, cw, ch;
+        if (mb) { x = mb.x - ox; y = mb.y - oy; cw = mb.w; ch = mb.h; }
+        else { const cs = xkid(c, 'curSz') || xkid(c, 'sz'); cw = xint(cs, 'width', 0); ch = xint(cs, 'height', 0); const off = xkid(c, 'offset'); x = u32(xint(off, 'x', 0)); y = u32(xint(off, 'y', 0)); }
+        const k = this.shapeEl(c, cw, ch, true); if (!k) continue; k.style.left = (x / HU) + 'px'; k.style.top = (y / HU) + 'px'; box.appendChild(k);
       }
     } else return null;
     const dt = xkid(el, 'drawText'); if (dt) box.appendChild(this.roText(dt));
@@ -591,7 +618,7 @@ class HwpxDoc {
   }
   roPara(p) {
     const d = document.createElement('div'); const pp = p.getAttribute('paraPrIDRef') || '0';
-    d.className = 'hro pp-' + pp; let any = false;
+    const r0 = xkid(p, 'run'); d.className = 'hro pp-' + pp + ' cp-' + (r0 ? r0.getAttribute('charPrIDRef') || '0' : '0'); let any = false; // 줄 높이는 그 문단 첫 글자 크기 기준 (바깥 문단 글자 크기를 물려받지 않게)
     for (const run of xkids(p, 'run')) {
       const cp = run.getAttribute('charPrIDRef') || '0';
       for (const c of xkids(run)) {
@@ -600,7 +627,7 @@ class HwpxDoc {
           for (let x = c.firstChild; x; x = x.nextSibling) {
             if (x.nodeType === 3) { const s = document.createElement('span'); s.className = 'cp-' + cp; s.textContent = x.nodeValue; d.appendChild(s); any = true; }
             else if (x.localName === 'lineBreak') d.appendChild(document.createElement('br'));
-            else if (x.localName === 'tab') { const s = document.createElement('span'); s.className = 'cp-' + cp + ' rtab'; s.style.width = Math.max(10, xint(x, 'width', 3000) / HU).toFixed(1) + 'px'; d.appendChild(s); }
+            else if (x.localName === 'tab') { const s = document.createElement('span'); s.className = 'cp-' + cp + ' rtab'; s.style.width = Math.max(10, xint(x, 'width', 3000) / HU).toFixed(1) + 'px'; this.tabMeta(s, x); d.appendChild(s); }
             else if (/Space/.test(x.localName)) { const s = document.createElement('span'); s.className = 'cp-' + cp; s.textContent = ' '; d.appendChild(s); }
           }
         } else if (n === 'tbl') { d.appendChild(this.roTable(c)); any = true; }
@@ -653,7 +680,10 @@ class HwpxDoc {
     const ti = this.tables.push(tbl) - 1;
     const t = document.createElement('table'); t.className = 'htb'; t.contentEditable = 'false'; t.dataset.t = ti; t.dataset.cp = cp;
     const pos = xkid(tbl, 'pos');
-    if (pos && pos.getAttribute('treatAsChar') !== '1') {
+    const twrap = tbl.getAttribute('textWrap') || 'TOP_AND_BOTTOM';
+    if (pos && pos.getAttribute('treatAsChar') !== '1' && twrap !== 'TOP_AND_BOTTOM') { // 어울림·글 앞·글 뒤 표: 그림처럼 띄움 (자리를 따로 차지하지 않음)
+      const tsz = xkid(tbl, 'sz'); this.floatize(t, tbl, xint(tsz, 'width', 0), xint(tsz, 'height', 0));
+    } else if (pos && pos.getAttribute('treatAsChar') !== '1') {
       t.classList.add('blk');
       const ha = pos.getAttribute('horzAlign'), ho = xint(pos, 'horzOffset', 0);
       if (ha === 'CENTER') t.classList.add('mid'); else if (ha === 'RIGHT') t.classList.add('end'); else if (ho > 0 && ho < 60000) t.style.marginLeft = (ho / HU).toFixed(1) + 'px';
