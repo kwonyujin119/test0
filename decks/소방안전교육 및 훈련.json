@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T01:27:02.000Z",
- "modified": "2026-11-20T01:27:02.000Z",
+ "modified": "2026-11-22T13:13:35.405Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -1613,6 +1613,57 @@
     }
    ],
    "notes": "⏱ 2분\n[퀴즈 · 첫 참여] 질문을 읽고 5초 기다린다.\n클릭 1: \"1등이라고 생각하시는 분? 2등? 3등?\" 손을 센다 — 대개 1등이 가장 많다.\n클릭 2: 정답 2등. \"당연해 보이는 답이 틀릴 수 있습니다. 시험 문제도 그렇습니다 — 보기를 끝까지 읽는 습관부터.\" → 다음 장 학습목표.\n앞 장 Direction 3번(적극 참여)의 첫 실천: 답한 분께 박수.\n[그림] 교육용 생성 이미지 — 정답(클릭 2)과 함께 나온다. 질문할 때 보이면 앞의 1등이 보여 답이 쉬워지므로 일부러 늦게 띄움. 정답 때 그림을 가리키며: \"앞에 한 명이 보이시죠. 저는 2등을 제쳤을 뿐입니다.\""
+  },
+  {
+   "id": "o8419zkt7",
+   "bg": {
+    "color": "#15181C"
+   },
+   "transition": "",
+   "notes": "원본 14쪽 쇼츠. 웃음 포인트 → \"배울 때 무시한 것, 결정적 순간에 몸이 합니다\"로 연결\n\n[영상] 영상 파일을 이 상자 위로 끌어다 놓으면 들어갑니다.",
+   "elements": [
+    {
+     "id": "d46dyjkt7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 950,
+     "w": 1440,
+     "h": 60,
+     "role": "text",
+     "html": "▶ 영상 첨부 위치 — ‘학교에서 배울 때 무시한 호신술’ (쇼츠)",
+     "style": {
+      "fontSize": 26,
+      "color": "#B9BEC5",
+      "lineHeight": 1.4,
+      "align": "center"
+     },
+     "hide": true,
+     "mk": "ldc69z9ot"
+    },
+    {
+     "id": "11npt2kt7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": -92,
+     "y": 0,
+     "w": 2104,
+     "h": 1282,
+     "url": "https://www.youtube.com/embed/3HH1vBd7KIQ?feature=oembed",
+     "radius": 16,
+     "autoplay": true,
+     "shadow": false,
+     "mk": "tlmyt6mmb"
+    }
+   ],
+   "hidden": false,
+   "noFooter": true
   },
   {
    "id": "sc4qe8k97",
