@@ -2123,7 +2123,7 @@
      "w": 400,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#B3261E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2278,7 +2278,7 @@
      "w": 400,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#B3261E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2433,7 +2433,7 @@
      "w": 400,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2588,7 +2588,7 @@
      "w": 400,
      "h": 2,
      "shape": "rect",
-     "fill": "#15181C",
+     "fill": "#0F6E6E",
      "stroke": "",
      "strokeWidth": 0,
      "radius": 0,
@@ -2807,6 +2807,197 @@
     }
    ],
    "decor": "none"
+  },
+  {
+   "id": "ed_s1",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "[0:03–0:03] 제1절 시작. 핵심 질문: \"같은 훈련을 받았는데, 왜 어떤 사람만 몸이 기억할까요?\" — 이 절의 답은 실시원칙 7가지와 동기부여입니다. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)",
+   "elements": [
+    {
+     "id": "edv001",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#15181C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "edv002",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sp-ch2.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "edv003",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 110,
+     "w": 800,
+     "h": 300,
+     "role": "text",
+     "html": "1",
+     "style": {
+      "fontSize": 280,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "font": "blackhan"
+     }
+    },
+    {
+     "id": "edv004",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 440,
+     "w": 820,
+     "h": 50,
+     "role": "text",
+     "html": "제1절",
+     "style": {
+      "fontSize": 36,
+      "color": "#B9BEC5",
+      "bold": true
+     }
+    },
+    {
+     "id": "edv005",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 500,
+     "w": 820,
+     "h": 100,
+     "role": "heading",
+     "html": "개념과 실시원칙",
+     "style": {
+      "fontSize": 80,
+      "color": "#FFFFFF",
+      "bold": true,
+      "letterSpacing": -3,
+      "lineHeight": 1.12
+     }
+    },
+    {
+     "id": "edv006",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 620,
+     "w": 820,
+     "h": 50,
+     "role": "text",
+     "html": "정의, 실시근거   /   실시원칙 7   /   동기부여 10",
+     "style": {
+      "fontSize": 28,
+      "color": "#B9BEC5"
+     }
+    },
+    {
+     "id": "edv007",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 740,
+     "w": 80,
+     "h": 3,
+     "shape": "rect",
+     "fill": "#B3261E",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "edv008",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 764,
+     "w": 820,
+     "h": 120,
+     "role": "text",
+     "html": "같은 훈련을 받았는데, 왜 어떤 사람만 몸이 기억할까요?",
+     "style": {
+      "fontSize": 36,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "edv009",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 1000,
+     "w": 820,
+     "h": 36,
+     "role": "text",
+     "html": "오른쪽 사진: 교육용 생성 이미지",
+     "style": {
+      "fontSize": 24,
+      "color": "#B9BEC5"
+     }
+    }
+   ],
+   "decor": "none",
+   "noFooter": true
   },
   {
    "id": "ed04",
@@ -5740,6 +5931,197 @@
     }
    ],
    "decor": "none"
+  },
+  {
+   "id": "ed_s2",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "[0:17–0:17] 제2절 시작. 핵심 질문: \"작년 훈련 결과, 지금 서류로 보여 줄 수 있습니까?\" — 계획(11~12월) → 준비·실시 → 평가·기록(13호·28호)의 순서로 답합니다. (질문은 클릭 1에 등장)",
+   "elements": [
+    {
+     "id": "edv010",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#15181C",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "edv011",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sp-ch1.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "edv012",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 110,
+     "w": 800,
+     "h": 300,
+     "role": "text",
+     "html": "2",
+     "style": {
+      "fontSize": 280,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "font": "blackhan"
+     }
+    },
+    {
+     "id": "edv013",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 440,
+     "w": 820,
+     "h": 50,
+     "role": "text",
+     "html": "제2절",
+     "style": {
+      "fontSize": 36,
+      "color": "#B9BEC5",
+      "bold": true
+     }
+    },
+    {
+     "id": "edv014",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 500,
+     "w": 820,
+     "h": 100,
+     "role": "heading",
+     "html": "계획에서 기록까지",
+     "style": {
+      "fontSize": 80,
+      "color": "#FFFFFF",
+      "bold": true,
+      "letterSpacing": -3,
+      "lineHeight": 1.12
+     }
+    },
+    {
+     "id": "edv015",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 620,
+     "w": 820,
+     "h": 50,
+     "role": "text",
+     "html": "11~12월 계획   /   교안 50분   /   실시 5   /   설문·강평·기록",
+     "style": {
+      "fontSize": 28,
+      "color": "#B9BEC5"
+     }
+    },
+    {
+     "id": "edv016",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 740,
+     "w": 80,
+     "h": 3,
+     "shape": "rect",
+     "fill": "#4FC1B6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     }
+    },
+    {
+     "id": "edv017",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 764,
+     "w": 820,
+     "h": 120,
+     "role": "text",
+     "html": "작년 훈련 결과, 지금 서류로 보여 줄 수 있습니까?",
+     "style": {
+      "fontSize": 36,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "edv018",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 1000,
+     "w": 820,
+     "h": 36,
+     "role": "text",
+     "html": "오른쪽 사진: 교육용 생성 이미지",
+     "style": {
+      "fontSize": 24,
+      "color": "#B9BEC5"
+     }
+    }
+   ],
+   "decor": "none",
+   "noFooter": true
   },
   {
    "id": "ed10",
