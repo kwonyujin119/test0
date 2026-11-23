@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-07T07:32:45.091Z",
- "modified": "2026-11-23T12:55:39.743Z",
+ "modified": "2026-11-23T13:04:51.949Z",
  "footer": {
   "text": "소방 용수 · 권유진",
   "num": true,
@@ -9217,7 +9217,7 @@
      "w": 390,
      "h": 60,
      "role": "text",
-     "html": "전용소화전 선정",
+     "html": "중요물탱크",
      "style": {
       "fontSize": 38,
       "color": "#0E1116",
@@ -9758,7 +9758,7 @@
      "strokeWidth": 0,
      "radius": 22,
      "shadow": false,
-     "html": "고정물탱크 · 펌프차<br><span style=\"font-size:22px;font-weight:500\">무중단 방수 유지</span>",
+     "html": "중요물탱크 · 펌프차<br><span style=\"font-size:22px; font-weight:500\">무중단 방수 유지</span>",
      "style": {
       "padding": 0,
       "lineHeight": 1.25,
