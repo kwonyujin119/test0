@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T01:27:02.000Z",
- "modified": "2026-11-22T13:13:35.405Z",
+ "modified": "2026-11-23T00:53:03.233Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -1615,57 +1615,6 @@
    "notes": "⏱ 2분\n[퀴즈 · 첫 참여] 질문을 읽고 5초 기다린다.\n클릭 1: \"1등이라고 생각하시는 분? 2등? 3등?\" 손을 센다 — 대개 1등이 가장 많다.\n클릭 2: 정답 2등. \"당연해 보이는 답이 틀릴 수 있습니다. 시험 문제도 그렇습니다 — 보기를 끝까지 읽는 습관부터.\" → 다음 장 학습목표.\n앞 장 Direction 3번(적극 참여)의 첫 실천: 답한 분께 박수.\n[그림] 교육용 생성 이미지 — 정답(클릭 2)과 함께 나온다. 질문할 때 보이면 앞의 1등이 보여 답이 쉬워지므로 일부러 늦게 띄움. 정답 때 그림을 가리키며: \"앞에 한 명이 보이시죠. 저는 2등을 제쳤을 뿐입니다.\""
   },
   {
-   "id": "o8419zkt7",
-   "bg": {
-    "color": "#15181C"
-   },
-   "transition": "",
-   "notes": "원본 14쪽 쇼츠. 웃음 포인트 → \"배울 때 무시한 것, 결정적 순간에 몸이 합니다\"로 연결\n\n[영상] 영상 파일을 이 상자 위로 끌어다 놓으면 들어갑니다.",
-   "elements": [
-    {
-     "id": "d46dyjkt7",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 240,
-     "y": 950,
-     "w": 1440,
-     "h": 60,
-     "role": "text",
-     "html": "▶ 영상 첨부 위치 — ‘학교에서 배울 때 무시한 호신술’ (쇼츠)",
-     "style": {
-      "fontSize": 26,
-      "color": "#B9BEC5",
-      "lineHeight": 1.4,
-      "align": "center"
-     },
-     "hide": true,
-     "mk": "ldc69z9ot"
-    },
-    {
-     "id": "11npt2kt7",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "embed",
-     "x": -92,
-     "y": 0,
-     "w": 2104,
-     "h": 1282,
-     "url": "https://www.youtube.com/embed/3HH1vBd7KIQ?feature=oembed",
-     "radius": 16,
-     "autoplay": true,
-     "shadow": false,
-     "mk": "tlmyt6mmb"
-    }
-   ],
-   "hidden": false,
-   "noFooter": true
-  },
-  {
    "id": "sc4qe8k97",
    "bg": {
     "color": "#FAFAF7"
@@ -2807,6 +2756,124 @@
     }
    ],
    "decor": "none"
+  },
+  {
+   "id": "rvdiuvxne",
+   "bg": {
+    "color": "#15181C"
+   },
+   "transition": "fade",
+   "notes": "[1:02] 영상 「자위소방대의 중요성」. 틀기 전에 한 줄: \"보면서, 불이 난 뒤 처음 움직인 사람이 누구였는지 봐 주십시오.\"\n영상이 끝나면 클릭 1 → 「보고 나서」 질문. 두세 명 답을 듣고 다음 장 「자위소방대는 왜 필요할까요?」로 넘어감.\n[영상] 영상 파일을 가운데 상자 위로 끌어다 놓으면 들어갑니다. 영상 길이만큼 제2장 뒤 시간(1:02 이후)이 밀리니, 길면 31~33장 설명을 줄이세요.",
+   "decor": "none",
+   "noFooter": true,
+   "elements": [
+    {
+     "id": "znaghhxne",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 6,
+     "shape": "rect",
+     "fill": "#E8B04B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     },
+     "mk": "spv001"
+    },
+    {
+     "id": "6ahi3xxne",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 36,
+     "w": 900,
+     "h": 40,
+     "role": "text",
+     "html": "영상",
+     "style": {
+      "fontSize": 24,
+      "color": "#E8B04B",
+      "bold": true,
+      "lineHeight": 1.3
+     },
+     "mk": "spv002"
+    },
+    {
+     "id": "i1b1rbxne",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 76,
+     "w": 1680,
+     "h": 70,
+     "role": "text",
+     "html": "대덕구 안전공업 화재",
+     "style": {
+      "fontSize": 48,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.3
+     },
+     "mk": "spv003"
+    },
+    {
+     "id": "3j4zd7xne",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 240,
+     "y": 170,
+     "w": 1440,
+     "h": 810,
+     "url": "bigvideo/kwonyujin119/test0/video-mwsjx1tx7pk7/5-4194304-16977266/대전화재_편집_-x1tx8vc.mp4",
+     "radius": 0,
+     "autoplay": false,
+     "shadow": false,
+     "posterOf": "bigvideo/kwonyujin119/test0/video-mwsjx1tx7pk7/5-4194304-16977266/대전화재_편집_-x1tx8vc.mp4",
+     "poster": "assets/대전화재_편집_-poster-x1uv3s0.png",
+     "mk": "spv004"
+    },
+    {
+     "id": "d54dmkxne",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 1000,
+     "w": 1680,
+     "h": 44,
+     "role": "text",
+     "html": "<b style=\"color:#E8B04B\">보고 나서</b>&nbsp;&nbsp;&nbsp;영상 속 종합훈련 잘 보셨나요?",
+     "style": {
+      "fontSize": 30,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.3
+     },
+     "mk": "spv005"
+    }
+   ]
   },
   {
    "id": "ed_s1",
@@ -5931,6 +5998,57 @@
     }
    ],
    "decor": "none"
+  },
+  {
+   "id": "o8419zkt7",
+   "bg": {
+    "color": "#15181C"
+   },
+   "transition": "",
+   "notes": "원본 14쪽 쇼츠. 웃음 포인트 → \"배울 때 무시한 것, 결정적 순간에 몸이 합니다\"로 연결\n\n[영상] 영상 파일을 이 상자 위로 끌어다 놓으면 들어갑니다.",
+   "elements": [
+    {
+     "id": "d46dyjkt7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 950,
+     "w": 1440,
+     "h": 60,
+     "role": "text",
+     "html": "▶ 영상 첨부 위치 — ‘학교에서 배울 때 무시한 호신술’ (쇼츠)",
+     "style": {
+      "fontSize": 26,
+      "color": "#B9BEC5",
+      "lineHeight": 1.4,
+      "align": "center"
+     },
+     "hide": true,
+     "mk": "ldc69z9ot"
+    },
+    {
+     "id": "11npt2kt7",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": -92,
+     "y": 0,
+     "w": 2104,
+     "h": 1282,
+     "url": "https://www.youtube.com/embed/3HH1vBd7KIQ?feature=oembed",
+     "radius": 16,
+     "autoplay": true,
+     "shadow": false,
+     "mk": "tlmyt6mmb"
+    }
+   ],
+   "hidden": false,
+   "noFooter": true
   },
   {
    "id": "ed_s2",
@@ -12542,6 +12660,124 @@
     }
    ],
    "decor": "none"
+  },
+  {
+   "id": "ngi56ek9n",
+   "bg": {
+    "color": "#15181C"
+   },
+   "transition": "fade",
+   "notes": "[1:02] 영상 「자위소방대의 중요성」. 틀기 전에 한 줄: \"보면서, 불이 난 뒤 처음 움직인 사람이 누구였는지 봐 주십시오.\"\n영상이 끝나면 클릭 1 → 「보고 나서」 질문. 두세 명 답을 듣고 다음 장 「자위소방대는 왜 필요할까요?」로 넘어감.\n[영상] 영상 파일을 가운데 상자 위로 끌어다 놓으면 들어갑니다. 영상 길이만큼 제2장 뒤 시간(1:02 이후)이 밀리니, 길면 31~33장 설명을 줄이세요.",
+   "decor": "none",
+   "noFooter": true,
+   "elements": [
+    {
+     "id": "sk57g3k9n",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 6,
+     "shape": "rect",
+     "fill": "#E8B04B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {
+      "fontSize": 28,
+      "color": "#FFFFFF"
+     },
+     "mk": "spv001"
+    },
+    {
+     "id": "x502ixk9n",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 36,
+     "w": 900,
+     "h": 40,
+     "role": "text",
+     "html": "영상",
+     "style": {
+      "fontSize": 24,
+      "color": "#E8B04B",
+      "bold": true,
+      "lineHeight": 1.3
+     },
+     "mk": "spv002"
+    },
+    {
+     "id": "2rwa1yk9n",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 76,
+     "w": 1680,
+     "h": 70,
+     "role": "text",
+     "html": "(소방서) 긴급구조 종합 훈련",
+     "style": {
+      "fontSize": 48,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.3
+     },
+     "mk": "spv003"
+    },
+    {
+     "id": "t9jdq3k9n",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 240,
+     "y": 170,
+     "w": 1440,
+     "h": 810,
+     "url": "bigvideo/kwonyujin119/test0/video-mwsiyza1f5h9/18-4194304-74664459/긴급구조훈련_3분30초_-yza1rp4.mp4",
+     "radius": 0,
+     "autoplay": false,
+     "shadow": false,
+     "posterOf": "bigvideo/kwonyujin119/test0/video-mwsiyza1f5h9/18-4194304-74664459/긴급구조훈련_3분30초_-yza1rp4.mp4",
+     "poster": "assets/긴급구조훈련_3분30초_-poster-yzbolel.png",
+     "mk": "spv004"
+    },
+    {
+     "id": "75cm2rk9n",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 1000,
+     "w": 1680,
+     "h": 44,
+     "role": "text",
+     "html": "<b style=\"color:#E8B04B\">보고 나서</b>&nbsp;&nbsp;&nbsp;영상 속 종합훈련 잘 보셨나요?",
+     "style": {
+      "fontSize": 30,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.3
+     },
+     "mk": "spv005"
+    }
+   ]
   },
   {
    "id": "ed_pb10",
