@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T00:54:32.000Z",
- "modified": "2026-11-23T00:12:28.662Z",
+ "modified": "2026-11-23T01:25:05.389Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -12542,7 +12542,7 @@
      "h": 810,
      "url": "bigvideo/kwonyujin119/test0/video-mwsibtoq9sqc/7-4194304-25818130/___자위소방대__현실_조언___소방관_오기전에_____-btoqqzm.mp4",
      "radius": 0,
-     "autoplay": false,
+     "autoplay": true,
      "shadow": false,
      "posterOf": "bigvideo/kwonyujin119/test0/video-mwsibtoq9sqc/7-4194304-25818130/___자위소방대__현실_조언___소방관_오기전에_____-btoqqzm.mp4",
      "poster": "assets/___자위소방대__현실_조언___소방관_오기전에_____--btqc8zi.png"
@@ -24436,7 +24436,7 @@
      "h": 810,
      "url": "bigvideo/kwonyujin119/test0/video-mwsicma41sej/6-4194304-22167883/훈련_받은_그대로_행동한_유치원_선생님과_아이들-_KBS_-cma5ufp.mp4",
      "radius": 0,
-     "autoplay": false,
+     "autoplay": true,
      "shadow": false,
      "posterOf": "bigvideo/kwonyujin119/test0/video-mwsicma41sej/6-4194304-22167883/훈련_받은_그대로_행동한_유치원_선생님과_아이들-_KBS_-cma5ufp.mp4",
      "poster": "assets/훈련_받은_그대로_행동한_유치원_선생님과_아이들-_KBS_-cmbeg8d.png",
@@ -34205,129 +34205,6 @@
       "color": "#FFFFFF",
       "bold": false,
       "lineHeight": 1.45
-     }
-    }
-   ],
-   "decor": "none"
-  },
-  {
-   "id": "sp_qb",
-   "bg": {
-    "color": "#FAFAF7"
-   },
-   "transition": "fade",
-   "notes": "[2:50~3:00] 예상문제 100 안내. 이 과목 범위: Part 1 1 ~ 25번, Part 2 26 ~ 50번, Part 3 51 ~ 70번. 교재 본문 기반 예상문항(공식 기출 아님).\n[현장 경험 연결] 현장대응단·구조대 출동에서 본 장면 중 이 장과 맞닿는 것 하나를 1분 이야기(관계인의 초기대응, 대피 장면 등).",
-   "elements": [
-    {
-     "id": "sp1582",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 92,
-     "w": 1680,
-     "h": 120,
-     "role": "heading",
-     "html": "복습은 예상문제 100으로",
-     "style": {
-      "fontSize": 52,
-      "color": "#15181C",
-      "bold": true,
-      "valign": "middle",
-      "lineHeight": 1.2,
-      "letterSpacing": -1
-     }
-    },
-    {
-     "id": "sp1583",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 210,
-     "w": 1680,
-     "h": 44,
-     "role": "text",
-     "html": "교안 목록의 <b>소방계획과 교육훈련 예상문제 100</b>에서 이 과목 파트만 풀어 보세요",
-     "style": {
-      "fontSize": 28,
-      "color": "#5B6168",
-      "valign": "middle"
-     }
-    },
-    {
-     "id": "sp1584",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "table",
-     "x": 120,
-     "y": 270,
-     "w": 1680,
-     "h": 370,
-     "rows": [
-      [
-       "파트",
-       "번호",
-       "범위"
-      ],
-      [
-       "Part 1",
-       "1 ~ 25번",
-       "제6편 제1장 소방계획"
-      ],
-      [
-       "Part 2",
-       "26 ~ 50번",
-       "제6편 제2장 자위소방대 및 초기대응체계"
-      ],
-      [
-       "Part 3",
-       "51 ~ 70번",
-       "제6편 제3장 화재대응 및 피난"
-      ]
-     ],
-     "header": true,
-     "band": false,
-     "firstCol": true,
-     "lines": "h",
-     "headFill": "#F1EFEA",
-     "headColor": "#15181C",
-     "lineColor": "#D6D3CD",
-     "radius": 0,
-     "cols": [
-      0.18,
-      0.22,
-      0.6
-     ],
-     "style": {
-      "fontSize": 30,
-      "color": "#2A2F35",
-      "align": "left"
-     }
-    },
-    {
-     "id": "sp1585",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 670,
-     "w": 1680,
-     "h": 160,
-     "role": "text",
-     "html": "1.&nbsp;&nbsp;1분 혼자 풀고 클릭해 정답 확인<br>2.&nbsp;&nbsp;파트 끝 정답표로 채점, 틀린 번호의 풀이와 교재 쪽수를 다시 보기",
-     "style": {
-      "fontSize": 30,
-      "color": "#2A2F35",
-      "lineHeight": 1.6
      }
     }
    ],
