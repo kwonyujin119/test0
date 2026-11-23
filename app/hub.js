@@ -471,7 +471,7 @@
     const fo = Folders.of(d.name) ? Folders.get(Folders.of(d.name)) : null;
     const items = GUEST
       ? [['present', 'play', '발표'], null, ['link', 'link', '발표 링크 복사']]
-      : [['edit', 'edit', '편집'], ['present', 'play', '발표'], fine ? ['newtab', 'expand', '새 탭에서 편집'] : null, null,
+      : [['edit', 'edit', '편집'], ['present', 'play', '발표'], fine ? ['newwin', 'expand', '새 창에서 편집 (나란히 두기)'] : null, fine ? ['newtab', 'expand', '새 탭에서 편집'] : null, null,
         ['move', 'folder', fo ? '다른 폴더로 옮기기' : '폴더로 옮기기'], fo ? ['out', 'folderOut', `폴더에서 빼기 (${fo.name})`] : null, null,
         ['dup', 'copy', '사본 만들기'], ['rename', 'text', '이름 바꾸기'], ['link', 'link', '발표 링크 복사'], ['export', 'export', '파일로 받기 (.json)'], null,
         ['del', 'trash', '삭제']];
@@ -525,6 +525,7 @@
     if (a === 'present') return openPresent(d.name);
     if (a === 'out') return moveDeck(d.name, null);
     if (a === 'move') { const to = await movePicker(d); if (to !== undefined) moveDeck(d.name, to); return; }
+    if (a === 'newwin') { openSideWindow('editor.html?deck=' + encodeURIComponent(d.name)); return; }
     if (a === 'newtab') { window.open('editor.html?deck=' + encodeURIComponent(d.name), '_blank'); return; }
     if (a === 'link') {
       const url = new URL('present.html?deck=' + encodeURIComponent(d.name), location.href).href;

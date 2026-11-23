@@ -2530,6 +2530,7 @@
   themeSel.onchange = () => { setProp('deck.theme', themeSel.value, true); themeSel.blur(); };
   $('zoom').onchange = (ev) => { S.zoomMode = ev.target.value; layoutStage(); ev.target.blur(); };
   $('btnPresent').onclick = () => present(false);
+  $('btnNewWin').onclick = () => openSideWindow('gyoan.html');
   $('btnPreview').onclick = () => { if (S.editing) endEdit(); flushNudge(); const d = S.dirty && draftPut(); window.open(`present.html?deck=${encodeURIComponent(S.name)}${d ? '&draft=1' : ''}&start=${S.cur}`, '_blank'); };
   $('btnExport').onclick = (ev) => {
     ev.stopPropagation();
