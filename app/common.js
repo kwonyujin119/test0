@@ -131,6 +131,16 @@ const ROLE_NAMES = { title: '제목', subtitle: '부제목', heading: '소제목
 /* ---------- 유틸 ---------- */
 function uid() { return Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3); }
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
+/* 새 창으로 열기 — 지금 창이 화면 왼쪽이면 오른쪽 절반에, 오른쪽이면 왼쪽 절반에 띄운다(두 교안을 나란히 두고 슬라이드 복사·붙여넣기) */
+function openSideWindow(url) {
+  const sw = screen.availWidth || 1920, sh = screen.availHeight || 1080, sl = screen.availLeft || 0, st = screen.availTop || 0;
+  const w = Math.floor(sw / 2), mid = (window.screenX || 0) + (window.outerWidth || sw) / 2;
+  const left = mid < sl + sw / 2 ? sl + w : sl;
+  const win = window.open(url, '_blank', `popup,width=${w},height=${sh},left=${left},top=${st}`);
+  if (!win) { alert('브라우저가 새 창을 막았습니다. 주소창 오른쪽의 팝업 차단 아이콘에서 이 사이트를 허용해 주세요.'); return null; }
+  try { win.focus(); } catch (e) {}
+  return win;
+}
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function stripHtml(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || '').trim(); }
