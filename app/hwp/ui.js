@@ -573,7 +573,7 @@
     char: [['bold', gly('<b>가</b>', '진하게', 'Ctrl+B')], ['italic', gly('<i>가</i>', '기울임', 'Ctrl+I')], ['underline', gly('<u>가</u>', '밑줄', 'Ctrl+U')], ['strike', gly('<s>가</s>', '취소선')], ['sup', gly('x²', '위 첨자')], ['sub', gly('x₂', '아래 첨자')], ['shadeNone', { icon: 'x', label: '형광펜 지우기' }], ['charDlg', { icon: 'type', label: '글자 모양 · 색 · 형광펜…', kbd: 'Alt+L' }]],
     para: [['indentL', { icon: 'indentL', label: '왼쪽 여백 줄이기' }], ['indentR', { icon: 'indentR', label: '왼쪽 여백 늘리기' }], ['outline', { icon: 'listNum', label: '개요 번호' }], ['bullet', { icon: 'list', label: '글머리표' }], ['paraDlg', { icon: 'paragraph', label: '문단 모양 · 줄 간격…', kbd: 'Alt+T' }]],
     insert: [['table', { icon: 'table', label: '표 만들기', kbd: 'Ctrl+N, T' }], ['image', { icon: 'image', label: '그림 넣기', kbd: 'Ctrl+N, I' }], ['pageBreak', { icon: 'pageBreak', label: '쪽 나누기', kbd: 'Ctrl+Enter' }], ['symbol', { icon: 'symbol', label: '문자표', kbd: 'Ctrl+F10' }]],
-    page: [['pageDlg', { icon: 'ruler', label: '편집 용지', kbd: 'F7' }], ['pageNum', { icon: 'hash', label: '쪽 번호 매기기', kbd: 'Ctrl+N, P' }], ['headFoot', { icon: 'layout', label: '머리말/꼬리말', kbd: 'Ctrl+N, H' }]],
+    page: [['pageDlg', { icon: 'ruler', label: '편집 용지', kbd: 'F7' }], ['pageNum', { icon: 'hash', label: '쪽 번호 매기기', kbd: 'Ctrl+N, P' }], ['headFoot', { icon: 'layout', label: '머리말/꼬리말', kbd: 'Ctrl+N, H' }], ['spread', { icon: 'spread', label: '두 쪽 보기' }]],
     find: [['find', { icon: 'search', label: '찾기', kbd: 'Ctrl+F' }], ['replace', { icon: 'search', label: '찾아 바꾸기', kbd: 'Ctrl+H' }]],
   };
   const rib = $id('ribbon'), ribMore = $id('btnRibMore'), ribGroups = Array.from(rib.querySelectorAll(':scope > .grp'));
@@ -631,7 +631,7 @@
 
   /* ---------- 명령 ---------- */
   const ALIGN = { alJ: 'JUSTIFY', alL: 'LEFT', alC: 'CENTER', alR: 'RIGHT', alD: 'DISTRIBUTE' };
-  const GUEST_OK = /^(home|box|open|help|print|find|replace|zoomIn|zoomOut)$/; // best 문서는 관리자만
+  const GUEST_OK = /^(home|box|open|help|print|find|replace|zoomIn|zoomOut|spread)$/; // best 문서는 관리자만
   function act(a) {
     if (GUEST && !GUEST_OK.test(a)) { guestSay(); return; }
     if (a === 'home') return HwpHome.show();
@@ -661,6 +661,7 @@
       case 'find': return openFind(false);
       case 'replace': return openFind(true);
       case 'pageDlg': return pageDialog();
+      case 'spread': return spreadView();
       case 'pageNum': return pageNumDialog();
       case 'headFoot': return headFootDialog();
       case 'styleDlg': return styleDialog();
@@ -715,6 +716,63 @@
     if (W.doc) { Track.full = true; layout(); if (!W.reflow) { const cw = $id('canvas').clientWidth, pw = W.doc.page(0).w / HU; if (cw < pw + 60) setZoom('width'); else if (W.pageZoom) setZoom(W.pageZoom); W.pageZoom = null; } }
   }
   $id('btnView').addEventListener('click', () => { setView(W.reflow ? 'page' : 'reflow'); toast(W.reflow ? '화면 맞춤 보기 — 글이 화면 폭에 맞춰 흐릅니다 (파일은 그대로)' : '쪽 보기 — 인쇄될 모양 그대로', 2200); });
+
+  /* ---------- 두 쪽 보기: 펼침면으로 훑어보기 (읽기 전용 사본 — 문서·편집에는 손대지 않음) ---------- */
+  let spreadEl = null;
+  function spreadClose(goto) {
+    if (!spreadEl) return; spreadEl.remove(); spreadEl = null; document.removeEventListener('keydown', spreadKey, true);
+    if (goto != null && W.pages[goto]) { const cv = $id('canvas'), sh = $id('sheet'); cv.scrollTop += sh.getBoundingClientRect().top + W.pages[goto].top * W.zoom - cv.getBoundingClientRect().top - 8; }
+    $id('canvas').focus({ preventScroll: true });
+  }
+  function spreadKey(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); spreadClose(); } }
+  function spreadView() {
+    if (spreadEl) return spreadClose();
+    if (W.reflow) setView('page', true);
+    Track.full = true; layout();
+    const pages = W.pages; if (!pages.length) return;
+    let cover = false; try { cover = localStorage.getItem('hwp:spreadCover') === '1'; } catch (e) { }
+    const ov = document.createElement('div'); ov.id = 'spreadView'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '두 쪽 보기');
+    ov.innerHTML = `<div class="sv-bar"><b>두 쪽 보기</b><span class="muted">읽기 전용 · 쪽을 누르면 그 쪽에서 편집</span><span class="grow"></span><label class="chk"><input type="checkbox" id="svCover" ${cover ? 'checked' : ''}> 첫 쪽(표지) 따로</label><button class="tb" data-x="close">닫기 (Esc)</button></div><div class="sv-body" tabindex="-1"></div>`;
+    document.body.appendChild(ov); spreadEl = ov; document.addEventListener('keydown', spreadKey, true);
+    ov.querySelector('[data-x="close"]').onclick = () => spreadClose();
+    const body = ov.querySelector('.sv-body'), sheet = $id('sheet');
+    const build = () => {
+      body.replaceChildren();
+      const pw = Math.max(...pages.map(p => p.w)), ph = Math.max(...pages.map(p => p.h));
+      const sc = Math.min(1, (body.clientWidth - 64) / (pw * 2 + 24), (body.clientHeight - 40) / ph);
+      const groups = []; let i = 0; if (cover) { groups.push([null, 0]); i = 1; }
+      for (; i < pages.length; i += 2) groups.push([i, i + 1 < pages.length ? i + 1 : null]);
+      const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting && !en.target.dataset.done) { en.target.dataset.done = '1'; fill(en.target); } }), { root: body, rootMargin: '600px 0px' });
+      const fill = box => { // 그 쪽 부분만 보이도록 문서 사본을 옮겨 놓음
+        const k = +box.dataset.p, P = pages[k];
+        const cl = sheet.cloneNode(true); cl.removeAttribute('id'); cl.style.transform = ''; cl.style.top = (-P.top) + 'px'; cl.style.left = (-(P.left || 0)) + 'px'; cl.inert = true;
+        const dc = cl.querySelector('#doc'); if (dc) dc.classList.add('sv-doc'); cl.querySelectorAll('[id]').forEach(x => x.removeAttribute('id')); cl.querySelectorAll('[contenteditable]').forEach(x => x.removeAttribute('contenteditable'));
+        cl.querySelectorAll('.cv').forEach(x => x.classList.remove('cv'));
+        const inner = box.firstElementChild; inner.appendChild(cl);
+      };
+      for (const g of groups) {
+        const row = document.createElement('div'); row.className = 'sv-row';
+        for (const k of g) {
+          const box = document.createElement('div'); box.className = 'sv-page' + (k == null ? ' blank' : '');
+          box.style.width = (pw * sc) + 'px'; box.style.height = (ph * sc) + 'px';
+          if (k != null) {
+            box.dataset.p = k; box.title = (k + 1) + '쪽 — 눌러서 편집';
+            const inner = document.createElement('div'); inner.className = 'sv-inner'; inner.style.cssText = `width:${pages[k].w}px;height:${pages[k].h}px;transform:scale(${sc})`; box.appendChild(inner);
+            const lab = document.createElement('span'); lab.className = 'sv-no'; lab.textContent = k + 1; box.appendChild(lab);
+            box.onclick = () => spreadClose(k); io.observe(box);
+          }
+          row.appendChild(box);
+        }
+        body.appendChild(row);
+      }
+      // 지금 보던 쪽이 있는 펼침면으로
+      const cur = caretPage(); const tgt = body.querySelector(`.sv-page[data-p="${cur}"]`); if (tgt) tgt.parentElement.scrollIntoView({ block: 'center' });
+    };
+    ov.querySelector('#svCover').onchange = e => { cover = e.target.checked; try { localStorage.setItem('hwp:spreadCover', cover ? '1' : '0'); } catch (x) { } build(); };
+    requestAnimationFrame(build);
+    body.focus({ preventScroll: true });
+  }
+  $id('btnSpread').addEventListener('click', () => act('spread'));
 
   /* ---------- 확대/축소 ---------- */
   function setZoom(v) {

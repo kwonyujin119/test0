@@ -199,6 +199,7 @@ const ICONS = {
   copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>',
   trash: '<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5"/><path d="M14 11v5"/>',
   slideAdd: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6"/><path d="M9 12h6"/>',
+  spread: '<rect x="2.5" y="4" width="8.5" height="16" rx="1.2"/><rect x="13" y="4" width="8.5" height="16" rx="1.2"/><path d="M5 8h3.5"/><path d="M5 11h3.5"/><path d="M15.5 8h3.5"/><path d="M15.5 11h3.5"/>',
   panels: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16"/><path d="M16 4v16"/>',
   expand: '<path d="M4 9V5a1 1 0 0 1 1-1h4"/><path d="M15 4h4a1 1 0 0 1 1 1v4"/><path d="M20 15v4a1 1 0 0 1-1 1h-4"/><path d="M9 20H5a1 1 0 0 1-1-1v-4"/>',
   notes: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h3"/>',

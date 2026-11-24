@@ -45,12 +45,13 @@ const HwpHome = (() => {
   }
   async function loadBox() { // 공통 저장소(documents/): 누구나 읽음 — 토큰 · 암호 필요 없음
     box.state = box.items.length ? 'ok' : 'loading'; render(); // 받아 둔 목록이 있으면 그대로 보여 주며 새로 받음
-    try { box.items = await U().boxRun(() => HwpStore.box.list()); box.folders = HwpStore.box.folder.list(); box.state = 'ok'; }
+    try { box.items = (await U().boxRun(() => HwpStore.box.list())).filter(b => !delPending.has(b.id)); box.folders = HwpStore.box.folder.list(); box.state = 'ok'; }
     catch (e) { console.error(e); box.state = 'err'; box.err = e.message; }
     render(); checkLegacy();
   }
   /* 예전 잠긴 문서함(hwp/*.bin)에 남은 문서 → 공통 저장소로 옮기기 (관리자 · GitHub 연결 · 한 번만 암호) */
   const legacy = { n: 0, busy: false };
+  let delQ = Promise.resolve(); const delPending = new Set(); // 문서함 지우기: 화면은 즉시, 저장소는 뒤에서 차례로 (지우는 중인 문서는 목록을 새로 받아도 숨김)
   const movedIds = () => new Set(box.items.map(x => x.legacy).filter(Boolean).concat(HwpStore.box.folder.skipped() || []));
   async function checkLegacy() {
     if (GUEST || !HwpStore.box.canWrite() || legacy.checked) return; legacy.checked = true;
@@ -256,7 +257,16 @@ const HwpHome = (() => {
     const print = async () => { await open(); if (U().W.doc && root.hidden) U().act('print'); };
     const dl = async () => { toast('받는 중…', 20000); const u = await U().boxRun(() => HwpStore.box.load(x.box.id)); HwpStore.download(x.box.name + '.hwpx', new Blob([u], { type: 'application/hwp+zip' })); toast('내려받기 폴더에 저장했습니다 (' + x.box.name + '.hwpx)', 2600); };
     const ren = async () => { const n = await U().askText('이름 바꾸기', '이름', x.box.name, '바꾸기'); if (!n || n === x.box.name) return; await U().boxRun(() => HwpStore.box.rename(x.box.id, n)); if (x.box.id === W.boxId) U().setName(n); x.box.name = n; render(); toast('이름을 바꿨습니다'); };
-    const delBox = async () => { if (!(await U().askConfirm(`"${x.name}" 을(를) 문서함에서 지울까요?`, '저장소에서 지웁니다. Git 기록에는 남습니다.' + (x.draft ? ' 이 기기의 임시본은 그대로 둡니다.' : ''), '삭제', true))) return; await U().boxRun(() => HwpStore.box.remove(x.box.id)); if (x.box.id === W.boxId) { W.boxId = null; U().updateState(); } box.items = box.items.filter(b => b.id !== x.box.id); render(); toast('문서함에서 지웠습니다', 2200); };
+    const delBox = async () => { if (!(await U().askConfirm(`"${x.name}" 을(를) 문서함에서 지울까요?`, '저장소에서 지웁니다. Git 기록에는 남습니다.' + (x.draft ? ' 이 기기의 임시본은 그대로 둡니다.' : ''), '삭제', true))) return;
+      // 누르는 즉시 목록에서 빼고 알림 — 저장소에서 지우는 일은 뒤에서 차례로(동시에 여러 개 지워도 목록 파일이 엉키지 않게). 실패할 때만 되살리고 알림
+      const id = x.box.id, at = box.items.findIndex(b => b.id === id), rec = box.items[at], wasCur = id === W.boxId;
+      box.items = box.items.filter(b => b.id !== id); if (wasCur) { W.boxId = null; U().updateState(); }
+      render(); toast('문서함에서 지웠습니다', 2200); delPending.add(id);
+      delQ = delQ.then(() => U().boxRun(() => HwpStore.box.remove(id))).then(() => delPending.delete(id), e => { delPending.delete(id);
+        if (rec && !box.items.some(b => b.id === id)) box.items.splice(Math.max(0, Math.min(at, box.items.length)), 0, rec);
+        if (wasCur && !W.boxId) { W.boxId = id; U().updateState(); }
+        render(); U().tell('"' + (rec ? rec.name : x.name) + '" 을(를) 지우지 못했습니다 — 목록에 되살렸습니다', e.message);
+      }); };
     const delDraft = async () => { if (!(await U().askConfirm(`"${x.name}" 임시본을 지울까요?`, x.box ? '문서함에 저장된 문서는 그대로 두고, 이 기기에 남은 저장 안 한 작업본만 지웁니다.' : '지우면 되살릴 수 없습니다.', '지우기', true))) return; await HwpStore.drafts.del(x.draft.id); loadDrafts(); };
     const openLabel = x.cur ? '편집으로 돌아가기' : x.stale ? '열기 (새 판 있음)' : x.draft ? '이어서 편집' : GUEST ? '열기' : '열어서 편집';
     const o = { id: x.id, cur: x.cur, title: x.name, preview: x.preview,
