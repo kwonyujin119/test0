@@ -330,7 +330,8 @@ function measureBlocks(all, full) {
   need.forEach((b, i) => {
     if (!full) b.style.contentVisibility = '';
     Hs.set(b, hs[i]);
-    const L = Lay.get(b) || {}; L.mz = _pass; // 이번에 다시 잰 문단 L.brk = b.dataset.pb === '1' || ppBreak(b.dataset.pp); Lay.set(b, L);
+    const L = Lay.get(b) || {}; L.mz = _pass; // 이번에 다시 잰 문단
+    L.brk = b.dataset.pb === '1' || ppBreak(b.dataset.pp); Lay.set(b, L);
     const v = `auto ${Math.max(0, hs[i] - blockPad(b)).toFixed(1)}px`;
     if (b.style.containIntrinsicSize !== v) b.style.containIntrinsicSize = v;
   });
