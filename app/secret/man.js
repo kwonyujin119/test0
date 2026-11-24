@@ -1,7 +1,7 @@
 /* SECRET — Man's 브리핑 (Man 모드 · 주식과 무관)
    하루 세 번(6시 · 12시 · 18시, 한국 시간) + [생성]으로 언제든 한 편 더.
    주제: 동기부여 · 규율 · 도전 · 실행 · 절제 · 목표 · 두려움 정복 — 어조는 짧게 끊는 명령형 · 싸움 · 사냥 · 몸을 먼저 움직이게 (2026-11-14 강하게 개편)
-   · AI 토큰을 쓰지 않는다. 아래 글 묶음에서 골라 조립한다 — 정해진 판은 날짜 · 시각으로(어느 기기에서나 같은 글), [생성] 판은 무작위
+   · AI 토큰을 쓰지 않는다. 2026-11-24부터 두 달은 man-data.js 의 새 글(날짜 · 시각마다 한 편), 그 밖의 날은 아래 글 묶음에서 골라 조립한다 — 정해진 판은 날짜 · 시각으로(어느 기기에서나 같은 글), [생성] 판은 무작위
    · 성적인 내용 · 남을 깎아내리는 말 · 투자 이야기는 넣지 않는다. 근거 문장은 출처를 밝힌다 */
 'use strict';
 window.SEC_MAN = (() => {
@@ -138,6 +138,21 @@ window.SEC_MAN = (() => {
     const f1 = R(FACT.length, dn * 3 + si), fact = FACT[f1];
     const goal = ctx.goal ? { h: '네가 내건 깃발', t: `「${String(ctx.goal).slice(0, 80)}」 — 이게 네가 내건 깃발이다. 오늘 이 깃발을 위해 땀 한 방울이라도 흘렸나. 아니라면 이 글을 닫기 전에 하나 해라. 말만 하는 남자의 깃발은 바람에 찢긴다.` } : null;
     let parts;
+    /* 두 달치 새 글(man-data.js: 날짜 → am · noon · pm)이 있으면 그 글로. 없는 날은 아래 묶음에서 조립 */
+    const D = window.SEC_MAN_DATA, e = !ex && D && D.days && D.days[ctx.date] && D.days[ctx.date][s.key];
+    if (e) {
+      const th2 = THEMES.find(t => t.key === e.th) || th;
+      parts = [
+        { h: '여는 말', t: e.open },
+        { h: `오늘의 주제 · ${th2.name}`, t: e.core },
+        { h: '오늘이라는 판', t: dayFacts(ctx.date, s.key) },
+        goal,
+        { h: '근거 하나', t: fact[0], src: fact[1] },
+        { h: '스스로 답할 질문', t: e.ask.map(q => '— ' + q).join('\n') },
+        { h: '오늘의 명령', t: e.cmd.map((c, i) => `${i + 1}. ${c}`).join('\n') },
+      ].filter(Boolean);
+      return { slot: s, theme: th2.name, punch: e.punch, last: e.last, title: `Man's 브리핑 · ${s.name} — ${e.title}`, parts, chars: parts.reduce((x, p) => x + p.t.length, 0), fresh: true };
+    }
     if (!ex) {
       parts = [
         { h: '여는 말', t: OPEN[s.key][(dn * 3 + si) % OPEN[s.key].length] },
@@ -178,5 +193,5 @@ window.SEC_MAN = (() => {
     const punch = PUNCH[R(PUNCH.length, dn * 3 + si * 5)];
     return { slot: s, theme: th.name, punch, last: LAST[s.key], title: ex ? `Man's 브리핑 · 추가 — ${th.name}` : `Man's 브리핑 · ${s.name} — ${s.title}`, parts, chars: len() };
   }
-  return { SLOTS, THEMES: THEMES.map(t => ({ key: t.key, name: t.name })), build };
+  return { SLOTS, THEMES: THEMES.map(t => ({ key: t.key, name: t.name })), build, has: (d, k) => { const D = window.SEC_MAN_DATA; return !!(D && D.days && D.days[d] && D.days[d][k]); }, start: () => (window.SEC_MAN_DATA || {}).start || '' };
 })();

@@ -3490,7 +3490,7 @@ ${[
   const manNow = () => { const k = kstNow(), h = k.getUTCHours(), d = k.toISOString().slice(0, 10); const s = MAN.SLOTS.filter(x => x.h <= h).pop(); if (s) return d + '-' + s.key; return new Date(k.getTime() - 864e5).toISOString().slice(0, 10) + '-pm'; };
   /* 지금까지 열린 판 (최근 7일, 새것부터) */
   /* 고를 수 있는 판: 오늘 세 판 모두(아직 시각 전이어도 미리 열어 볼 수 있음) + 지난 6일 — 새것부터 */
-  const manList = () => { const td = kstNow().toISOString().slice(0, 10), out = []; for (let i = 0; i < 7; i++) { const d = new Date(Date.parse(td) - i * 864e5).toISOString().slice(0, 10); for (let j = MAN.SLOTS.length - 1; j >= 0; j--) out.push(d + '-' + MAN.SLOTS[j].key); } return out; };
+  const manList = () => { const td = kstNow().toISOString().slice(0, 10), out = [], st = MAN.start(), back = st && st <= td ? Math.min(62, Math.round((Date.parse(td) - Date.parse(st)) / 864e5) + 1) : 0; for (let i = 0; i < Math.max(7, back); i++) { const d = new Date(Date.parse(td) - i * 864e5).toISOString().slice(0, 10); for (let j = MAN.SLOTS.length - 1; j >= 0; j--) out.push(d + '-' + MAN.SLOTS[j].key); } return out; };
   const manLabel = id => { const s = MAN.SLOTS.find(x => x.key === id.slice(11)); return `${dLabel(id.slice(0, 10))} ${s ? s.name : ''}`; };
   const mnui = { id: '' };
   $('manPick').onchange = e => { mnui.id = e.target.value; renderMan(); };
@@ -3633,7 +3633,7 @@ ${[
   async function renderMan() {
     paintThemes();
     const sched = manList(), l = manX.map(x => x.id).concat(sched), now = manNow(); if (!mnui.id || !l.includes(mnui.id)) mnui.id = sched.includes(now) ? now : sched[0];
-    $('manPick').innerHTML = (manX.length ? `<optgroup label="[한 판 더]로 만든 브리핑">${manX.map(x => `<option value="${x.id}"${x.id === mnui.id ? ' selected' : ''}>${manXLabel(x)}</option>`).join('')}</optgroup><optgroup label="정해진 시각">` : '') + sched.map(id => `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${manLabel(id)}${id === now ? ' · 지금' : id > now ? ' · 미리 보기' : ''}</option>`).join('') + (manX.length ? '</optgroup>' : '');
+    $('manPick').innerHTML = (manX.length ? `<optgroup label="[한 판 더]로 만든 브리핑">${manX.map(x => `<option value="${x.id}"${x.id === mnui.id ? ' selected' : ''}>${manXLabel(x)}</option>`).join('')}</optgroup>` : '') + (() => { let h = '', cd = ''; for (const id of sched) { const d = id.slice(0, 10); if (d !== cd) { h += (cd ? '</optgroup>' : '') + `<optgroup label="${esc(dLabel(d))}">`; cd = d; } const sl = MAN.SLOTS.find(x => x.key === id.slice(11)); h += `<option value="${id}"${id === mnui.id ? ' selected' : ''}>${esc(dLabel(d))} ${sl ? sl.name : ''}${id === now ? ' · 지금' : id > now ? ' · 미리 보기' : ''}</option>`; } return h + (cd ? '</optgroup>' : ''); })();
     const i = l.indexOf(mnui.id); $('manPrev').disabled = i >= l.length - 1; $('manNext').disabled = i <= 0;
     /* 오늘의 세 판: 지난 것 · 지금 · 아직 */
     const k = kstNow(), d = k.toISOString().slice(0, 10), h = k.getUTCHours();
