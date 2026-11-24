@@ -132,7 +132,7 @@ body.reflow #pgGaps { display: none; }
 .pg-hd, .pg-ft { display: flex; flex-direction: column; }
 .pg-hd, .pg-ft { white-space: pre; overflow: visible; color: #000; font-size: 10pt; line-height: 1.4; } /* 글자 모양은 머리말·꼬리말 자신의 cp- 를 따름 */
 .pg-lab { position: absolute; right: -36px; top: 2px; font-size: var(--fs-2xs, 11px); color: var(--ui-fg); opacity: .7; font-variant-numeric: tabular-nums; } /* 회색 바탕 위라 흐린 글자색 대신 옅게 */
-#doc { position: relative; z-index: 1; outline: none; color: #000; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; font-family: '함초롬바탕', 'Noto Serif KR', Batang, serif; font-size: 10pt; line-height: 1.6; caret-color: #000; text-wrap: stable; } /* stable: 글을 쓰는 동안 앞 줄이 다시 흐르지 않음 (줄 나눔·쪽 수는 그대로) */
+#doc, #spreadView .sv-doc { position: relative; z-index: 1; outline: none; color: #000; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; font-family: '함초롬바탕', 'Noto Serif KR', Batang, serif; font-size: 10pt; line-height: 1.6; caret-color: #000; text-wrap: stable; } /* stable: 글을 쓰는 동안 앞 줄이 다시 흐르지 않음 (줄 나눔·쪽 수는 그대로) */
 #doc ::selection { background: rgba(48, 120, 230, .3); }
 .hsec { position: relative; }
 .hp { margin: 0; position: relative; min-height: 1px; }
@@ -633,3 +633,19 @@ body.reflow #doc { min-width: 100%; }
 .ghx-link { display: flex; gap: 6px; margin-top: 12px; }
 .ghx-link input { flex: 1; min-width: 0; height: 34px; padding: 0 8px; border: 1px solid var(--ui-border); border-radius: 8px; background: var(--ui-bg); color: var(--ui-muted); font-size: 12px; }
 @media (max-width: 560px) { .ghx { grid-template-columns: 1fr; justify-items: center; } }
+
+/* 두 쪽 보기 (펼침면, 읽기 전용) */
+#spreadView { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: var(--ui-canvas); }
+#spreadView .sv-bar { flex: none; display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--ui-panel); border-bottom: 1px solid var(--ui-border); }
+#spreadView .sv-bar .grow { flex: 1; }
+#spreadView .sv-body { flex: 1; overflow: auto; padding: 20px 12px 40px; outline: none; }
+#spreadView .sv-row { display: flex; justify-content: center; gap: 24px; margin: 0 auto 28px; }
+#spreadView .sv-page { position: relative; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.18), 0 6px 18px rgba(0,0,0,.08); cursor: pointer; flex: none; }
+#spreadView .sv-page.blank { background: transparent; box-shadow: none; cursor: default; }
+#spreadView .sv-page:hover { outline: 2px solid var(--ui-accent); }
+#spreadView .sv-inner { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden; pointer-events: none; }
+#spreadView .sv-inner > div { position: absolute; }
+#spreadView .sv-inner .page { box-shadow: none; }
+#spreadView .sv-inner .pg-lab { display: none; }
+#spreadView .sv-no { position: absolute; right: 6px; bottom: 4px; font-size: 11px; color: var(--ui-muted); background: rgba(255,255,255,.85); padding: 0 4px; border-radius: 3px; }
+@media print { #spreadView { display: none; } }
