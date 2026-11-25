@@ -3698,10 +3698,10 @@
 
   /* ---- 명령창 (Ctrl+K): 한국어 문장으로 편집 · 정해진 규칙으로만 알아들음 (AI·서버 없음) ---- */
   let cmdEl = null; const cmdHist = []; let cmdHi = 0;
-  const CMD_EX = ['3장으로 이동', '다음에 빈 장 추가', '이 장 복제', "제목을 '현장지휘'로 바꿔", '글자 크게', '굵게', '글자색 빨강', '가운데 정렬', '배경 어둡게', '이 장 숨기기', "'소방대'를 '자위소방대'로 모두 바꿔", '되돌려'];
+  const CMD_EX = ['3장으로 이동', '다음에 빈 장 추가', '이 장 복제', "제목을 '현장지휘'로 바꿔", '글자 크게', '굵게', '글자색 빨강', '가운데 정렬', '이미지 넣기', '배경 어둡게', '이 장 숨기기', "'소방대'를 '자위소방대'로 모두 바꿔", '되돌려'];
   const CMD_HELP = [['이동', '3장으로 이동 · 다음 장 · 이전 장 · 처음 · 마지막'], ['장', '빈 장 추가 · 5장 뒤에 제목 장 추가 · 이 장 복제 · 이 장 삭제 · 이 장 위로/아래로 · 3장을 7장 뒤로 · 숨기기/보이기'],
     ['글 (먼저 글 상자 클릭)', '글자 크게/작게 · 크기 48 · 굵게/굵게 해제 · 기울임 · 글자색 빨강/#C93A12 · 가운데/왼쪽/오른쪽 정렬'], ['제목·바꾸기', "제목을 '현장지휘'로 바꿔 · 4장 제목을 '…'로 · 'A'를 'B'로 모두 바꿔"],
-    ['배경', '배경 어둡게/밝게 · 배경색 파랑 · 배경 테마로 · 이 배경을 모든 장에'], ['기타', '되돌려 · 다시 실행 · 저장 · 도움말 · ↑↓ 이전 명령']];
+    ['이미지', '이미지 넣기 · 3장에 사진 넣어 · 이미지 라이브러리 열어 · 배경 사진 넣기 · https://… 이미지 넣기 (상자를 골라 두면 그 자리에)'], ['배경', '배경 어둡게/밝게 · 배경색 파랑 · 배경 테마로 · 이 배경을 모든 장에'], ['기타', '되돌려 · 다시 실행 · 저장 · 도움말 · ↑↓ 이전 명령']];
   const KNUM = { 첫: 1, 한: 1, 하나: 1, 두: 2, 둘: 2, 세: 3, 셋: 3, 네: 4, 넷: 4, 다섯: 5, 여섯: 6, 일곱: 7, 여덟: 8, 아홉: 9, 열: 10 };
   const CMD_COLORS = { 빨강: '#C62828', 빨간: '#C62828', 붉은: '#C62828', 파랑: '#1565C0', 파란: '#1565C0', 남색: '#1A237E', 검정: '#111111', 검은: '#111111', 까만: '#111111', 흰색: '#FFFFFF', 흰: '#FFFFFF', 하양: '#FFFFFF', 하얀: '#FFFFFF', 주황: '#C93A12', 노랑: '#F5B800', 노란: '#F5B800', 초록: '#2E7D32', 녹색: '#2E7D32', 회색: '#5E6675', 보라: '#6A1B9A' };
   const QUOTE = /['"‘’“”「」『』]([^'"‘’“”「」『』]+)['"‘’“”「」『』]/g;
@@ -3741,6 +3741,20 @@
         let m = 0; S.deck.slides.forEach(sl => sl.elements.forEach(e => { m += replaceInElement(e, q, r, false); }));
         return done(`${m}곳을 '${r}'(으)로 바꿨습니다`, true);
       })();
+    }
+
+    // 이미지 넣기 (파일 고르기 · 이미지 라이브러리 · 주소 · 배경 사진) — 상자 하나를 골라 두면 그 자리에 채움
+    if (/이미지|사진|그림/.test(k) && /넣|추가|삽입|불러|올려|바꿔|바꾸|교체|가져|열어|^(이미지|사진|그림)$/.test(k)) {
+      if (nums.length) gotoSlide(idx(nums[0]));
+      const url = t.match(/https?:\/\/\S+/);
+      if (/배경/.test(k)) { $('fileBg').click(); return say(true, `${S.cur + 1}장 배경 사진을 고르세요`); }
+      if (/라이브러리|보관함|assets|에셋/i.test(k)) { showAssetLibrary(); return say(true, '이미지 라이브러리를 열었습니다'); }
+      if (url) {
+        return (async () => { const u = url[0]; const d = await imageSize(u); const r = Math.min(1, 1200 / d.w, 760 / d.h); addElement(imageEl(Math.round((SLIDE_W - d.w * r) / 2), Math.round((SLIDE_H - d.h * r) / 2), Math.round(d.w * r), Math.round(d.h * r), u)); return say(true, `${S.cur + 1}장에 주소 이미지를 넣었습니다`); })();
+      }
+      const box = S.sel.length === 1 && elById(S.sel[0]);
+      $('fileImage').click();
+      return say(true, box ? '사진을 고르세요 · 고른 상자 자리에 채웁니다' : `사진을 고르세요 · ${S.cur + 1}장 가운데에 넣습니다`);
     }
 
     // 장 추가
@@ -3838,7 +3852,7 @@
     if (r && r.help) { cmdAdd('ok', '<b>알아듣는 명령</b>' + CMD_HELP.map(([h, d]) => `<div class="ch"><span>${esc(h)}</span>${esc(d)}</div>`).join('')); inp.value = ''; return; }
     if (!r) { cmdAdd('no', '알아듣지 못했습니다. 이렇게 써 보세요: ' + cmdSuggest(text).map(x => `<button class="cmdchip" type="button">${esc(x)}</button>`).join(' ')); return; }
     cmdAdd(r.ok ? 'ok' : 'no', (r.ok ? '✓ ' : '') + esc(r.msg)); if (r.ok) inp.value = '';
-    inp.focus();
+    if (!document.querySelector('.modal-bg')) inp.focus(); // 창(이미지 라이브러리 등)을 열었으면 초점을 그 창에 둠
   }
   function showCmd() {
     if (S.editing) endEdit();
@@ -3846,7 +3860,7 @@
     cmdEl = document.createElement('div'); cmdEl.className = 'cmdbar'; cmdEl.setAttribute('role', 'dialog'); cmdEl.setAttribute('aria-label', '명령창');
     cmdEl.innerHTML = `<div class="cmdlog" aria-live="polite"><div class="cl tip">문장으로 편집합니다 · 정해진 명령만 알아듣습니다 (<button class="cmdchip" type="button">도움말</button>)</div></div>
       <div class="cmdrow"><input id="cmdq" type="text" autocomplete="off" enterkeyhint="send" placeholder="예: 3장 제목을 '현장지휘'로 바꿔" aria-label="명령"><button class="btn sm primary" id="cmdgo">실행</button><button class="btn sm icon ghost" id="cmdx" title="닫기 (Esc)" aria-label="명령창 닫기">${icon('x', 16)}</button></div>
-      <div class="cmdchips">${CMD_EX.slice(0, 9).map(x => `<button class="cmdchip" type="button">${esc(x)}</button>`).join('')}</div>`;
+      <div class="cmdchips">${CMD_EX.slice(0, 10).map(x => `<button class="cmdchip" type="button">${esc(x)}</button>`).join('')}</div>`;
     main.appendChild(cmdEl);
     const inp = cmdEl.querySelector('#cmdq');
     const close = () => { cmdEl.remove(); cmdEl = null; $('btnCmd') && $('btnCmd').classList.remove('active'); };
@@ -3860,7 +3874,7 @@
     inp.addEventListener('keydown', (ev) => {
       ev.stopPropagation();
       if (ev.key === 'Enter' && !ev.isComposing && ev.keyCode !== 229) { ev.preventDefault(); cmdExec(inp.value); return; }
-      if (ev.key === 'Escape') { close(); return; }
+      if (ev.key === 'Escape') { const m = document.querySelector('.modal-bg'); if (m) { const b = m.querySelector('[data-close]'); if (b) b.click(); else m.remove(); return; } close(); return; }
       if (ev.key === 'ArrowUp' && !ev.isComposing && cmdHist.length) { ev.preventDefault(); cmdHi = Math.max(0, cmdHi - 1); inp.value = cmdHist[cmdHi]; return; }
       if (ev.key === 'ArrowDown' && !ev.isComposing && cmdHist.length) { ev.preventDefault(); cmdHi = Math.min(cmdHist.length, cmdHi + 1); inp.value = cmdHist[cmdHi] || ''; return; }
       const c = ev.ctrlKey || ev.metaKey, l = ev.key.toLowerCase();
