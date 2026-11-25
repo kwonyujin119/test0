@@ -221,8 +221,70 @@
   }
   if (TOURS[PAGE]) { let n = 0; const t = setInterval(() => { if (++n > 30 || !pending().length) { clearInterval(t); return; } tryTours(); }, 2500); }
 
+  /* ---------- AI 단추 표시: 반짝이 아이콘 + 글자 라벨이 있는 단추만 (라벨 없는 반짝이는 AI 로 표시하지 않음) ---------- */
+  function markAI(root) {
+    (root || document).querySelectorAll('button i[data-ic="sparkle"], button .ico[data-ic="sparkle"], a.btn i[data-ic="sparkle"]').forEach(i => { const b = i.closest('button, a'); if (b && b.textContent.trim() && !b.classList.contains('ai-act')) b.classList.add('ai-act'); });
+  }
+  let aiMo = null;
+  function watchAI() { markAI(); if (!('MutationObserver' in window)) return; aiMo = new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('[data-ic="sparkle"]')) markAI(n); }); aiMo.observe(document.body, { childList: true, subtree: true }); }
+
+  /* ---------- 명령 찾기 (Ctrl+K) — 작업장 이동 · 이 화면 메뉴 · 테마 · 단축키 ----------
+     편집기 · 문서 · 영상 작업장은 Ctrl+K 를 자기 기능으로 이미 쓰므로, 그 밖의 화면에서만 Ctrl+K 로 연다 (탭 바 [찾기] 는 어디서나) */
+  const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho = s => [...String(s)].map(c => { const k = c.charCodeAt(0) - 0xAC00; return k >= 0 && k < 11172 ? CHO[Math.floor(k / 588)] : c; }).join('');
+  const OWN_K = /^(editor|hangul|video|present)\.html$/;
+  function commands() {
+    const isAdmin = document.documentElement.classList.contains('admin');
+    const L = [];
+    const go = (label, href, hint) => L.push({ label, hint: hint || '작업장', run: () => { location.href = href; } });
+    go('DPV 첫 화면', 'index.html'); go('DOCUMENT — 한글 문서', 'hangul.html'); go('PRESENTATION — 교안', 'gyoan.html'); go('VIDEO — 영상', 'videos.html');
+    if (isAdmin) go('SECRET — 투자', 'secret.html');
+    const seen = new Set();
+    document.querySelectorAll('.rail [data-view], #hmNav .rail-item, #veRail [data-tab]').forEach(b => {
+      const t = (b.textContent || b.getAttribute('data-tip') || '').replace(/\s+/g, ' ').replace(/\s\d+$/, '').trim(); if (!t || t.length > 40 || seen.has(t)) return;
+      seen.add(t); L.push({ label: t, hint: '이 화면', run: () => b.click() });
+    });
+    L.push({ label: document.documentElement.dataset.theme === 'dark' ? '화면을 밝게' : '화면을 어둡게', hint: '보기', run: () => { if (window.UiTheme) UiTheme.set(UiTheme.get() === 'dark' ? 'light' : 'dark'); } });
+    L.push({ label: '단축키 안내', hint: '도움말 · ?', run: () => { location.href = 'shortcuts.html'; } });
+    L.push({ label: '새 기능 안내 다시 보기', hint: '도움말', run: () => { window.DPV.resetCoach(); location.reload(); } });
+    return L;
+  }
+  function palette() {
+    if (document.getElementById('dpvPal')) return;
+    const all = commands(); let list = all, sel = 0;
+    const bg = document.createElement('div'); bg.className = 'modal-bg dpv-pal-bg'; bg.id = 'dpvPal';
+    bg.innerHTML = `<div class="modal dpv-pal" role="dialog" aria-modal="true" aria-label="명령 찾기"><input type="search" class="dpv-pal-q" placeholder="무엇을 할까요? (초성도 됩니다: ㅁㅅ → 문서)" role="combobox" aria-expanded="true" aria-controls="dpvPalL" aria-autocomplete="list" enterkeyhint="go"><ul class="dpv-pal-l" id="dpvPalL" role="listbox"></ul><p class="dpv-pal-f"><kbd>↑</kbd> <kbd>↓</kbd> 고르기 · <kbd>Enter</kbd> 실행 · <kbd>Esc</kbd> 닫기</p></div>`;
+    document.body.appendChild(bg);
+    const q = bg.querySelector('input'), ul = bg.querySelector('ul');
+    const close = () => { bg.remove(); document.removeEventListener('keydown', key, true); };
+    const draw = () => {
+      ul.innerHTML = list.length ? list.slice(0, 40).map((c, i) => `<li role="option" id="dpvPo${i}" aria-selected="${i === sel}" class="${i === sel ? 'on' : ''}" data-i="${i}"><span>${esc(c.label)}</span><small>${esc(c.hint)}</small></li>`).join('') : '<li class="none">찾는 것이 없습니다</li>';
+      q.setAttribute('aria-activedescendant', list.length ? 'dpvPo' + sel : '');
+      const on = ul.querySelector('.on'); if (on) on.scrollIntoView({ block: 'nearest' });
+    };
+    const run = i => { const c = list[i]; if (!c) return; close(); setTimeout(() => c.run(), 0); };
+    q.addEventListener('input', () => { const v = q.value.trim().toLowerCase(), vc = cho(v); list = !v ? all : all.filter(c => { const l = c.label.toLowerCase(); return l.includes(v) || cho(l).includes(vc) || c.hint.includes(v); }); sel = 0; draw(); });
+    ul.addEventListener('click', e => { const li = e.target.closest('[data-i]'); if (li) run(+li.dataset.i); });
+    const key = e => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(list.length - 1, sel + 1); draw(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(0, sel - 1); draw(); }
+      else if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); run(sel); }
+    };
+    document.addEventListener('keydown', key, true);
+    bg.addEventListener('mousedown', e => { if (e.target === bg) close(); });
+    draw(); setTimeout(() => q.focus(), 20);
+  }
+  document.addEventListener('keydown', e => {
+    if (OWN_K.test(PAGE)) return;
+    const typing = e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]');
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.code === 'KeyK') { e.preventDefault(); palette(); }
+    else if (e.key === '?' && !typing && !e.ctrlKey && !e.metaKey && !document.querySelector('.modal-bg')) { e.preventDefault(); location.href = 'shortcuts.html'; }
+  });
+
   /* ---------- 시작 ---------- */
   function boot() {
+    watchAI();
     openWindow(document.body, 2200);
     document.querySelectorAll('button[title], a[title]').forEach(el => { if (!el.textContent.trim() && !el.getAttribute('aria-label')) el.setAttribute('aria-label', el.getAttribute('title')); });
   }
@@ -231,7 +293,8 @@
   window.DPV = Object.assign(window.DPV || {}, {
     ready: true,
     view(root) { if (root && !seenViews.has(root)) { seenViews.add(root); openWindow(root, 1200); } const pg = root && root.classList && root.classList.contains('sc-page') ? root : null; if (pg) progress(pg); }, // 화면(탭)을 바꿀 때 부름
-    reveal: prime, coach, confirm: confirmBox, alert: alertBox,
+    reveal: prime, coach, confirm: confirmBox, alert: alertBox, palette,
+    aiBusy(el, on) { if (el) el.classList.toggle('ai-busy', !!on); }, // AI 가 일하는 동안 그 입력창 · 카드 테두리에 빛 (화면당 한 곳)
     resetCoach(id) { try { if (id) localStorage.removeItem('dpv:coach:' + id); else Object.keys(localStorage).filter(k => k.startsWith('dpv:coach:')).forEach(k => localStorage.removeItem(k)); } catch (e) { } },
   });
 })();
