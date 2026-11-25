@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment2.outputs.page_url || steps.deployment3.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       # 화면 스크립트에 문법 오류가 있으면 배포하지 않음 → 사이트는 마지막으로 잘 되던 판 그대로 (한 줄 실수로 앱이 통째로 안 열리는 일 방지)
@@ -39,5 +39,21 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
+      # 배포 단계는 가끔 GitHub 쪽에서 방금 올린 묶음을 아직 못 찾아 실패함 ("No artifacts named github-pages")
+      # → 잠깐 기다렸다가 같은 묶음으로 두 번 더 시도 (사이트 내용은 같고, 반영이 1~2분 늦어질 뿐)
       - id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait before retry (1)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+      - id: deployment2
+        if: steps.deployment.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Wait before retry (2)
+        if: steps.deployment.outcome == 'failure' && steps.deployment2.outcome == 'failure'
+        run: sleep 90
+      - id: deployment3
+        if: steps.deployment.outcome == 'failure' && steps.deployment2.outcome == 'failure'
         uses: actions/deploy-pages@v4
