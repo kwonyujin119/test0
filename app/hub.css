@@ -220,3 +220,32 @@ body.deck-dragging .folder-card .deck-thumb { box-shadow: 0 0 0 1.5px var(--ui-b
 .folder-lock-badge .ico { width: 13px; height: 13px; }
 .folder-locked { color: var(--ui-fg); }
 .fb-lock { margin-left: 8px; font-style: normal; font-size: var(--fs-xs); color: var(--ui-muted); }
+
+/* ---------- 첫 화면 작업장 카드: 위계 정리 (마크업은 그대로, CSS 만) ----------
+   ① 맨 위 작업장 색 띠(편집기 머리 줄의 색 띠와 같은 말) ② 이름 ③ 한 줄 설명 ④ 이어서 열 것 ⑤ 맨 아래 [열기] 줄.
+   [열기] 는 가는 선 아래 한 줄 전체 — 카드 어디를 눌러도 열린다는 것을 아래 줄이 알려 줌.
+   빈 '이어서' 칸은 점선(끌어다 놓는 자리처럼 보였음) 대신 옅은 바탕 */
+.ws-card[data-ws] { gap: 12px; padding: 22px 22px 0; overflow: hidden; box-shadow: inset 0 3px 0 var(--ws-dot); }
+.ws-card[data-ws]:hover { box-shadow: inset 0 3px 0 var(--ws-dot), var(--ui-shadow-sm); }
+.ws-card[data-ws] .ws-ico { width: 48px; height: 48px; border-radius: 12px; font-size: 22px; }
+.ws-card[data-ws] h2 { font-size: var(--fs-xl); font-weight: 700; }
+.ws-card[data-ws] .desc { margin: 0; color: var(--ui-fg); opacity: .78; font-size: var(--fs-sm); line-height: 1.6; word-break: keep-all; }
+.ws-card[data-ws] .stat { font-weight: 500; }
+.ws-card[data-ws] .stat::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ws-dot); flex: none; margin-right: 2px; }
+.ws-card[data-ws] .stat:has(.dot)::before { content: none; }
+.ws-card[data-ws] .stat .dot { background: var(--ws-dot); }
+.ws-card[data-ws] .resume-link.empty { border: 0; background: var(--ui-panel2); }
+.ws-card[data-ws] .resume-link.empty .rl-title { white-space: normal; }
+.ws-card[data-ws] .go { justify-content: space-between; margin: auto -22px 0; padding: 0 22px; min-height: 52px; border-top: 1px solid var(--ui-border); font-size: var(--fs-md); transition: background-color .15s; }
+.ws-card[data-ws] .go .ico { width: 30px; height: 30px; padding: 7px; box-sizing: border-box; border-radius: 50%; background: var(--ws-bg); box-shadow: inset 0 0 0 1px var(--ws-line); }
+.ws-card[data-ws]:hover .go { background: color-mix(in srgb, var(--ws-bg) 55%, transparent); }
+/* SECRET 카드는 설명 줄이 없어 비어 보였음 — 마크업에 설명(.desc)이 생기면 저절로 꺼짐 */
+#secretCard:not(:has(.desc))::before { content: '관리자 전용 투자 도우미 · 오늘 한눈에 · 수익 엔진 · 매매 일지'; order: 1; color: var(--ui-fg); opacity: .78; font-size: var(--fs-sm); line-height: 1.6; word-break: keep-all; }
+#secretCard > .card-top { order: 0; }
+#secretCard > .go { order: 2; }
+@media (max-width: 760px) {
+  .ws-card[data-ws] { padding: 18px 18px 0; }
+  .ws-card[data-ws] .go { margin: auto -18px 0; padding: 0 18px; }
+  .ws-card[data-ws] .ws-ico { width: 44px; height: 44px; font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .ws-card[data-ws] .go { transition: none; } }
