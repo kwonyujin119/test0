@@ -491,6 +491,7 @@ function renderSlide(slide, deck, opts) {
   const decor = bg.image ? 'none' : (slide.decor || theme.decor);
   if (decor && decor !== 'none') { const d = document.createElement('div'); d.className = 'decor decor-' + decor; el.appendChild(d); }
   for (const e of slide.elements) {
+    if (e.po && (mode !== 'present' || step === Infinity)) continue; // 발표 화면에서만 (스포트라이트 덮개 · 여는 커튼): 편집 · 썸네일 · 인쇄에는 안 그림
     const node = renderElement(e, theme, mode);
     if (mode === 'present') applyStepToNode(e, node, step, opts.back);
     el.appendChild(node);
