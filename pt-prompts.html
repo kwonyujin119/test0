@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PT 툴 만들기 프롬프트</title>
+<meta name="description" content="37번 교안 「AI로 나만의 PT 툴 만들기」 단계별 프롬프트 — 복사해서 AI에 붙여넣기">
+<style>
+:root { --bg:#FAFAF7; --card:#fff; --fg:#15181C; --muted:#5B6168; --line:#D9D6CF; --acc:#2457D6; --acc-s:#E8EEFC; --pre:#F4F2EE; --ok:#1E7B4F; }
+@media (prefers-color-scheme: dark) { :root { --bg:#14161B; --card:#1F232B; --fg:#EEEEF0; --muted:#A3A8B2; --line:#343944; --acc:#7AA2FF; --acc-s:#1B2640; --pre:#171A20; --ok:#5BD08F; } }
+* { box-sizing:border-box }
+body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
+header { padding:28px 16px 8px; max-width:760px; margin:0 auto; }
+header .kick { color:var(--acc); font-weight:700; font-size:14px }
+header h1 { margin:4px 0 6px; font-size:26px; line-height:1.3 }
+header p { margin:0; color:var(--muted); font-size:15px }
+nav { max-width:760px; margin:14px auto 0; padding:0 16px; display:flex; flex-wrap:wrap; gap:6px }
+nav a { text-decoration:none; color:var(--fg); border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:14px; background:var(--card) }
+nav a.on { background:var(--acc); border-color:var(--acc); color:#fff }
+main { max-width:760px; margin:0 auto; padding:16px; display:flex; flex-direction:column; gap:16px }
+.card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px 18px; scroll-margin-top:12px }
+.card.on { border:2px solid var(--acc); box-shadow:0 8px 28px rgba(36,87,214,.15) }
+.step { display:inline-block; background:var(--acc-s); color:var(--acc); font-weight:700; font-size:13px; padding:3px 10px; border-radius:999px }
+h2 { margin:10px 0 4px; font-size:21px }
+.when { margin:0 0 10px; color:var(--muted); font-size:14px }
+.links { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px }
+.links a { color:var(--acc); font-weight:600; font-size:15px }
+pre { white-space:pre-wrap; word-break:keep-all; overflow-wrap:anywhere; background:var(--pre); border-radius:12px; padding:14px; margin:0 0 12px; font:15px/1.65 inherit; font-family:inherit }
+.copy + pre { margin-top:12px }
+.copy { width:100%; min-height:52px; border:0; border-radius:12px; background:var(--acc); color:#fff; font:700 17px/1 inherit; font-family:inherit; cursor:pointer }
+.copy.done { background:var(--ok) }
+.copy:focus-visible { outline:3px solid var(--fg); outline-offset:2px }
+footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--muted); font-size:13px }
+</style></head><body>
+<header><div class="kick">37번 교안 · AI로 나만의 PT 툴 만들기</div><h1>단계별 프롬프트</h1>
+<p>[프롬프트 복사]를 누르고 AI 대화창에 붙여넣으세요. ( ) 안은 내 상황에 맞게 바꿉니다. 한 번에 한 단계씩, 끝나면 직접 확인하세요.</p></header>
+<nav><a href="?p=0-3" data-no="0-3">0~3 한 번에</a><a href="?p=0" data-no="0">0단계</a><a href="?p=1" data-no="1">1단계</a><a href="?p=2" data-no="2">2단계</a><a href="?p=3" data-no="3">3단계</a><a href="?p=4" data-no="4">4단계</a><a href="?p=5" data-no="5">5단계</a><a href="?p=6" data-no="6">6단계</a></nav>
+<main>
+<section class="card" id="p0-3" data-no="0-3">
+  <div class="step">0~3단계 · 한 번에</div>
+  <h2>주말 하루 코스 (준비 → 형식 → 발표기 → 공개)</h2>
+  <p class="when">언제: 처음 시작할 때 — 이것 하나만 붙여넣기</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>아래 0~3단계를 순서대로 진행해 줘.
+한 단계가 끝나면 그 단계의 [완료 기준]을 보여 주고 멈춰. 내가 &quot;다음&quot;이라고 하면 다음 단계로 넘어가.
+내가 직접 눌러야 하는 것은 화면 순서대로 하나씩 알려 줘.
+
+==== 0단계 · 준비 : 창고 만들기 도우미 ====
+나는 GitHub를 처음 써. 코딩은 모르는 강사야.
+브라우저에서 쓰는 나만의 발표 프로그램(PT 툴)을 만들려고 해.
+
+지금부터 아래 일을 내가 따라 할 수 있게 화면 순서대로 하나씩 알려 줘.
+1. GitHub에 새 저장소(창고) 만들기 — 이름은 my-pt, 공개(Public)로
+2. 이 저장소를 AI(너)가 직접 고칠 수 있게 연결하는 방법
+3. 나중에 이 저장소를 인터넷 주소로 공개(GitHub Pages)할 때 필요한 설정
+
+[규칙]
+- 한 번에 한 단계만 알려 주고, 내가 &quot;다음&quot;이라고 하면 다음 단계로
+- 버튼 이름은 화면에 보이는 그대로 (영어면 영어 그대로) 적어 줘
+- 내가 화면 캡처를 보내면, 그 화면에서 무엇을 누르면 되는지 짚어 줘
+- 비밀번호·토큰 같은 비밀 값은 대화창에 붙여 넣으라고 하지 마
+
+==== 1단계 · 형식 : 교안 파일 형식 정하기 ====
+너는 웹 개발자야. 나는 코딩을 모르는 강사이고, 브라우저에서 쓰는 발표 프로그램을 만들려고 해.
+먼저 &quot;교안 파일 형식&quot;만 정해 줘. 화면은 아직 만들지 마.
+
+[형식 조건]
+- 교안 1개 = JSON 파일 1개, decks/ 폴더에 저장 (예: decks/sample.json)
+- 슬라이드 크기는 1920×1080 기준 좌표
+- 구조: { title, slides: [ { bg, notes, elements: [...] } ] }
+- 요소 종류: text(글), image(그림), shape(도형). 각 요소는 x, y, w, h, 그리고 step(몇 번째 클릭에 나타날지)
+- 사람이 읽고 고칠 수 있게 단순하게. 나중에 AI가 이 파일을 직접 고칠 거야.
+
+[참고] PowerPoint의 &quot;슬라이드 / 개체 / 애니메이션 순서&quot; 개념을 따르되, 파일은 JSON으로.
+
+[완료 기준]
+- 형식 설명 문서 docs/format.md 와 예시 교안 decks/sample.json (5장: 표지, 목차, 본문 2장, 마무리)
+- 각 항목이 무슨 뜻인지 한국어로 설명
+
+==== 2단계 · 발표기 : 발표 화면 만들기 ====
+docs/format.md 형식의 교안을 발표하는 화면(present.html)을 만들어 줘.
+외부 서버 없이 정적 파일만으로 동작해야 해 (GitHub Pages에 올릴 거야).
+
+[기능]
+- 주소 present.html?deck=sample 로 decks/sample.json 을 읽어 보여주기
+- → · Space · 클릭: 다음 (step이 남아 있으면 요소를 하나씩 등장, 없으면 다음 장)
+- ← : 이전 / Home·End: 처음·끝 / 숫자+Enter: 그 장으로
+- F5 또는 F: 전체 화면 / B: 화면 검게 / Esc: 나가기
+- 화면 크기가 달라도 16:9 비율을 유지하며 꽉 차게 (남는 곳은 검은 여백)
+- 휴대폰에서는 좌우로 밀어서 넘기기
+- S: 발표자 보기 새 창 (현재 장, 다음 장 미리보기, notes, 경과 시간)
+
+[참고] reveal.js(revealjs.com)의 키보드 조작·전체 화면·발표자 보기 방식 — 동작만 참고하고 라이브러리는 쓰지 말 것 / PowerPoint 슬라이드 쇼 단축키(F5, B, 숫자+Enter)
+
+[하지 말 것]
+- 빌드 도구(npm, React 등) 쓰지 말 것. HTML·CSS·JS 파일만
+- 교안 내용을 코드 안에 직접 적지 말 것 (반드시 JSON에서 읽기)
+
+[완료 기준]
+- 위 단축키를 하나씩 눌러 본 결과를 표로 보고
+- 휴대폰 크기(390×844)와 PC 크기에서 화면을 캡처해서 보여주기
+
+==== 3단계 · 공개 : 인터넷 주소로 공개하기 ====
+지금 만든 발표 프로그램을 GitHub Pages로 공개해서 인터넷 주소를 알려 줘.
+
+[조건]
+- 내가 직접 눌러야 하는 설정이 있으면 화면 순서대로 알려 줘
+- 공개가 끝나면 아래 두 주소를 알려 줘
+  1) 사이트 첫 주소
+  2) 예시 교안 발표 주소 (present.html?deck=sample)
+
+[완료 기준]
+- 두 주소가 실제로 열리는지 확인한 결과
+- 고친 뒤 화면에 반영되기까지 몇 분 걸릴 수 있다는 것과, 안 바뀌면 새로고침하라는 안내</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p0" data-no="0">
+  <div class="step">0단계 · 준비</div>
+  <h2>창고 만들기 도우미</h2>
+  <p class="when">언제: GitHub 가입 직후, 저장소를 만들 때</p>
+  <p class="links"><a href="https://github.com/signup" target="_blank" rel="noopener">GitHub 가입 ↗</a><a href="https://claude.ai" target="_blank" rel="noopener">Claude ↗</a><a href="https://docs.github.com/ko/pages" target="_blank" rel="noopener">GitHub Pages 안내 ↗</a></p>
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>나는 GitHub를 처음 써. 코딩은 모르는 강사야.
+브라우저에서 쓰는 나만의 발표 프로그램(PT 툴)을 만들려고 해.
+
+지금부터 아래 일을 내가 따라 할 수 있게 화면 순서대로 하나씩 알려 줘.
+1. GitHub에 새 저장소(창고) 만들기 — 이름은 my-pt, 공개(Public)로
+2. 이 저장소를 AI(너)가 직접 고칠 수 있게 연결하는 방법
+3. 나중에 이 저장소를 인터넷 주소로 공개(GitHub Pages)할 때 필요한 설정
+
+[규칙]
+- 한 번에 한 단계만 알려 주고, 내가 &quot;다음&quot;이라고 하면 다음 단계로
+- 버튼 이름은 화면에 보이는 그대로 (영어면 영어 그대로) 적어 줘
+- 내가 화면 캡처를 보내면, 그 화면에서 무엇을 누르면 되는지 짚어 줘
+- 비밀번호·토큰 같은 비밀 값은 대화창에 붙여 넣으라고 하지 마</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p1" data-no="1">
+  <div class="step">1단계 · 형식</div>
+  <h2>교안 파일 형식 정하기</h2>
+  <p class="when">언제: 가장 먼저 — 화면을 만들기 전에</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>너는 웹 개발자야. 나는 코딩을 모르는 강사이고, 브라우저에서 쓰는 발표 프로그램을 만들려고 해.
+먼저 &quot;교안 파일 형식&quot;만 정해 줘. 화면은 아직 만들지 마.
+
+[형식 조건]
+- 교안 1개 = JSON 파일 1개, decks/ 폴더에 저장 (예: decks/sample.json)
+- 슬라이드 크기는 1920×1080 기준 좌표
+- 구조: { title, slides: [ { bg, notes, elements: [...] } ] }
+- 요소 종류: text(글), image(그림), shape(도형). 각 요소는 x, y, w, h, 그리고 step(몇 번째 클릭에 나타날지)
+- 사람이 읽고 고칠 수 있게 단순하게. 나중에 AI가 이 파일을 직접 고칠 거야.
+
+[참고] PowerPoint의 &quot;슬라이드 / 개체 / 애니메이션 순서&quot; 개념을 따르되, 파일은 JSON으로.
+
+[완료 기준]
+- 형식 설명 문서 docs/format.md 와 예시 교안 decks/sample.json (5장: 표지, 목차, 본문 2장, 마무리)
+- 각 항목이 무슨 뜻인지 한국어로 설명</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p2" data-no="2">
+  <div class="step">2단계 · 발표기</div>
+  <h2>발표 화면 만들기</h2>
+  <p class="when">언제: 형식이 정해진 다음</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>docs/format.md 형식의 교안을 발표하는 화면(present.html)을 만들어 줘.
+외부 서버 없이 정적 파일만으로 동작해야 해 (GitHub Pages에 올릴 거야).
+
+[기능]
+- 주소 present.html?deck=sample 로 decks/sample.json 을 읽어 보여주기
+- → · Space · 클릭: 다음 (step이 남아 있으면 요소를 하나씩 등장, 없으면 다음 장)
+- ← : 이전 / Home·End: 처음·끝 / 숫자+Enter: 그 장으로
+- F5 또는 F: 전체 화면 / B: 화면 검게 / Esc: 나가기
+- 화면 크기가 달라도 16:9 비율을 유지하며 꽉 차게 (남는 곳은 검은 여백)
+- 휴대폰에서는 좌우로 밀어서 넘기기
+- S: 발표자 보기 새 창 (현재 장, 다음 장 미리보기, notes, 경과 시간)
+
+[참고] reveal.js(revealjs.com)의 키보드 조작·전체 화면·발표자 보기 방식 — 동작만 참고하고 라이브러리는 쓰지 말 것 / PowerPoint 슬라이드 쇼 단축키(F5, B, 숫자+Enter)
+
+[하지 말 것]
+- 빌드 도구(npm, React 등) 쓰지 말 것. HTML·CSS·JS 파일만
+- 교안 내용을 코드 안에 직접 적지 말 것 (반드시 JSON에서 읽기)
+
+[완료 기준]
+- 위 단축키를 하나씩 눌러 본 결과를 표로 보고
+- 휴대폰 크기(390×844)와 PC 크기에서 화면을 캡처해서 보여주기</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p3" data-no="3">
+  <div class="step">3단계 · 공개</div>
+  <h2>인터넷 주소로 공개하기</h2>
+  <p class="when">언제: 발표 화면이 PC에서 잘 될 때</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>지금 만든 발표 프로그램을 GitHub Pages로 공개해서 인터넷 주소를 알려 줘.
+
+[조건]
+- 내가 직접 눌러야 하는 설정이 있으면 화면 순서대로 알려 줘
+- 공개가 끝나면 아래 두 주소를 알려 줘
+  1) 사이트 첫 주소
+  2) 예시 교안 발표 주소 (present.html?deck=sample)
+
+[완료 기준]
+- 두 주소가 실제로 열리는지 확인한 결과
+- 고친 뒤 화면에 반영되기까지 몇 분 걸릴 수 있다는 것과, 안 바뀌면 새로고침하라는 안내</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p4" data-no="4">
+  <div class="step">4단계 · 교안 목록</div>
+  <h2>교안 목록(첫 화면) 만들기</h2>
+  <p class="when">언제: 교안이 2개 이상 생길 때</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>교안 목록 화면(index.html)을 만들어 줘. 이 사이트의 첫 화면이야.
+
+[기능]
+- decks/ 폴더의 교안들을 카드로 보여주기. 목록은 decks/index.json 한 파일로 관리 (교안을 추가하면 여기에 한 줄 추가)
+- 카드: 첫 장 미리보기(축소 화면), 제목, 장 수, 고친 날짜
+- 카드 누르면 present.html?deck=… 로 발표 / &quot;편집&quot; 단추는 나중에 만들 편집기로 연결 (지금은 숨김)
+- 위에 검색칸 (제목으로 거르기), 폴더(분류)별 묶기
+- 휴대폰에서는 카드 1열, PC에서는 3~4열
+
+[참고] Google Slides 첫 화면(최근 프레젠테이션 카드 격자) / Notion 갤러리 보기 / 행정안전부 KRDS(디지털 정부 디자인 시스템)의 글자 크기·대비 기준
+
+[완료 기준]
+- 예시 교안 3개를 넣고 PC·휴대폰 화면을 캡처해 보여주기
+- 검색칸에 글자를 넣었을 때 걸러지는지 확인 결과</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p5" data-no="5">
+  <div class="step">5단계 · 첫 교안</div>
+  <h2>AI로 첫 교안 만들기</h2>
+  <p class="when">언제: 목록까지 되면 — 그 뒤로는 수업마다</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>docs/format.md 형식으로 새 교안을 만들어 줘.
+
+- 주제: (여기에 주제)
+- 대상: (예: 신입 직원) · 시간: (예: 40분) · 장 수: 10장 안팎
+- 구성: 표지 → 목차 → 본문 → 정리
+- 한 장에 한 메시지. 글은 짧게, 설명은 발표자 노트(notes)에
+- 글자는 24px 이상, 배경과 글자의 대비를 충분히
+
+[완료 기준]
+- decks/ 에 파일을 만들고 목록(decks/index.json)에도 추가
+- 모든 장을 그림으로 뽑아서 글자가 넘치거나 잘린 곳이 없는지 확인한 결과</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+<section class="card" id="p6" data-no="6">
+  <div class="step">6단계 · 편집기</div>
+  <h2>편집기 만들기 (세 번에 나눠서)</h2>
+  <p class="when">언제: 말로 고치는 게 불편해질 때 — 한 번에 하나씩</p>
+  
+  <button class="copy" type="button">프롬프트 복사</button>
+  <pre>[6-1] editor.html 을 만들어 줘. 이번에는 &quot;보기와 고르기&quot;까지만.
+- 왼쪽: 슬라이드 썸네일 목록 / 가운데: 현재 장 크게 / 오른쪽: 고른 요소의 속성(위치·크기·글자 크기·색)
+- 요소를 클릭하면 테두리와 크기 조절 손잡이 8개 표시, 끌어서 이동, 손잡이로 크기 조절
+- 아직 저장은 하지 말고, 화면에서만 바뀌게
+[참고] Google Slides 편집 화면 배치 / PowerPoint 단축키: 방향키 이동, Shift+방향키 크게 이동, Ctrl+D 복제, Delete 삭제
+[완료 기준] 요소 고르기·이동·크기 조절을 해 본 화면 캡처
+
+---- (위가 끝나고 확인한 다음에) ----
+[6-2] 이어서: 글 상자를 두 번 클릭하면 글을 직접 고치기, Ctrl+Z 되돌리기 / Ctrl+Y 다시, 슬라이드 추가·복제·삭제·순서 바꾸기(썸네일 끌기)
+[완료 기준] 각 기능을 해 보고, 되돌리기로 원래대로 돌아오는지 확인 결과
+
+---- (위가 끝나고 확인한 다음에) ----
+[6-3] 이어서: 저장. 고친 교안을 GitHub 저장소의 decks/*.json 에 커밋하는 방식으로 (GitHub 토큰은 브라우저에만 저장, 코드에 넣지 말 것). 저장 전에는 &quot;저장 안 됨&quot; 표시, 창을 닫으려 하면 경고.
+[완료 기준] 저장 → 새로고침 → 고친 내용이 남아 있는지 확인</pre>
+  <button class="copy" type="button">프롬프트 복사</button>
+</section>
+</main>
+<footer>인천소방학교 지휘역량강화센터 · 소방위 권유진 · 공개 페이지입니다. 비밀 자료나 개인정보를 프롬프트에 넣지 마세요.</footer>
+<script>
+(function () {
+  var n = new URLSearchParams(location.search).get('p');
+  if (n !== null) {
+    var c = document.getElementById('p' + n);
+    if (c) { c.classList.add('on'); c.parentNode.insertBefore(c, c.parentNode.firstChild); }
+    var a = document.querySelector('nav a[data-no="' + n + '"]'); if (a) a.classList.add('on');
+  }
+  document.querySelectorAll('.copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.parentNode.querySelector('pre').textContent;
+      var ok = function () { b.textContent = '복사했습니다 — AI 대화창에 붙여넣으세요'; b.classList.add('done'); setTimeout(function () { b.textContent = '프롬프트 복사'; b.classList.remove('done'); }, 2500); };
+      var fb = function () { var r = document.createRange(); var pre = b.parentNode.querySelector('pre'); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); ok(); } catch (e) { b.textContent = '글을 길게 눌러 복사하세요'; } };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, fb); else fb();
+    });
+  });
+})();
+</script>
+</body></html>
