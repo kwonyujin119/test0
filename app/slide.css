@@ -139,7 +139,10 @@ li.step-hidden { visibility: hidden; }
 .anim-type { animation-name: a-type; animation-duration: 1.4s; animation-timing-function: steps(24, end); }
 @keyframes a-scan { from { translate: 0 -140px; } to { translate: 0 1180px; } }
 @keyframes a-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@media (prefers-reduced-motion: reduce) { .anim-kenburns, .anim-float, .anim-scan { animation: none; } .anim-rise, .anim-focus, .anim-type { animation-name: a-fade; } }
+/* 프레임 순환 (사진 여러 장을 같은 자리에 겹쳐 두고 차례로 겹쳐 바꿈 → 움직이는 사진처럼). 프레임마다 지연을 2초씩 주어 씀 */
+.anim-cycle4 { animation-name: a-cycle4; animation-duration: 8s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+@keyframes a-cycle4 { 0% { opacity: 0; } 8% { opacity: 1; } 25% { opacity: 1; } 33% { opacity: 0; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .anim-kenburns, .anim-float, .anim-scan, .anim-cycle4 { animation: none; } .anim-rise, .anim-focus, .anim-type { animation-name: a-fade; } }
 @keyframes a-fade { from { opacity: 0; } to { opacity: var(--op, 1); } }
 @keyframes a-up { from { opacity: 0; translate: 0 40px; } to { opacity: var(--op, 1); translate: 0 0; } }
 @keyframes a-down { from { opacity: 0; translate: 0 -40px; } to { opacity: var(--op, 1); translate: 0 0; } }
