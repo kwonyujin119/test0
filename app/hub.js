@@ -389,12 +389,33 @@
       if (!deck.slides || !deck.slides.length) return;
       drawSlide(main, deck.slides[0], deck);
       const film = resume.querySelector('[data-film]');
-      deck.slides.slice(1, 5).forEach((s, i) => {
-        const t = document.createElement('button'); t.className = 'film-t'; t.title = `${i + 2}번 슬라이드${GUEST ? '부터 발표' : ' 편집'}`; t.setAttribute('aria-label', t.title);
+      // 2번부터 모든 슬라이드 · 보이는 것만 그림 (긴 교안도 가볍게) · 마우스로 좌우로 끌어서 넘겨 보기
+      const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting && !e.target._drawn) { e.target._drawn = 1; drawSlide(e.target, e.target._s, deck); io.unobserve(e.target); } }), { root: film, rootMargin: '0px 300px' }) : null;
+      deck.slides.slice(1).forEach((s, i) => {
+        const t = document.createElement('button'); t.className = 'film-t'; t.title = `${i + 2}번 슬라이드${GUEST ? '부터 발표' : ' 편집'}`; t.setAttribute('aria-label', t.title); t.draggable = false;
         t.onclick = () => { if (GUEST) openPresent(d.name, i + 1); else location.href = 'editor.html?deck=' + encodeURIComponent(d.name) + '&slide=' + (i + 1); };
-        film.appendChild(t); drawSlide(t, s, deck);
+        film.appendChild(t); t._s = s; if (io) io.observe(t); else drawSlide(t, s, deck);
+        const no = document.createElement('span'); no.className = 'film-no'; no.textContent = i + 2; t.appendChild(no);
       });
+      filmDrag(film);
     }).catch(() => { main.classList.remove('loading'); });
+  }
+
+  /* 미리보기 띠: 마우스 왼쪽 단추로 좌우로 끌어서 넘겨 보기 (조금이라도 끌었으면 그 클릭은 열기로 치지 않음) · 터치는 원래 밀어서 넘김 */
+  function filmDrag(film) {
+    let down = null, moved = false;
+    const sync = () => { film.classList.toggle('more-l', film.scrollLeft > 2); film.classList.toggle('more-r', film.scrollLeft < film.scrollWidth - film.clientWidth - 2); };
+    film.addEventListener('scroll', sync, { passive: true }); requestAnimationFrame(sync);
+    film.addEventListener('dragstart', (ev) => ev.preventDefault());
+    film.addEventListener('pointerdown', (ev) => { if (ev.pointerType !== 'mouse' || ev.button !== 0) return; down = { x: ev.clientX, sl: film.scrollLeft, id: ev.pointerId }; moved = false; });
+    film.addEventListener('pointermove', (ev) => {
+      if (!down) return; const dx = ev.clientX - down.x;
+      if (!moved && Math.abs(dx) > 5) { moved = true; film.classList.add('dragging'); try { film.setPointerCapture(down.id); } catch (e) { } }
+      if (moved) { film.scrollLeft = down.sl - dx; ev.preventDefault(); }
+    });
+    const up = () => { if (!down) return; down = null; film.classList.remove('dragging'); };
+    film.addEventListener('pointerup', up); film.addEventListener('pointercancel', up); film.addEventListener('lostpointercapture', up);
+    film.addEventListener('click', (ev) => { if (moved) { ev.stopPropagation(); ev.preventDefault(); moved = false; } }, true);
   }
 
   function card(d, vf) {
