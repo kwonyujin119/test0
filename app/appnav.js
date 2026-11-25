@@ -17,11 +17,42 @@
     if (document.getElementById('appNav')) return;
     const nav = document.createElement('nav');
     nav.id = 'appNav'; nav.className = 'app-nav'; nav.setAttribute('aria-label', '작업장 바꾸기');
-    nav.innerHTML = TABS.map((t, i) => `<a href="${t.href}" class="app-tab${t.key === cur ? ' on' : ''}"${t.key === 'home' ? '' : ` data-ws="${t.key}"`}${t.admin ? ' data-admin-tab' : ''}${t.key === cur ? ' aria-current="page"' : ''} title="${t.title} (Alt+${i + 1})"><b class="app-tile${t.key === 'home' ? ' home' : ''}">${t.tile}</b><span>${t.label}</span></a>`).join('');
+    nav.innerHTML = TABS.map((t, i) => `<a href="${t.href}" data-k="${t.key}" data-label="${t.title}" class="app-tab${t.key === cur ? ' on' : ''}"${t.key === 'home' ? '' : ` data-ws="${t.key}"`}${t.admin ? ' data-admin-tab' : ''}${t.key === cur ? ' aria-current="page"' : ''} title="${t.title} (Alt+${i + 1})"><b class="app-tile${t.key === 'home' ? ' home' : ''}">${t.tile}</b><span>${t.label}</span></a>`).join('');
+    nav.insertAdjacentHTML('afterbegin', '<i class="app-ind" aria-hidden="true"></i>');
     const rail = document.querySelector('.shell > .rail');
     if (rail) rail.appendChild(nav); else document.body.appendChild(nav);
     document.documentElement.classList.add('has-app-nav');
+    dots(nav); slide(nav);
+    addEventListener('resize', () => place(nav, false));
+    if ('ResizeObserver' in window) new ResizeObserver(() => { const ind = nav.querySelector('.app-ind'); if (ind && !ind.classList.contains('show')) place(nav, false); }).observe(nav); // 처음엔 숨어 있다가 보이는 화면(문서 작업장 등)
+    addEventListener('pagehide', () => { try { sessionStorage.setItem('dpv:tabFrom', cur); } catch (e) { } });
+    addEventListener('storage', e => { if (e.key && e.key.startsWith('dpv:dot:')) dots(nav); });
     nav.addEventListener('click', e => { const a = e.target.closest('a.on'); if (a) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }); // 지금 탭을 다시 누르면 맨 위로
+  }
+  /* 지금 탭 알약(M3 활성 표시): 이전 작업장 자리에서 미끄러져 옴 · 동작 줄이기면 바로 */
+  function place(nav, anim, from) {
+    const ind = nav.querySelector('.app-ind'), on = nav.querySelector('.app-tab.on'); if (!ind || !on || !on.getClientRects().length) return;
+    const t = from || on, tile = t.querySelector('.app-tile'), r = tile.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+    ind.style.transition = anim ? '' : 'none';
+    ind.style.transform = `translate(${r.left + r.width / 2 - nr.left}px, ${r.top + r.height / 2 - nr.top}px) translate(-50%, -50%)`;
+    ind.classList.add('show');
+  }
+  function slide(nav) {
+    let from = null; try { from = sessionStorage.getItem('dpv:tabFrom'); } catch (e) { }
+    const fromEl = from && from !== cur && nav.querySelector(`.app-tab[data-k="${from}"]`);
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(() => {
+      if (fromEl && fromEl.getClientRects().length && !still) { place(nav, false, fromEl); requestAnimationFrame(() => requestAnimationFrame(() => place(nav, true))); }
+      else place(nav, false);
+    });
+  }
+  /* 배지 · 닷: 숫자가 필요 없는 "확인할 것 있음"만 (SECRET 수익 엔진이 새 매매 절반 · 중지일 때) */
+  function dots(nav) {
+    nav.querySelectorAll('.app-tab').forEach(a => {
+      let v = null; try { v = localStorage.getItem('dpv:dot:' + a.dataset.k); } catch (e) { }
+      a.classList.toggle('has-dot', v === 'half' || v === 'stop'); a.classList.toggle('dot-stop', v === 'stop');
+      const base = a.dataset.label; a.setAttribute('aria-label', base + (v === 'stop' ? ', 새 매매 중지 상태' : v === 'half' ? ', 확인할 것 있음' : ''));
+    });
   }
   if (document.body) build(); else document.addEventListener('DOMContentLoaded', build);
 

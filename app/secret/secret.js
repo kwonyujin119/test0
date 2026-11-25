@@ -1285,7 +1285,7 @@ ${[
       ui.live = false; busy = null; setBusy(false); wakeOff(); chat.updated = Date.now(); saveChats(); renderChat(); renderChatList();
     }
   }
-  function setBusy(on) { $('btnSend').hidden = on; $('btnStop').hidden = !on; }
+  function setBusy(on) { $('btnSend').hidden = on; $('btnStop').hidden = !on; const st = $('aiStatus'); if (st) st.textContent = on ? 'AI 가 답을 쓰는 중입니다' : 'AI 답이 나왔습니다'; const inp = $('compose') && $('compose').querySelector('.sc-input'); if (inp) inp.classList.toggle('ai-busy', !!on); if (!on) { const last = document.querySelector('#msgs .sc-bot:last-child, .sc-msgs .sc-bot:last-child'); if (last) { last.classList.remove('ai-settle'); void last.offsetWidth; last.classList.add('ai-settle'); } } }
   $('btnStop').onclick = () => { if (busy) busy.abort(); };
 
   /* 아주 작은 마크다운 → HTML (먼저 모두 이스케이프) */
@@ -1344,13 +1344,13 @@ ${[
       if (steps.length) {
         const g = new Map(); steps.forEach(s => { const k = s.label + '|' + (s.state === 'bad' ? 'bad' : s.state === 'ok' ? 'ok' : 'run'); const x = g.get(k) || { s, n: 0 }; x.n++; g.set(k, x); });
         const run = steps.filter(s => s.state !== 'ok' && s.state !== 'bad'), bad = steps.filter(s => s.state === 'bad').length, okN = steps.length - run.length - bad;
-        const sum = run.length ? `${icon('refresh', 13)}<b>${esc(run[run.length - 1].label)}</b> 하는 중 · 도구 ${steps.length}번` : `${icon('check', 13)}자료 확인 ${okN}번${bad ? ` · <i>실패 ${bad}</i>` : ''}`;
+        const sum = run.length ? `${icon('refresh', 13)}<b class="ai-shimmer">${esc(run[run.length - 1].label)} 하는 중</b> · 도구 ${steps.length}번` : `${icon('check', 13)}자료 확인 ${okN}번${bad ? ` · <i>실패 ${bad}</i>` : ''}`;
         tl = `<details class="sc-tuse${run.length ? ' run' : ''}" data-vi="${vi}"${m.stepsOpen ? ' open' : ''}><summary>${sum}<span class="more">${m.stepsOpen ? '접기' : '자세히'}</span></summary><div class="sc-tsteps">${[...g.values()].map(({ s, n }) => `<span class="sc-step ${s.state === 'ok' ? 'ok' : s.state === 'bad' ? 'bad' : ''}" title="${esc(s.err || '')}">${icon(s.state === 'ok' ? 'check' : s.state === 'bad' ? 'alert' : s.name === 'web_search' ? 'globe' : 'refresh', 13)}${esc(s.label)}${n > 1 ? ` <em>×${n}</em>` : ''}</span>`).join('')}</div></details>`;
       }
       return `<div class="sc-bot">
         ${tl}
         ${m.think ? `<details class="sc-think" data-ti="${vi}"${m.thinkOpen != null ? (m.thinkOpen ? ' open' : '') : m.live && !m.text ? ' open' : ''}><summary>생각 요약</summary><div>${esc(m.think)}</div></details>` : ''}
-        <div class="${m.live ? 'sc-cursor' : ''}">${md(m.text || '')}</div>
+        <div class="${m.live ? 'ai-caret' : ''}">${md(m.text || '')}</div>
         ${m.note ? `<p class="sc-fine" style="text-align:left;margin:6px 0 0">${esc(m.note)}</p>` : ''}
         ${m.error ? `<div class="sc-err">${esc(m.error)}${m.resumable && cur.pending && m === cur.view[cur.view.length - 1] ? `<div class="sc-err-act"><button type="button" class="btn sm ink" data-resume>${icon('refresh', 14)}이어서 다시 시도</button></div>` : ''}</div>` : ''}
         ${m.sources && m.sources.length ? `<div class="sc-src">${m.sources.slice(0, 12).map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener" title="${esc(s.title)}">${esc(s.title)}</a>`).join('')}</div>` : ''}
@@ -2495,7 +2495,7 @@ ${[
   function engDot() {
     const b = document.querySelector('.rail [data-view="engine"]'); if (!b) return;
     let f = 1; try { f = engineState().sizeFactor; } catch (e) { }
-    b.classList.toggle('dpv-dot', f < 1); b.classList.toggle('warn', f === .5);
+    b.classList.toggle('dpv-dot', f < 1); b.classList.toggle('warn', f === .5); try { localStorage.setItem('dpv:dot:secret', f === 0 ? 'stop' : f === .5 ? 'half' : ''); } catch (e) { } { const t = document.querySelector('#appNav .app-tab[data-k="secret"]'); if (t) { t.classList.toggle('has-dot', f < 1); t.classList.toggle('dot-stop', f === 0); } }
     if (f < 1) b.setAttribute('data-tip', f === 0 ? '수익 엔진: 새 매매 중지 상태' : '수익 엔진: 새 매매 크기 절반'); else b.removeAttribute('data-tip');
   }
   function renderEngine() {
