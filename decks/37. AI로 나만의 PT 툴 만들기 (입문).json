@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-25T13:17:30.000Z",
+ "modified": "2026-11-25T13:21:44.000Z",
  "footer": {
   "text": "",
   "num": true,
@@ -1190,14 +1190,89 @@
    "decor": "none",
    "elements": [
     {
+     "id": "p7058",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 0.55,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/pt37-sec1.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
      "id": "p7057",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B0D11",
+     "fill2": "#0B0D11",
+     "fill2Op": 0.35,
+     "gAngle": 0,
+     "strokeWidth": 0,
+     "stroke": "",
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7059",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "image",
+     "x": 1060,
+     "y": -260,
+     "w": 1000,
+     "h": 1000,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7060",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.35,
+     "type": "image",
+     "x": 1300,
+     "y": 480,
+     "w": 760,
+     "h": 760,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true,
+     "delay": 1.5
+    },
+    {
+     "id": "p7061",
+     "step": 0,
+     "anim": "focus",
+     "rotate": 0,
+     "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 300,
+     "y": 290,
      "w": 700,
      "h": 250,
      "role": "text",
@@ -1207,17 +1282,43 @@
       "color": "#7FA0F0",
       "bold": true,
       "lineHeight": 1.15
-     }
+     },
+     "enter": true,
+     "delay": 0.1,
+     "dur": 1.4
     },
     {
-     "id": "p7058",
+     "id": "p7062",
      "step": 0,
-     "anim": "fade",
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 548,
+     "w": 160,
+     "h": 8,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.6,
+     "dur": 0.6
+    },
+    {
+     "id": "p7063",
+     "step": 0,
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 570,
+     "y": 575,
      "w": 1600,
      "h": 110,
      "role": "title",
@@ -1227,17 +1328,20 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 0.75,
+     "dur": 1.0
     },
     {
-     "id": "p7059",
+     "id": "p7064",
      "step": 0,
-     "anim": "fade",
+     "anim": "blur",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 710,
+     "y": 715,
      "w": 1600,
      "h": 60,
      "role": "text",
@@ -1247,12 +1351,15 @@
       "color": "#C9CED8",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.25,
+     "dur": 0.8
     },
     {
-     "id": "p7060",
+     "id": "p7065",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1267,12 +1374,15 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6,
+     "dur": 0.5
     },
     {
-     "id": "p7061",
+     "id": "p7066",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1287,12 +1397,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6800000000000002,
+     "dur": 0.5
     },
     {
-     "id": "p7062",
+     "id": "p7067",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1307,12 +1420,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.76,
+     "dur": 0.5
     },
     {
-     "id": "p7063",
+     "id": "p7068",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1327,12 +1443,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.84,
+     "dur": 0.5
     },
     {
-     "id": "p7064",
+     "id": "p7069",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1347,7 +1466,33 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.9200000000000002,
+     "dur": 0.5
+    },
+    {
+     "id": "p7070",
+     "step": 0,
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 976,
+     "w": 300,
+     "h": 4,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 2,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 2.1,
+     "dur": 0.5
     }
    ]
   },
@@ -1361,7 +1506,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7065",
+     "id": "p7071",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1381,7 +1526,7 @@
      }
     },
     {
-     "id": "p7066",
+     "id": "p7072",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1401,7 +1546,7 @@
      }
     },
     {
-     "id": "p7067",
+     "id": "p7073",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1421,7 +1566,7 @@
      "style": {}
     },
     {
-     "id": "p7068",
+     "id": "p7074",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1441,7 +1586,7 @@
      "style": {}
     },
     {
-     "id": "p7069",
+     "id": "p7075",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1462,7 +1607,7 @@
      }
     },
     {
-     "id": "p7070",
+     "id": "p7076",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1482,7 +1627,7 @@
      }
     },
     {
-     "id": "p7071",
+     "id": "p7077",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1502,7 +1647,7 @@
      }
     },
     {
-     "id": "p7072",
+     "id": "p7078",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1522,7 +1667,7 @@
      "style": {}
     },
     {
-     "id": "p7073",
+     "id": "p7079",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1542,7 +1687,7 @@
      "style": {}
     },
     {
-     "id": "p7074",
+     "id": "p7080",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1563,7 +1708,7 @@
      }
     },
     {
-     "id": "p7075",
+     "id": "p7081",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1583,7 +1728,7 @@
      }
     },
     {
-     "id": "p7076",
+     "id": "p7082",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1603,7 +1748,7 @@
      }
     },
     {
-     "id": "p7077",
+     "id": "p7083",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1634,7 +1779,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7078",
+     "id": "p7084",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1654,7 +1799,7 @@
      }
     },
     {
-     "id": "p7079",
+     "id": "p7085",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1674,7 +1819,7 @@
      }
     },
     {
-     "id": "p7080",
+     "id": "p7086",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1694,7 +1839,7 @@
      "style": {}
     },
     {
-     "id": "p7081",
+     "id": "p7087",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1715,7 +1860,7 @@
      }
     },
     {
-     "id": "p7082",
+     "id": "p7088",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1735,7 +1880,7 @@
      "style": {}
     },
     {
-     "id": "p7083",
+     "id": "p7089",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1755,7 +1900,7 @@
      }
     },
     {
-     "id": "p7084",
+     "id": "p7090",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1776,7 +1921,7 @@
      }
     },
     {
-     "id": "p7085",
+     "id": "p7091",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1797,7 +1942,7 @@
      }
     },
     {
-     "id": "p7086",
+     "id": "p7092",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1817,7 +1962,7 @@
      "style": {}
     },
     {
-     "id": "p7087",
+     "id": "p7093",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1837,7 +1982,7 @@
      }
     },
     {
-     "id": "p7088",
+     "id": "p7094",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1858,7 +2003,7 @@
      }
     },
     {
-     "id": "p7089",
+     "id": "p7095",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1879,7 +2024,7 @@
      }
     },
     {
-     "id": "p7090",
+     "id": "p7096",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1899,7 +2044,7 @@
      "style": {}
     },
     {
-     "id": "p7091",
+     "id": "p7097",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1919,7 +2064,7 @@
      }
     },
     {
-     "id": "p7092",
+     "id": "p7098",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1940,7 +2085,7 @@
      }
     },
     {
-     "id": "p7093",
+     "id": "p7099",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1961,7 +2106,7 @@
      }
     },
     {
-     "id": "p7094",
+     "id": "p7100",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -1981,7 +2126,7 @@
      "style": {}
     },
     {
-     "id": "p7095",
+     "id": "p7101",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2001,7 +2146,7 @@
      }
     },
     {
-     "id": "p7096",
+     "id": "p7102",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2022,7 +2167,7 @@
      }
     },
     {
-     "id": "p7097",
+     "id": "p7103",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2043,7 +2188,7 @@
      }
     },
     {
-     "id": "p7098",
+     "id": "p7104",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2063,7 +2208,7 @@
      "style": {}
     },
     {
-     "id": "p7099",
+     "id": "p7105",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2083,7 +2228,7 @@
      }
     },
     {
-     "id": "p7100",
+     "id": "p7106",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2104,7 +2249,7 @@
      }
     },
     {
-     "id": "p7101",
+     "id": "p7107",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2125,7 +2270,7 @@
      }
     },
     {
-     "id": "p7102",
+     "id": "p7108",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2145,7 +2290,7 @@
      "style": {}
     },
     {
-     "id": "p7103",
+     "id": "p7109",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2166,7 +2311,7 @@
      }
     },
     {
-     "id": "p7104",
+     "id": "p7110",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2186,7 +2331,7 @@
      "style": {}
     },
     {
-     "id": "p7105",
+     "id": "p7111",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2206,7 +2351,7 @@
      }
     },
     {
-     "id": "p7106",
+     "id": "p7112",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2226,7 +2371,7 @@
      }
     },
     {
-     "id": "p7107",
+     "id": "p7113",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2246,7 +2391,7 @@
      "style": {}
     },
     {
-     "id": "p7108",
+     "id": "p7114",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2266,7 +2411,7 @@
      }
     },
     {
-     "id": "p7109",
+     "id": "p7115",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2286,7 +2431,7 @@
      }
     },
     {
-     "id": "p7110",
+     "id": "p7116",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2306,7 +2451,7 @@
      "style": {}
     },
     {
-     "id": "p7111",
+     "id": "p7117",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2326,7 +2471,7 @@
      }
     },
     {
-     "id": "p7112",
+     "id": "p7118",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2357,14 +2502,89 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7113",
+     "id": "p7120",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 0.55,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/pt37-sec2.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7119",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B0D11",
+     "fill2": "#0B0D11",
+     "fill2Op": 0.35,
+     "gAngle": 0,
+     "strokeWidth": 0,
+     "stroke": "",
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7121",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "image",
+     "x": 1060,
+     "y": -260,
+     "w": 1000,
+     "h": 1000,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7122",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.35,
+     "type": "image",
+     "x": 1300,
+     "y": 480,
+     "w": 760,
+     "h": 760,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true,
+     "delay": 1.5
+    },
+    {
+     "id": "p7123",
+     "step": 0,
+     "anim": "focus",
+     "rotate": 0,
+     "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 300,
+     "y": 290,
      "w": 700,
      "h": 250,
      "role": "text",
@@ -2374,17 +2594,43 @@
       "color": "#7FA0F0",
       "bold": true,
       "lineHeight": 1.15
-     }
+     },
+     "enter": true,
+     "delay": 0.1,
+     "dur": 1.4
     },
     {
-     "id": "p7114",
+     "id": "p7124",
      "step": 0,
-     "anim": "fade",
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 548,
+     "w": 160,
+     "h": 8,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.6,
+     "dur": 0.6
+    },
+    {
+     "id": "p7125",
+     "step": 0,
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 570,
+     "y": 575,
      "w": 1600,
      "h": 110,
      "role": "title",
@@ -2394,17 +2640,20 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 0.75,
+     "dur": 1.0
     },
     {
-     "id": "p7115",
+     "id": "p7126",
      "step": 0,
-     "anim": "fade",
+     "anim": "blur",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 710,
+     "y": 715,
      "w": 1600,
      "h": 60,
      "role": "text",
@@ -2414,12 +2663,15 @@
       "color": "#C9CED8",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.25,
+     "dur": 0.8
     },
     {
-     "id": "p7116",
+     "id": "p7127",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -2434,12 +2686,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6,
+     "dur": 0.5
     },
     {
-     "id": "p7117",
+     "id": "p7128",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -2454,12 +2709,15 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6800000000000002,
+     "dur": 0.5
     },
     {
-     "id": "p7118",
+     "id": "p7129",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -2474,12 +2732,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.76,
+     "dur": 0.5
     },
     {
-     "id": "p7119",
+     "id": "p7130",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -2494,12 +2755,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.84,
+     "dur": 0.5
     },
     {
-     "id": "p7120",
+     "id": "p7131",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -2514,7 +2778,33 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.9200000000000002,
+     "dur": 0.5
+    },
+    {
+     "id": "p7132",
+     "step": 0,
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 450,
+     "y": 976,
+     "w": 300,
+     "h": 4,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 2,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 2.1,
+     "dur": 0.5
     }
    ]
   },
@@ -2528,7 +2818,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7121",
+     "id": "p7133",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2548,7 +2838,7 @@
      }
     },
     {
-     "id": "p7122",
+     "id": "p7134",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2568,7 +2858,7 @@
      }
     },
     {
-     "id": "p7123",
+     "id": "p7135",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2588,7 +2878,7 @@
      "style": {}
     },
     {
-     "id": "p7124",
+     "id": "p7136",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2609,7 +2899,7 @@
      }
     },
     {
-     "id": "p7125",
+     "id": "p7137",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2630,7 +2920,7 @@
      }
     },
     {
-     "id": "p7126",
+     "id": "p7138",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2651,7 +2941,7 @@
      }
     },
     {
-     "id": "p7127",
+     "id": "p7139",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2671,7 +2961,7 @@
      "style": {}
     },
     {
-     "id": "p7128",
+     "id": "p7140",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -2692,7 +2982,7 @@
      }
     },
     {
-     "id": "p7129",
+     "id": "p7141",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2712,7 +3002,7 @@
      "style": {}
     },
     {
-     "id": "p7130",
+     "id": "p7142",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2733,7 +3023,7 @@
      }
     },
     {
-     "id": "p7131",
+     "id": "p7143",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2754,7 +3044,7 @@
      }
     },
     {
-     "id": "p7132",
+     "id": "p7144",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2775,7 +3065,7 @@
      }
     },
     {
-     "id": "p7133",
+     "id": "p7145",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2795,7 +3085,7 @@
      "style": {}
     },
     {
-     "id": "p7134",
+     "id": "p7146",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -2816,7 +3106,7 @@
      }
     },
     {
-     "id": "p7135",
+     "id": "p7147",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2836,7 +3126,7 @@
      "style": {}
     },
     {
-     "id": "p7136",
+     "id": "p7148",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2857,7 +3147,7 @@
      }
     },
     {
-     "id": "p7137",
+     "id": "p7149",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2878,7 +3168,7 @@
      }
     },
     {
-     "id": "p7138",
+     "id": "p7150",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2899,7 +3189,7 @@
      }
     },
     {
-     "id": "p7139",
+     "id": "p7151",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2919,7 +3209,7 @@
      "style": {}
     },
     {
-     "id": "p7140",
+     "id": "p7152",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -2940,7 +3230,7 @@
      }
     },
     {
-     "id": "p7141",
+     "id": "p7153",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2960,7 +3250,7 @@
      "style": {}
     },
     {
-     "id": "p7142",
+     "id": "p7154",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -2981,7 +3271,7 @@
      }
     },
     {
-     "id": "p7143",
+     "id": "p7155",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3002,7 +3292,7 @@
      }
     },
     {
-     "id": "p7144",
+     "id": "p7156",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3023,7 +3313,7 @@
      }
     },
     {
-     "id": "p7145",
+     "id": "p7157",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3043,7 +3333,7 @@
      "style": {}
     },
     {
-     "id": "p7146",
+     "id": "p7158",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3075,7 +3365,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7147",
+     "id": "p7159",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3095,7 +3385,7 @@
      }
     },
     {
-     "id": "p7148",
+     "id": "p7160",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3115,7 +3405,7 @@
      }
     },
     {
-     "id": "p7149",
+     "id": "p7161",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3135,7 +3425,7 @@
      "style": {}
     },
     {
-     "id": "p7150",
+     "id": "p7162",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3155,7 +3445,7 @@
      }
     },
     {
-     "id": "p7151",
+     "id": "p7163",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3175,7 +3465,7 @@
      }
     },
     {
-     "id": "p7152",
+     "id": "p7164",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3195,7 +3485,7 @@
      }
     },
     {
-     "id": "p7153",
+     "id": "p7165",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3215,7 +3505,7 @@
      }
     },
     {
-     "id": "p7154",
+     "id": "p7166",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -3235,7 +3525,7 @@
      }
     },
     {
-     "id": "p7155",
+     "id": "p7167",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3255,7 +3545,7 @@
      "style": {}
     },
     {
-     "id": "p7156",
+     "id": "p7168",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3275,7 +3565,7 @@
      }
     },
     {
-     "id": "p7157",
+     "id": "p7169",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3295,7 +3585,7 @@
      }
     },
     {
-     "id": "p7158",
+     "id": "p7170",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3315,7 +3605,7 @@
      }
     },
     {
-     "id": "p7159",
+     "id": "p7171",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3335,7 +3625,7 @@
      }
     },
     {
-     "id": "p7160",
+     "id": "p7172",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -3355,7 +3645,7 @@
      }
     },
     {
-     "id": "p7161",
+     "id": "p7173",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3375,7 +3665,7 @@
      "style": {}
     },
     {
-     "id": "p7162",
+     "id": "p7174",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3395,7 +3685,7 @@
      }
     },
     {
-     "id": "p7163",
+     "id": "p7175",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3415,7 +3705,7 @@
      }
     },
     {
-     "id": "p7164",
+     "id": "p7176",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3435,7 +3725,7 @@
      }
     },
     {
-     "id": "p7165",
+     "id": "p7177",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3455,7 +3745,7 @@
      }
     },
     {
-     "id": "p7166",
+     "id": "p7178",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -3475,7 +3765,7 @@
      }
     },
     {
-     "id": "p7167",
+     "id": "p7179",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3495,7 +3785,7 @@
      "style": {}
     },
     {
-     "id": "p7168",
+     "id": "p7180",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3515,7 +3805,7 @@
      }
     },
     {
-     "id": "p7169",
+     "id": "p7181",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3535,7 +3825,7 @@
      }
     },
     {
-     "id": "p7170",
+     "id": "p7182",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3555,7 +3845,7 @@
      }
     },
     {
-     "id": "p7171",
+     "id": "p7183",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3575,7 +3865,7 @@
      }
     },
     {
-     "id": "p7172",
+     "id": "p7184",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -3595,7 +3885,7 @@
      }
     },
     {
-     "id": "p7173",
+     "id": "p7185",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3615,7 +3905,7 @@
      "style": {}
     },
     {
-     "id": "p7174",
+     "id": "p7186",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -3646,14 +3936,89 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7175",
+     "id": "p7188",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 0.55,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/pt37-sec3.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7187",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B0D11",
+     "fill2": "#0B0D11",
+     "fill2Op": 0.35,
+     "gAngle": 0,
+     "strokeWidth": 0,
+     "stroke": "",
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7189",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "image",
+     "x": 1060,
+     "y": -260,
+     "w": 1000,
+     "h": 1000,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7190",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.35,
+     "type": "image",
+     "x": 1300,
+     "y": 480,
+     "w": 760,
+     "h": 760,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true,
+     "delay": 1.5
+    },
+    {
+     "id": "p7191",
+     "step": 0,
+     "anim": "focus",
+     "rotate": 0,
+     "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 300,
+     "y": 290,
      "w": 700,
      "h": 250,
      "role": "text",
@@ -3663,17 +4028,43 @@
       "color": "#7FA0F0",
       "bold": true,
       "lineHeight": 1.15
-     }
+     },
+     "enter": true,
+     "delay": 0.1,
+     "dur": 1.4
     },
     {
-     "id": "p7176",
+     "id": "p7192",
      "step": 0,
-     "anim": "fade",
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 548,
+     "w": 160,
+     "h": 8,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.6,
+     "dur": 0.6
+    },
+    {
+     "id": "p7193",
+     "step": 0,
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 570,
+     "y": 575,
      "w": 1600,
      "h": 110,
      "role": "title",
@@ -3683,17 +4074,20 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 0.75,
+     "dur": 1.0
     },
     {
-     "id": "p7177",
+     "id": "p7194",
      "step": 0,
-     "anim": "fade",
+     "anim": "blur",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 710,
+     "y": 715,
      "w": 1600,
      "h": 60,
      "role": "text",
@@ -3703,12 +4097,15 @@
       "color": "#C9CED8",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.25,
+     "dur": 0.8
     },
     {
-     "id": "p7178",
+     "id": "p7195",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3723,12 +4120,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6,
+     "dur": 0.5
     },
     {
-     "id": "p7179",
+     "id": "p7196",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3743,12 +4143,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6800000000000002,
+     "dur": 0.5
     },
     {
-     "id": "p7180",
+     "id": "p7197",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3763,12 +4166,15 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.76,
+     "dur": 0.5
     },
     {
-     "id": "p7181",
+     "id": "p7198",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3783,12 +4189,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.84,
+     "dur": 0.5
     },
     {
-     "id": "p7182",
+     "id": "p7199",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3803,7 +4212,33 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.9200000000000002,
+     "dur": 0.5
+    },
+    {
+     "id": "p7200",
+     "step": 0,
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 790,
+     "y": 976,
+     "w": 300,
+     "h": 4,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 2,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 2.1,
+     "dur": 0.5
     }
    ]
   },
@@ -3814,381 +4249,6 @@
    },
    "transition": "fade",
    "notes": "코딩은 몰라도 되지만, 이 두 가지는 꼭 사람이 해야 합니다. 확인을 안 하면 고장이 쌓입니다.",
-   "decor": "none",
-   "elements": [
-    {
-     "id": "p7183",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 110,
-     "y": 70,
-     "w": 1300,
-     "h": 40,
-     "role": "text",
-     "html": "03 · AI에게 말하는 법",
-     "style": {
-      "fontSize": 26,
-      "color": "#2457D6",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7184",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 110,
-     "y": 112,
-     "w": 1700,
-     "h": 90,
-     "role": "title",
-     "html": "AI가 대신 못 하는 사람의 몫 두 가지",
-     "style": {
-      "fontSize": 58,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.2
-     }
-    },
-    {
-     "id": "p7185",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 110,
-     "y": 260,
-     "w": 820,
-     "h": 680,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "#D9D6CF",
-     "strokeWidth": 2,
-     "radius": 18,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7186",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 160,
-     "y": 300,
-     "w": 720,
-     "h": 60,
-     "role": "text",
-     "html": "<b>원하는 것을 말로 설명하기</b>",
-     "style": {
-      "fontSize": 40,
-      "color": "#15181C",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7187",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 160,
-     "y": 400,
-     "w": 240,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#FBEAE8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7188",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 160,
-     "y": 406,
-     "w": 240,
-     "h": 40,
-     "role": "text",
-     "html": "<b>✕ 이렇게 말고</b>",
-     "style": {
-      "fontSize": 24,
-      "color": "#B3261E",
-      "bold": false,
-      "lineHeight": 1.2,
-      "align": "center"
-     }
-    },
-    {
-     "id": "p7189",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 160,
-     "y": 465,
-     "w": 720,
-     "h": 120,
-     "role": "text",
-     "html": "「좋게 만들어 줘」",
-     "style": {
-      "fontSize": 32,
-      "color": "#5B6168",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7190",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 160,
-     "y": 600,
-     "w": 180,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#E6F3EC",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7191",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 160,
-     "y": 606,
-     "w": 180,
-     "h": 40,
-     "role": "text",
-     "html": "<b>○ 이렇게</b>",
-     "style": {
-      "fontSize": 24,
-      "color": "#1E7B4F",
-      "bold": false,
-      "lineHeight": 1.2,
-      "align": "center"
-     }
-    },
-    {
-     "id": "p7192",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 160,
-     "y": 665,
-     "w": 720,
-     "h": 200,
-     "role": "text",
-     "html": "「발표할 때 화살표 키로<br>다음 장으로 넘어가게 해 줘」",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.45
-     }
-    },
-    {
-     "id": "p7193",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 990,
-     "y": 260,
-     "w": 820,
-     "h": 680,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "#D9D6CF",
-     "strokeWidth": 2,
-     "radius": 18,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7194",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1040,
-     "y": 300,
-     "w": 720,
-     "h": 60,
-     "role": "text",
-     "html": "<b>결과를 직접 확인하기</b>",
-     "style": {
-      "fontSize": 40,
-      "color": "#15181C",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7195",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1040,
-     "y": 400,
-     "w": 240,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#FBEAE8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7196",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1040,
-     "y": 406,
-     "w": 240,
-     "h": 40,
-     "role": "text",
-     "html": "<b>✕ 이렇게 말고</b>",
-     "style": {
-      "fontSize": 24,
-      "color": "#B3261E",
-      "bold": false,
-      "lineHeight": 1.2,
-      "align": "center"
-     }
-    },
-    {
-     "id": "p7197",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1040,
-     "y": 465,
-     "w": 720,
-     "h": 120,
-     "role": "text",
-     "html": "「완료했습니다」를 그대로 믿기",
-     "style": {
-      "fontSize": 32,
-      "color": "#5B6168",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7198",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1040,
-     "y": 600,
-     "w": 180,
-     "h": 48,
-     "shape": "rect",
-     "fill": "#E6F3EC",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7199",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1040,
-     "y": 606,
-     "w": 180,
-     "h": 40,
-     "role": "text",
-     "html": "<b>○ 이렇게</b>",
-     "style": {
-      "fontSize": 24,
-      "color": "#1E7B4F",
-      "bold": false,
-      "lineHeight": 1.2,
-      "align": "center"
-     }
-    },
-    {
-     "id": "p7200",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1040,
-     "y": 665,
-     "w": 720,
-     "h": 200,
-     "role": "text",
-     "html": "직접 열어 보고<br>「여기가 안 바뀌었어」라고 말하기",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.45
-     }
-    }
-   ]
-  },
-  {
-   "id": "p7s12",
-   "bg": {
-    "color": "#FAFAF7"
-   },
-   "transition": "fade",
-   "notes": "좋은 프롬프트는 일곱 칸. 특히 완료 기준을 꼭 넣으세요.\n4부의 QR 프롬프트도 이 틀로 쓰여 있습니다.",
    "decor": "none",
    "elements": [
     {
@@ -4223,7 +4283,7 @@
      "w": 1700,
      "h": 90,
      "role": "title",
-     "html": "좋은 프롬프트의 일곱 칸",
+     "html": "AI가 대신 못 하는 사람의 몫 두 가지",
      "style": {
       "fontSize": 58,
       "color": "#15181C",
@@ -4233,6 +4293,381 @@
     },
     {
      "id": "p7203",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 260,
+     "w": 820,
+     "h": 680,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D9D6CF",
+     "strokeWidth": 2,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7204",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 160,
+     "y": 300,
+     "w": 720,
+     "h": 60,
+     "role": "text",
+     "html": "<b>원하는 것을 말로 설명하기</b>",
+     "style": {
+      "fontSize": 40,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7205",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 160,
+     "y": 400,
+     "w": 240,
+     "h": 48,
+     "shape": "rect",
+     "fill": "#FBEAE8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7206",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 160,
+     "y": 406,
+     "w": 240,
+     "h": 40,
+     "role": "text",
+     "html": "<b>✕ 이렇게 말고</b>",
+     "style": {
+      "fontSize": 24,
+      "color": "#B3261E",
+      "bold": false,
+      "lineHeight": 1.2,
+      "align": "center"
+     }
+    },
+    {
+     "id": "p7207",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 160,
+     "y": 465,
+     "w": 720,
+     "h": 120,
+     "role": "text",
+     "html": "「좋게 만들어 줘」",
+     "style": {
+      "fontSize": 32,
+      "color": "#5B6168",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7208",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 160,
+     "y": 600,
+     "w": 180,
+     "h": 48,
+     "shape": "rect",
+     "fill": "#E6F3EC",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7209",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 160,
+     "y": 606,
+     "w": 180,
+     "h": 40,
+     "role": "text",
+     "html": "<b>○ 이렇게</b>",
+     "style": {
+      "fontSize": 24,
+      "color": "#1E7B4F",
+      "bold": false,
+      "lineHeight": 1.2,
+      "align": "center"
+     }
+    },
+    {
+     "id": "p7210",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 160,
+     "y": 665,
+     "w": 720,
+     "h": 200,
+     "role": "text",
+     "html": "「발표할 때 화살표 키로<br>다음 장으로 넘어가게 해 줘」",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "p7211",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 990,
+     "y": 260,
+     "w": 820,
+     "h": 680,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D9D6CF",
+     "strokeWidth": 2,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7212",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1040,
+     "y": 300,
+     "w": 720,
+     "h": 60,
+     "role": "text",
+     "html": "<b>결과를 직접 확인하기</b>",
+     "style": {
+      "fontSize": 40,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7213",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1040,
+     "y": 400,
+     "w": 240,
+     "h": 48,
+     "shape": "rect",
+     "fill": "#FBEAE8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7214",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1040,
+     "y": 406,
+     "w": 240,
+     "h": 40,
+     "role": "text",
+     "html": "<b>✕ 이렇게 말고</b>",
+     "style": {
+      "fontSize": 24,
+      "color": "#B3261E",
+      "bold": false,
+      "lineHeight": 1.2,
+      "align": "center"
+     }
+    },
+    {
+     "id": "p7215",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1040,
+     "y": 465,
+     "w": 720,
+     "h": 120,
+     "role": "text",
+     "html": "「완료했습니다」를 그대로 믿기",
+     "style": {
+      "fontSize": 32,
+      "color": "#5B6168",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7216",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1040,
+     "y": 600,
+     "w": 180,
+     "h": 48,
+     "shape": "rect",
+     "fill": "#E6F3EC",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 24,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7217",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1040,
+     "y": 606,
+     "w": 180,
+     "h": 40,
+     "role": "text",
+     "html": "<b>○ 이렇게</b>",
+     "style": {
+      "fontSize": 24,
+      "color": "#1E7B4F",
+      "bold": false,
+      "lineHeight": 1.2,
+      "align": "center"
+     }
+    },
+    {
+     "id": "p7218",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1040,
+     "y": 665,
+     "w": 720,
+     "h": 200,
+     "role": "text",
+     "html": "직접 열어 보고<br>「여기가 안 바뀌었어」라고 말하기",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.45
+     }
+    }
+   ]
+  },
+  {
+   "id": "p7s12",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "좋은 프롬프트는 일곱 칸. 특히 완료 기준을 꼭 넣으세요.\n4부의 QR 프롬프트도 이 틀로 쓰여 있습니다.",
+   "decor": "none",
+   "elements": [
+    {
+     "id": "p7219",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 70,
+     "w": 1300,
+     "h": 40,
+     "role": "text",
+     "html": "03 · AI에게 말하는 법",
+     "style": {
+      "fontSize": 26,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7220",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 112,
+     "w": 1700,
+     "h": 90,
+     "role": "title",
+     "html": "좋은 프롬프트의 일곱 칸",
+     "style": {
+      "fontSize": 58,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "p7221",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4252,7 +4687,7 @@
      "style": {}
     },
     {
-     "id": "p7204",
+     "id": "p7222",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4272,7 +4707,7 @@
      }
     },
     {
-     "id": "p7205",
+     "id": "p7223",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4292,7 +4727,7 @@
      }
     },
     {
-     "id": "p7206",
+     "id": "p7224",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4312,7 +4747,7 @@
      }
     },
     {
-     "id": "p7207",
+     "id": "p7225",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4332,7 +4767,7 @@
      "style": {}
     },
     {
-     "id": "p7208",
+     "id": "p7226",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4352,7 +4787,7 @@
      }
     },
     {
-     "id": "p7209",
+     "id": "p7227",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4372,7 +4807,7 @@
      }
     },
     {
-     "id": "p7210",
+     "id": "p7228",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4392,7 +4827,7 @@
      }
     },
     {
-     "id": "p7211",
+     "id": "p7229",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4412,7 +4847,7 @@
      "style": {}
     },
     {
-     "id": "p7212",
+     "id": "p7230",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4432,7 +4867,7 @@
      }
     },
     {
-     "id": "p7213",
+     "id": "p7231",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4452,7 +4887,7 @@
      }
     },
     {
-     "id": "p7214",
+     "id": "p7232",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4472,7 +4907,7 @@
      }
     },
     {
-     "id": "p7215",
+     "id": "p7233",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4492,7 +4927,7 @@
      "style": {}
     },
     {
-     "id": "p7216",
+     "id": "p7234",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4512,7 +4947,7 @@
      }
     },
     {
-     "id": "p7217",
+     "id": "p7235",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4532,7 +4967,7 @@
      }
     },
     {
-     "id": "p7218",
+     "id": "p7236",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4552,7 +4987,7 @@
      }
     },
     {
-     "id": "p7219",
+     "id": "p7237",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4572,7 +5007,7 @@
      "style": {}
     },
     {
-     "id": "p7220",
+     "id": "p7238",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4592,7 +5027,7 @@
      }
     },
     {
-     "id": "p7221",
+     "id": "p7239",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4612,7 +5047,7 @@
      }
     },
     {
-     "id": "p7222",
+     "id": "p7240",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4632,7 +5067,7 @@
      }
     },
     {
-     "id": "p7223",
+     "id": "p7241",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4652,7 +5087,7 @@
      "style": {}
     },
     {
-     "id": "p7224",
+     "id": "p7242",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4672,7 +5107,7 @@
      }
     },
     {
-     "id": "p7225",
+     "id": "p7243",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4692,7 +5127,7 @@
      }
     },
     {
-     "id": "p7226",
+     "id": "p7244",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4712,7 +5147,7 @@
      }
     },
     {
-     "id": "p7227",
+     "id": "p7245",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4732,7 +5167,7 @@
      "style": {}
     },
     {
-     "id": "p7228",
+     "id": "p7246",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4752,7 +5187,7 @@
      }
     },
     {
-     "id": "p7229",
+     "id": "p7247",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4772,7 +5207,7 @@
      }
     },
     {
-     "id": "p7230",
+     "id": "p7248",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -4792,7 +5227,7 @@
      }
     },
     {
-     "id": "p7231",
+     "id": "p7249",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4812,7 +5247,7 @@
      }
     },
     {
-     "id": "p7232",
+     "id": "p7250",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -4843,14 +5278,89 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7233",
+     "id": "p7252",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 0.55,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/pt37-sec4.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7251",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B0D11",
+     "fill2": "#0B0D11",
+     "fill2Op": 0.35,
+     "gAngle": 0,
+     "strokeWidth": 0,
+     "stroke": "",
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7253",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "image",
+     "x": 1060,
+     "y": -260,
+     "w": 1000,
+     "h": 1000,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7254",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.35,
+     "type": "image",
+     "x": 1300,
+     "y": 480,
+     "w": 760,
+     "h": 760,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true,
+     "delay": 1.5
+    },
+    {
+     "id": "p7255",
+     "step": 0,
+     "anim": "focus",
+     "rotate": 0,
+     "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 300,
+     "y": 290,
      "w": 700,
      "h": 250,
      "role": "text",
@@ -4860,17 +5370,43 @@
       "color": "#7FA0F0",
       "bold": true,
       "lineHeight": 1.15
-     }
+     },
+     "enter": true,
+     "delay": 0.1,
+     "dur": 1.4
     },
     {
-     "id": "p7234",
+     "id": "p7256",
      "step": 0,
-     "anim": "fade",
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 548,
+     "w": 160,
+     "h": 8,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.6,
+     "dur": 0.6
+    },
+    {
+     "id": "p7257",
+     "step": 0,
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 570,
+     "y": 575,
      "w": 1600,
      "h": 110,
      "role": "title",
@@ -4880,17 +5416,20 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 0.75,
+     "dur": 1.0
     },
     {
-     "id": "p7235",
+     "id": "p7258",
      "step": 0,
-     "anim": "fade",
+     "anim": "blur",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 710,
+     "y": 715,
      "w": 1600,
      "h": 60,
      "role": "text",
@@ -4900,12 +5439,15 @@
       "color": "#C9CED8",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.25,
+     "dur": 0.8
     },
     {
-     "id": "p7236",
+     "id": "p7259",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -4920,12 +5462,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6,
+     "dur": 0.5
     },
     {
-     "id": "p7237",
+     "id": "p7260",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -4940,12 +5485,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6800000000000002,
+     "dur": 0.5
     },
     {
-     "id": "p7238",
+     "id": "p7261",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -4960,12 +5508,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.76,
+     "dur": 0.5
     },
     {
-     "id": "p7239",
+     "id": "p7262",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -4980,12 +5531,15 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.84,
+     "dur": 0.5
     },
     {
-     "id": "p7240",
+     "id": "p7263",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -5000,7 +5554,33 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.9200000000000002,
+     "dur": 0.5
+    },
+    {
+     "id": "p7264",
+     "step": 0,
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1130,
+     "y": 976,
+     "w": 300,
+     "h": 4,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 2,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 2.1,
+     "dur": 0.5
     }
    ]
   },
@@ -5014,7 +5594,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7241",
+     "id": "p7265",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5034,7 +5614,7 @@
      }
     },
     {
-     "id": "p7242",
+     "id": "p7266",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5054,7 +5634,7 @@
      }
     },
     {
-     "id": "p7243",
+     "id": "p7267",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5074,7 +5654,7 @@
      "style": {}
     },
     {
-     "id": "p7244",
+     "id": "p7268",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5094,7 +5674,7 @@
      }
     },
     {
-     "id": "p7245",
+     "id": "p7269",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5114,7 +5694,7 @@
      }
     },
     {
-     "id": "p7246",
+     "id": "p7270",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5134,7 +5714,7 @@
      }
     },
     {
-     "id": "p7247",
+     "id": "p7271",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5155,7 +5735,7 @@
      }
     },
     {
-     "id": "p7248",
+     "id": "p7272",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5175,7 +5755,7 @@
      "style": {}
     },
     {
-     "id": "p7249",
+     "id": "p7273",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5195,7 +5775,7 @@
      }
     },
     {
-     "id": "p7250",
+     "id": "p7274",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5215,7 +5795,7 @@
      }
     },
     {
-     "id": "p7251",
+     "id": "p7275",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5235,7 +5815,7 @@
      }
     },
     {
-     "id": "p7252",
+     "id": "p7276",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5256,7 +5836,7 @@
      }
     },
     {
-     "id": "p7253",
+     "id": "p7277",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5276,7 +5856,7 @@
      "style": {}
     },
     {
-     "id": "p7254",
+     "id": "p7278",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5296,7 +5876,7 @@
      }
     },
     {
-     "id": "p7255",
+     "id": "p7279",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5316,7 +5896,7 @@
      }
     },
     {
-     "id": "p7256",
+     "id": "p7280",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5336,7 +5916,7 @@
      }
     },
     {
-     "id": "p7257",
+     "id": "p7281",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5357,7 +5937,7 @@
      }
     },
     {
-     "id": "p7258",
+     "id": "p7282",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5377,7 +5957,7 @@
      "style": {}
     },
     {
-     "id": "p7259",
+     "id": "p7283",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5397,7 +5977,7 @@
      }
     },
     {
-     "id": "p7260",
+     "id": "p7284",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5417,7 +5997,7 @@
      }
     },
     {
-     "id": "p7261",
+     "id": "p7285",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -5437,7 +6017,7 @@
      }
     },
     {
-     "id": "p7262",
+     "id": "p7286",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5457,7 +6037,7 @@
      "style": {}
     },
     {
-     "id": "p7263",
+     "id": "p7287",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -5477,7 +6057,7 @@
      }
     },
     {
-     "id": "p7264",
+     "id": "p7288",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5497,7 +6077,7 @@
      "style": {}
     },
     {
-     "id": "p7265",
+     "id": "p7289",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5517,7 +6097,7 @@
      "style": {}
     },
     {
-     "id": "p7266",
+     "id": "p7290",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5538,7 +6118,7 @@
      }
     },
     {
-     "id": "p7267",
+     "id": "p7291",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5554,7 +6134,7 @@
      "shadow": false
     },
     {
-     "id": "p7268",
+     "id": "p7292",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5586,7 +6166,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7269",
+     "id": "p7293",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5606,7 +6186,7 @@
      }
     },
     {
-     "id": "p7270",
+     "id": "p7294",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5626,7 +6206,7 @@
      }
     },
     {
-     "id": "p7271",
+     "id": "p7295",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5646,7 +6226,7 @@
      "style": {}
     },
     {
-     "id": "p7272",
+     "id": "p7296",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5666,7 +6246,7 @@
      }
     },
     {
-     "id": "p7273",
+     "id": "p7297",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5686,7 +6266,7 @@
      }
     },
     {
-     "id": "p7274",
+     "id": "p7298",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5706,7 +6286,7 @@
      "style": {}
     },
     {
-     "id": "p7275",
+     "id": "p7299",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5726,7 +6306,7 @@
      }
     },
     {
-     "id": "p7276",
+     "id": "p7300",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5746,7 +6326,7 @@
      }
     },
     {
-     "id": "p7277",
+     "id": "p7301",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5766,7 +6346,7 @@
      "style": {}
     },
     {
-     "id": "p7278",
+     "id": "p7302",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5786,7 +6366,7 @@
      }
     },
     {
-     "id": "p7279",
+     "id": "p7303",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5806,7 +6386,7 @@
      }
     },
     {
-     "id": "p7280",
+     "id": "p7304",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5826,7 +6406,7 @@
      "style": {}
     },
     {
-     "id": "p7281",
+     "id": "p7305",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5842,7 +6422,7 @@
      "shadow": false
     },
     {
-     "id": "p7282",
+     "id": "p7306",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5862,7 +6442,7 @@
      "style": {}
     },
     {
-     "id": "p7283",
+     "id": "p7307",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5882,7 +6462,7 @@
      "style": {}
     },
     {
-     "id": "p7284",
+     "id": "p7308",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -5902,7 +6482,7 @@
      }
     },
     {
-     "id": "p7285",
+     "id": "p7309",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5922,7 +6502,7 @@
      "style": {}
     },
     {
-     "id": "p7286",
+     "id": "p7310",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5938,7 +6518,7 @@
      "shadow": false
     },
     {
-     "id": "p7287",
+     "id": "p7311",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -5958,7 +6538,7 @@
      }
     },
     {
-     "id": "p7288",
+     "id": "p7312",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5978,7 +6558,7 @@
      "style": {}
     },
     {
-     "id": "p7289",
+     "id": "p7313",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -5994,7 +6574,7 @@
      "shadow": false
     },
     {
-     "id": "p7290",
+     "id": "p7314",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6014,7 +6594,7 @@
      }
     },
     {
-     "id": "p7291",
+     "id": "p7315",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -6045,7 +6625,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7292",
+     "id": "p7316",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6065,7 +6645,7 @@
      }
     },
     {
-     "id": "p7293",
+     "id": "p7317",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6085,7 +6665,7 @@
      }
     },
     {
-     "id": "p7294",
+     "id": "p7318",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6105,7 +6685,7 @@
      "style": {}
     },
     {
-     "id": "p7295",
+     "id": "p7319",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6125,7 +6705,7 @@
      }
     },
     {
-     "id": "p7296",
+     "id": "p7320",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6145,7 +6725,7 @@
      }
     },
     {
-     "id": "p7297",
+     "id": "p7321",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6165,7 +6745,7 @@
      }
     },
     {
-     "id": "p7298",
+     "id": "p7322",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6185,7 +6765,7 @@
      "style": {}
     },
     {
-     "id": "p7299",
+     "id": "p7323",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6205,7 +6785,7 @@
      }
     },
     {
-     "id": "p7300",
+     "id": "p7324",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6225,7 +6805,7 @@
      }
     },
     {
-     "id": "p7301",
+     "id": "p7325",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6245,7 +6825,7 @@
      }
     },
     {
-     "id": "p7302",
+     "id": "p7326",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6265,7 +6845,7 @@
      "style": {}
     },
     {
-     "id": "p7303",
+     "id": "p7327",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6285,7 +6865,7 @@
      }
     },
     {
-     "id": "p7304",
+     "id": "p7328",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6305,7 +6885,7 @@
      }
     },
     {
-     "id": "p7305",
+     "id": "p7329",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6325,7 +6905,7 @@
      }
     },
     {
-     "id": "p7306",
+     "id": "p7330",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6345,7 +6925,7 @@
      "style": {}
     },
     {
-     "id": "p7307",
+     "id": "p7331",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6365,7 +6945,7 @@
      }
     },
     {
-     "id": "p7308",
+     "id": "p7332",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6385,7 +6965,7 @@
      }
     },
     {
-     "id": "p7309",
+     "id": "p7333",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6405,7 +6985,7 @@
      }
     },
     {
-     "id": "p7310",
+     "id": "p7334",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6425,7 +7005,7 @@
      "style": {}
     },
     {
-     "id": "p7311",
+     "id": "p7335",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6445,7 +7025,7 @@
      }
     },
     {
-     "id": "p7312",
+     "id": "p7336",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6465,7 +7045,7 @@
      }
     },
     {
-     "id": "p7313",
+     "id": "p7337",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6485,7 +7065,7 @@
      }
     },
     {
-     "id": "p7314",
+     "id": "p7338",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6505,7 +7085,7 @@
      "style": {}
     },
     {
-     "id": "p7315",
+     "id": "p7339",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6521,7 +7101,7 @@
      "shadow": false
     },
     {
-     "id": "p7316",
+     "id": "p7340",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -6541,7 +7121,7 @@
      }
     },
     {
-     "id": "p7317",
+     "id": "p7341",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6561,7 +7141,7 @@
      "style": {}
     },
     {
-     "id": "p7318",
+     "id": "p7342",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6577,7 +7157,7 @@
      "shadow": false
     },
     {
-     "id": "p7319",
+     "id": "p7343",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6597,7 +7177,7 @@
      "style": {}
     },
     {
-     "id": "p7320",
+     "id": "p7344",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -6625,493 +7205,6 @@
    },
    "transition": "fade",
    "notes": "Claude 쪽 화면은 업데이트로 버튼 이름이 조금 바뀔 수 있습니다. 핵심은 「GitHub 연결 → Claude 앱을 my-pt 저장소에만 설치」.\n오른쪽 그림은 GitHub 공식 안내의 앱 설치 화면(예시 앱)입니다. 실제로는 Claude 앱으로 표시됩니다.",
-   "decor": "none",
-   "elements": [
-    {
-     "id": "p7321",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 110,
-     "y": 70,
-     "w": 1300,
-     "h": 40,
-     "role": "text",
-     "html": "04 · 프롬프트 하나로 만들기",
-     "style": {
-      "fontSize": 26,
-      "color": "#2457D6",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7322",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 110,
-     "y": 112,
-     "w": 1700,
-     "h": 90,
-     "role": "title",
-     "html": "화면으로 따라 하기 ③ Claude 앱 설치 — my-pt 하나만",
-     "style": {
-      "fontSize": 58,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.2
-     }
-    },
-    {
-     "id": "p7323",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 110,
-     "y": 245,
-     "w": 800,
-     "h": 155,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "#D9D6CF",
-     "strokeWidth": 2,
-     "radius": 16,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7324",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 134,
-     "y": 275,
-     "w": 70,
-     "h": 90,
-     "role": "text",
-     "html": "1",
-     "style": {
-      "fontSize": 56,
-      "color": "#2457D6",
-      "bold": true,
-      "lineHeight": 1.2
-     }
-    },
-    {
-     "id": "p7325",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 267,
-     "w": 680,
-     "h": 50,
-     "role": "text",
-     "html": "<b>claude.ai/code 열기</b>",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7326",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 323,
-     "w": 680,
-     "h": 60,
-     "role": "text",
-     "html": "Claude에 로그인 → <b>Claude Code</b>",
-     "style": {
-      "fontSize": 26,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "p7327",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 110,
-     "y": 420,
-     "w": 800,
-     "h": 155,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "#D9D6CF",
-     "strokeWidth": 2,
-     "radius": 16,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7328",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 134,
-     "y": 450,
-     "w": 70,
-     "h": 90,
-     "role": "text",
-     "html": "2",
-     "style": {
-      "fontSize": 56,
-      "color": "#2457D6",
-      "bold": true,
-      "lineHeight": 1.2
-     }
-    },
-    {
-     "id": "p7329",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 442,
-     "w": 680,
-     "h": 50,
-     "role": "text",
-     "html": "<b>GitHub 연결</b>",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7330",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 498,
-     "w": 680,
-     "h": 60,
-     "role": "text",
-     "html": "안내에 따라 <b>GitHub 연결</b> → GitHub 로그인",
-     "style": {
-      "fontSize": 26,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "p7331",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 110,
-     "y": 595,
-     "w": 800,
-     "h": 155,
-     "shape": "rect",
-     "fill": "#E8EEFC",
-     "stroke": "#2457D6",
-     "strokeWidth": 3,
-     "radius": 16,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7332",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 134,
-     "y": 625,
-     "w": 70,
-     "h": 90,
-     "role": "text",
-     "html": "3",
-     "style": {
-      "fontSize": 56,
-      "color": "#2457D6",
-      "bold": true,
-      "lineHeight": 1.2
-     }
-    },
-    {
-     "id": "p7333",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 617,
-     "w": 680,
-     "h": 50,
-     "role": "text",
-     "html": "<b>Claude 앱 설치 화면</b>",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7334",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 673,
-     "w": 680,
-     "h": 60,
-     "role": "text",
-     "html": "<b>Only select repositories</b> → <b>my-pt</b> 고르기 → <b>Install</b>",
-     "style": {
-      "fontSize": 26,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "p7335",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 110,
-     "y": 770,
-     "w": 800,
-     "h": 155,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "#D9D6CF",
-     "strokeWidth": 2,
-     "radius": 16,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7336",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 134,
-     "y": 800,
-     "w": 70,
-     "h": 90,
-     "role": "text",
-     "html": "4",
-     "style": {
-      "fontSize": 56,
-      "color": "#2457D6",
-      "bold": true,
-      "lineHeight": 1.2
-     }
-    },
-    {
-     "id": "p7337",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 792,
-     "w": 680,
-     "h": 50,
-     "role": "text",
-     "html": "<b>저장소 고르고 시작</b>",
-     "style": {
-      "fontSize": 32,
-      "color": "#15181C",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7338",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 210,
-     "y": 848,
-     "w": 680,
-     "h": 60,
-     "role": "text",
-     "html": "돌아와서 <b>my-pt</b> 선택 → 대화창이 열리면 준비 끝",
-     "style": {
-      "fontSize": 26,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "p7339",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 978,
-     "y": 258,
-     "w": 834,
-     "h": 413,
-     "shape": "rect",
-     "fill": "#FFFFFF",
-     "stroke": "#D9D6CF",
-     "strokeWidth": 2,
-     "radius": 10,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7340",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "image",
-     "x": 980,
-     "y": 260,
-     "w": 830,
-     "h": 409,
-     "src": "assets/pt37-gh-install.png",
-     "fit": "contain",
-     "radius": 0,
-     "shadow": false
-    },
-    {
-     "id": "p7341",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 1018,
-     "y": 550,
-     "w": 332,
-     "h": 100,
-     "shape": "rect",
-     "fill": "none",
-     "stroke": "#B3261E",
-     "strokeWidth": 5,
-     "radius": 10,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7342",
-     "step": 2,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 980,
-     "y": 687,
-     "w": 830,
-     "h": 40,
-     "role": "text",
-     "html": "GitHub 공식 안내의 앱 설치 화면 — 실제로는 Claude 앱",
-     "style": {
-      "fontSize": 24,
-      "color": "#5B6168",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "p7343",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 980,
-     "y": 780,
-     "w": 830,
-     "h": 190,
-     "shape": "rect",
-     "fill": "#FBEAE8",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 16,
-     "shadow": false,
-     "html": "",
-     "style": {}
-    },
-    {
-     "id": "p7344",
-     "step": 3,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1010,
-     "y": 800,
-     "w": 770,
-     "h": 150,
-     "role": "text",
-     "html": "<b>All repositories 말고 Only select</b><br>AI가 손댈 수 있는 곳을 <b>my-pt 하나로</b> 좁힙니다<br>비밀번호 · 토큰은 대화창에 붙여넣지 않기",
-     "style": {
-      "fontSize": 26,
-      "color": "#B3261E",
-      "bold": false,
-      "lineHeight": 1.55
-     }
-    }
-   ]
-  },
-  {
-   "id": "p7s18",
-   "bg": {
-    "color": "#FAFAF7"
-   },
-   "transition": "fade",
-   "notes": "교육생은 이 QR 하나만 찍으면 됩니다. 페이지의 [프롬프트 복사] → Claude Code 대화창에 붙여넣기 → 보내기.\nAI가 여섯 가지를 차례로 만들고, 단계마다 스스로 확인한 뒤 결과 주소와 화면 캡처를 보고합니다.\n\n── 프롬프트 전문 ──\n너는 웹 개발자야. 나는 코딩을 모르는 강사야.\n지금 연결된 저장소에 브라우저에서 쓰는 나만의 발표 프로그램(PT 툴)을 처음부터 끝까지 만들어 줘.\n아래 순서대로 네가 알아서 진행하고, 단계마다 직접 확인한 뒤 다음으로 넘어가. 내가 직접 눌러야 하는 것만 화면 순서대로 짧게 알려 줘.\n\n1) 교안 형식\n- 교안 1개 = JSON 파일 1개 (decks/ 폴더). 슬라이드 1920×1080 좌표\n- 요소: 글 · 그림 · 도형. 각 요소에 step(몇 번째 클릭에 나타날지)\n- 형식 설명은 docs/format.md 에 한국어로\n\n2) 발표 화면 present.html\n- → · Space · 클릭: 다음 / ← 이전 / 숫자+Enter 이동\n- F5 전체 화면 · B 검은 화면 · S 발표자 보기(다음 장 · 노트 · 시간)\n- 16:9 비율 유지, 휴대폰은 밀어서 넘기기\n- 참고: reveal.js 와 PowerPoint 쇼의 조작 방식 (라이브러리는 쓰지 말 것)\n\n3) 교안 목록 index.html (첫 화면)\n- 교안을 카드로: 첫 장 미리보기 · 제목 · 장 수. 누르면 발표\n- 검색칸. 휴대폰 1열 · PC 3~4열\n\n4) 예시 교안 하나\n- 주제: (내 강의 주제) · 대상: (예: 신입 직원) · 10장 안팎\n- 표지 → 목차 → 본문 → 정리. 한 장에 한 메시지, 글자 24px 이상, 설명은 발표자 노트에\n\n5) 인터넷에 공개\n- GitHub Pages 로 공개. 내가 눌러야 하는 설정이 있으면 순서대로 알려 줘\n\n6) 작업 규칙 문서 CLAUDE.md\n- 고치기 전에 최신 상태 받기 · 한 번에 한 가지만 · 고친 뒤 화면으로 확인 · 비밀 자료와 토큰은 절대 올리지 않기\n\n[하지 말 것]\n- npm · React 같은 빌드 도구 금지. HTML · CSS · JS 파일만\n- 비밀번호 · 토큰을 대화창에 붙여넣으라고 하지 말 것\n\n[끝나면 보고]\n- 사이트 주소와 예시 교안 발표 주소\n- 단축키를 하나씩 시험한 결과 표\n- PC · 휴대폰 화면 캡처\n- 앞으로 내가 말로 시킬 수 있는 예시 5개 (예: \"3장 제목 바꿔 줘\")",
    "decor": "none",
    "elements": [
     {
@@ -7146,7 +7239,7 @@
      "w": 1700,
      "h": 90,
      "role": "title",
-     "html": "프롬프트 하나 — 붙여넣고 기다리기",
+     "html": "화면으로 따라 하기 ③ Claude 앱 설치 — my-pt 하나만",
      "style": {
       "fontSize": 58,
       "color": "#15181C",
@@ -7156,6 +7249,493 @@
     },
     {
      "id": "p7347",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 245,
+     "w": 800,
+     "h": 155,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D9D6CF",
+     "strokeWidth": 2,
+     "radius": 16,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7348",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 134,
+     "y": 275,
+     "w": 70,
+     "h": 90,
+     "role": "text",
+     "html": "1",
+     "style": {
+      "fontSize": 56,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "p7349",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 267,
+     "w": 680,
+     "h": 50,
+     "role": "text",
+     "html": "<b>claude.ai/code 열기</b>",
+     "style": {
+      "fontSize": 32,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7350",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 323,
+     "w": 680,
+     "h": 60,
+     "role": "text",
+     "html": "Claude에 로그인 → <b>Claude Code</b>",
+     "style": {
+      "fontSize": 26,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.4
+     }
+    },
+    {
+     "id": "p7351",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 420,
+     "w": 800,
+     "h": 155,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D9D6CF",
+     "strokeWidth": 2,
+     "radius": 16,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7352",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 134,
+     "y": 450,
+     "w": 70,
+     "h": 90,
+     "role": "text",
+     "html": "2",
+     "style": {
+      "fontSize": 56,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "p7353",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 442,
+     "w": 680,
+     "h": 50,
+     "role": "text",
+     "html": "<b>GitHub 연결</b>",
+     "style": {
+      "fontSize": 32,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7354",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 498,
+     "w": 680,
+     "h": 60,
+     "role": "text",
+     "html": "안내에 따라 <b>GitHub 연결</b> → GitHub 로그인",
+     "style": {
+      "fontSize": 26,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.4
+     }
+    },
+    {
+     "id": "p7355",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 595,
+     "w": 800,
+     "h": 155,
+     "shape": "rect",
+     "fill": "#E8EEFC",
+     "stroke": "#2457D6",
+     "strokeWidth": 3,
+     "radius": 16,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7356",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 134,
+     "y": 625,
+     "w": 70,
+     "h": 90,
+     "role": "text",
+     "html": "3",
+     "style": {
+      "fontSize": 56,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "p7357",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 617,
+     "w": 680,
+     "h": 50,
+     "role": "text",
+     "html": "<b>Claude 앱 설치 화면</b>",
+     "style": {
+      "fontSize": 32,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7358",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 673,
+     "w": 680,
+     "h": 60,
+     "role": "text",
+     "html": "<b>Only select repositories</b> → <b>my-pt</b> 고르기 → <b>Install</b>",
+     "style": {
+      "fontSize": 26,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.4
+     }
+    },
+    {
+     "id": "p7359",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 770,
+     "w": 800,
+     "h": 155,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D9D6CF",
+     "strokeWidth": 2,
+     "radius": 16,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7360",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 134,
+     "y": 800,
+     "w": 70,
+     "h": 90,
+     "role": "text",
+     "html": "4",
+     "style": {
+      "fontSize": 56,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "p7361",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 792,
+     "w": 680,
+     "h": 50,
+     "role": "text",
+     "html": "<b>저장소 고르고 시작</b>",
+     "style": {
+      "fontSize": 32,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7362",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 210,
+     "y": 848,
+     "w": 680,
+     "h": 60,
+     "role": "text",
+     "html": "돌아와서 <b>my-pt</b> 선택 → 대화창이 열리면 준비 끝",
+     "style": {
+      "fontSize": 26,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.4
+     }
+    },
+    {
+     "id": "p7363",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 978,
+     "y": 258,
+     "w": 834,
+     "h": 413,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D9D6CF",
+     "strokeWidth": 2,
+     "radius": 10,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7364",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 980,
+     "y": 260,
+     "w": 830,
+     "h": 409,
+     "src": "assets/pt37-gh-install.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
+    },
+    {
+     "id": "p7365",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1018,
+     "y": 550,
+     "w": 332,
+     "h": 100,
+     "shape": "rect",
+     "fill": "none",
+     "stroke": "#B3261E",
+     "strokeWidth": 5,
+     "radius": 10,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7366",
+     "step": 2,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 980,
+     "y": 687,
+     "w": 830,
+     "h": 40,
+     "role": "text",
+     "html": "GitHub 공식 안내의 앱 설치 화면 — 실제로는 Claude 앱",
+     "style": {
+      "fontSize": 24,
+      "color": "#5B6168",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7367",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 980,
+     "y": 780,
+     "w": 830,
+     "h": 190,
+     "shape": "rect",
+     "fill": "#FBEAE8",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 16,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7368",
+     "step": 3,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1010,
+     "y": 800,
+     "w": 770,
+     "h": 150,
+     "role": "text",
+     "html": "<b>All repositories 말고 Only select</b><br>AI가 손댈 수 있는 곳을 <b>my-pt 하나로</b> 좁힙니다<br>비밀번호 · 토큰은 대화창에 붙여넣지 않기",
+     "style": {
+      "fontSize": 26,
+      "color": "#B3261E",
+      "bold": false,
+      "lineHeight": 1.55
+     }
+    }
+   ]
+  },
+  {
+   "id": "p7s18",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "교육생은 이 QR 하나만 찍으면 됩니다. 페이지의 [프롬프트 복사] → Claude Code 대화창에 붙여넣기 → 보내기.\nAI가 여섯 가지를 차례로 만들고, 단계마다 스스로 확인한 뒤 결과 주소와 화면 캡처를 보고합니다.\n\n── 프롬프트 전문 ──\n너는 웹 개발자야. 나는 코딩을 모르는 강사야.\n지금 연결된 저장소에 브라우저에서 쓰는 나만의 발표 프로그램(PT 툴)을 처음부터 끝까지 만들어 줘.\n아래 순서대로 네가 알아서 진행하고, 단계마다 직접 확인한 뒤 다음으로 넘어가. 내가 직접 눌러야 하는 것만 화면 순서대로 짧게 알려 줘.\n\n1) 교안 형식\n- 교안 1개 = JSON 파일 1개 (decks/ 폴더). 슬라이드 1920×1080 좌표\n- 요소: 글 · 그림 · 도형. 각 요소에 step(몇 번째 클릭에 나타날지)\n- 형식 설명은 docs/format.md 에 한국어로\n\n2) 발표 화면 present.html\n- → · Space · 클릭: 다음 / ← 이전 / 숫자+Enter 이동\n- F5 전체 화면 · B 검은 화면 · S 발표자 보기(다음 장 · 노트 · 시간)\n- 16:9 비율 유지, 휴대폰은 밀어서 넘기기\n- 참고: reveal.js 와 PowerPoint 쇼의 조작 방식 (라이브러리는 쓰지 말 것)\n\n3) 교안 목록 index.html (첫 화면)\n- 교안을 카드로: 첫 장 미리보기 · 제목 · 장 수. 누르면 발표\n- 검색칸. 휴대폰 1열 · PC 3~4열\n\n4) 예시 교안 하나\n- 주제: (내 강의 주제) · 대상: (예: 신입 직원) · 10장 안팎\n- 표지 → 목차 → 본문 → 정리. 한 장에 한 메시지, 글자 24px 이상, 설명은 발표자 노트에\n\n5) 인터넷에 공개\n- GitHub Pages 로 공개. 내가 눌러야 하는 설정이 있으면 순서대로 알려 줘\n\n6) 작업 규칙 문서 CLAUDE.md\n- 고치기 전에 최신 상태 받기 · 한 번에 한 가지만 · 고친 뒤 화면으로 확인 · 비밀 자료와 토큰은 절대 올리지 않기\n\n[하지 말 것]\n- npm · React 같은 빌드 도구 금지. HTML · CSS · JS 파일만\n- 비밀번호 · 토큰을 대화창에 붙여넣으라고 하지 말 것\n\n[끝나면 보고]\n- 사이트 주소와 예시 교안 발표 주소\n- 단축키를 하나씩 시험한 결과 표\n- PC · 휴대폰 화면 캡처\n- 앞으로 내가 말로 시킬 수 있는 예시 5개 (예: \"3장 제목 바꿔 줘\")",
+   "decor": "none",
+   "elements": [
+    {
+     "id": "p7369",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 70,
+     "w": 1300,
+     "h": 40,
+     "role": "text",
+     "html": "04 · 프롬프트 하나로 만들기",
+     "style": {
+      "fontSize": 26,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "p7370",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 112,
+     "w": 1700,
+     "h": 90,
+     "role": "title",
+     "html": "프롬프트 하나 — 붙여넣고 기다리기",
+     "style": {
+      "fontSize": 58,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.2
+     }
+    },
+    {
+     "id": "p7371",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7175,7 +7755,7 @@
      "style": {}
     },
     {
-     "id": "p7348",
+     "id": "p7372",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7195,7 +7775,7 @@
      }
     },
     {
-     "id": "p7349",
+     "id": "p7373",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7215,7 +7795,7 @@
      "style": {}
     },
     {
-     "id": "p7350",
+     "id": "p7374",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7235,7 +7815,7 @@
      }
     },
     {
-     "id": "p7351",
+     "id": "p7375",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7255,7 +7835,7 @@
      }
     },
     {
-     "id": "p7352",
+     "id": "p7376",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7275,7 +7855,7 @@
      }
     },
     {
-     "id": "p7353",
+     "id": "p7377",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7295,7 +7875,7 @@
      "style": {}
     },
     {
-     "id": "p7354",
+     "id": "p7378",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7315,7 +7895,7 @@
      }
     },
     {
-     "id": "p7355",
+     "id": "p7379",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7335,7 +7915,7 @@
      }
     },
     {
-     "id": "p7356",
+     "id": "p7380",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7355,7 +7935,7 @@
      }
     },
     {
-     "id": "p7357",
+     "id": "p7381",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7375,7 +7955,7 @@
      "style": {}
     },
     {
-     "id": "p7358",
+     "id": "p7382",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7395,7 +7975,7 @@
      }
     },
     {
-     "id": "p7359",
+     "id": "p7383",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7415,7 +7995,7 @@
      }
     },
     {
-     "id": "p7360",
+     "id": "p7384",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7435,7 +8015,7 @@
      }
     },
     {
-     "id": "p7361",
+     "id": "p7385",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7455,7 +8035,7 @@
      "style": {}
     },
     {
-     "id": "p7362",
+     "id": "p7386",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7475,7 +8055,7 @@
      }
     },
     {
-     "id": "p7363",
+     "id": "p7387",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7495,7 +8075,7 @@
      }
     },
     {
-     "id": "p7364",
+     "id": "p7388",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7515,7 +8095,7 @@
      }
     },
     {
-     "id": "p7365",
+     "id": "p7389",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7535,7 +8115,7 @@
      "style": {}
     },
     {
-     "id": "p7366",
+     "id": "p7390",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7555,7 +8135,7 @@
      }
     },
     {
-     "id": "p7367",
+     "id": "p7391",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7575,7 +8155,7 @@
      }
     },
     {
-     "id": "p7368",
+     "id": "p7392",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7595,7 +8175,7 @@
      }
     },
     {
-     "id": "p7369",
+     "id": "p7393",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7615,7 +8195,7 @@
      "style": {}
     },
     {
-     "id": "p7370",
+     "id": "p7394",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7635,7 +8215,7 @@
      }
     },
     {
-     "id": "p7371",
+     "id": "p7395",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7655,7 +8235,7 @@
      }
     },
     {
-     "id": "p7372",
+     "id": "p7396",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -7675,7 +8255,7 @@
      }
     },
     {
-     "id": "p7373",
+     "id": "p7397",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7695,7 +8275,7 @@
      "style": {}
     },
     {
-     "id": "p7374",
+     "id": "p7398",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7716,7 +8296,7 @@
      }
     },
     {
-     "id": "p7375",
+     "id": "p7399",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7736,7 +8316,7 @@
      "style": {}
     },
     {
-     "id": "p7376",
+     "id": "p7400",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7752,7 +8332,7 @@
      "shadow": false
     },
     {
-     "id": "p7377",
+     "id": "p7401",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7784,7 +8364,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7378",
+     "id": "p7402",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7804,7 +8384,7 @@
      }
     },
     {
-     "id": "p7379",
+     "id": "p7403",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7824,7 +8404,7 @@
      }
     },
     {
-     "id": "p7380",
+     "id": "p7404",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7844,7 +8424,7 @@
      "style": {}
     },
     {
-     "id": "p7381",
+     "id": "p7405",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7864,7 +8444,7 @@
      "style": {}
     },
     {
-     "id": "p7382",
+     "id": "p7406",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7885,7 +8465,7 @@
      }
     },
     {
-     "id": "p7383",
+     "id": "p7407",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7905,7 +8485,7 @@
      "style": {}
     },
     {
-     "id": "p7384",
+     "id": "p7408",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -7925,7 +8505,7 @@
      }
     },
     {
-     "id": "p7385",
+     "id": "p7409",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7945,7 +8525,7 @@
      "style": {}
     },
     {
-     "id": "p7386",
+     "id": "p7410",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7965,7 +8545,7 @@
      "style": {}
     },
     {
-     "id": "p7387",
+     "id": "p7411",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -7986,7 +8566,7 @@
      }
     },
     {
-     "id": "p7388",
+     "id": "p7412",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8006,7 +8586,7 @@
      "style": {}
     },
     {
-     "id": "p7389",
+     "id": "p7413",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8026,7 +8606,7 @@
      }
     },
     {
-     "id": "p7390",
+     "id": "p7414",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8046,7 +8626,7 @@
      "style": {}
     },
     {
-     "id": "p7391",
+     "id": "p7415",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8066,7 +8646,7 @@
      "style": {}
     },
     {
-     "id": "p7392",
+     "id": "p7416",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8087,7 +8667,7 @@
      }
     },
     {
-     "id": "p7393",
+     "id": "p7417",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8107,7 +8687,7 @@
      "style": {}
     },
     {
-     "id": "p7394",
+     "id": "p7418",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8127,7 +8707,7 @@
      }
     },
     {
-     "id": "p7395",
+     "id": "p7419",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8147,7 +8727,7 @@
      "style": {}
     },
     {
-     "id": "p7396",
+     "id": "p7420",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8167,7 +8747,7 @@
      "style": {}
     },
     {
-     "id": "p7397",
+     "id": "p7421",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8188,7 +8768,7 @@
      }
     },
     {
-     "id": "p7398",
+     "id": "p7422",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8208,7 +8788,7 @@
      "style": {}
     },
     {
-     "id": "p7399",
+     "id": "p7423",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8228,7 +8808,7 @@
      }
     },
     {
-     "id": "p7400",
+     "id": "p7424",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -8259,14 +8839,89 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7401",
+     "id": "p7426",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 0.55,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/pt37-sec5.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7425",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B0D11",
+     "fill2": "#0B0D11",
+     "fill2Op": 0.35,
+     "gAngle": 0,
+     "strokeWidth": 0,
+     "stroke": "",
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "p7427",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.5,
+     "type": "image",
+     "x": 1060,
+     "y": -260,
+     "w": 1000,
+     "h": 1000,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "p7428",
+     "step": 0,
+     "anim": "float",
+     "rotate": 0,
+     "opacity": 0.35,
+     "type": "image",
+     "x": 1300,
+     "y": 480,
+     "w": 760,
+     "h": 760,
+     "src": "assets/pt37-glow.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false,
+     "enter": true,
+     "delay": 1.5
+    },
+    {
+     "id": "p7429",
+     "step": 0,
+     "anim": "focus",
+     "rotate": 0,
+     "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 300,
+     "y": 290,
      "w": 700,
      "h": 250,
      "role": "text",
@@ -8276,17 +8931,43 @@
       "color": "#7FA0F0",
       "bold": true,
       "lineHeight": 1.15
-     }
+     },
+     "enter": true,
+     "delay": 0.1,
+     "dur": 1.4
     },
     {
-     "id": "p7402",
+     "id": "p7430",
      "step": 0,
-     "anim": "fade",
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 110,
+     "y": 548,
+     "w": 160,
+     "h": 8,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 4,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.6,
+     "dur": 0.6
+    },
+    {
+     "id": "p7431",
+     "step": 0,
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 570,
+     "y": 575,
      "w": 1600,
      "h": 110,
      "role": "title",
@@ -8296,17 +8977,20 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 0.75,
+     "dur": 1.0
     },
     {
-     "id": "p7403",
+     "id": "p7432",
      "step": 0,
-     "anim": "fade",
+     "anim": "blur",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
      "x": 110,
-     "y": 710,
+     "y": 715,
      "w": 1600,
      "h": 60,
      "role": "text",
@@ -8316,12 +9000,15 @@
       "color": "#C9CED8",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.25,
+     "dur": 0.8
     },
     {
-     "id": "p7404",
+     "id": "p7433",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8336,12 +9023,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6,
+     "dur": 0.5
     },
     {
-     "id": "p7405",
+     "id": "p7434",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8356,12 +9046,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.6800000000000002,
+     "dur": 0.5
     },
     {
-     "id": "p7406",
+     "id": "p7435",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8376,12 +9069,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.76,
+     "dur": 0.5
     },
     {
-     "id": "p7407",
+     "id": "p7436",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8396,12 +9092,15 @@
       "color": "#9AA1AD",
       "bold": false,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.84,
+     "dur": 0.5
     },
     {
-     "id": "p7408",
+     "id": "p7437",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8416,7 +9115,33 @@
       "color": "#FFFFFF",
       "bold": true,
       "lineHeight": 1.35
-     }
+     },
+     "enter": true,
+     "delay": 1.9200000000000002,
+     "dur": 0.5
+    },
+    {
+     "id": "p7438",
+     "step": 0,
+     "anim": "wipe",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1470,
+     "y": 976,
+     "w": 300,
+     "h": 4,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 2,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 2.1,
+     "dur": 0.5
     }
    ]
   },
@@ -8430,7 +9155,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7409",
+     "id": "p7439",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8450,7 +9175,7 @@
      }
     },
     {
-     "id": "p7410",
+     "id": "p7440",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8470,7 +9195,7 @@
      }
     },
     {
-     "id": "p7411",
+     "id": "p7441",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8490,7 +9215,7 @@
      }
     },
     {
-     "id": "p7412",
+     "id": "p7442",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8510,7 +9235,7 @@
      }
     },
     {
-     "id": "p7413",
+     "id": "p7443",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8530,7 +9255,7 @@
      "style": {}
     },
     {
-     "id": "p7414",
+     "id": "p7444",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8551,7 +9276,7 @@
      }
     },
     {
-     "id": "p7415",
+     "id": "p7445",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8572,7 +9297,7 @@
      }
     },
     {
-     "id": "p7416",
+     "id": "p7446",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8592,7 +9317,7 @@
      "style": {}
     },
     {
-     "id": "p7417",
+     "id": "p7447",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8613,7 +9338,7 @@
      }
     },
     {
-     "id": "p7418",
+     "id": "p7448",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8633,7 +9358,7 @@
      "style": {}
     },
     {
-     "id": "p7419",
+     "id": "p7449",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8654,7 +9379,7 @@
      }
     },
     {
-     "id": "p7420",
+     "id": "p7450",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8675,7 +9400,7 @@
      }
     },
     {
-     "id": "p7421",
+     "id": "p7451",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8695,7 +9420,7 @@
      "style": {}
     },
     {
-     "id": "p7422",
+     "id": "p7452",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -8716,7 +9441,7 @@
      }
     },
     {
-     "id": "p7423",
+     "id": "p7453",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8736,7 +9461,7 @@
      "style": {}
     },
     {
-     "id": "p7424",
+     "id": "p7454",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8757,7 +9482,7 @@
      }
     },
     {
-     "id": "p7425",
+     "id": "p7455",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8778,7 +9503,7 @@
      }
     },
     {
-     "id": "p7426",
+     "id": "p7456",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8798,7 +9523,7 @@
      "style": {}
     },
     {
-     "id": "p7427",
+     "id": "p7457",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -8819,7 +9544,7 @@
      }
     },
     {
-     "id": "p7428",
+     "id": "p7458",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8839,7 +9564,7 @@
      "style": {}
     },
     {
-     "id": "p7429",
+     "id": "p7459",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8860,7 +9585,7 @@
      }
     },
     {
-     "id": "p7430",
+     "id": "p7460",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8881,7 +9606,7 @@
      }
     },
     {
-     "id": "p7431",
+     "id": "p7461",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8901,7 +9626,7 @@
      "style": {}
     },
     {
-     "id": "p7432",
+     "id": "p7462",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -8933,7 +9658,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7433",
+     "id": "p7463",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8953,7 +9678,7 @@
      }
     },
     {
-     "id": "p7434",
+     "id": "p7464",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8973,7 +9698,7 @@
      }
     },
     {
-     "id": "p7435",
+     "id": "p7465",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -8993,7 +9718,7 @@
      }
     },
     {
-     "id": "p7436",
+     "id": "p7466",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9013,7 +9738,7 @@
      "style": {}
     },
     {
-     "id": "p7437",
+     "id": "p7467",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9029,7 +9754,7 @@
      "shadow": false
     },
     {
-     "id": "p7438",
+     "id": "p7468",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9050,7 +9775,7 @@
      }
     },
     {
-     "id": "p7439",
+     "id": "p7469",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9070,7 +9795,7 @@
      "style": {}
     },
     {
-     "id": "p7440",
+     "id": "p7470",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -9090,7 +9815,7 @@
      }
     },
     {
-     "id": "p7441",
+     "id": "p7471",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9110,7 +9835,7 @@
      "style": {}
     },
     {
-     "id": "p7442",
+     "id": "p7472",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -9130,7 +9855,7 @@
      }
     },
     {
-     "id": "p7443",
+     "id": "p7473",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -9150,7 +9875,7 @@
      "style": {}
     },
     {
-     "id": "p7444",
+     "id": "p7474",
      "step": 2,
      "anim": "fade",
      "rotate": 0,

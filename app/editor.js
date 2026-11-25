@@ -1896,7 +1896,7 @@
     const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return '#' + [m[1], m[2], m[3]].map(x => (+x).toString(16).padStart(2, '0')).join('');
     return '#000000';
   }
-  const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['none', '효과 없음']];
+  const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['rise', '마스크 위로 (솟아오르기)'], ['focus', '초점 맞추며'], ['kenburns', '느린 확대 (배경 사진)'], ['float', '떠다니기 (계속)'], ['none', '효과 없음']];
   const EMPHS = [['pulse', '두근 (크게)'], ['shake', '흔들기'], ['glow', '빛나기']];
   const SPEEDS = [['', '기본'], ['0.3', '빠르게'], ['0.5', '보통'], ['1', '느리게'], ['2', '아주 느리게']];
   const TRANS = [['', '기본 (교안 설정)'], ['none', '없음'], ['fade', '페이드'], ['slide', '밀어내기'], ['up', '위로 밀기'], ['cover', '덮기'], ['wipe', '닦아내기'], ['zoom', '확대'], ['blur', '흐리게'], ['morph', '모핑 (같은 요소가 움직임)']];
@@ -2017,6 +2017,7 @@
   function animSection(e) {
     return `<section><h4>애니메이션 (클릭 단계)</h4>
       ${row('나타내기', num('step', e.step || 0, 1, 0, 50, '0 = 처음부터 보임, 1 이상 = 그 번째 클릭에 나타남') + selIn('anim', e.anim || 'fade', ANIMS))}
+      ${row('시작', tog('enter', e.enter, '장이 열릴 때 바로', '나타내기 0 인 요소를 클릭 없이 장이 열리자마자 움직이게 (표지 · 구분 장 연출)'))}
       ${e.type === 'text' ? row('목록', tog('listSteps', e.listSteps, '항목 하나씩 표시', '글머리 항목을 클릭할 때마다 하나씩 보여줍니다')) : ''}
       ${row('속도', selIn('dur', e.dur ? String(e.dur) : '', SPEEDS) + small('지연(초)') + num('delay', e.delay || 0, 0.1, 0, 10, '같은 클릭에서 이만큼 늦게 시작'))}
       ${row('강조', num('emStep', e.emStep || 0, 1, 0, 50, '이 번째 클릭에서 한 번 강조 (0 = 없음)') + selIn('emAnim', e.emAnim || 'pulse', EMPHS))}
