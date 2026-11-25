@@ -650,8 +650,46 @@
     const more = body.querySelector('[data-more]'); if (more) more.onclick = (ev) => { ev.stopPropagation(); folderMenu(more, f); };
     c.appendChild(body);
     if (!GUEST) pressMenu(c, null, c, (at) => folderMenu(null, f, at));
+    if (FINE && ds.length) folderPeek(c, f, ds);
     return c;
   }
+  /* 폴더 미리보기: 마우스를 올리면 안의 교안 목록이 떠오름 → 누르면 폴더에 들어가지 않고 바로 열기 */
+  let peekEl = null, peekOwner = null, peekT = 0;
+  function hidePeek() { clearTimeout(peekT); if (peekEl) { peekEl.remove(); peekEl = null; peekOwner = null; } }
+  function folderPeek(card, f, ds) {
+    const later = (fn, ms) => { clearTimeout(peekT); peekT = setTimeout(fn, ms); };
+    card.addEventListener('mouseenter', () => { if (document.body.classList.contains('deck-dragging')) return; if (peekOwner === card) { clearTimeout(peekT); return; } later(() => showPeek(card, f, ds), 280); });
+    card.addEventListener('mouseleave', (ev) => { if (peekEl && peekEl.contains(ev.relatedTarget)) return; later(hidePeek, 220); });
+    card.addEventListener('dragstart', hidePeek); card.addEventListener('mousedown', hidePeek);
+  }
+  function showPeek(card, f, ds) {
+    hidePeek(); if (!card.isConnected) return;
+    const el = peekEl = document.createElement('div'); peekOwner = card; el.className = 'folder-peek'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${f.name} 폴더의 교안`);
+    el.innerHTML = `<div class="fp-head">${icon('folder', 15)}<b>${esc(f.name)}</b><span>교안 ${ds.length}개</span><button class="btn sm ghost fp-open" type="button">폴더 열기</button></div><div class="fp-list"></div>`;
+    const list = el.querySelector('.fp-list');
+    ds.forEach(d => {
+      const it = document.createElement('div'); it.className = 'fp-item'; it.tabIndex = 0; it.setAttribute('role', 'link'); it.title = GUEST ? '발표' : '편집 (발표는 ▶)';
+      const t = relTime(timeOf(d));
+      it.innerHTML = `<div class="fp-thumb loading"></div><div class="fp-text"><div class="fp-title">${esc(d.title)}</div><div class="fp-meta">${d.slides !== '' ? `슬라이드 ${d.slides}장` : ''}${t ? ' · ' + esc(t) : ''}</div></div>${GUEST ? '' : `<button class="btn sm icon ghost fp-play" type="button" title="발표" aria-label="${esc(d.title)} 발표">${icon('play', 14)}</button>`}`;
+      it.onclick = (ev) => { if (ev.target.closest('.fp-play')) { openPresent(d.name); hidePeek(); return; } openEditor(d.name); };
+      it.onkeydown = (ev) => { if (ev.key === 'Enter') openEditor(d.name); };
+      list.appendChild(it);
+      const th = it.querySelector('.fp-thumb');
+      loadDeck(d).then(deck => { if (deck.slides && deck.slides.length && el.isConnected) drawSlide(th, deck.slides[0], deck); else th.classList.remove('loading'); }).catch(() => th.classList.remove('loading'));
+    });
+    el.querySelector('.fp-open').onclick = () => { hidePeek(); openFolder(f.id); };
+    el.addEventListener('mouseleave', (ev) => { if (card.contains(ev.relatedTarget)) return; clearTimeout(peekT); peekT = setTimeout(hidePeek, 220); });
+    el.addEventListener('mouseenter', () => clearTimeout(peekT));
+    document.body.appendChild(el);
+    const r = card.getBoundingClientRect(), W = el.offsetWidth, H = el.offsetHeight, vw = innerWidth, vh = innerHeight, g = 10;
+    let x, y = Math.min(r.top, vh - H - 8);
+    if (r.right + g + W <= vw - 8) x = r.right + g; else if (r.left - g - W >= 8) x = r.left - g - W; // 카드 옆 (오른쪽 먼저)
+    else { x = Math.max(8, Math.min(vw - W - 8, r.left)); y = r.bottom + g + H <= vh - 8 ? r.bottom + g : Math.max(8, r.top - g - H); } // 옆에 자리가 없으면 아래(또는 위)
+    el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(Math.max(8, y)) + 'px';
+  }
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && peekEl) hidePeek(); });
+  window.addEventListener('scroll', (ev) => { if (peekEl && !peekEl.contains(ev.target)) hidePeek(); }, { passive: true, capture: true });
+  window.addEventListener('hashchange', hidePeek);
   function folderMenu(btn, f, at) {
     const n = folderDecks(f.id).length;
     showMenu(btn, at, f.name, `폴더 · 교안 ${n}개${f.locked ? ' · 잠금' : ''}`, [['open', 'folder', '열기'], null, ['frename', 'text', '폴더 이름 바꾸기'], f.locked ? ['unlock', 'unlock', '잠금 풀기'] : ['lock', 'lock', '잠금 설정 (게스트에게 숨기기)'], null, ['fdel', 'trash', '폴더 삭제']], (a) => folderAct(a, f));
