@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-25T13:32:10.000Z",
+ "modified": "2026-11-25T13:36:22.451Z",
  "footer": {
   "text": "",
   "num": true,
@@ -1016,7 +1016,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 4.5
     },
     {
@@ -1129,7 +1129,7 @@
       "font": "nanum-coding"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 1.2
     },
     {
@@ -1152,7 +1152,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 3.0,
+     "delay": 3,
      "dur": 0.5
     },
     {
@@ -2482,7 +2482,7 @@
      },
      "enter": true,
      "delay": 0.75,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7109",
@@ -3922,7 +3922,7 @@
      },
      "enter": true,
      "delay": 0.75,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7173",
@@ -5449,7 +5449,7 @@
      },
      "enter": true,
      "delay": 0.75,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7243",
@@ -6911,7 +6911,7 @@
      },
      "enter": true,
      "delay": 0.75,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7307",
@@ -10719,7 +10719,7 @@
      },
      "enter": true,
      "delay": 0.75,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7482",
@@ -11530,7 +11530,7 @@
      },
      "enter": true,
      "delay": 0.4,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7518",
@@ -11552,7 +11552,7 @@
       "lineHeight": 1.5
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 0.8
     },
     {
@@ -11755,7 +11755,7 @@
       "lineHeight": 1.5
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.6
     }
    ]
