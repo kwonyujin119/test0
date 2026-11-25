@@ -134,7 +134,12 @@ li.step-hidden { visibility: hidden; }
 @keyframes a-focus { from { opacity: 0; filter: blur(18px); scale: 1.12; } to { opacity: var(--op, 1); filter: blur(0); scale: 1; } }
 @keyframes a-kenburns { from { scale: 1; } to { scale: 1.12; } }
 @keyframes a-float { from { translate: 0 0; } to { translate: 24px -28px; } }
-@media (prefers-reduced-motion: reduce) { .anim-kenburns, .anim-float { animation: none; } .anim-rise, .anim-focus { animation-name: a-fade; } }
+/* 훑기 (위→아래로 계속 지나가는 빛줄기) · 타자 (한 글자씩 써지듯) */
+.anim-scan { animation-name: a-scan; animation-duration: 4s; animation-iteration-count: infinite; animation-timing-function: linear; }
+.anim-type { animation-name: a-type; animation-duration: 1.4s; animation-timing-function: steps(24, end); }
+@keyframes a-scan { from { translate: 0 -140px; } to { translate: 0 1180px; } }
+@keyframes a-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@media (prefers-reduced-motion: reduce) { .anim-kenburns, .anim-float, .anim-scan { animation: none; } .anim-rise, .anim-focus, .anim-type { animation-name: a-fade; } }
 @keyframes a-fade { from { opacity: 0; } to { opacity: var(--op, 1); } }
 @keyframes a-up { from { opacity: 0; translate: 0 40px; } to { opacity: var(--op, 1); translate: 0 0; } }
 @keyframes a-down { from { opacity: 0; translate: 0 -40px; } to { opacity: var(--op, 1); translate: 0 0; } }
