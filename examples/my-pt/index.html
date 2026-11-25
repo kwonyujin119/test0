@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>나의 교안</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root { --bg: #f6f7f9; --card: #fff; --fg: #16181d; --muted: #616772; --line: #e3e6eb; --acc: #2457d6; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121418; --card: #1c1f26; --fg: #eceef2; --muted: #9aa1ad; --line: #2b2f38; --acc: #7aa2ff; } }
+body { background: var(--bg); color: var(--fg); }
+header { max-width: 1200px; margin: 0 auto; padding: 32px 20px 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+h1 { margin: 0; font-size: 28px; flex: 1; }
+#q { min-width: 240px; flex: 0 1 320px; font-size: 16px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--fg); }
+main { max-width: 1200px; margin: 0 auto; padding: 16px 20px 40px; }
+.folder { margin: 18px 0 10px; font-size: 15px; color: var(--muted); font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.12); }
+.thumb { position: relative; aspect-ratio: 16/9; background: #e9ecf1; overflow: hidden; }
+.meta { padding: 12px 14px 14px; }
+.meta b { display: block; font-size: 17px; margin-bottom: 4px; }
+.meta span { color: var(--muted); font-size: 14px; }
+.empty { color: var(--muted); padding: 40px 0; }
+</style></head><body>
+<header><h1>나의 교안</h1><input id="q" type="search" placeholder="교안 검색" aria-label="교안 검색"></header>
+<main id="list"></main>
+<script src="slide.js"></script>
+<script>
+(async function () {
+  const index = await (await fetch('decks/index.json')).json();
+  const decks = await Promise.all(index.map(async (it) => ({ ...it, deck: await (await fetch('decks/' + encodeURIComponent(it.file) + '.json')).json() })));
+  const list = document.getElementById('list'), q = document.getElementById('q');
+  function render() {
+    const kw = q.value.trim().toLowerCase(); list.innerHTML = '';
+    const shown = decks.filter(d => !kw || d.deck.title.toLowerCase().includes(kw));
+    if (!shown.length) { list.innerHTML = '<p class="empty">찾는 교안이 없습니다.</p>'; return; }
+    const folders = [...new Set(shown.map(d => d.folder || '기타'))];
+    for (const f of folders) {
+      const h = document.createElement('div'); h.className = 'folder'; h.textContent = f; list.appendChild(h);
+      const g = document.createElement('div'); g.className = 'grid'; list.appendChild(g);
+      for (const d of shown.filter(x => (x.folder || '기타') === f)) {
+        const a = document.createElement('a'); a.className = 'card'; a.href = 'present.html?deck=' + encodeURIComponent(d.file);
+        a.innerHTML = `<div class="thumb"></div><div class="meta"><b></b><span>${d.deck.slides.length}장 · ${d.updated || ''}</span></div>`;
+        a.querySelector('b').textContent = d.deck.title; g.appendChild(a);
+        const box = a.querySelector('.thumb'), node = PT.drawSlide(d.deck.slides[0], 99); box.appendChild(node);
+        requestAnimationFrame(() => PT.fit(box, node)); new ResizeObserver(() => PT.fit(box, node)).observe(box);
+      }
+    }
+  }
+  q.addEventListener('input', render); render();
+})();
+</script>
+</body></html>

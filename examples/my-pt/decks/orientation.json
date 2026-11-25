@@ -1,0 +1,165 @@
+{
+ "title": "신규 직원 안전 오리엔테이션",
+ "slides": [
+  {
+   "bg": {
+    "color": "#3B3F8F"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "text",
+     "x": 140,
+     "y": 360,
+     "w": 1500,
+     "h": 80,
+     "text": "오리엔테이션",
+     "size": 36,
+     "color": "#FFFFFF",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 450,
+     "w": 1600,
+     "h": 240,
+     "text": "신규 직원 안전 오리엔테이션",
+     "size": 110,
+     "color": "#FFFFFF",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.15
+    }
+   ]
+  },
+  {
+   "bg": {
+    "color": "#FFFFFF"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "shape",
+     "shape": "rect",
+     "x": 110,
+     "y": 96,
+     "w": 10,
+     "h": 64,
+     "fill": "#C62828",
+     "radius": 5,
+     "step": 0,
+     "opacity": 1
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 80,
+     "w": 1400,
+     "h": 50,
+     "text": "오리엔테이션",
+     "size": 30,
+     "color": "#C62828",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 128,
+     "w": 1600,
+     "h": 100,
+     "text": "비상구 위치",
+     "size": 68,
+     "color": "#16181D",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 340,
+     "w": 1600,
+     "h": 500,
+     "text": "층마다 두 곳<br>엘리베이터는 쓰지 않습니다",
+     "size": 48,
+     "color": "#16181D",
+     "bold": false,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.5
+    }
+   ]
+  },
+  {
+   "bg": {
+    "color": "#FFFFFF"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "shape",
+     "shape": "rect",
+     "x": 110,
+     "y": 96,
+     "w": 10,
+     "h": 64,
+     "fill": "#C62828",
+     "radius": 5,
+     "step": 0,
+     "opacity": 1
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 80,
+     "w": 1400,
+     "h": 50,
+     "text": "오리엔테이션",
+     "size": 30,
+     "color": "#C62828",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 128,
+     "w": 1600,
+     "h": 100,
+     "text": "집결 장소",
+     "size": 68,
+     "color": "#16181D",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 340,
+     "w": 1600,
+     "h": 500,
+     "text": "본관 앞 주차장<br>팀장이 인원을 확인합니다",
+     "size": 48,
+     "color": "#16181D",
+     "bold": false,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.5
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,227 @@
+{
+ "title": "응급처치 기초",
+ "slides": [
+  {
+   "bg": {
+    "color": "#1E6F5C"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "text",
+     "x": 140,
+     "y": 360,
+     "w": 1500,
+     "h": 80,
+     "text": "안전교육",
+     "size": 36,
+     "color": "#FFFFFF",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 450,
+     "w": 1600,
+     "h": 240,
+     "text": "응급처치 기초",
+     "size": 110,
+     "color": "#FFFFFF",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.15
+    }
+   ]
+  },
+  {
+   "bg": {
+    "color": "#FFFFFF"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "shape",
+     "shape": "rect",
+     "x": 110,
+     "y": 96,
+     "w": 10,
+     "h": 64,
+     "fill": "#C62828",
+     "radius": 5,
+     "step": 0,
+     "opacity": 1
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 80,
+     "w": 1400,
+     "h": 50,
+     "text": "안전교육",
+     "size": 30,
+     "color": "#C62828",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 128,
+     "w": 1600,
+     "h": 100,
+     "text": "먼저 확인할 것",
+     "size": 68,
+     "color": "#16181D",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 340,
+     "w": 1600,
+     "h": 500,
+     "text": "주변이 안전한가<br>의식이 있는가<br>119에 신고했는가",
+     "size": 48,
+     "color": "#16181D",
+     "bold": false,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.5
+    }
+   ]
+  },
+  {
+   "bg": {
+    "color": "#FFFFFF"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "shape",
+     "shape": "rect",
+     "x": 110,
+     "y": 96,
+     "w": 10,
+     "h": 64,
+     "fill": "#C62828",
+     "radius": 5,
+     "step": 0,
+     "opacity": 1
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 80,
+     "w": 1400,
+     "h": 50,
+     "text": "안전교육",
+     "size": 30,
+     "color": "#C62828",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 128,
+     "w": 1600,
+     "h": 100,
+     "text": "가슴 압박",
+     "size": 68,
+     "color": "#16181D",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 340,
+     "w": 1600,
+     "h": 500,
+     "text": "가슴 가운데 · 분당 100~120회<br>5cm 깊이로 강하게",
+     "size": 48,
+     "color": "#16181D",
+     "bold": false,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.5
+    }
+   ]
+  },
+  {
+   "bg": {
+    "color": "#FFFFFF"
+   },
+   "notes": "",
+   "elements": [
+    {
+     "type": "shape",
+     "shape": "rect",
+     "x": 110,
+     "y": 96,
+     "w": 10,
+     "h": 64,
+     "fill": "#C62828",
+     "radius": 5,
+     "step": 0,
+     "opacity": 1
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 80,
+     "w": 1400,
+     "h": 50,
+     "text": "안전교육",
+     "size": 30,
+     "color": "#C62828",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 144,
+     "y": 128,
+     "w": 1600,
+     "h": 100,
+     "text": "자동심장충격기",
+     "size": 68,
+     "color": "#16181D",
+     "bold": true,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.35
+    },
+    {
+     "type": "text",
+     "x": 140,
+     "y": 340,
+     "w": 1600,
+     "h": 500,
+     "text": "전원을 켜고<br>음성 안내를 따릅니다",
+     "size": 48,
+     "color": "#16181D",
+     "bold": false,
+     "align": "left",
+     "step": 0,
+     "lineHeight": 1.5
+    }
+   ]
+  }
+ ]
+}

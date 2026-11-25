@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>발표자 보기</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body { background: #15171c; color: #e8e9ec; height: 100vh; display: grid; grid-template-columns: 3fr 2fr; grid-template-rows: auto 1fr auto; gap: 14px; padding: 16px; }
+header { grid-column: 1 / 3; display: flex; align-items: center; gap: 18px; font-size: 15px; color: #a3a8b2; }
+header b { color: #fff; font-size: 30px; font-variant-numeric: tabular-nums; }
+.box { position: relative; background: #000; border-radius: 10px; overflow: hidden; }
+#now { aspect-ratio: 16/9; align-self: start; }
+.side { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+#nextBox { aspect-ratio: 16/9; opacity: .9; }
+.lbl { font-size: 13px; color: #a3a8b2; margin-bottom: -6px; }
+#notes { flex: 1; background: #1f232b; border-radius: 10px; padding: 14px 16px; font-size: 20px; line-height: 1.6; overflow: auto; white-space: pre-wrap; }
+footer { grid-column: 1 / 3; display: flex; gap: 8px; }
+button { background: #2a2f3a; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; font-size: 16px; cursor: pointer; }
+</style></head><body>
+<header><span>경과</span><b id="time">00:00</b><span id="pos"></span></header>
+<div class="box" id="now"></div>
+<div class="side"><div class="lbl">다음 장</div><div class="box" id="nextBox"></div><div class="lbl">발표자 노트</div><div id="notes"></div></div>
+<footer><button id="prev">◀ 이전</button><button id="nextBtn">다음 ▶</button></footer>
+<script src="slide.js"></script>
+<script>
+(async function () {
+  const name = new URLSearchParams(location.search).get('deck') || 'sample';
+  const deck = await (await fetch('decks/' + encodeURIComponent(name) + '.json')).json();
+  const chan = new BroadcastChannel('pt-' + name), t0 = Date.now();
+  const put = (box, slide, step) => { box.innerHTML = ''; if (!slide) return; const n = PT.drawSlide(slide, step); box.appendChild(n); PT.fit(box, n); };
+  let state = { cur: 0, step: 0 };
+  function render() {
+    const s = deck.slides[state.cur];
+    put(document.getElementById('now'), s, state.step); put(document.getElementById('nextBox'), deck.slides[state.cur + 1], 99);
+    document.getElementById('notes').textContent = s.notes || '(노트 없음)';
+    document.getElementById('pos').textContent = (state.cur + 1) + ' / ' + deck.slides.length + ' 장';
+  }
+  chan.onmessage = (m) => { if (m.data && m.data.cur != null) { state = m.data; render(); } };
+  document.getElementById('prev').onclick = () => chan.postMessage({ cmd: 'prev' });
+  document.getElementById('nextBtn').onclick = () => chan.postMessage({ cmd: 'next' });
+  addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') chan.postMessage({ cmd: 'next' }); if (e.key === 'ArrowLeft') chan.postMessage({ cmd: 'prev' }); });
+  setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); document.getElementById('time').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 1000);
+  addEventListener('resize', render);
+  render(); chan.postMessage({ cmd: 'hello' });
+})();
+</script>
+</body></html>

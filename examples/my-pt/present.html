@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>발표</title>
+<link rel="stylesheet" href="style.css">
+<style>
+html, body { height: 100%; background: #000; overflow: hidden; }
+#stage { position: fixed; inset: 0; }
+#black { position: fixed; inset: 0; background: #000; display: none; z-index: 5; }
+#pos { position: fixed; right: 16px; bottom: 12px; color: rgba(255,255,255,.55); font-size: 14px; font-variant-numeric: tabular-nums; z-index: 6; }
+#jump { position: fixed; left: 50%; top: 40%; transform: translate(-50%,-50%); background: rgba(0,0,0,.75); color: #fff; font-size: 48px; padding: 12px 28px; border-radius: 12px; display: none; z-index: 7; }
+#err { color: #fff; padding: 40px; font-size: 20px; }
+</style></head><body>
+<div id="stage"></div><div id="black"></div><div id="pos"></div><div id="jump"></div>
+<script src="slide.js"></script>
+<script>
+(async function () {
+  const q = new URLSearchParams(location.search), name = q.get('deck') || 'sample';
+  const stage = document.getElementById('stage'), pos = document.getElementById('pos');
+  let deck;
+  try { deck = await (await fetch('decks/' + encodeURIComponent(name) + '.json')).json(); }
+  catch (e) { stage.innerHTML = '<div id="err">교안을 찾을 수 없습니다: decks/' + name + '.json</div>'; return; }
+  document.title = deck.title + ' · 발표';
+  let cur = Math.max(0, Math.min(deck.slides.length - 1, (+q.get('slide') || 1) - 1)), step = 0, typed = '';
+  const chan = 'BroadcastChannel' in window ? new BroadcastChannel('pt-' + name) : null;
+  function show() {
+    const s = deck.slides[cur]; stage.innerHTML = '';
+    const node = PT.drawSlide(s, step); stage.appendChild(node); PT.fit(stage, node);
+    pos.textContent = (cur + 1) + ' / ' + deck.slides.length;
+    if (chan) chan.postMessage({ cur, step });
+  }
+  function next() { if (step < PT.maxStep(deck.slides[cur])) step++; else if (cur < deck.slides.length - 1) { cur++; step = 0; } show(); }
+  function prev() { if (step > 0) step--; else if (cur > 0) { cur--; step = PT.maxStep(deck.slides[cur]); } show(); }
+  function go(i) { cur = Math.max(0, Math.min(deck.slides.length - 1, i)); step = 0; show(); }
+  addEventListener('resize', show);
+  addEventListener('keydown', (ev) => {
+    const k = ev.key, jump = document.getElementById('jump');
+    if (/^[0-9]$/.test(k)) { typed += k; jump.textContent = typed; jump.style.display = 'block'; return; }
+    if (k === 'Enter' && typed) { go(+typed - 1); typed = ''; jump.style.display = 'none'; return; }
+    typed = ''; jump.style.display = 'none';
+    if (k === 'ArrowRight' || k === ' ' || k === 'PageDown') { ev.preventDefault(); next(); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { ev.preventDefault(); prev(); }
+    else if (k === 'Home') go(0);
+    else if (k === 'End') go(deck.slides.length - 1);
+    else if (k === 'F5' || k === 'f' || k === 'F') { ev.preventDefault(); document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+    else if (k === 'b' || k === 'B') { const b = document.getElementById('black'); b.style.display = b.style.display === 'block' ? 'none' : 'block'; }
+    else if (k === 's' || k === 'S') window.open('presenter.html?deck=' + encodeURIComponent(name), 'presenter', 'width=1100,height=700');
+    else if (k === 'Escape' && !document.fullscreenElement) location.href = 'index.html';
+  });
+  stage.addEventListener('click', next);
+  let sx = null; // 휴대폰: 좌우로 밀어서 넘기기
+  addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', (e) => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) (dx < 0 ? next : prev)(); sx = null; });
+  if (chan) chan.onmessage = (m) => { if (m.data && m.data.cmd === 'next') next(); if (m.data && m.data.cmd === 'prev') prev(); if (m.data && m.data.cmd === 'hello') show(); };
+  show();
+})();
+</script>
+</body></html>
