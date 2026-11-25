@@ -149,6 +149,7 @@
     if (on && remoteErr) { notice.style.display = ''; notice.className = 'hub-notice warn'; notice.innerHTML = `${icon('cloud', 15)} 다른 기기 목록을 읽지 못했습니다: ${esc(remoteErr)} <a href="video.html?sync=1">연결 확인</a>`; }
     else if (on && nUnsent && filter !== 'unsent') { notice.style.display = ''; notice.className = 'hub-notice'; notice.innerHTML = `${icon('cloud', 15)} 이 기기에서 고친 뒤 아직 올리지 않은 영상이 ${nUnsent}개 있습니다. ${S.state === 'busy' ? esc(S.msg) + (S.ratio != null ? ` ${Math.round(S.ratio * 100)}%` : '') : '<a href="#" id="upNow">지금 올리기</a>'}`; const u = $('upNow'); if (u) u.onclick = ev => { ev.preventDefault(); upload(); }; }
     else notice.style.display = 'none';
+    if (window.DPV && DPV.swap) DPV.swap(grid.parentNode, [filter, pref.view, pref.sort, loaded].join('|')); // 분류 · 보기 · 정렬이 바뀌거나 빈 카드 → 내용: 새 내용이 스며듦
   }
 
   /* 카드 아랫줄: '3분 12초 · 2일 전' (정확한 때는 마우스를 올리면) */
@@ -296,6 +297,7 @@
     $('btnRec').onclick = () => go('new=1&tab=rec');
     $('btnSync').onclick = () => go('sync=1');
     /* 창에 파일을 끌어다 놓으면 새 영상으로 */
+    if (!document.querySelector('.drop-veil')) document.body.insertAdjacentHTML('beforeend', `<div class="drop-veil" aria-hidden="true"><div>${icon('import', 28)}<b>여기에 놓으면 새 영상으로 가져옵니다</b><span>영상 · 사진 · 소리 파일</span></div></div>`); // 끌어 올 때 놓을 곳 안내 (교안 목록과 같은 모양)
     let n = 0; const isFile = ev => ev.dataTransfer && [...ev.dataTransfer.types].includes('Files');
     addEventListener('dragenter', ev => { if (isFile(ev)) { n++; document.body.classList.add('dragover'); ev.preventDefault(); } });
     addEventListener('dragleave', ev => { if (isFile(ev) && --n <= 0) { n = 0; document.body.classList.remove('dragover'); } });

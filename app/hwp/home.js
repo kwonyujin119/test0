@@ -411,6 +411,7 @@ const HwpHome = (() => {
     const nb = renderBest(match, q);
     const shown = list.length + nb;
     $('hmSub').textContent = (q || filter !== 'all') ? `${shown}개` : (all.length ? `문서 ${all.length}개` : '');
+    if (window.DPV && DPV.swap) DPV.swap($('hmTitle').closest('.hub'), [filter, pref.view, pref.sort].join('|')); // 분류 · 보기 · 정렬이 바뀌면 새 내용이 스며듦
   }
   function setFilter(k) {
     filter = k;
