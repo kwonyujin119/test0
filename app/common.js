@@ -618,7 +618,7 @@ function normalizeDeck(d) {
   }
   return d;
 }
-const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4'];
+const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen'];
 const ANIM_KEEP = ['kenburns', 'float', 'scan', 'cycle4']; // 계속 움직이는 효과: 다음 클릭에도 멈추지 않음
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
 function applyStepToNode(e, node, step, back) {
