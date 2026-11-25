@@ -1,0 +1,142 @@
+/* DPV — AI 모션 2단계 (app/ai-motion.js 와 함께)
+   · 기본 부품(.ai-act · .ai-busy · .ai-shimmer · .ai-caret · .ai-settle)은 app/ui.css 「AI 모션」에 있고, 여기서는 그 위에 얹는 것만 둔다.
+   · 규칙(docs/dpv-ui-motion.md): AI 강조는 화면당 한 곳 · 보라색 대신 작업장 색 · transform/opacity 만 움직임 ·
+     짧게(150–400ms, 배경 흐름만 예외로 아주 느리게 · 끝이 있음) · 동작 줄이기면 모두 정지.
+   넣는 곳: index.html(첫 화면 히어로) · video.html · editor.html · secret.html — <head> 에 ui.css 다음 */
+
+/* =====================================================================
+   1. 첫 화면 히어로 (#aimHero) — 작업장 색 4가지의 오로라가 아주 천천히 흐르고, 글과 표식은 처음 한 번만 나타남
+   ===================================================================== */
+.aim-hero { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 20px 28px; align-items: center; margin: -8px 0 24px; padding: 28px 28px 26px; border-radius: 18px; background: var(--ui-panel); border: 1px solid var(--ui-border); }
+.aim-hero[hidden] { display: none; }
+.aim-hero[data-mode="gate"], .aim-hero[data-jobs="0"] { grid-template-columns: minmax(0, 1fr); }
+/* 오로라: 큰 원 4개(작업장 색)를 흐릿한 원형 그라데이션으로 — blur 필터를 쓰지 않아 가볍다. 글 쪽(왼쪽)은 가림 */
+.aim-aura { position: absolute; inset: 0; z-index: -1; pointer-events: none; -webkit-mask-image: linear-gradient(100deg, transparent 26%, #000 58%); mask-image: linear-gradient(100deg, transparent 26%, #000 58%); }
+.aim-hero[data-mode="gate"] .aim-aura, .aim-hero[data-jobs="0"] .aim-aura { -webkit-mask-image: linear-gradient(100deg, transparent 40%, #000 75%); mask-image: linear-gradient(100deg, transparent 40%, #000 75%); }
+.aim-aura i { position: absolute; width: 34%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--ws-dot) var(--aim-aura, 46%), transparent), transparent); will-change: transform; }
+:root[data-theme=dark] .aim-aura i { --aim-aura: 52%; }
+/* 왼쪽부터 DOCUMENT 파랑 · VIDEO 보라 · PRESENTATION 주황 · SECRET 초록 — 서로 반쯤만 겹쳐 탁해지지 않게 */
+.aim-aura i:nth-child(1) { left: 40%; top: -55%; }
+.aim-aura i:nth-child(3) { left: 55%; top: 10%; }
+.aim-aura i:nth-child(2) { left: 70%; top: -60%; }
+.aim-aura i:nth-child(4) { left: 82%; top: 5%; --aim-aura: 40%; }
+:root[data-theme=dark] .aim-aura i:nth-child(4) { --aim-aura: 46%; }
+/* 흐름: 26초에 한 번 갔다 오는 것을 두 번 (약 1분 뒤 처음 자리에 멈춤 — 끝없이 움직이지 않게) */
+.aim-flow .aim-aura i { animation: aim-drift-a 26s ease-in-out 2 alternate both; }
+.aim-flow .aim-aura i:nth-child(2) { animation-name: aim-drift-b; animation-duration: 31s; }
+.aim-flow .aim-aura i:nth-child(3) { animation-name: aim-drift-c; animation-duration: 23s; }
+.aim-flow .aim-aura i:nth-child(4) { animation-name: aim-drift-d; animation-duration: 29s; }
+@keyframes aim-drift-a { to { transform: translate(14%, 18%) scale(1.12); } }
+@keyframes aim-drift-b { to { transform: translate(-16%, 10%) scale(.92); } }
+@keyframes aim-drift-c { to { transform: translate(12%, -14%) scale(1.08); } }
+@keyframes aim-drift-d { to { transform: translate(-18%, -12%) scale(1.15); } }
+
+.aim-hero-main { min-width: 0; }
+.aim-kicker { margin: 0 0 6px; color: var(--ui-muted); font-size: var(--fs-sm); line-height: var(--lh-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.aim-hero h2 { margin: 0; font-size: var(--fs-3xl); line-height: var(--lh-3xl); letter-spacing: -.025em; word-break: keep-all; }
+.aim-lead { margin: 8px 0 0; max-width: 34em; color: var(--ui-muted); font-size: var(--fs-md); line-height: var(--lh-prose); word-break: keep-all; overflow-wrap: anywhere; }
+/* 할 수 있는 일: 작업장 글자 타일 + 이름 (누르는 것이 아니라 안내 — 단추처럼 보이지 않게 테두리 없음) */
+.aim-feats { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 16px 0 0; padding: 0; list-style: none; font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.aim-feats li { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: var(--ui-fg); }
+.aim-tile { width: 22px; height: 22px; border-radius: 6px; display: inline-grid; place-items: center; flex: none; font-size: 11px; font-weight: 800; font-style: normal; background: var(--ws-bg); color: var(--ws-fg); box-shadow: inset 0 0 0 1px var(--ws-line); }
+
+/* 이어서 할 일: 오로라 위에 거의 불투명한 판 (글자 대비 유지 · 유리 효과 아님) */
+.aim-today { position: relative; min-width: 0; padding: 14px 10px 10px; border-radius: 14px; background: color-mix(in srgb, var(--ui-panel) 90%, transparent); border: 1px solid var(--ui-border); box-shadow: var(--ui-shadow-sm); }
+.aim-today[hidden] { display: none; }
+.aim-today-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 6px 6px; font-size: var(--fs-sm); line-height: var(--lh-sm); font-weight: 700; }
+.aim-today-h small { color: var(--ui-muted); font-size: var(--fs-xs); font-weight: 500; }
+.aim-today ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.aim-job { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px; border-radius: 10px; color: var(--ui-fg); text-decoration: none; }
+.aim-job:hover { background: var(--ui-hover); }
+.aim-job:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 0; }
+.aim-job .aim-tile { width: 32px; height: 32px; border-radius: 9px; font-size: 14px; }
+.aim-job-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.aim-job-t small { color: var(--ui-muted); font-size: var(--fs-xs); line-height: var(--lh-xs); }
+.aim-job-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-md); line-height: var(--lh-md); font-weight: 600; }
+.aim-job-ago { flex: none; color: var(--ui-muted); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
+.aim-job .ico { width: 16px; height: 16px; flex: none; color: var(--ui-muted); transition: transform .15s; }
+.aim-job:hover .ico { transform: translateX(2px); }
+
+/* 처음 한 번만(이 탭에서): 표식이 차례로 놓이고 글이 살짝 올라옴 — 모두 합쳐 0.7초 안 */
+.aim-in .aim-aura { animation: aim-fade .9s ease-out both; }
+.aim-in .aim-kicker, .aim-in h2, .aim-in .aim-lead { animation: aim-up .32s var(--ease) both; }
+.aim-in h2 { animation-delay: .05s; }
+.aim-in .aim-lead { animation-delay: .1s; }
+.aim-in .aim-feats li { animation: aim-up .28s var(--ease) both; animation-delay: calc(.16s + var(--i, 0) * .05s); }
+.aim-in .aim-feats .aim-tile { animation: aim-pop .3s cubic-bezier(.3,1.4,.5,1) both; animation-delay: calc(.16s + var(--i, 0) * .05s); }
+.aim-in .aim-today { animation: aim-up .34s var(--ease) .18s both; }
+@keyframes aim-fade { from { opacity: 0; } }
+@keyframes aim-up { from { opacity: 0; transform: translateY(8px); } }
+@keyframes aim-pop { from { opacity: 0; transform: scale(.6); } }
+
+@media (max-width: 860px) {
+  .aim-hero { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .aim-hero { margin: -4px 0 18px; padding: 20px 16px 16px; border-radius: 16px; gap: 16px; }
+  .aim-hero h2 { font-size: var(--fs-2xl); line-height: var(--lh-2xl); }
+  .aim-lead { font-size: var(--fs-sm); line-height: 1.6; }
+  .aim-feats { gap: 8px 14px; margin-top: 12px; font-size: var(--fs-xs); }
+  .aim-aura { -webkit-mask-image: linear-gradient(200deg, #000 10%, transparent 55%); mask-image: linear-gradient(200deg, #000 10%, transparent 55%); }
+  .aim-hero[data-mode="gate"] .aim-aura, .aim-hero[data-jobs="0"] .aim-aura { -webkit-mask-image: linear-gradient(200deg, #000 10%, transparent 50%); mask-image: linear-gradient(200deg, #000 10%, transparent 50%); }
+  .aim-aura i { width: 62%; }
+  .aim-aura i:nth-child(1) { left: 22%; top: -38%; }
+  .aim-aura i:nth-child(3) { left: 44%; top: -22%; }
+  .aim-aura i:nth-child(2) { left: 64%; top: -34%; }
+  .aim-aura i:nth-child(4) { left: 78%; top: -12%; }
+  .aim-today { padding: 10px 6px 6px; }
+}
+
+/* =====================================================================
+   2. 작업 단계 표시 (.aim-steps) — "소리 읽기 → AI 준비 → 받아쓰기 → 자막 완성"
+      지금 단계: 작업장 색 점이 숨 쉬고 이름이 진하게 · 지난 단계: 채운 점 · 남은 단계: 흐린 점
+   ===================================================================== */
+.aim-steps { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); margin: 2px 0 10px; padding: 0; list-style: none; counter-reset: aim; }
+.aim-steps li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; color: var(--ui-muted); font-size: 11.5px; line-height: 15px; font-weight: 500; text-align: center; word-break: keep-all; }
+.aim-steps li::before { content: ''; position: relative; z-index: 1; width: 10px; height: 10px; border-radius: 50%; background: var(--ui-panel2); box-shadow: inset 0 0 0 1.5px var(--ui-border-control); }
+/* 점 사이를 잇는 줄 (지난 구간은 작업장 색) */
+.aim-steps li + li::after { content: ''; position: absolute; top: 4px; right: 50%; width: 100%; height: 2px; border-radius: 1px; background: var(--ui-border2); transform-origin: left center; }
+.aim-steps li.done + li::after, .aim-steps li.done + li.now::after { background: var(--ws-fg, var(--ui-accent)); }
+.aim-steps li.done { color: var(--ui-fg); }
+.aim-steps li.done::before { background: var(--ws-fg, var(--ui-accent)); box-shadow: none; }
+.aim-steps li.now { color: var(--ui-fg); font-weight: 700; }
+.aim-steps li.now::before { background: var(--ai-c1); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ai-c1) 28%, transparent); animation: aim-breathe 1.4s ease-in-out infinite; }
+@keyframes aim-breathe { 50% { transform: scale(.75); } }
+/* 단계가 바뀔 때 한 번: 새 단계 점이 톡 */
+.aim-steps li.now.enter::before { animation: aim-pop .3s cubic-bezier(.3,1.4,.5,1) 1, aim-breathe 1.4s ease-in-out .3s infinite; }
+.aim-steps li.done + li.enter::after { animation: aim-line .3s var(--ease) 1; }
+@keyframes aim-line { from { transform: scaleX(0); } }
+
+/* AI 진행 상자 (.ai-prog = 영상 작업장의 .ve-prog 에 함께 붙음): 막대 위로 빛이 지나감 — 멈춘 것이 아님을 보여 줌 */
+.ai-prog .ve-bar i { position: relative; overflow: hidden; background: var(--ws-fg, var(--ui-accent)); }
+.ai-prog .ve-bar i::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); transform: translateX(-100%); animation: aim-sheen 1.6s ease-in-out infinite; }
+:root[data-theme=dark] .ai-prog .ve-bar i::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); }
+@keyframes aim-sheen { to { transform: translateX(100%); } }
+.ai-prog .ve-prog-top .ai-shimmer { font-weight: 700; }
+/* .ai-busy(ui.css)의 바탕은 --ui-panel — 영상 패널 안 회색 상자 색을 유지 */
+.ai-prog.ai-busy { background: linear-gradient(var(--ui-panel2), var(--ui-panel2)) padding-box, var(--ai-ring) border-box !important; border: 1.5px solid transparent; }
+
+/* =====================================================================
+   3. 그림을 훑는 AI (.aim-scan) — 배경 AI 지우기처럼 "그림을 보고 있는" 작업. 작업장 색 띠가 위에서 아래로 지나감
+   ===================================================================== */
+.aim-scan { position: relative; overflow: hidden; }
+.aim-scan::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 45%; z-index: 2; pointer-events: none; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ai-c1) 22%, transparent) 70%, color-mix(in srgb, var(--ai-c1) 70%, transparent) 98%, transparent); transform: translateY(-100%); animation: aim-scan 2s cubic-bezier(.45,0,.55,1) infinite; }
+.aim-scan::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: color-mix(in srgb, var(--ui-panel) 28%, transparent); animation: aim-fade .2s ease-out both; }
+@keyframes aim-scan { to { transform: translateY(240%); } }
+
+/* =====================================================================
+   4. 기다리는 단추 (AIM.wait) — "레슨을 만드는 중 0:12 · 보통 1~2분"
+   ===================================================================== */
+.aim-wait { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.aim-wait-t { color: var(--ui-muted); font-variant-numeric: tabular-nums; font-weight: 500; }
+.btn.ai-busy { opacity: 1 !important; cursor: progress; }
+
+/* =====================================================================
+   움직임 줄이기: 오로라는 멈춘 그라데이션, 나머지는 모두 정지
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .aim-flow .aim-aura i, .aim-in .aim-aura, .aim-in .aim-kicker, .aim-in h2, .aim-in .aim-lead, .aim-in .aim-feats li, .aim-in .aim-feats .aim-tile, .aim-in .aim-today,
+  .aim-steps li::before, .aim-steps li::after, .ai-prog .ve-bar i::after, .aim-scan::before, .aim-scan::after { animation: none !important; }
+  .ai-prog .ve-bar i::after { display: none; }
+  .aim-scan::before { transform: none; top: auto; bottom: 0; height: 30%; }
+}
