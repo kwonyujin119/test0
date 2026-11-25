@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T02:44:31.000Z",
- "modified": "2026-11-25T05:13:57.953Z",
+ "modified": "2026-11-25T05:14:21.520Z",
  "footer": {
   "text": "",
   "num": false,
@@ -649,46 +649,6 @@
       "color": "#D7DCE3",
       "bold": false,
       "lineHeight": 1.4
-     }
-    },
-    {
-     "id": "c2_032",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 60,
-     "y": 40,
-     "w": 560,
-     "h": 28,
-     "role": "text",
-     "html": "표지 사진: 교육용 생성 이미지",
-     "style": {
-      "fontSize": 18,
-      "color": "#C9CFD8",
-      "bold": false,
-      "lineHeight": 1.25
-     }
-    },
-    {
-     "id": "c2_033",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 60,
-     "y": 66,
-     "w": 560,
-     "h": 52,
-     "role": "text",
-     "html": "차량 사진: Wikimedia Commons(CC0, Choi Kwang-mo · 어썰트)<br>사다리차: 현대에버다임",
-     "style": {
-      "fontSize": 18,
-      "color": "#C9CFD8",
-      "bold": false,
-      "lineHeight": 1.35
      }
     },
     {
