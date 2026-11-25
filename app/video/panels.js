@@ -4,7 +4,7 @@
   const $ = VE.$; let tab = 'media';
   const job = {}; /* 진행 중인 분석: { kind, stage, ratio, eta, abort } */
   const eta = s => s == null ? '' : s < 60 ? `약 ${Math.max(1, Math.round(s))}초 남음` : `약 ${Math.ceil(s / 60)}분 남음`;
-  const progress = (k, cancel) => { const j = job[k]; return j ? `<div class="ve-prog"><div class="ve-prog-top"><span>${esc(j.stage || '')}</span><span class="muted">${j.ratio != null ? Math.round(j.ratio * 100) + '%' : ''} ${eta(j.eta)}</span></div><div class="ve-bar"><i style="width:${Math.round((j.ratio || 0) * 100)}%"></i></div>${cancel ? `<button class="btn sm" data-act="${cancel}">그만두기</button>` : ''}</div>` : ''; };
+  const progress = (k, cancel) => { const j = job[k]; return j ? `<div class="ve-prog ai-prog ai-busy" data-k="${k}" aria-busy="true"><div class="ve-prog-top"><span class="ai-shimmer">${esc(j.stage || '')}</span><span class="muted">${j.ratio != null ? Math.round(j.ratio * 100) + '%' : ''} ${eta(j.eta)}</span></div>${window.AIM ? AIM.steps(k, j.stage) : ''}<div class="ve-bar"><i style="width:${Math.round((j.ratio || 0) * 100)}%"></i></div>${cancel ? `<button class="btn sm" data-act="${cancel}">그만두기</button>` : ''}</div>` : ''; };
   const range = (id, label, val, min, max, step, fmt) => `<label class="ve-field"><span class="ve-lab">${label}<em id="${id}V">${fmt ? fmt(val) : val}</em></span><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></label>`;
   const seg = (id, val, opts) => `<div class="ve-seg" id="${id}">${opts.map(([v, t]) => `<button type="button" data-v="${v}" class="${String(val) === String(v) ? 'on' : ''}">${t}</button>`).join('')}</div>`;
   const onSeg = (root, id, fn) => { const el = root.querySelector('#' + id); if (el) el.onclick = ev => { const b = ev.target.closest('button'); if (b) fn(b.dataset.v); }; };
@@ -179,12 +179,12 @@
     if (job.text) return; const ac = new AbortController(); job.text = { stage: '준비 중', ratio: 0, abort: ac }; renderTab();
     try {
       for (let i = 0; i < mids.length; i++) await VE.transcribe(mids[i], { quality: textUi.quality, lang: textUi.lang || null, signal: ac.signal, onProg: p => { job.text.stage = p.stage + (mids.length > 1 ? ` (${i + 1}/${mids.length})` : ''); job.text.ratio = p.ratio; job.text.eta = p.eta; if (tab === 'text') updateProgress('text'); } });
-      toast('자막을 만들었습니다', 2400);
+      toast('자막을 만들었습니다', 2400); if (job.text) job.text.ok = 1;
     } catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('자막을 만들지 못했습니다: ' + VE.niceErr(e), 5000); } }
-    delete job.text; if (tab === 'text') renderTab();
+    const ok = job.text && job.text.ok; delete job.text; if (tab === 'text') { renderTab(); if (ok && window.AIM) AIM.settle($('vePanel')); }
   }
   /* 진행 막대만 고침 */
-  function updateProgress(k) { const p = $('vePanel').querySelector('.ve-prog'); if (!p) { renderTab(); return; } const j = job[k]; if (!j) return; p.querySelector('.ve-prog-top span').textContent = j.stage || ''; p.querySelector('.ve-prog-top .muted').textContent = `${j.ratio != null ? Math.round(j.ratio * 100) + '%' : ''} ${eta(j.eta)}`; p.querySelector('.ve-bar i').style.width = Math.round((j.ratio || 0) * 100) + '%'; }
+  function updateProgress(k) { const p = $('vePanel').querySelector('.ve-prog'); if (!p) { renderTab(); return; } const j = job[k]; if (!j) return; p.querySelector('.ve-prog-top span').textContent = j.stage || ''; p.querySelector('.ve-prog-top .muted').textContent = `${j.ratio != null ? Math.round(j.ratio * 100) + '%' : ''} ${eta(j.eta)}`; p.querySelector('.ve-bar i').style.width = Math.round((j.ratio || 0) * 100) + '%'; if (window.AIM) AIM.sync(p, k, j.stage); }
   document.addEventListener('click', ev => { const b = ev.target.closest('[data-act]'); if (!b) return; if (b.dataset.act === 'stopText' && job.text) job.text.abort.abort(); if (b.dataset.act === 'stopFace' && job.face) job.face.abort.abort(); });
   /* 재생 중 지금 말하는 낱말 표시 */
   VE.on('time', () => {
@@ -362,9 +362,9 @@
   async function runDub() {
     if (job.dub) return; if (!await askModel()) return;
     const ac = new AbortController(); job.dub = { stage: '준비 중', ratio: 0, abort: ac }; renderTab();
-    try { await VE.dub.run({ signal: ac.signal, onProg: p => { if (!job.dub) return; job.dub.stage = p.stage; job.dub.ratio = p.ratio; job.dub.eta = p.eta; if (tab === 'voice') updateProgress('dub'); } }); VE.player.invalidate(); toast('AI 목소리로 바꿨습니다. 재생해서 들어 보세요.', 2600); }
+    try { await VE.dub.run({ signal: ac.signal, onProg: p => { if (!job.dub) return; job.dub.stage = p.stage; job.dub.ratio = p.ratio; job.dub.eta = p.eta; if (tab === 'voice') updateProgress('dub'); } }); VE.player.invalidate(); toast('AI 목소리로 바꿨습니다. 재생해서 들어 보세요.', 2600); if (job.dub) job.dub.ok = 1; }
     catch (e) { if (e.name !== 'AbortError') { console.error(e); toast('AI 목소리를 만들지 못했습니다: ' + VE.niceErr(e), 5000); } else toast('멈췄습니다. 만든 문장까지는 남겨 두었습니다.', 2600); }
-    delete job.dub; if (tab === 'voice') renderTab();
+    const ok = job.dub && job.dub.ok; delete job.dub; if (tab === 'voice') { renderTab(); if (ok && window.AIM) AIM.settle($('vePanel')); }
   }
   async function runNarr() {
     if (job.narr) return; const text = voiceUi.narr.trim(); if (!text) return; if (!await askModel()) return;

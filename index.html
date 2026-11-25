@@ -26,6 +26,18 @@
     <div class="tools" id="headTools"><button class="btn" id="btnApp" hidden title="DPV 를 앱으로 설치합니다 (바탕화면 · 홈 화면 아이콘, 주소창 없는 창)"><i data-ic="download"></i><span>앱 설치</span></button><button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button></div>
   </header>
 
+  <!-- AI 히어로: 입장 전 · 뒤 모두. app/ai-motion.js 가 글 · "이어서 할 일"을 채우고 보여 줌 (그 파일이 없으면 숨은 채로) -->
+  <section class="aim-hero" id="aimHero" aria-labelledby="aimHeroT" hidden>
+    <div class="aim-aura" aria-hidden="true"><i data-ws="doc"></i><i data-ws="pres"></i><i data-ws="video"></i><i data-ws="secret"></i></div>
+    <div class="aim-hero-main">
+      <p class="aim-kicker" id="aimKicker"></p>
+      <h2 id="aimHeroT"></h2>
+      <p class="aim-lead" id="aimLead"></p>
+      <ul class="aim-feats" id="aimFeats" aria-label="할 수 있는 일"></ul>
+    </div>
+    <div class="aim-today" id="aimToday" hidden></div>
+  </section>
+
   <!-- 입장: 게스트 / 관리자 -->
   <main id="gate" hidden>
     <div class="ws-gate">
@@ -130,15 +142,15 @@
   /* 빈 칸으로 되돌림: 모드를 바꿔 다시 그릴 때 앞 모드의 링크가 남지 않게 */
   const placeholder = (id, text) => {
     const a = $(id);
-    a.className = 'resume-link empty'; a.removeAttribute('href'); a.removeAttribute('title');
+    a.className = 'resume-link empty'; a.removeAttribute('href'); a.removeAttribute('title'); delete a.dataset.t;
     a.innerHTML = '<span class="rl-text"><span class="rl-title"></span></span>';
     a.querySelector('.rl-title').textContent = text;
   };
   /* showSpace 를 다시 부르면 앞서 읽던 결과는 버림 (늦게 끝난 읽기가 새 모드의 칸을 덮지 않게) */
   let gen = 0;
-  function resume(id, href, label, title, ic) {
+  function resume(id, href, label, title, ic, t) {
     const a = $(id);
-    a.className = 'resume-link'; a.href = href;
+    a.className = 'resume-link'; a.href = href; if (t) a.dataset.t = t; else delete a.dataset.t; // 저장 시각: 첫 화면 히어로의 "이어서 할 일" 순서
     a.title = `${label}: ${title}`;
     a.innerHTML = `${icon(ic || 'clock', 16)}<span class="rl-text"><span class="rl-lbl">${esc(label)}</span><span class="rl-title">${esc(title)}</span></span><span class="rl-go">${icon('arrowRight', 16)}</span>`;
   }
@@ -172,9 +184,9 @@
       const drafts = Access.isAdmin ? list.filter(d => Draft.has(d.name)).length : 0;
       stat('deckStat', [list.length ? `교안 ${list.length}개` : '아직 교안이 없습니다', t ? `마지막 저장 ${fmtAgo(t)}` : '', drafts ? `<span class="dot" aria-hidden="true"></span>저장 안 한 작업본 ${drafts}개` : '']);
       if (!latest) { placeholder('deckResume', list.length ? '최근에 저장한 교안을 찾지 못했습니다' : (Access.isAdmin ? '첫 교안을 만들어 보세요' : '관리자가 만든 교안이 여기에 보입니다')); return; }
-      if (!latest.name) resume('deckResume', 'gyoan.html', '교안 목록에서 열기', latest.title, 'list'); // 커밋 제목만 알고 파일은 못 찾음
-      else if (Access.isGuest) resume('deckResume', 'present.html?deck=' + enc(latest.name), '바로 발표', latest.title, 'play');
-      else resume('deckResume', 'editor.html?deck=' + enc(latest.name), '이어서 편집', latest.title, 'edit');
+      if (!latest.name) resume('deckResume', 'gyoan.html', '교안 목록에서 열기', latest.title, 'list', t); // 커밋 제목만 알고 파일은 못 찾음
+      else if (Access.isGuest) resume('deckResume', 'present.html?deck=' + enc(latest.name), '바로 발표', latest.title, 'play', t);
+      else resume('deckResume', 'editor.html?deck=' + enc(latest.name), '이어서 편집', latest.title, 'edit', t);
     } catch (e) { if (g0 === gen) { stat('deckStat', ['교안 목록을 읽지 못했습니다']); placeholder('deckResume', '작업장을 열면 다시 읽습니다'); } }
   }
 
@@ -201,7 +213,7 @@
     const drafts = (await idbAll('hwp-ws', 'drafts')).filter(d => d && d.name).sort((a, b) => (b.time || 0) - (a.time || 0));
     if (g0 !== gen || !drafts.length) return;
     stat('hwpStat', [`<span class="dot" aria-hidden="true"></span>저장 안 한 문서 ${drafts.length}개`, `마지막 ${fmtAgo(drafts[0].time)}`]);
-    resume('hwpResume', 'hangul.html', '작업본 목록에서 열기', drafts[0].name, 'doc'); // hangul.html 은 주소로 문서를 바로 열지 않음: 첫 화면 목록으로
+    resume('hwpResume', 'hangul.html', '작업본 목록에서 열기', drafts[0].name, 'doc', drafts[0].time); // hangul.html 은 주소로 문서를 바로 열지 않음: 첫 화면 목록으로
   }
   async function liveVideo() {
     const g0 = gen;
@@ -212,7 +224,7 @@
     let sync = {}, sent = {}; try { sync = JSON.parse(localStorage.getItem('ve:sync') || '{}') || {}; sent = (JSON.parse(localStorage.getItem('ve:syncState') || '{}') || {}).p || {}; } catch (e) { }
     const unsent = sync.on ? ps.filter(p => ((sent[p.id] || {}).rev || 0) < (p.updated || 0) && ((p.media || []).length || (p.clips || []).length)).length : 0;
     stat('videoStat', [`영상 ${ps.length}개`, unsent ? `${unsent}개 아직 안 올라감` : '', `마지막 편집 ${fmtAgo(ps[0].updated)}`]);
-    resume('videoResume', 'video.html?p=' + enc(ps[0].id), '이어서 편집', ps[0].name || '새 영상', 'play');
+    resume('videoResume', 'video.html?p=' + enc(ps[0].id), '이어서 편집', ps[0].name || '새 영상', 'play', ps[0].updated);
   }
 
   /* ---------- 앱 설치 안내: 닫으면 이 기기에서는 다시 보이지 않음 ---------- */
