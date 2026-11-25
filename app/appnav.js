@@ -56,6 +56,40 @@
   }
   if (document.body) build(); else document.addEventListener('DOMContentLoaded', build);
 
+  /* 작업장 안의 2단 탭 줄(휴대폰에서 옆으로 넘기는 분류 · 폴더 · 도구 줄):
+     넘칠 때만 끝을 흐리게(.edge-l / .edge-r — 더 있다는 표시) · 고른 탭이 가려져 있으면 화면 안으로 */
+  const STRIPS = '.shell > .rail > .rail-nav';
+  const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function edge(el) {
+    const max = el.scrollWidth - el.clientWidth, x = Math.abs(el.scrollLeft);
+    el.classList.toggle('edge-l', max > 2 && x > 2);
+    el.classList.toggle('edge-r', max > 2 && x < max - 2);
+  }
+  function reveal(el, smooth) {
+    const on = el.querySelector('.rail-item.on'); if (!on || el.scrollWidth <= el.clientWidth + 2) return;
+    const r = on.getBoundingClientRect(), er = el.getBoundingClientRect();
+    if (r.left >= er.left + 8 && r.right <= er.right - 8) return; // 이미 다 보이면 그대로
+    const left = el.scrollLeft + (r.left - er.left) - (er.width - r.width) / 2;
+    el.scrollTo({ left, behavior: smooth && !still() ? 'smooth' : 'auto' });
+  }
+  function strips() {
+    const ro = 'ResizeObserver' in window ? new ResizeObserver(es => es.forEach(e => edge(e.target))) : null;
+    document.querySelectorAll(STRIPS).forEach(el => {
+      el.addEventListener('scroll', () => edge(el), { passive: true });
+      if (ro) ro.observe(el);
+      /* 항목이 늘거나(폴더 · 개수) 고른 탭이 바뀌면 다시 계산 */
+      new MutationObserver(ms => {
+        ms = ms.filter(m => m.target !== el || m.type !== 'attributes'); // 줄 자신의 .edge-* 바뀜은 무시
+        if (!ms.length) return;
+        edge(el);
+        if (ms.some(m => m.type === 'attributes' && m.target.classList && m.target.classList.contains('on'))) reveal(el, true);
+      }).observe(el, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+      edge(el); reveal(el, false);
+    });
+    addEventListener('resize', () => document.querySelectorAll(STRIPS).forEach(edge));
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', strips); else strips();
+
   /* 카드를 길게 누르거나(안드로이드) 오른쪽 클릭하면 그 카드의 ⋯ 메뉴를 엶 — DOCUMENT · VIDEO 목록 (PRESENTATION 은 hub.js 가 누른 자리에서 직접 엶) */
   document.addEventListener('contextmenu', e => {
     if (e.defaultPrevented || e.target.closest('input, textarea, [contenteditable], .menu, .ProseMirror')) return;
