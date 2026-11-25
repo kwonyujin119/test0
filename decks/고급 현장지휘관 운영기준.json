@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T02:44:31.000Z",
- "modified": "2026-11-25T04:14:19.000Z",
+ "modified": "2026-11-25T04:38:57.000Z",
  "footer": {
   "text": "",
   "num": false,
@@ -29,7 +29,7 @@
     "color": "#0B0E12"
    },
    "transition": "fade",
-   "notes": "⏱ 3분 · 한 장 운영기준. 클릭 1~5로 칸을 하나씩 엽니다.\n① 출동대 편성: 진압대 5 · 구조대 1 · 구급 1 · 특수차 2.\n② 추가출동 요청 시: 진압 2 · 구조대 1 · 구급(@ — 필요한 만큼). 특수차를 요청하면 「출동 중」으로 안내(고가 · 굴절 · 소형은 제외).\n③ 분리운영: 구조대만 분리할 수 있다.\n④ 실습 시간: 시작(출동지령) → 1~3분 선착대 도착 · 활동 → 3~4분 지휘대 도착 → 4~15분 지휘대 활동 → 15분 초진 → 완진.\n⑤ RIT: 먼저 진압대 · 구조대 분리대로 선제적으로 운영 → 최종적으로 타관내 구조대 · 특대단을 요청 → RIT 운영은 디브리핑에서 의견 제시.\n[이미지] 교육용 생성 이미지(GPT) — 장비 · 복장 세부는 실제와 다를 수 있음.",
+   "notes": "⏱ 3분 · 한 장 운영기준. 클릭 1~5로 칸을 하나씩 엽니다.\n① 출동대 편성: 진압대 5 · 구조대 1 · 구급 1 · 특수차 2.\n② 추가출동 요청 시: 진압 2 · 구조대 1 · 구급차(@ — 필요한 만큼). 특수차를 요청하면 「출동 중」으로 안내(고가 · 굴절 · 소형은 제외).\n③ 분리운영: 구조대만 분리할 수 있다.\n④ 실습 시간: 시작(출동지령) → 1~3분 선착대 도착 · 활동 → 3~4분 지휘대 도착 → 4~15분 지휘대 활동 → 15분 초진 → 완진.\n⑤ RIT: 먼저 진압대 · 구조대 분리대로 선제적으로 운영 → 최종적으로 타관내 구조대 · 특대단을 요청 → RIT 운영은 디브리핑에서 의견 제시.\n[이미지] 교육용 생성 이미지(GPT) — 장비 · 복장 세부는 실제와 다를 수 있음.\n[차량 사진] 펌프차: Wikimedia Commons 「2020-07-30 things places in south korea IMG 6502」(Choi Kwang-mo, CC0) · 구조대: 「2020-08-16 … IMG 0099」(Choi Kwang-mo, CC0) · 구급차: 「스타리아 구급차」(어썰트, CC0) · 사다리차: 현대에버다임 홈페이지 고가사다리차 ERL53 제품 사진(제조사 저작물 — 외부 배포 전 허락 확인).",
    "decor": "none",
    "noFooter": true,
    "elements": [
@@ -660,10 +660,10 @@
      "type": "text",
      "x": 60,
      "y": 40,
-     "w": 300,
+     "w": 560,
      "h": 28,
      "role": "text",
-     "html": "교육용 생성 이미지",
+     "html": "표지 사진: 교육용 생성 이미지",
      "style": {
       "fontSize": 18,
       "color": "#C9CFD8",
@@ -673,6 +673,26 @@
     },
     {
      "id": "c2_033",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 60,
+     "y": 66,
+     "w": 560,
+     "h": 52,
+     "role": "text",
+     "html": "차량 사진: Wikimedia Commons(CC0, Choi Kwang-mo · 어썰트)<br>사다리차: 현대에버다임",
+     "style": {
+      "fontSize": 18,
+      "color": "#C9CFD8",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "c2_034",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -692,7 +712,7 @@
      "style": {}
     },
     {
-     "id": "c2_034",
+     "id": "c2_035",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -713,7 +733,7 @@
      }
     },
     {
-     "id": "c2_035",
+     "id": "c2_037",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -739,34 +759,14 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 734,
-     "y": 140,
-     "w": 52,
-     "h": 52,
-     "src": "assets/cmd-ic-engine.svg",
-     "fit": "contain",
-     "radius": 0,
+     "x": 712,
+     "y": 118,
+     "w": 167,
+     "h": 112,
+     "src": "assets/cmd-v-pump.jpg",
+     "fit": "cover",
+     "radius": 12,
      "shadow": false
-    },
-    {
-     "id": "c2_037",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 734,
-     "y": 198,
-     "w": 123,
-     "h": 84,
-     "role": "text",
-     "html": "5",
-     "style": {
-      "fontSize": 76,
-      "color": "#F04E23",
-      "bold": true,
-      "lineHeight": 1.05
-     }
     },
     {
      "id": "c2_038",
@@ -775,10 +775,30 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 734,
-     "y": 278,
-     "w": 123,
-     "h": 32,
+     "x": 728,
+     "y": 236,
+     "w": 70,
+     "h": 78,
+     "role": "text",
+     "html": "5",
+     "style": {
+      "fontSize": 66,
+      "color": "#F04E23",
+      "bold": true,
+      "lineHeight": 1.05
+     }
+    },
+    {
+     "id": "c2_039",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 796,
+     "y": 260,
+     "w": 75,
+     "h": 34,
      "role": "text",
      "html": "진압대",
      "style": {
@@ -789,7 +809,7 @@
      }
     },
     {
-     "id": "c2_039",
+     "id": "c2_041",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -815,34 +835,14 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 917,
-     "y": 140,
-     "w": 52,
-     "h": 52,
-     "src": "assets/cmd-ic-rescue.svg",
-     "fit": "contain",
-     "radius": 0,
+     "x": 895,
+     "y": 118,
+     "w": 167,
+     "h": 112,
+     "src": "assets/cmd-v-rescue.jpg",
+     "fit": "cover",
+     "radius": 12,
      "shadow": false
-    },
-    {
-     "id": "c2_041",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 917,
-     "y": 198,
-     "w": 123,
-     "h": 84,
-     "role": "text",
-     "html": "1",
-     "style": {
-      "fontSize": 76,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.05
-     }
     },
     {
      "id": "c2_042",
@@ -851,10 +851,30 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 917,
-     "y": 278,
-     "w": 123,
-     "h": 32,
+     "x": 911,
+     "y": 236,
+     "w": 70,
+     "h": 78,
+     "role": "text",
+     "html": "1",
+     "style": {
+      "fontSize": 66,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.05
+     }
+    },
+    {
+     "id": "c2_043",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 979,
+     "y": 260,
+     "w": 75,
+     "h": 34,
      "role": "text",
      "html": "구조대",
      "style": {
@@ -865,7 +885,7 @@
      }
     },
     {
-     "id": "c2_043",
+     "id": "c2_045",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -891,34 +911,14 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 1100,
-     "y": 140,
-     "w": 52,
-     "h": 52,
-     "src": "assets/cmd-ic-ems.svg",
-     "fit": "contain",
-     "radius": 0,
+     "x": 1078,
+     "y": 118,
+     "w": 167,
+     "h": 112,
+     "src": "assets/cmd-v-ems.jpg",
+     "fit": "cover",
+     "radius": 12,
      "shadow": false
-    },
-    {
-     "id": "c2_045",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1100,
-     "y": 198,
-     "w": 123,
-     "h": 84,
-     "role": "text",
-     "html": "1",
-     "style": {
-      "fontSize": 76,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.05
-     }
     },
     {
      "id": "c2_046",
@@ -927,10 +927,30 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 1100,
-     "y": 278,
-     "w": 123,
-     "h": 32,
+     "x": 1094,
+     "y": 236,
+     "w": 70,
+     "h": 78,
+     "role": "text",
+     "html": "1",
+     "style": {
+      "fontSize": 66,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.05
+     }
+    },
+    {
+     "id": "c2_047",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1162,
+     "y": 260,
+     "w": 75,
+     "h": 34,
      "role": "text",
      "html": "구급차",
      "style": {
@@ -941,7 +961,7 @@
      }
     },
     {
-     "id": "c2_047",
+     "id": "c2_049",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -967,34 +987,14 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 1283,
-     "y": 140,
-     "w": 52,
-     "h": 52,
-     "src": "assets/cmd-ic-special.svg",
-     "fit": "contain",
-     "radius": 0,
+     "x": 1261,
+     "y": 118,
+     "w": 167,
+     "h": 112,
+     "src": "assets/cmd-v-ladder.jpg",
+     "fit": "cover",
+     "radius": 12,
      "shadow": false
-    },
-    {
-     "id": "c2_049",
-     "step": 1,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 1283,
-     "y": 198,
-     "w": 123,
-     "h": 84,
-     "role": "text",
-     "html": "2",
-     "style": {
-      "fontSize": 76,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.05
-     }
     },
     {
      "id": "c2_050",
@@ -1003,10 +1003,30 @@
      "rotate": 0,
      "opacity": 1,
      "type": "text",
-     "x": 1283,
-     "y": 278,
-     "w": 123,
-     "h": 32,
+     "x": 1277,
+     "y": 236,
+     "w": 70,
+     "h": 78,
+     "role": "text",
+     "html": "2",
+     "style": {
+      "fontSize": 66,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.05
+     }
+    },
+    {
+     "id": "c2_051",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 1345,
+     "y": 260,
+     "w": 75,
+     "h": 34,
      "role": "text",
      "html": "특수차",
      "style": {
@@ -1017,7 +1037,7 @@
      }
     },
     {
-     "id": "c2_051",
+     "id": "c2_052",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -1037,7 +1057,7 @@
      }
     },
     {
-     "id": "c2_052",
+     "id": "c2_053",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1057,7 +1077,7 @@
      "style": {}
     },
     {
-     "id": "c2_053",
+     "id": "c2_054",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1078,7 +1098,7 @@
      }
     },
     {
-     "id": "c2_054",
+     "id": "c2_055",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1099,7 +1119,7 @@
      }
     },
     {
-     "id": "c2_055",
+     "id": "c2_056",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1119,7 +1139,7 @@
      }
     },
     {
-     "id": "c2_056",
+     "id": "c2_057",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1139,7 +1159,7 @@
      "style": {}
     },
     {
-     "id": "c2_057",
+     "id": "c2_058",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -1159,7 +1179,7 @@
      }
     },
     {
-     "id": "c2_058",
+     "id": "c2_059",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1179,7 +1199,7 @@
      "style": {}
     },
     {
-     "id": "c2_059",
+     "id": "c2_060",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1200,7 +1220,7 @@
      }
     },
     {
-     "id": "c2_060",
+     "id": "c2_061",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1220,7 +1240,7 @@
      "style": {}
     },
     {
-     "id": "c2_061",
+     "id": "c2_062",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1236,7 +1256,7 @@
      "shadow": false
     },
     {
-     "id": "c2_062",
+     "id": "c2_063",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1256,7 +1276,7 @@
      }
     },
     {
-     "id": "c2_063",
+     "id": "c2_064",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1276,7 +1296,7 @@
      }
     },
     {
-     "id": "c2_064",
+     "id": "c2_065",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1296,7 +1316,7 @@
      "style": {}
     },
     {
-     "id": "c2_065",
+     "id": "c2_066",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1312,7 +1332,7 @@
      "shadow": false
     },
     {
-     "id": "c2_066",
+     "id": "c2_067",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1332,7 +1352,7 @@
      }
     },
     {
-     "id": "c2_067",
+     "id": "c2_068",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1352,7 +1372,7 @@
      }
     },
     {
-     "id": "c2_068",
+     "id": "c2_069",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1372,7 +1392,7 @@
      "style": {}
     },
     {
-     "id": "c2_069",
+     "id": "c2_070",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1388,7 +1408,7 @@
      "shadow": false
     },
     {
-     "id": "c2_070",
+     "id": "c2_071",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1408,7 +1428,7 @@
      }
     },
     {
-     "id": "c2_071",
+     "id": "c2_072",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1428,7 +1448,7 @@
      }
     },
     {
-     "id": "c2_072",
+     "id": "c2_073",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1448,7 +1468,7 @@
      "style": {}
     },
     {
-     "id": "c2_073",
+     "id": "c2_074",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1464,7 +1484,7 @@
      "shadow": false
     },
     {
-     "id": "c2_074",
+     "id": "c2_075",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1484,7 +1504,7 @@
      }
     },
     {
-     "id": "c2_075",
+     "id": "c2_076",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1504,7 +1524,7 @@
      }
     },
     {
-     "id": "c2_076",
+     "id": "c2_077",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1524,7 +1544,7 @@
      }
     },
     {
-     "id": "c2_077",
+     "id": "c2_078",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1547,7 +1567,7 @@
      }
     },
     {
-     "id": "c2_078",
+     "id": "c2_079",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1570,7 +1590,7 @@
      }
     },
     {
-     "id": "c2_079",
+     "id": "c2_080",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -1593,7 +1613,7 @@
      }
     },
     {
-     "id": "c2_080",
+     "id": "c2_081",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1613,7 +1633,7 @@
      "style": {}
     },
     {
-     "id": "c2_081",
+     "id": "c2_082",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1634,7 +1654,7 @@
      }
     },
     {
-     "id": "c2_082",
+     "id": "c2_083",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1657,7 +1677,7 @@
      }
     },
     {
-     "id": "c2_083",
+     "id": "c2_084",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1680,7 +1700,7 @@
      }
     },
     {
-     "id": "c2_084",
+     "id": "c2_085",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1703,7 +1723,7 @@
      }
     },
     {
-     "id": "c2_085",
+     "id": "c2_086",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1724,7 +1744,7 @@
      }
     },
     {
-     "id": "c2_086",
+     "id": "c2_087",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1747,7 +1767,7 @@
      }
     },
     {
-     "id": "c2_087",
+     "id": "c2_088",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1767,7 +1787,7 @@
      "style": {}
     },
     {
-     "id": "c2_088",
+     "id": "c2_089",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1790,7 +1810,7 @@
      }
     },
     {
-     "id": "c2_089",
+     "id": "c2_090",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1810,7 +1830,7 @@
      "style": {}
     },
     {
-     "id": "c2_090",
+     "id": "c2_091",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1830,7 +1850,7 @@
      "style": {}
     },
     {
-     "id": "c2_091",
+     "id": "c2_092",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1851,7 +1871,7 @@
      }
     },
     {
-     "id": "c2_092",
+     "id": "c2_093",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1871,7 +1891,7 @@
      "style": {}
     },
     {
-     "id": "c2_093",
+     "id": "c2_094",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1892,7 +1912,7 @@
      }
     },
     {
-     "id": "c2_094",
+     "id": "c2_095",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1912,7 +1932,7 @@
      "style": {}
     },
     {
-     "id": "c2_095",
+     "id": "c2_096",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1933,7 +1953,7 @@
      }
     },
     {
-     "id": "c2_096",
+     "id": "c2_097",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1953,7 +1973,7 @@
      "style": {}
     },
     {
-     "id": "c2_097",
+     "id": "c2_098",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1974,7 +1994,7 @@
      }
     },
     {
-     "id": "c2_098",
+     "id": "c2_099",
      "step": 5,
      "anim": "fade",
      "rotate": 0,
@@ -1995,7 +2015,7 @@
      }
     },
     {
-     "id": "c2_099",
+     "id": "c2_100",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2015,7 +2035,7 @@
      "style": {}
     },
     {
-     "id": "c2_100",
+     "id": "c2_101",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2036,7 +2056,7 @@
      }
     },
     {
-     "id": "c2_101",
+     "id": "c2_102",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2059,7 +2079,7 @@
      }
     },
     {
-     "id": "c2_102",
+     "id": "c2_103",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2079,7 +2099,7 @@
      }
     },
     {
-     "id": "c2_103",
+     "id": "c2_104",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2099,7 +2119,7 @@
      }
     },
     {
-     "id": "c2_104",
+     "id": "c2_105",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2119,7 +2139,7 @@
      "style": {}
     },
     {
-     "id": "c2_105",
+     "id": "c2_106",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2142,7 +2162,7 @@
      }
     },
     {
-     "id": "c2_106",
+     "id": "c2_107",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2162,7 +2182,7 @@
      }
     },
     {
-     "id": "c2_107",
+     "id": "c2_108",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2182,7 +2202,7 @@
      }
     },
     {
-     "id": "c2_108",
+     "id": "c2_109",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2202,7 +2222,7 @@
      "style": {}
     },
     {
-     "id": "c2_109",
+     "id": "c2_110",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2225,7 +2245,7 @@
      }
     },
     {
-     "id": "c2_110",
+     "id": "c2_111",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
@@ -2245,7 +2265,7 @@
      }
     },
     {
-     "id": "c2_111",
+     "id": "c2_112",
      "step": 4,
      "anim": "fade",
      "rotate": 0,
