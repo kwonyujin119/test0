@@ -111,7 +111,7 @@
       ${!P.clips.length ? '<div class="ve-empty">영상을 먼저 넣어 주세요.</div>' : `
       <div class="ve-sec"><div class="ve-lab">세로 쇼츠 · 릴스 · 틱톡<em>9:16 · 3분 이하</em></div>
         ${v ? `<div class="ve-meter${T > SHORTS_MAX ? ' over' : ''}"><i style="width:${Math.min(100, T / SHORTS_MAX * 100)}%"></i><span>${VE.fmtT(T)} / 3:00</span></div>` : ''}
-        ${job.on ? `<div class="ve-prog"><div class="ve-prog-top"><span>${job.stage}</span><button class="btn sm ghost" id="sStop" type="button">그만</button></div><div class="ve-bar"><i id="sProg" style="width:${Math.round(job.ratio * 100)}%"></i></div></div>`
+        ${job.on ? `<div class="ve-prog ai-prog ai-busy" aria-busy="true"><div class="ve-prog-top"><span class="ai-shimmer">${job.stage}</span><button class="btn sm ghost" id="sStop" type="button">그만</button></div><div class="ve-bar"><i id="sProg" style="width:${Math.round(job.ratio * 100)}%"></i></div></div>`
         : `<button class="btn ${v ? '' : 'ink '}ve-big" id="sApply" type="button"><i data-ic="smartphone"></i>${v ? '얼굴 따라가기 다시 맞추기' : '세로 쇼츠로 바꾸기'}</button>
         <p class="ve-hint">가로 영상은 화면을 꽉 채우고 말하는 사람 얼굴을 따라 좌우로 움직입니다. 자막은 쇼츠형 큰 자막으로 바꿉니다. 마음에 안 들면 Ctrl+Z.</p>`}
         ${v ? `<label class="ve-check tight"><input type="checkbox" id="sSafe"${safeOn() ? ' checked' : ''}><span><b>안전 영역 보기</b> 앱 단추 · 제목이 덮는 자리를 미리보기에만 표시 (대략)</span></label>` : ''}</div>

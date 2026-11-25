@@ -5,6 +5,7 @@
    · 모달 → 휴대폰에서는 바텀시트(CSS) + 손잡이를 아래로 끌어 닫기
    · 코치마크: 새 기능을 처음 한 번만 짚어 줌 (DPV.coach)
    · 확인 · 알림 창: 브라우저 기본 창 대신 같은 모양의 창 (DPV.confirm / DPV.alert)
+   · 상태 변화 움직임(7절, 모양은 app/anim.css): 누름 · 닫힘 고스트 · 화면 바뀜(DPV.swap) · 숫자 세기 · 첫 화면 ↔ 작업장 이어짐
    움직임을 줄이도록 설정한 기기(prefers-reduced-motion)에서는 나타나기 · 코치마크 움직임을 모두 끈다. */
 'use strict';
 (() => {
@@ -174,7 +175,7 @@
     document.body.appendChild(wrap);
     const hole = wrap.querySelector('.co-hole'), pop = wrap.querySelector('.co-pop');
     // 안내 중에 창이 열리면 안내를 닫음 — 안내 층이 창의 단추를 가려 누를 수 없던 문제
-    const mo = new MutationObserver(() => { if (document.querySelector('.modal-bg, .dlg-bg')) end(); });
+    const mo = new MutationObserver(() => { if (document.querySelector('.modal-bg:not(.dpv-ghost), .dlg-bg:not(.dpv-ghost)')) end(); });
     const end = () => { LS.set(key, '1'); coachOn = false; wrap.remove(); mo.disconnect(); removeEventListener('resize', place); document.removeEventListener('keydown', onKey, true); };
     mo.observe(document.body, { childList: true });
     const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); end(); } else if (e.key === 'Enter' || e.key === 'ArrowRight') { e.preventDefault(); next(); } };
@@ -216,7 +217,7 @@
   };
   const pending = () => (TOURS[PAGE] || []).filter(([id]) => !LS.get('dpv:coach:' + id));
   function tryTours() {
-    if (coachOn || document.querySelector('.modal-bg, .menu, .dlg-bg')) return; // 창(DOCUMENT 의 .dlg-bg 포함)이 떠 있으면 안내하지 않음
+    if (coachOn || document.querySelector('.modal-bg:not(.dpv-ghost), .menu:not(.dpv-ghost), .dlg-bg:not(.dpv-ghost)')) return; // 창(DOCUMENT 의 .dlg-bg 포함)이 떠 있으면 안내하지 않음
     for (const [id, steps] of pending()) if (coach(id, steps)) return;
   }
   if (TOURS[PAGE]) { let n = 0; const t = setInterval(() => { if (++n > 30 || !pending().length) { clearInterval(t); return; } tryTours(); }, 2500); }
@@ -279,21 +280,165 @@
     if (OWN_K.test(PAGE)) return;
     const typing = e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]');
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.code === 'KeyK') { e.preventDefault(); palette(); }
-    else if (e.key === '?' && !typing && !e.ctrlKey && !e.metaKey && !document.querySelector('.modal-bg')) { e.preventDefault(); location.href = 'shortcuts.html'; }
+    else if (e.key === '?' && !typing && !e.ctrlKey && !e.metaKey && !document.querySelector('.modal-bg:not(.dpv-ghost)')) { e.preventDefault(); location.href = 'shortcuts.html'; }
   });
+
+  /* 작업장 사이 전환(View Transitions)이 중간에 끊기면(곧바로 다른 화면으로 넘어갈 때) 브라우저가 오류로 남기므로 조용히 받음 */
+  const quietVT = e => { const vt = e && e.viewTransition; if (vt) ['ready', 'finished', 'updateCallbackDone'].forEach(k => vt[k] && vt[k].catch(() => { })); };
+  addEventListener('pagereveal', quietVT); addEventListener('pageswap', quietVT);
+
+  /* =====================================================================
+     7. 상태 변화 움직임 (모양은 app/anim.css) — 누름 · 닫힘 · 화면 바뀜 · 숫자 바뀜 · 작업장 들어가기
+     편집 중인 캔버스 · 슬라이드 · 타임라인에는 걸지 않는다. 움직임 줄이기면 모두 즉시.
+     ===================================================================== */
+  /* 7-0. anim.css 를 스스로 불러옴 (페이지에 이미 <link> 가 있으면 그대로) */
+  (() => {
+    const me = document.currentScript;
+    if (!me || !me.src || document.querySelector('link[href*="anim.css"]')) return;
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = new URL('anim.css', me.src).href;
+    document.head.appendChild(l);
+  })();
+  const calm = () => RM.matches || document.hidden;
+
+  /* 7-1. 닫힘도 부드럽게: 메뉴 · 시트 · 창이 닫히면 같은 모양의 그림자(고스트)가 그 자리에서 짧게 사라짐.
+     진짜 요소는 원래대로 바로 지워지므로 앱의 동작(상태 · 초점 · 검사)은 그대로. 고스트는 누를 수 없고(inert),
+     화면낭독기에 안 읽히며, 다음 키 · 누름이 오면 곧바로 없어져 앱의 "창이 떠 있나?" 검사에 걸리지 않는다. */
+  const GHOST = '.menu, .menu-shade, .modal-bg, .dlg-bg, .folder-peek';
+  const GHOST_RX = /(^|\s)(menu|menu-shade|modal-bg|dlg-bg|folder-peek|[\w-]+-menu)(\s|$)/;
+  const HEAVY = 'iframe, video, audio, canvas, object, embed';
+  const ghosts = new Set();
+  function killGhosts() { for (const g of ghosts) g.remove(); ghosts.clear(); }
+  function grab(n) {
+    if (!n.matches(GHOST) || n.classList.contains('dpv-ghost') || !n.parentNode) return;
+    if (n.querySelector(HEAVY) || n.getElementsByTagName('*').length > 1200) return; // 영상 · 그림판이 든 창은 그냥 닫음
+    const r = n.getBoundingClientRect(); if (!r.width || !r.height) return; // 안 보이던 것
+    const parent = n.parentNode, next = n.nextSibling;
+    const scrollers = [n, ...n.querySelectorAll('.modal, .dlg, .dlg .body, .menu')].map(x => x.scrollTop);
+    // 붙이기는 다음 그리기 직전에: 지금 이벤트를 처리하는 다른 코드가 고스트를 "열린 창"으로 보지 않게. 그 사이 화면은 그려지지 않아 깜빡임 없음
+    requestAnimationFrame(() => {
+      if (n.isConnected || !parent.isConnected) return; // 다시 붙였으면(옮기기) 그대로
+      const g = n.cloneNode(true);
+      g.classList.add('dpv-ghost'); g.setAttribute('aria-hidden', 'true'); g.inert = true;
+      for (const x of [g, ...g.querySelectorAll('[id], [name], [autofocus]')]) { x.removeAttribute('id'); x.removeAttribute('name'); x.removeAttribute('autofocus'); }
+      parent.insertBefore(g, next && next.parentNode === parent ? next : null);
+      [g, ...g.querySelectorAll('.modal, .dlg, .dlg .body, .menu')].forEach((x, i) => { if (scrollers[i]) x.scrollTop = scrollers[i]; });
+      ghosts.add(g);
+      const bye = () => { if (ghosts.delete(g)) g.remove(); };
+      g.addEventListener('animationend', e => { if (e.target === g || e.target.parentNode === g) bye(); });
+      setTimeout(bye, 320);
+    });
+  }
+  const _remove = Element.prototype.remove;
+  Element.prototype.remove = function () {
+    if (!RM.matches && this.isConnected) { const c = this.className; if (typeof c === 'string' && GHOST_RX.test(c)) { try { grab(this); } catch (e) { } } }
+    return _remove.apply(this, arguments);
+  };
+  for (const t of ['keydown', 'pointerdown', 'wheel']) addEventListener(t, () => { if (ghosts.size) killGhosts(); }, { capture: true, passive: true });
+
+  /* 7-2. 화면(탭 · 보기 · 분류) 바뀜: 새 내용이 짧게 스며듦 (위쪽 머리 줄은 그대로).
+     key 가 앞과 다를 때만 — 검색 글자를 칠 때마다 움직이지 않게 검색어는 key 에 넣지 않는다 */
+  const swapKeys = new WeakMap(); let lastView = null;
+  function swap(el, key) {
+    if (!el) return;
+    if (key !== undefined) { const had = swapKeys.has(el), old = swapKeys.get(el); swapKeys.set(el, key); if (!had || old === key) return; }
+    if (calm() || mo) return; // 화면을 연 직후(나타나기 중)에는 겹치지 않게
+    el.classList.remove('dpv-swap'); void el.offsetWidth; el.classList.add('dpv-swap');
+    clearTimeout(el._dpvSwap); el._dpvSwap = setTimeout(() => el.classList.remove('dpv-swap'), 420);
+  }
+  /* 글 한 줄이 바뀔 때(읽는 중… → 결과): 그 줄만 살짝 스며듦 */
+  function settleText(el) {
+    if (calm() || !el) return;
+    el.classList.remove('dpv-fresh'); void el.offsetWidth; el.classList.add('dpv-fresh');
+    clearTimeout(el._dpvFresh); el._dpvFresh = setTimeout(() => el.classList.remove('dpv-fresh'), 360);
+  }
+
+  /* 7-3. 숫자 바뀜: 평가액 · 통과율이 바뀌면 앞 값에서 새 값까지 짧게(360ms) 세어 감. 처음 보일 때 · 같은 값이면 그대로 */
+  const COUNT = '.sc-sum b, [data-count]';
+  const lastNum = new Map(), counting = new WeakMap();
+  const numOf = t => { const m = /-?\d[\d,]*(?:\.\d+)?/.exec(t); return m ? { v: parseFloat(m[0].replace(/,/g, '')), pre: t.slice(0, m.index), suf: t.slice(m.index + m[0].length), dec: (m[0].split('.')[1] || '').length, comma: m[0].includes(',') } : null; };
+  function countKey(el) {
+    if (el.dataset.count) return el.dataset.count;
+    const box = el.closest('[id]'), lab = el.parentElement && el.parentElement.querySelector(':scope > span');
+    return (box ? box.id : '') + '|' + (lab ? lab.textContent.trim() : el.parentElement ? [...el.parentElement.parentElement.children].indexOf(el.parentElement) : '');
+  }
+  function countOne(el) {
+    if (counting.has(el)) return;
+    const text = el.textContent, k = countKey(el), now = numOf(text), before = lastNum.get(k);
+    lastNum.set(k, text);
+    if (!now || before == null || before === text || calm()) return;
+    const old = numOf(before); if (!old || old.pre !== now.pre || old.suf !== now.suf || old.v === now.v) return;
+    const fmt = v => now.pre + (now.comma ? v.toLocaleString('ko-KR', { minimumFractionDigits: now.dec, maximumFractionDigits: now.dec }) : v.toFixed(now.dec)) + now.suf;
+    const t0 = performance.now(), D = 360;
+    counting.set(el, 1); el.classList.add('dpv-counting', now.v > old.v ? 'dpv-up' : 'dpv-dn');
+    const step = t => {
+      const p = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - p, 3);
+      if (!el.isConnected) { counting.delete(el); return; }
+      el.textContent = p < 1 ? fmt(old.v + (now.v - old.v) * e) : text;
+      if (p < 1) requestAnimationFrame(step); else { counting.delete(el); setTimeout(() => el.classList.remove('dpv-counting', 'dpv-up', 'dpv-dn'), 260); }
+    };
+    requestAnimationFrame(step);
+  }
+  function countIn(root) { if (root.nodeType !== 1) return; if (root.matches(COUNT)) countOne(root); root.querySelectorAll(COUNT).forEach(countOne); }
+  function watchCounts() {
+    document.querySelectorAll(COUNT).forEach(countOne);
+    new MutationObserver(ms => {
+      for (const m of ms) {
+        const t = m.target.nodeType === 1 ? m.target : m.target.parentElement;
+        if (t && t.closest && t.closest(COUNT)) { countOne(t.closest(COUNT)); continue; }
+        for (const n of m.addedNodes) countIn(n);
+      }
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  /* 7-4. 첫 화면 ↔ 작업장: 누른 카드의 글자 표식(D · P · V · S)과 이름이 다음 화면 왼쪽 위 표식 · 이름으로 이어짐
+     (페이지 사이 View Transitions — 지원하는 브라우저만, 나머지는 지금처럼 바로 바뀜) */
+  const HUB_WS = { 'hangul.html': 'doc', 'gyoan.html': 'pres', 'videos.html': 'video', 'secret.html': 'secret' };
+  const fileOf = u => { try { return new URL(u, location.href).pathname.split('/').pop() || 'index.html'; } catch (e) { return ''; } };
+  const vtParts = ws => {
+    if (PAGE === 'index.html') { const c = ws && document.querySelector(`#space:not([hidden]) .ws-card[data-ws="${ws}"]`); return c ? [c.querySelector('.ws-ico'), c.querySelector('h2 .card-link')] : []; }
+    const b = document.querySelector('.rail .brand'); return b && b.offsetParent ? [b.querySelector('.mark'), b.querySelector('b')] : [];
+  };
+  const VT_NAMES = ['dpv-ws-mark', 'dpv-ws-name'];
+  function vtTag(ws) { vtParts(ws).forEach((el, i) => { if (el) el.style.viewTransitionName = VT_NAMES[i]; }); }
+  function vtUntag() { document.querySelectorAll('[style*="view-transition-name"]').forEach(el => { if (VT_NAMES.includes(el.style.viewTransitionName)) el.style.viewTransitionName = ''; }); }
+  const wsFor = other => PAGE === 'index.html' ? HUB_WS[other] : (other === 'index.html' && HUB_WS[PAGE]) ? HUB_WS[PAGE] : null;
+  addEventListener('pageswap', e => {
+    if (RM.matches || !e.viewTransition || !e.activation || !e.activation.entry) return;
+    const ws = wsFor(fileOf(e.activation.entry.url)); if (ws) vtTag(ws);
+  });
+  addEventListener('pagereveal', e => {
+    vtUntag();
+    if (RM.matches || !e.viewTransition) return;
+    const from = window.navigation && navigation.activation && navigation.activation.from ? fileOf(navigation.activation.from.url) : '';
+    const ws = wsFor(from); if (!ws) return;
+    vtTag(ws); e.viewTransition.finished.finally(vtUntag);
+  });
+  addEventListener('pageshow', e => { if (e.persisted) vtUntag(); });
+
+  /* 7-5. 첫 화면(index.html): 입장 고르기 ↔ 작업장 카드가 바뀔 때, 카드의 상태 줄이 "읽는 중…" 에서 결과로 바뀔 때 */
+  function watchIndex() {
+    const gate = document.getElementById('gate'), space = document.getElementById('space'); if (!gate || !space) return;
+    new MutationObserver(ms => { for (const m of ms) if (m.attributeName === 'hidden' && !m.target.hidden) swap(m.target); }).observe(document.querySelector('.ws'), { attributes: true, attributeFilter: ['hidden'], subtree: true });
+    new MutationObserver(ms => {
+      const seen = new Set();
+      for (const m of ms) { const el = (m.target.nodeType === 1 ? m.target : m.target.parentElement); const s = el && el.closest('.ws-card .stat, .ws-card .resume-link'); if (s && !seen.has(s)) { seen.add(s); settleText(s); } }
+    }).observe(space, { childList: true, subtree: true, characterData: true });
+  }
 
   /* ---------- 시작 ---------- */
   function boot() {
     watchAI();
     openWindow(document.body, 2200);
+    if (PAGE === 'secret.html' || document.querySelector('[data-count]')) watchCounts();
+    if (PAGE === 'index.html') setTimeout(watchIndex, 0); // 처음 그리기(입장 모드 고르기)는 나타나기가 맡음
     document.querySelectorAll('button[title], a[title]').forEach(el => { if (!el.textContent.trim() && !el.getAttribute('aria-label')) el.setAttribute('aria-label', el.getAttribute('title')); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
   window.DPV = Object.assign(window.DPV || {}, {
     ready: true,
-    view(root) { if (root && !seenViews.has(root)) { seenViews.add(root); openWindow(root, 1200); } const pg = root && root.classList && root.classList.contains('sc-page') ? root : null; if (pg) progress(pg); }, // 화면(탭)을 바꿀 때 부름
-    reveal: prime, coach, confirm: confirmBox, alert: alertBox, palette,
+    view(root) { if (root && !seenViews.has(root)) { seenViews.add(root); openWindow(root, 1200); } if (root && lastView && lastView !== root) swap(root); lastView = root || lastView; const pg = root && root.classList && root.classList.contains('sc-page') ? root : null; if (pg) progress(pg); }, // 화면(탭)을 바꿀 때 부름
+    reveal: prime, swap, coach, confirm: confirmBox, alert: alertBox, palette,
     aiBusy(el, on) { if (el) el.classList.toggle('ai-busy', !!on); }, // AI 가 일하는 동안 그 입력창 · 카드 테두리에 빛 (화면당 한 곳)
     resetCoach(id) { try { if (id) localStorage.removeItem('dpv:coach:' + id); else Object.keys(localStorage).filter(k => k.startsWith('dpv:coach:')).forEach(k => localStorage.removeItem(k)); } catch (e) { } },
   });

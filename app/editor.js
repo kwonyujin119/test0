@@ -3509,19 +3509,20 @@
     if (aiBtn) aiBtn.onclick = async () => {
       aiBtn.disabled = true; const old = aiBtn.textContent; aiBtn.textContent = '처리 중…';
       const say = (t) => { if (bg.isConnected) aiMsg.textContent = t; };
+      const busy = on => { if (window.AIM) AIM.scan(q('.bgrm-view'), on); aiMsg.classList.toggle('ai-shimmer', on); }; // AI 가 그림을 훑는 동안: 작업장 색 띠 + 하는 일 글자 반짝임
       try {
         await loadScript('app/bgai.js');
         if (!(await BGAI.cached()) && !confirm(`처음 한 번 AI 모델(${BGAI.info().mb}MB)을 내려받습니다. 이 기기에 보관되어 다음부터는 바로 됩니다.\n(그림은 서버로 보내지 않고 이 기기 안에서만 처리합니다)\n\n계속할까요?`)) { aiBtn.disabled = false; aiBtn.textContent = old; return; }
-        const base = aiBase || orig, alpha = await BGAI.mask(base, say);
+        busy(true); const base = aiBase || orig, alpha = await BGAI.mask(base, say);
         if (!bg.isConnected) return;
         const d = new Uint8ClampedArray(base.data); let cnt = 0;
         for (let i = 0; i < W * H; i++) { const a = Math.min(d[i * 4 + 3], alpha[i]); if (a < 8 && d[i * 4 + 3] >= 16) cnt++; d[i * 4 + 3] = a; }
         aiBase = orig; orig = new ImageData(d, W, H); picks = []; first.length = 0; // AI 결과 위에서 이어서 작업
         q('[data-reset]').onclick = () => { orig = aiBase; aiBase = null; picks = []; redraw(); aiMsg.textContent = 'AI 결과를 되돌렸습니다'; };
-        draw(); ok.disabled = false; q('[data-reset]').disabled = false;
+        busy(false); draw(); if (window.AIM) AIM.settle(cv); ok.disabled = false; q('[data-reset]').disabled = false;
         say(`AI 가 배경을 분리했습니다${BGAI.info().ep === 'webgpu' ? '' : ' (CPU)'} · 남은 곳이 있으면 눌러서 더 지우고, [적용] 을 누르세요`);
       } catch (err) { say('AI 배경 지우기를 쓰지 못했습니다: ' + err.message); }
-      aiBtn.disabled = false; aiBtn.textContent = old;
+      busy(false); aiBtn.disabled = false; aiBtn.textContent = old;
     };
     q('.bgrm-bgs').onclick = (ev) => { const b = ev.target.closest('[data-pv]'); if (!b) return; for (const x of bg.querySelectorAll('[data-pv]')) x.classList.toggle('on', x === b); cv.style.background = b.dataset.pv || ''; };
     ok.onclick = async () => {

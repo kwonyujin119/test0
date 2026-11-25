@@ -614,7 +614,18 @@ body.reflow #doc { min-width: 100%; }
 #home .rail-add:hover { background: var(--ui-hover); color: var(--ui-fg); }
 #home .rail-add .ico { width: 16px; height: 16px; }
 #home #hmFolders:empty { display: none; }
-@media (max-width: 820px) { #home .rail-sec { order: 2; padding: 4px 6px; } }
+/* 세로 태블릿 (761~900px): 편집기 머리 줄(.bar1)이 화면보다 넓어 페이지 전체가 옆으로 밀리고(문서 목록까지 오른쪽이 잘림)
+   휴대폰처럼 머리 줄 안에서만 옆으로 넘기게 */
+@media (min-width: 761px) and (max-width: 900px) {
+  .bar1 { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .bar1::-webkit-scrollbar { display: none; }
+  .bar1 > * { flex-shrink: 0; }
+  .bar1 .nm { flex-shrink: 1; }
+}
+@media (max-width: 820px) {
+  #home .rail-sec { order: 3; flex: none; gap: 2px; padding: 0 4px 0 2px; } /* 폴더 줄 맨 앞 이름표 */
+  #home .rail-add { width: 40px; height: 40px; }
+}
 
 /* 편집 용지: 여백 빠른 선택 · 미리 보기 */
 .pg-pre { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }

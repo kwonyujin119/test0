@@ -140,10 +140,10 @@ window.SEC_STUDY = (() => {
   async function fixWriting(x, text, out) {
     if (!text.trim()) { H.toast('먼저 작문을 써 주세요', 1800); return; }
     if (!H.aiName()) { H.toast('AI API 를 먼저 등록해 주세요 (Stock → API 연결)', 2600); return; }
-    out.innerHTML = '<div class="sc-bmsg">첨삭하는 중…</div>';
+    out.innerHTML = '<div class="sc-bmsg" role="status"><span class="ai-shimmer">AI 가 첨삭하는 중</span></div>';
     try {
       const r = await H.ai(`고등학생 영어 작문 첨삭.\n과제: ${x.writing.prompt}\n학생 글:\n"""${text.slice(0, 2000)}"""\n\n한국어로 짧게: 1) 고친 글 전체(영어) 2) 고친 곳마다 이유 한 줄씩(최대 6개) 3) 더 자연스러운 표현 2개 4) 10점 만점 점수와 다음에 신경 쓸 한 가지. 칭찬은 근거가 있을 때만.`, { web: false });
-      out.innerHTML = `<div class="st-ai">${esc(r)}</div>`;
+      out.innerHTML = `<div class="st-ai ai-settle">${esc(r)}</div>`;
     } catch (e) { out.innerHTML = `<div class="sc-err">${esc(e.message)}</div>`; }
   }
   const EN_SCHEMA = `{"title":"영어 제목","sub":"한국어 부제(출처 · 날짜)","note":"한국어 안내(각색 · 직접 쓴 글임을 밝힘)","sources":[["출처 제목","https://..."]],"plan":[["단어",7],["문법",6],["독해",10],["작문",7]],"vocab":[["word","품사(n./v./adj.)","한국어 뜻","English example","예문 해석"]  (정확히 12개)],"grammar":{"title":"문법 이름(한국어)","explain":"한국어 설명 3~4문장","examples":[["English","해석"] (3개)],"practice":[["문제","[보기 4개]",정답 번호(0~3),"한국어 해설"] (4개)]},"passage":[["말하는 사람(대사면 이름, 서술이면 빈 문자열)","English","한국어 해석"] (8~12줄, 합계 280~350단어)],"questions":[["English question",["A","B","C","D"],정답 번호,"한국어 해설"] (5개)],"writing":{"prompt":"한국어 과제(5~6문장 · 오늘 문법 사용)","guide":["틀 문장 4개"],"model":"모범 답안 English"}}`;
@@ -160,7 +160,7 @@ window.SEC_STUDY = (() => {
     }, l => { ui.en = l.id; renderEn(el); });
   }
   async function makeLesson(lang, prompt, opt, btn, fix, done) {
-    const label = btn.innerHTML; btn.disabled = true; btn.textContent = '만드는 중… (1~2분)';
+    const label = btn.innerHTML, stop = window.AIM ? AIM.wait(btn, '레슨을 만드는 중', '보통 1~2분') : null; btn.disabled = true; if (!stop) btn.textContent = '만드는 중… (1~2분)';
     try {
       const txt = await H.ai(prompt, opt);
       const a = txt.indexOf('{'), b = txt.lastIndexOf('}'); if (a < 0 || b < a) throw new Error('AI 답에서 레슨을 찾지 못했습니다. 다시 눌러 보세요');
@@ -168,7 +168,7 @@ window.SEC_STUDY = (() => {
       const l = fix(j), s = aiStore(); s[lang] = [l].concat(s[lang]).slice(0, 20); H.LS.set(KAI, s);
       H.toast('새 레슨을 만들었습니다', 2000); done(l);
     } catch (e) { H.toast(e.message, 4000); }
-    finally { btn.disabled = false; btn.innerHTML = label; }
+    finally { if (stop) stop(); btn.disabled = false; btn.innerHTML = label; }
   }
 
   /* =====================================================================

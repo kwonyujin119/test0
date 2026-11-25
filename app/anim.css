@@ -1,0 +1,111 @@
+/* =====================================================================
+   DPV 상태 변화 움직임 (app/motion.js 「7. 상태 변화 움직임」 과 짝) — docs/dpv-ui-motion.md
+   규칙: 업무 도구라 짧게(누름 80–120ms · 바뀜 160–240ms · 숫자 360ms) · transform / opacity 만
+         (접기/펼치기의 높이는 예외: 브라우저가 지원할 때만) · 편집 중인 슬라이드 · 문서 · 타임라인에는 걸지 않음
+         · 움직임 줄이기(prefers-reduced-motion)면 모두 즉시.
+   motion.js 가 이 파일을 스스로 불러오므로 HTML 에 따로 넣지 않아도 된다.
+   ===================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ---------- 1. 누름 피드백: 눌린 동안 살짝 작아짐 (떼면 100ms 에 돌아옴) ---------- */
+  :where(.btn, .seg-b, .rail-item, .bn-go, .resume-link:not(.empty), .folder-new, .menu .mi, .chip, .cmdchip):not(:disabled, [aria-disabled="true"]) {
+    transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+    transition-duration: .12s;
+  }
+  :where(.btn, .seg-b, .menu .mi, .chip, .cmdchip):not(:disabled, [aria-disabled="true"]):active { transform: scale(.97); transition-duration: .08s; }
+  :where(.rail-item, .resume-link:not(.empty), .folder-new):active { transform: scale(.98); transition-duration: .08s; }
+  /* 목록 카드: 그림이 눌림 (마우스를 올렸을 때 떠오른 것도 내려앉음) */
+  .deck-card:not(.ghost):active .deck-thumb, .doc-card:not(.ghost, .busy):active .doc-sheet { transform: scale(.98); transition-duration: .08s; }
+
+  /* ---------- 2. 첫 화면: 작업장 카드 · 입장 배너 ---------- */
+  .ws-card { transition: border-color .15s, box-shadow .15s, transform .18s var(--ease); }
+  .ws-card .ws-ico { transition: transform .2s var(--ease); }
+  @media (hover: hover) and (pointer: fine) {
+    .ws-card:hover { transform: translateY(-2px); }
+    .ws-card:hover .ws-ico { transform: scale(1.06); }
+  }
+  .ws-card:active { transform: scale(.985); transition-duration: .08s; }
+  .ws-card:active .ws-ico { transform: scale(.94); }
+  .ws-banner:active { transform: scale(.985); transition-duration: .08s; }
+
+  /* 입장(게스트 · 관리자)을 고른 뒤 카드가 차례로 들어옴 / 나가기를 누르면 배너가 들어옴 */
+  #space.dpv-swap .ws-card, #gate.dpv-swap .ws-banner, #gate.dpv-swap .ws-gate-note { animation: dpv-in .26s var(--ease) both; }
+  #space.dpv-swap .ws-card:nth-child(2), #gate.dpv-swap .ws-banner:nth-child(2) { animation-delay: .04s; }
+  #space.dpv-swap .ws-card:nth-child(3), #gate.dpv-swap .ws-gate-note { animation-delay: .08s; }
+  #space.dpv-swap .ws-card:nth-child(4) { animation-delay: .12s; }
+  #space.dpv-swap > :not(.ws-grid), #appBox.dpv-swap { animation: dpv-fade .2s ease-out both; }
+  /* 상태 줄이 "읽는 중…" 에서 결과로 바뀔 때 그 줄만 */
+  .dpv-fresh { animation: dpv-fresh .28s ease-out both; }
+
+  /* 작업장으로 들어갈 때: 카드의 D · P · V · S 표식과 이름이 다음 화면 왼쪽 위로 이어짐 (motion.js 가 이름을 붙임) */
+  ::view-transition-group(dpv-ws-mark), ::view-transition-group(dpv-ws-name) { animation-duration: .3s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+  ::view-transition-old(dpv-ws-name), ::view-transition-new(dpv-ws-name) { height: 100%; object-fit: contain; object-position: left center; }
+
+  /* ---------- 3. 화면(탭 · 보기 · 분류) 바뀜: 새 내용이 짧게 스며듦 (머리 줄은 그대로) ---------- */
+  .hub.dpv-swap > :not(.hub-bar, [hidden]), .sc-page.dpv-swap > :not(.sc-bar, [hidden]) { animation: dpv-in .2s var(--ease) both; }
+
+  /* ---------- 4. 닫힘도 부드럽게 (motion.js 가 닫힌 자리에 그림자를 둠) ---------- */
+  .dpv-ghost { pointer-events: none !important; }
+  .dpv-ghost.menu { animation: dpv-menu-out .12s ease-in both !important; }
+  .dpv-ghost.menu.sheet { animation: dpv-sheet-out .18s ease-in both !important; }
+  .dpv-ghost.menu-shade, .dpv-ghost.modal-bg, .dpv-ghost.dlg-bg { animation: dpv-out .16s ease-in both !important; }
+  .dpv-ghost.modal-bg > .modal, .dpv-ghost.dlg-bg > .dlg { animation: dpv-pop-out .16s ease-in both !important; }
+  .dpv-ghost.folder-peek { animation: dpv-menu-out .12s ease-in both !important; }
+
+  /* DOCUMENT 창(.dlg)은 열릴 때 움직임이 없었음: 다른 작업장 창과 같게 (조금 더 짧게) */
+  .dlg-bg:not(.dpv-ghost) { animation: fade-in .12s ease-out; }
+  .dlg-bg:not(.dpv-ghost) > .dlg { animation: pop-in .16s var(--ease); }
+
+  /* ---------- 5. 접기/펼치기(details): 높이와 투명도가 부드럽게 (지원하는 브라우저만, 나머지는 지금처럼 바로) ---------- */
+  @supports selector(::details-content) {
+    details:not(.slide details, #doc details) { interpolate-size: allow-keywords; }
+    details:not(.slide details, #doc details)::details-content {
+      block-size: 0; opacity: 0; overflow: clip; overflow-clip-margin: 4px;
+      transition: block-size .22s var(--ease), opacity .18s ease-out, content-visibility .22s allow-discrete;
+    }
+    details[open]:not(.slide details, #doc details)::details-content { block-size: auto; opacity: 1; }
+  }
+
+  /* ---------- 6. 끌어다 놓기: 놓을 곳 안내가 부드럽게 나타나고 사라짐 ---------- */
+  .drop-veil { opacity: 0; transition: opacity .14s ease-out, display .14s allow-discrete; }
+  body.dragover .drop-veil { opacity: 1; }
+  .drop-veil > div, #dropMask > div { transition: transform .22s var(--ease); }
+  #dropMask { transition: opacity .14s ease-out, display .14s allow-discrete; }
+  #dropMask[hidden] { display: none; opacity: 0; }
+  @starting-style {
+    body.dragover .drop-veil, #dropMask:not([hidden]) { opacity: 0; }
+    body.dragover .drop-veil > div, #dropMask:not([hidden]) > div { transform: scale(.96); }
+  }
+  body.dragover .drop-veil .ico, #dropMask:not([hidden]) .ico { animation: dpv-drop .5s var(--ease) both; }
+  /* 교안을 폴더로 끌 때: 놓을 수 있는 폴더 · 메뉴가 살짝 반응 */
+  .rail-item.drop-on, .fb-back.drop-on { transform: scale(1.02); transition: transform .12s var(--ease), background-color .12s; }
+
+  /* ---------- 7. 숫자 바뀜 (SECRET 평가액 · 통과율): 세는 동안 자리 폭이 흔들리지 않게 ---------- */
+  .sc-sum b, [data-count] { font-variant-numeric: tabular-nums; }
+  .dpv-counting { display: inline-block; transition: transform .2s var(--ease); }
+  .dpv-counting.dpv-up { transform: translateY(-1px); }
+  .dpv-counting.dpv-dn { transform: translateY(1px); }
+}
+
+@keyframes dpv-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes dpv-fade { from { opacity: 0; } }
+@keyframes dpv-fresh { from { opacity: .35; } }
+@keyframes dpv-out { to { opacity: 0; } }
+@keyframes dpv-menu-out { to { opacity: 0; transform: translateY(-3px) scale(.98); } }
+@keyframes dpv-sheet-out { to { transform: translateY(100%); } }
+@keyframes dpv-pop-out { to { opacity: 0; transform: translateY(4px) scale(.98); } }
+@keyframes dpv-drop { from { transform: translateY(-8px); opacity: .4; } }
+
+/* 휴대폰: 창은 바텀시트라 닫힐 때도 아래로 내려감 */
+@media (prefers-reduced-motion: no-preference) and (max-width: 640px) {
+  .dpv-ghost.modal-bg > .modal { animation: dpv-sheet-out .2s ease-in both !important; }
+}
+/* 휴대폰: 놓을 곳 안내 상자가 화면 폭을 넘지 않게 */
+@media (max-width: 640px) { .drop-veil > div { margin: 0 16px; padding: 28px 20px; text-align: center; } }
+
+/* 움직임 줄이기: 고스트는 motion.js 가 만들지 않음. 화면 바뀜 · 숫자 세기도 motion.js 가 건너뜀. 여기서는 남은 것만 확실히 끔 */
+@media (prefers-reduced-motion: reduce) {
+  .dpv-swap *, .dpv-fresh, .dpv-ghost { animation: none !important; }
+  ::view-transition-group(dpv-ws-mark), ::view-transition-group(dpv-ws-name) { animation: none !important; }
+}
