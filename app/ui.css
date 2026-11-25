@@ -1285,3 +1285,20 @@ body > .app-nav { display: none; }
 .cmdchip { font: inherit; font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ui-border); background: transparent; color: var(--ui-fg); cursor: pointer; }
 .cmdchip:hover { background: var(--ui-hover, rgba(127,127,127,.12)); }
 @media (max-width: 700px) { .cmdbar { bottom: 6px; } .cmdbar .cmdchips { display: none; } .cmdbar .cl .ch { flex-direction: column; gap: 0; } }
+
+/* 폴더 미리보기 (마우스를 올리면 뜨는 교안 목록) */
+.folder-peek { position: fixed; z-index: 60; width: 380px; max-height: min(520px, calc(100vh - 16px)); display: flex; flex-direction: column; background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 14px; box-shadow: var(--ui-shadow, 0 12px 32px rgba(0,0,0,.18)); animation: fpIn .14s ease-out; }
+@keyframes fpIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .folder-peek { animation: none; } }
+.folder-peek .fp-head { display: flex; align-items: center; gap: 6px; padding: 10px 10px 8px 14px; border-bottom: 1px solid var(--ui-border); color: var(--ui-fg); }
+.folder-peek .fp-head span { color: var(--ui-muted); font-size: 13px; }
+.folder-peek .fp-head .fp-open { margin-left: auto; }
+.folder-peek .fp-list { overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+.folder-peek .fp-item { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 10px; cursor: pointer; color: var(--ui-fg); }
+.folder-peek .fp-item:hover, .folder-peek .fp-item:focus-visible { background: var(--ui-hover); outline: none; }
+.folder-peek .fp-thumb { position: relative; flex: 0 0 112px; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; background: var(--ui-panel2); box-shadow: 0 0 0 1px var(--ui-border); }
+.folder-peek .fp-thumb .slide { pointer-events: none; }
+.folder-peek .fp-text { flex: 1; min-width: 0; }
+.folder-peek .fp-title { font-size: 14px; font-weight: 600; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.folder-peek .fp-meta { font-size: 12px; color: var(--ui-muted); margin-top: 2px; }
+.folder-peek .fp-play { flex: none; opacity: .55; } .folder-peek .fp-item:hover .fp-play { opacity: 1; }
