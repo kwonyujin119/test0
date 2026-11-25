@@ -358,6 +358,7 @@
     }
     /* 불러오기 전: 빈 카드 자리 */
     if (!loadedOnce) for (let i = 0; i < 6; i++) { const c = document.createElement('div'); c.className = 'deck-card ghost'; c.innerHTML = '<div class="deck-thumb loading"></div><div class="deck-body"><div class="line"></div><div class="line short"></div></div>'; grid.appendChild(c); }
+    if (window.DPV && DPV.swap) DPV.swap(grid.parentNode, [filter, pref.view, pref.sort, loadedOnce].join('|')); // 분류 · 보기 · 정렬이 바뀌거나 빈 카드 → 내용: 새 내용이 스며듦 (검색 글자는 제외)
   }
 
   function renderResume(d) {
