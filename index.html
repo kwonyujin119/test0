@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
+<link rel="stylesheet" href="app/ai-motion.css">
 <link rel="stylesheet" href="app/hub.css">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
@@ -102,6 +103,7 @@
 </div>
 <script src="app/common.js"></script>
 <script src="app/motion.js"></script>
+<script src="app/ai-motion.js"></script>
 <script src="app/access.js"></script>
 <script>
 (() => {
@@ -131,7 +133,7 @@
   function secretCard() {
     const old = $('secretCard'); if (old) old.remove();
     if (!Access.isAdmin) return;
-    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card" id="secretCard" data-ws="secret"><div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div><span class="go" aria-hidden="true">SECRET 열기${icon('arrowRight')}</span></article>`);
+    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card" id="secretCard" data-ws="secret"><div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div><p class="desc">투자 원칙 점검 · 시장 브리핑 · AI 어시스턴트</p><span class="go" aria-hidden="true">SECRET 열기${icon('arrowRight')}</span></article>`);
   }
   $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
   $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };

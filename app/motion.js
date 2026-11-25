@@ -282,6 +282,10 @@
     else if (e.key === '?' && !typing && !e.ctrlKey && !e.metaKey && !document.querySelector('.modal-bg')) { e.preventDefault(); location.href = 'shortcuts.html'; }
   });
 
+  /* 작업장 사이 전환(View Transitions)이 중간에 끊기면(곧바로 다른 화면으로 넘어갈 때) 브라우저가 오류로 남기므로 조용히 받음 */
+  const quietVT = e => { const vt = e && e.viewTransition; if (vt) ['ready', 'finished', 'updateCallbackDone'].forEach(k => vt[k] && vt[k].catch(() => { })); };
+  addEventListener('pagereveal', quietVT); addEventListener('pageswap', quietVT);
+
   /* ---------- 시작 ---------- */
   function boot() {
     watchAI();
