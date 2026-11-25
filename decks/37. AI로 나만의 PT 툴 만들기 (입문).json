@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-25T22:59:43.000Z",
+ "modified": "2026-11-25T23:19:01.000Z",
  "footer": {
   "text": "",
   "num": true,
@@ -2005,7 +2005,7 @@
      "y": 746,
      "w": 160,
      "h": 90,
-     "src": "assets/pt37-sech-r2.jpg",
+     "src": "assets/pt37-sech-6r.jpg",
      "fit": "cover",
      "radius": 10,
      "shadow": false,
@@ -11711,7 +11711,7 @@
      "y": 0,
      "w": 1920,
      "h": 1080,
-     "src": "assets/pt37-sech-r2.jpg",
+     "src": "assets/pt37-sech-6r.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
@@ -14389,6 +14389,546 @@
   {
    "id": "p7s26",
    "bg": {
+    "image": "assets/pt37-bga-5.jpg",
+    "fit": "cover",
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "notes": "왼쪽은 지금 보고 있는 이 교안 전체입니다. 오른쪽은 만들면서 실제로 AI에게 한 말 중 일부입니다.\n코드는 직접 쓰지 않았습니다. 말하고, 열어 보고, 다시 말하는 것을 반복했을 뿐입니다. 이것이 「쌓은 시간」의 정체입니다.",
+   "decor": "none",
+   "elements": [
+    {
+     "id": "p7650",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 70,
+     "w": 1300,
+     "h": 40,
+     "role": "text",
+     "html": "05 · 결과물 미리보기",
+     "style": {
+      "fontSize": 26,
+      "color": "#2457D6",
+      "bold": true,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.2,
+     "dur": 0.6
+    },
+    {
+     "id": "p7651",
+     "step": 0,
+     "anim": "rise",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 112,
+     "w": 1700,
+     "h": 90,
+     "role": "title",
+     "html": "이 교안도 같은 방법으로 만들었습니다",
+     "style": {
+      "fontSize": 58,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.2,
+      "letterSpacing": -1
+     },
+     "enter": true,
+     "delay": 0.22,
+     "dur": 0.9
+    },
+    {
+     "id": "p7652",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 102,
+     "y": 292,
+     "w": 806,
+     "h": 556,
+     "shape": "rect",
+     "fill": "#1A1D24",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.34,
+     "dur": 0.6
+    },
+    {
+     "id": "p7653",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 110,
+     "y": 300,
+     "w": 790,
+     "h": 540,
+     "src": "assets/pt37-all.jpg",
+     "fit": "contain",
+     "radius": 10,
+     "shadow": false,
+     "enter": true,
+     "delay": 0.34,
+     "dur": 0.6
+    },
+    {
+     "id": "p7654",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 872,
+     "w": 790,
+     "h": 44,
+     "role": "text",
+     "html": "↑ 지금 보고 있는 이 교안 전체",
+     "style": {
+      "fontSize": 26,
+      "color": "#5B6168",
+      "bold": false,
+      "lineHeight": 1.35,
+      "align": "center"
+     },
+     "enter": true,
+     "delay": 0.72,
+     "dur": 0.6
+    },
+    {
+     "id": "p7655",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 940,
+     "y": 236,
+     "w": 870,
+     "h": 50,
+     "role": "text",
+     "html": "<b>코드는 한 줄도 직접 쓰지 않았습니다.</b> 이렇게 말했을 뿐입니다",
+     "style": {
+      "fontSize": 28,
+      "color": "#15181C",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.3,
+     "dur": 0.6
+    },
+    {
+     "id": "p7656",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 300,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.5,
+     "dur": 0.5
+    },
+    {
+     "id": "p7657",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 313,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「표지 이미지 high로 업그레이드」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.5,
+     "dur": 0.5
+    },
+    {
+     "id": "p7658",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 378,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.62,
+     "dur": 0.5
+    },
+    {
+     "id": "p7659",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 391,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「2장에 더 몰입되는 AI 모션 효과」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.62,
+     "dur": 0.5
+    },
+    {
+     "id": "p7660",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 456,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.74,
+     "dur": 0.5
+    },
+    {
+     "id": "p7661",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 469,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「이모지는 이미지로 새로 만들어 개선」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.74,
+     "dur": 0.5
+    },
+    {
+     "id": "p7662",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 534,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.86,
+     "dur": 0.5
+    },
+    {
+     "id": "p7663",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 547,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「AI가 만든 티를 없애 주세요」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.86,
+     "dur": 0.5
+    },
+    {
+     "id": "p7664",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 612,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 0.98,
+     "dur": 0.5
+    },
+    {
+     "id": "p7665",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 625,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「GitHub 공개 주소 형식도 설명」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 0.98,
+     "dur": 0.5
+    },
+    {
+     "id": "p7666",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 690,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 1.1,
+     "dur": 0.5
+    },
+    {
+     "id": "p7667",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 703,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「4장과 5장을 하나로 합쳐요」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 1.1,
+     "dur": 0.5
+    },
+    {
+     "id": "p7668",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 768,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 1.22,
+     "dur": 0.5
+    },
+    {
+     "id": "p7669",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 781,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「QR 코드는 하나만 합시다」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 1.22,
+     "dur": 0.5
+    },
+    {
+     "id": "p7670",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 940,
+     "y": 846,
+     "w": 870,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#14161B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "enter": true,
+     "delay": 1.3399999999999999,
+     "dur": 0.5
+    },
+    {
+     "id": "p7671",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 970,
+     "y": 859,
+     "w": 820,
+     "h": 40,
+     "role": "text",
+     "html": "「결과물이 어떻게 나오는지 보여 주면?」",
+     "style": {
+      "fontSize": 26,
+      "color": "#FFFFFF",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 1.3399999999999999,
+     "dur": 0.5
+    },
+    {
+     "id": "p7672",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 940,
+     "y": 936,
+     "w": 870,
+     "h": 50,
+     "role": "text",
+     "html": "<b>29장 · 그림 50여 장 · 모션 · 예시 사이트</b>까지 대화로",
+     "style": {
+      "fontSize": 28,
+      "color": "#2457D6",
+      "bold": false,
+      "lineHeight": 1.35
+     },
+     "enter": true,
+     "delay": 1.6,
+     "dur": 0.6
+    }
+   ]
+  },
+  {
+   "id": "p7s27",
+   "bg": {
     "color": "#14161B"
    },
    "transition": "fade",
@@ -14396,7 +14936,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7655",
+     "id": "p7678",
      "step": 0,
      "anim": "kenburns",
      "rotate": 0,
@@ -14414,7 +14954,7 @@
      "dur": 24
     },
     {
-     "id": "p7650",
+     "id": "p7673",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14437,7 +14977,7 @@
      "style": {}
     },
     {
-     "id": "p7656",
+     "id": "p7679",
      "step": 0,
      "anim": "float",
      "rotate": 0,
@@ -14454,7 +14994,7 @@
      "enter": true
     },
     {
-     "id": "p7657",
+     "id": "p7680",
      "step": 0,
      "anim": "float",
      "rotate": 0,
@@ -14472,7 +15012,7 @@
      "delay": 1.5
     },
     {
-     "id": "p7651",
+     "id": "p7674",
      "step": 0,
      "anim": "out",
      "rotate": 0,
@@ -14495,7 +15035,7 @@
      "dur": 1.3
     },
     {
-     "id": "p7652",
+     "id": "p7675",
      "step": 0,
      "anim": "focus",
      "rotate": 0,
@@ -14522,7 +15062,7 @@
      "dur": 2.2
     },
     {
-     "id": "p7658",
+     "id": "p7681",
      "step": 0,
      "anim": "focus",
      "rotate": 0,
@@ -14546,7 +15086,7 @@
      "dur": 1.5
     },
     {
-     "id": "p7653",
+     "id": "p7676",
      "step": 0,
      "anim": "wipe",
      "rotate": 0,
@@ -14569,7 +15109,7 @@
      "dur": 1.4
     },
     {
-     "id": "p7659",
+     "id": "p7682",
      "step": 0,
      "anim": "wipe",
      "rotate": 0,
@@ -14592,7 +15132,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7660",
+     "id": "p7683",
      "step": 0,
      "anim": "rise",
      "rotate": 0,
@@ -14616,7 +15156,7 @@
      "dur": 1.1
     },
     {
-     "id": "p7661",
+     "id": "p7684",
      "step": 0,
      "anim": "blur",
      "rotate": 0,
@@ -14639,7 +15179,7 @@
      "dur": 0.9
     },
     {
-     "id": "p7654",
+     "id": "p7677",
      "step": 0,
      "anim": "sheen",
      "rotate": 14,
@@ -14658,7 +15198,7 @@
      "dur": 1.9
     },
     {
-     "id": "p7662",
+     "id": "p7685",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14681,7 +15221,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7663",
+     "id": "p7686",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14704,7 +15244,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7664",
+     "id": "p7687",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14727,7 +15267,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7665",
+     "id": "p7688",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14750,7 +15290,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7666",
+     "id": "p7689",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14773,7 +15313,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7667",
+     "id": "p7690",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14796,7 +15336,7 @@
      "dur": 0.7
     },
     {
-     "id": "p7668",
+     "id": "p7691",
      "step": 0,
      "anim": "wipe",
      "rotate": 0,
@@ -14821,7 +15361,7 @@
    ]
   },
   {
-   "id": "p7s27",
+   "id": "p7s28",
    "bg": {
     "image": "assets/pt37-bga-6.jpg",
     "fit": "cover",
@@ -14832,7 +15372,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7669",
+     "id": "p7692",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14855,7 +15395,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7670",
+     "id": "p7693",
      "step": 0,
      "anim": "rise",
      "rotate": 0,
@@ -14879,7 +15419,7 @@
      "dur": 0.9
     },
     {
-     "id": "p7671",
+     "id": "p7694",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14902,7 +15442,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7672",
+     "id": "p7695",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14925,7 +15465,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7673",
+     "id": "p7696",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14948,7 +15488,7 @@
      "delay": 0.35
     },
     {
-     "id": "p7674",
+     "id": "p7697",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14972,7 +15512,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7675",
+     "id": "p7698",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -14996,7 +15536,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7676",
+     "id": "p7699",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15019,7 +15559,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7677",
+     "id": "p7700",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15043,7 +15583,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7678",
+     "id": "p7701",
      "step": 1,
      "anim": "shake",
      "rotate": 0,
@@ -15064,7 +15604,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7679",
+     "id": "p7702",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15085,7 +15625,7 @@
      }
     },
     {
-     "id": "p7680",
+     "id": "p7703",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15106,7 +15646,7 @@
      }
     },
     {
-     "id": "p7681",
+     "id": "p7704",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15126,7 +15666,7 @@
      "style": {}
     },
     {
-     "id": "p7682",
+     "id": "p7705",
      "step": 1,
      "anim": "fade",
      "rotate": 0,
@@ -15147,7 +15687,7 @@
      }
     },
     {
-     "id": "p7683",
+     "id": "p7706",
      "step": 2,
      "anim": "shake",
      "rotate": 0,
@@ -15168,7 +15708,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7684",
+     "id": "p7707",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15189,7 +15729,7 @@
      }
     },
     {
-     "id": "p7685",
+     "id": "p7708",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15210,7 +15750,7 @@
      }
     },
     {
-     "id": "p7686",
+     "id": "p7709",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15230,7 +15770,7 @@
      "style": {}
     },
     {
-     "id": "p7687",
+     "id": "p7710",
      "step": 2,
      "anim": "fade",
      "rotate": 0,
@@ -15251,7 +15791,7 @@
      }
     },
     {
-     "id": "p7688",
+     "id": "p7711",
      "step": 3,
      "anim": "shake",
      "rotate": 0,
@@ -15272,7 +15812,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7689",
+     "id": "p7712",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15293,7 +15833,7 @@
      }
     },
     {
-     "id": "p7690",
+     "id": "p7713",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15314,7 +15854,7 @@
      }
     },
     {
-     "id": "p7691",
+     "id": "p7714",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15334,7 +15874,7 @@
      "style": {}
     },
     {
-     "id": "p7692",
+     "id": "p7715",
      "step": 3,
      "anim": "fade",
      "rotate": 0,
@@ -15357,7 +15897,7 @@
    ]
   },
   {
-   "id": "p7s28",
+   "id": "p7s29",
    "bg": {
     "color": "#14161B"
    },
@@ -15366,7 +15906,7 @@
    "decor": "none",
    "elements": [
     {
-     "id": "p7693",
+     "id": "p7716",
      "step": 0,
      "anim": "kenburns",
      "rotate": 0,
@@ -15384,7 +15924,7 @@
      "dur": 20
     },
     {
-     "id": "p7694",
+     "id": "p7717",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15407,7 +15947,7 @@
      "style": {}
     },
     {
-     "id": "p7695",
+     "id": "p7718",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15430,7 +15970,7 @@
      "style": {}
     },
     {
-     "id": "p7696",
+     "id": "p7719",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15452,7 +15992,7 @@
      "delay": 0.2
     },
     {
-     "id": "p7697",
+     "id": "p7720",
      "step": 0,
      "anim": "rise",
      "rotate": 0,
@@ -15476,7 +16016,7 @@
      "dur": 1.0
     },
     {
-     "id": "p7698",
+     "id": "p7721",
      "step": 0,
      "anim": "blur",
      "rotate": 0,
@@ -15499,7 +16039,7 @@
      "dur": 0.8
     },
     {
-     "id": "p7699",
+     "id": "p7722",
      "step": 0,
      "anim": "zoom",
      "rotate": 0,
@@ -15522,7 +16062,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7700",
+     "id": "p7723",
      "step": 0,
      "anim": "focus",
      "rotate": 0,
@@ -15541,7 +16081,7 @@
      "dur": 0.9
     },
     {
-     "id": "p7701",
+     "id": "p7724",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
@@ -15564,7 +16104,7 @@
      "delay": 1.8
     },
     {
-     "id": "p7702",
+     "id": "p7725",
      "step": 0,
      "anim": "up",
      "rotate": 0,
@@ -15587,7 +16127,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7703",
+     "id": "p7726",
      "step": 0,
      "anim": "up",
      "rotate": 0,
@@ -15610,7 +16150,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7704",
+     "id": "p7727",
      "step": 0,
      "anim": "up",
      "rotate": 0,
@@ -15633,7 +16173,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7705",
+     "id": "p7728",
      "step": 0,
      "anim": "up",
      "rotate": 0,
@@ -15656,7 +16196,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7706",
+     "id": "p7729",
      "step": 0,
      "anim": "up",
      "rotate": 0,
@@ -15679,7 +16219,7 @@
      "dur": 0.6
     },
     {
-     "id": "p7707",
+     "id": "p7730",
      "step": 0,
      "anim": "up",
      "rotate": 0,
