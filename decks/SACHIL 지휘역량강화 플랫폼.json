@@ -187,10 +187,10 @@
      "opacity": 1,
      "type": "shape",
      "shape": "rect",
-     "x": 1190,
-     "y": 230,
+     "x": 1196,
+     "y": 48,
      "w": 610,
-     "h": 500,
+     "h": 894,
      "fill": "#ffffff",
      "stroke": "",
      "strokeWidth": 0,
@@ -206,8 +206,8 @@
      "rotate": 0,
      "opacity": 1,
      "type": "image",
-     "x": 1210,
-     "y": 250,
+     "x": 1216,
+     "y": 462,
      "w": 570,
      "h": 460,
      "src": "assets/sc-hero.webp",
@@ -223,8 +223,8 @@
      "opacity": 1,
      "type": "text",
      "role": "body",
-     "x": 1190,
-     "y": 750,
+     "x": 1196,
+     "y": 962,
      "w": 610,
      "h": 50,
      "html": "sachil47.com",
@@ -235,6 +235,22 @@
       "bold": true,
       "align": "center"
      }
+    },
+    {
+     "id": "th8r9dhst",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 1326,
+     "y": 74,
+     "w": 388,
+     "h": 388,
+     "src": "assets/clipboard-1795650894748-6hstddc.png",
+     "fit": "contain",
+     "radius": 0,
+     "shadow": false
     }
    ]
   },
@@ -10470,5 +10486,5 @@
    ]
   }
  ],
- "modified": "2026-11-07T13:16:08.939Z"
+ "modified": "2026-11-25T23:55:07.494Z"
 }
