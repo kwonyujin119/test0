@@ -1262,3 +1262,19 @@ body > .app-nav { display: none; }
   #dpvTip, #coach .co-hole, #toast { transition: none !important; }
   #coach .co-pop, .modal-bg > .modal { animation: none !important; }
 }
+
+/* 명령창 (Ctrl+K) */
+.cmdbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 41; width: 600px; max-width: calc(100% - 20px); background: var(--ui-panel); border: 1px solid var(--ui-border); border-radius: 12px; box-shadow: var(--ui-shadow); padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.cmdbar .cmdrow { display: flex; gap: 6px; align-items: center; }
+.cmdbar .cmdrow input { flex: 1; font-size: 15px; }
+.cmdbar .cmdlog { max-height: 190px; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; font-size: 13px; line-height: 1.45; }
+.cmdbar .cl { padding: 3px 8px; border-radius: 8px; }
+.cmdbar .cl.me { align-self: flex-end; background: color-mix(in srgb, var(--ui-accent, #2563eb) 14%, transparent); }
+.cmdbar .cl.ok { color: var(--ui-fg); }
+.cmdbar .cl.no { color: #B3261E; }
+.cmdbar .cl.tip { color: var(--ui-muted); }
+.cmdbar .cl .ch { display: flex; gap: 8px; margin-top: 2px; } .cmdbar .cl .ch span { flex: 0 0 130px; font-weight: 600; }
+.cmdbar .cmdchips { display: flex; flex-wrap: wrap; gap: 4px; }
+.cmdchip { font: inherit; font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ui-border); background: transparent; color: var(--ui-fg); cursor: pointer; }
+.cmdchip:hover { background: var(--ui-hover, rgba(127,127,127,.12)); }
+@media (max-width: 700px) { .cmdbar { bottom: 6px; } .cmdbar .cmdchips { display: none; } .cmdbar .cl .ch { flex-direction: column; gap: 0; } }

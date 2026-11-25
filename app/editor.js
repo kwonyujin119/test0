@@ -2834,7 +2834,7 @@
         setTimeout(() => { if (imeKey === p) { imeKey = null; onKey(p.ev); } }, 150); // 조합이 끝났다는 신호가 오지 않아도 실행
         return;
       }
-      if ((ev.ctrlKey || ev.metaKey) && /^(KeyS|KeyF|KeyH|KeyP|KeyM|Enter)$/.test(ev.code)) {
+      if ((ev.ctrlKey || ev.metaKey) && /^(KeyS|KeyF|KeyH|KeyP|KeyM|KeyK|Enter)$/.test(ev.code)) {
         ev.preventDefault();
         imeKey = { t: Date.now(), ev: { key: ev.code === 'Enter' ? 'Enter' : ev.code.slice(3).toLowerCase(), code: ev.code, keyCode: 0, isComposing: false, ctrlKey: ev.ctrlKey, metaKey: ev.metaKey, shiftKey: ev.shiftKey, altKey: ev.altKey, target: ev.target, preventDefault() { } } };
         return;
@@ -2893,6 +2893,7 @@
     /* --- 편집 (슬라이드/요소) --- */
     if (ctrl && low === 'z') { stop(); shift ? redo() : undo(); return; }
     if (ctrl && low === 'y') { stop(); redo(); return; }
+    if (ctrl && !shift && low === 'k') { stop(); showCmd(); return; } // 명령창
     if (ctrl && shift && low === 'd') { stop(); duplicateSlide(); return; }
     if (ctrl && low === 'd') { stop(); duplicateSelected(); return; }
     if (ctrl && shift && low === 'c') { stop(); copyStyle(); return; }
@@ -2944,7 +2945,7 @@
     const bg = document.createElement('div'); bg.className = 'modal-bg'; bg.id = 'kbHelp';
     bg.innerHTML = `<div class="modal kb-help"><h3>편집 단축키 <span class="muted" style="font-weight:400;font-size:13px">PowerPoint 와 같은 배치 · 전체 설명서는 <a href="shortcuts.html" target="_blank">shortcuts.html</a></span></h3>
       <div class="kb-cols">
-        <div><h4>파일 · 발표</h4>${rows([['저장', k('Ctrl+S')], ['발표 (처음부터)', k('F5')], ['발표 (현재 슬라이드부터)', k('Shift+F5')], ['인쇄 / PDF 보기', k('Ctrl+P')], ['이 도움말', k('F1') + ' ' + k('Ctrl+/')]])}
+        <div><h4>파일 · 발표</h4>${rows([['저장', k('Ctrl+S')], ['발표 (처음부터)', k('F5')], ['발표 (현재 슬라이드부터)', k('Shift+F5')], ['인쇄 / PDF 보기', k('Ctrl+P')], ['이 도움말', k('F1') + ' ' + k('Ctrl+/')], ['명령창 (문장으로 편집)', k('Ctrl+K')]])}
         <h4>슬라이드</h4>${rows([['새 슬라이드', k('Ctrl+M') + ' ' + k('Ctrl+Enter')], ['슬라이드 복제', k('Ctrl+Shift+D')], ['슬라이드 삭제', k('Ctrl+Delete')], ['이전 / 다음 슬라이드', k('PgUp') + ' / ' + k('PgDn')], ['처음 / 끝 슬라이드', k('Ctrl+Home') + ' / ' + k('Ctrl+End')], ['슬라이드 순서 위 / 아래', k('Ctrl+Shift+↑') + ' / ' + k('Ctrl+Shift+↓')]])}
         <h4>선택 · 이동</h4>${rows([['다음 / 이전 요소 선택', k('Tab') + ' / ' + k('Shift+Tab')], ['모두 선택', k('Ctrl+A')], ['여러 개 선택', k('Shift') + '+클릭 · 드래그'], ['선택 해제', k('Esc')], ['이동 10px / 1px / 50px', k('←↑↓→') + ' / ' + k('Ctrl+') + ' / ' + k('Shift+')], ['비율 유지 크기 조절', k('Shift') + '+모서리 드래그 (이미지는 기본)'], ['스냅 끄고 드래그', k('Alt') + '+드래그'], ['묶기 / 풀기', k('Ctrl+G') + ' / ' + k('Ctrl+Shift+G')], ['묶음 안 하나만 선택', k('Alt') + '+클릭'], ['개체 목록 (선택 창)', k('Alt+F10')]])}
         <h4>찾기</h4>${rows([['찾기', k('Ctrl+F')], ['바꾸기', k('Ctrl+H')]])}</div>
@@ -3695,6 +3696,183 @@
     q.focus(); q.select(); upd();
   }
 
+  /* ---- 명령창 (Ctrl+K): 한국어 문장으로 편집 · 정해진 규칙으로만 알아들음 (AI·서버 없음) ---- */
+  let cmdEl = null; const cmdHist = []; let cmdHi = 0;
+  const CMD_EX = ['3장으로 이동', '다음에 빈 장 추가', '이 장 복제', "제목을 '현장지휘'로 바꿔", '글자 크게', '굵게', '글자색 빨강', '가운데 정렬', '배경 어둡게', '이 장 숨기기', "'소방대'를 '자위소방대'로 모두 바꿔", '되돌려'];
+  const CMD_HELP = [['이동', '3장으로 이동 · 다음 장 · 이전 장 · 처음 · 마지막'], ['장', '빈 장 추가 · 5장 뒤에 제목 장 추가 · 이 장 복제 · 이 장 삭제 · 이 장 위로/아래로 · 3장을 7장 뒤로 · 숨기기/보이기'],
+    ['글 (먼저 글 상자 클릭)', '글자 크게/작게 · 크기 48 · 굵게/굵게 해제 · 기울임 · 글자색 빨강/#C93A12 · 가운데/왼쪽/오른쪽 정렬'], ['제목·바꾸기', "제목을 '현장지휘'로 바꿔 · 4장 제목을 '…'로 · 'A'를 'B'로 모두 바꿔"],
+    ['배경', '배경 어둡게/밝게 · 배경색 파랑 · 배경 테마로 · 이 배경을 모든 장에'], ['기타', '되돌려 · 다시 실행 · 저장 · 도움말 · ↑↓ 이전 명령']];
+  const KNUM = { 첫: 1, 한: 1, 하나: 1, 두: 2, 둘: 2, 세: 3, 셋: 3, 네: 4, 넷: 4, 다섯: 5, 여섯: 6, 일곱: 7, 여덟: 8, 아홉: 9, 열: 10 };
+  const CMD_COLORS = { 빨강: '#C62828', 빨간: '#C62828', 붉은: '#C62828', 파랑: '#1565C0', 파란: '#1565C0', 남색: '#1A237E', 검정: '#111111', 검은: '#111111', 까만: '#111111', 흰색: '#FFFFFF', 흰: '#FFFFFF', 하양: '#FFFFFF', 하얀: '#FFFFFF', 주황: '#C93A12', 노랑: '#F5B800', 노란: '#F5B800', 초록: '#2E7D32', 녹색: '#2E7D32', 회색: '#5E6675', 보라: '#6A1B9A' };
+  const QUOTE = /['"‘’“”「」『』]([^'"‘’“”「」『』]+)['"‘’“”「」『』]/g;
+  function cmdColor(t) {
+    const h = t.match(/#([0-9a-f]{6}|[0-9a-f]{3})\b/i); if (h) return '#' + h[1].toUpperCase();
+    const k = Object.keys(CMD_COLORS).sort((a, b) => b.length - a.length).find(k => t.includes(k)); return k ? CMD_COLORS[k] : null;
+  }
+  /* 문장 속 슬라이드 번호들 (1부터) · '이 장/현재/지금' 은 현재 장 */
+  function cmdNums(t) {
+    const out = []; const re = /(\d+|첫|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s*(?:번째|번)?\s*(?:장|쪽|슬라이드|페이지)/g; let m;
+    while ((m = re.exec(t))) out.push(/^\d+$/.test(m[1]) ? +m[1] : KNUM[m[1]]);
+    return out;
+  }
+  function cmdRun(raw) {
+    const say = (ok, msg) => ({ ok, msg });
+    let t = raw.trim().replace(/[.!~。]+$/, '').replace(/\s*(?:해\s*)?(?:주세요|줘요|줘|줄래요?|주라)\??$/, '').replace(/\s*(?:해요|하세요|해라|해|하기)$/, '').trim();
+    if (!t) return null;
+    const quotes = [...t.matchAll(QUOTE)].map(m => m[1]);
+    const k = t.replace(QUOTE, '"…"'); // 따옴표 안 글자는 명령어로 보지 않음
+    const n = S.deck.slides.length, nums = cmdNums(k), thisSlide = /이\s*장|이\s*슬라이드|현재|지금/.test(k);
+    const idx = (no) => { if (no < 1 || no > n) throw new Error(`${no}장은 없습니다 (모두 ${n}장)`); return no - 1; };
+    const tx = () => { const l = selEls().filter(e => TEXTY.includes(e.type)); if (!l.length) throw new Error('글 상자를 먼저 클릭해서 고르세요. (고른 채로 명령창에 쓰면 됩니다)'); return l; };
+    const done = (msg, all) => { commit(all ? { all: true } : undefined); renderStage(); renderProps(); updateTop(); return say(true, msg); };
+    if (S.editing) endEdit();
+
+    if (/^(도움말|도움|명령어?|\?|뭐|무엇)|할\s*수\s*있/.test(k)) return { ok: true, help: true, msg: '알아듣는 명령' };
+    if (/^(되돌려|되돌리|실행\s*취소|취소|원래대로|undo)/i.test(k)) { if (S.hi <= 0) return say(false, '되돌릴 것이 없습니다'); undo(); return say(true, '되돌렸습니다'); }
+    if (/^(다시\s*실행|다시\s*해|다시|redo)$/i.test(k)) { if (S.hi >= S.history.length - 1) return say(false, '다시 실행할 것이 없습니다'); redo(); return say(true, '다시 실행했습니다'); }
+    if (/^저장/.test(k)) { save(); return say(true, '저장합니다'); }
+
+    // 'A'를 'B'로 (모두) 바꿔 — 모든 슬라이드
+    if (quotes.length >= 2 && !/제목/.test(k.split('"…"')[0]) && /바꿔|바꾸|변경|고쳐|교체|로$/.test(k)) {
+      const [q, r] = quotes; let cnt = 0; S.deck.slides.forEach(sl => sl.elements.forEach(e => { if (elementText(e).includes(q)) cnt++; }));
+      if (!cnt) return say(false, `'${q}' 를 찾지 못했습니다`);
+      return (async () => {
+        if (cnt >= 5 && !(await uiConfirm(`'${q}' → '${r}'`, `글 상자 ${cnt}곳을 바꿉니다. 계속할까요?`, '바꾸기'))) return say(false, '바꾸지 않았습니다');
+        let m = 0; S.deck.slides.forEach(sl => sl.elements.forEach(e => { m += replaceInElement(e, q, r, false); }));
+        return done(`${m}곳을 '${r}'(으)로 바꿨습니다`, true);
+      })();
+    }
+
+    // 장 추가
+    if (/추가|넣어|삽입|만들어|새\s*장|빈\s*장/.test(k) && /장|슬라이드|페이지/.test(k)) {
+      const lay = /제목/.test(k) ? 'title' : /목차/.test(k) ? 'agenda' : /구분|간지|섹션|절/.test(k) ? 'section' : /본문|내용/.test(k) ? 'content' : /마무리|끝맺/.test(k) ? 'closing' : 'blank';
+      let after = S.cur;
+      if (/맨\s*(끝|뒤)|마지막(에|으로)/.test(k)) after = n - 1; else if (/맨\s*앞|처음(에|으로)/.test(k)) after = -1;
+      else if (nums.length) { const i = idx(nums[0]); after = /앞/.test(k) ? i - 1 : i; } else if (/앞/.test(k)) after = S.cur - 1;
+      addSlide(lay, after);
+      return say(true, `${S.cur + 1}장에 ${({ blank: '빈', title: '제목', agenda: '목차', section: '구분', content: '본문', closing: '마무리' })[lay]} 장을 넣었습니다`);
+    }
+
+    // 제목 바꾸기
+    if (/제목/.test(k) && (quotes.length || /(으로|로)(\s*(바꿔|바꾸|변경|고쳐|수정))?$/.test(k))) {
+      let v = quotes[0]; if (!v) { const m = t.match(/제목(?:을|를|은|는)?\s*(.+?)\s*(?:으로|로)(?:\s*(?:바꿔|바꾸기|변경|고쳐|수정))?$/); v = m && m[1]; }
+      if (!v) return say(false, "새 제목을 따옴표로 써 주세요. 예: 제목을 '현장지휘'로 바꿔");
+      const si = nums.length ? idx(nums[0]) : S.cur; if (si !== S.cur) gotoSlide(si);
+      const s = curSlide(); const e = s.elements.find(x => x.type === 'text' && (x.role === 'title' || x.role === 'heading')) || s.elements.find(x => x.type === 'text');
+      if (!e) return say(false, `${si + 1}장에는 글 상자가 없습니다`);
+      e.html = esc(v); S.sel = [e.id]; return done(`${si + 1}장 제목 → '${v}'`);
+    }
+
+    // 장 순서
+    const mv = k.match(/(\d+|이)\s*(?:장|슬라이드)?(?:을|를)?\s*(\d+)\s*(?:장|슬라이드)\s*(뒤|다음|앞)/);
+    if (mv && /옮|이동|보내|뒤로|앞으로|다음으로/.test(k)) {
+      const from = mv[1] === '이' ? S.cur : idx(+mv[1]), to = idx(+mv[2]); if (from === to) return say(false, '같은 장입니다');
+      const s = S.deck.slides[from], tg = S.deck.slides[to]; S.deck.slides.splice(from, 1);
+      const at = S.deck.slides.indexOf(tg) + (mv[3] === '앞' ? 0 : 1); S.deck.slides.splice(at, 0, s); S.cur = at; S.sel = []; S.ssel = [s.id];
+      commit({ all: true }); renderStage(); renderProps(); updateTop(); thumbsEl.children[S.cur]?.scrollIntoView({ block: 'nearest' }); return say(true, `${from + 1}장 → ${at + 1}번째 자리`);
+    }
+    if (/(장|슬라이드).*(위로|앞으로)|^위로|^앞으로/.test(k) && /옮|이동|올려|보내|위로|앞으로/.test(k)) { if (nums.length) gotoSlide(idx(nums[0])); if (S.cur === 0) return say(false, '이미 맨 앞입니다'); moveSlide(-1); return say(true, `${S.cur + 1}번째 자리로 올렸습니다`); }
+    if (/(장|슬라이드).*(아래로|뒤로)|^아래로|^뒤로/.test(k) && /옮|이동|내려|보내|아래로|뒤로/.test(k)) { if (nums.length) gotoSlide(idx(nums[0])); if (S.cur === n - 1) return say(false, '이미 맨 뒤입니다'); moveSlide(1); return say(true, `${S.cur + 1}번째 자리로 내렸습니다`); }
+
+    // 복제 · 삭제 · 숨기기
+    if (/복제|복사|하나\s*더/.test(k)) { if (nums.length) gotoSlide(idx(nums[0])); const from = S.cur + 1; duplicateSlide(); return say(true, `${from}장을 복제해 ${S.cur + 1}장에 넣었습니다`); }
+    if (/삭제|지워|지우|없애/.test(k)) {
+      if (/장|슬라이드|페이지/.test(k)) {
+        const si = nums.length ? idx(nums[0]) : S.cur;
+        return (async () => {
+          if (si !== S.cur && !(await uiConfirm(`${si + 1}장을 지울까요?`, `「${slideTitle(S.deck.slides[si]).slice(0, 30)}」`, '지우기', true))) return say(false, '지우지 않았습니다');
+          gotoSlide(si); S.ssel = [curSlide().id]; deleteSlide(); return say(true, `${si + 1}장을 지웠습니다 (되돌려 로 복구)`);
+        })();
+      }
+      if (S.sel.length) { const c = S.sel.length; deleteSelected(); return say(true, `고른 개체 ${c}개를 지웠습니다`); }
+      return say(false, "무엇을 지울지 모르겠습니다. 예: '이 장 삭제' 또는 개체를 고른 뒤 '지워'");
+    }
+    if (/숨겨|숨기|가려|안\s*보이게/.test(k)) { if (nums.length) gotoSlide(idx(nums[0])); if (curSlide().hidden) return say(false, '이미 숨긴 장입니다'); toggleHideSlide(); return say(true, `${S.cur + 1}장을 숨겼습니다 (발표 때 건너뜀)`); }
+    if (/보이게|보이기|숨김\s*해제|드러내/.test(k)) { if (nums.length) gotoSlide(idx(nums[0])); if (!curSlide().hidden) return say(false, '숨긴 장이 아닙니다'); toggleHideSlide(); return say(true, `${S.cur + 1}장을 다시 보이게 했습니다`); }
+
+    // 배경
+    if (/배경/.test(k)) {
+      const s = curSlide(), img = s.bg && s.bg.image;
+      if (/모든|전체|전부|모두/.test(k)) {
+        return (async () => { if (!(await uiConfirm('이 배경을 모든 장에 적용할까요?', `${n}장의 배경이 바뀝니다. 되돌려 로 복구할 수 있습니다.`, '적용'))) return say(false, '적용하지 않았습니다'); doAct('bgAll'); return say(true, `${n}장에 같은 배경을 적용했습니다`); })();
+      }
+      if (/테마|원래|기본/.test(k)) { s.bg = null; return done('배경을 테마 기본으로 돌렸습니다'); }
+      if (/어둡|어둡게|다크|진하게/.test(k)) { if (img) { s.bg.dim = Math.min(0.8, Math.round(((s.bg.dim || 0) + 0.3) * 10) / 10); return done(`배경 사진을 어둡게 (${Math.round(s.bg.dim * 100)}%)`); } s.bg = { color: '#15181C' }; return done("배경을 어둡게 했습니다 · 글자가 안 보이면 '글자색 흰색'"); }
+      if (/밝|환하게/.test(k)) { if (img) { s.bg.dim = Math.max(0, Math.round(((s.bg.dim || 0) - 0.3) * 10) / 10); return done(`배경 사진을 밝게 (${Math.round(s.bg.dim * 100)}%)`); } s.bg = { color: '#FFFFFF' }; return done('배경을 흰색으로 했습니다'); }
+      const c = cmdColor(k); if (c) { s.bg = { color: c }; return done(`배경색 ${c}`); }
+      return say(false, '배경을 어떻게 할까요? 예: 배경 어둡게 · 배경색 파랑 · 배경 테마로');
+    }
+
+    // 글 서식 (고른 글 상자)
+    if (/정렬|맞춰|맞춤/.test(k) && /가운데|중앙|왼쪽|좌측|오른쪽|우측/.test(k)) { tx(); const a = /가운데|중앙/.test(k) ? 'center' : /왼쪽|좌측/.test(k) ? 'left' : 'right'; setAlign(a); return say(true, ({ center: '가운데', left: '왼쪽', right: '오른쪽' })[a] + ' 정렬'); }
+    if (/굵게|볼드|진하게|두껍게/.test(k)) { const v = !/해제|빼|풀|없애|얇게|취소/.test(k); for (const e of tx()) { e.style = e.style || {}; e.style.bold = v; } return done(v ? '굵게' : '굵게 해제'); }
+    if (/기울|이탤릭/.test(k)) { const v = !/해제|빼|풀|없애|바로|취소/.test(k); for (const e of tx()) { e.style = e.style || {}; e.style.italic = v; } return done(v ? '기울임' : '기울임 해제'); }
+    { const m = k.match(/(\d+)\s*(?:px|픽셀|포인트|pt)?/i);
+      if (m && /크기|px|픽셀|포인트|pt/i.test(k) && !/장|슬라이드/.test(k)) { const v = clamp(+m[1], 8, 400); for (const e of tx()) { e.style = e.style || {}; e.style.fontSize = v; } return done(`글자 크기 ${v}`); } }
+    if (/크게|키워|키우|크기\s*업/.test(k)) { tx(); const d = /조금|약간|살짝/.test(k) ? 2 : /많이|훨씬|아주|확/.test(k) ? 12 : 4; fontSizeStep(d); return say(true, `글자 크게 (+${d})`); }
+    if (/작게|줄여|줄이/.test(k)) { tx(); const d = /조금|약간|살짝/.test(k) ? 2 : /많이|훨씬|아주|확/.test(k) ? 12 : 4; fontSizeStep(-d); return say(true, `글자 작게 (−${d})`); }
+    { const c = cmdColor(k); if (c && /색|글자|글씨|으로|로|칠/.test(k)) { for (const e of tx()) { e.style = e.style || {}; e.style.color = c; } return done(`글자색 ${c}`); } }
+
+    // 이동 (마지막: 다른 명령에 걸리지 않은 'N장')
+    if (/다음\s*(장|슬라이드|페이지)|^다음$/.test(k)) { if (S.cur >= n - 1) return say(false, '마지막 장입니다'); gotoSlide(S.cur + 1); return say(true, `${S.cur + 1}장`); }
+    if (/이전\s*(장|슬라이드|페이지)|앞\s*장|^이전$/.test(k)) { if (S.cur <= 0) return say(false, '첫 장입니다'); gotoSlide(S.cur - 1); return say(true, `${S.cur + 1}장`); }
+    if (/^(처음|맨\s*앞|첫\s*장)/.test(k)) { gotoSlide(0); return say(true, '1장'); }
+    if (/^(마지막|맨\s*(끝|뒤)|끝\s*장)/.test(k)) { gotoSlide(n - 1); return say(true, `${n}장`); }
+    if (nums.length) { gotoSlide(idx(nums[0])); return say(true, `${S.cur + 1}장 · ${slideTitle(curSlide()).slice(0, 24)}`); }
+    if (thisSlide) return say(false, '이 장을 어떻게 할까요? 예: 이 장 복제 · 이 장 삭제 · 이 장 숨기기');
+    return null;
+  }
+  function cmdSuggest(t) {
+    const bi = (s) => { const o = new Set(); for (let i = 0; i < s.length - 1; i++) o.add(s.slice(i, i + 2)); return o; }; const a = bi(t.replace(/\s/g, ''));
+    return CMD_EX.map(x => { const b = bi(x.replace(/\s/g, '')); let c = 0; a.forEach(g => { if (b.has(g)) c++; }); return [c, x]; }).sort((p, q) => q[0] - p[0]).slice(0, 3).map(p => p[1]);
+  }
+  function cmdAdd(cls, html) {
+    const log = cmdEl.querySelector('.cmdlog'); const d = document.createElement('div'); d.className = 'cl ' + cls; d.innerHTML = html; log.appendChild(d);
+    while (log.children.length > 12) log.firstChild.remove(); log.scrollTop = log.scrollHeight;
+  }
+  async function cmdExec(text) {
+    const inp = cmdEl.querySelector('#cmdq'); text = text.trim(); if (!text) return;
+    cmdHist.push(text); if (cmdHist.length > 50) cmdHist.shift(); cmdHi = cmdHist.length;
+    cmdAdd('me', esc(text));
+    let r; try { r = await cmdRun(text); } catch (e) { r = { ok: false, msg: e.message }; }
+    if (r && r.help) { cmdAdd('ok', '<b>알아듣는 명령</b>' + CMD_HELP.map(([h, d]) => `<div class="ch"><span>${esc(h)}</span>${esc(d)}</div>`).join('')); inp.value = ''; return; }
+    if (!r) { cmdAdd('no', '알아듣지 못했습니다. 이렇게 써 보세요: ' + cmdSuggest(text).map(x => `<button class="cmdchip" type="button">${esc(x)}</button>`).join(' ')); return; }
+    cmdAdd(r.ok ? 'ok' : 'no', (r.ok ? '✓ ' : '') + esc(r.msg)); if (r.ok) inp.value = '';
+    inp.focus();
+  }
+  function showCmd() {
+    if (S.editing) endEdit();
+    if (cmdEl) { cmdEl.querySelector('#cmdq').focus(); return; }
+    cmdEl = document.createElement('div'); cmdEl.className = 'cmdbar'; cmdEl.setAttribute('role', 'dialog'); cmdEl.setAttribute('aria-label', '명령창');
+    cmdEl.innerHTML = `<div class="cmdlog" aria-live="polite"><div class="cl tip">문장으로 편집합니다 · 정해진 명령만 알아듣습니다 (<button class="cmdchip" type="button">도움말</button>)</div></div>
+      <div class="cmdrow"><input id="cmdq" type="text" autocomplete="off" enterkeyhint="send" placeholder="예: 3장 제목을 '현장지휘'로 바꿔" aria-label="명령"><button class="btn sm primary" id="cmdgo">실행</button><button class="btn sm icon ghost" id="cmdx" title="닫기 (Esc)" aria-label="명령창 닫기">${icon('x', 16)}</button></div>
+      <div class="cmdchips">${CMD_EX.slice(0, 9).map(x => `<button class="cmdchip" type="button">${esc(x)}</button>`).join('')}</div>`;
+    main.appendChild(cmdEl);
+    const inp = cmdEl.querySelector('#cmdq');
+    const close = () => { cmdEl.remove(); cmdEl = null; $('btnCmd') && $('btnCmd').classList.remove('active'); };
+    $('btnCmd') && $('btnCmd').classList.add('active');
+    cmdEl.addEventListener('mousedown', (ev) => { if (ev.target.closest('.cmdchip,button')) ev.preventDefault(); }); // 단추를 눌러도 입력칸 초점·고른 개체 유지
+    cmdEl.addEventListener('click', (ev) => {
+      const c = ev.target.closest('.cmdchip'); if (!c) return;
+      if (c.textContent === '도움말') { cmdExec('도움말'); return; }
+      inp.value = c.textContent; inp.focus(); const q = inp.value.search(/'[^']+'/); if (q >= 0) inp.setSelectionRange(q + 1, inp.value.indexOf("'", q + 1)); // 따옴표 안을 골라 두어 바로 고쳐 쓰게
+    });
+    inp.addEventListener('keydown', (ev) => {
+      ev.stopPropagation();
+      if (ev.key === 'Enter' && !ev.isComposing && ev.keyCode !== 229) { ev.preventDefault(); cmdExec(inp.value); return; }
+      if (ev.key === 'Escape') { close(); return; }
+      if (ev.key === 'ArrowUp' && !ev.isComposing && cmdHist.length) { ev.preventDefault(); cmdHi = Math.max(0, cmdHi - 1); inp.value = cmdHist[cmdHi]; return; }
+      if (ev.key === 'ArrowDown' && !ev.isComposing && cmdHist.length) { ev.preventDefault(); cmdHi = Math.min(cmdHist.length, cmdHi + 1); inp.value = cmdHist[cmdHi] || ''; return; }
+      const c = ev.ctrlKey || ev.metaKey, l = ev.key.toLowerCase();
+      if (c && !inp.value && (l === 'z' || l === 'y')) { ev.preventDefault(); if (l === 'y' || ev.shiftKey) redo(); else undo(); return; } // 입력칸이 비었으면 교안 되돌리기
+      if (c && l === 's') { ev.preventDefault(); save(); return; }
+      if (c && l === 'k') { ev.preventDefault(); close(); }
+    });
+    cmdEl.querySelector('#cmdgo').onclick = () => cmdExec(inp.value);
+    cmdEl.querySelector('#cmdx').onclick = close;
+    inp.focus();
+  }
+
   /* ---- 개체 목록 (Alt+F10) ---- */
   let layersOn = false;
   const TYPE_ICON = { text: icon('text', 15), image: icon('image', 15), shape: icon('shape', 15), table: icon('table', 15), chart: icon('chart', 15), math: '∑', embed: '▶' };
@@ -3898,6 +4076,7 @@
   };
   $('btnGroup').onclick = () => { const els = selEls(); if (els.length > 1 && els.every(e => e.group && e.group === els[0].group)) ungroupSel(); else groupSel(); };
   $('btnFind').onclick = () => showFind(false);
+  $('btnCmd').onclick = () => { if (cmdEl) cmdEl.querySelector('#cmdx').click(); else showCmd(); };
   $('btnLayers').onclick = toggleLayers;
   $('btnDesign').onclick = showDesign;
 
