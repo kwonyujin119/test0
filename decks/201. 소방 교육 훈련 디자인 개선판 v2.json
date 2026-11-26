@@ -4578,7 +4578,7 @@
      "shadow": false,
      "enter": true,
      "delay": 0.2,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "d2r012",
@@ -13573,7 +13573,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 1.0
+     "delay": 1
     },
     {
      "id": "d2r068",
@@ -14088,7 +14088,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 0.4
     },
     {
@@ -14113,7 +14113,7 @@
       "valign": "middle"
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 0.4
     },
     {
