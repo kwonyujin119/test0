@@ -725,7 +725,7 @@ const PPTX = (() => {
   }
 
   /* 화면 효과 이름 → PowerPoint 에서 가장 가까운 효과 (흐림 · 반짝임 · 계속 도는 움직임은 PowerPoint 에 없어 '서서히' 로) */
-  const ANIM_PPT = { none: 'appear', fade: 'fade', wipe: 'wipe', rise: 'up', up: 'up', down: 'down', left: 'left', right: 'right', zoom: 'zoom', pop: 'pop', spin: 'zoom', focus: 'zoom', kenburns: 'grow', blur: 'fade', type: 'wipe', sheen: 'fade', scan: 'fade', glow: 'fade', float: 'fade', cycle4: 'fade' };
+  const ANIM_PPT = { none: 'appear', fade: 'fade', wipe: 'wipe', rise: 'up', up: 'up', down: 'down', left: 'left', right: 'right', zoom: 'zoom', pop: 'pop', spin: 'zoom', focus: 'zoom', count: 'up', words: 'up', kenburns: 'grow', blur: 'fade', type: 'wipe', sheen: 'fade', scan: 'fade', glow: 'fade', float: 'fade', cycle4: 'fade' };
   /* ---------- 클릭 단계(나타나기·사라지기) + 자동 등장 + 영상 재생 ---------- */
   function timing(anim, vids) {
     if (!anim.length && !vids.length) return '';

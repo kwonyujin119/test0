@@ -618,12 +618,57 @@ function normalizeDeck(d) {
   }
   return d;
 }
-const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen'];
+const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-count', 'anim-countdown', 'anim-words', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen'];
 const ANIM_KEEP = ['kenburns', 'float', 'scan', 'cycle4']; // 계속 움직이는 효과: 다음 클릭에도 멈추지 않음
 const ANIM_INTRO = ['out', 'sheen']; // 발표 화면에서 장이 열릴 때 한 번만 쓰는 효과
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
+/* 숫자 움직이기: 'count' 0 → 값으로 올라가기, 'countdown' 값 → 0 실제 시간(초)으로 내려가기. 글자 안 첫 숫자만 바꾸고 끝나면 원래 글자로 */
+function stopCount(node) {
+  const c = node._cnt; if (!c) return;
+  cancelAnimationFrame(c.raf); clearTimeout(c.to); c.tn.nodeValue = c.orig; node._cnt = null;
+}
+function runCount(node, e, down) {
+  stopCount(node);
+  const w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); let tn, m;
+  while ((tn = w.nextNode())) { m = /\d[\d,]*(?:\.\d+)?/.exec(tn.nodeValue); if (m) break; }
+  if (!tn || !m) return;
+  const orig = tn.nodeValue, raw = m[0], comma = raw.includes(','), dec = (raw.split('.')[1] || '').length, target = parseFloat(raw.replace(/,/g, ''));
+  if (!isFinite(target) || target <= 0) return;
+  const fmt = (v) => { let t = v.toFixed(dec); if (comma) { const [a, b] = t.split('.'); t = a.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (b ? '.' + b : ''); } return t; };
+  const put = (v) => { tn.nodeValue = orig.slice(0, m.index) + fmt(v) + orig.slice(m.index + raw.length); };
+  const c = node._cnt = { tn, orig, raf: 0, to: 0 };
+  const dur = down ? target * 1000 : (+e.dur || 1.6) * 1000, delay = down ? 0 : (+e.delay || 0) * 1000;
+  put(down ? target : 0);
+  c.to = setTimeout(() => {
+    const t0 = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / dur);
+      put(down ? Math.ceil(target * (1 - t) - 1e-9) : (dec ? target * (1 - Math.pow(1 - t, 3)) : Math.round(target * (1 - Math.pow(1 - t, 3)))));
+      if (t < 1) c.raf = requestAnimationFrame(tick); else if (!down) { tn.nodeValue = orig; node._cnt = null; }
+    };
+    c.raf = requestAnimationFrame(tick);
+  }, delay);
+}
+/* 단어씩 떠오르기(키네틱 타이포): 글자를 단어 단위 조각으로 나눠 차례로 (한 번만 나눔) */
+function splitWords(node, e) {
+  if (node._kw) return;
+  node._kw = true; let k = 0;
+  const step = Math.min(0.14, 1.1 / Math.max(1, (node.textContent.match(/\S+/g) || []).length)), base = +e.delay || 0;
+  const w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), list = [];
+  while (w.nextNode()) if (w.currentNode.nodeValue.trim()) list.push(w.currentNode);
+  for (const tn of list) {
+    const frag = document.createDocumentFragment();
+    for (const part of tn.nodeValue.split(/(\s+)/)) {
+      if (!part) continue;
+      if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); continue; }
+      const sp = document.createElement('span'); sp.className = 'kw'; sp.textContent = part; sp.style.animationDelay = (base + k++ * step).toFixed(2) + 's'; frag.appendChild(sp);
+    }
+    tn.parentNode.replaceChild(frag, tn);
+  }
+}
 function applyStepToNode(e, node, step, back) {
   const s = e.step || 0;
+  stopCount(node);
   node.classList.remove('step-hidden', ...ANIM_CLASSES);
   node.style.animationDuration = e.dur ? e.dur + 's' : '';
   node.style.animationDelay = e.delay ? e.delay + 's' : '';
@@ -635,6 +680,8 @@ function applyStepToNode(e, node, step, back) {
   else if (s === 0 && e.enter && e.anim && e.anim !== 'none' && (step === 0 || ANIM_KEEP.includes(e.anim))) node.classList.add('anim', 'anim-' + e.anim); // 장이 열릴 때 바로 (클릭 없이)
   // 여는 장면 전용(막 걷기 · 반짝임): 장이 처음 열릴 때만 — 다음 클릭이나 뒤로 왔을 때는 숨김 (막이 화면을 덮지 않게)
   if (e.po && e.enter && ANIM_INTRO.includes(e.anim) && !node.classList.contains('anim')) { node.classList.add('step-hidden'); return; }
+  if (e.type === 'text' && node.classList.contains('anim-words')) splitWords(node, e);
+  if (e.type === 'text' && (node.classList.contains('anim-count') || node.classList.contains('anim-countdown'))) runCount(node, e, node.classList.contains('anim-countdown'));
   if (e.type === 'text' && e.listSteps) {
     const inner = node.querySelector('.el-text-inner'); if (!inner) return;
     const base = listStepBase(e);
