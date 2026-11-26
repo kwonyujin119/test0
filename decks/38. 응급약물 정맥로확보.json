@@ -730,7 +730,7 @@
      "h": 828,
      "url": "bigvideo/kwonyujin119/test0/video-mwwr6t4c3lav/3-4194304-9976537/인트로-6t4cj2p.mp4",
      "radius": 0,
-     "autoplay": false,
+     "autoplay": true,
      "posterOf": "bigvideo/kwonyujin119/test0/video-mwwr6t4c3lav/3-4194304-9976537/인트로-6t4cj2p.mp4",
      "poster": "assets/인트로-poster-6t3x3ji.jpg",
      "enter": true,
@@ -1071,7 +1071,7 @@
      "h": 799,
      "url": "assets/구급차_IV-6t6zzks.mp4",
      "radius": 0,
-     "autoplay": false,
+     "autoplay": true,
      "posterOf": "assets/구급차_IV-6t6zzks.mp4",
      "poster": "assets/구급차_IV-poster-6t6vvkq.jpg",
      "enter": true,
@@ -13241,7 +13241,7 @@
      "h": 922,
      "url": "assets/에피펜-6tiy323.mp4",
      "radius": 0,
-     "autoplay": false,
+     "autoplay": true,
      "posterOf": "assets/에피펜-6tiy323.mp4",
      "poster": "assets/에피펜-poster-6titpyz.jpg",
      "enter": true,
@@ -14366,7 +14366,7 @@
      "h": 710,
      "url": "assets/독도추모영상_편집본_내장-6tk8gg5.mp4",
      "radius": 0,
-     "autoplay": false,
+     "autoplay": true,
      "posterOf": "assets/독도추모영상_편집본_내장-6tk8gg5.mp4",
      "poster": "assets/독도추모영상_편집본_내장-poster-6tjzowr.jpg",
      "enter": true,
@@ -14616,5 +14616,5 @@
   "title": "#3F3F3F",
   "fg": "#222222"
  },
- "modified": "2026-11-26T00:54:08.583Z"
+ "modified": "2026-11-26T01:00:41.822Z"
 }
