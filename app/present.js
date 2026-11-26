@@ -210,6 +210,11 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
   }
   /* 끝난 애니메이션의 흔적 지우기 (원 모양으로 자른 그림·그림자가 다음 클릭 때까지 풀려 보이던 문제) */
   pstage.addEventListener('animationend', (ev) => { const n = ev.target; if (n.classList && n.classList.contains('anim') && !n.classList.contains('anim-out') && !n.classList.contains('anim-sheen') && !n.classList.contains('anim-kenburns') && !n.classList.contains('anim-float') && !n.classList.contains('anim-scan') && !n.classList.contains('anim-cycle4')) n.classList.remove(...ANIM_CLASSES); });
+  /* 카운트다운이 0이 되면: 장 설정 autoNext 가 있으면 잠깐(암흑) 멈췄다가 다음 장으로 */
+  pstage.addEventListener('countdown-end', () => {
+    const i = st.idx, sl = slideOf(i); if (!sl.autoNext) return;
+    setTimeout(() => { if (st.idx !== i || st.ended) return; const j = nextVisible(i, 1); if (j < N) show(j, 0, 1); }, (+sl.autoNextDelay || 1.5) * 1000);
+  });
   const firstVisible = () => { const j = visible(0) ? 0 : nextVisible(0, 1); return j < N ? j : 0; };
   const lastVisible = () => { const j = visible(N - 1) ? N - 1 : nextVisible(N - 1, -1); return j >= 0 ? j : N - 1; };
   function updateHud() {
