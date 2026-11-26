@@ -73,7 +73,8 @@
   <!-- 입장 뒤: 작업장 고르기 (순서는 늘 같게) -->
   <main id="space" hidden>
     <div class="ws-grid">
-      <article class="ws-card" data-ws="doc">
+      <article class="ws-card" data-ws="doc" data-spot>
+        <div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-doc.webp" alt="" width="960" height="640" decoding="async"></div>
         <div class="card-top"><div class="ws-ico" aria-hidden="true">D</div><h2><a class="card-link" href="hangul.html">DOCUMENT</a></h2></div>
         <p class="desc" data-admin>설치 없이 · 한글과 같은 단축키 · hwpx 그대로 저장</p>
         <p class="desc" data-guest>hwpx 문서를 열어 보고 인쇄합니다.</p>
@@ -81,14 +82,16 @@
         <a class="resume-link empty" id="hwpResume"><span class="rl-text"><span class="rl-title">저장하지 않고 닫은 문서가 없습니다</span></span></a>
         <span class="go" aria-hidden="true">DOCUMENT 열기<i data-ic="arrowRight"></i></span>
       </article>
-      <article class="ws-card" data-ws="pres">
+      <article class="ws-card" data-ws="pres" data-spot>
+        <div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-pres.webp" alt="" width="960" height="640" decoding="async"></div>
         <div class="card-top"><div class="ws-ico" aria-hidden="true">P</div><h2><a class="card-link" href="gyoan.html">PRESENTATION</a></h2></div>
         <p class="desc">강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
         <div class="stat" id="deckStat">교안 목록을 읽는 중…</div>
         <a class="resume-link empty" id="deckResume"><span class="rl-text"><span class="rl-title">최근 교안을 찾는 중…</span></span></a>
         <span class="go" aria-hidden="true">PRESENTATION 열기<i data-ic="arrowRight"></i></span>
       </article>
-      <article class="ws-card" data-ws="video">
+      <article class="ws-card" data-ws="video" data-spot>
+        <div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-video.webp" alt="" width="960" height="640" decoding="async"></div>
         <div class="card-top"><div class="ws-ico" aria-hidden="true">V</div><h2><a class="card-link" href="videos.html">VIDEO</a></h2></div>
         <p class="desc">강의 영상을 자르고 자막을 넣습니다. 파일은 이 기기에서만 처리합니다.</p>
         <div class="stat" id="videoStat">컷 편집 · 화면 녹화 · 자동 자막</div>
@@ -133,7 +136,13 @@
   function secretCard() {
     const old = $('secretCard'); if (old) old.remove();
     if (!Access.isAdmin) return;
-    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card" id="secretCard" data-ws="secret"><div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div><p class="desc">투자 원칙 점검 · 시장 브리핑 · AI 어시스턴트</p><span class="go" aria-hidden="true">SECRET 열기${icon('arrowRight')}</span></article>`);
+    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card" id="secretCard" data-ws="secret" data-spot><div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-secret.webp" alt="" width="960" height="640" decoding="async"></div><div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div><p class="desc">투자 원칙 점검 · 시장 브리핑 · AI 어시스턴트</p><div class="stat" id="secStat">투자 기록을 읽는 중…</div><a class="resume-link empty" id="secResume"><span class="rl-text"><span class="rl-title">수익 엔진 점검</span></span></a><span class="go" aria-hidden="true">SECRET 열기${icon('arrowRight')}</span></article>`);
+    /* 이 기기에 저장된 SECRET 기록을 읽기만 함: 관심 종목 · 매매 일지 수, 수익 엔진 상태(절반 · 중지) */
+    const rd = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+    const w = rd('sec:watch'), j = rd('sec:journal'), dot = (() => { try { return localStorage.getItem('dpv:dot:secret') || ''; } catch (e) { return ''; } })();
+    const nw = w && Array.isArray(w.items) ? w.items.length : 0, hold = w && Array.isArray(w.items) ? w.items.filter(x => +x.qty > 0).length : 0, nj = Array.isArray(j) ? j.length : 0;
+    $('secStat').textContent = nw || nj ? `관심 · 보유 ${nw}종목${hold ? ` (보유 ${hold})` : ''} · 매매 일지 ${nj}건` : '관심 종목 · 매매 일지가 아직 없습니다';
+    resume('secResume', 'secret.html#engine', '수익 엔진', dot === 'stop' ? '새 매매 중지 상태 — 원인부터 점검' : dot === 'half' ? '새 매매 크기 절반 — 규칙 점검' : '오늘 규칙 · 비중 · 낙폭 점검', 'chart');
   }
   $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
   $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };
