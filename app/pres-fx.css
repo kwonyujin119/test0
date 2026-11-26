@@ -1,0 +1,222 @@
+/* PRESENTATION 몰입 연출 — 발표 화면(present.html) · 교안 목록(gyoan.html) · 편집기(editor.html)
+   근거: 0번 교안 「UI - UX - PT증강 효과」 순위. 1장 1위 콜드 오픈 · 2위 진행 표시 · 3위 구역 큰 번호, 2장 1위 하나씩 나타나기 · 3위 페이드,
+   6장 4위 카드 반응 · 5위 진행 막대 · 7위 누름 반응, 7장 7위 짝 토의 · 2위 실습(시간 재기). 21~25위(떠다니기 · 파티클 · 글리치 · 오로라 · 3D 기울기 · 그레인)는 쓰지 않음.
+   규칙: 슬라이드 자체(slide.css · renderSlide)는 건드리지 않고 바깥 틀만. transform · opacity 만 움직이고, 움직임 줄이기 설정이면 모두 멈춤. */
+
+/* ============================ 발표 화면 ============================ */
+body.pf { --pf-acc: var(--ws-dot, #e28452); --pf-ink: rgba(23,24,27,.88); }
+body.pf .pbar { display: none; } /* 구역별 진행 막대(.pf-track)가 대신함 */
+
+/* 아래 진행 막대: 칸 = 구역, 칸 너비 = 장 수. 어느 바탕에서도 보이게 중간 회색, 지금 구역만 작업장 색 */
+.pf-track { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; gap: 3px; height: 3px; pointer-events: none; transition: transform .2s var(--ease); transform-origin: bottom; }
+.pf-track .sg { position: relative; flex: 1 1 0; min-width: 4px; overflow: hidden; background: rgba(150,152,158,.32); }
+.pf-track .sg i { position: absolute; inset: 0; transform-origin: left center; transform: scaleX(0); background: rgba(196,198,204,.9); transition: transform .45s var(--ease); }
+.pf-track .sg.cur i { background: var(--pf-acc); }
+body.pf-awake .pf-track { transform: scaleY(1.67); }
+body.pf-bar-off .pf-track { display: none; }
+
+/* 조작 막대: 마우스를 움직이면 아래 가운데에서 떠오름 (메뉴와 같이 2.5초 뒤 사라짐) */
+.pf-dock { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); z-index: 60; display: flex; align-items: center; gap: 2px; max-width: calc(100vw - 24px); padding: 4px; border-radius: 14px; background: var(--pf-ink); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 14px 40px rgba(0,0,0,.5); color: #eeeef0; opacity: 0; transform: translate(-50%, 10px); pointer-events: none; transition: opacity .2s ease, transform .25s var(--ease); cursor: default; }
+body.pf-awake .pf-dock, .pf-dock:hover, .pf-dock:focus-within { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+body.pf-dock-off .pf-dock { display: none; }
+body.present .pmenu:hover { cursor: default; }
+/* 암전 중에는 막대를 감추고(청중에게 보이는 것은 검은 화면뿐), 끝 화면에서는 끝 화면만 */
+body.pf-coldon .pf-dock, body.pf-coldon .pf-track, .pend.show ~ .pf-dock, .pend.show ~ .pf-track, .pend.show ~ .pf-cue { display: none; }
+body.pf.pf-awake:not(.pf-dock-off) .pnum:not(.keep) { opacity: 0; } /* 조작 막대에 같은 번호가 있음 */
+.pf-b { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: none; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #eeeef0; cursor: pointer; transition: background-color .12s, transform .1s; }
+.pf-b:hover { background: rgba(255,255,255,.12); }
+.pf-b:active { transform: scale(.94); }
+.pf-b:focus-visible, .pf-sec:focus-visible, .pf-time:focus-visible { outline: 2px solid var(--pf-acc); outline-offset: 1px; }
+.pf-b.on { background: color-mix(in srgb, var(--pf-acc) 30%, transparent); color: #ffd9c2; }
+.pf-pos { display: flex; align-items: baseline; gap: 4px; padding: 0 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pf-pos b { font-size: 15px; font-weight: 700; min-width: 2ch; text-align: right; }
+.pf-pos span { font-size: 13px; color: rgba(238,238,240,.62); }
+.pf-pos em { font-style: normal; font-size: 12px; color: #fde68a; margin-left: 2px; }
+.pf-pos em:empty { display: none; }
+.pf-sep { width: 1px; height: 20px; margin: 0 4px; background: rgba(255,255,255,.14); flex: none; }
+.pf-secs { display: flex; align-items: center; gap: 3px; min-width: 0; }
+.pf-sec { display: inline-flex; align-items: center; gap: 6px; height: 28px; min-width: 32px; padding: 0 9px; border: 0; border-radius: 999px; background: rgba(255,255,255,.07); color: rgba(238,238,240,.6); font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; transition: background-color .15s, color .15s; }
+.pf-sec b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pf-sec .t { display: none; max-width: 180px; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.pf-sec:hover { background: rgba(255,255,255,.16); color: #fff; }
+.pf-sec.past { color: rgba(238,238,240,.86); background: rgba(255,255,255,.12); }
+.pf-sec.cur { background: var(--pf-acc); color: #1d1007; }
+.pf-sec.cur .t { display: inline; }
+.pf-tools { display: flex; align-items: center; gap: 2px; }
+.pf-time { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: #eeeef0; font: inherit; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; cursor: pointer; }
+.pf-time:hover { background: rgba(255,255,255,.12); }
+.pf-time .ico { color: rgba(238,238,240,.62); }
+.pf-time small { font-size: 12px; color: rgba(238,238,240,.7); }
+.pf-time.warn, .pf-time.warn small { color: #fcd34d; }
+.pf-time.over, .pf-time.over small { color: #ff8a65; }
+.pf-time.paused span { opacity: .55; }
+
+/* 구역 안내: 건너뛰어 다른 구역에 들어왔을 때 아래 왼쪽에 잠깐 */
+.pf-cue { position: fixed; left: 24px; bottom: 26px; z-index: 21; display: flex; align-items: center; gap: 10px; max-width: min(560px, calc(100vw - 48px)); padding: 10px 16px 10px 12px; border-radius: 12px; background: var(--pf-ink); box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 10px 30px rgba(0,0,0,.4); color: #f4f4f6; opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .25s ease, transform .3s var(--ease); }
+.pf-cue.show { opacity: 1; transform: none; }
+.pf-cue b { display: inline-grid; place-items: center; min-width: 34px; height: 28px; padding: 0 8px; border-radius: 8px; background: var(--pf-acc); color: #1d1007; font-size: 14px; font-variant-numeric: tabular-nums; }
+.pf-cue span { font-size: 17px; font-weight: 700; letter-spacing: -.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf-cue em { font-style: normal; font-size: 12px; color: rgba(238,238,240,.62); white-space: nowrap; }
+body.pf-awake .pf-cue { transform: translateY(-60px); } /* 조작 막대와 겹치지 않게 */
+body.pf-awake .pf-cue:not(.show) { transform: translateY(-52px); }
+
+/* 콜드 오픈: 검은 화면 → 첫 클릭에 0.9초 동안 걷힘 */
+.pf-cold { position: fixed; inset: 0; z-index: 43; background: #000; display: flex; align-items: flex-end; justify-content: center; padding: 0 20px max(8vh, 40px); cursor: pointer; transition: opacity .9s ease; }
+.pf-cold.go { opacity: 0; pointer-events: none; }
+.pf-cold .hint { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; color: rgba(255,255,255,.62); font-size: 15px; line-height: 1.5; word-break: keep-all; transition: opacity .6s ease; }
+.pf-cold .hint b { color: #fff; font-weight: 600; }
+.pf-cold .hint .sub { font-size: 13px; color: rgba(255,255,255,.42); }
+.pf-cold .hint kbd { display: inline-block; min-width: 20px; padding: 0 5px; border-radius: 4px; border: 1px solid rgba(255,255,255,.22); color: rgba(255,255,255,.8); font: inherit; font-size: 12px; line-height: 18px; text-align: center; }
+.pf-cold.quiet .hint { opacity: 0; }
+body.hide-cursor .pf-cold { cursor: none; }
+
+/* 작은 창: 연출 설정 · 타이머 고르기 */
+.pf-pop { position: fixed; z-index: 70; width: max-content; max-width: min(360px, calc(100vw - 16px)); padding: 8px; border-radius: 14px; background: rgba(23,24,27,.96); box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 18px 48px rgba(0,0,0,.55); color: #eeeef0; animation: pf-pop .16s var(--ease); cursor: default; }
+@keyframes pf-pop { from { opacity: 0; transform: translateY(4px) scale(.98); } }
+.pf-pop-h { display: flex; flex-direction: column; gap: 2px; padding: 6px 8px 8px; font-size: 14px; font-weight: 700; }
+.pf-pop-h small { font-size: 12px; font-weight: 400; color: rgba(238,238,240,.6); }
+.pf-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 8px; border-radius: 10px; cursor: pointer; }
+.pf-row:hover { background: rgba(255,255,255,.07); }
+.pf-row input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--pf-acc); flex: none; }
+.pf-row span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pf-row b { font-size: 14px; font-weight: 600; }
+.pf-row small { font-size: 12px; line-height: 1.5; color: rgba(238,238,240,.62); word-break: keep-all; }
+.pf-cd-opts { display: flex; gap: 4px; padding: 0 2px 2px; }
+.pf-cd-opts button { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 58px; padding: 10px 8px 9px; border: 0; border-radius: 10px; background: rgba(255,255,255,.07); color: #fff; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color .12s, transform .1s; }
+.pf-cd-opts button:hover, .pf-cd-opts button:focus-visible { background: color-mix(in srgb, var(--pf-acc) 34%, transparent); outline: 0; }
+.pf-cd-opts button:active { transform: scale(.95); }
+.pf-cd-opts kbd { font: inherit; font-size: 11px; font-weight: 500; color: rgba(238,238,240,.55); }
+
+/* 토의 · 실습 타이머: 처음엔 가운데 크게, 1.8초 뒤 왼쪽 위로 작게 (transform 만) */
+.pf-cd { position: fixed; left: 20px; top: 20px; z-index: 42; display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 7px; border-radius: 999px; background: rgba(15,16,18,.88); box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 10px 30px rgba(0,0,0,.45); color: #fff; cursor: pointer; transform-origin: center; transition: transform .55s var(--ease), background-color .2s; }
+.pf-cd[hidden] { display: none; }
+.pf-cd.big { transform: translate(calc(50vw - 50% - 20px), calc(50vh - 50% - 20px)) scale(2.4); }
+.pf-cd .ring { width: 38px; height: 38px; flex: none; transform: rotate(-90deg); }
+.pf-cd .ring circle { fill: none; stroke-width: 3.2; }
+.pf-cd .ring .bg { stroke: rgba(255,255,255,.16); }
+.pf-cd .ring .fg { stroke: var(--pf-acc); stroke-linecap: round; transition: stroke-dashoffset .25s linear; }
+.pf-cd .v { min-width: 3.2ch; font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.pf-cd .l { font-size: 12px; color: rgba(255,255,255,.62); white-space: nowrap; }
+.pf-cd .x { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: rgba(255,255,255,.62); cursor: pointer; }
+.pf-cd .x:hover { background: rgba(255,255,255,.14); color: #fff; }
+.pf-cd.big { padding: 7px 14px 7px 7px; }
+.pf-cd.big .x, .pf-cd.big .l { display: none; }
+.pf-cd.paused .v { opacity: .55; }
+.pf-cd.low .v { color: #fcd34d; }
+.pf-cd.done { background: var(--pf-acc); }
+.pf-cd.done .v { color: #1d1007; font-size: 20px; }
+.pf-cd.done .l, .pf-cd.done .x { color: rgba(29,16,7,.72); }
+.pf-cd.done .ring .bg { stroke: rgba(29,16,7,.2); }
+.pf-cd.done:not(.big) { animation: pf-beat .5s ease-in-out 2; }
+@keyframes pf-beat { 50% { transform: scale(1.08); } }
+body.hide-cursor .pf-cd { cursor: none; }
+
+/* 끝 화면: 감사 · 오늘 다룬 것 · Q&A (청중용), 그 아래 발표자용 시간 기록과 단추 — 하나씩 나타남 */
+.pend .pf-end { display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: min(960px, 92vw); text-align: center; word-break: keep-all; }
+.pf-end-k { color: var(--pf-acc); font-size: 14px; font-weight: 700; letter-spacing: .06em; }
+.pf-end-t { color: #f4f4f6; font-size: clamp(48px, 8vw, 112px); font-weight: 800; line-height: 1.04; letter-spacing: -.035em; }
+.pf-end-d { color: #a9acb4; font-size: clamp(16px, 1.7vw, 22px); line-height: 1.4; }
+.pf-recap:empty { display: none; }
+.pf-recap { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 10px; }
+.pf-recap-l { color: #8e929a; font-size: 13px; font-weight: 600; }
+.pf-recap-c { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.pf-recap-c span { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 6px; border-radius: 999px; background: rgba(255,255,255,.07); color: #e6e7ea; font-size: 15px; font-weight: 600; }
+.pf-recap-c span b { display: inline-grid; place-items: center; min-width: 28px; height: 26px; padding: 0 6px; border-radius: 999px; background: rgba(255,255,255,.1); color: var(--pf-acc); font-size: 13px; font-variant-numeric: tabular-nums; }
+.pf-qa { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; padding: 10px 20px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); color: #eeeef0; font-size: 18px; font-weight: 600; }
+.pf-qa .ico { color: var(--pf-acc); }
+.pf-end-me { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.1); min-width: min(520px, 86vw); }
+.pend.show .pf-end > * { animation: pf-up .45s var(--ease) both; }
+.pend.show .pf-end > :nth-child(2) { animation-delay: .07s; }
+.pend.show .pf-end > :nth-child(3) { animation-delay: .14s; }
+.pend.show .pf-end > :nth-child(4) { animation-delay: .24s; }
+.pend.show .pf-end > :nth-child(5) { animation-delay: .32s; }
+.pend.show .pf-end > :nth-child(6) { animation-delay: .44s; }
+@keyframes pf-up { from { opacity: 0; transform: translateY(12px); } }
+
+@media (max-width: 760px), (pointer: coarse) {
+  .pf-wide { display: none !important; }
+  .pf-dock { bottom: max(12px, env(safe-area-inset-bottom)); }
+  .pf-b { width: 44px; height: 44px; }
+  .pf-sec { height: 36px; }
+  .pf-time { height: 44px; padding: 0 8px; }
+  .pf-cue { left: 12px; bottom: 16px; }
+  .pf-cd { left: 12px; top: 12px; }
+}
+@media (max-width: 560px) {
+  .pf-secs .pf-sec:not(.cur) { display: none; } /* 휴대폰: 지금 구역만 */
+  .pf-sec .t { max-width: 96px; }
+  .pf-time small { display: none; }
+  .pf-cd.big { transform: translate(calc(50vw - 50% - 12px), calc(50vh - 50% - 12px)) scale(1.7); }
+  .pf-end-me .pend-a { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-track, .pf-track .sg i, .pf-dock, .pf-cue, .pf-cold, .pf-cold .hint, .pf-cd, .pf-cd .ring .fg, .pf-b, .pf-cd-opts button { transition: none !important; }
+  .pf-pop, .pend.show .pf-end > *, .pf-cd.done:not(.big) { animation: none !important; }
+  body.pf-awake .pf-track { transform: none; }
+}
+
+/* ============================ 교안 목록 ============================ */
+/* 맨 위 그림 배너: 그림이 제자리로 내려앉고(한 번), 아래 줄에 지금 현황 */
+.hub > .ws-hero img.ok { animation: pf-settle .9s var(--ease) both; }
+@keyframes pf-settle { from { transform: scale(1.04); } }
+.ws-hero .wh-s { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; }
+.ws-hero .wh-s:empty { display: none; }
+.ws-hero .wh-s span { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 999px; background: color-mix(in srgb, var(--ui-panel) 72%, transparent); box-shadow: inset 0 0 0 1px var(--ws-line, var(--ui-border)); color: var(--ui-fg); font-size: var(--fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ws-hero .wh-s span i { width: 6px; height: 6px; border-radius: 50%; background: var(--ws-dot, var(--ui-accent)); }
+@media (min-width: 821px) { .hub > .ws-hero { height: 132px; } }
+@media (max-width: 820px) { .ws-hero .wh-s { display: none; } }
+
+/* 이어서: 표지 위 큰 [발표] 단추 + 마지막으로 본 장에서 이어 발표 */
+.resume-main { position: relative; }
+.pf-playwrap { position: absolute; left: 50%; top: 50%; z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0; transform: translate(-50%, -50%) scale(.96); transition: opacity .16s, transform .2s var(--ease); }
+.resume-main:hover .pf-playwrap, .resume-main:focus-within .pf-playwrap { opacity: 1; transform: translate(-50%, -50%); }
+.pf-play { display: inline-flex; align-items: center; gap: 8px; height: 52px; padding: 0 22px 0 18px; border: 0; border-radius: 999px; background: rgba(16,17,19,.84); color: #fff; font: inherit; font-size: var(--fs-md); font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.35); cursor: pointer; transition: background-color .15s, transform .1s; }
+.pf-play .ico { width: 20px; height: 20px; fill: currentColor; }
+.pf-play:hover { background: #9c4512; } /* 작업장 진한 색 (두 테마 모두 흰 글자 대비 6:1 이상) */
+.pf-cont { height: 34px; padding: 0 14px; border: 0; border-radius: 999px; background: rgba(255,255,255,.94); color: #16171a; font: inherit; font-size: var(--fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; box-shadow: 0 6px 18px rgba(0,0,0,.25); cursor: pointer; transition: transform .1s; }
+.pf-cont:hover { background: #fff; }
+.pf-play:active, .pf-cont:active { transform: scale(.96); }
+.pf-play:focus-visible, .pf-cont:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
+@media (hover: none) { .pf-playwrap { opacity: 1; transform: translate(-50%, -50%); } .pf-play { height: 46px; } }
+
+/* 카드: 마우스를 올리면 슬라이드 몇 장을 넘겨 보여 줌 (위쪽 눈금 = 몇 번째 장) · 단추는 아래로 내려 그림을 가리지 않게 */
+@media (hover: hover) and (pointer: fine) { /* (터치 화면은 ui.css 가 단추를 늘 보여 줌) */
+  .deck-grid:not(.list) .deck-hover { align-items: flex-end; justify-content: flex-start; padding: 10px; background: linear-gradient(180deg, transparent 52%, rgba(10,11,12,.62)); }
+  .deck-grid:not(.list) .deck-hover .btn { height: 32px; }
+}
+.pf-pv { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.pf-pv .fr { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease; overflow: hidden; }
+.pf-pv .fr.on { opacity: 1; }
+.pf-pv .fr .slide { pointer-events: none; }
+.pf-pvbar { position: absolute; left: 8px; right: 8px; top: 7px; z-index: 4; display: flex; gap: 3px; pointer-events: none; }
+.pf-pvbar i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.42); box-shadow: 0 0 0 .5px rgba(0,0,0,.18); }
+.pf-pvbar i.on { background: #fff; }
+.pf-pvno { position: absolute; right: 8px; top: 15px; z-index: 4; padding: 1px 7px; border-radius: 999px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; font-variant-numeric: tabular-nums; pointer-events: none; }
+/* 폴더 표지: 겹쳐 놓은 종이 두 장 (폴더인 것이 한눈에) */
+.folder-card .folder-thumb { overflow: visible; }
+.folder-card .folder-thumb::before, .folder-card .folder-thumb::after { content: ''; position: absolute; left: 10px; right: 10px; z-index: -1; border-radius: 8px; background: color-mix(in srgb, var(--ui-border2, #c9cbd1) 55%, var(--ui-panel2)); box-shadow: 0 0 0 1px rgba(var(--ui-tint), .1); transition: transform .2s var(--ease); }
+.folder-card .folder-thumb::before { top: -6px; bottom: 6px; left: 16px; right: 16px; opacity: .55; }
+.folder-card .folder-thumb::after { top: -3px; bottom: 3px; opacity: .85; }
+.folder-card .folder-thumb .folder-mosaic { border-radius: 8px; overflow: hidden; background: var(--ui-panel2); }
+.folder-card { isolation: isolate; }
+@media (hover: hover) {
+  .folder-card:hover .folder-thumb::before { transform: translateY(-3px); }
+  .folder-card:hover .folder-thumb::after { transform: translateY(-1.5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub > .ws-hero img.ok { animation: none; }
+  .pf-playwrap, .pf-play, .pf-pv .fr, .folder-card .folder-thumb::before, .folder-card .folder-thumb::after { transition: none; }
+}
+
+/* ============================ 편집기 ============================ */
+/* 장 목록: 누르면 살짝 눌리고, 끄는 동안은 들린 장이 흐려지며, 놓일 자리는 위 · 아래 선으로 */
+.ed .thumb { transition: box-shadow .1s, transform .12s var(--ease), opacity .12s; }
+.ed .thumb:active { transform: scale(.97); }
+.ed .thumb.pf-lift { opacity: .4; transform: scale(.96); }
+.ed .thumb.dragover.pf-after { box-shadow: 0 3px 0 0 var(--ui-accent); }
+/* 저장 완료: 저장 단추가 잠깐 ✓ 저장됨 으로 바뀜 (토스트와 함께) */
+#btnSave.pf-saved { color: var(--ui-ok-fg); background: var(--ui-ok-bg); border-color: var(--ui-ok-border); }
+#btnSave.pf-saved .ico { color: var(--ui-ok-fg); animation: pf-check .32s var(--ease); }
+@keyframes pf-check { from { transform: scale(.4); opacity: 0; } }
+.ed-top .savestate.pf-just { color: var(--ui-ok-fg); }
+@media (prefers-reduced-motion: reduce) { .ed .thumb, .ed .thumb:active, .ed .thumb.pf-lift { transition: none; transform: none; } #btnSave.pf-saved .ico { animation: none; } }

@@ -1,5 +1,7 @@
 /* 교안 편집기 */
 'use strict';
+/* 연출 스타일(app/pres-fx.css): 페이지 머리에 아직 연결되지 않았으면 여기서 붙임 (이미 있으면 그대로) */
+if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="app/pres-fx.css">');
 (async function () {
   const $ = (id) => document.getElementById(id);
   const S = { name: '', deck: null, cur: 0, sel: [], ssel: [], focus: 'stage', editing: null, k: 1, zoomMode: 'fit', history: [], hi: -1, dirty: false, rev: 0, clip: null, slideClip: null };
@@ -126,15 +128,26 @@
     else { S.savedSnap = null; draftPut(); } // 저장하는 동안 더 고친 것: 임시 작업본의 출발점을 방금 저장본으로
     showSaveState();
   }
+  /* 저장 완료 표시: 저장 단추가 1.4초 동안 「✓ 저장됨」 (토스트와 함께 · 다음 저장을 누르면 바로 원래대로) */
+  let flashT = 0, flashHtml = null;
+  function endFlash() { const b = $('btnSave'); clearTimeout(flashT); if (flashHtml != null && b) { b.innerHTML = flashHtml; b.classList.remove('pf-saved'); } flashHtml = null; const ss = $('saveState'); if (ss) ss.classList.remove('pf-just'); }
+  function flashSaved() {
+    const b = $('btnSave'); if (!b || S.dirty) return; endFlash();
+    const ok = icon('save').replace(/<svg([^>]*)>[\s\S]*<\/svg>/, '<svg$1><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>'); // ✓ (아이콘 틀은 공통 icon() 그대로)
+    flashHtml = b.innerHTML; b.classList.add('pf-saved'); b.innerHTML = '<i data-ic="check">' + ok + '</i>저장됨';
+    const ss = $('saveState'); if (ss) ss.classList.add('pf-just');
+    flashT = setTimeout(endFlash, 1400);
+  }
   async function save1() {
     if (S.deletedElsewhere && !confirm('이 교안은 목록에서 삭제되었습니다. 저장하면 같은 이름으로 다시 만들어집니다.\n저장할까요?')) return;
+    endFlash();
     const sb = $('btnSave'), sbHtml = sb.innerHTML; sb.disabled = true; sb.innerHTML = API.mode === 'github' ? '저장 중… (몇 초)' : '저장 중…';
     const r0 = S.rev; // 저장하는 동안(GitHub 은 몇 초) 더 고친 내용은 '저장 안 됨' 으로 남김
-    let retry = false;
+    let retry = false, savedOk = false;
     try {
       if (!(await okToOverwrite())) { saveAgain = false; draftPut(); toast('저장하지 않았습니다 — 내 작업은 이 기기에 임시로 남아 있습니다', 4500); return; }
       await API.save(S.name, S.deck);
-      afterSaved(r0);
+      afterSaved(r0); savedOk = true;
       const up = BIGV.pct();
       if (up != null) toast(`저장했습니다 — 영상은 아직 올리는 중입니다 (${up}%). 다 올라갈 때까지 이 창을 닫지 마세요`, 5000);
       else toast(API.mode === 'local' ? '저장했습니다 — 이 브라우저 안에만 저장됩니다 (다른 기기에서는 보이지 않습니다)' : `저장했습니다 (${WHERE[API.mode]})`, API.mode === 'local' ? 4500 : 2200);
@@ -154,6 +167,7 @@
         alert('저장하지 못했습니다: ' + msg + '\n\n고친 내용은 이 기기에 임시로 남아 있습니다.\n연결을 확인한 뒤 다시 [저장] 을 눌러 주세요.');
       }
     } finally { sb.disabled = false; sb.innerHTML = sbHtml; }
+    if (savedOk) flashSaved();
     const again = saveAgain && S.dirty; saveAgain = false;
     if (retry || again) { saving = null; return save(); }
   }
@@ -612,6 +626,7 @@
   const thumbIO = 'IntersectionObserver' in window ? new IntersectionObserver(ents => {
     for (const en of ents) if (en.isIntersecting) { const t = en.target; thumbIO.unobserve(t); if (t._draw) t._draw(); }
   }, { root: thumbsEl, rootMargin: '600px 0px' }) : null;
+  let thumbDragFrom = null; // 장 목록에서 끌고 있는 장 번호 (놓일 자리 선을 위 · 아래로)
   function makeThumb(s, i) {
     const t = document.createElement('div'); t.className = 'thumb' + (i === S.cur ? ' active' : '') + (S.ssel.includes(s.id) && i !== S.cur ? ' multi' : '') + (s.hidden ? ' hid' : ''); t.dataset.i = i; t.draggable = true;
     t.style.aspectRatio = SLIDE_W + ' / ' + SLIDE_H;
@@ -636,11 +651,12 @@
       gotoSlide(i);
     };
     t.oncontextmenu = (ev) => { ev.preventDefault(); S.focus = 'thumbs'; if (!S.ssel.includes(S.deck.slides[i].id)) gotoSlide(i); else gotoSlide(i, true); showMenu(ev.clientX, ev.clientY, slideMenuItems()); };
-    t.ondragstart = (ev) => { if (!S.ssel.includes(S.deck.slides[i].id)) gotoSlide(i); ev.dataTransfer.setData('text/slide', String(i)); ev.dataTransfer.effectAllowed = 'move'; };
-    t.ondragover = (ev) => { if (ev.dataTransfer.types.includes('text/slide')) { ev.preventDefault(); t.classList.add('dragover'); } };
-    t.ondragleave = () => t.classList.remove('dragover');
+    t.ondragstart = (ev) => { if (!S.ssel.includes(S.deck.slides[i].id)) gotoSlide(i); ev.dataTransfer.setData('text/slide', String(i)); ev.dataTransfer.effectAllowed = 'move'; thumbDragFrom = i; t.classList.add('pf-lift'); };
+    t.ondragend = () => { thumbDragFrom = null; t.classList.remove('pf-lift'); };
+    t.ondragover = (ev) => { if (ev.dataTransfer.types.includes('text/slide')) { ev.preventDefault(); t.classList.add('dragover'); t.classList.toggle('pf-after', thumbDragFrom != null && i > thumbDragFrom); } }; // 아래로 옮기면 이 장 뒤에 놓임 → 선도 아래에
+    t.ondragleave = () => t.classList.remove('dragover', 'pf-after');
     t.ondrop = (ev) => {
-      ev.preventDefault(); t.classList.remove('dragover');
+      ev.preventDefault(); t.classList.remove('dragover', 'pf-after'); thumbDragFrom = null;
       const from = parseInt(ev.dataTransfer.getData('text/slide'), 10); if (isNaN(from) || from === i) return;
       // 함께 잡은 슬라이드는 묶어서 옮김 (순서는 그대로)
       const moving = S.deck.slides.filter(x => S.ssel.includes(x.id)); if (!moving.length) moving.push(S.deck.slides[from]);
@@ -2661,8 +2677,9 @@
     let slideCss, uiCss, commonJs, presentJs, timeJs;
     try { [slideCss, uiCss, commonJs, presentJs, timeJs] = await Promise.all(['app/slide.css', 'app/ui.css', 'app/common.js', 'app/present.js', 'app/prestime.js'].map(u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ' (' + r.status + ')'); return r.text(); }))); }
     catch (err) { alert('HTML 파일을 만들지 못했습니다: 프로그램 파일을 읽을 수 없습니다 (' + err.message + ')\n서버(또는 사이트)로 연 화면에서 다시 해 주세요.'); return; }
+    const fxCss = await fetch('app/pres-fx.css').then(r => r.ok ? r.text() : '').catch(() => ''); // 발표 화면 연출(조작 막대 · 진행 막대 · 끝 화면) — 없으면 빼고 만듦
     const json = JSON.stringify(deck).replace(/<\/script/gi, '<\\/script');
-    const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(deck.title)}</title><style>${slideCss}\n${uiCss}</style></head><body class="present"><script>window.EMBEDDED_DECK=${json};<\/script><script>${commonJs}<\/script><script>${timeJs}<\/script><script>${presentJs}<\/script></body></html>`;
+    const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(deck.title)}</title><style>${slideCss}\n${uiCss}\n${fxCss}</style></head><body class="present"><script>window.EMBEDDED_DECK=${json};<\/script><script>${commonJs}<\/script><script>${timeJs}<\/script><script>${presentJs}<\/script></body></html>`;
     download(S.name + '.html', html, 'text/html');
     const vnote = vlocal ? ` · 동영상 파일 ${vlocal}개는 담기지 않습니다 (HTML 파일 옆에 assets 폴더를 함께 두어야 재생)` : vids ? ` · 동영상 파일 ${vids}개는 인터넷이 있어야 재생됩니다` : '';
     toast((lost ? `HTML 파일을 내려받았습니다 — 이미지 ${lost}개는 넣지 못했습니다 (그 그림은 인터넷이 있어야 보입니다)` : 'HTML 파일을 내려받았습니다') + vnote, lost || vnote ? 6000 : 2600);

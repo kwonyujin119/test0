@@ -1,5 +1,7 @@
 /* 허브: 교안 목록 */
 'use strict';
+/* 연출 스타일(app/pres-fx.css): 페이지 머리에 아직 연결되지 않았으면 여기서 붙임 (이미 있으면 그대로) */
+if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="app/pres-fx.css">');
 (async function () {
   await API.init();
   const $ = (id) => document.getElementById(id);
@@ -350,6 +352,7 @@
       if (!GUEST) { const b = document.createElement('button'); b.className = 'folder-new'; b.type = 'button'; b.innerHTML = `${icon('folderPlus', 22)}<span>새 폴더</span><small>교안을 끌어다 넣어 정리합니다</small>`; b.onclick = newFolder; fgrid.appendChild(b); }
     }
 
+    heroStats();
     const none = loadedOnce && !list.length && !hero && !(grouped && folders.length);
     empty.style.display = none ? '' : 'none';
     if (none) {
@@ -368,7 +371,8 @@
   }
 
   function renderResume(d) {
-    resume.innerHTML = `<div class="resume-main deck-thumb loading" tabindex="0" role="link" aria-label="${esc(d.title)} ${GUEST ? '발표' : '편집'}"></div>
+    const lp = lastPresented(d.name), cont = lp && !lp.done && lp.i > 0 && lp.i < (lp.n || Infinity) ? lp.i : 0;
+    resume.innerHTML = `<div class="resume-main deck-thumb loading" tabindex="0" role="link" aria-label="${esc(d.title)} ${GUEST ? '발표' : '편집'}"><div class="pf-playwrap"><button class="pf-play" type="button" data-pfplay title="처음부터 발표 (새 창)">${icon('play', 20)}발표</button>${cont ? `<button class="pf-cont" type="button" data-pfcont title="지난번 발표를 멈춘 ${cont + 1}번 슬라이드부터 이어서 발표">${cont + 1}장부터 이어서</button>` : ''}</div></div>
       <div class="resume-side">
         <div class="eyebrow">${GUEST ? '최근 교안' : '이어서 작업'}</div>
         <h2 class="resume-title">${esc(d.title)}</h2>
@@ -381,11 +385,12 @@
           <button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(d.title)} 더 보기">${icon('dots')}</button>`}
         </div>
       </div>`;
-    const meta = () => { const m = resume.querySelector('[data-m]'), t = relTime(timeOf(d)); m.textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', t ? t + ' 저장' : ''].filter(Boolean).join(' · '); m.title = fmtWhen(d.modified) ? '마지막으로 저장한 때: ' + fmtWhen(d.modified) : ''; };
+    const run = lastRun(d.name);
+    const meta = () => { const m = resume.querySelector('[data-m]'), t = relTime(timeOf(d)); m.textContent = [d.slides !== '' ? `슬라이드 ${d.slides}장` : '', t ? t + ' 저장' : '', run ? `지난 발표 ${fmtDur(run.total)}` : ''].filter(Boolean).join(' · '); m.title = fmtWhen(d.modified) ? '마지막으로 저장한 때: ' + fmtWhen(d.modified) : ''; };
     meta();
     const main = resume.querySelector('.resume-main');
-    main.onclick = () => openEditor(d.name);
-    main.onkeydown = (ev) => { if (ev.key === 'Enter') openEditor(d.name); };
+    main.onclick = (ev) => { if (ev.target.closest('[data-pfplay]')) { openPresent(d.name); return; } if (ev.target.closest('[data-pfcont]')) { openPresent(d.name, cont); return; } openEditor(d.name); };
+    main.onkeydown = (ev) => { if (ev.key === 'Enter' && ev.target === main) openEditor(d.name); };
     if (!GUEST) resume.querySelector('[data-go=edit]').onclick = () => openEditor(d.name);
     resume.querySelector('[data-go=present]').onclick = () => openPresent(d.name);
     if (!GUEST) resume.querySelector('[data-more]').onclick = (ev) => actionMenu(ev.currentTarget, d, main);
@@ -450,6 +455,7 @@
       if (d.partial) { body.querySelector('.deck-title').textContent = d.title; body.querySelector('.deck-meta').innerHTML = meta(); }
       if (!deck.slides || !deck.slides.length) { th.classList.remove('loading'); return; }
       drawSlide(th, deck.slides[0], deck);
+      if (PEEK) hoverPreview(th, d, c);
     }).catch(() => { th.classList.remove('loading'); th.classList.add('broken'); if (d.partial) body.querySelector('.deck-meta').innerHTML = meta('내용을 읽지 못했습니다'); }); // 목록에는 있는데 열 수 없는 교안 (연결 끊김 · 파일 손상)
     c.addEventListener('click', (ev) => {
       const more = ev.target.closest('[data-more]'); if (more) { actionMenu(more, d, c); return; }
@@ -460,6 +466,50 @@
     c.appendChild(body);
     pressMenu(c, d, c);
     return c;
+  }
+
+  /* ---------- 카드 미리보기: 마우스를 0.5초 올려 두면 표지 뒤의 슬라이드 몇 장(고르게 5장)을 차례로 넘겨 보여 줌 ----------
+     마우스가 있는 기기만 · 움직임 줄이기 설정이면 끔 · 목록 보기 · 끌어다 놓는 중에는 하지 않음. 마우스를 떼면 바로 표지로 */
+  const PEEK = matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function hoverPreview(th, d, c) {
+    let live = false, tm = 0, pv = null;
+    const stop = () => { live = false; clearTimeout(tm); if (pv) { pv.remove(); pv = null; } th.querySelectorAll('.pf-pvbar, .pf-pvno').forEach(x => x.remove()); };
+    th.addEventListener('mouseenter', () => { if (grid.classList.contains('list') || document.body.classList.contains('deck-dragging') || c.classList.contains('busy')) return; live = true; clearTimeout(tm); tm = setTimeout(run, 500); });
+    th.addEventListener('mouseleave', stop); th.addEventListener('mousedown', stop); c.addEventListener('dragstart', stop);
+    async function run() {
+      let deck; try { deck = await loadDeck(d); } catch (e) { return; }
+      if (!live || !th.isConnected || pv) return;
+      const vis = (deck.slides || []).map((s, i) => ({ s, i })).filter(x => !x.s.hidden);
+      if (vis.length < 2) return;
+      const K = Math.min(5, vis.length - 1), picks = [];
+      for (let k = 1; k <= K; k++) { const p = vis[Math.round(k * (vis.length - 1) / K)]; if (!picks.includes(p)) picks.push(p); }
+      pv = document.createElement('div'); pv.className = 'pf-pv'; th.insertBefore(pv, th.querySelector('.deck-hover'));
+      const bar = document.createElement('div'); bar.className = 'pf-pvbar'; bar.innerHTML = '<i class="on"></i>' + picks.map(() => '<i></i>').join(''); th.appendChild(bar);
+      const no = document.createElement('div'); no.className = 'pf-pvno'; no.hidden = true; th.appendChild(no);
+      const frames = []; let n = 0;
+      const step = () => {
+        if (!live || !pv) return;
+        n = (n + 1) % (picks.length + 1); // 0 = 표지
+        if (n && !frames[n]) { const fr = document.createElement('div'); fr.className = 'fr'; const sl = renderSlide(picks[n - 1].s, deck, { mode: 'thumb' }); fr.appendChild(sl); pv.appendChild(fr); fitSlide(fr, sl); frames[n] = fr; }
+        requestAnimationFrame(() => frames.forEach((f, j) => f && f.classList.toggle('on', j === n)));
+        bar.querySelectorAll('i').forEach((x, j) => x.classList.toggle('on', j <= n));
+        no.textContent = n ? `${picks[n - 1].i + 1} / ${deck.slides.length}` : '';
+        no.hidden = !n;
+        tm = setTimeout(step, n ? 1100 : 900);
+      };
+      step();
+    }
+  }
+  /* 발표 화면이 이 브라우저에 남긴 것: 마지막으로 본 장 (이어서 발표) · 지난 발표 시간 */
+  function lastPresented(name) { try { const v = JSON.parse(localStorage.getItem('pres:last:' + name) || 'null'); return v && typeof v.i === 'number' && Date.now() - (v.at || 0) < 30 * 864e5 ? v : null; } catch (e) { return null; } }
+  function lastRun(name) { try { const r = JSON.parse(localStorage.getItem('pres:runs:' + name) || 'null'); return Array.isArray(r) && r[0] && r[0].total ? r[0] : null; } catch (e) { return null; } }
+  function fmtDur(sec) { sec = Math.round(sec || 0); const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s = sec % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); }
+  /* 맨 위 그림 배너의 현황 줄: 교안 수 · 이번 주 저장 · 마지막 발표 */
+  function heroStats() {
+    const el = $('heroStats'); if (!el || !loadedOnce) return;
+    const all = visDecks(), wk = all.filter(inWeek).length;
+    let lastAt = 0; for (const x of all) { const r = lastRun(x.name); if (r && r.at > lastAt) lastAt = r.at; }
+    el.innerHTML = [`<span><i></i>교안 ${all.length}개</span>`, wk ? `<span>이번 주 저장 ${wk}개</span>` : '', lastAt ? `<span>마지막 발표 ${esc(relTime(lastAt))}</span>` : ''].join('');
   }
 
   /* ---------- 길게 누르기(휴대폰) · 오른쪽 클릭(PC) · 메뉴 키(Shift+F10) → 같은 메뉴 ---------- */
