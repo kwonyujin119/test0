@@ -30,7 +30,7 @@ python3 tools/gpt-image/server.py --cli "벚꽃 아래 소풍 가는 어린이�
 | 항목 | 값 |
 |---|---|
 | size | 자유(16의 배수, 긴 변<3840, 비율≤3:1). 예: 1024x1024 · 1536x864(16:9) · 1024x1536 · 2560x1440(2K) |
-| quality | low · medium(기본) · high · xhigh · max · auto |
+| quality | low(기본) · medium · high · xhigh · max · auto |
 | n | 1~4 |
 | background | auto · transparent · opaque (투명은 png/webp) |
 | output_format | png(기본) · webp · jpeg |
