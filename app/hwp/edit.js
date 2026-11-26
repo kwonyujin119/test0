@@ -1345,3 +1345,29 @@ function replaceAll(q, rep, opts) {
   edit(first, last, work);
   return count;
 }
+
+/* 첫 쪽 미리보기 그림: 쪽 보기 화면의 1쪽을 SVG(foreignObject)로 옮겨 그려 작은 JPEG 로 (저장할 때 함께 올림 — 문서함 카드에 그대로 보임) */
+async function pageThumb(maxW) {
+  maxW = maxW || 360;
+  if (!W.doc || !W.pages || !W.pages.length || W.reflow) return null;
+  const P = W.pages[0], sheet = $id('sheet'); if (!sheet) return null;
+  const cl = sheet.cloneNode(true); cl.style.transform = ''; cl.style.left = '0'; cl.style.top = (-P.top) + 'px'; cl.style.position = 'absolute';
+  const od = docEl(), cd = cl.querySelector('#doc');
+  if (cd) { cd.classList.remove('cv'); const ob = Array.from(od.querySelectorAll('.hsec > .hp')), cb = Array.from(cd.querySelectorAll('.hsec > .hp')); ob.forEach((b, i) => { const L = Lay.get(b); if (L && L.page > 0 && cb[i]) cb[i].remove(); }); }
+  const pg = cl.querySelector('#pages'); if (pg) Array.from(pg.children).slice(1).forEach(x => x.remove());
+  for (const x of cl.querySelectorAll('#pgOver, #pgGaps, .pg-lab, .caret, .sel-box')) x.remove();
+  const toData = async u => { try { const b = await (await fetch(u)).blob(); return await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.onerror = () => r(null); fr.readAsDataURL(b); }); } catch (e) { return null; } };
+  for (const im of cl.querySelectorAll('img')) { const d = im.src && !/^data:/.test(im.src) ? await toData(im.src) : null; if (d) im.src = d; else if (!/^data:/.test(im.src || '')) im.remove(); }
+  let css = '';
+  for (const s of document.styleSheets) { try { for (const r of s.cssRules) { if (r.type === CSSRule.FONT_FACE_RULE || r.type === CSSRule.IMPORT_RULE) continue; css += r.cssText + '\n'; } } catch (e) { } }
+  const w = P.w, h = P.h;
+  const html = `<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:${w}px;height:${h}px;overflow:hidden;background:#fff"><style><![CDATA[${css.replace(/\]\]>/g, '')}]]></style>${new XMLSerializer().serializeToString(cl)}</div>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><foreignObject x="0" y="0" width="${w}" height="${h}">${html}</foreignObject></svg>`;
+  if (window.__thumbDebug) { const er = new DOMParser().parseFromString(svg, 'image/svg+xml').querySelector('parsererror'); if (er) console.warn('thumb svg', er.textContent.slice(0, 300)); }
+  const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  await img.decode();
+  const sc = Math.min(1, maxW / w), cv = document.createElement('canvas'); cv.width = Math.round(w * sc); cv.height = Math.round(h * sc);
+  const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.82));
+  return blob ? new Uint8Array(await blob.arrayBuffer()) : null;
+}

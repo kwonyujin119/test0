@@ -229,11 +229,13 @@ const HwpStore = (() => {
     if (!id) id = uniq((await idxGet()).data.items, name);
     else if (opts.base && !opts.force) { const it = (await idxGet()).data.items.find(x => x.id === id); if (it && it.modified && it.modified !== opts.base) throw conflictErr(it); } // 기기마다 시계가 달라 '나중 시각'으로 비교하면 놓침 — 판이 다르면 충돌
     // 1) 파일 먼저, 2) 목록 — 목록에 있는데 파일이 없는 일이 생기지 않게
-    await GH.commit('문서 저장: ' + name, [{ path: `${PDIR}/${id}`, base64: b64(data) }]);
+    const ch = [{ path: `${PDIR}/${id}`, base64: b64(data) }]; if (opts.thumb) ch.push({ path: `${PDIR}/thumbs/${id}.jpg`, base64: b64(opts.thumb) }); // 첫 쪽 미리보기 그림도 같은 커밋에
+    await GH.commit('문서 저장: ' + name, ch);
     const now = new Date().toISOString();
     await idxUpdate('문서 목록: ' + name, d => {
       const i = d.items.findIndex(x => x.id === id), rec = Object.assign({ id, name, size: data.length, modified: now, device: device || '' }, extra || {});
       if (preview != null) rec.preview = String(preview).slice(0, 400);
+      if (opts.thumb) rec.thumb = now;
       if (i >= 0) d.items[i] = Object.assign(d.items[i], rec); else d.items.push(Object.assign({ created: now }, rec));
     });
     lastSaved = { id, modified: now };
@@ -255,6 +257,7 @@ const HwpStore = (() => {
     needWrite();
     await idxUpdate('문서 삭제: ' + id, d => { d.items = d.items.filter(x => x.id !== id); }); // 목록 먼저 빼고
     await GH.commit('문서 파일 삭제: ' + id, [{ path: `${PDIR}/${id}`, delete: true }]).catch(e => console.warn('파일 삭제', e)); // 파일은 그다음 (실패해도 목록은 맞음)
+    await GH.commit('문서 미리보기 삭제: ' + id, [{ path: `${PDIR}/thumbs/${id}.jpg`, delete: true }]).catch(() => { }); // 없으면 그만
   }
   /* 목록 파일만 바꾸는 일 (이름 · 폴더) — fn(items, folders) 가 고치고 커밋 메시지를 돌려줌 (null 이면 바꾸지 않음) */
   async function pidx(fn) {
