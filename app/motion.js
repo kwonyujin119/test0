@@ -425,8 +425,19 @@
     }).observe(space, { childList: true, subtree: true, characterData: true });
   }
 
+  /* 스포트라이트([data-spot]): 마우스 자리를 --mx · --my 로 (마우스 기기 · 움직임 허용일 때만) */
+  document.addEventListener('pointermove', e => {
+    if (!FINE.matches || RM.matches || e.pointerType !== 'mouse') return;
+    const c = e.target.closest && e.target.closest('[data-spot]'); if (!c) return;
+    const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+  /* 그림이 다 받아지면 부드럽게 (그 전에는 작업장 색 바탕) */
+  function artLoad(root) { (root || document).querySelectorAll('.ws-art img:not(.ok)').forEach(img => { const ok = () => img.classList.add('ok'); if (img.complete && img.naturalWidth) ok(); else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', () => img.closest('.ws-art') && (img.closest('.ws-art').style.display = 'none'), { once: true }); } }); }
+  if ('MutationObserver' in window) new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('.ws-art img')) artLoad(n); }).observe(document.documentElement, { childList: true, subtree: true });
+
   /* ---------- 시작 ---------- */
   function boot() {
+    artLoad();
     watchAI();
     openWindow(document.body, 2200);
     if (PAGE === 'secret.html' || document.querySelector('[data-count]')) watchCounts();

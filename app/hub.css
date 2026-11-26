@@ -249,3 +249,32 @@ body.deck-dragging .folder-card .deck-thumb { box-shadow: 0 0 0 1.5px var(--ui-b
   .ws-card[data-ws] .ws-ico { width: 44px; height: 44px; font-size: 20px; }
 }
 @media (prefers-reduced-motion: reduce) { .ws-card[data-ws] .go { transition: none; } }
+
+/* ---------- 첫 화면 작업장 카드: 그림 배너 · 겹친 표식 · 스포트라이트 (docs/dpv-ui-motion.md 「4차」) ----------
+   그림은 카드마다 하나(작업장 색 3D 일러스트, 각 약 10KB). 글은 그림 위가 아니라 아래에 두어 대비를 지킴 */
+.ws-card[data-ws] .ws-art { position: relative; margin: -22px -22px 0; height: 132px; overflow: hidden; background: var(--ws-bg); }
+.ws-card[data-ws] .ws-art img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 46%; display: block; opacity: 0; transform: scale(1.02); transition: opacity .35s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+.ws-card[data-ws] .ws-art img.ok { opacity: 1; transform: none; }
+.ws-card[data-ws] .ws-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--ui-panel) 70%, transparent) 88%, var(--ui-panel)); pointer-events: none; }
+.ws-card[data-ws="doc"] .ws-art img { object-position: 50% 40%; }
+.ws-card[data-ws="video"] .ws-art img { object-position: 45% 60%; }
+.ws-card[data-ws="secret"] .ws-art img { object-position: 80% 50%; }
+.ws-card[data-ws] .ws-art + .card-top { margin-top: -30px; position: relative; z-index: 1; }
+.ws-card[data-ws] .ws-art + .card-top .ws-ico { box-shadow: inset 0 0 0 1px var(--ws-line), 0 0 0 4px var(--ui-panel), 0 6px 16px -6px color-mix(in srgb, var(--ws-dot) 60%, transparent); }
+.ws-card[data-ws] .ws-art + .card-top h2 { align-self: flex-end; }
+.ws-card[data-ws]:has(.ws-art) { box-shadow: none; } /* 색 띠 대신 그림이 작업장을 알려 줌 */
+.ws-card[data-ws]:has(.ws-art):hover { box-shadow: var(--ui-shadow-sm); }
+@media (hover: hover) and (pointer: fine) {
+  .ws-card[data-ws]:hover .ws-art img.ok { transform: scale(1.05); }
+  /* 스포트라이트: 마우스를 따라 작업장 색이 은은하게 (motion.js 가 --mx · --my 를 줌) */
+  .ws-card[data-spot]::before { content: ''; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .25s; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--ws-dot) 13%, transparent), transparent 62%); }
+  .ws-card[data-spot]:hover::before { opacity: 1; }
+  .ws-card[data-spot] > * { position: relative; z-index: 1; }
+}
+:root[data-theme=dark] .ws-card[data-ws] .ws-art img { filter: brightness(.62) saturate(.85); }
+@media (max-width: 640px) {
+  .ws-card[data-ws] .ws-art { margin: -18px -18px 0; height: 104px; }
+  .ws-card[data-ws] .ws-art + .card-top { margin-top: -26px; }
+}
+@media (prefers-reduced-motion: reduce) { .ws-card[data-ws] .ws-art img, .ws-card[data-ws]:hover .ws-art img.ok { transition: none; transform: none; } .ws-card[data-spot]::before { display: none; } }
+:root[data-theme=dark] .ws-card[data-ws] .ws-art::after { background: linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--ui-panel) 55%, transparent) 70%, var(--ui-panel)); }
