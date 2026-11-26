@@ -155,7 +155,7 @@
      "w": 900,
      "h": 40,
      "role": "body",
-     "html": "제29기 신임소방공무원반",
+     "html": "제28기 신임소방공무원반",
      "style": {
       "fontSize": 26,
       "color": "#FFB3C0",
@@ -235,7 +235,7 @@
      },
      "enter": true,
      "delay": 1.2,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "d38n011",
@@ -259,7 +259,7 @@
      },
      "enter": true,
      "delay": 1.45,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "d38n012",
@@ -281,7 +281,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.6
     }
    ]
@@ -14600,7 +14600,7 @@
       "lineHeight": 1.3
      },
      "enter": true,
-     "delay": 2.0
+     "delay": 2
     }
    ]
   }
@@ -14616,5 +14616,5 @@
   "title": "#3F3F3F",
   "fg": "#222222"
  },
- "modified": "2026-11-25T23:58:35.000Z"
+ "modified": "2026-11-26T00:54:02.504Z"
 }
