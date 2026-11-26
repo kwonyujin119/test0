@@ -644,7 +644,7 @@ function runCount(node, e, down) {
     const tick = (now) => {
       const t = Math.min(1, (now - t0) / dur);
       put(down ? Math.ceil(target * (1 - t) - 1e-9) : (dec ? target * (1 - Math.pow(1 - t, 3)) : Math.round(target * (1 - Math.pow(1 - t, 3)))));
-      if (t < 1) c.raf = requestAnimationFrame(tick); else if (!down) { tn.nodeValue = orig; node._cnt = null; }
+      if (t < 1) c.raf = requestAnimationFrame(tick); else if (!down) { tn.nodeValue = orig; node._cnt = null; } else node.dispatchEvent(new CustomEvent('countdown-end', { bubbles: true })); // 발표기: 장 설정에 따라 다음 장으로
     };
     c.raf = requestAnimationFrame(tick);
   }, delay);
