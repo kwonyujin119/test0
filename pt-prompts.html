@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PT 툴 만들기 프롬프트</title>
+<title>PT 툴 프롬프트</title>
 <meta name="description" content="37번 교안 「AI로 나만의 PT 툴 만들기」 단계별 프롬프트 — 복사해서 AI에 붙여넣기">
 <style>
 :root { --bg:#FAFAF7; --card:#fff; --fg:#15181C; --muted:#5B6168; --line:#D9D6CF; --acc:#2457D6; --acc-s:#E8EEFC; --pre:#F4F2EE; --ok:#1E7B4F; }
 @media (prefers-color-scheme: dark) { :root { --bg:#14161B; --card:#1F232B; --fg:#EEEEF0; --muted:#A3A8B2; --line:#343944; --acc:#7AA2FF; --acc-s:#1B2640; --pre:#171A20; --ok:#5BD08F; } }
-* { box-sizing:border-box }
+* { box-sizing:border-box } [hidden] { display:none !important }
 body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
 header { padding:28px 16px 8px; max-width:760px; margin:0 auto; }
 header .kick { color:var(--acc); font-weight:700; font-size:14px }
@@ -28,12 +28,17 @@ pre { white-space:pre-wrap; word-break:keep-all; overflow-wrap:anywhere; backgro
 .copy { width:100%; min-height:52px; border:0; border-radius:12px; background:var(--acc); color:#fff; font:700 17px/1 inherit; font-family:inherit; cursor:pointer }
 .copy.done { background:var(--ok) }
 .copy:focus-visible { outline:3px solid var(--fg); outline-offset:2px }
+.tabs { position:sticky; top:0; z-index:5; max-width:760px; margin:12px auto 0; padding:8px 16px; display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--bg) }
+.tabs button { min-height:52px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--fg); font:700 15px/1.3 inherit; font-family:inherit; cursor:pointer; padding:6px 8px }
+.tabs button.on { background:var(--acc); border-color:var(--acc); color:#fff }
+pre.fold { max-height:220px; overflow:auto }
 footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--muted); font-size:13px }
 </style></head><body>
-<header><div class="kick">37번 교안 · AI로 나만의 PT 툴 만들기</div><h1>프롬프트 하나로 PT 툴 만들기</h1>
-<p>복사해서 Claude Code 대화창에 한 번 붙여넣으면, AI가 발표 화면 · 교안 목록 · 예시 교안 · 인터넷 공개까지 순서대로 만듭니다. ( ) 안은 내 강의에 맞게 바꾸세요.</p></header>
-<nav><span>① claude.ai/code 에서 my-pt 저장소 고르기</span><span>② [프롬프트 복사]</span><span>③ 붙여넣고 보내기</span><span>④ 「계속」만 누르며 기다리기</span></nav>
-<main>
+<header><div class="kick">AI로 나만의 PT 툴 만들기 · 프롬프트</div><h1 id="ttl">나만의 PT 툴 한 번에 만들기</h1>
+<p id="sub1">복사해서 Claude Code 대화창에 한 번 붙여넣으면, AI가 발표 화면 · 교안 목록 · 예시 교안 · 인터넷 공개까지 순서대로 만듭니다. ( ) 안은 내 강의에 맞게 바꾸세요.</p><p id="sub2" hidden>만든 PT 툴에 효과를 더하는 프롬프트. 하나씩 복사하거나, 맨 위 [전부 한 번에 복사]로 한꺼번에 붙여넣으세요.</p></header>
+<div class="tabs" role="tablist"><button role="tab" data-t="1" class="on">① 나만의 PT 툴 한 번에 만들기</button><button role="tab" data-t="2">② PT 효과 높이는 프롬프트</button></div>
+<nav id="nav1"><span>① claude.ai/code 에서 my-pt 저장소 고르기</span><span>② [프롬프트 복사]</span><span>③ 붙여넣고 보내기</span><span>④ 「계속」만 누르며 기다리기</span></nav>
+<main id="tab1">
 <section class="card" id="pone" data-no="one">
   <div class="step">붙여넣기 한 번</div>
   <h2>나만의 PT 툴 한 번에 만들기</h2>
@@ -81,6 +86,72 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
   <button class="copy" type="button">프롬프트 복사</button>
 </section>
 </main>
+<main id="tab2" hidden>
+<section class="card on"><div class="step">한 번에</div><h2>효과 12가지 전부</h2><p class="when">PT 툴을 만든 뒤, 같은 대화창에 붙여넣기</p>
+  <button class="copy" type="button">전부 한 번에 복사</button><pre class="fold">내가 만든 PT 툴에 아래 효과들을 하나씩 추가해 줘. 하나 끝날 때마다 예시 교안에서 직접 확인하고, 다음으로 넘어가. 라이브러리는 쓰지 말고 HTML · CSS · JS만.
+
+1. 모든 장 등장 모션
+장이 열리면 요소가 위에서 아래로 0.1초 간격으로 차례로 나타나게 해 줘. 제목은 아래에서 떠오르게, 사진은 살짝 커지며 나타나게. 미리보기 · 인쇄 화면에는 효과 없이 완성된 모습으로 보이게.
+
+2. 클릭할 때마다 하나씩
+발표 중 클릭(→ · Space)할 때마다 카드 · 항목이 하나씩 나타나게 해 줘. 뒤로 가면 움직임 없이 사라지게. 편집기에서 요소마다 &#x27;몇 번째 클릭&#x27;을 고를 수 있게.
+
+3. 장 표지를 영화처럼
+장 표지에 들어가면 검은 막이 1초 동안 걷히고, 배경 사진이 20초 동안 아주 천천히 확대되게 해 줘. 큰 번호는 흐릿하다가 선명해지게.
+
+4. 제목 단어씩 떠오르기
+제목 글자를 단어 단위로 나눠 0.1초 간격으로 흐림에서 선명해지며 떠오르게 해 줘.
+
+5. 숫자 0부터 올라가기
+큰 숫자(예: 1,250명, 300만원)는 장이 열리면 0부터 그 값까지 1.5초 동안 올라가게 해 줘. 쉼표와 단위는 그대로.
+
+6. 실제 시간 카운트다운
+숫자 하나를 클릭하면 실제 초 단위로 0까지 줄어들게 해 줘(예: 42초). 줄어드는 동안 화면이 점점 어두워지고, 0이 되면 1.5초 뒤 다음 장으로 넘어가게.
+
+7. 강조: 빛나기 · 한 곳만 색
+강조하고 싶은 칸은 은은하게 한 번 빛나게 하고, 사진은 흑백으로 바꾼 뒤 중요한 부분만 색이 남게 하는 효과를 추가해 줘.
+
+8. 사진 위 글자 읽히게
+배경 사진 위에 글이 있으면 글 쪽을 어둡게(또는 밝게) 덮는 그라데이션을 깔아 글이 어디서나 읽히게 해 줘.
+
+9. 스포트라이트 · 돋보기
+사진에서 한 곳만 밝게 남기고 주변을 어둡게 하는 스포트라이트, 한 부분을 동그랗게 확대하는 돋보기 효과를 클릭 단계로 쓸 수 있게 해 줘.
+
+10. 진행 표시
+발표 화면 위쪽에 얇은 진행 막대와 &#x27;지금 몇 번째 파트&#x27; 표시를 넣어 줘. 장 표지에는 전체 파트 중 현재 파트만 진하게.
+
+11. 장 넘김 효과
+장 전환을 장마다 고를 수 있게 해 줘: 서서히 · 흐림 · 밀어내기 · 확대. 기본은 서서히(0.5초).
+
+12. 편하게 보는 설정
+컴퓨터의 &#x27;움직임 줄이기&#x27; 설정을 켠 사람에게는 큰 움직임 대신 서서히 나타나기만 쓰게 해 줘. 글자는 24px 이상, 배경과 글자 대비는 4.5:1 이상 유지.
+
+[끝나면 보고] 효과별로 어느 장에서 볼 수 있는지 표로, 편집기에서 고르는 방법 한 줄씩.</pre></section>
+<section class="card fx"><div class="step">효과 1</div><h2>모든 장 등장 모션</h2>
+  <pre>장이 열리면 요소가 위에서 아래로 0.1초 간격으로 차례로 나타나게 해 줘. 제목은 아래에서 떠오르게, 사진은 살짝 커지며 나타나게. 미리보기 · 인쇄 화면에는 효과 없이 완성된 모습으로 보이게.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 2</div><h2>클릭할 때마다 하나씩</h2>
+  <pre>발표 중 클릭(→ · Space)할 때마다 카드 · 항목이 하나씩 나타나게 해 줘. 뒤로 가면 움직임 없이 사라지게. 편집기에서 요소마다 &#x27;몇 번째 클릭&#x27;을 고를 수 있게.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 3</div><h2>장 표지를 영화처럼</h2>
+  <pre>장 표지에 들어가면 검은 막이 1초 동안 걷히고, 배경 사진이 20초 동안 아주 천천히 확대되게 해 줘. 큰 번호는 흐릿하다가 선명해지게.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 4</div><h2>제목 단어씩 떠오르기</h2>
+  <pre>제목 글자를 단어 단위로 나눠 0.1초 간격으로 흐림에서 선명해지며 떠오르게 해 줘.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 5</div><h2>숫자 0부터 올라가기</h2>
+  <pre>큰 숫자(예: 1,250명, 300만원)는 장이 열리면 0부터 그 값까지 1.5초 동안 올라가게 해 줘. 쉼표와 단위는 그대로.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 6</div><h2>실제 시간 카운트다운</h2>
+  <pre>숫자 하나를 클릭하면 실제 초 단위로 0까지 줄어들게 해 줘(예: 42초). 줄어드는 동안 화면이 점점 어두워지고, 0이 되면 1.5초 뒤 다음 장으로 넘어가게.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 7</div><h2>강조: 빛나기 · 한 곳만 색</h2>
+  <pre>강조하고 싶은 칸은 은은하게 한 번 빛나게 하고, 사진은 흑백으로 바꾼 뒤 중요한 부분만 색이 남게 하는 효과를 추가해 줘.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 8</div><h2>사진 위 글자 읽히게</h2>
+  <pre>배경 사진 위에 글이 있으면 글 쪽을 어둡게(또는 밝게) 덮는 그라데이션을 깔아 글이 어디서나 읽히게 해 줘.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 9</div><h2>스포트라이트 · 돋보기</h2>
+  <pre>사진에서 한 곳만 밝게 남기고 주변을 어둡게 하는 스포트라이트, 한 부분을 동그랗게 확대하는 돋보기 효과를 클릭 단계로 쓸 수 있게 해 줘.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 10</div><h2>진행 표시</h2>
+  <pre>발표 화면 위쪽에 얇은 진행 막대와 &#x27;지금 몇 번째 파트&#x27; 표시를 넣어 줘. 장 표지에는 전체 파트 중 현재 파트만 진하게.</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 11</div><h2>장 넘김 효과</h2>
+  <pre>장 전환을 장마다 고를 수 있게 해 줘: 서서히 · 흐림 · 밀어내기 · 확대. 기본은 서서히(0.5초).</pre><button class="copy" type="button">이 효과 복사</button></section>
+<section class="card fx"><div class="step">효과 12</div><h2>편하게 보는 설정</h2>
+  <pre>컴퓨터의 &#x27;움직임 줄이기&#x27; 설정을 켠 사람에게는 큰 움직임 대신 서서히 나타나기만 쓰게 해 줘. 글자는 24px 이상, 배경과 글자 대비는 4.5:1 이상 유지.</pre><button class="copy" type="button">이 효과 복사</button></section>
+</main>
 <footer>인천소방학교 지휘역량강화센터 · 소방위 권유진 · 공개 페이지입니다. 비밀 자료나 개인정보를 프롬프트에 넣지 마세요.</footer>
 <script>
 (function () {
@@ -90,10 +161,21 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
     if (c) { c.classList.add('on'); c.parentNode.insertBefore(c, c.parentNode.firstChild); }
     var a = document.querySelector('nav a[data-no="' + n + '"]'); if (a) a.classList.add('on');
   }
+  var tabs = document.querySelectorAll('.tabs button');
+  function show(t) {
+    tabs.forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); b.setAttribute('aria-selected', b.dataset.t === t); });
+    document.getElementById('tab1').hidden = t !== '1'; document.getElementById('tab2').hidden = t !== '2';
+    document.getElementById('nav1').hidden = t !== '1'; document.getElementById('sub1').hidden = t !== '1'; document.getElementById('sub2').hidden = t !== '2';
+    document.getElementById('ttl').textContent = t === '1' ? '나만의 PT 툴 한 번에 만들기' : 'PT 효과 높이는 프롬프트';
+    try { history.replaceState(null, '', t === '2' ? '#fx' : location.pathname + location.search); } catch (e) {}
+    scrollTo(0, 0);
+  }
+  tabs.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.t); }); });
+  if (location.hash === '#fx') show('2');
   document.querySelectorAll('.copy').forEach(function (b) {
     b.addEventListener('click', function () {
       var t = b.parentNode.querySelector('pre').textContent;
-      var ok = function () { b.textContent = '복사했습니다 — AI 대화창에 붙여넣으세요'; b.classList.add('done'); setTimeout(function () { b.textContent = '프롬프트 복사'; b.classList.remove('done'); }, 2500); };
+      var lab = b.dataset.l || (b.dataset.l = b.textContent); var ok = function () { b.textContent = '복사했습니다 — AI 대화창에 붙여넣으세요'; b.classList.add('done'); setTimeout(function () { b.textContent = lab; b.classList.remove('done'); }, 2500); };
       var fb = function () { var r = document.createRange(); var pre = b.parentNode.querySelector('pre'); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); ok(); } catch (e) { b.textContent = '글을 길게 눌러 복사하세요'; } };
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, fb); else fb();
     });
