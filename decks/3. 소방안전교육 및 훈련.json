@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T01:27:02.000Z",
- "modified": "2026-11-26T09:21:13.000Z",
+ "modified": "2026-11-26T09:50:12.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -410,6 +410,8 @@
   {
    "id": "ed02",
    "bg": {
+    "image": "assets/fp-bg2-f2_intro.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -956,6 +958,8 @@
   {
    "id": "n1wvdzlar",
    "bg": {
+    "image": "assets/fp-bg2-f2_intro.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "",
@@ -1037,7 +1041,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 280,
@@ -1146,7 +1150,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 164,
      "y": 700,
@@ -1215,7 +1219,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 394,
      "y": 700,
@@ -1284,7 +1288,7 @@
      "step": 2,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 690,
      "y": 280,
@@ -1393,7 +1397,7 @@
      "step": 3,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 1260,
      "y": 280,
@@ -1577,6 +1581,8 @@
   {
    "id": "gzfk8qbce",
    "bg": {
+    "image": "assets/fp-bg2-f2_intro.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "",
@@ -1742,7 +1748,7 @@
      "step": 2,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 650,
@@ -1811,6 +1817,8 @@
   {
    "id": "sc4qe8k97",
    "bg": {
+    "image": "assets/fp-bg2-f2_intro.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "",
@@ -1892,7 +1900,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 290,
@@ -2002,7 +2010,7 @@
      "step": 2,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 480,
@@ -2112,7 +2120,7 @@
      "step": 3,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 670,
@@ -2243,6 +2251,8 @@
   {
    "id": "ed03",
    "bg": {
+    "image": "assets/fp-bg2-f2_intro.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -3047,6 +3057,8 @@
   {
    "id": "rvdiuvxne",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -3178,6 +3190,8 @@
   {
    "id": "fqujlki3n",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "",
@@ -3796,6 +3810,8 @@
   {
    "id": "ed04",
    "bg": {
+    "image": "assets/fp-bg2-f2_c1a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -4434,6 +4450,8 @@
   {
    "id": "ed05",
    "bg": {
+    "image": "assets/fp-bg2-f2_c1b.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -4694,6 +4712,8 @@
   {
    "id": "ed06",
    "bg": {
+    "image": "assets/fp-bg2-f2_c1a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -4822,7 +4842,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 150,
      "y": 370,
@@ -4916,7 +4936,7 @@
      "step": 2,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 150,
      "y": 560,
@@ -5010,7 +5030,7 @@
      "step": 3,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 150,
      "y": 750,
@@ -5509,6 +5529,8 @@
   {
    "id": "ed07",
    "bg": {
+    "image": "assets/fp-bg2-f2_c1a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -6487,6 +6509,8 @@
   {
    "id": "ed08",
    "bg": {
+    "image": "assets/fp-bg2-f2_c1b.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -6632,7 +6656,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 150,
      "y": 498,
@@ -6747,7 +6771,7 @@
      "step": 2,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 1010,
      "y": 498,
@@ -6862,7 +6886,7 @@
      "step": 3,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 150,
      "y": 843,
@@ -6977,7 +7001,7 @@
      "step": 4,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 1010,
      "y": 843,
@@ -7026,6 +7050,8 @@
   {
    "id": "o8419zkt7",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "",
@@ -7364,6 +7390,8 @@
   {
    "id": "ed10",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -7791,6 +7819,8 @@
   {
    "id": "ed11",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2b.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -9982,6 +10012,8 @@
   {
    "id": "ed12",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -10066,7 +10098,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 270,
@@ -10120,7 +10152,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 352,
@@ -10175,7 +10207,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 434,
@@ -10230,7 +10262,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 516,
@@ -10285,7 +10317,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 598,
@@ -10340,7 +10372,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 680,
@@ -10395,7 +10427,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 762,
@@ -10450,7 +10482,7 @@
      "step": 1,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 490,
      "y": 844,
@@ -10633,6 +10665,8 @@
   {
    "id": "ed13",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2b.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -11489,6 +11523,8 @@
   {
    "id": "ed14",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2b.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -12396,6 +12432,8 @@
   {
    "id": "ed15",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -13397,6 +13435,8 @@
   {
    "id": "ed16",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2b.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -13784,6 +13824,8 @@
   {
    "id": "ed17",
    "bg": {
+    "image": "assets/fp-bg2-f2_c2a.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -14364,6 +14406,8 @@
   {
    "id": "ngi56ek9n",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -14889,6 +14933,8 @@
   {
    "id": "ed_pb101",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -15449,6 +15495,8 @@
   {
    "id": "ed_pb102",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -16007,6 +16055,8 @@
   {
    "id": "ed_pb103",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -16567,6 +16617,8 @@
   {
    "id": "ed_pb104",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -17127,6 +17179,8 @@
   {
    "id": "ed_pb105",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -17685,6 +17739,8 @@
   {
    "id": "ed_pb106",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -18245,6 +18301,8 @@
   {
    "id": "ed_pb107",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -18805,6 +18863,8 @@
   {
    "id": "ed_pb108",
    "bg": {
+    "image": "assets/fp-bg2-f2_q.jpg",
+    "fit": "cover",
     "color": "#15181C"
    },
    "transition": "fade",
@@ -19365,6 +19425,8 @@
   {
    "id": "ed_tp1",
    "bg": {
+    "image": "assets/fp-bg2-f2_sum.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
@@ -19422,7 +19484,7 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 280,
@@ -19520,7 +19582,7 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 970,
      "y": 280,
@@ -19641,7 +19703,7 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 530,
@@ -19739,7 +19801,7 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 970,
      "y": 530,
@@ -19860,7 +19922,7 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 1,
+     "opacity": 0.86,
      "type": "shape",
      "x": 120,
      "y": 780,
@@ -20008,6 +20070,8 @@
   {
    "id": "ed_qb",
    "bg": {
+    "image": "assets/fp-bg2-f2_sum.jpg",
+    "fit": "cover",
     "color": "#FAFAF7"
    },
    "transition": "fade",
