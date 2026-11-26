@@ -284,8 +284,25 @@ const PPTX = (() => {
   const canvasBlob = (c, type, q) => new Promise(res => c.toBlob(res, type || 'image/png', q));
   async function sniff(blob) { const b = new Uint8Array(await blob.slice(0, 12).arrayBuffer()); return b[0] === 0x89 && b[1] === 0x50 ? 'png' : b[0] === 0xFF && b[1] === 0xD8 ? 'jpeg' : b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 ? 'gif' : ''; }
   function filterCss(fx) { const f = []; fx = fx || {}; if (fx.b != null && fx.b !== 100) f.push(`brightness(${fx.b}%)`); if (fx.c != null && fx.c !== 100) f.push(`contrast(${fx.c}%)`); if (fx.s != null && fx.s !== 100) f.push(`saturate(${fx.s}%)`); if (fx.sepia) f.push(`sepia(${fx.sepia}%)`); if (fx.blur) f.push(`blur(${fx.blur}px)`); return f.join(' '); }
+  /* 캔버스의 투명한 곳: 'none' 없음 · 'edge' 가장자리(둥근 모서리 등)에만 조금 · 'yes' 그 밖 */
+  function alphaKind(c) {
+    try {
+      const W = c.width, H = c.height, d = c.getContext('2d').getImageData(0, 0, W, H).data, m = Math.max(2, Math.round(Math.min(W, H) * 0.06));
+      let n = 0;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (d[(y * W + x) * 4 + 3] === 255) continue;
+        if (x >= m && x < W - m && y >= m && y < H - m) return 'yes';
+        n++;
+      }
+      return n === 0 ? 'none' : n < W * H * 0.04 ? 'edge' : 'yes';
+    } catch (e) { return 'yes'; }
+  }
+  async function digest(data) { // 같은 내용의 그림을 한 번만 담으려고
+    try { const h = new Uint8Array(await crypto.subtle.digest('SHA-1', data)); return Array.from(h, b => b.toString(16).padStart(2, '0')).join(''); }
+    catch (e) { let h = 2166136261; for (let i = 0; i < data.length; i++) { h ^= data[i]; h = Math.imul(h, 16777619); } return (h >>> 0).toString(16) + ':' + data.length; }
+  }
   /* 그림 파일 → PowerPoint 가 읽는 형식(png·jpeg·gif)으로, 보정(밝기 등)은 그림에 입혀서. → { data, ext, w, h } */
-  async function prepImage(blob, fx) {
+  async function prepImage(blob, fx, matte) {
     const kind = await sniff(blob), filter = filterCss(fx), url = URL.createObjectURL(blob);
     try {
       const im = await loadImage(url); let w = im.naturalWidth, h = im.naturalHeight;
@@ -294,7 +311,15 @@ const PPTX = (() => {
       const k = kind ? 1 : Math.min(2, Math.max(1, 1600 / Math.max(w, h))); // SVG 등은 넉넉한 크기로
       const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
       const g = c.getContext('2d'); if (filter) g.filter = filter; g.drawImage(im, 0, 0, c.width, c.height);
-      const jpg = kind === 'jpeg', out = await canvasBlob(c, jpg ? 'image/jpeg' : 'image/png', 0.92);
+      /* SVG 로 싼 사진(PPT 에서 가져온 그림 등)을 PNG 로 담으면 원본의 10배 넘게 커짐 → 투명한 곳이 없거나
+         둥근 모서리 정도뿐이면 슬라이드 바탕색을 깔고 JPEG 로 */
+      let jpg = kind === 'jpeg', cv = c;
+      if (!kind) {
+        const ak = alphaKind(c);
+        if (ak === 'none') jpg = true;
+        else if (ak === 'edge' && matte) { cv = document.createElement('canvas'); cv.width = c.width; cv.height = c.height; const g2 = cv.getContext('2d'); g2.fillStyle = matte; g2.fillRect(0, 0, cv.width, cv.height); g2.drawImage(c, 0, 0); jpg = true; }
+      }
+      const out = await canvasBlob(cv, jpg ? 'image/jpeg' : 'image/png', 0.9);
       return { data: new Uint8Array(await out.arrayBuffer()), ext: jpg ? 'jpeg' : 'png', w, h };
     } finally { URL.revokeObjectURL(url); }
   }
@@ -392,10 +417,10 @@ const PPTX = (() => {
       const m = { name }; if (key) media.set(key, m); return m;
     };
     const imgCache = new Map();
-    const image = async (src, fx) => { // → { name, w, h } | null
-      const key = src + '|' + filterCss(fx); if (imgCache.has(key)) return imgCache.get(key);
+    const image = async (src, fx, matte) => { // → { name, w, h } | null   matte: 투명한 모서리에 깔 색(바탕색)
+      const key = src + '|' + filterCss(fx) + '|' + (matte || ''); if (imgCache.has(key)) return imgCache.get(key);
       let out = null;
-      try { const b = await getBlob(src); if (b) { const p = await prepImage(b, fx); out = Object.assign(addMedia(key, p.data, p.ext), { w: p.w, h: p.h }); } } catch (e) { out = null; }
+      try { const b = await getBlob(src); if (b) { const p = await prepImage(b, fx, matte); const m = addMedia('h:' + await digest(p.data), p.data, p.ext); out = { name: m.name, w: p.w, h: p.h }; } } catch (e) { out = null; }
       imgCache.set(key, out); return out;
     };
     const slideFile = new Map(deck.slides.map((s, i) => [s.id, i + 1]));
@@ -488,7 +513,7 @@ const PPTX = (() => {
             }
           } else if (e.type === 'image') {
             if (!e.src) continue;
-            const im = await image(e.src, e.fx); if (!im) { warn.img++; continue; }
+            const im = await image(e.src, e.fx, rgba(bg.color || theme.bg) ? (bg.color || theme.bg) : '#ffffff'); if (!im) { warn.img++; continue; }
             const pl = placeImage(e.w, e.h, im.w, im.h, e.fit || 'contain', e.cropX, e.cropY, e.zoom, e.flip, e.flipV); if (!pl) continue;
             const full = pl.w > e.w - 1 && pl.h > e.h - 1;
             const MASK = { hexagon: POLY.hexagon, diamond: POLY.diamond, triangle: POLY.triangle, blob: [[.32, .03], [.7, 0], [.96, .24], [1, .62], [.8, .93], [.44, 1], [.12, .86], [0, .52], [.08, .18]] };
@@ -556,9 +581,11 @@ const PPTX = (() => {
             }
           }
         } catch (err) { console.warn('pptx: 요소를 옮기지 못함', e.type, err); continue; }
-        /* 클릭 단계 → 나타나기 · 사라지기 */
+        /* 클릭 단계 → 나타나기 · 사라지기,  장이 열릴 때 자동 등장(enter) → 이전 효과와 함께 + 지연 */
         if (id) {
-          const stp = e.step || 0, kind = e.anim === 'none' ? 'appear' : e.anim === 'wipe' ? 'wipe' : 'fade';
+          const stp = e.step || 0, kind = ANIM_PPT[e.anim] || 'fade';
+          if (stp === 0 && e.enter && e.anim && e.anim !== 'none' && !e.po)
+            anim.push({ step: 0, id, kind, delay: Math.round((+e.delay || 0) * 1000), dur: Math.round((+e.dur || 0.6) * 1000), auto: true });
           if (e.type === 'text' && e.listSteps && paraInfo && paraInfo.some(p => p.item >= 0)) {
             const b = stp > 0 ? stp : 1, ranges = new Map();
             paraInfo.forEach((p, i) => { const k = p.item >= 0 ? b + p.item : stp; if (k <= 0) return; const key = (p.item >= 0 ? 'i' + p.item : 'x' + i); const r = ranges.get(key); if (r) r.end = i; else ranges.set(key, { step: k, st: i, end: i }); });
@@ -686,25 +713,34 @@ const PPTX = (() => {
     return `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="${id}" name="${X(name)}"/><p:cNvGraphicFramePr><a:graphicFrameLocks noGrp="1"/></p:cNvGraphicFramePr><p:nvPr/></p:nvGraphicFramePr>${xfrm(e.x, e.y, e.w, e.h, 0, false, false, 'p:xfrm')}<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table"><a:tbl><a:tblPr/><a:tblGrid>${cw.map(w => `<a:gridCol w="${w}"/>`).join('')}</a:tblGrid>${body}</a:tbl></a:graphicData></a:graphic></p:graphicFrame>`;
   }
 
-  /* ---------- 클릭 단계(나타나기·사라지기) + 영상 재생 ---------- */
+  /* 화면 효과 이름 → PowerPoint 에서 가장 가까운 효과 (흐림 · 반짝임 · 계속 도는 움직임은 PowerPoint 에 없어 '서서히' 로) */
+  const ANIM_PPT = { none: 'appear', fade: 'fade', wipe: 'wipe', rise: 'up', up: 'up', down: 'down', left: 'left', right: 'right', zoom: 'zoom', pop: 'pop', spin: 'zoom', focus: 'zoom', kenburns: 'grow', blur: 'fade', type: 'wipe', sheen: 'fade', scan: 'fade', glow: 'fade', float: 'fade', cycle4: 'fade' };
+  /* ---------- 클릭 단계(나타나기·사라지기) + 자동 등장 + 영상 재생 ---------- */
   function timing(anim, vids) {
     if (!anim.length && !vids.length) return '';
     let nid = 2; const next = () => ++nid;
     const tgt = (a) => `<p:tgtEl><p:spTgt spid="${a.id}"${a.p ? `><p:txEl><p:pRg st="${a.p[0]}" end="${a.p[1]}"/></p:txEl></p:spTgt>` : '/>'}</p:tgtEl>`;
     const setVis = (a, val, delay) => `<p:set><p:cBhvr><p:cTn id="${next()}" dur="1" fill="hold"><p:stCondLst><p:cond delay="${delay || 0}"/></p:stCondLst></p:cTn>${tgt(a)}<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr><p:to><p:strVal val="${val}"/></p:to></p:set>`;
+    const anim1 = (a, attr, from, to, dur) => `<p:anim calcmode="lin" valueType="num"><p:cBhvr additive="base"><p:cTn id="${next()}" dur="${dur}" fill="hold"/>${tgt(a)}<p:attrNameLst><p:attrName>${attr}</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst><p:tav tm="0"><p:val><p:strVal val="${from}"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal val="${to}"/></p:val></p:tav></p:tavLst></p:anim>`;
+    const fadeIn = (a, dur) => `<p:animEffect transition="in" filter="fade"><p:cBhvr><p:cTn id="${next()}" dur="${dur}"/>${tgt(a)}</p:cBhvr></p:animEffect>`;
+    const MOVE = { up: ['#ppt_x', '#ppt_y+0.04', 42, 0], down: ['#ppt_x', '#ppt_y-0.04', 47, 0], left: ['#ppt_x-0.03', '#ppt_y', 42, 0], right: ['#ppt_x+0.03', '#ppt_y', 42, 0] };
     const effect = (a, first) => {
-      const id = next(), node = first ? 'clickEffect' : 'withEffect', grp = a.p ? ' grpId="0"' : '';
+      const id = next(), node = a.auto ? 'withEffect' : first ? 'clickEffect' : 'withEffect', grp = a.p ? ' grpId="0"' : '', dur = a.dur || 500, delay = a.delay || 0;
       let inner, preset;
+      if (MOVE[a.kind]) { const m = MOVE[a.kind]; preset = `presetID="${m[2]}" presetClass="entr" presetSubtype="${m[3]}"`; inner = setVis(a, 'visible') + fadeIn(a, dur) + anim1(a, 'ppt_x', m[0], '#ppt_x', dur) + anim1(a, 'ppt_y', m[1], '#ppt_y', dur); }
+      else if (a.kind === 'zoom' || a.kind === 'pop') { const f = a.kind === 'pop' ? '0.3' : '0.8'; preset = 'presetID="53" presetClass="entr" presetSubtype="16"'; inner = setVis(a, 'visible') + fadeIn(a, dur) + anim1(a, 'ppt_w', '#ppt_w*' + f, '#ppt_w', dur) + anim1(a, 'ppt_h', '#ppt_h*' + f, '#ppt_h', dur); }
+      else if (a.kind === 'grow') { preset = 'presetID="6" presetClass="emph" presetSubtype="0"'; inner = `<p:animScale><p:cBhvr><p:cTn id="${next()}" dur="${dur}" fill="hold"/>${tgt(a)}</p:cBhvr><p:by x="112000" y="112000"/></p:animScale>`; }
+      else
       if (a.kind === 'out') { preset = 'presetID="10" presetClass="exit"'; inner = `<p:animEffect transition="out" filter="fade"><p:cBhvr><p:cTn id="${next()}" dur="500"/>${tgt(a)}</p:cBhvr></p:animEffect>` + setVis(a, 'hidden', 499); }
       else if (a.kind === 'appear') { preset = 'presetID="1" presetClass="entr"'; inner = setVis(a, 'visible'); }
-      else if (a.kind === 'wipe') { preset = 'presetID="22" presetClass="entr" presetSubtype="8"'; inner = setVis(a, 'visible') + `<p:animEffect transition="in" filter="wipe(left)"><p:cBhvr><p:cTn id="${next()}" dur="500"/>${tgt(a)}</p:cBhvr></p:animEffect>`; }
-      else { preset = 'presetID="10" presetClass="entr"'; inner = setVis(a, 'visible') + `<p:animEffect transition="in" filter="fade"><p:cBhvr><p:cTn id="${next()}" dur="500"/>${tgt(a)}</p:cBhvr></p:animEffect>`; }
-      return `<p:par><p:cTn id="${id}" ${preset}${/presetSubtype/.test(preset) ? '' : ' presetSubtype="0"'} fill="hold"${grp} nodeType="${node}"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>${inner}</p:childTnLst></p:cTn></p:par>`;
+      else if (a.kind === 'wipe') { preset = 'presetID="22" presetClass="entr" presetSubtype="8"'; inner = setVis(a, 'visible') + `<p:animEffect transition="in" filter="wipe(left)"><p:cBhvr><p:cTn id="${next()}" dur="${dur}"/>${tgt(a)}</p:cBhvr></p:animEffect>`; }
+      else { preset = 'presetID="10" presetClass="entr"'; inner = setVis(a, 'visible') + fadeIn(a, dur); }
+      return `<p:par><p:cTn id="${id}" ${preset}${/presetSubtype/.test(preset) ? '' : ' presetSubtype="0"'} fill="hold"${grp} nodeType="${node}"><p:stCondLst><p:cond delay="${delay}"/></p:stCondLst><p:childTnLst>${inner}</p:childTnLst></p:cTn></p:par>`;
     };
     let main = '';
     if (anim.length) {
       const steps = Array.from(new Set(anim.map(a => a.step))).sort((a, b) => a - b);
-      const clicks = steps.map(stp => { const list = anim.filter(a => a.step === stp); const o = next(), i = next(); return `<p:par><p:cTn id="${o}" fill="hold"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:childTnLst><p:par><p:cTn id="${i}" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>${list.map((a, k) => effect(a, k === 0)).join('')}</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>`; }).join('');
+      const clicks = steps.map(stp => { const list = anim.filter(a => a.step === stp); const o = next(), i = next(); return `<p:par><p:cTn id="${o}" fill="hold"><p:stCondLst><p:cond delay="indefinite"/>${stp === 0 ? '<p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond>' : ''}</p:stCondLst><p:childTnLst><p:par><p:cTn id="${i}" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>${list.map((a, k) => effect(a, k === 0)).join('')}</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>`; }).join('');
       main = `<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>${clicks}</p:childTnLst></p:cTn><p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst><p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>`;
     }
     const vseq = vids.map(v => { const a = next(), b = next(), c = next(), d = next(), f = next(); return `<p:seq concurrent="1" nextAc="seek"><p:cTn id="${a}" restart="whenNotActive" fill="hold" evtFilter="cancelBubble" nodeType="interactiveSeq"><p:stCondLst><p:cond evt="onClick" delay="0"><p:tgtEl><p:spTgt spid="${v}"/></p:tgtEl></p:cond></p:stCondLst><p:endSync evt="end" delay="0"><p:rtn val="all"/></p:endSync><p:childTnLst><p:par><p:cTn id="${b}" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst><p:par><p:cTn id="${c}" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst><p:par><p:cTn id="${d}" presetID="2" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="clickEffect"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst><p:cmd type="call" cmd="togglePause"><p:cBhvr><p:cTn id="${f}" dur="1" fill="hold"/><p:tgtEl><p:spTgt spid="${v}"/></p:tgtEl></p:cBhvr></p:cmd></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn><p:nextCondLst><p:cond evt="onClick" delay="0"><p:tgtEl><p:spTgt spid="${v}"/></p:tgtEl></p:cond></p:nextCondLst></p:seq>`; }).join('');
