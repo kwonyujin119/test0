@@ -122,7 +122,9 @@ if (!window.EMBEDDED_DECK && !document.querySelector('link[href$="pres-fx.css"]'
   /* 몰입 연출 설정 (이 브라우저에 기억): cold = 시작할 때 암전 → 표지, bar = 아래 구역별 진행 막대, dock = 마우스를 움직이면 나타나는 조작 막대 */
   const FX = (() => { const d = { cold: true, bar: true, dock: true }; try { return Object.assign(d, JSON.parse(localStorage.getItem('pres:fx') || '{}')); } catch (e) { return d; } })();
   /* 콜드 오픈: 목록 · 링크로 처음 열었을 때만 (편집기의 [발표] · 새로 고침 · 미리보기는 바로 그 장) */
-  let cold = !!(FX.cold && !qs('start') && !qs('draft'));
+  /* 암전 시작은 발표하는 사람 화면에만: 공유 링크 · QR 로 각자 휴대폰에서 보는 청중(게스트)은 바로 표지 */
+  const viewer = qs('guest') === '1' || (() => { try { return (JSON.parse(localStorage.getItem('ws:access') || 'null') || {}).role === 'guest'; } catch (e) { return false; } })();
+  let cold = !!(FX.cold && !qs('start') && !qs('draft') && !viewer && role === 'main');
   let pfPop = null; // 열려 있는 작은 창 (연출 설정 · 타이머 고르기)
   const CD = { total: 0, end: 0, left: null, t: 0, hideT: 0, shrinkT: 0 }; // 토의 · 실습 타이머: end = 끝나는 시각(돌아가는 중), left = 멈춘 동안 남은 초
   /* 장별 시간 기록 (멈춘 시간은 빼고) — 발표가 끝나거나 창을 닫을 때 "지난 발표 기록"으로 저장 */
