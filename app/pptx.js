@@ -601,7 +601,7 @@ const PPTX = (() => {
             const b = stp > 0 ? stp : 1, ranges = new Map();
             paraInfo.forEach((p, i) => { const k = p.item >= 0 ? b + p.item : stp; if (k <= 0) return; const key = (p.item >= 0 ? 'i' + p.item : 'x' + i); const r = ranges.get(key); if (r) r.end = i; else ranges.set(key, { step: k, st: i, end: i }); });
             for (const r of ranges.values()) anim.push({ step: r.step, id, kind, p: [r.st, r.end] });
-          } else if (stp > 0) anim.push({ step: stp, id, kind });
+          } else if (stp > 0) anim.push({ step: stp, id, kind, delay: Math.round((+e.delay || 0) * 1000), dur: Math.round((+e.dur || 0.5) * 1000) });
           if (e.outStep > 0) anim.push({ step: e.outStep, id, kind: 'out' });
         }
       }

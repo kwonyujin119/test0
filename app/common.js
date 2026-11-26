@@ -620,6 +620,7 @@ function normalizeDeck(d) {
 }
 const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen'];
 const ANIM_KEEP = ['kenburns', 'float', 'scan', 'cycle4']; // 계속 움직이는 효과: 다음 클릭에도 멈추지 않음
+const ANIM_INTRO = ['out', 'sheen']; // 발표 화면에서 장이 열릴 때 한 번만 쓰는 효과
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
 function applyStepToNode(e, node, step, back) {
   const s = e.step || 0;
@@ -632,6 +633,8 @@ function applyStepToNode(e, node, step, back) {
   else if (e.emStep && step === e.emStep) node.classList.add('anim', 'anim-' + (e.emAnim || 'pulse'));
   else if (s > 0 && s === step && e.anim && e.anim !== 'none') node.classList.add('anim', 'anim-' + e.anim);
   else if (s === 0 && e.enter && e.anim && e.anim !== 'none' && (step === 0 || ANIM_KEEP.includes(e.anim))) node.classList.add('anim', 'anim-' + e.anim); // 장이 열릴 때 바로 (클릭 없이)
+  // 여는 장면 전용(막 걷기 · 반짝임): 장이 처음 열릴 때만 — 다음 클릭이나 뒤로 왔을 때는 숨김 (막이 화면을 덮지 않게)
+  if (e.po && e.enter && ANIM_INTRO.includes(e.anim) && !node.classList.contains('anim')) { node.classList.add('step-hidden'); return; }
   if (e.type === 'text' && e.listSteps) {
     const inner = node.querySelector('.el-text-inner'); if (!inner) return;
     const base = listStepBase(e);
