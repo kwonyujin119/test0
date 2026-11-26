@@ -1674,8 +1674,8 @@ const API = {
     const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
   },
   /* 파일 이름 바꾸기: GitHub 은 새 파일 + 옛 파일 삭제를 커밋 하나로 */
-  async rename(from, to) {
-    const deck = await this.load(from);
+  async rename(from, to, given) { // given: 이미 읽어 둔(제목을 고친) 교안 — 있으면 그 내용으로 한 커밋에 바꿈
+    const deck = given || await this.load(from);
     if (this.mode === 'github') {
       if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
       // 내용은 그대로이므로 저장 시각을 바꾸지 않음 (이 교안을 열어 둔 편집 화면이 "다른 곳에서 고쳤다"고 잘못 알지 않게)
