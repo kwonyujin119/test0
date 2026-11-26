@@ -648,10 +648,18 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       refresh();
     }
     if (a === 'rename') {
-      const same = !d.title || d.title === d.name; // 제목이 파일 이름과 같으면(보통) 제목도 함께 바꿈
-      const nn = await askText('이름 바꾸기', same ? '목록에 보이는 제목과 교안 파일 이름을 함께 바꿉니다.' : `교안 파일 이름을 바꿉니다. 화면 제목("${d.title}")은 따로 정한 것이라 그대로 둡니다 — 제목은 편집기 맨 위에서 바꿉니다.`, d.name, '바꾸기'); if (!nn || nn.trim() === d.name) return;
+      /* 목록 카드에 보이는 이름(제목)과 교안 파일 이름을 늘 함께 바꿈 — 예전에는 제목을 따로 정한 교안(8개)은 파일 이름만 바뀌어
+         카드에는 옛 이름이 그대로 보였음. 입력 칸에는 지금 카드에 보이는 이름을 채워 둠 */
+      const shown = d.title || d.name;
+      const nn = await askText('이름 바꾸기', '목록에 보이는 이름과 교안 파일 이름을 함께 바꿉니다.', shown, '바꾸기'); if (!nn || (nn.trim() === shown && sanitize(nn) === d.name)) return;
       const safe = sanitize(nn); if (!safe) return;
       const done = busy();
+      if (safe === d.name) { // 파일 이름은 그대로이고 보이는 이름(괄호 · 쉼표 등)만 바뀜: 제목만 저장
+        let deck = null;
+        try { deck = await ghTry(() => API.load(d.name)); deck.title = nn.trim(); await ghTry(() => API.save(d.name, deck, { keepTime: true })); fillMeta(d, deck.title, (deck.slides || []).length, deck.modified || deck.created || ''); if (deckMeta[d.name]) { deckMeta[d.name].title = deck.title; saveMeta(); } }
+        catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
+        done(); render(); toast('이름을 바꿨습니다', 2500); if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: d.name, title: deck.title }); return;
+      }
       if (!(await freshList())) { done(); return; } // 최신 목록으로 확인 (다른 기기에서 만든 같은 이름의 교안을 덮어쓰지 않게)
       if (decks.some(x => x.name === safe)) { done(); tell('같은 이름의 교안이 있습니다', '다른 이름을 골라 주세요.'); return; }
       if (!decks.some(x => x.name === d.name)) { done(); tell('교안을 찾을 수 없습니다', '이 교안은 이미 지워졌거나 이름이 바뀌었습니다. 목록을 새로 고쳤습니다.'); return; }
@@ -661,8 +669,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       let deck = null;
       try { deck = added.has(d.name) ? JSON.parse(JSON.stringify(await deckCache.get(d.name + '|opt'))) : await ghTry(() => API.load(d.name)); } // 방금 이름 바꾼 교안을 또 바꾸면 GitHub 가 아직 못 돌려줄 수 있어 아는 내용으로
       catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
-      const sameTitle = !deck.title || deck.title === d.name;
-      if (sameTitle) deck.title = nn.trim();
+      deck.title = nn.trim(); const sameTitle = true; // 보이는 이름도 늘 새 이름으로
       try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe, deck)); }
       catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
       const newTitle = sameTitle ? deck.title : null;

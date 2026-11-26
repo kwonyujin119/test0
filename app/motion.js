@@ -227,7 +227,7 @@
     (root || document).querySelectorAll('button i[data-ic="sparkle"], button .ico[data-ic="sparkle"], a.btn i[data-ic="sparkle"]').forEach(i => { const b = i.closest('button, a'); if (b && b.textContent.trim() && !b.classList.contains('ai-act')) b.classList.add('ai-act'); });
   }
   let aiMo = null;
-  function watchAI() { markAI(); if (!('MutationObserver' in window)) return; aiMo = new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('[data-ic="sparkle"]')) markAI(n); }); aiMo.observe(document.body, { childList: true, subtree: true }); }
+  function watchAI() { markAI(); if (!('MutationObserver' in window)) return; aiMo = new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && !(n.closest && n.closest('.slide, .thumbs, #stage')) && n.querySelector('[data-ic="sparkle"]')) markAI(n); }); aiMo.observe(document.body, { childList: true, subtree: true }); }
 
   /* ---------- 명령 찾기 (Ctrl+K) — 작업장 이동 · 이 화면 메뉴 · 테마 · 단축키 ----------
      편집기 · 문서 · 영상 작업장은 Ctrl+K 를 자기 기능으로 이미 쓰므로, 그 밖의 화면에서만 Ctrl+K 로 연다 (탭 바 [찾기] 는 어디서나) */
@@ -426,19 +426,19 @@
   }
 
   /* 스포트라이트([data-spot]): 마우스 자리를 --mx · --my 로 (마우스 기기 · 움직임 허용일 때만) */
-  document.addEventListener('pointermove', e => {
+  if (PAGE === 'index.html') document.addEventListener('pointermove', e => { // 스포트라이트 카드는 첫 화면에만
     if (!FINE.matches || RM.matches || e.pointerType !== 'mouse') return;
     const c = e.target.closest && e.target.closest('[data-spot]'); if (!c) return;
     const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
   }, { passive: true });
   /* 그림이 다 받아지면 부드럽게 (그 전에는 작업장 색 바탕) */
   function artLoad(root) { (root || document).querySelectorAll('.ws-art img:not(.ok), .ws-hero img:not(.ok)').forEach(img => { const ok = () => img.classList.add('ok'); if (img.complete && img.naturalWidth) ok(); else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', () => { const box = img.closest('.ws-art'); if (box) box.style.display = 'none'; else img.remove(); }, { once: true }); } }); }
-  if ('MutationObserver' in window) new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('.ws-art img, .ws-hero img')) artLoad(n); }).observe(document.documentElement, { childList: true, subtree: true });
+  if (PAGE === 'index.html' && 'MutationObserver' in window) new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('.ws-art img')) artLoad(n); }).observe(document.querySelector('.ws') || document.body, { childList: true, subtree: true }); // 첫 화면만 (SECRET 카드를 나중에 붙임)
 
   /* ---------- 시작 ---------- */
   function boot() {
     artLoad();
-    watchAI();
+    if (PAGE !== 'present.html') watchAI(); // 발표 화면에는 AI 단추가 없음
     openWindow(document.body, 2200);
     if (PAGE === 'secret.html' || document.querySelector('[data-count]')) watchCounts();
     if (PAGE === 'index.html') setTimeout(watchIndex, 0); // 처음 그리기(입장 모드 고르기)는 나타나기가 맡음
