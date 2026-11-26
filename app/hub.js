@@ -7,6 +7,7 @@
   let decks = [];
   const removed = new Map();   // 방금 지운(이름 바꾼) 교안: 목록이 잠깐 옛것을 돌려줘도 다시 보이지 않게
   const deckCache = new Map(); // 썸네일용 교안 내용 (목록을 다시 그릴 때 또 받지 않게)
+  const added = new Map();     // 방금 이름을 바꿔 만든 교안: GitHub 목록이 늦게 따라와도 화면에 그대로 (2분)
   const bus = ('BroadcastChannel' in window) ? new BroadcastChannel('gyoan:hub') : null; // 열려 있는 편집기 창에 알림
 
   /* 이 기기에 기억해 두는 보기 설정 */
@@ -244,6 +245,11 @@
   async function refresh() {
     try { decks = await API.list(); listOk = true; } catch (e) { listOk = false; toast('목록을 불러오지 못했습니다' + (e && e.message ? ' — ' + e.message : '') + (decks.length ? ' (이전 목록을 보여 줍니다)' : ''), 4000); } // 실패해도 보이던 목록은 그대로
     decks = decks.filter(d => !(removed.has(d.name) && Date.now() - removed.get(d.name) < 120000));
+    for (const [k, v] of added) { // 이름 바꾼 교안: 목록에 아직 없으면 넣어 두고, 있으면 아는 제목 · 장 수로 채움(새 파일을 늦게 돌려줘도 옛 제목이 보이지 않게)
+      if (Date.now() - v.at > 120000) { added.delete(k); continue; }
+      const got = decks.find(x => x.name === k);
+      if (!got) decks.push(v.entry); else if (!got._read) fillMeta(got, v.entry.title, v.entry.slides, v.entry._when);
+    }
     for (const d of decks) if (d.partial && !d._read) { const m = deckMeta[d.name]; if (m && d.sha && m.sha === d.sha) fillMeta(d, m.title, m.slides, m.when); }
     if (listOk) { let gone = false; for (const k in deckMeta) if (!decks.some(d => d.name === k)) { delete deckMeta[k]; gone = true; } if (gone) saveMeta(); }
     const unknown = decks.filter(d => d.partial && !d._read);
@@ -275,7 +281,7 @@
   /* ---------- 교안 내용 (썸네일용) ---------- */
   function loadDeck(d) {
     const ck = d.name + '|' + (d.size || '') + '|' + (d.sha || d.modified || ''); // GitHub: sha 로 (제목·시각을 채운 뒤에도 같은 열쇠 → 두 번 받지 않음)
-    if (!deckCache.has(ck)) deckCache.set(ck, API.load(d.name).catch(e => { deckCache.delete(ck); throw e; }));
+    if (!deckCache.has(ck)) deckCache.set(ck, API.load(d.name).catch(e => { deckCache.delete(ck); if (deckCache.has(d.name + '|opt')) return deckCache.get(d.name + '|opt'); throw e; }));
     return deckCache.get(ck).then(deck => {
       if (d.partial) {
         const title = deck.title || d.name, slides = (deck.slides || []).length, when = deck.modified || deck.created || '';
@@ -599,21 +605,32 @@
       if (!(await freshList())) { done(); return; } // 최신 목록으로 확인 (다른 기기에서 만든 같은 이름의 교안을 덮어쓰지 않게)
       if (decks.some(x => x.name === safe)) { done(); tell('같은 이름의 교안이 있습니다', '다른 이름을 골라 주세요.'); return; }
       if (!decks.some(x => x.name === d.name)) { done(); tell('교안을 찾을 수 없습니다', '이 교안은 이미 지워졌거나 이름이 바뀌었습니다. 목록을 새로 고쳤습니다.'); return; }
-      try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe)); }
+      /* 제목까지 한 커밋에: 옛 파일을 먼저 읽어 제목을 고친 뒤 새 이름으로 올림.
+         (예전에는 이름을 바꾼 직후 새 파일을 다시 읽어 제목을 고쳤는데, GitHub 가 방금 만든 파일을 몇 초~1분 늦게 돌려줘서
+          제목이 그대로 남거나 목록에서 잠깐 사라졌음) */
+      let deck = null;
+      try { deck = added.has(d.name) ? JSON.parse(JSON.stringify(await deckCache.get(d.name + '|opt'))) : await ghTry(() => API.load(d.name)); } // 방금 이름 바꾼 교안을 또 바꾸면 GitHub 가 아직 못 돌려줄 수 있어 아는 내용으로
       catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
-      let newTitle = null;
-      let kept = false;
-      try { // 저장된 제목이 옛 파일 이름과 같으면(보통) 제목도 새 이름으로 — 따로 정한 제목은 그대로 (실패해도 파일 이름은 이미 바뀜)
-        const deck = await API.load(safe);
-        if (!deck.title || deck.title === d.name) { deck.title = nn.trim(); await ghTry(() => API.save(safe, deck)); newTitle = deck.title; deckCache.clear(); }
-        else kept = true;
-      } catch (e) { toast('파일 이름은 바꿨지만 화면 제목은 바꾸지 못했습니다 — 편집기 맨 위에서 제목을 고쳐 주세요', 6000); }
-      if (newTitle) toast('이름을 바꿨습니다', 2500);
-      else if (kept) toast('파일 이름을 바꿨습니다 — 화면 제목은 따로 정한 것이라 그대로 두었습니다(편집기 맨 위에서 바꿀 수 있습니다)', 6000);
+      const sameTitle = !deck.title || deck.title === d.name;
+      if (sameTitle) deck.title = nn.trim();
+      try { removed.delete(safe); await ghTry(() => API.rename(d.name, safe, deck)); }
+      catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
+      const newTitle = sameTitle ? deck.title : null;
+      toast(sameTitle ? '이름을 바꿨습니다' : '파일 이름을 바꿨습니다 — 화면 제목은 따로 정한 것이라 그대로 두었습니다(편집기 맨 위에서 바꿀 수 있습니다)', sameTitle ? 2500 : 6000);
       Draft.forget(safe); Draft.move(d.name, safe); // 이 기기에 남은 작업본도 새 이름으로
       if (Folders.of(d.name)) Folders.do({ t: 'renameDeck', from: d.name, to: safe }, `이름 바꾼 교안 ${d.name} → ${safe}`); // 폴더도 새 이름으로
       removed.set(d.name, Date.now());
+      /* 화면은 바로 바꿈: GitHub 목록이 따라올 때까지(최대 2분) 새 이름 카드를 그대로 둠 */
+      const when = deck.modified || deck.created || '', slides = (deck.slides || []).length;
+      const fresh = Object.assign({}, d, { name: safe, partial: true, sha: '' }); fillMeta(fresh, deck.title || safe, slides, when);
+      added.delete(d.name); deckCache.delete(d.name + '|opt');
+      added.set(safe, { at: Date.now(), entry: fresh });
+      delete deckMeta[d.name]; saveMeta();
+      deckCache.set(safe + '|opt', Promise.resolve(deck));
+      decks = decks.filter(x => x.name !== d.name && x.name !== safe).concat(fresh);
+      done(); render();
       if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: safe, title: newTitle });
+      setTimeout(refresh, 1500);
       refresh();
     }
   }
