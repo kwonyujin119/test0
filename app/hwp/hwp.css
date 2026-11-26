@@ -660,3 +660,16 @@ body.reflow #doc { min-width: 100%; }
 #spreadView .sv-inner .pg-lab { display: none; }
 #spreadView .sv-no { position: absolute; right: 6px; bottom: 4px; font-size: 11px; color: var(--ui-muted); background: rgba(255,255,255,.85); padding: 0 4px; border-radius: 3px; }
 @media print { #spreadView { display: none; } }
+
+/* 모든 문서 아래 폴더 모음 · 끌어서 옮기기 */
+.fold-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 168px), 1fr)); gap: 12px; }
+.fold-tile { display: flex; align-items: center; gap: 10px; padding: 14px 14px; border: 1px solid var(--ui-border); border-radius: 12px; background: var(--ui-panel); color: var(--ui-fg); cursor: pointer; text-align: left; min-width: 0; transition: border-color .15s, background .15s, transform .15s; }
+.fold-tile:hover { border-color: var(--ui-accent); }
+.fold-tile .ico { flex: none; color: var(--ui-accent); }
+.fold-tile .ft-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.fold-tile em { font-style: normal; color: var(--ui-muted); font-size: var(--fs-xs, 12px); font-variant-numeric: tabular-nums; }
+.doc-card[draggable="true"] { cursor: grab; }
+.doc-card.dragging { opacity: .45; }
+#home.doc-dragging .fold-tile, #home.doc-dragging .rail-folders .rail-item, #home.doc-dragging [data-filter="all"] { outline: 1px dashed var(--ui-accent); outline-offset: -2px; }
+#home .drop-on { background: var(--ui-hover) !important; outline: 2px solid var(--ui-accent) !important; outline-offset: -2px; transform: scale(1.02); }
+.doc-sheet .ds-img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: top center; background: #fff; }

@@ -153,7 +153,7 @@ const HwpHome = (() => {
   function renderFolders() {
     const nav = $('hmFolders'), head = $('hmFoldHead'); const fs = visibleFolders();
     head.hidden = GUEST && !fs.length;
-    nav.innerHTML = fs.map(f => `<button class="rail-item${filter === 'f:' + f.id ? ' on' : ''}" data-filter="f:${esc(f.id)}" title="${esc(f.name)}${f.locked ? ' — 잠금: 게스트에게 숨김' : ''}">${icon(f.locked ? 'lock' : 'folder')}<span>${esc(f.name)}</span><em>${box.items.filter(x => x.folder === f.id).length || ''}</em></button>`).join('');
+    nav.innerHTML = fs.map(f => `<button class="rail-item${filter === 'f:' + f.id ? ' on' : ''}" data-filter="f:${esc(f.id)}" data-drop-folder="${esc(f.id)}" title="${esc(f.name)}${f.locked ? ' — 잠금: 게스트에게 숨김' : ''}">${icon(f.locked ? 'lock' : 'folder')}<span>${esc(f.name)}</span><em>${box.items.filter(x => x.folder === f.id).length || ''}</em></button>`).join('');
   }
   async function folderNew() {
     if (!(await U().boxEnsure())) return;
@@ -179,6 +179,32 @@ const HwpHome = (() => {
       { okText: '옮기기', onOk: async q => { if (!(await U().boxEnsure())) return false; try { await U().boxRun(() => HwpStore.box.folder.move(x.box.id, q('#mvF').value)); toast('옮겼습니다', 1600); loadBox(); } catch (e) { U().tell('옮기지 못했습니다', e.message); } } });
   }
 
+  /* 모든 문서 화면 아래: 폴더 모음 (누르면 그 폴더로, 문서를 끌어다 놓으면 옮김) */
+  function renderFoldersMain(q) {
+    const S = $('secFolders'); if (!S) return;
+    const fs = visibleFolders();
+    S.hidden = !(filter === 'all' && !q && box.state === 'ok' && (fs.length || !GUEST)); if (S.hidden) return;
+    $('foldCnt').textContent = fs.length ? fs.length + '개' : '';
+    const acts = $('foldActs'); acts.innerHTML = ''; if (!GUEST) headBtn(acts, '새 폴더', 'folderPlus', folderNew, 'ghost');
+    const cnt = id => box.items.filter(it => it.folder === id).length;
+    const body = $('foldBody');
+    if (!fs.length) { body.replaceChildren(empty('<b>아직 폴더가 없습니다</b><span>[새 폴더]로 만든 뒤 문서를 끌어다 놓으면 옮겨집니다.</span>')); return; }
+    const g = document.createElement('div'); g.className = 'fold-grid';
+    g.innerHTML = fs.map(f => `<button class="fold-tile" data-filter="f:${esc(f.id)}" data-drop-folder="${esc(f.id)}" title="${esc(f.name)}${f.locked ? ' — 잠금: 게스트에게 숨김' : ''}">${icon(f.locked ? 'lock' : 'folder', 22)}<span class="ft-name">${esc(f.name)}</span><em>${cnt(f.id)}개</em></button>`).join('');
+    g.onclick = e => { const b = e.target.closest('[data-filter]'); if (!b) return; setFilter(b.dataset.filter); render(); root.scrollTop = 0; };
+    body.replaceChildren(g);
+  }
+  let moveQ = Promise.resolve();
+  function dropMove(id, fid) { // 화면은 즉시 옮기고, 저장소 반영은 뒤에서 차례로. 실패할 때만 되돌리고 알림
+    const it = box.items.find(b => b.id === id); if (!it || (it.folder || '') === (fid || '')) return;
+    const before = it.folder || '', f = fid ? folderOf(fid) : null;
+    it.folder = fid || undefined; if (!fid) delete it.folder; render();
+    toast(`"${it.name}"을(를) ${f ? `"${f.name}" 폴더로` : '폴더 밖(모든 문서)으로'} 옮겼습니다`, 2000);
+    moveQ = moveQ.then(() => U().boxRun(() => HwpStore.box.folder.move(id, fid || ''))).catch(e => {
+      if (before) it.folder = before; else delete it.folder; render();
+      U().tell(`"${it.name}"을(를) 옮기지 못했습니다 — 원래 자리로 되돌렸습니다`, e.message);
+    });
+  }
   function docs() {
     const W = U().W, list = [];
     const byBox = new Map(); for (const d of drafts) if (d.boxId && !byBox.has(d.boxId)) byBox.set(d.boxId, d); // 임시본은 최근 것부터
@@ -199,16 +225,22 @@ const HwpHome = (() => {
 
   /* ---------- 카드 ---------- */
   /* 종이: 미리보기 글이 있으면 그 글(첫 줄이 제목처럼), 없으면 이름과 글줄 모양 */
-  function sheetHtml(title, preview, badge) {
-    const body = preview ? `<div class="ds-text">${esc(preview)}</div>` : `<div class="ds-title">${esc(title)}</div><div class="ds-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`;
+  const thumbUrl = it => it && it.thumb ? 'documents/thumbs/' + encodeURIComponent(it.id) + '.jpg?v=' + encodeURIComponent(it.thumb) : null;
+  function sheetHtml(title, preview, badge, thumb) {
+    const body = (thumb ? `<img class="ds-img" src="${esc(thumb)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : '') + (preview ? `<div class="ds-text">${esc(preview)}</div>` : `<div class="ds-title">${esc(title)}</div><div class="ds-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`);
     return `<div class="doc-sheet" tabindex="0" role="link">${body}${badge ? `<span class="ds-badge">${esc(badge)}</span>` : ''}<div class="ds-hover"></div></div>`;
   }
   /* o: { id, title, preview, badge, meta: [], chip, note, tags, cur, click, actions: [{ label, icon, run }], menu: [{ label, icon, run, danger } | null] } */
   function card(o) {
     const c = document.createElement('article'); c.className = 'doc-card' + (o.cur ? ' cur' : ''); c.dataset.id = o.id;
-    c.innerHTML = sheetHtml(o.title, o.preview, o.badge) + `<div class="doc-body"><div class="doc-text"><div class="doc-title" title="${esc(o.title)}">${esc(o.title)}</div><div class="doc-meta">${(o.meta || []).filter(Boolean).map(m => `<span>${esc(m)}</span>`).join('')}${o.chip ? `<span class="draft-chip" title="저장하지 않은 작업본이 이 기기에 남아 있습니다. 열면 그 작업본을 엽니다">${esc(o.chip)}</span>` : ''}${o.tags && o.tags.length ? `<span class="doc-tags">${o.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</span>` : ''}</div>${o.note ? `<div class="doc-note" title="${esc(o.note)}">${esc(o.note)}</div>` : ''}</div>
+    c.innerHTML = sheetHtml(o.title, o.preview, o.badge, o.thumb) + `<div class="doc-body"><div class="doc-text"><div class="doc-title" title="${esc(o.title)}">${esc(o.title)}</div><div class="doc-meta">${(o.meta || []).filter(Boolean).map(m => `<span>${esc(m)}</span>`).join('')}${o.chip ? `<span class="draft-chip" title="저장하지 않은 작업본이 이 기기에 남아 있습니다. 열면 그 작업본을 엽니다">${esc(o.chip)}</span>` : ''}${o.tags && o.tags.length ? `<span class="doc-tags">${o.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</span>` : ''}</div>${o.note ? `<div class="doc-note" title="${esc(o.note)}">${esc(o.note)}</div>` : ''}</div>
       <div class="doc-actions">${o.actions.map((a, i) => `<button class="btn sm" data-a="${i}">${icon(a.icon, 14)}${esc(a.label)}</button>`).join('')}</div>
       ${o.menu && o.menu.length ? `<button class="btn icon ghost kebab" data-more title="더 보기" aria-label="${esc(o.title)} 더 보기">${icon('dots')}</button>` : ''}</div>`;
+    if (o.dragId) { // 끌어서 폴더로 옮기기
+      c.draggable = true;
+      c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/x-doc-id', o.dragId); e.dataTransfer.effectAllowed = 'move'; c.classList.add('dragging'); root.classList.add('doc-dragging'); });
+      c.addEventListener('dragend', () => { c.classList.remove('dragging'); root.classList.remove('doc-dragging'); root.querySelectorAll('.drop-on').forEach(x => x.classList.remove('drop-on')); });
+    }
     const sheet = c.querySelector('.doc-sheet'), hv = c.querySelector('.ds-hover');
     const main = o.click || o.actions[0];
     hv.innerHTML = o.actions.map((a, i) => `<button class="btn${i === 0 ? ' ink' : ''}" data-a="${i}">${icon(a.icon, 16)}${esc(a.label)}</button>`).join('');
@@ -269,7 +301,7 @@ const HwpHome = (() => {
       }); };
     const delDraft = async () => { if (!(await U().askConfirm(`"${x.name}" 임시본을 지울까요?`, x.box ? '문서함에 저장된 문서는 그대로 두고, 이 기기에 남은 저장 안 한 작업본만 지웁니다.' : '지우면 되살릴 수 없습니다.', '지우기', true))) return; await HwpStore.drafts.del(x.draft.id); loadDrafts(); };
     const openLabel = x.cur ? '편집으로 돌아가기' : x.stale ? '열기 (새 판 있음)' : x.draft ? '이어서 편집' : GUEST ? '열기' : '열어서 편집';
-    const o = { id: x.id, cur: x.cur, title: x.name, preview: x.preview,
+    const o = { id: x.id, cur: x.cur, title: x.name, preview: x.preview, dragId: x.box && !GUEST ? x.box.id : null, thumb: x.draft && !x.stale ? null : thumbUrl(x.box),
       meta: [x.cur ? '지금 편집 중' : '', relTime(x.time) + (x.time ? (x.draft && !x.stale ? ' 임시 저장' : ' 저장') : ''), x.kind === 'box' ? ((folderOf(x.box.folder) || {}).name || '모든 기기') : (x.draft.boxId ? '저장된 문서 · 이 기기 작업본' : '이 기기'), x.size ? U().fmtKB(x.size) : '', x.device || ''],
       chip: x.stale ? '다른 기기에서 새로 저장됨' : x.draft ? '저장 안 한 작업본' : '',
       actions: [{ label: openLabel, icon: 'edit', run: open }, { label: '인쇄', icon: 'print', run: print }],
@@ -297,7 +329,7 @@ const HwpHome = (() => {
     const R = $('hmResume'); R.hidden = !x; if (!x) return;
     const o = docCard(x);
     const when = x.time ? new Date(x.time).toLocaleString('ko-KR') : '';
-    R.innerHTML = `${sheetHtml(o.title, o.preview)}<div class="rs-side"><div class="eyebrow">${x.cur ? '지금 편집 중' : '이어서 작업'}</div><h2 class="rs-title">${esc(o.title)}</h2><div class="meta" title="${esc(when)}">${o.meta.slice(1).filter(Boolean).map(m => `<span>${esc(m)}</span>`).join(' · ')}${o.chip ? ` · <span class="draft-chip">${esc(o.chip)}</span>` : ''}</div>
+    R.innerHTML = `${sheetHtml(o.title, o.preview, null, o.thumb)}<div class="rs-side"><div class="eyebrow">${x.cur ? '지금 편집 중' : '이어서 작업'}</div><h2 class="rs-title">${esc(o.title)}</h2><div class="meta" title="${esc(when)}">${o.meta.slice(1).filter(Boolean).map(m => `<span>${esc(m)}</span>`).join(' · ')}${o.chip ? ` · <span class="draft-chip">${esc(o.chip)}</span>` : ''}</div>
       <div class="rs-facts">${x.box ? `<span>${icon('lock', 14)}GitHub 문서함에 암호로 보관 · 다른 기기에서도 같은 문서</span>` : `<span>${icon('clock', 14)}이 브라우저에 자동 임시 저장된 작업본 · 저장하면 문서함이나 PC 파일로</span>`}</div>
       <div class="cta"><button class="btn ink lg" data-a="0">${icon('edit')}${esc(o.actions[0].label)}</button><button class="btn lg" data-a="1">${icon('print')}인쇄</button><span class="flex"></span><button class="btn icon ghost" data-more title="더 보기" aria-label="${esc(o.title)} 더 보기">${icon('dots')}</button></div></div>`;
     const sheet = R.querySelector('.doc-sheet'); sheet.querySelector('.ds-hover').remove();
@@ -409,6 +441,7 @@ const HwpHome = (() => {
     const rest = hero ? list.slice(1) : list;
     notice(renderDocs(rest, hero, q));
     const nb = renderBest(match, q);
+    renderFoldersMain(q);
     const shown = list.length + nb;
     $('hmSub').textContent = (q || filter !== 'all') ? `${shown}개` : (all.length ? `문서 ${all.length}개` : '');
     if (window.DPV && DPV.swap) DPV.swap($('hmTitle').closest('.hub'), [filter, pref.view, pref.sort].join('|')); // 분류 · 보기 · 정렬이 바뀌면 새 내용이 스며듦
@@ -433,6 +466,11 @@ const HwpHome = (() => {
     if (inited) return; inited = true;
     $('hmNav').onclick = $('hmFolders').onclick = e => { const b = e.target.closest('[data-filter]'); if (!b) return; setFilter(b.dataset.filter); render(); root.scrollTop = 0; };
     $('hmFolderNew').onclick = folderNew;
+    const allBtn = $('hmNav').querySelector('[data-filter="all"]'); if (allBtn) allBtn.dataset.dropFolder = '';
+    const dropT = e => { if (GUEST || !e.dataTransfer || !Array.from(e.dataTransfer.types).includes('text/x-doc-id')) return null; return e.target.closest && e.target.closest('[data-drop-folder]'); };
+    root.addEventListener('dragover', e => { const t = dropT(e); if (!t) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; root.querySelectorAll('.drop-on').forEach(x => x !== t && x.classList.remove('drop-on')); t.classList.add('drop-on'); });
+    root.addEventListener('dragleave', e => { const t = dropT(e); if (t && !t.contains(e.relatedTarget)) t.classList.remove('drop-on'); });
+    root.addEventListener('drop', e => { const t = dropT(e); if (!t) return; e.preventDefault(); e.stopPropagation(); t.classList.remove('drop-on'); dropMove(e.dataTransfer.getData('text/x-doc-id'), t.dataset.dropFolder); });
     $('hmQ').oninput = () => { kw = $('hmQ').value.trim(); render(); };
     const sortSel = $('hmSort'); sortSel.value = pref.sort; sortSel.onchange = () => { pref.sort = sortSel.value; savePref(); render(); };
     document.querySelectorAll('#home .seg-b').forEach(b => b.onclick = () => { pref.view = b.dataset.view; savePref(); paintView(); render(); });

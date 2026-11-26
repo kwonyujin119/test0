@@ -273,7 +273,8 @@
   /* ---------- 문서함 ---------- */
   async function boxSaveCurrent(blob, r0, asNew, after) {
     if (!(await boxEnsure())) { setState(''); updateState(); return false; }
-    const run = (id, force, name) => boxRun(() => HwpStore.box.save(id, name || W.name, blob, deviceName(), preview(), null, { base: W.boxBase, force }));
+    let thumb = null; try { thumb = await Promise.race([pageThumb(360), new Promise(r => setTimeout(() => r(null), 4000))]); } catch (e) { console.warn('첫 쪽 그림', e); } // 실패해도 저장은 그대로
+    const run = (id, force, name) => boxRun(() => HwpStore.box.save(id, name || W.name, blob, deviceName(), preview(), null, { base: W.boxBase, force, thumb }));
     let id = asNew ? null : W.boxId;
     try { W.boxId = await run(id, false); }
     catch (e) {
