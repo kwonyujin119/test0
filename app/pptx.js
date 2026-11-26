@@ -452,7 +452,7 @@ const PPTX = (() => {
       /* 요소 */
       let n = 0;
       for (const e of s.elements || []) {
-        if (e.hide) continue;
+        if (e.hide || e.po) continue; // po: 발표 화면 전용(막 등) — 파일에는 넣지 않음
         const op = e.opacity == null ? 1 : +e.opacity, name = ((typeof TYPE_NAMES !== 'undefined' && TYPE_NAMES[e.type]) || e.type) + ' ' + (++n), hl = link(e);
         let id = 0, paraInfo = null;
         try {
