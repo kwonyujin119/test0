@@ -28,24 +28,44 @@
    "notes": "오늘은 지휘역량강화센터에서 만들어 쓰고 있는 SACHIL 플랫폼을 소개합니다. 모든 화면은 2026년 11월 7일 실제 서비스(앱 V246)에서 직접 캡처했습니다. 체크리스트와 보고서 예시는 가상 훈련 내용입니다.",
    "elements": [
     {
-     "id": "sc0001",
+     "id": "sx0013",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-cover.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "sx0014",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.06,
+     "opacity": 0.9,
      "type": "shape",
-     "shape": "ring",
-     "x": 1240,
-     "y": -240,
-     "w": 1040,
-     "h": 1040,
-     "fill": "#ffffff",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1B3F",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 24,
+     "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
+     "style": {},
+     "fill2": "#0B1B3F",
+     "fill2Op": 0.15,
+     "gAngle": 0
     },
     {
      "id": "sc0002",
@@ -102,7 +122,7 @@
     {
      "id": "sc0005",
      "step": 0,
-     "anim": "fade",
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -117,7 +137,9 @@
       "lineHeight": 1.14,
       "color": "#ffffff",
       "valign": "middle"
-     }
+     },
+     "enter": true,
+     "delay": 0.2
     },
     {
      "id": "sc0006",
@@ -142,7 +164,7 @@
     {
      "id": "sc0007",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -156,7 +178,9 @@
       "fontSize": 38,
       "lineHeight": 1.42,
       "color": "#DCE6F8"
-     }
+     },
+     "enter": true,
+     "delay": 0.6
     },
     {
      "id": "sc0008",
@@ -255,8 +279,204 @@
    ]
   },
   {
+   "id": "scs01b",
+   "bg": {
+    "color": "#07090D"
+   },
+   "transition": "fade",
+   "decor": "none",
+   "elements": [
+    {
+     "id": "sx0121",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-cold.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "sx0122",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.93,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#05070B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {},
+     "fill2": "#05070B",
+     "fill2Op": 0.2,
+     "gAngle": 0
+    },
+    {
+     "id": "sx0123",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 150,
+     "w": 1100,
+     "h": 50,
+     "role": "text",
+     "html": "2017. 12. 21. 제천 복합건물 화재",
+     "style": {
+      "fontSize": 30,
+      "color": "#AEB8CC",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0124",
+     "step": 0,
+     "anim": "count",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 110,
+     "y": 220,
+     "w": 900,
+     "h": 380,
+     "role": "text",
+     "html": "29",
+     "style": {
+      "fontSize": 340,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "enter": true,
+      "dur": 2.2
+     },
+     "enter": true
+    },
+    {
+     "id": "sx0125",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 590,
+     "w": 900,
+     "h": 60,
+     "role": "text",
+     "html": "명이 돌아오지 못했습니다",
+     "style": {
+      "fontSize": 44,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0126",
+     "step": 1,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 690,
+     "w": 200,
+     "h": 8,
+     "shape": "rect",
+     "fill": "#FDD000",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0127",
+     "step": 1,
+     "anim": "words",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 720,
+     "w": 1150,
+     "h": 140,
+     "role": "text",
+     "html": "2층에 구조를 기다리는 사람이 많다는 정보가<br>현장 대원에게 즉시 전해지지 않았습니다.",
+     "style": {
+      "fontSize": 40,
+      "color": "#E6EAF2",
+      "bold": false,
+      "lineHeight": 1.45
+     }
+    },
+    {
+     "id": "sx0128",
+     "step": 2,
+     "anim": "focus",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 880,
+     "w": 1300,
+     "h": 60,
+     "role": "text",
+     "html": "오늘의 질문 — 필요한 정보가, 필요한 사람에게, 제때 닿고 있습니까?",
+     "style": {
+      "fontSize": 34,
+      "color": "#FDD000",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0129",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 960,
+     "w": 1500,
+     "h": 40,
+     "role": "text",
+     "html": "출처: 소방합동조사단 발표 보도(서울신문 2018. 2. 28.) · 자세한 내용은 5장",
+     "style": {
+      "fontSize": 20,
+      "color": "#7F8AA3",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    }
+   ],
+   "notes": "[1분 · 콜드 오픈] 인사 전에 이 장부터 띄우고 3초 침묵합니다.\n[클릭 1] 조사단이 지적한 내용을 그대로 읽습니다. 특정인의 책임을 말하지 않습니다.\n[클릭 2] 질문을 던지고 답을 받지 않은 채 다음 장으로 — 5장 사례에서 다시 매듭짓습니다.\n희생자와 유족이 있는 사건이므로 차분한 목소리로 다룹니다."
+  },
+  {
    "id": "scs02",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "하나씩 눌러 보여 줍니다. 기능 설명보다 언제 어떤 칸을 누르는지를 익히는 시간이라고 안내합니다.",
    "elements": [
@@ -579,44 +799,65 @@
    "notes": "먼저 문제부터 봅니다.",
    "elements": [
     {
-     "id": "sc0027",
+     "id": "sx0002",
      "step": 0,
-     "anim": "fade",
+     "anim": "kenburns",
      "rotate": 0,
-     "opacity": 0.07,
-     "type": "shape",
-     "shape": "ring",
-     "x": 1290,
-     "y": -150,
-     "w": 860,
-     "h": 860,
-     "fill": "#ffffff",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-p1.jpg",
+     "fit": "cover",
+     "radius": 0,
      "shadow": false,
-     "html": "",
-     "style": {}
+     "enter": true
     },
     {
-     "id": "sc0028",
+     "id": "sx0003",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.35,
+     "opacity": 0.95,
      "type": "shape",
-     "shape": "ring",
-     "x": 1560,
-     "y": 560,
-     "w": 460,
-     "h": 460,
-     "fill": "#FDD000",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1B3F",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 24,
+     "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
+     "style": {},
+     "fill2": "#0B1B3F",
+     "fill2Op": 0.15,
+     "gAngle": 0
+    },
+    {
+     "id": "sx0001",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.1,
+     "type": "text",
+     "x": 1180,
+     "y": 560,
+     "w": 700,
+     "h": 420,
+     "role": "text",
+     "html": "01",
+     "style": {
+      "fontSize": 360,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "align": "right"
+     }
     },
     {
      "id": "sc0029",
@@ -641,7 +882,7 @@
     {
      "id": "sc0030",
      "step": 0,
-     "anim": "fade",
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -656,7 +897,9 @@
       "lineHeight": 1.15,
       "color": "#ffffff",
       "valign": "middle"
-     }
+     },
+     "enter": true,
+     "delay": 0.3
     },
     {
      "id": "sc0031",
@@ -681,7 +924,7 @@
     {
      "id": "sc0032",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -695,13 +938,17 @@
       "fontSize": 36,
       "lineHeight": 1.42,
       "color": "#DCE6F8"
-     }
+     },
+     "enter": true,
+     "delay": 0.7
     }
    ]
   },
   {
    "id": "scs04",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "교육생에게 먼저 묻습니다. 최근 현장에서 가장 답답했던 것은 무엇이었나요? 네 가지 중 어디에 해당하는지 손을 들어 보게 합니다.",
    "elements": [
@@ -1039,12 +1286,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0017",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0018",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0019",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0020",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs05",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "희생자와 유족이 있는 사건이므로 차분하게 다룹니다. 특정인의 책임을 논하지 않고, 정보가 현장까지 흐르는 구조를 어떻게 보완할지에 집중합니다. 수치와 내용은 슬라이드의 언론 보도 기준입니다.",
    "elements": [
@@ -1300,7 +1657,7 @@
     {
      "id": "sc0061",
      "step": 3,
-     "anim": "fade",
+     "anim": "focus",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1336,12 +1693,122 @@
       "lineHeight": 1.3,
       "color": "#5B667E"
      }
+    },
+    {
+     "id": "sx0021",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0022",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0023",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0024",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs06",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "플랫폼은 새로운 지휘 이론이 아니라, 이미 있는 기준을 현장에서 꺼내 쓰기 쉽게 만든 도구입니다. 체크리스트는 지휘관을 대신해 결정하지 않습니다.",
    "elements": [
@@ -1501,6 +1968,114 @@
       "color": "#5B667E",
       "align": "center"
      }
+    },
+    {
+     "id": "sx0025",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0026",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0027",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0028",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
@@ -1513,44 +2088,65 @@
    "notes": "이제 플랫폼을 봅니다.",
    "elements": [
     {
-     "id": "sc0069",
+     "id": "sx0005",
      "step": 0,
-     "anim": "fade",
+     "anim": "kenburns",
      "rotate": 0,
-     "opacity": 0.07,
-     "type": "shape",
-     "shape": "ring",
-     "x": 1290,
-     "y": -150,
-     "w": 860,
-     "h": 860,
-     "fill": "#ffffff",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-p2.jpg",
+     "fit": "cover",
+     "radius": 0,
      "shadow": false,
-     "html": "",
-     "style": {}
+     "enter": true
     },
     {
-     "id": "sc0070",
+     "id": "sx0006",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.35,
+     "opacity": 0.95,
      "type": "shape",
-     "shape": "ring",
-     "x": 1560,
-     "y": 560,
-     "w": 460,
-     "h": 460,
-     "fill": "#FDD000",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1B3F",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 24,
+     "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
+     "style": {},
+     "fill2": "#0B1B3F",
+     "fill2Op": 0.15,
+     "gAngle": 0
+    },
+    {
+     "id": "sx0004",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.1,
+     "type": "text",
+     "x": 1180,
+     "y": 560,
+     "w": 700,
+     "h": 420,
+     "role": "text",
+     "html": "02",
+     "style": {
+      "fontSize": 360,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "align": "right"
+     }
     },
     {
      "id": "sc0071",
@@ -1575,7 +2171,7 @@
     {
      "id": "sc0072",
      "step": 0,
-     "anim": "fade",
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1590,7 +2186,9 @@
       "lineHeight": 1.15,
       "color": "#ffffff",
       "valign": "middle"
-     }
+     },
+     "enter": true,
+     "delay": 0.3
     },
     {
      "id": "sc0073",
@@ -1615,7 +2213,7 @@
     {
      "id": "sc0074",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -1629,13 +2227,17 @@
       "fontSize": 36,
       "lineHeight": 1.42,
       "color": "#DCE6F8"
-     }
+     },
+     "enter": true,
+     "delay": 0.7
     }
    ]
   },
   {
    "id": "scs08",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "앱 화면에서도 S, A, CH, IL 네 글자를 손글씨 시그니처로 씁니다. 47은 사칠을 숫자로 쓴 것입니다.",
    "elements": [
@@ -2060,12 +2662,122 @@
       "lineHeight": 1.42,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0029",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0030",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0031",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0032",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs09",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "첫 화면에서 한 번 누르면 원하는 기능으로 바로 들어갑니다. 위쪽 시계 아이콘은 초과근무 확인 알림입니다.",
    "elements": [
@@ -2341,12 +3053,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0033",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0034",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0035",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0036",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs10",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "왼쪽 위 버튼으로 두 모드를 바꿉니다. 선택은 기기에 기억됩니다. 화면의 12/50은 시연용으로 체크한 것입니다.",
    "elements": [
@@ -2760,12 +3582,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0037",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0038",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0039",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0040",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs11",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "기능을 따로 외우기보다 이 흐름으로 기억하게 합니다. 뒤에서 가상 시나리오로 다시 짚습니다.",
    "elements": [
@@ -3238,6 +4170,114 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0041",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0042",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0043",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0044",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
@@ -3250,44 +4290,65 @@
    "notes": "실제 화면을 하나씩 봅니다.",
    "elements": [
     {
-     "id": "sc0152",
+     "id": "sx0008",
      "step": 0,
-     "anim": "fade",
+     "anim": "kenburns",
      "rotate": 0,
-     "opacity": 0.07,
-     "type": "shape",
-     "shape": "ring",
-     "x": 1290,
-     "y": -150,
-     "w": 860,
-     "h": 860,
-     "fill": "#ffffff",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-p3.jpg",
+     "fit": "cover",
+     "radius": 0,
      "shadow": false,
-     "html": "",
-     "style": {}
+     "enter": true
     },
     {
-     "id": "sc0153",
+     "id": "sx0009",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.35,
+     "opacity": 0.95,
      "type": "shape",
-     "shape": "ring",
-     "x": 1560,
-     "y": 560,
-     "w": 460,
-     "h": 460,
-     "fill": "#FDD000",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1B3F",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 24,
+     "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
+     "style": {},
+     "fill2": "#0B1B3F",
+     "fill2Op": 0.15,
+     "gAngle": 0
+    },
+    {
+     "id": "sx0007",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.1,
+     "type": "text",
+     "x": 1180,
+     "y": 560,
+     "w": 700,
+     "h": 420,
+     "role": "text",
+     "html": "03",
+     "style": {
+      "fontSize": 360,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "align": "right"
+     }
     },
     {
      "id": "sc0154",
@@ -3312,7 +4373,7 @@
     {
      "id": "sc0155",
      "step": 0,
-     "anim": "fade",
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3327,7 +4388,9 @@
       "lineHeight": 1.15,
       "color": "#ffffff",
       "valign": "middle"
-     }
+     },
+     "enter": true,
+     "delay": 0.3
     },
     {
      "id": "sc0156",
@@ -3352,7 +4415,7 @@
     {
      "id": "sc0157",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -3366,13 +4429,17 @@
       "fontSize": 36,
       "lineHeight": 1.42,
       "color": "#DCE6F8"
-     }
+     },
+     "enter": true,
+     "delay": 0.7
     }
    ]
   },
   {
    "id": "scs13",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "어디서든 / 키를 누르면 검색창으로 이동합니다. 2026년 11월 7일 기준 자료 13개, 2,385쪽이 색인되어 있습니다. 법령은 첨부 자료와 별도로 법제처 현행 법령에서 가져옵니다.",
    "elements": [
@@ -3684,12 +4751,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0045",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0046",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0047",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0048",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs14",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "출동 중 대상물 정보와 용수 정보를 확인하는 체크리스트 1단계와 연결됩니다. 앱 화면에도 실제 위치와 사용 가능 여부를 확인하라는 안내가 있습니다. 예시 건물은 공개 건축물대장 조회 결과입니다.",
    "elements": [
@@ -3976,12 +5153,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0049",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0050",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0051",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0052",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs15",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "메뉴에 올린 SOP, 계획, 교재를 근거로 답합니다. 대화는 이 기기에만 저장됩니다. 답변 내용은 AI가 작성한 것이므로 그대로 믿지 말고 다음 슬라이드처럼 확인합니다.",
    "elements": [
@@ -4357,12 +5644,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0053",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0054",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0055",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0056",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs16",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "먼저 빠른 답이 나오고, 근거와 함께 다시 묻기를 누르면 자료와 쪽 번호가 붙습니다. 위 예시는 앱에 등록된 03-지휘통제 표준작전절차 17쪽 내용입니다. 교육생에게 직접 근거 쪽을 눌러 보게 합니다.",
    "elements": [
@@ -4573,7 +5970,7 @@
     {
      "id": "sc0214",
      "step": 2,
-     "anim": "fade",
+     "anim": "focus",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -4590,12 +5987,122 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0057",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0058",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0059",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0060",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs17",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "다음 할 항목이 강조되어 순서를 놓치지 않게 합니다. 전략 결정 단계는 공격, 방어, 병행 중 하나만 고르면 완료됩니다. 체크리스트는 지휘관의 판단을 돕는 보조 도구입니다.",
    "elements": [
@@ -4907,12 +6414,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0061",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0062",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0063",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0064",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs18",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "단계 이름과 항목 수는 2026년 11월 7일 앱 화면 기준입니다. 교수가 방재실에서 항목을 바꾸면 달라질 수 있습니다. 3단계 정식 이름은 도착(상황판단/초기상황보고), 4단계는 도착(지휘권)입니다.",
    "elements": [
@@ -5427,12 +7044,122 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0065",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0066",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0067",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0068",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs19",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "기록은 이 기기에 자동 저장되고 서버로 보내지 않습니다. 복기 때 언제 무엇을 했는지 그대로 볼 수 있습니다.",
    "elements": [
@@ -5744,12 +7471,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0069",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0070",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0071",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0072",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs20",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "대부분 칩을 누르고, 지금 버튼으로 시각을 넣습니다. 현장에서 글자를 적게 치도록 만들었습니다. 입력한 항목은 위쪽 표시가 초록으로 바뀝니다.",
    "elements": [
@@ -6125,12 +7962,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0073",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0074",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0075",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0076",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs21",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "결과는 복사, 공유, PDF 받기가 됩니다. 보고서는 이 기기에 최대 30건 저장됩니다. 공식 보고 전에는 내용을 반드시 검토합니다.",
    "elements": [
@@ -6405,12 +8352,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0077",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0078",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0079",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0080",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs22",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "말로 전달하기 어려운 내용을 사칠망으로 확인하라고 무전으로 알리고, 자세한 내용은 47망에서 공유합니다. 대화방 내부는 실제 대화 보호를 위해 교안에 캡처하지 않았습니다. 시연이 필요하면 강의실에서 직접 보여 줍니다.",
    "elements": [
@@ -6647,12 +8704,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0081",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0082",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0083",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0084",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs23",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "이 슬라이드는 개념도입니다. CP와 소화전 지도는 47망에 입장해야 열리는데, 실제 화면에 진행 중 대화와 표시가 나타날 수 있어 이번 교안에는 캡처하지 않았습니다. 설명은 앱 버전 기록을 바탕으로 했습니다.",
    "elements": [
@@ -7171,12 +9338,122 @@
       "color": "#5B667E",
       "align": "center"
      }
+    },
+    {
+     "id": "sx0085",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0086",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0087",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0088",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs24",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "현장에 참여한 대원은 익명으로 개선할 점을 남기고, 현장지휘관은 의견을 듣습니다. 실명, 소속, 계급, 차량 번호처럼 나를 알 수 있는 말은 쓰지 않습니다. 좋은 의견 예: 2층 진입 때 무전이 겹쳐 지시를 놓쳤어요. 진입조 채널을 따로 쓰면 좋겠어요.",
    "elements": [
@@ -7552,12 +9829,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0089",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0090",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0091",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0092",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs25",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "2026년 11월 7일 기준으로 자료가 있는 섹션은 14개 중 9개입니다. 나머지는 준비 중입니다. 자료는 주소를 아는 누구나 볼 수 있으므로 개인정보와 내부 문서는 올리지 않습니다.",
    "elements": [
@@ -7869,12 +10256,122 @@
       "lineHeight": 1.34,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0093",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0094",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0095",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0096",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs26",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "법령은 법제처 페이지로 새 창에서 열리므로 항상 현행을 봅니다. 업데이트 내역은 메뉴 맨 아래에 있습니다.",
    "elements": [
@@ -8073,6 +10570,114 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0097",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0098",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0099",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0100",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
@@ -8085,44 +10690,65 @@
    "notes": "이제 실제로 어떻게 쓰는지 봅니다.",
    "elements": [
     {
-     "id": "sc0378",
+     "id": "sx0011",
      "step": 0,
-     "anim": "fade",
+     "anim": "kenburns",
      "rotate": 0,
-     "opacity": 0.07,
-     "type": "shape",
-     "shape": "ring",
-     "x": 1290,
-     "y": -150,
-     "w": 860,
-     "h": 860,
-     "fill": "#ffffff",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 24,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-p4.jpg",
+     "fit": "cover",
+     "radius": 0,
      "shadow": false,
-     "html": "",
-     "style": {}
+     "enter": true
     },
     {
-     "id": "sc0379",
+     "id": "sx0012",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.35,
+     "opacity": 0.95,
      "type": "shape",
-     "shape": "ring",
-     "x": 1560,
-     "y": 560,
-     "w": 460,
-     "h": 460,
-     "fill": "#FDD000",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1B3F",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 24,
+     "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
+     "style": {},
+     "fill2": "#0B1B3F",
+     "fill2Op": 0.15,
+     "gAngle": 0
+    },
+    {
+     "id": "sx0010",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 0.1,
+     "type": "text",
+     "x": 1180,
+     "y": 560,
+     "w": 700,
+     "h": 420,
+     "role": "text",
+     "html": "04",
+     "style": {
+      "fontSize": 360,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1,
+      "align": "right"
+     }
     },
     {
      "id": "sc0380",
@@ -8147,7 +10773,7 @@
     {
      "id": "sc0381",
      "step": 0,
-     "anim": "fade",
+     "anim": "rise",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8162,7 +10788,9 @@
       "lineHeight": 1.15,
       "color": "#ffffff",
       "valign": "middle"
-     }
+     },
+     "enter": true,
+     "delay": 0.3
     },
     {
      "id": "sc0382",
@@ -8187,7 +10815,7 @@
     {
      "id": "sc0383",
      "step": 0,
-     "anim": "fade",
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -8201,13 +10829,17 @@
       "fontSize": 36,
       "lineHeight": 1.42,
       "color": "#DCE6F8"
-     }
+     },
+     "enter": true,
+     "delay": 0.7
     }
    ]
   },
   {
    "id": "scs28",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "이 표를 보며 직접 눌러 보게 합니다. 운전 중이거나 활동 중에는 조작하지 않고, 지정된 사람이 조작한다는 점을 강조합니다. 역할을 나누어 지휘보좌나 상황 담당이 입력하는 방식도 토의합니다.",
    "elements": [
@@ -8372,12 +11004,122 @@
       "color": "#5B667E",
       "align": "center"
      }
+    },
+    {
+     "id": "sx0101",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0102",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0103",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0104",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs29",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "브라우저 데이터를 지우면 이 기기에 저장된 기록도 함께 사라질 수 있습니다. 대화명은 익명이지만 서버 접속 기록은 남는다는 점을 정확히 안내합니다. 공식 문서 관리와 개인정보 처리는 소속 기관 규정을 따릅니다.",
    "elements": [
@@ -8558,12 +11300,705 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0105",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0106",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0107",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0108",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
+   "id": "scs29b",
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
+   "transition": "fade",
+   "decor": "none",
+   "elements": [
+    {
+     "id": "sx0130",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 10,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0131",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 0,
+     "y": 10,
+     "w": 240,
+     "h": 6,
+     "shape": "rect",
+     "fill": "#FDD000",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 0,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0132",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 40,
+     "w": 1300,
+     "h": 44,
+     "role": "text",
+     "html": "PART 4 · 확인 퀴즈",
+     "style": {
+      "fontSize": 26,
+      "color": "#244EA2",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0133",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 84,
+     "w": 1300,
+     "h": 100,
+     "role": "text",
+     "html": "이럴 때, 무엇을 먼저 하시겠습니까?",
+     "style": {
+      "fontSize": 52,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0134",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 230,
+     "w": 1680,
+     "h": 220,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D5DDEB",
+     "strokeWidth": 2,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0135",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 150,
+     "y": 260,
+     "w": 64,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "Q1",
+     "style": {
+      "fontSize": 24,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0136",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 258,
+     "w": 1500,
+     "h": 70,
+     "role": "text",
+     "html": "AI 가 「외벽에서 최소 60m」라고 답했다",
+     "style": {
+      "fontSize": 38,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0137",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 340,
+     "w": 1100,
+     "h": 50,
+     "role": "text",
+     "html": "먼저 짝과 10초 — 무엇부터?",
+     "style": {
+      "fontSize": 26,
+      "color": "#8A94A8",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0138",
+     "step": 1,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 240,
+     "y": 334,
+     "w": 1520,
+     "h": 84,
+     "shape": "rect",
+     "fill": "#FFF6CC",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 14,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0139",
+     "step": 1,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 270,
+     "y": 334,
+     "w": 1470,
+     "h": 84,
+     "role": "text",
+     "html": "✔ 근거 쪽을 눌러 SOP 원문에서 수치를 확인한다",
+     "style": {
+      "fontSize": 32,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3,
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0140",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 480,
+     "w": 1680,
+     "h": 220,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D5DDEB",
+     "strokeWidth": 2,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0141",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 150,
+     "y": 510,
+     "w": 64,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "Q2",
+     "style": {
+      "fontSize": 24,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0142",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 508,
+     "w": 1500,
+     "h": 70,
+     "role": "text",
+     "html": "검색 결과, 300m 앞에 소화전이 있다고 나온다",
+     "style": {
+      "fontSize": 38,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0143",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 590,
+     "w": 1100,
+     "h": 50,
+     "role": "text",
+     "html": "먼저 짝과 10초 — 무엇부터?",
+     "style": {
+      "fontSize": 26,
+      "color": "#8A94A8",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0144",
+     "step": 2,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 240,
+     "y": 584,
+     "w": 1520,
+     "h": 84,
+     "shape": "rect",
+     "fill": "#FFF6CC",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 14,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0145",
+     "step": 2,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 270,
+     "y": 584,
+     "w": 1470,
+     "h": 84,
+     "role": "text",
+     "html": "✔ 실제 위치 · 사용 가능 여부를 현장에서 확인한다",
+     "style": {
+      "fontSize": 32,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3,
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0146",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 730,
+     "w": 1680,
+     "h": 220,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#D5DDEB",
+     "strokeWidth": 2,
+     "radius": 18,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0147",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 150,
+     "y": 760,
+     "w": 64,
+     "h": 64,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 32,
+     "shadow": false,
+     "html": "Q3",
+     "style": {
+      "fontSize": 24,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0148",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 758,
+     "w": 1500,
+     "h": 70,
+     "role": "text",
+     "html": "긴급 철수 지시를 내려야 한다",
+     "style": {
+      "fontSize": 38,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0149",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 240,
+     "y": 840,
+     "w": 1100,
+     "h": 50,
+     "role": "text",
+     "html": "먼저 짝과 10초 — 무엇부터?",
+     "style": {
+      "fontSize": 26,
+      "color": "#8A94A8",
+      "bold": false,
+      "lineHeight": 1.3
+     }
+    },
+    {
+     "id": "sx0150",
+     "step": 3,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 240,
+     "y": 834,
+     "w": 1520,
+     "h": 84,
+     "shape": "rect",
+     "fill": "#FFF6CC",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 14,
+     "shadow": false,
+     "html": "",
+     "style": {}
+    },
+    {
+     "id": "sx0151",
+     "step": 3,
+     "anim": "pop",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 270,
+     "y": 834,
+     "w": 1470,
+     "h": 84,
+     "role": "text",
+     "html": "✔ 지휘 · 작전망 무전이 먼저. 47망은 보조로만",
+     "style": {
+      "fontSize": 32,
+      "color": "#0B1B3F",
+      "bold": true,
+      "lineHeight": 1.3,
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0152",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0153",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0154",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0155",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    }
+   ],
+   "notes": "[4분 · 확인 퀴즈] 문제를 읽고 짝과 10초 이야기하게 한 뒤 손을 들게 합니다. 클릭할 때마다 답이 하나씩 나옵니다.\nQ1 = 16장(수치는 원문 확인), Q2 = 14장(현장 확인이 먼저), Q3 = 다음 장 '무전이 먼저'.\n떠올려 보게 하는 것(인출 연습)이 설명을 다시 듣는 것보다 오래 남습니다."
+  },
+  {
    "id": "scs30",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "플랫폼은 지휘를 돕는 보조 도구이며 지휘 체계나 공식 보고 절차를 대신하지 않습니다.",
    "elements": [
@@ -9070,12 +12505,122 @@
       "lineHeight": 1.2,
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0109",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0110",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0111",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0112",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs31",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "강의실에서 모두 접속하게 합니다. 대화명에는 실명을 쓰지 않습니다. 교수 전용 기능은 이번 교안에서 다루지 않습니다.",
    "elements": [
@@ -9472,12 +13017,122 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0113",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0114",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0115",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0116",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs32",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "번호는 저장소 버전 기록 기준입니다. V38 등 중간 버전은 생략했습니다. V173과 V174가 체크리스트 13단계와 보고서 서식 개편입니다.",
    "elements": [
@@ -9948,12 +13603,122 @@
       "align": "center",
       "valign": "middle"
      }
+    },
+    {
+     "id": "sx0117",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1364,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "1 왜",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0118",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1476,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "2 한눈에",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0119",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1588,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#FFFFFF",
+     "stroke": "#C9D3E6",
+     "strokeWidth": 2,
+     "radius": 17,
+     "shadow": false,
+     "html": "3 기능",
+     "style": {
+      "fontSize": 16,
+      "color": "#5B667E",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "sx0120",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 1700,
+     "y": 36,
+     "w": 100,
+     "h": 34,
+     "shape": "rect",
+     "fill": "#244EA2",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 17,
+     "shadow": false,
+     "html": "4 활용",
+     "style": {
+      "fontSize": 16,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.1,
+      "align": "center",
+      "valign": "middle"
+     }
     }
    ]
   },
   {
    "id": "scs33",
-   "bg": null,
+   "bg": {
+    "image": "assets/sc302-bg-light.jpg"
+   },
    "transition": "",
    "notes": "실습이 끝나면 체크 초기화와 기록 초기화를 안내합니다. 실습에는 가상 내용만 입력합니다.",
    "elements": [
@@ -10341,27 +14106,47 @@
     "gradient": "linear-gradient(135deg,#0B1B3F 0%,#16336F 60%,#244EA2 100%)"
    },
    "transition": "",
-   "notes": "플랫폼은 지휘관을 대신하지 않습니다. 지휘관이 더 빨리 확인하고, 놓치지 않고, 함께 배우도록 돕습니다. 질문을 받습니다.",
+   "notes": "플랫폼은 지휘관을 대신하지 않습니다. 지휘관이 더 빨리 확인하고, 놓치지 않고, 함께 배우도록 돕습니다. 질문을 받습니다.\n[클릭 1] 네 줄 요약 → [클릭 2] 주소. 첫 장과 같은 사진으로 끝내 처음과 끝을 잇습니다.",
    "elements": [
     {
-     "id": "sc0480",
+     "id": "sx0015",
+     "step": 0,
+     "anim": "kenburns",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "image",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "src": "assets/sc302-bg-cover.jpg",
+     "fit": "cover",
+     "radius": 0,
+     "shadow": false,
+     "enter": true
+    },
+    {
+     "id": "sx0016",
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.06,
+     "opacity": 0.94,
      "type": "shape",
-     "shape": "ring",
-     "x": 1240,
-     "y": -240,
-     "w": 1040,
-     "h": 1040,
-     "fill": "#ffffff",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "shape": "rect",
+     "fill": "#0B1B3F",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 24,
+     "radius": 0,
      "shadow": false,
      "html": "",
-     "style": {}
+     "style": {},
+     "fill2": "#0B1B3F",
+     "fill2Op": 0.15,
+     "gAngle": 0
     },
     {
      "id": "sc0481",
@@ -10386,7 +14171,7 @@
     {
      "id": "sc0482",
      "step": 0,
-     "anim": "fade",
+     "anim": "words",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -10401,7 +14186,9 @@
       "lineHeight": 1.15,
       "color": "#ffffff",
       "valign": "middle"
-     }
+     },
+     "enter": true,
+     "delay": 0.3
     },
     {
      "id": "sc0483",
@@ -10425,8 +14212,8 @@
     },
     {
      "id": "sc0484",
-     "step": 0,
-     "anim": "fade",
+     "step": 1,
+     "anim": "up",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -10444,7 +14231,7 @@
     },
     {
      "id": "sc0485",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -10465,7 +14252,7 @@
     },
     {
      "id": "sc0486",
-     "step": 0,
+     "step": 2,
      "anim": "fade",
      "rotate": 0,
      "opacity": 1,
@@ -10486,5 +14273,5 @@
    ]
   }
  ],
- "modified": "2026-11-26T10:57:03.848Z"
+ "modified": "2026-11-26T13:30:00.000Z"
 }
