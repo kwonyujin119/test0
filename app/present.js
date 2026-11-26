@@ -19,7 +19,9 @@ if (!ICONS.arrowRight) ICONS.arrowRight = '<path d="M5 12h14"/><path d="m13 6 6 
       if (qs('draft')) deck = Draft.get(name); // 편집 화면의 [미리보기]: 아직 저장하지 않은 작업본
       if (deck && role === 'main' && !qs('print')) setTimeout(() => toast('아직 저장하지 않은 작업본을 보여 줍니다 (미리보기)', 3500), 800);
       if (!deck) deck = await API.load(name);
-    } catch (e) { document.body.innerHTML = `<div class="pend show"><div class="pend-t">교안을 열 수 없습니다</div><div style="color:#c9cbd1;max-width:560px;padding:0 20px;text-align:center;font-size:15px;line-height:1.65;word-break:keep-all">${esc(e.message)}</div><div class="pend-a"><a class="btn ink" href="gyoan.html">교안 목록으로</a></div></div>`; return; }
+    } catch (e) {
+      if (e && e.notFound) { const to = await API.findMoved(name); if (to) { const u = new URL(location.href); u.searchParams.set('deck', to); location.replace(u.href); return; } } /* 이름(번호)이 바뀐 교안의 옛 링크 */
+      document.body.innerHTML = `<div class="pend show"><div class="pend-t">교안을 열 수 없습니다</div><div style="color:#c9cbd1;max-width:560px;padding:0 20px;text-align:center;font-size:15px;line-height:1.65;word-break:keep-all">${esc(e.message)}</div><div class="pend-a"><a class="btn ink" href="gyoan.html">교안 목록으로</a></div></div>`; return; }
   }
   normalizeDeck(deck);
   if (!deck.slides.length) deck.slides = [newSlide('blank')];

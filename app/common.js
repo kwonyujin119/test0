@@ -1674,6 +1674,15 @@ const API = {
     const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
   },
   /* 파일 이름 바꾸기: GitHub 은 새 파일 + 옛 파일 삭제를 커밋 하나로 */
+  /* 이름이 바뀐 교안 찾기: 번호만 바꾼 경우(37. ○○ → 301. ○○, ○○ → 302.○○)가 많아서, 앞 번호를 뺀 이름이 같은 교안이 하나뿐이면 그것.
+     옛 링크 · 즐겨찾기 · 공유한 발표 링크가 계속 열리게 함. 못 찾으면 '' */
+  async findMoved(name) {
+    const core = n => String(n || '').replace(/^\s*\d+\s*[.\-_)]?\s*/, '').trim().toLowerCase();
+    const want = core(name); if (!want) return '';
+    let list = []; try { list = await this.list(); } catch (e) { return ''; }
+    const hit = list.filter(d => d.name !== name && core(d.name) === want);
+    return hit.length === 1 ? hit[0].name : '';
+  },
   async rename(from, to, given) { // given: 이미 읽어 둔(제목을 고친) 교안 — 있으면 그 내용으로 한 커밋에 바꿈
     const deck = given || await this.load(from);
     if (this.mode === 'github') {

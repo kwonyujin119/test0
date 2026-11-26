@@ -432,8 +432,8 @@
     const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
   }, { passive: true });
   /* 그림이 다 받아지면 부드럽게 (그 전에는 작업장 색 바탕) */
-  function artLoad(root) { (root || document).querySelectorAll('.ws-art img:not(.ok)').forEach(img => { const ok = () => img.classList.add('ok'); if (img.complete && img.naturalWidth) ok(); else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', () => img.closest('.ws-art') && (img.closest('.ws-art').style.display = 'none'), { once: true }); } }); }
-  if ('MutationObserver' in window) new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('.ws-art img')) artLoad(n); }).observe(document.documentElement, { childList: true, subtree: true });
+  function artLoad(root) { (root || document).querySelectorAll('.ws-art img:not(.ok), .ws-hero img:not(.ok)').forEach(img => { const ok = () => img.classList.add('ok'); if (img.complete && img.naturalWidth) ok(); else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', () => { const box = img.closest('.ws-art'); if (box) box.style.display = 'none'; else img.remove(); }, { once: true }); } }); }
+  if ('MutationObserver' in window) new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('.ws-art img, .ws-hero img')) artLoad(n); }).observe(document.documentElement, { childList: true, subtree: true });
 
   /* ---------- 시작 ---------- */
   function boot() {
