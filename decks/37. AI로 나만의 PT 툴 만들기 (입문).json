@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-25T23:42:46.000Z",
+ "modified": "2026-11-26T06:17:53.648Z",
  "footer": {
   "text": "",
   "num": true,
@@ -243,7 +243,7 @@
      "w": 1300,
      "h": 60,
      "role": "text",
-     "html": "소방위 권유진 · 2026. 11.",
+     "html": "소방위 권유진 ",
      "style": {
       "fontSize": 34,
       "color": "#FFFFFF",
@@ -263,7 +263,7 @@
      "w": 1500,
      "h": 44,
      "role": "text",
-     "html": "대상: PT 툴을 처음 접하는 분 · AI가 낯선 분 · 직접 만들어 보고 싶은 분",
+     "html": "대상: 인천소방학교 교직원",
      "style": {
       "fontSize": 24,
       "color": "#8D94A0",
@@ -1076,7 +1076,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 4.5
     },
     {
@@ -1189,7 +1189,7 @@
       "font": "nanum-coding"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 1.2
     },
     {
@@ -1212,7 +1212,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 3.0,
+     "delay": 3,
      "dur": 0.5
     },
     {
@@ -2823,7 +2823,7 @@
       "letterSpacing": -2
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 1.1
     },
     {
@@ -4435,7 +4435,7 @@
       "letterSpacing": -2
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 1.1
     },
     {
@@ -6342,7 +6342,7 @@
       "letterSpacing": -2
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 1.1
     },
     {
@@ -7963,7 +7963,7 @@
       "letterSpacing": -2
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 1.1
     },
     {
@@ -11917,7 +11917,7 @@
       "letterSpacing": -2
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 1.1
     },
     {
@@ -15151,7 +15151,7 @@
       "letterSpacing": -2
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 1.1
     },
     {
@@ -16012,7 +16012,7 @@
      },
      "enter": true,
      "delay": 0.4,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "p7721",
@@ -16034,7 +16034,7 @@
       "lineHeight": 1.5
      },
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 0.8
     },
     {
@@ -16237,7 +16237,7 @@
       "lineHeight": 1.5
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.6
     }
    ]
