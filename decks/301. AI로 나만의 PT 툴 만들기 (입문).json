@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-26T21:54:22.000Z",
+ "modified": "2026-11-26T21:59:22.000Z",
  "footer": {
   "text": "",
   "num": true,
@@ -13572,7 +13572,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "실제로 마스터 프롬프트 그대로 만든 예시입니다 (examples/my-pt). 교안 3개를 넣은 첫 화면.\n오른쪽 QR을 찍으면 교육생이 휴대폰으로 직접 열어 볼 수 있습니다: kwonyujin119.github.io/test0/examples/my-pt/",
+   "notes": "실제로 마스터 프롬프트 그대로 만든 예시입니다 (examples/my-pt). 교안 3개를 넣은 첫 화면.\n오른쪽 QR을 찍으면 교육생이 휴대폰으로 직접 열어 볼 수 있습니다: kwonyujin119.github.io/test0/examples/my-pt/\nQR은 다른 장과 같은 QR입니다. 열면 위쪽 세 칸 중 ② PT 예시를 누르면 교안 목록 · 발표 화면을 직접 볼 수 있습니다.",
    "decor": "none",
    "elements": [
     {
@@ -13916,7 +13916,7 @@
      "y": 730,
      "w": 160,
      "h": 160,
-     "src": "assets/pt37-qr-ex.png",
+     "src": "assets/pt37-qr.png",
      "fit": "contain",
      "radius": 0,
      "shadow": false,
@@ -13934,7 +13934,7 @@
      "w": 260,
      "h": 70,
      "role": "text",
-     "html": "<b>직접 열어 보기</b><br>예시 사이트",
+     "html": "<b>QR 하나로</b><br>② PT 예시 열기",
      "style": {
       "fontSize": 24,
       "color": "#FFFFFF",
@@ -17991,7 +17991,7 @@
      "strokeWidth": 0,
      "radius": 24,
      "shadow": false,
-     "html": "② PT 효과 프롬프트",
+     "html": "③ PT 효과 프롬프트",
      "style": {
       "fontSize": 22,
       "color": "#FFFFFF",
@@ -18058,7 +18058,7 @@
      "w": 338,
      "h": 300,
      "role": "body",
-     "html": "같은 QR입니다<br><br>열면 ①만들기 · ②효과<br>두 칸을 눌러 바꿔 보고<br>[복사] 한 번이면 끝",
+     "html": "같은 QR입니다<br><br>열면 ①만들기 · ②예시<br>· ③효과 세 칸을<br>눌러 바꿔 보고<br>[복사] 한 번이면 끝",
      "style": {
       "fontSize": 24,
       "color": "#FFFFFF",

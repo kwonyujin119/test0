@@ -28,15 +28,18 @@ pre { white-space:pre-wrap; word-break:keep-all; overflow-wrap:anywhere; backgro
 .copy { width:100%; min-height:52px; border:0; border-radius:12px; background:var(--acc); color:#fff; font:700 17px/1 inherit; font-family:inherit; cursor:pointer }
 .copy.done { background:var(--ok) }
 .copy:focus-visible { outline:3px solid var(--fg); outline-offset:2px }
-.tabs { position:sticky; top:0; z-index:5; max-width:760px; margin:12px auto 0; padding:8px 16px; display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--bg) }
-.tabs button { min-height:52px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--fg); font:700 15px/1.3 inherit; font-family:inherit; cursor:pointer; padding:6px 8px }
+.tabs { position:sticky; top:0; z-index:5; max-width:760px; margin:12px auto 0; padding:8px 16px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; background:var(--bg) }
+.tabs button { min-height:52px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--fg); font:700 14px/1.3 inherit; font-family:inherit; cursor:pointer; padding:6px 8px }
 .tabs button.on { background:var(--acc); border-color:var(--acc); color:#fff }
 pre.fold { max-height:220px; overflow:auto }
+.go { display:block; margin:0 0 12px } .go img, img.go { width:100%; border-radius:12px; border:1px solid var(--line); display:block }
+a.golink { display:flex; align-items:center; justify-content:center; text-decoration:none; margin-top:8px; text-align:center; padding:8px 12px; line-height:1.3 }
+a.golink.alt { background:var(--acc-s); color:var(--acc) }
 footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--muted); font-size:13px }
 </style></head><body>
 <header><div class="kick">AI로 나만의 PT 툴 만들기 · 프롬프트</div><h1 id="ttl">나만의 PT 툴 한 번에 만들기</h1>
-<p id="sub1">복사해서 Claude Code 대화창에 한 번 붙여넣으면, AI가 발표 화면 · 교안 목록 · 예시 교안 · 인터넷 공개까지 순서대로 만듭니다. ( ) 안은 내 강의에 맞게 바꾸세요.</p><p id="sub2" hidden>만든 PT 툴에 효과를 더하는 프롬프트. 하나씩 복사하거나, 맨 위 [전부 한 번에 복사]로 한꺼번에 붙여넣으세요.</p></header>
-<div class="tabs" role="tablist"><button role="tab" data-t="1" class="on">① 나만의 PT 툴 한 번에 만들기</button><button role="tab" data-t="2">② PT 효과 높이는 프롬프트</button></div>
+<p id="sub1">복사해서 Claude Code 대화창에 한 번 붙여넣으면, AI가 발표 화면 · 교안 목록 · 예시 교안 · 인터넷 공개까지 순서대로 만듭니다. ( ) 안은 내 강의에 맞게 바꾸세요.</p><p id="sub2" hidden>프롬프트 하나로 실제로 만든 PT 툴입니다. 눌러서 직접 넘겨 보세요. 휴대폰은 옆으로 밀면 넘어갑니다.</p><p id="sub3" hidden>만든 PT 툴에 효과를 더하는 프롬프트. 하나씩 복사하거나, 맨 위 [전부 한 번에 복사]로 한꺼번에 붙여넣으세요.</p></header>
+<div class="tabs" role="tablist"><button role="tab" data-t="1" class="on">① 한 번에 만들기</button><button role="tab" data-t="2">② PT 예시</button><button role="tab" data-t="3">③ 효과 프롬프트</button></div>
 <nav id="nav1"><span>① claude.ai/code 에서 my-pt 저장소 고르기</span><span>② [프롬프트 복사]</span><span>③ 붙여넣고 보내기</span><span>④ 「계속」만 누르며 기다리기</span></nav>
 <main id="tab1">
 <section class="card" id="pone" data-no="one">
@@ -87,6 +90,19 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 </section>
 </main>
 <main id="tab2" hidden>
+<section class="card on"><div class="step">첫 화면</div><h2>교안 목록</h2><p class="when">카드 · 검색 · 폴더 — 누르면 바로 발표</p>
+  <a class="go" href="examples/my-pt/index.html"><img src="assets/pt37-ex-index.jpg" alt="교안 목록 화면" loading="lazy"></a>
+  <a class="copy golink" href="examples/my-pt/index.html">교안 목록 열기</a></section>
+<section class="card"><div class="step">발표</div><h2>발표 화면</h2><p class="when">→ · Space 다음, ← 이전, F5 전체 화면, S 발표자 보기</p>
+  <a class="go" href="examples/my-pt/present.html?deck=sample"><img src="assets/pt37-ex-present.jpg" alt="발표 화면" loading="lazy"></a>
+  <a class="copy golink" href="examples/my-pt/present.html?deck=sample">예시 교안 — 소화기 사용법</a>
+  <a class="copy golink alt" href="examples/my-pt/present.html?deck=first-aid">예시 교안 — 응급처치 기초</a>
+  <a class="copy golink alt" href="examples/my-pt/present.html?deck=orientation">예시 교안 — 신규 직원 안전 오리엔테이션</a></section>
+<section class="card"><div class="step">강사용</div><h2>발표자 보기</h2><p class="when">다음 장 · 노트 · 지난 시간 — 발표 화면에서 S</p>
+  <img class="go" src="assets/pt37-ex-presenter.jpg" alt="발표자 보기" loading="lazy">
+  <button class="copy" type="button" data-t="1">이렇게 만들려면 → ① 프롬프트로</button></section>
+</main>
+<main id="tab3" hidden>
 <section class="card on"><div class="step">한 번에</div><h2>효과 12가지 전부</h2><p class="when">PT 툴을 만든 뒤, 같은 대화창에 붙여넣기</p>
   <button class="copy" type="button">전부 한 번에 복사</button><pre class="fold">내가 만든 PT 툴에 아래 효과들을 하나씩 추가해 줘. 하나 끝날 때마다 예시 교안에서 직접 확인하고, 다음으로 넘어가. 라이브러리는 쓰지 말고 HTML · CSS · JS만.
 
@@ -162,17 +178,19 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
     var a = document.querySelector('nav a[data-no="' + n + '"]'); if (a) a.classList.add('on');
   }
   var tabs = document.querySelectorAll('.tabs button');
+  var T = { '1': ['나만의 PT 툴 한 번에 만들기', ''], '2': ['PT 예시', '#ex'], '3': ['PT 효과 높이는 프롬프트', '#fx'] };
   function show(t) {
     tabs.forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); b.setAttribute('aria-selected', b.dataset.t === t); });
-    document.getElementById('tab1').hidden = t !== '1'; document.getElementById('tab2').hidden = t !== '2';
-    document.getElementById('nav1').hidden = t !== '1'; document.getElementById('sub1').hidden = t !== '1'; document.getElementById('sub2').hidden = t !== '2';
-    document.getElementById('ttl').textContent = t === '1' ? '나만의 PT 툴 한 번에 만들기' : 'PT 효과 높이는 프롬프트';
-    try { history.replaceState(null, '', t === '2' ? '#fx' : location.pathname + location.search); } catch (e) {}
+    ['1', '2', '3'].forEach(function (k) { document.getElementById('tab' + k).hidden = k !== t; document.getElementById('sub' + k).hidden = k !== t; });
+    document.getElementById('nav1').hidden = t !== '1';
+    document.getElementById('ttl').textContent = T[t][0];
+    try { history.replaceState(null, '', T[t][1] || location.pathname + location.search); } catch (e) {}
     scrollTo(0, 0);
   }
   tabs.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.t); }); });
-  if (location.hash === '#fx') show('2');
-  document.querySelectorAll('.copy').forEach(function (b) {
+  document.querySelectorAll('button.copy[data-t]').forEach(function (b) { b.addEventListener('click', function (ev) { ev.stopImmediatePropagation(); show(b.dataset.t); }, true); });
+  if (location.hash === '#ex') show('2'); else if (location.hash === '#fx') show('3');
+  document.querySelectorAll('button.copy:not([data-t])').forEach(function (b) {
     b.addEventListener('click', function () {
       var t = b.parentNode.querySelector('pre').textContent;
       var lab = b.dataset.l || (b.dataset.l = b.textContent); var ok = function () { b.textContent = '복사했습니다 — AI 대화창에 붙여넣으세요'; b.classList.add('done'); setTimeout(function () { b.textContent = lab; b.classList.remove('done'); }, 2500); };
