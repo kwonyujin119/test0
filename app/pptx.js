@@ -302,24 +302,35 @@ const PPTX = (() => {
     catch (e) { let h = 2166136261; for (let i = 0; i < data.length; i++) { h ^= data[i]; h = Math.imul(h, 16777619); } return (h >>> 0).toString(16) + ':' + data.length; }
   }
   /* 그림 파일 → PowerPoint 가 읽는 형식(png·jpeg·gif)으로, 보정(밝기 등)은 그림에 입혀서. → { data, ext, w, h } */
-  async function prepImage(blob, fx, matte) {
+  /* need: 슬라이드에 보이는 크기 { bw, bh, fit, zoom } — 그보다 1.5배 넘게 큰 그림은 줄여서 담음 */
+  const SHARP = 1.5, JPEG_Q = 0.82;
+  async function prepImage(blob, fx, matte, need) {
     const kind = await sniff(blob), filter = filterCss(fx), url = URL.createObjectURL(blob);
     try {
       const im = await loadImage(url); let w = im.naturalWidth, h = im.naturalHeight;
       if (!w || !h) { w = 800; h = 600; } // 크기 없는 SVG
-      if (kind && !filter) return { data: new Uint8Array(await blob.arrayBuffer()), ext: kind, w, h };
-      const k = kind ? 1 : Math.min(2, Math.max(1, 1600 / Math.max(w, h))); // SVG 등은 넉넉한 크기로
-      const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
-      const g = c.getContext('2d'); if (filter) g.filter = filter; g.drawImage(im, 0, 0, c.width, c.height);
-      /* SVG 로 싼 사진(PPT 에서 가져온 그림 등)을 PNG 로 담으면 원본의 10배 넘게 커짐 → 투명한 곳이 없거나
-         둥근 모서리 정도뿐이면 슬라이드 바탕색을 깔고 JPEG 로 */
+      // SVG 등은 넉넉한 크기로. 단 사진 한 장을 싼 SVG(PPT 에서 가져온 그림)는 원래 해상도 그대로 — 키워도 선명해지지 않고 용량만 늘어남
+      const rasterSvg = !kind && blob.size > 2000 && /data:image\/(jpeg|png)/.test(await blob.slice(0, 4000).text()) && !/<text[\s>]/.test(await blob.text());
+      let k = kind || rasterSvg ? 1 : Math.min(2, Math.max(1, 1600 / Math.max(w, h)));
+      if (need && need.bw > 0 && need.bh > 0) { // 보이는 크기에 맞춰 줄이기 (늘리지는 않음)
+        const sx = need.bw / w, sy = need.bh / h, sc = need.fit === 'contain' ? Math.min(sx, sy) : need.fit === 'none' ? 1 : Math.max(sx, sy);
+        k = Math.min(k, sc * (need.zoom || 1) * SHARP);
+      }
+      if (kind === 'gif' && !filter) return { data: new Uint8Array(await blob.arrayBuffer()), ext: kind, w, h }; // 움직이는 GIF 는 그대로
+      const shrink = k < 0.9, bigPng = kind === 'png' && blob.size > 150000;
+      if (kind && !filter && !shrink && !bigPng) return { data: new Uint8Array(await blob.arrayBuffer()), ext: kind, w, h };
+      if (kind && shrink) k = Math.max(k, 64 / Math.min(w, h));
+      const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+      const g = c.getContext('2d'); if (filter) g.filter = filter; g.imageSmoothingQuality = 'high'; g.drawImage(im, 0, 0, c.width, c.height);
+      /* 사진을 PNG 로 담으면 몇 배로 커짐 → 투명한 곳이 없거나 둥근 모서리 정도뿐이면 바탕색을 깔고 JPEG 로 */
       let jpg = kind === 'jpeg', cv = c;
-      if (!kind) {
+      if (kind !== 'jpeg' && kind !== 'gif') {
         const ak = alphaKind(c);
         if (ak === 'none') jpg = true;
         else if (ak === 'edge' && matte) { cv = document.createElement('canvas'); cv.width = c.width; cv.height = c.height; const g2 = cv.getContext('2d'); g2.fillStyle = matte; g2.fillRect(0, 0, cv.width, cv.height); g2.drawImage(c, 0, 0); jpg = true; }
       }
-      const out = await canvasBlob(cv, jpg ? 'image/jpeg' : 'image/png', 0.9);
+      const out = await canvasBlob(cv, jpg ? 'image/jpeg' : 'image/png', JPEG_Q);
+      if (kind && !filter && !shrink && out.size >= blob.size) return { data: new Uint8Array(await blob.arrayBuffer()), ext: kind, w, h }; // 다시 담아 더 커지면 원본 그대로
       return { data: new Uint8Array(await out.arrayBuffer()), ext: jpg ? 'jpeg' : 'png', w, h };
     } finally { URL.revokeObjectURL(url); }
   }
@@ -417,10 +428,10 @@ const PPTX = (() => {
       const m = { name }; if (key) media.set(key, m); return m;
     };
     const imgCache = new Map();
-    const image = async (src, fx, matte) => { // → { name, w, h } | null   matte: 투명한 모서리에 깔 색(바탕색)
-      const key = src + '|' + filterCss(fx) + '|' + (matte || ''); if (imgCache.has(key)) return imgCache.get(key);
+    const image = async (src, fx, matte, need) => { // → { name, w, h } | null   matte: 투명한 모서리에 깔 색(바탕색), need: 보이는 크기
+      const key = src + '|' + filterCss(fx) + '|' + (matte || '') + '|' + (need ? [need.bw, need.bh, need.fit, need.zoom].map(v => typeof v === 'number' ? Math.round(v) : v).join(',') : ''); if (imgCache.has(key)) return imgCache.get(key);
       let out = null;
-      try { const b = await getBlob(src); if (b) { const p = await prepImage(b, fx, matte); const m = addMedia('h:' + await digest(p.data), p.data, p.ext); out = { name: m.name, w: p.w, h: p.h }; } } catch (e) { out = null; }
+      try { const b = await getBlob(src); if (b) { const p = await prepImage(b, fx, matte, need); const m = addMedia('h:' + await digest(p.data), p.data, p.ext); out = { name: m.name, w: p.w, h: p.h }; } } catch (e) { out = null; }
       imgCache.set(key, out); return out;
     };
     const slideFile = new Map(deck.slides.map((s, i) => [s.id, i + 1]));
@@ -448,7 +459,7 @@ const PPTX = (() => {
       const bg = s.bg || {}; let bgXml = '', under = '';
       const bgFill = (fill) => `<p:bg><p:bgPr>${fill}<a:effectLst/></p:bgPr></p:bg>`;
       if (bg.image) {
-        const im = await image(bg.image);
+        const im = await image(bg.image, null, null, { bw: SW, bh: SH, fit: bg.fit === 'contain' ? 'contain' : 'cover', zoom: 1 });
         if (im) {
           const pl = placeImage(SW, SH, im.w, im.h, bg.fit === 'contain' ? 'contain' : 'cover', 50, 50, 1);
           const rid = rel(REL + 'image', '../media/' + im.name);
@@ -513,7 +524,7 @@ const PPTX = (() => {
             }
           } else if (e.type === 'image') {
             if (!e.src) continue;
-            const im = await image(e.src, e.fx, rgba(bg.color || theme.bg) ? (bg.color || theme.bg) : '#ffffff'); if (!im) { warn.img++; continue; }
+            const im = await image(e.src, e.fx, rgba(bg.color || theme.bg) ? (bg.color || theme.bg) : '#ffffff', { bw: e.w, bh: e.h, fit: e.fit || 'contain', zoom: e.zoom || 1 }); if (!im) { warn.img++; continue; }
             const pl = placeImage(e.w, e.h, im.w, im.h, e.fit || 'contain', e.cropX, e.cropY, e.zoom, e.flip, e.flipV); if (!pl) continue;
             const full = pl.w > e.w - 1 && pl.h > e.h - 1;
             const MASK = { hexagon: POLY.hexagon, diamond: POLY.diamond, triangle: POLY.triangle, blob: [[.32, .03], [.7, 0], [.96, .24], [1, .62], [.8, .93], [.44, 1], [.12, .86], [0, .52], [.08, .18]] };
