@@ -39,7 +39,7 @@ TOOL = {
         "properties": {
             "prompt": {"type": "string", "description": "만들 그림 설명(한국어 가능)"},
             "size": {"type": "string", "default": "1024x1024", "description": "WxH 또는 auto. 예: " + SIZE_EXAMPLES},
-            "quality": {"type": "string", "enum": QUALITIES, "default": "medium",
+            "quality": {"type": "string", "enum": QUALITIES, "default": "low",
                         "description": "low < medium < high < xhigh < max 순으로 비싸다"},
             "model": {"type": "string", "description": "생략하면 기본 모델. 예: gpt-image-2.6-sunburst, gpt-image-2.6-flare, gpt-image-2"},
             "n": {"type": "integer", "minimum": 1, "maximum": 4, "default": 1},
@@ -97,7 +97,7 @@ def _multipart(fields, files):
     return b"".join(out), f"multipart/form-data; boundary={boundary}"
 
 
-def generate(prompt, size="1024x1024", quality="medium", n=1, background="auto", filename=None, model=None,
+def generate(prompt, size="1024x1024", quality="low", n=1, background="auto", filename=None, model=None,
              output_format="png", reference_images=None, input_fidelity=None):
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
@@ -201,7 +201,7 @@ def cli(argv):
     p = argparse.ArgumentParser(description="GPT 이미지 한 장 만들기")
     p.add_argument("prompt")
     p.add_argument("--size", default="1024x1024")
-    p.add_argument("--quality", default="medium", choices=QUALITIES)
+    p.add_argument("--quality", default="low", choices=QUALITIES)
     p.add_argument("--n", type=int, default=1)
     p.add_argument("--filename")
     p.add_argument("--model")
