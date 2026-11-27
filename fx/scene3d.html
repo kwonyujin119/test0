@@ -13,7 +13,7 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
           lake   숲 호수 — 해 질 녘에서 밤으로 (오두막 불이 켜짐)
           city   네온 도시 거리를 따라 날아감
           sky    구름 위 비행기 → 구름을 뚫고 내려가 농경지
-   &speed=1 (카메라 속도) &q=0.6 (그림 해상도 비율, 느린 PC 는 0.4) &rain=1 (유리창 빗방울) &still=8 (8초 장면에서 멈춤) */
+   &speed=1 (카메라 속도) &q=0.6 (그림 해상도 비율, 느린 PC 는 0.4) &rain=1 (유리창 빗방울) &still=8 (8초 장면에서 멈춤) &shift=0.6 (장면을 오른쪽으로 옮김 · 왼쪽에 글을 둘 때) */
 (function () {
   const q = new URLSearchParams(location.search);
   const SCENE = { alps: 0, space: 1, lake: 2, city: 3, sky: 4 }[q.get('scene') || 'alps'] || 0;
@@ -24,7 +24,7 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
   if (!gl) { document.body.style.background = '#0B1020'; return; }
   const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
   const FS = `precision highp float;
-uniform vec2 R; uniform float T; uniform int S;
+uniform vec2 R; uniform float T; uniform int S; uniform float SX;
 float h1(float n){return fract(sin(n)*43758.5453);}
 float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
@@ -176,7 +176,7 @@ vec3 sky(vec2 uv){
  float pl=min(min(body,wing),tail);col=mix(col,vec3(.28,.3,.34),smoothstep(.002,0.,pl)*(1.-des));
  return col;}
 
-void main(){vec2 uv=(gl_FragCoord.xy-.5*R)/R.y;vec3 c;
+void main(){vec2 uv=(gl_FragCoord.xy-.5*R)/R.y;uv.x-=SX;vec3 c;
  if(S==0)c=alps(uv);else if(S==1)c=space(uv);else if(S==2)c=lake(uv);else if(S==3)c=city(uv);else c=sky(uv);
  c=aces(c*1.05);c*=1.-.25*dot(uv*.8,uv*.8);c+=(h2(gl_FragCoord.xy+T)-.5)/255.;
  gl_FragColor=vec4(pow(c,vec3(.95)),1.);}`;
@@ -185,7 +185,7 @@ void main(){vec2 uv=(gl_FragCoord.xy-.5*R)/R.y;vec3 c;
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const uR = gl.getUniformLocation(pr, 'R'), uT = gl.getUniformLocation(pr, 'T'), uS = gl.getUniformLocation(pr, 'S');
-  gl.uniform1i(uS, SCENE);
+  gl.uniform1i(uS, SCENE); gl.uniform1f(gl.getUniformLocation(pr, 'SX'), +(q.get('shift') || 0));
   /* 빗방울 (2D 캔버스를 위에 겹침) */
   const rc = document.getElementById('rain'), rx = rc.getContext('2d'); let drops = [];
   function size() {
