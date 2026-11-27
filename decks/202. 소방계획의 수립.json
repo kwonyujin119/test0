@@ -1,5 +1,5 @@
 {
- "title": "소방계획의 수립",
+ "title": "202. 소방계획의 수립",
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
@@ -1098,7 +1098,7 @@
       "bold": true,
       "letterSpacing": -4
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.03
     },
     {
@@ -1345,7 +1345,7 @@
       "bold": true,
       "letterSpacing": -4
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.03
     },
     {
@@ -1454,7 +1454,7 @@
       "bold": true,
       "letterSpacing": -4
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.03
     },
     {
@@ -1786,7 +1786,7 @@
       "letterSpacing": -5,
       "valign": "middle"
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.33
     },
     {
@@ -2708,7 +2708,7 @@
      },
      "enter": true,
      "delay": 0.68,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp0076",
@@ -4325,7 +4325,7 @@
      },
      "enter": true,
      "delay": 0.31,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp1339",
@@ -5801,7 +5801,7 @@
      },
      "enter": true,
      "delay": 0.3,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp1345",
@@ -8332,7 +8332,7 @@
      },
      "enter": true,
      "delay": 0.78,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp0748",
@@ -13196,7 +13196,7 @@
      },
      "enter": true,
      "delay": 0.79,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp0944",
@@ -13451,7 +13451,7 @@
      },
      "enter": true,
      "delay": 0.68,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp0266",
@@ -21486,7 +21486,7 @@
      },
      "enter": true,
      "delay": 0.78,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp0950",
@@ -26227,7 +26227,7 @@
      },
      "enter": true,
      "delay": 0.79,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp1141",
@@ -26837,7 +26837,7 @@
      },
      "enter": true,
      "delay": 0.68,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp0520",
@@ -32172,7 +32172,7 @@
      },
      "enter": true,
      "delay": 0.78,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "sp1147",
