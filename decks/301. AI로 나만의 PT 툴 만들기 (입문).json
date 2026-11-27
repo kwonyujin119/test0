@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-26T21:59:22.000Z",
+ "modified": "2026-11-27T07:44:16.727Z",
  "footer": {
   "text": "",
   "num": true,
@@ -276,7 +276,7 @@
      "w": 1500,
      "h": 44,
      "role": "text",
-     "html": "대상: 인천소방학교 교직원",
+     "html": "대상: 인천소방학교 전직원(희망자)",
      "style": {
       "fontSize": 24,
       "color": "#8D94A0",
@@ -1333,7 +1333,7 @@
      "w": 1500,
      "h": 44,
      "role": "text",
-     "html": "대상: PT 툴을 처음 접하는 분 · AI가 낯선 분 · 직접 만들어 보고 싶은 분",
+     "html": "대상: 인천소방학교 전직원(희망자)",
      "style": {
       "fontSize": 24,
       "color": "#8D94A0",
@@ -2200,7 +2200,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -4503,7 +4503,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -4724,7 +4724,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5
     },
     {
@@ -5938,7 +5938,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -6857,7 +6857,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 3.0,
+     "delay": 3,
      "dur": 0.5
     },
     {
@@ -8545,7 +8545,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -10006,7 +10006,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -12436,7 +12436,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -15509,7 +15509,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -16412,7 +16412,7 @@
      "step": 0,
      "anim": "pop",
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.5,
      "rotate": 0,
      "opacity": 0.92,
@@ -17830,7 +17830,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0
+     "delay": 2
     },
     {
      "id": "qf0104",
@@ -18043,7 +18043,7 @@
      "radius": 0,
      "shadow": false,
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "dur": 0.5
     },
     {
@@ -18330,7 +18330,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
