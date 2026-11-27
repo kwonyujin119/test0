@@ -21,6 +21,8 @@ main { max-width: 1200px; margin: 0 auto; padding: 16px 20px 40px; }
 .meta b { display: block; font-size: 17px; margin-bottom: 4px; }
 .meta span { color: var(--muted); font-size: 14px; }
 .empty { color: var(--muted); padding: 40px 0; }
+.meta { position: relative; }
+.meta .edit { cursor: pointer; position: absolute; right: 12px; bottom: 12px; font-size: 14px; font-weight: 700; color: var(--acc); text-decoration: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; background: var(--card); }
 </style></head><body>
 <header><h1>나의 교안</h1><input id="q" type="search" placeholder="교안 검색" aria-label="교안 검색"></header>
 <main id="list"></main>
@@ -28,7 +30,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 16px 20px 40px; }
 <script>
 (async function () {
   const index = await (await fetch('decks/index.json')).json();
-  const decks = await Promise.all(index.map(async (it) => ({ ...it, deck: await (await fetch('decks/' + encodeURIComponent(it.file) + '.json')).json() })));
+  const decks = await Promise.all(index.map(async (it) => ({ ...it, deck: await PT.load(it.file), edited: !!PT.local(it.file) })));
   const list = document.getElementById('list'), q = document.getElementById('q');
   function render() {
     const kw = q.value.trim().toLowerCase(); list.innerHTML = '';
@@ -40,8 +42,10 @@ main { max-width: 1200px; margin: 0 auto; padding: 16px 20px 40px; }
       const g = document.createElement('div'); g.className = 'grid'; list.appendChild(g);
       for (const d of shown.filter(x => (x.folder || '기타') === f)) {
         const a = document.createElement('a'); a.className = 'card'; a.href = 'present.html?deck=' + encodeURIComponent(d.file);
-        a.innerHTML = `<div class="thumb"></div><div class="meta"><b></b><span>${d.deck.slides.length}장 · ${d.updated || ''}</span></div>`;
+        a.innerHTML = `<div class="thumb"></div><div class="meta"><b></b><span>${d.deck.slides.length}장 · ${d.edited ? '이 기기에서 고침' : (d.updated || '')}</span><span class="edit" role="link" tabindex="0">편집</span></div>`;
         a.querySelector('b').textContent = d.deck.title; g.appendChild(a);
+        const ed = a.querySelector('.edit'), goEdit = (ev) => { ev.preventDefault(); ev.stopPropagation(); location.href = 'editor.html?deck=' + encodeURIComponent(d.file); };
+        ed.addEventListener('click', goEdit); ed.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') goEdit(ev); });
         const box = a.querySelector('.thumb'), node = PT.drawSlide(d.deck.slides[0], 99); box.appendChild(node);
         requestAnimationFrame(() => PT.fit(box, node)); new ResizeObserver(() => PT.fit(box, node)).observe(box);
       }

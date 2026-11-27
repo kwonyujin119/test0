@@ -23,7 +23,7 @@ button { background: #2a2f3a; color: #fff; border: 0; border-radius: 8px; paddin
 <script>
 (async function () {
   const name = new URLSearchParams(location.search).get('deck') || 'sample';
-  const deck = await (await fetch('decks/' + encodeURIComponent(name) + '.json')).json();
+  const deck = await PT.load(name);
   const chan = new BroadcastChannel('pt-' + name), t0 = Date.now();
   const put = (box, slide, step) => { box.innerHTML = ''; if (!slide) return; const n = PT.drawSlide(slide, step); box.appendChild(n); PT.fit(box, n); };
   let state = { cur: 0, step: 0 };

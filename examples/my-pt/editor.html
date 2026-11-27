@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>편집</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root { --bg:#EEF0F3; --card:#fff; --fg:#16181d; --muted:#616772; --line:#DDE1E7; --acc:#2457D6; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; background: var(--card); border-bottom: 1px solid var(--line); }
+header a.back { color: var(--muted); text-decoration: none; font-size: 15px; margin-right: 4px; }
+#title { font: 700 18px/1.2 inherit; font-family: inherit; border: 1px solid transparent; border-radius: 8px; padding: 6px 8px; min-width: 200px; flex: 1 1 260px; background: transparent; color: var(--fg); }
+#title:hover, #title:focus { border-color: var(--line); outline: none; }
+button, .btn { font: 600 14px/1 inherit; font-family: inherit; border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 8px; padding: 9px 12px; cursor: pointer; text-decoration: none; white-space: nowrap; }
+button:hover, .btn:hover { border-color: #b9c0cc; }
+button.pri, .btn.pri { background: var(--acc); border-color: var(--acc); color: #fff; }
+#status { font-size: 13px; color: var(--muted); min-width: 110px; text-align: right; }
+.wrap { display: grid; grid-template-columns: 190px 1fr 270px; min-height: 0; }
+#list { overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--line); }
+.thumb { position: relative; aspect-ratio: 16/9; background: #fff; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; flex: none; }
+.thumb.on { border-color: var(--acc); }
+.thumb.drop { outline: 3px dashed var(--acc); }
+.thumb .no { position: absolute; left: 4px; top: 2px; z-index: 2; font-size: 12px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); border-radius: 6px; padding: 1px 6px; }
+#center { position: relative; min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 20px; }
+#frame { position: relative; width: 100%; aspect-ratio: 16/9; max-height: 100%; background: #fff; box-shadow: 0 8px 30px rgba(0,0,0,.12); overflow: hidden; }
+#frame .el { cursor: move; }
+#frame .el.sel { outline: 3px solid var(--acc); outline-offset: 2px; }
+#frame .el [contenteditable="true"], #frame .el[contenteditable="true"] { cursor: text; outline: 3px dashed #E8590C; }
+.handle { position: absolute; width: 22px; height: 22px; right: -11px; bottom: -11px; background: #fff; border: 3px solid var(--acc); border-radius: 50%; cursor: nwse-resize; z-index: 9; }
+#side { overflow: auto; padding: 14px; border-left: 1px solid var(--line); background: var(--card); font-size: 14px; }
+#side h3 { margin: 4px 0 10px; font-size: 15px; }
+#side label { display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 8px; margin: 6px 0; color: var(--muted); }
+#side input, #side select, #side textarea { font: 14px/1.3 inherit; font-family: inherit; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; color: var(--fg); background: #fff; }
+#side textarea { min-height: 90px; resize: vertical; }
+#side input[type=color] { height: 34px; padding: 2px 4px; }
+#side .row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+#side hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
+.hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+@media (max-width: 900px) { .wrap { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; } #list { flex-direction: row; border-right: 0; border-bottom: 1px solid var(--line); } .thumb { width: 140px; } #side { border-left: 0; border-top: 1px solid var(--line); max-height: 40vh; } }
+</style></head><body>
+<header>
+  <a class="back" href="index.html">← 목록</a>
+  <input id="title" aria-label="교안 제목">
+  <button id="addSlide" title="새 장 (N)">＋ 장</button>
+  <button id="dupSlide">복제</button>
+  <button id="delSlide">장 삭제</button>
+  <button id="undo" title="되돌리기 (Ctrl+Z)">↶ 되돌리기</button>
+  <a class="btn pri" id="present" href="#">▶ 발표</a>
+  <button id="download">JSON 내려받기</button>
+  <button id="reset" title="이 기기에서 고친 것을 버리고 파일 내용으로">원래대로</button>
+  <span id="status"></span>
+</header>
+<div class="wrap">
+  <nav id="list" aria-label="장 목록"></nav>
+  <main id="center"><div id="frame"></div></main>
+  <aside id="side"></aside>
+</div>
+<script src="slide.js"></script>
+<script>
+(async function () {
+  const name = new URLSearchParams(location.search).get('deck') || 'sample';
+  let deck;
+  try { deck = await PT.load(name); } catch (e) { document.body.innerHTML = '<p style="padding:40px">교안을 찾을 수 없습니다: decks/' + name + '.json</p>'; return; }
+  const $ = (id) => document.getElementById(id), frame = $('frame'), list = $('list'), side = $('side');
+  let cur = 0, sel = -1, history = [], saveT = 0;
+  $('present').href = 'present.html?deck=' + encodeURIComponent(name);
+  $('title').value = deck.title || name; document.title = (deck.title || name) + ' · 편집';
+  const status = (t) => { $('status').textContent = t; };
+  status(PT.local(name) ? '이 기기에 저장됨' : '파일 그대로');
+
+  /* 바꾸기 전에 부르기: 되돌리기용 기록 + 자동 저장 예약 */
+  function change() { history.push(JSON.stringify(deck)); if (history.length > 50) history.shift(); }
+  function saved() { clearTimeout(saveT); status('저장 중…'); saveT = setTimeout(() => { status(PT.saveLocal(name, deck) ? '이 기기에 저장됨' : '저장 실패 (공간 부족)'); }, 300); }
+  function commit() { saved(); drawList(); drawStage(); drawSide(); }
+  const slide = () => deck.slides[cur], elOf = () => (sel >= 0 ? slide().elements[sel] : null);
+
+  /* ---------- 장 목록 (끌어서 순서 바꾸기) ---------- */
+  let dragFrom = -1;
+  function drawList() {
+    list.innerHTML = '';
+    deck.slides.forEach((s, i) => {
+      const t = document.createElement('div'); t.className = 'thumb' + (i === cur ? ' on' : ''); t.draggable = true; t.title = (i + 1) + '장';
+      t.innerHTML = '<span class="no">' + (i + 1) + '</span>';
+      const n = PT.drawSlide(s, null); t.appendChild(n); list.appendChild(t);
+      requestAnimationFrame(() => PT.fit(t, n));
+      t.onclick = () => { cur = i; sel = -1; drawList(); drawStage(); drawSide(); };
+      t.ondragstart = (e) => { dragFrom = i; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(i)); };
+      t.ondragover = (e) => { e.preventDefault(); t.classList.add('drop'); };
+      t.ondragleave = () => t.classList.remove('drop');
+      t.ondrop = (e) => { e.preventDefault(); t.classList.remove('drop'); const from = dragFrom; if (from < 0 || from === i) return; change(); const [m] = deck.slides.splice(from, 1); deck.slides.splice(i, 0, m); cur = i; sel = -1; commit(); };
+    });
+  }
+
+  /* ---------- 가운데: 고르기 · 끌기 · 크기 · 두 번 눌러 글 고치기 ---------- */
+  let k = 1;
+  function drawStage() {
+    frame.innerHTML = '';
+    const n = PT.drawSlide(slide(), null); frame.appendChild(n);
+    k = frame.clientWidth / PT.W; n.style.transform = 'scale(' + k + ')';
+    if (sel >= 0) { const node = n.querySelector('.el[data-i="' + sel + '"]'); if (node) { node.classList.add('sel'); const h = document.createElement('div'); h.className = 'handle'; h.style.transform = 'scale(' + (1 / k) + ')'; h.style.transformOrigin = '100% 100%'; node.appendChild(h); } }
+  }
+  addEventListener('resize', drawStage);
+  let drag = null;
+  frame.addEventListener('pointerdown', (ev) => {
+    if (ev.target.isContentEditable) return;
+    if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur(); // 글 고치기를 마치고 저장한 뒤
+    const node = ev.target.closest('.el'), handle = ev.target.classList.contains('handle');
+    if (!node) { sel = -1; drawStage(); drawSide(); return; }
+    const i = +node.dataset.i; if (sel !== i) { sel = i; drawStage(); drawSide(); }
+    const e = elOf(); drag = { x0: ev.clientX, y0: ev.clientY, x: e.x, y: e.y, w: e.w, h: e.h, resize: handle, moved: false };
+    frame.setPointerCapture(ev.pointerId); ev.preventDefault();
+  });
+  frame.addEventListener('pointermove', (ev) => {
+    if (!drag) return; const e = elOf(); if (!e) return;
+    const dx = Math.round((ev.clientX - drag.x0) / k), dy = Math.round((ev.clientY - drag.y0) / k);
+    if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+    if (!drag.moved) { change(); drag.moved = true; }
+    if (drag.resize) { e.w = Math.max(20, drag.w + dx); e.h = Math.max(20, drag.h + dy); } else { e.x = drag.x + dx; e.y = drag.y + dy; }
+    const node = frame.querySelector('.el[data-i="' + sel + '"]');
+    if (node) Object.assign(node.style, { left: e.x + 'px', top: e.y + 'px', width: e.w + 'px', height: e.h + 'px' });
+  });
+  frame.addEventListener('pointerup', () => { if (drag && drag.moved) commit(); drag = null; });
+  frame.addEventListener('dblclick', (ev) => {
+    // 끌기 때문에 이벤트가 frame 으로 모이므로, 누른 자리의 요소를 직접 찾음
+    const hit = document.elementFromPoint(ev.clientX, ev.clientY), node = hit && hit.closest('.el-text'); if (!node || !frame.contains(node)) return;
+    const i = +node.dataset.i, e = slide().elements[i]; sel = i;
+    const h = node.querySelector('.handle'); if (h) h.remove();
+    node.contentEditable = 'true'; node.focus();
+    const r = document.createRange(); r.selectNodeContents(node); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    node.addEventListener('blur', () => { node.contentEditable = 'false'; const html = node.innerHTML.replace(/<div>/g, '<br>').replace(/<\/div>/g, '').replace(/^<br>/, ''); if (html !== e.text) { change(); e.text = html; } commit(); }, { once: true });
+  });
+
+  /* ---------- 오른쪽: 장 · 요소 속성 ---------- */
+  const esc = (v) => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  function field(lab, key, val, type, extra) { return '<label>' + lab + (type === 'select' ? '<select data-k="' + key + '">' + extra.map(o => '<option' + (o === val ? ' selected' : '') + '>' + o + '</option>').join('') + '</select>' : '<input data-k="' + key + '" type="' + (type || 'text') + '" value="' + esc(val) + '"' + (extra || '') + '>') + '</label>'; }
+  function drawSide() {
+    const s = slide(), e = elOf(); let h = '';
+    h += '<h3>' + (cur + 1) + '장</h3>' + field('배경색', 'bg.color', (s.bg && s.bg.color) || '#ffffff', 'color') + field('배경 그림', 'bg.image', (s.bg && s.bg.image) || '') +
+         '<label>노트<textarea data-k="notes">' + esc(s.notes || '') + '</textarea></label>';
+    h += '<div class="row"><button data-add="text">＋ 글</button><button data-add="shape">＋ 도형</button><button data-add="image">＋ 그림</button></div>';
+    if (e) {
+      h += '<hr><h3>선택한 ' + ({ text: '글', image: '그림', shape: '도형' })[e.type] + '</h3>' + field('x', 'x', e.x, 'number') + field('y', 'y', e.y, 'number') + field('너비', 'w', e.w, 'number') + field('높이', 'h', e.h, 'number') + field('나타날 클릭', 'step', e.step || 0, 'number', ' min="0"');
+      if (e.type === 'text') h += field('글자 크기', 'size', e.size || 40, 'number') + field('색', 'color', e.color || '#111111', 'color') + field('굵게', 'bold', e.bold ? '예' : '아니요', 'select', ['아니요', '예']) + field('정렬', 'align', e.align || 'left', 'select', ['left', 'center', 'right']);
+      if (e.type === 'shape') h += field('모양', 'shape', e.shape || 'rect', 'select', ['rect', 'circle']) + field('채움', 'fill', e.fill || '#dddddd', 'color') + field('투명도', 'opacity', e.opacity == null ? 1 : e.opacity, 'number', ' step="0.05" min="0" max="1"') + field('모서리', 'radius', e.radius || 0, 'number');
+      if (e.type === 'image') h += field('주소', 'src', e.src || '') + field('맞춤', 'fit', e.fit || 'cover', 'select', ['cover', 'contain']) + field('모서리', 'radius', e.radius || 0, 'number');
+      h += '<div class="row"><button data-act="front">맨 앞으로</button><button data-act="copy">복제</button><button data-act="del">삭제 (Del)</button></div>';
+    } else h += '<p class="hint">요소를 누르면 고를 수 있습니다. 끌어서 옮기고, 파란 동그라미로 크기를 바꿉니다. 글은 두 번 눌러 고칩니다.<br><br>고친 내용은 이 기기에 자동 저장됩니다. 저장소에 올리려면 [JSON 내려받기] 한 파일을 AI 대화창에 올리고 「이 파일로 decks/' + esc(name) + '.json 을 바꿔 줘」라고 하세요.</p>';
+    side.innerHTML = h;
+  }
+  side.addEventListener('change', (ev) => {
+    const t = ev.target, key = t.dataset.k; if (!key) return;
+    change(); const s = slide(), e = elOf(); let v = t.value;
+    if (key.startsWith('bg.')) { s.bg = s.bg || {}; s.bg[key.slice(3)] = v; if (!v) delete s.bg[key.slice(3)]; }
+    else if (key === 'notes') s.notes = v;
+    else if (e) { if (t.type === 'number') v = +v; if (key === 'bold') v = v === '예'; e[key] = v; }
+    commit();
+  });
+  side.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return; const s = slide();
+    if (b.dataset.add) {
+      change();
+      const e = b.dataset.add === 'text' ? { type: 'text', x: 200, y: 200, w: 900, h: 120, text: '새 글', size: 56, color: '#111111', bold: true, align: 'left', step: 0 }
+        : b.dataset.add === 'shape' ? { type: 'shape', shape: 'rect', x: 300, y: 300, w: 400, h: 260, fill: '#2457D6', radius: 24, opacity: 1, step: 0 }
+        : { type: 'image', x: 300, y: 260, w: 640, h: 360, src: prompt('그림 주소 (예: images/photo.jpg)', '') || '', fit: 'cover', radius: 16, step: 0 };
+      s.elements.push(e); sel = s.elements.length - 1; commit();
+    } else if (b.dataset.act && sel >= 0) {
+      change(); const e = s.elements[sel];
+      if (b.dataset.act === 'del') { s.elements.splice(sel, 1); sel = -1; }
+      else if (b.dataset.act === 'copy') { const c = JSON.parse(JSON.stringify(e)); c.x += 40; c.y += 40; s.elements.push(c); sel = s.elements.length - 1; }
+      else if (b.dataset.act === 'front') { s.elements.splice(sel, 1); s.elements.push(e); sel = s.elements.length - 1; }
+      commit();
+    }
+  });
+
+  /* ---------- 위쪽 버튼 · 단축키 ---------- */
+  $('title').addEventListener('change', () => { change(); deck.title = $('title').value.trim() || name; document.title = deck.title + ' · 편집'; saved(); });
+  $('addSlide').onclick = () => { change(); deck.slides.splice(cur + 1, 0, { bg: { color: '#ffffff' }, notes: '', elements: [{ type: 'text', x: 140, y: 120, w: 1600, h: 120, text: '새 장 제목', size: 72, color: '#111111', bold: true, align: 'left', step: 0 }] }); cur++; sel = -1; commit(); };
+  $('dupSlide').onclick = () => { change(); deck.slides.splice(cur + 1, 0, JSON.parse(JSON.stringify(slide()))); cur++; sel = -1; commit(); };
+  $('delSlide').onclick = () => { if (deck.slides.length < 2) { alert('마지막 한 장은 지울 수 없습니다'); return; } if (!confirm((cur + 1) + '장을 지울까요?')) return; change(); deck.slides.splice(cur, 1); cur = Math.min(cur, deck.slides.length - 1); sel = -1; commit(); };
+  function undo() { const s = history.pop(); if (!s) { status('되돌릴 것이 없습니다'); return; } deck = JSON.parse(s); cur = Math.min(cur, deck.slides.length - 1); sel = -1; $('title').value = deck.title || name; commit(); }
+  $('undo').onclick = undo;
+  $('download').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(deck, null, 1)], { type: 'application/json' })); a.download = name + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+  $('reset').onclick = async () => { if (!confirm('이 기기에서 고친 것을 모두 버리고 파일 내용으로 돌아갈까요?')) return; PT.clearLocal(name); deck = await PT.fileDeck(name); history = []; cur = 0; sel = -1; $('title').value = deck.title || name; status('파일 그대로'); drawList(); drawStage(); drawSide(); };
+  addEventListener('keydown', (ev) => {
+    if (ev.target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)) return;
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); undo(); return; }
+    const e = elOf();
+    if (e && (ev.key === 'Delete' || ev.key === 'Backspace')) { ev.preventDefault(); change(); slide().elements.splice(sel, 1); sel = -1; commit(); return; }
+    if (e && ev.key.startsWith('Arrow')) { ev.preventDefault(); change(); const d = ev.shiftKey ? 10 : 1; if (ev.key === 'ArrowLeft') e.x -= d; if (ev.key === 'ArrowRight') e.x += d; if (ev.key === 'ArrowUp') e.y -= d; if (ev.key === 'ArrowDown') e.y += d; commit(); return; }
+    if (!e && (ev.key === 'ArrowDown' || ev.key === 'PageDown')) { cur = Math.min(deck.slides.length - 1, cur + 1); drawList(); drawStage(); drawSide(); }
+    if (!e && (ev.key === 'ArrowUp' || ev.key === 'PageUp')) { cur = Math.max(0, cur - 1); drawList(); drawStage(); drawSide(); }
+    if (ev.key === 'n' || ev.key === 'N') $('addSlide').click();
+    if (ev.key === 'Escape') { sel = -1; drawStage(); drawSide(); }
+  });
+  drawList(); drawStage(); drawSide();
+})();
+</script>
+</body></html>

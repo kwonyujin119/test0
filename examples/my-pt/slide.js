@@ -7,7 +7,7 @@
     s.style.background = (slide.bg && slide.bg.color) || '#ffffff';
     if (slide.bg && slide.bg.image) { s.style.backgroundImage = `url("${slide.bg.image}")`; s.style.backgroundSize = 'cover'; s.style.backgroundPosition = 'center'; }
     for (const e of slide.elements || []) {
-      const n = el('div', 'el el-' + e.type);
+      const n = el('div', 'el el-' + e.type); n.dataset.i = slide.elements.indexOf(e);
       Object.assign(n.style, { left: e.x + 'px', top: e.y + 'px', width: e.w + 'px', height: e.h + 'px' });
       if (e.type === 'text') {
         n.innerHTML = e.text;
@@ -31,5 +31,12 @@
     slideNode.style.transform = `translate(${(box.clientWidth - W * k) / 2}px, ${(box.clientHeight - H * k) / 2}px) scale(${k})`;
   }
   function maxStep(slide) { return Math.max(0, ...(slide.elements || []).map(e => e.step || 0)); }
-  window.PT = { drawSlide, fit, maxStep, W, H };
+  /* 편집기에서 고친 교안: 이 기기(localStorage)에 저장. 있으면 파일보다 먼저 씀 */
+  const KEY = (name) => 'mypt:deck:' + name;
+  function local(name) { try { const d = JSON.parse(localStorage.getItem(KEY(name))); return d && Array.isArray(d.slides) ? d : null; } catch (e) { return null; } }
+  function saveLocal(name, deck) { try { localStorage.setItem(KEY(name), JSON.stringify(deck)); return true; } catch (e) { return false; } }
+  function clearLocal(name) { try { localStorage.removeItem(KEY(name)); } catch (e) { } }
+  async function fileDeck(name) { const r = await fetch('decks/' + encodeURIComponent(name) + '.json', { cache: 'no-store' }); if (!r.ok) throw new Error('not found'); return r.json(); }
+  async function load(name) { return local(name) || fileDeck(name); }
+  window.PT = { drawSlide, fit, maxStep, W, H, load, local, saveLocal, clearLocal, fileDeck };
 })();
