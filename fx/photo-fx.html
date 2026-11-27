@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>사진에 생명 넣기</title>
+<style>html, body { margin: 0; height: 100%; background: #05060A; overflow: hidden; } canvas { display: block; width: 100%; height: 100%; }</style>
+</head><body><canvas id="c"></canvas>
+<script>
+/* 사진 한 장을 살아 있는 장면으로 — WebGL 셰이더로 사진 위에 움직임을 얹음 (라이브러리 없음)
+   ?img=assets/fx-fireground.jpg &mode=fireground  : 불꽃 일렁임 · 열 아지랑이 · 경광등 빨강/파랑 번쩍임(건물·젖은 길에 비침) · 불티 · 연기 흐름
+   ?img=assets/fx-water.jpg      &mode=water       : 물줄기 흐름 · 튀는 물방울 · 수증기 · 바닥 물보라 · 불꽃 일렁임
+   좌표(0~1, 왼쪽 위 기준)를 바꾸려면 &l1=x,y,x2 (경광등 막대) &l2=... · &noz=x,y &tgt=x,y (관창 → 닿는 곳)
+   &q=0.8 (해상도 비율) &still=6 (멈춘 장면) */
+(function () {
+  const q = new URLSearchParams(location.search);
+  const MODE = q.get('mode') === 'water' ? 1 : 0;
+  const IMG = new URL('../' + (q.get('img') || (MODE ? 'assets/fx-water.jpg' : 'assets/fx-fireground.jpg')), location.href).href;
+  const v = (k, d) => (q.get(k) || d).split(',').map(Number);
+  const L1 = v('l1', '.755,.66,.835'), L2 = v('l2', '.31,.745,.40'), NOZ = v('noz', '.661,.398'), TGT = v('tgt', '.911,.185');
+  const QUAL = Math.min(1, +(q.get('q') || .8)), RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STILL = q.get('still') != null ? +(q.get('still') || 6) : (RM ? 6 : null);
+  const cv = document.getElementById('c'), gl = cv.getContext('webgl', { preserveDrawingBuffer: STILL != null });
+  const FS = `precision highp float;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T; uniform int M; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
+vec3 tex(vec2 u){return texture2D(I,u).rgb;}
+float fireMask(vec3 c){return smoothstep(.5,.85,c.r)*smoothstep(.12,.4,c.r-c.b)*smoothstep(.95,.6,c.b+.0);}
+float embers(vec2 u,float asp,float sp,float dens,vec4 box){float a=0.;
+ for(int i=0;i<3;i++){float fi=float(i);vec2 g=vec2(u.x*asp,u.y)*(26.+fi*14.)+vec2(sin(u.y*9.+T*.8+fi*2.)*.7,T*sp*(1.+fi*.4));
+  vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*7.3);if(r<dens){vec2 o=vec2(h2(id+3.)-.5,h2(id+5.)-.5)*.55;
+   a+=smoothstep(.1+fi*.02,0.,length(f-o))*(.45+.55*sin(T*7.+r*50.));}}
+ return a*smoothstep(box.x-.1,box.x,u.x)*smoothstep(box.z+.1,box.z,u.x)*smoothstep(box.y-.1,box.y,u.y)*smoothstep(box.w+.1,box.w,u.y);}
+void main(){
+ vec2 fc=gl_FragCoord.xy/R; fc.y=1.-fc.y; // 화면 0~1 (위가 0)
+ float sa=R.x/R.y, ia=IS.x/IS.y; vec2 u=fc; if(sa>ia){u.y=(fc.y-.5)*ia/sa+.5;}else{u.x=(fc.x-.5)*sa/ia+.5;} // cover
+ float z=1.025+.02*sin(T*.07); u=(u-vec2(.6,.5))/z+vec2(.6,.5)+vec2(sin(T*.05)*.004,0.); // 아주 느린 카메라 숨쉬기
+ vec3 c0=tex(u); float fm=fireMask(c0);
+ // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임
+ vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
+ vec2 u2=u+hz*(fm+.25*smoothstep(.0,.6,fm))*1.6+vec2(0.,.004*fm*sin(T*9.+u.x*40.));
+ vec3 c=tex(u2); float f2=fireMask(c);
+ float fl=fbm(vec2(u.x*14.,u.y*10.+T*3.2));c*=1.+(fl-.45)*.75*f2;c+=vec3(1.,.45,.1)*pow(f2,2.)*.18*(.5+.5*sin(T*11.+u.x*60.));
+ float glow=fbm(vec2(T*1.7,1.))*.5+.5;
+ if(M==0){
+  // 연기 흐름 (위쪽 어두운 부분)
+  float sm=fbm(vec2(u.x*3.,u.y*4.)+vec2(T*.03,T*.06))-.5;float smm=smoothstep(.55,.0,u.y)*smoothstep(.25,.55,u.x);c*=1.+sm*.35*smm;c+=vec3(.35,.12,.04)*max(sm,0.)*smm*.25*glow;
+  // 경광등: 빨강 · 파랑 번갈아 (두 대가 조금 어긋나게)
+  for(int k=0;k<2;k++){vec3 L=k==0?L1:L2;float ph=fract(T*1.55+float(k)*.37);
+   float r=(step(ph,.09)+step(.16,ph)*step(ph,.25))*(.75+.25*vn(vec2(T*30.,float(k))));float b=step(.5,ph)*step(ph,.59)+step(.66,ph)*step(ph,.75);
+   vec2 pr=vec2(L.x+(L.z-L.x)*.2,L.y),pb=vec2(L.z-(L.z-L.x)*.2,L.y);
+   vec2 dr=(u-pr)*vec2(sa,1.),db=(u-pb)*vec2(sa,1.);float lum=dot(c0,vec3(.3,.6,.1));
+   float kk=k==0?1.:.7;
+   c+=vec3(1.,.08,.06)*r*kk*(exp(-length(dr)*4.)*(.22+lum*1.1)+.0016/(dot(dr,dr)+.0006));
+   c+=vec3(.15,.3,1.)*b*kk*(exp(-length(db)*4.)*(.22+lum*1.1)+.0016/(dot(db,db)+.0006));
+   // 젖은 길에 길게 비친 빛
+   float road=smoothstep(.86,.95,u.y);c+=(vec3(1.,.1,.08)*r*exp(-abs(dr.x)*30.)+vec3(.2,.35,1.)*b*exp(-abs(db.x)*30.))*road*kk*.6*(.6+.4*vn(vec2(u.x*80.,u.y*200.+T*2.)));}
+  c+=vec3(1.,.55,.18)*embers(u,sa,-.35,.07,vec4(.45,.0,.98,.6))*1.3;
+ }else{
+  // 물줄기: 관창 → 창문 (사진 속 물줄기를 따라 흐름 · 반짝임)
+  vec2 A=NZ,B=TG;vec2 ab=(B-A)*vec2(sa,1.),ap=(u-A)*vec2(sa,1.);float s=clamp(dot(ap,ab)/dot(ab,ab),0.,1.);
+  vec2 P=A+(B-A)*s-vec2(0.,.04*4.*s*(1.-s));float d=length((u-P)*vec2(sa,1.));float w=mix(.006,.03,s);
+  float core=smoothstep(w,0.,d);float flow=fbm(vec2(s*22.-T*9.,d*80.));
+  c+=vec3(.78,.9,1.)*core*smoothstep(.4,.8,flow)*.9;c+=vec3(.6,.75,.9)*smoothstep(w*3.,0.,d)*smoothstep(.55,.9,fbm(vec2(s*10.-T*6.,d*40.)))*.18;c=mix(c,c*.9+vec3(.08,.1,.12)*flow,core*.4);
+  // 튀는 물방울
+  for(int i=0;i<110;i++){float fi=float(i);float age=fract(h1(fi*1.7)+T*(.5+.4*h1(fi)));float s0=.08+.9*h1(fi*3.1);
+   vec2 p0=A+(B-A)*s0-vec2(0.,.04*4.*s0*(1.-s0));vec2 vel=vec2((h1(fi*5.)-.4)*.08,(h1(fi*7.)-.75)*.12);
+   vec2 pp=p0+vel*age+vec2(0.,.35*age*age);vec2 dd=(u-pp)*vec2(sa,1.);
+   c+=vec3(.85,.93,1.)*smoothstep(.0034,0.,length(dd))*(1.-age)*1.2;}
+  // 수증기 (닿는 곳에서 피어오름)
+  float st=fbm((u-B)*vec2(5.,4.)+vec2(-T*.08,T*.22));float stm=smoothstep(.32,.0,length((u-B-vec2(-.08,-.02))*vec2(1.,1.3)));
+  c=mix(c,vec3(.86,.84,.82)+vec3(.25,.1,.0)*glow*.3,smoothstep(.35,.85,st)*stm*.55);
+  // 바닥 물보라 · 반짝임
+  float gnd=smoothstep(.84,.95,u.y);float sp=pow(vn(vec2(u.x*300.,u.y*90.+T*6.)),12.);c+=vec3(1.,.8,.6)*sp*gnd*1.5;
+  c+=vec3(.9,.95,1.)*embers(vec2(u.x,1.-u.y),sa,1.2,.05,vec4(.5,.02,.75,.12))*.8;
+  c+=vec3(1.,.5,.15)*embers(u,sa,-.3,.05,vec4(.68,.0,1.,.5));
+ }
+ c*=1.-.22*pow(length((fc-.5)*vec2(1.,.9))*1.25,2.);
+ gl_FragColor=vec4(c+(h2(gl_FragCoord.xy+T)-.5)/255.,1.);}`;
+  const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; };
+  const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}')); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
+  const U = (n) => gl.getUniformLocation(pr, n);
+  gl.uniform1i(U('M'), MODE); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
+  function size() { cv.width = Math.round(innerWidth * QUAL * Math.min(1.5, devicePixelRatio || 1)); cv.height = Math.round(innerHeight * QUAL * Math.min(1.5, devicePixelRatio || 1)); gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(U('R'), cv.width, cv.height); }
+  addEventListener('resize', size); size();
+  const im = new Image(); im.onload = () => {
+    const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, im);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.uniform2f(U('IS'), im.width, im.height);
+    const t0 = performance.now();
+    (function f(now) { gl.uniform1f(U('T'), STILL != null ? STILL : Math.max(0, (now - t0) / 1000)); gl.drawArrays(gl.TRIANGLES, 0, 3); if (STILL == null) requestAnimationFrame(f); })(t0);
+  }; im.src = IMG;
+  if (window.parent !== window) {
+    const fwd = (key, ev) => { try { parent.document.dispatchEvent(new KeyboardEvent('keydown', { key, code: ev && ev.code, shiftKey: ev && ev.shiftKey, ctrlKey: ev && ev.ctrlKey, bubbles: true })); parent.focus(); } catch (e) { } };
+    addEventListener('keydown', (ev) => { ev.preventDefault(); fwd(ev.key, ev); });
+    addEventListener('click', () => fwd('ArrowRight'));
+  }
+})();
+</script></body></html>
