@@ -13,10 +13,13 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
           lake   숲 호수 — 해 질 녘에서 밤으로 (오두막 불이 켜짐)
           city   네온 도시 거리를 따라 날아감
           sky    구름 위 비행기 → 구름을 뚫고 내려가 농경지
+          fireground  밤의 화재 현장 — 소방차 경광등, 불난 건물, 젖은 길 반사
+          fire   타오르는 불꽃 · 불티 · 아지랑이 · 연기
+          water  관창에서 뻗는 물줄기 · 물방울 · 수증기
    &speed=1 (카메라 속도) &q=0.6 (그림 해상도 비율, 느린 PC 는 0.4) &rain=1 (유리창 빗방울) &still=8 (8초 장면에서 멈춤) &shift=0.6 (장면을 오른쪽으로 옮김 · 왼쪽에 글을 둘 때) */
 (function () {
   const q = new URLSearchParams(location.search);
-  const SCENE = { alps: 0, space: 1, lake: 2, city: 3, sky: 4 }[q.get('scene') || 'alps'] || 0;
+  const SCENE = { alps: 0, space: 1, lake: 2, city: 3, sky: 4, fireground: 5, fire: 6, water: 7 }[q.get('scene') || 'alps'] || 0;
   const SPEED = +(q.get('speed') || 1), QUAL = Math.min(1, +(q.get('q') || 0.6)), RAIN = q.get('rain') === '1';
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const STILL = q.get('still') != null ? +(q.get('still') || 8) : (RM ? 8 : null);
@@ -176,8 +179,91 @@ vec3 sky(vec2 uv){
  float pl=min(min(body,wing),tail);col=mix(col,vec3(.28,.3,.34),smoothstep(.002,0.,pl)*(1.-des));
  return col;}
 
+/* ---------- 5 · 6 · 7 소방: 현장 · 화재 · 방수 ---------- */
+vec3 fireRamp(float t){t=clamp(t,0.,1.);return vec3(min(1.,t*1.8),pow(t,1.6)*1.1,pow(t,4.)*1.2);}
+float flameI(vec2 p,float cx,float wd,float ht,float sp){ // 불꽃 세기 (p.y: 바닥 0)
+ float n=fbm(vec2(p.x*3.5,p.y*2.2-T*sp))+.5*fbm(vec2(p.x*7.,p.y*4.-T*sp*1.6));
+ float bed=smoothstep(wd,0.,abs(p.x-cx));return n*1.25+bed*1.1-p.y/ht*1.9-.35;}
+float embers(vec2 uv,float rise,float dens){float a=0.;
+ for(int i=0;i<3;i++){float fi=float(i);vec2 g=uv*vec2(10.+fi*6.,6.+fi*4.)+vec2(sin(uv.y*3.+T*.7+fi)*.6,-T*rise*(1.+fi*.5));
+  vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*7.);if(r<dens){vec2 o=vec2(h2(id+3.)-.5,h2(id+5.)-.5)*.6;
+  a+=smoothstep(.09,0.,length(f-o))*(.5+.5*sin(T*6.+r*40.));}}return a;}
+float smoke(vec2 p,float sp){vec2 w=vec2(fbm(p*1.5+vec2(0.,-T*sp)),fbm(p*1.5+vec2(4.,-T*sp*.8)));return fbm(p*1.8+w*1.6+vec2(T*.03,-T*sp));}
+/* 건물 줄 (2D): 높이 · 창 · 불난 창 */
+float bldH(float x,float seed,float base,float var){float i=floor(x);return base+var*h1(i*7.3+seed);}
+vec3 street(vec2 uv,float strobeR,float strobeB,bool refl){
+ vec3 sky=mix(vec3(.05,.03,.04),vec3(.01,.012,.03),smoothstep(-.2,.5,uv.y));
+ sky+=vec3(.9,.35,.08)*exp(-length((uv-vec2(.5,.2))*vec2(1.,1.4))*2.4)*.6; // 불빛 반사된 하늘
+ float sm=smoke(vec2(uv.x-.5,uv.y)*1.3,.14)*smoothstep(.18,.4,uv.y)*smoothstep(.6,.0,abs(uv.x-.5+(uv.y-.3)*.9))*1.4;
+ vec3 col=mix(sky,mix(vec3(.08,.07,.07),vec3(.55,.22,.08),smoothstep(.5,.1,uv.y)*.8),smoothstep(.3,.7,sm)*.9);
+ // 먼 건물
+ float x1=uv.x*3.+T*.01;float h1v=bldH(x1,1.,-.12,.2);if(uv.y<h1v){col=vec3(.03,.03,.04);
+  vec2 w=vec2(fract(x1)*10.,uv.y*40.);if(step(.35,fract(w.x))*step(.3,fract(w.y))*step(.7,h2(floor(w)+floor(x1)*13.))>0.)col=vec3(.5,.42,.3)*.5;}
+ // 가까운 건물 (불난 건물 포함)
+ float x2=uv.x*2.2+.4;float i2=floor(x2);float h2v=i2==1.?.16:bldH(x2,9.,-.1,.18);bool burn=i2==1.;
+ if(uv.y<h2v){col=vec3(.05,.045,.05);vec2 w=vec2(fract(x2)*12.,(uv.y+.3)*26.);vec2 wi=floor(w);
+  float win=step(.25,fract(w.x))*step(fract(w.x),.8)*step(.25,fract(w.y))*step(fract(w.y),.85);
+  if(burn){float fl=.6+.4*vn(vec2(wi.x*3.,T*6.+wi.y));col+=win*vec3(1.,.45,.1)*fl*1.6*step(.25,h2(wi));col+=vec3(.6,.2,.05)*.25;}
+  else col+=win*vec3(.9,.8,.6)*.35*step(.75,h2(wi+i2*9.));}
+ // 불난 건물 지붕 불꽃
+ float fx=(1.15)/1.6-.0;vec2 fp=vec2(uv.x-.5,uv.y-.16);
+ if(fp.y>-.02&&abs(fp.x)<.23&&fp.y<.4){float fi=flameI(fp*vec2(2.6,2.),.0,.42,.3,1.6)*smoothstep(.23,.12,abs(fp.x));col=max(col,fireRamp(fi)*1.2);}
+ // 경광등 빛이 건물을 물들임
+ float near=smoothstep(.9,-.2,length(uv-vec2(.25,-.3)));col+=(vec3(1.,.05,.05)*strobeR+vec3(.1,.2,1.)*strobeB)*near*.35*(refl?.6:1.);
+ return col;}
+vec3 fireground(vec2 uv){
+ uv.x+=sin(T*.05)*.03;
+ float ph=fract(T*1.6);float sR=step(ph,.25)*(step(.0,ph)-step(.12,ph)+step(.16,ph)),sB=step(.5,ph)*step(ph,.75); // 빨강 · 파랑 번갈아 깜빡
+ sR=pow(sR,1.)*(.7+.3*vn(vec2(T*20.,1.)));sB*=.8;
+ float gy=-.3;vec3 col;
+ if(uv.y>gy)col=street(uv,sR,sB,false);
+ else{vec2 r=vec2(uv.x+(vn(vec2(uv.x*30.,uv.y*120.+T))-.5)*.01,2.*gy-uv.y);col=street(r,sR,sB,true)*.45; // 젖은 바닥 반사
+  col+=(vec3(1.,.05,.05)*sR+vec3(.1,.25,1.)*sB)*smoothstep(.35,0.,abs(uv.x-.25))*smoothstep(-.5,gy,uv.y)*.25;}
+ // 소방차 실루엣
+ vec2 t=uv-vec2(.25,-.34);float body=max(abs(t.x)-.26,abs(t.y)-.07);float cab=max(abs(t.x-.2)-.07,abs(t.y-.03)-.1);
+ float lad=max(abs(t.x+.02)-.22,abs(t.y-.1)-.006);float truck=min(min(body,cab),lad);
+ if(truck<0.){col=vec3(.06,.015,.015)+vec3(.5,.05,.04)*smoothstep(-.07,.07,t.y)*.4;
+  col+=vec3(.9,.8,.6)*step(abs(t.y+.01),.004)*step(t.x,.18)*.5;}
+ float wh=min(length(t-vec2(-.17,-.07)),length(t-vec2(.17,-.07)));if(wh<.035)col=vec3(.01);
+ // 경광등 (빛 번짐)
+ col+=vec3(1.,.1,.08)*sR*.0009/(dot(t-vec2(.17,.14),t-vec2(.17,.14))+.0003);
+ col+=vec3(.2,.35,1.)*sB*.0009/(dot(t-vec2(.23,.14),t-vec2(.23,.14))+.0003);
+ col+=vec3(1.,.55,.2)*embers(uv-vec2(.0,0.),.25,.06)*smoothstep(-.3,.3,uv.y)*smoothstep(.5,.0,abs(uv.x-.5))*.9;
+ return col;}
+vec3 fire(vec2 uv){
+ vec2 p=uv;float hz=(vn(vec2(p.x*12.,p.y*8.-T*3.))-.5)*.015*smoothstep(-.4,.3,p.y);p.x+=hz; // 아지랑이
+ float y0=p.y+.5;
+ vec3 bg=mix(vec3(.02,.01,.01),vec3(.28,.07,.02),exp(-length((p-vec2(.35,-.45))*vec2(.9,1.2))*1.8));
+ float sm=smoke(vec2(p.x-.3,p.y)*1.3,.18)*smoothstep(.0,.6,y0);vec3 col=mix(bg,vec3(.12,.09,.08)+vec3(.35,.12,.03)*smoothstep(.9,.2,y0),smoothstep(.45,.85,sm)*.85);
+ float i=flameI(vec2(p.x,y0),.38,.62,.75,2.)+ .35*flameI(vec2(p.x*1.4+.3,y0),.75,.3,.45,2.6);
+ col=max(col,fireRamp(i*.88)*1.1);col+=fireRamp(i*.55)*.2;
+ col+=vec3(1.,.5,.15)*embers(uv,.35,.12)*smoothstep(-.4,.2,uv.y)*1.2;
+ col+=vec3(1.,.6,.2)*embers(uv*.6+3.,.2,.05)*.8;
+ float gnd=step(y0,.05+.03*vn(vec2(p.x*8.,1.)));col=mix(col,vec3(.03,.01,.0)+fireRamp(.4)*.15,gnd*.9);
+ return col;}
+vec2 arc(float s){vec2 A=vec2(.08,-.4),B=vec2(.62,.12);return mix(A,B,s)+vec2(0.,.22*4.*s*(1.-s));}
+vec3 water(vec2 uv){
+ // 뒤: 연기 속 불난 건물
+ vec3 col=mix(vec3(.03,.035,.05),vec3(.02,.02,.03),uv.y+.5);
+ vec2 b=uv-vec2(.62,.0);if(abs(b.x)<.3&&uv.y<.35){col=vec3(.05,.05,.06);vec2 w=floor(vec2(b.x*14.,uv.y*12.));vec2 f=fract(vec2(b.x*14.,uv.y*12.));
+  float win=step(.2,f.x)*step(f.x,.8)*step(.2,f.y)*step(f.y,.8);float burn=step(.45,h2(w))*smoothstep(.35,.0,length(b-vec2(.0,.12)));
+  col+=win*vec3(1.,.45,.12)*burn*(.7+.3*vn(vec2(w.x,T*5.+w.y)))*1.3;}
+ float st=smoke(vec2(uv.x-.62,uv.y-.1)*1.4,.22)*smoothstep(.0,.5,uv.y+.05)*smoothstep(.5,.0,abs(uv.x-.6+uv.y*.3));
+ col+=vec3(.6,.2,.05)*exp(-length(uv-vec2(.62,.1))*3.)*.5;col=mix(col,vec3(.78,.8,.84),smoothstep(.3,.8,st)*.85); // 수증기
+ // 물줄기: 곡선까지 거리
+ float dmin=1.,sAt=0.;vec2 pa=arc(0.);for(int k=1;k<29;k++){float s=float(k)/28.;vec2 pb=arc(s);vec2 ba=pb-pa,qa=uv-pa;float hh=clamp(dot(qa,ba)/dot(ba,ba),0.,1.);float dd=length(qa-ba*hh);if(dd<dmin){dmin=dd;sAt=s-(1.-hh)/28.;}pa=pb;}
+ float wdt=mix(.006,.03,sAt);float brk=smoothstep(.25,.7,fbm(vec2(sAt*14.-T*6.,dmin*30.)))*smoothstep(.4,1.,sAt);
+ float core=smoothstep(wdt,0.,dmin)*(1.-brk*.8);col=mix(col,vec3(.85,.93,1.),core);col+=vec3(.5,.7,1.)*smoothstep(wdt*4.,0.,dmin)*.35;
+ // 물방울 · 분무
+ for(int i=0;i<60;i++){float fi=float(i);float s=fract(h1(fi)+T*.55);vec2 pp=arc(s)+vec2(h1(fi*3.)-.5,h1(fi*5.)-.5)*.16*s*s+vec2(0.,-.05*s*s*h1(fi*7.));
+  col+=vec3(.75,.88,1.)*smoothstep(.0035,0.,length(uv-pp))*smoothstep(.0,.2,s)*.8;}
+ float mist=fbm((uv-vec2(.62,.12))*6.+vec2(T*.4,-T*.3))*smoothstep(.22,.0,length((uv-vec2(.62,.12))*vec2(.9,1.3)));col+=vec3(.7,.8,.9)*mist*.9;
+ // 관창 · 호스
+ vec2 n=uv-arc(0.);float hose=abs(n.y-n.x*.9)-.007;if(n.x<.0&&n.x>-.25&&hose<0.)col=vec3(.25,.08,.06);
+ if(length(n)<.016)col=vec3(.5,.45,.3);
+ return col;}
 void main(){vec2 uv=(gl_FragCoord.xy-.5*R)/R.y;uv.x-=SX;vec3 c;
- if(S==0)c=alps(uv);else if(S==1)c=space(uv);else if(S==2)c=lake(uv);else if(S==3)c=city(uv);else c=sky(uv);
+ if(S==0)c=alps(uv);else if(S==1)c=space(uv);else if(S==2)c=lake(uv);else if(S==3)c=city(uv);else if(S==4)c=sky(uv);else if(S==5)c=fireground(uv);else if(S==6)c=fire(uv);else c=water(uv);
  c=aces(c*1.05);c*=1.-.25*dot(uv*.8,uv*.8);c+=(h2(gl_FragCoord.xy+T)-.5)/255.;
  gl_FragColor=vec4(pow(c,vec3(.95)),1.);}`;
   function sh(t, s) { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; }
