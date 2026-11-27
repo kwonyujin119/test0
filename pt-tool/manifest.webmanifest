@@ -1,0 +1,36 @@
+{
+  "id": "/test0/dpv",
+  "name": "DPV",
+  "short_name": "DPV",
+  "description": "한글(hwpx) 문서 편집, 강의 교안 작업, 영상 편집을 하는 개인 업무 앱",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "background_color": "#f7f7f8",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "app/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "app/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "app/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "DOCUMENT", "short_name": "DOCUMENT", "url": "./hangul.html", "icons": [{ "src": "app/icons/hangul-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "PRESENTATION", "short_name": "PRESENTATION", "url": "./gyoan.html", "icons": [{ "src": "app/icons/gyoan-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "VIDEO", "short_name": "VIDEO", "url": "./videos.html", "icons": [{ "src": "app/icons/video-96.png", "sizes": "96x96", "type": "image/png" }] }
+  ],
+  "file_handlers": [
+    { "action": "./hangul.html", "accept": { "application/hwp+zip": [".hwpx"] } },
+    { "action": "./gyoan.html", "accept": {
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow": [".ppsx"],
+      "application/vnd.ms-powerpoint.presentation.macroEnabled.12": [".pptm"],
+      "application/vnd.ms-powerpoint.slideshow.macroEnabled.12": [".ppsm"],
+      "application/vnd.openxmlformats-officedocument.presentationml.template": [".potx"],
+      "application/vnd.ms-powerpoint": [".ppt", ".pps"] } }
+  ],
+  "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+  "related_applications": [{ "platform": "webapp", "url": "https://kwonyujin119.github.io/test0/manifest.webmanifest" }],
+  "prefer_related_applications": false
+}

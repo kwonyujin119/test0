@@ -1,0 +1,1803 @@
+/* PRESENTATION 공통 모듈
+   - 데이터 모델 / 테마 / 레이아웃 / 렌더러 / 저장 API
+   - 편집기(editor.js), 발표기(present.js), 허브(hub.js)가 함께 사용 */
+'use strict';
+
+const SLIDE_W = 1920, SLIDE_H = 1080;
+
+const FONT_SANS = "'Pretendard Variable', Pretendard, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
+const FONT_SERIF = "'Noto Serif KR', 'Nanum Myeongjo', '나눔명조', Batang, '바탕', serif";
+const FONT_MONO = "'Cascadia Code', 'D2Coding', Consolas, 'Courier New', monospace";
+/* 글꼴 목록 — PRESENTATION·DOCUMENT 공용.
+   fam: CSS 글꼴 이름, gf: Google Fonts 이름 (실제로 쓰일 때만 불러옴, 한글은 쓰인 글자 묶음만 내려받음),
+   face: 한글(hwpx) 문서에 저장할 글꼴 이름 (그 PC 에 같은 이름의 글꼴이 있으면 한글이 그대로 씀), cat: 분류 */
+const FONT_CATS = [['sans', '고딕'], ['serif', '명조'], ['display', '제목·강조'], ['hand', '손글씨'], ['mono', '고정폭']];
+const _F = (id, name, fam, gf, cat, face, fb) => ({ id, name, fam, gf, cat, face: face || fam, css: (fam ? `'${fam}', ` : '') + (fb || (cat === 'serif' ? FONT_SERIF : cat === 'mono' ? FONT_MONO : cat === 'hand' ? FONT_SANS.replace(/sans-serif$/, 'cursive') : FONT_SANS)) });
+const FONTS = [
+  { id: 'sans', name: '프리텐다드 (기본 고딕)', fam: 'Pretendard Variable', cat: 'sans', face: 'Pretendard', css: FONT_SANS },
+  _F('noto-sans', '노토 산스 (본고딕)', 'Noto Sans KR', 'Noto+Sans+KR:wght@300;400;500;700;900', 'sans'),
+  _F('nanum-gothic', '나눔고딕', 'Nanum Gothic', 'Nanum+Gothic:wght@400;700;800', 'sans', '나눔고딕'),
+  _F('dodum', '고운 돋움 (부드러운 고딕)', 'Gowun Dodum', 'Gowun+Dodum', 'sans', '고운돋움'),
+  _F('ibm', 'IBM Plex 고딕 (단정함)', 'IBM Plex Sans KR', 'IBM+Plex+Sans+KR:wght@300;400;600;700', 'sans'),
+  _F('gothic-a1', '고딕 A1', 'Gothic A1', 'Gothic+A1:wght@300;400;600;800', 'sans'),
+  _F('sunflower', '해바라기 고딕', 'Sunflower', 'Sunflower:wght@300;500;700', 'sans'),
+  _F('orbit', '오르빗 (둥근 고딕)', 'Orbit', 'Orbit', 'sans'),
+  _F('dongle', '동글 (귀여운 고딕)', 'Dongle', 'Dongle:wght@300;400;700', 'sans'),
+  _F('serif', '노토 명조 (본명조)', 'Noto Serif KR', 'Noto+Serif+KR:wght@400;700;900', 'serif'),
+  _F('nanum-myeongjo', '나눔명조', 'Nanum Myeongjo', 'Nanum+Myeongjo:wght@400;700;800', 'serif', '나눔명조'),
+  _F('batang', '고운 바탕 (부드러운 명조)', 'Gowun Batang', 'Gowun+Batang:wght@400;700', 'serif', '고운바탕'),
+  _F('hahmlet', '함렛 (현대적 명조)', 'Hahmlet', 'Hahmlet:wght@300;400;600;800', 'serif'),
+  _F('song-myung', '송명 (옛 명조)', 'Song Myung', 'Song+Myung', 'serif'),
+  _F('diphylleia', '산수국 (가는 명조)', 'Diphylleia', 'Diphylleia', 'serif'),
+  _F('blackhan', '검은고딕 (굵은 제목)', 'Black Han Sans', 'Black+Han+Sans', 'display', '검은고딕'),
+  _F('dohyeon', '도현 (제목)', 'Do Hyeon', 'Do+Hyeon', 'display'),
+  _F('jua', '주아 (둥근 글씨)', 'Jua', 'Jua', 'display'),
+  _F('gugi', '구기 (붓 제목)', 'Gugi', 'Gugi', 'display'),
+  _F('yeon-sung', '연성 (부드러운 제목)', 'Yeon Sung', 'Yeon+Sung', 'display'),
+  _F('stylish', '스타일리시', 'Stylish', 'Stylish', 'display'),
+  _F('black-white', '흑백사진 (레트로)', 'Black And White Picture', 'Black+And+White+Picture', 'display'),
+  _F('kirang', '기랑해랑 (그림 글씨)', 'Kirang Haerang', 'Kirang+Haerang', 'display'),
+  _F('bagel', '베이글 (아주 굵게)', 'Bagel Fat One', 'Bagel+Fat+One', 'display'),
+  _F('gasoek', '가석 (굵은 강조)', 'Gasoek One', 'Gasoek+One', 'display'),
+  _F('pen', '나눔손글씨 펜', 'Nanum Pen Script', 'Nanum+Pen+Script', 'hand', '나눔손글씨 펜'),
+  _F('brush', '나눔손글씨 붓', 'Nanum Brush Script', 'Nanum+Brush+Script', 'hand', '나눔손글씨 붓'),
+  _F('gaegu', '개구 (손글씨)', 'Gaegu', 'Gaegu:wght@300;400;700', 'hand'),
+  _F('hi-melody', '하이멜로디', 'Hi Melody', 'Hi+Melody', 'hand'),
+  _F('poor-story', '서툰 이야기', 'Poor Story', 'Poor+Story', 'hand'),
+  _F('gamja', '감자꽃', 'Gamja Flower', 'Gamja+Flower', 'hand'),
+  _F('cute', '귀여운 글씨', 'Cute Font', 'Cute+Font', 'hand'),
+  _F('single-day', '싱글데이', 'Single Day', 'Single+Day', 'hand'),
+  _F('east-sea', '동해 독도 (붓글씨)', 'East Sea Dokdo', 'East+Sea+Dokdo', 'hand'),
+  _F('dokdo', '독도 (거친 손글씨)', 'Dokdo', 'Dokdo', 'hand'),
+  { id: 'mono', name: '고정폭 (코드)', fam: 'Consolas', cat: 'mono', face: 'Consolas', css: FONT_MONO },
+  _F('nanum-coding', '나눔고딕코딩', 'Nanum Gothic Coding', 'Nanum+Gothic+Coding:wght@400;700', 'mono', '나눔고딕코딩'),
+];
+/* DOCUMENT에서 고를 수 있는 PC 글꼴 (설치된 PC 에서만 그 모양으로 보임 — 사무실 한글 문서에 흔한 글꼴) */
+const PC_FONTS = ['함초롬바탕', '함초롬돋움', '맑은 고딕', '바탕', '바탕체', '돋움', '돋움체', '굴림', '굴림체', '궁서', '궁서체', '휴먼명조', '신명조', '견고딕', '중고딕', 'HY헤드라인M', 'HY견고딕', 'HY견명조', 'HY중고딕', 'HY신명조', '한컴 윤고딕 230', '한컴 윤고딕 240', 'Arial', 'Times New Roman', 'Calibri'];
+/* 글꼴 이름(한글 문서의 face 나 CSS 이름)으로 목록 항목 찾기 */
+function findFontByFace(face) { if (!face) return null; const k = String(face).replace(/\s+/g, '').toLowerCase(); return FONTS.find(f => [f.face, f.fam, f.name].some(n => n && n.replace(/\s+/g, '').toLowerCase() === k)) || null; }
+const _fontsLoaded = new Set();
+function loadFont(id) {
+  const f = FONTS.find(x => x.id === id);
+  if (!f || !f.gf || _fontsLoaded.has(id) || typeof document === 'undefined') return;
+  _fontsLoaded.add(id);
+  const l = document.createElement('link'); l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=' + f.gf + '&display=swap';
+  document.head.appendChild(l);
+}
+/* 글꼴 목록 미리보기용: 그 글꼴 이름 글자만 아주 작게 받아 옴 */
+const _fontPreview = new Set();
+function loadFontPreview(f) {
+  if (!f || !f.gf || _fontsLoaded.has(f.id) || _fontPreview.has(f.id) || typeof document === 'undefined') return;
+  _fontPreview.add(f.id);
+  const fam = f.gf.split(':')[0];
+  const l = document.createElement('link'); l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=' + fam + '&text=' + encodeURIComponent(Array.from(new Set(f.name + '가나다 AaBb123')).join('')) + '&display=swap';
+  document.head.appendChild(l);
+}
+function fontCss(id) { const f = FONTS.find(f => f.id === id); if (!f) return FONT_SANS; loadFont(id); return f.css; }
+
+/* ---------- 테마 ---------- */
+const THEMES = [
+  { id: 'clean', name: '클린 화이트', bg: '#ffffff', fg: '#1f2937', title: '#111827', accent: '#2563eb', accent2: '#f59e0b', muted: '#6b7280', surface: '#f3f4f6', decor: 'bar-left' },
+  { id: 'academic', name: '아카데믹 네이비', bg: '#ffffff', fg: '#1e293b', title: '#1e3a8a', accent: '#1e3a8a', accent2: '#c2410c', muted: '#64748b', surface: '#eef2ff', decor: 'bar-top' },
+  { id: 'slate', name: '슬레이트 비즈니스', bg: '#f8fafc', fg: '#334155', title: '#0f172a', accent: '#0f766e', accent2: '#6366f1', muted: '#64748b', surface: '#e2e8f0', decor: 'bar-top', titleFont: 'ibm', bodyFont: 'ibm' },
+  { id: 'paper', name: '종이 노트', bg: '#fbfaf6', fg: '#33302a', title: '#1d1b17', accent: '#b45309', accent2: '#2563eb', muted: '#8a8377', surface: '#f1ede2', decor: 'frame', titleFont: 'serif' },
+  { id: 'coral', name: '코랄', bg: '#fff7f5', fg: '#3b2723', title: '#2a1714', accent: '#e8505b', accent2: '#0d9488', muted: '#94736c', surface: '#ffe4df', decor: 'band-bottom' },
+  { id: 'warm', name: '웜 베이지', bg: '#faf5ea', fg: '#3f3a30', title: '#2b2620', accent: '#c2410c', accent2: '#0f766e', muted: '#857c6c', surface: '#f1e8d6', decor: 'bar-left' },
+  { id: 'forest', name: '포레스트', bg: '#f0f7f2', fg: '#1f3326', title: '#14532d', accent: '#15803d', accent2: '#ca8a04', muted: '#5b7262', surface: '#dcebe0', decor: 'bar-top' },
+  { id: 'ocean', name: '오션 블루', bg: '#f0f9ff', fg: '#1e3a5f', title: '#0c2a4d', accent: '#0369a1', accent2: '#f97316', muted: '#5b7a99', surface: '#dbeafe', decor: 'corner', bgGradient: 'linear-gradient(160deg, #f0f9ff 0%, #dbeafe 100%)' },
+  { id: 'mint', name: '민트 그라데이션', bg: '#ecfeff', fg: '#134e4a', title: '#0f3d3a', accent: '#0d9488', accent2: '#f97316', muted: '#4b7f7a', surface: '#ccfbf1', decor: 'none', bgGradient: 'linear-gradient(160deg, #ecfeff 0%, #d1fae5 100%)' },
+  { id: 'navy', name: '다크 네이비', bg: '#0f172a', fg: '#e2e8f0', title: '#ffffff', accent: '#38bdf8', accent2: '#fbbf24', muted: '#94a3b8', surface: '#1e293b', decor: 'bar-left' },
+  { id: 'mono', name: '모노 블랙', bg: '#0b0b0c', fg: '#e7e7e7', title: '#ffffff', accent: '#ffffff', accent2: '#f43f5e', muted: '#9a9a9a', surface: '#1c1c1f', decor: 'none' },
+  { id: 'bold', name: '볼드 옐로', bg: '#111827', fg: '#e5e7eb', title: '#facc15', accent: '#facc15', accent2: '#38bdf8', muted: '#9ca3af', surface: '#1f2937', decor: 'corner', titleFont: 'blackhan' },
+  { id: 'blueprint', name: '블루프린트', bg: '#0b3a6e', fg: '#e0f2fe', title: '#ffffff', accent: '#7dd3fc', accent2: '#fde047', muted: '#a5c8e6', surface: '#124a85', decor: 'grid' },
+  { id: 'chalk', name: '칠판', bg: '#26403a', fg: '#f1f5f1', title: '#fde68a', accent: '#fde68a', accent2: '#93c5fd', muted: '#b7c4bd', surface: '#31504a', decor: 'none', bgGradient: 'radial-gradient(ellipse at center, #2d4b44 0%, #203630 100%)' },
+  { id: 'plum', name: '플럼 다크', bg: '#1c1023', fg: '#f3e8ff', title: '#ffffff', accent: '#e879f9', accent2: '#fbbf24', muted: '#c4b5d8', surface: '#2e1b3a', decor: 'none', bgGradient: 'linear-gradient(135deg, #1c1023 0%, #2a1440 100%)' },
+  { id: 'sunset', name: '선셋', bg: '#1f1235', fg: '#fde7f3', title: '#ffffff', accent: '#fb7185', accent2: '#fbbf24', muted: '#d8b4c8', surface: '#2f1d4a', decor: 'none', bgGradient: 'linear-gradient(135deg, #1f1235 0%, #4a1942 60%, #7c2d4a 100%)' },
+];
+const THEME_COLOR_KEYS = [['accent', '강조'], ['accent2', '강조 2'], ['title', '제목'], ['fg', '본문'], ['muted', '흐린 글자'], ['surface', '면(카드)'], ['bg', '배경']];
+function getTheme(id) { return THEMES.find(t => t.id === id) || THEMES[0]; }
+/* 교안의 테마 + 직접 지정한 색·글꼴·장식 (deck.colors / titleFont / bodyFont / decor) */
+function deckTheme(deck) {
+  const t = Object.assign({}, getTheme(deck && deck.theme));
+  const c = (deck && deck.colors) || {};
+  for (const [k] of THEME_COLOR_KEYS) if (c[k]) t[k] = c[k];
+  if (c.bg) t.bgGradient = '';
+  if (deck && deck.titleFont) t.titleFont = deck.titleFont;
+  if (deck && deck.bodyFont) t.bodyFont = deck.bodyFont;
+  if (deck && deck.decor) t.decor = deck.decor;
+  t.titleFont = t.titleFont || 'sans'; t.bodyFont = t.bodyFont || 'sans';
+  return t;
+}
+
+/* 역할(role)별 텍스트 기본 스타일 — 테마를 바꾸면 함께 바뀜 */
+function textDefaults(role, theme) {
+  const tf = theme.titleFont || 'sans', bf = theme.bodyFont || 'sans';
+  switch (role) {
+    case 'title': return { fontSize: 84, color: theme.title, bold: true, lineHeight: 1.2, font: tf };
+    case 'subtitle': return { fontSize: 38, color: theme.muted, lineHeight: 1.4, font: bf };
+    case 'heading': return { fontSize: 58, color: theme.title, bold: true, lineHeight: 1.25, font: tf };
+    case 'body': return { fontSize: 36, color: theme.fg, lineHeight: 1.55, font: bf };
+    case 'caption': return { fontSize: 24, color: theme.muted, lineHeight: 1.4, font: bf };
+    case 'quote': return { fontSize: 52, color: theme.title, lineHeight: 1.4, font: tf === 'sans' ? 'serif' : tf, italic: tf === 'sans', align: 'center' };
+    case 'code': return { fontSize: 28, color: '#e5e7eb', lineHeight: 1.5, font: 'mono', bg: '#1e1e2e', padding: 36, radius: 18 };
+    case 'number': return { fontSize: 160, color: theme.accent, bold: true, lineHeight: 1.1, align: 'center', font: tf };
+    default: return { fontSize: 36, color: theme.fg, lineHeight: 1.5, font: bf };
+  }
+}
+const ROLE_NAMES = { title: '제목', subtitle: '부제목', heading: '소제목', body: '본문', caption: '캡션', quote: '인용', code: '코드', number: '큰 숫자', text: '일반' };
+
+/* ---------- 유틸 ---------- */
+function uid() { return Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3); }
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+/* 새 창으로 열기 — 지금 창이 화면 왼쪽이면 오른쪽 절반에, 오른쪽이면 왼쪽 절반에 띄운다(두 교안을 나란히 두고 슬라이드 복사·붙여넣기) */
+function openSideWindow(url) {
+  const sw = screen.availWidth || 1920, sh = screen.availHeight || 1080, sl = screen.availLeft || 0, st = screen.availTop || 0;
+  const w = Math.floor(sw / 2), mid = (window.screenX || 0) + (window.outerWidth || sw) / 2;
+  const left = mid < sl + sw / 2 ? sl + w : sl;
+  const win = window.open(url, '_blank', `popup,width=${w},height=${sh},left=${left},top=${st}`);
+  if (!win) { alert('브라우저가 새 창을 막았습니다. 주소창 오른쪽의 팝업 차단 아이콘에서 이 사이트를 허용해 주세요.'); return null; }
+  try { win.focus(); } catch (e) {}
+  return win;
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function stripHtml(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || '').trim(); }
+
+/* ---------- 선 아이콘 ----------
+   24×24 칸에 선으로만 그린 그림 (글자 색을 따라감). icon('save') 는 SVG 문자열,
+   HTML 의 <i data-ic="save"></i> 는 fillIcons() 가 채운다 */
+const ICONS = {
+  back: '<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
+  arrowRight: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+  chevronDown: '<path d="m6 9 6 6 6-6"/>',
+  chevronUp: '<path d="m6 15 6-6 6 6"/>',
+  arrowUp: '<path d="M12 19V5"/><path d="m6 11 6-6 6 6"/>',
+  arrowDown: '<path d="M12 5v14"/><path d="m6 13 6 6 6-6"/>',
+  palette: '<path d="M12 3a9 9 0 0 0 0 18c1.2 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.3-4-7.7-9-7.7Z"/><path d="M7.5 12v.01"/><path d="M9.5 7.8v.01"/><path d="M14.5 7.5v.01"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
+  save: '<path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M8 3v5h7V3"/><path d="M7 21v-7h10v7"/>',
+  export: '<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff: '<path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.9 3.8"/><path d="M6.5 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/>',
+  play: '<path d="M7 4.5v15l12-7.5Z"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.6 2.6 0 0 1 5 .7c0 1.8-2.5 2.2-2.5 4"/><path d="M12 17.3v.01"/>',
+  sliders: '<path d="M4 7h8"/><path d="M16 7h4"/><circle cx="14" cy="7" r="2"/><path d="M4 17h4"/><path d="M12 17h8"/><circle cx="10" cy="17" r="2"/>',
+  plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
+  text: '<path d="M5 7V5h14v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-4.5-4.5L7 20"/>',
+  shape: '<rect x="3" y="11" width="10" height="10" rx="1.5"/><circle cx="16" cy="8" r="5"/>',
+  table: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M3 15h18"/><path d="M10 4v16"/>',
+  chart: '<path d="M4 20h16"/><path d="M7 17v-6"/><path d="M12 17V6"/><path d="M17 17v-8"/>',
+  smile: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.8v.01"/><path d="M15 9.8v.01"/>',
+  more: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8"/><path d="M8 12h8"/>',
+  alignL: '<path d="M4 3v18"/><rect x="8" y="6" width="12" height="4" rx="1"/><rect x="8" y="14" width="7" height="4" rx="1"/>',
+  alignH: '<path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/>',
+  alignR: '<path d="M20 3v18"/><rect x="4" y="6" width="12" height="4" rx="1"/><rect x="9" y="14" width="7" height="4" rx="1"/>',
+  alignT: '<path d="M3 4h18"/><rect x="6" y="8" width="4" height="12" rx="1"/><rect x="14" y="8" width="4" height="7" rx="1"/>',
+  alignV: '<path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/>',
+  alignB: '<path d="M3 20h18"/><rect x="6" y="4" width="4" height="12" rx="1"/><rect x="14" y="9" width="4" height="7" rx="1"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
+  box: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5"/><path d="M12 12v9"/>',
+  grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.9 19.1 1.4-1.4"/><path d="m17.7 6.3 1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  unlock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/>',
+  x: '<path d="m6 6 12 12"/><path d="m18 6-12 12"/>',
+  stack: '<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M7 5.5h10"/><path d="M9.5 2.5h5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  import: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4"/>',
+  gallery: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  rows: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+  dots: '<path d="M5 12h.01"/><path d="M12 12h.01"/><path d="M19 12h.01"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>',
+  trash: '<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5"/><path d="M14 11v5"/>',
+  slideAdd: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 9v6"/><path d="M9 12h6"/>',
+  spread: '<rect x="2.5" y="4" width="8.5" height="16" rx="1.2"/><rect x="13" y="4" width="8.5" height="16" rx="1.2"/><path d="M5 8h3.5"/><path d="M5 11h3.5"/><path d="M15.5 8h3.5"/><path d="M15.5 11h3.5"/>',
+  panels: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16"/><path d="M16 4v16"/>',
+  expand: '<path d="M4 9V5a1 1 0 0 1 1-1h4"/><path d="M15 4h4a1 1 0 0 1 1 1v4"/><path d="M20 15v4a1 1 0 0 1-1 1h-4"/><path d="M9 20H5a1 1 0 0 1-1-1v-4"/>',
+  notes: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h3"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
+  folderPlus: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10v6"/><path d="M9 13h6"/>',
+  folderOut: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 16v-6"/><path d="m9 12 3-3 3 3"/>',
+  shrink: '<path d="M9 4v4a1 1 0 0 1-1 1H4"/><path d="M20 9h-4a1 1 0 0 1-1-1V4"/><path d="M15 20v-4a1 1 0 0 1 1-1h4"/><path d="M4 15h4a1 1 0 0 1 1 1v4"/>',
+  chat: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/><path d="M8 10h8"/><path d="M8 13h5"/>',
+};
+function icon(name, size) {
+  const z = size || 18;
+  return `<svg class="ico" viewBox="0 0 24 24" width="${z}" height="${z}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+}
+function fillIcons(root) { (root || document).querySelectorAll('[data-ic]').forEach(n => { if (!n.firstChild) n.innerHTML = icon(n.dataset.ic); }); }
+
+/* ---------- 화면 밝게 · 어둡게 ----------
+   고른 적이 없으면 기기 설정(밝은 모드·어두운 모드)을 따르고, 고르면 이 기기에 기억한다.
+   페이지 머리의 짧은 스크립트가 먼저 <html data-theme> 를 정해 두므로 여기서는 단추만 맡는다 */
+const UiTheme = {
+  KEY: 'ws:theme',
+  get() { return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'; },
+  set(t) {
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem(this.KEY, t); } catch (e) { }
+    this.paint();
+  },
+  paint() {
+    const dark = this.get() === 'dark';
+    const m = document.querySelector('meta[name="theme-color"]'); if (m && !document.body.classList.contains('present')) m.content = dark ? '#17181b' : '#ffffff';
+    document.querySelectorAll('[data-ui-theme]').forEach(b => {
+      b.innerHTML = icon(dark ? 'sun' : 'moon'); b.title = dark ? '화면을 밝게' : '화면을 어둡게'; b.setAttribute('aria-label', b.title);
+    });
+  },
+  init() {
+    if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = 'light';
+    document.addEventListener('click', (ev) => { const b = ev.target.closest && ev.target.closest('[data-ui-theme]'); if (b) this.set(this.get() === 'dark' ? 'light' : 'dark'); });
+    window.addEventListener('storage', (ev) => { if (ev.key === this.KEY && (ev.newValue === 'dark' || ev.newValue === 'light')) { document.documentElement.dataset.theme = ev.newValue; this.paint(); } }); // 다른 창에서 바꾸면 같이 바뀜
+    this.paint();
+  },
+};
+if (typeof document !== 'undefined' && document.body) { fillIcons(document); UiTheme.init(); }
+
+/* ---------- 모델 생성 ---------- */
+function newDeck(title) {
+  const d = { title: title || '새 교안', theme: 'clean', created: new Date().toISOString(), slides: [] };
+  d.slides.push(newSlide('title', { title: title || '새 교안', subtitle: '부제목 · 강의자 이름 · 날짜' }));
+  return d;
+}
+function newSlide(layout, fill) {
+  const s = { id: uid(), bg: null, transition: '', notes: '', elements: layoutElements(layout || 'blank', fill || {}) };
+  if (layout === 'heroImage') { s.bg = { color: '#111111' }; s.decor = 'none'; s.noFooter = true; }
+  if (layout === 'agenda') s.decor = 'none';
+  return s;
+}
+const BASE = () => ({ id: uid(), step: 0, anim: 'fade', rotate: 0, opacity: 1 });
+function textEl(role, x, y, w, h, html, extra) {
+  return Object.assign(BASE(), { type: 'text', role, x, y, w, h, html: html || '', style: {} }, extra || {});
+}
+function imageEl(x, y, w, h, src, extra) {
+  return Object.assign(BASE(), { type: 'image', x, y, w, h, src: src || '', fit: 'contain', radius: 0, shadow: false }, extra || {});
+}
+function shapeEl(shape, x, y, w, h, extra) {
+  return Object.assign(BASE(), { type: 'shape', shape, x, y, w, h, fill: '$accent', stroke: '', strokeWidth: 0, radius: 24, shadow: false, html: '', style: {} }, extra || {});
+}
+function tableEl(x, y, w, h, rows, extra) {
+  return Object.assign(BASE(), { type: 'table', x, y, w, h, rows: rows || [['구분', '내용', '비고'], ['', '', ''], ['', '', '']], header: true, band: true, firstCol: false, lines: 'grid', headFill: '$accent', radius: 0, style: {} }, extra || {});
+}
+function chartEl(x, y, w, h, kind, data, extra) {
+  return Object.assign(BASE(), { type: 'chart', x, y, w, h, kind: kind || 'bar', data: data || '항목,값\n1분기,42\n2분기,58\n3분기,71\n4분기,64', values: true, legend: true, grid: true, unit: '', style: {} }, extra || {});
+}
+function mathEl(x, y, w, h, tex, extra) {
+  return Object.assign(BASE(), { type: 'math', x, y, w, h, tex: tex || 'Q = A \\cdot V', style: {} }, extra || {});
+}
+function embedEl(x, y, w, h, url, extra) {
+  return Object.assign(BASE(), { type: 'embed', x, y, w, h, url: url || '', radius: 16, autoplay: false }, extra || {});
+}
+const TYPE_NAMES = { text: '텍스트', image: '이미지', shape: '도형', table: '표', chart: '차트', math: '수식', embed: '동영상·웹' };
+
+const LAYOUTS = [
+  { id: 'title', name: '표지' },
+  { id: 'section', name: '섹션 구분' },
+  { id: 'agenda', name: '목차' },
+  { id: 'content', name: '소제목 + 본문' },
+  { id: 'twoCol', name: '2단 본문' },
+  { id: 'threeCards', name: '3단 카드' },
+  { id: 'imageRight', name: '본문 + 이미지(우)' },
+  { id: 'imageLeft', name: '이미지(좌) + 본문' },
+  { id: 'imageFull', name: '큰 이미지 + 캡션' },
+  { id: 'heroImage', name: '전면 사진 + 제목' },
+  { id: 'twoImages', name: '이미지 2장' },
+  { id: 'imageGrid', name: '이미지 4장' },
+  { id: 'compare', name: '비교 (A vs B)' },
+  { id: 'process', name: '단계 (프로세스)' },
+  { id: 'timeline', name: '타임라인' },
+  { id: 'summary', name: '핵심 정리 3줄' },
+  { id: 'stats', name: '숫자 3개' },
+  { id: 'number', name: '핵심 숫자' },
+  { id: 'table', name: '표' },
+  { id: 'chart', name: '차트 + 설명' },
+  { id: 'quote', name: '인용구' },
+  { id: 'code', name: '코드' },
+  { id: 'closing', name: '마무리 (감사합니다)' },
+  { id: 'blank', name: '빈 슬라이드' },
+];
+const LAYOUT_NAMES = Object.fromEntries(LAYOUTS.map(l => [l.id, l.name]));
+const M = 120; // 좌우 여백
+function layoutElements(layout, f) {
+  f = f || {};
+  const H = f.heading || '소제목을 입력하세요';
+  const B = f.body || '<ul><li>첫 번째 내용</li><li>두 번째 내용</li><li>세 번째 내용</li></ul>';
+  const head = (y, h) => textEl('heading', M, y || 90, SLIDE_W - M * 2, h || 130, H, { style: { valign: 'middle' } });
+  const white = (extra) => Object.assign({ color: '#ffffff' }, extra || {});
+  switch (layout) {
+    case 'title': return [
+      textEl('title', M, 330, SLIDE_W - M * 2, 220, f.title || '강의 제목', { style: { align: 'center', valign: 'middle' } }),
+      textEl('subtitle', M, 570, SLIDE_W - M * 2, 120, f.subtitle || '부제목 · 강의자 · 날짜', { style: { align: 'center', valign: 'top' } }),
+    ];
+    case 'section': return [
+      textEl('caption', M, 360, 900, 60, f.caption || 'PART 1', { style: { fontSize: 30, color: '$accent', bold: true } }),
+      textEl('title', M, 430, SLIDE_W - M * 2, 240, f.title || '섹션 제목', { style: { fontSize: 96, valign: 'top' } }),
+      shapeEl('rect', M, 690, 220, 12, { fill: '$accent', radius: 6 }),
+      textEl('subtitle', M, 730, SLIDE_W - M * 2, 100, f.subtitle || '이 섹션에서 다룰 내용을 한 줄로'),
+    ];
+    case 'agenda': return [
+      shapeEl('rect', 0, 0, 660, SLIDE_H, { fill: '$accent', radius: 0 }),
+      textEl('caption', M, 400, 460, 60, 'CONTENTS', { style: white({ fontSize: 30, bold: true, letterSpacing: 6 }) }),
+      textEl('title', M, 460, 460, 160, f.title || '목차', { style: white({ fontSize: 110 }) }),
+      textEl('body', 780, 200, 1020, 700, f.body || '<ol><li>강의 개요</li><li>핵심 개념</li><li>사례와 적용</li><li>정리와 질문</li></ol>', { style: { fontSize: 46, lineHeight: 2.1, valign: 'middle', bold: true } }),
+    ];
+    case 'content': return [head(), textEl('body', M, 260, SLIDE_W - M * 2, 700, B)];
+    case 'twoCol': return [
+      head(),
+      textEl('body', M, 260, 800, 700, f.body || '<ul><li>왼쪽 내용</li><li>왼쪽 내용</li></ul>'),
+      textEl('body', 1000, 260, 800, 700, f.body2 || '<ul><li>오른쪽 내용</li><li>오른쪽 내용</li></ul>'),
+    ];
+    case 'threeCards': {
+      const out = [head()]; const w = 520, gap = 60;
+      const icons = ['💡', '🔍', '🎯'], titles = ['첫 번째', '두 번째', '세 번째'];
+      for (let i = 0; i < 3; i++) {
+        const x = M + i * (w + gap);
+        out.push(shapeEl('rect', x, 270, w, 680, { fill: '$surface', radius: 32 }));
+        out.push(textEl('text', x, 320, w, 140, icons[i], { style: { fontSize: 100, align: 'center', valign: 'middle', lineHeight: 1 } }));
+        out.push(textEl('text', x + 40, 490, w - 80, 80, titles[i] + ' 핵심', { style: { fontSize: 42, bold: true, align: 'center', color: '$title', valign: 'middle' } }));
+        out.push(textEl('body', x + 50, 590, w - 100, 320, '짧은 설명을 두세 줄로 적어 주세요.', { style: { fontSize: 30, align: 'center', lineHeight: 1.6 } }));
+      }
+      return out;
+    }
+    case 'imageRight': return [head(), textEl('body', M, 260, 820, 700, B), imageEl(1000, 260, 800, 660, f.image || '', { radius: 24, shadow: true })];
+    case 'imageLeft': return [head(), imageEl(M, 260, 800, 660, f.image || '', { radius: 24, shadow: true }), textEl('body', 980, 260, 820, 700, B)];
+    case 'imageFull': return [
+      head(70, 110),
+      imageEl(M, 200, SLIDE_W - M * 2, 720, f.image || '', { radius: 20, shadow: true }),
+      textEl('caption', M, 940, SLIDE_W - M * 2, 70, f.caption || '그림 1. 캡션을 입력하세요', { style: { align: 'center' } }),
+    ];
+    case 'heroImage': return [
+      imageEl(0, 0, SLIDE_W, SLIDE_H, f.image || '', { fit: 'cover' }),
+      shapeEl('rect', 0, 380, SLIDE_W, 700, { fill: '#000000', fill2: '#000000', fill2Op: 0, gAngle: 270, radius: 0, opacity: 0.8 }),
+      textEl('title', M, 660, SLIDE_W - M * 2, 180, f.title || '사진 위의 큰 제목', { style: white({ fontSize: 96, valign: 'bottom', tshadow: true }) }),
+      textEl('subtitle', M, 850, SLIDE_W - M * 2, 90, f.subtitle || '한 줄 설명', { style: white({ tshadow: true }) }),
+    ];
+    case 'twoImages': return [
+      head(),
+      imageEl(M, 260, 810, 560, '', { radius: 20, fit: 'cover' }), imageEl(990, 260, 810, 560, '', { radius: 20, fit: 'cover' }),
+      textEl('caption', M, 850, 810, 70, '왼쪽 그림 설명', { style: { align: 'center', fontSize: 30 } }),
+      textEl('caption', 990, 850, 810, 70, '오른쪽 그림 설명', { style: { align: 'center', fontSize: 30 } }),
+    ];
+    case 'imageGrid': {
+      const out = [head(60, 110)]; const w = 820, h = 380;
+      for (let i = 0; i < 4; i++) out.push(imageEl(M + (i % 2) * (w + 40), 210 + Math.floor(i / 2) * (h + 30), w, h, '', { radius: 16, fit: 'cover' }));
+      return out;
+    }
+    case 'compare': return [
+      head(),
+      shapeEl('rect', M, 260, 810, 100, { fill: '$accent', radius: 20, html: f.a || 'A', style: { fontSize: 40 } }),
+      shapeEl('rect', 990, 260, 810, 100, { fill: '$accent2', radius: 20, html: f.b || 'B', style: { fontSize: 40 } }),
+      shapeEl('rect', M, 380, 810, 560, { fill: '$surface', radius: 20 }),
+      textEl('body', M + 30, 410, 750, 500, '<ul><li>장점</li><li>특징</li></ul>'),
+      shapeEl('rect', 990, 380, 810, 560, { fill: '$surface', radius: 20 }),
+      textEl('body', 1020, 410, 750, 500, '<ul><li>장점</li><li>특징</li></ul>'),
+    ];
+    case 'process': {
+      const out = [head()]; const w = 430, stp = 417;
+      for (let i = 0; i < 4; i++) {
+        const x = M + i * stp;
+        out.push(shapeEl('chevron', x, 300, w, 170, { fill: i % 2 ? '$accent2' : '$accent', html: `${i + 1}단계`, style: { fontSize: 40 }, step: i + 1, anim: 'left' }));
+        out.push(textEl('body', x + 40, 510, w - 90, 400, '이 단계에서 하는 일', { style: { fontSize: 30, align: 'center' }, step: i + 1, anim: 'up' }));
+      }
+      return out;
+    }
+    case 'timeline': {
+      const out = [head(), shapeEl('line', M, 560, SLIDE_W - M * 2, 40, { fill: '$muted', strokeWidth: 6 })];
+      [0, 1, 2, 3].map(i => M + 140 + i * 466).forEach((cx, i) => {
+        out.push(shapeEl('ellipse', cx - 32, 548, 64, 64, { fill: '$accent', stroke: '$bg', strokeWidth: 8 }));
+        out.push(textEl('text', cx - 200, 420, 400, 90, String(2021 + i), { style: { fontSize: 48, bold: true, color: '$accent', align: 'center', valign: 'bottom' } }));
+        out.push(textEl('body', cx - 200, 640, 400, 260, '이 시기의 중요한 사건', { style: { fontSize: 30, align: 'center' } }));
+      });
+      return out;
+    }
+    case 'summary': {
+      const out = [head(80, 120)];
+      ['첫 번째 핵심 내용을 한 문장으로', '두 번째 핵심 내용을 한 문장으로', '세 번째 핵심 내용을 한 문장으로'].forEach((t, i) => {
+        const y = 250 + i * 240;
+        out.push(shapeEl('rect', M, y, SLIDE_W - M * 2, 200, { fill: '$surface', radius: 28 }));
+        out.push(shapeEl('ellipse', M + 40, y + 40, 120, 120, { fill: '$accent', html: String(i + 1), style: { fontSize: 56 } }));
+        out.push(textEl('body', M + 200, y + 20, SLIDE_W - M * 2 - 240, 160, t, { style: { fontSize: 40, valign: 'middle', bold: true, color: '$title' } }));
+      });
+      return out;
+    }
+    case 'stats': {
+      const out = [head()]; const w = 520, gap = 60;
+      [['87%', '만족도'], ['1,240', '참여 인원'], ['3.5×', '성과 향상']].forEach(([n, c], i) => {
+        const x = M + i * (w + gap);
+        out.push(textEl('number', x, 350, w, 220, n, { style: { fontSize: 130, valign: 'middle' } }));
+        out.push(shapeEl('rect', x + w / 2 - 50, 590, 100, 8, { fill: '$accent2', radius: 4 }));
+        out.push(textEl('text', x, 630, w, 90, c, { style: { fontSize: 40, bold: true, align: 'center', color: '$title' } }));
+        out.push(textEl('caption', x + 30, 730, w - 60, 120, '숫자에 대한 짧은 설명', { style: { align: 'center', fontSize: 28 } }));
+      });
+      return out;
+    }
+    case 'number': return [
+      textEl('number', M, 260, SLIDE_W - M * 2, 260, f.number || '73%', { style: { valign: 'middle' } }),
+      textEl('heading', M, 560, SLIDE_W - M * 2, 120, f.heading || '핵심 수치의 의미', { style: { align: 'center' } }),
+      textEl('body', 300, 700, SLIDE_W - 600, 160, f.body || '수치에 대한 설명을 입력하세요', { style: { align: 'center' } }),
+    ];
+    case 'table': return [head(), tableEl(M, 260, SLIDE_W - M * 2, 620, [['구분', '항목 A', '항목 B'], ['기준 1', '', ''], ['기준 2', '', ''], ['기준 3', '', '']], { firstCol: true })];
+    case 'chart': return [
+      head(),
+      chartEl(M, 250, 1080, 720),
+      textEl('body', 1260, 280, 540, 640, '<ul><li>가장 높은 값은 3분기</li><li>전년 대비 증가</li><li>원인과 시사점</li></ul>', { style: { fontSize: 34 } }),
+    ];
+    case 'quote': return [
+      textEl('quote', 200, 300, SLIDE_W - 400, 360, f.quote || '“인용문을 입력하세요.”', { style: { valign: 'middle' } }),
+      textEl('caption', 200, 700, SLIDE_W - 400, 60, f.by || '— 출처', { style: { align: 'center', fontSize: 30 } }),
+    ];
+    case 'code': return [head(), textEl('code', M, 260, SLIDE_W - M * 2, 680, f.code || 'def hello(name):\n    print(f"안녕하세요, {name}")')];
+    case 'closing': return [
+      textEl('title', M, 340, SLIDE_W - M * 2, 200, f.title || '감사합니다', { style: { align: 'center', valign: 'middle', fontSize: 120 } }),
+      shapeEl('rect', SLIDE_W / 2 - 80, 570, 160, 10, { fill: '$accent', radius: 5 }),
+      textEl('subtitle', M, 610, SLIDE_W - M * 2, 80, 'Q & A · 질문을 환영합니다', { style: { align: 'center' } }),
+      textEl('caption', M, 720, SLIDE_W - M * 2, 60, '이름 · email@university.ac.kr', { style: { align: 'center', fontSize: 28 } }),
+    ];
+    default: return [];
+  }
+}
+function maxStep(slide) { return slide.elements.reduce((m, e) => Math.max(m, elementMaxStep(e)), 0); }
+
+/* ---------- 렌더러 ---------- */
+/* 테마 색 참조: 색 문자열이 "$accent" 처럼 시작하면 테마 색으로 치환 */
+function themeColor(v, theme) {
+  if (typeof v !== 'string') return v;
+  if (v[0] === '$') return theme[v.slice(1)] || v;
+  return v;
+}
+
+function slideBackground(slide, theme) {
+  const bg = slide.bg || {};
+  const css = {};
+  if (bg.image) {
+    css.backgroundImage = `url("${API.resolveSrc(bg.image)}")`;
+    css.backgroundSize = bg.fit === 'contain' ? 'contain' : 'cover';
+    css.backgroundPosition = 'center'; css.backgroundRepeat = 'no-repeat';
+    css.backgroundColor = bg.color || theme.bg;
+  } else if (bg.gradient) {
+    css.background = bg.gradient;
+  } else if (bg.color) {
+    css.background = bg.color;
+  } else {
+    css.background = theme.bgGradient || theme.bg;
+  }
+  return css;
+}
+
+/* opts: { mode: 'edit'|'present'|'thumb', step: number } */
+function renderSlide(slide, deck, opts) {
+  opts = opts || {};
+  const theme = deckTheme(deck);
+  const mode = opts.mode || 'present';
+  const step = opts.step == null ? Infinity : opts.step;
+  const el = document.createElement('div');
+  el.className = 'slide theme-' + theme.id + ' mode-' + mode;
+  el.style.width = SLIDE_W + 'px'; el.style.height = SLIDE_H + 'px';
+  Object.assign(el.style, slideBackground(slide, theme));
+  for (const [k] of THEME_COLOR_KEYS) el.style.setProperty('--' + k, theme[k]);
+  el.style.fontFamily = fontCss(theme.bodyFont);
+  const bg = slide.bg || {};
+  if (bg.image && API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(bg.image) && !API.blobs[bg.image]) { const t = new Image(); t.onerror = () => { el.style.backgroundImage = `url("${GH.rawUrl(bg.image)}")`; }; t.src = bg.image; }
+  if (bg.image && bg.dim) { const d = document.createElement('div'); d.className = 'bg-dim'; d.style.background = `rgba(0,0,0,${bg.dim})`; el.appendChild(d); }
+  // 테마 장식 (배경 이미지가 있으면 생략)
+  const decor = bg.image ? 'none' : (slide.decor || theme.decor);
+  if (decor && decor !== 'none') { const d = document.createElement('div'); d.className = 'decor decor-' + decor; el.appendChild(d); }
+  for (const e of slide.elements) {
+    if (e.po && (mode !== 'present' || step === Infinity)) continue; // 발표 화면에서만 (스포트라이트 덮개 · 여는 커튼): 편집 · 썸네일 · 인쇄에는 안 그림
+    const node = renderElement(e, theme, mode);
+    if (mode === 'present') applyStepToNode(e, node, step, opts.back);
+    el.appendChild(node);
+  }
+  // 꼬리말 (슬라이드 번호 / 문구)
+  const ft = deck.footer; const idx = deck.slides ? deck.slides.indexOf(slide) : -1;
+  if (ft && (ft.num || ft.text) && idx >= 0 && !slide.noFooter && !(ft.skipFirst && idx === 0)) {
+    const f = document.createElement('div'); f.className = 'slide-footer';
+    f.innerHTML = `<span>${esc(ft.text || '')}</span><span class="ft-num">${ft.num ? (idx + 1) + (ft.total ? ' / ' + deck.slides.length : '') : ''}</span>`;
+    el.appendChild(f);
+  }
+  return el;
+}
+
+function renderElement(e, theme, mode) {
+  const node = document.createElement('div');
+  node.className = 'el el-' + e.type;
+  node.dataset.id = e.id;
+  node.style.left = e.x + 'px'; node.style.top = e.y + 'px';
+  node.style.width = e.w + 'px'; node.style.height = e.h + 'px';
+  if (e.rotate) node.style.transform = `rotate(${e.rotate}deg)`;
+  if (e.opacity != null && e.opacity !== 1) { node.style.opacity = e.opacity; node.style.setProperty('--op', e.opacity); }
+  if (e.link) { node.dataset.link = e.link; node.classList.add('has-link'); }
+  if (e.hide) node.classList.add('el-hide');
+  const fn = RENDERERS[e.type];
+  if (fn) fn(e, node, theme, mode);
+  return node;
+}
+
+/* 요소 종류별 글자 기본값 */
+/* 저장된 글(HTML)에서 실행될 수 있는 것 제거 — 가져온 교안 · 웹에서 끌어온 글 대비. 대부분의 글은 검사만 하고 그대로 통과 */
+const UNSAFE_HTML = /<\s*(script|iframe|object|embed|style|link|meta|base|form)\b|\son\w+\s*=|javascript:|vbscript:|data:text\/html/i;
+function safeHtml(html) {
+  html = html || ''; if (!UNSAFE_HTML.test(html)) return html;
+  const t = document.createElement('template'); t.innerHTML = html;
+  t.content.querySelectorAll('script,iframe,object,embed,style,link,meta,base,form').forEach(x => x.remove());
+  t.content.querySelectorAll('*').forEach(x => { for (const a of Array.from(x.attributes)) { if (/^on/i.test(a.name) || (/^(href|src|xlink:href|action|formaction)$/i.test(a.name) && /^\s*(javascript|vbscript|data:text\/html)/i.test(a.value))) x.removeAttribute(a.name); } });
+  return t.innerHTML;
+}
+function resolveTextStyle(e, theme) {
+  let d;
+  const bf = theme.bodyFont || 'sans';
+  if (e.type === 'shape') d = { fontSize: 36, color: '#ffffff', bold: true, lineHeight: 1.3, align: 'center', valign: 'middle', font: bf };
+  else if (e.type === 'table') d = { fontSize: 30, color: theme.fg, lineHeight: 1.35, align: 'center', font: bf };
+  else if (e.type === 'chart') d = { fontSize: 26, color: theme.fg, font: bf };
+  else if (e.type === 'math') d = { fontSize: 64, color: theme.fg, align: 'center', valign: 'middle' };
+  else d = textDefaults(e.role, theme);
+  return Object.assign({}, d, e.style || {});
+}
+function setFontStyles(box, st, theme) {
+  box.style.fontSize = st.fontSize + 'px';
+  box.style.color = themeColor(st.color, theme);
+  box.style.fontFamily = fontCss(st.font);
+  box.style.fontWeight = st.bold ? '700' : '400';
+  box.style.fontStyle = st.italic ? 'italic' : 'normal';
+  box.style.textDecoration = st.underline ? 'underline' : 'none';
+  box.style.lineHeight = st.lineHeight || 1.5;
+  box.style.textAlign = st.align || 'left';
+  box.style.letterSpacing = st.letterSpacing ? st.letterSpacing + 'px' : '';
+  box.style.textShadow = st.tshadow ? '0 4px 18px rgba(0,0,0,.45)' : '';
+  box.style.webkitTextStroke = st.outline ? `${st.outline}px ${themeColor(st.outlineColor || '#000000', theme)}` : '';
+  box.style.writingMode = st.vertical ? 'vertical-rl' : '';
+  box.style.setProperty('--pg', st.paraGap ? st.paraGap + 'px' : '0px');
+}
+const VALIGN = { middle: 'center', bottom: 'flex-end' };
+
+function applyTextNodeStyle(e, node, theme) {
+  const st = resolveTextStyle(e, theme);
+  setFontStyles(node, st, theme);
+  node.style.justifyContent = VALIGN[st.valign] || 'flex-start';
+  node.style.background = st.bg ? themeColor(st.bg, theme) : '';
+  node.style.padding = st.padding ? st.padding + 'px' : '';
+  node.style.borderRadius = st.radius ? st.radius + 'px' : '';
+  node.style.boxShadow = st.shadow ? '0 12px 40px rgba(0,0,0,.18)' : '';
+  node.style.border = st.border ? `${st.border}px solid ${themeColor(st.borderColor || '$accent', theme)}` : '';
+  if (st.accentBar) node.style.borderLeft = `14px solid ${theme.accent}`;
+  if (st.accentBar && !st.padding) node.style.paddingLeft = '28px';
+  const inner = node.querySelector('.el-text-inner');
+  if (inner) { inner.classList.toggle('pre', st.font === 'mono' || e.role === 'code'); if (st.list) inner.dataset.list = st.list; else delete inner.dataset.list; }
+}
+/* 글자를 가진 모든 요소(텍스트·도형·표·수식)의 글자 서식 다시 적용 */
+function applyElementTextStyle(e, node, theme) {
+  if (!node) return;
+  if (e.type === 'text') return applyTextNodeStyle(e, node, theme);
+  const st = resolveTextStyle(e, theme);
+  const box = e.type === 'shape' ? node.querySelector('.shape-text') : node;
+  if (!box) return;
+  setFontStyles(box, st, theme);
+  if (e.type === 'shape' || e.type === 'math') box.style.justifyContent = VALIGN[st.valign] || (e.type === 'shape' ? 'center' : 'flex-start');
+  const inner = box.querySelector('.el-text-inner'); if (inner) { if (st.list) inner.dataset.list = st.list; else delete inner.dataset.list; }
+}
+
+function renderText(e, node, theme, mode) {
+  const inner = document.createElement('div');
+  inner.className = 'el-text-inner';
+  inner.innerHTML = safeHtml(e.html);
+  if (mode === 'edit' && !stripHtml(e.html) && !/<img|<ul|<ol/.test(e.html || '')) {
+    inner.innerHTML = '<span class="placeholder">텍스트를 입력하세요</span>';
+  }
+  node.appendChild(inner);
+  applyTextNodeStyle(e, node, theme);
+}
+
+/* 목록 항목 하나씩 표시(listSteps): 최상위 li 들을 찾는다 */
+function topLevelItems(inner) {
+  return Array.from(inner.querySelectorAll('li')).filter(li => !li.parentElement.closest('li'));
+}
+function listStepBase(e) { return (e.step || 0) > 0 ? e.step : 1; }
+function elementMaxStep(e) {
+  let m = e.step || 0;
+  if (e.type === 'text' && e.listSteps) {
+    const d = document.createElement('div'); d.innerHTML = e.html || '';
+    const n = topLevelItems(d).length;
+    if (n) m = Math.max(m, listStepBase(e) + n - 1);
+  }
+  return Math.max(m, e.outStep || 0, e.emStep || 0);
+}
+/* 빠진 값 채우기 (손으로 쓴 교안 파일 · 가져온 파일): id, elements, notes, step */
+function normalizeDeck(d) {
+  if (!Array.isArray(d.slides)) d.slides = [];
+  for (const s of d.slides) {
+    if (!s.id) s.id = uid(); if (!Array.isArray(s.elements)) s.elements = []; if (s.notes == null) s.notes = '';
+    for (const e of s.elements) { if (!e.id) e.id = uid(); if (e.type === 'text' && !e.style) e.style = {}; if (e.step == null) e.step = 0; }
+  }
+  return d;
+}
+const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-count', 'anim-countdown', 'anim-words', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen'];
+const ANIM_KEEP = ['kenburns', 'float', 'scan', 'cycle4']; // 계속 움직이는 효과: 다음 클릭에도 멈추지 않음
+const ANIM_INTRO = ['out', 'sheen']; // 발표 화면에서 장이 열릴 때 한 번만 쓰는 효과
+/* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
+/* 숫자 움직이기: 'count' 0 → 값으로 올라가기, 'countdown' 값 → 0 실제 시간(초)으로 내려가기. 글자 안 첫 숫자만 바꾸고 끝나면 원래 글자로 */
+function stopCount(node) {
+  const c = node._cnt; if (!c) return;
+  cancelAnimationFrame(c.raf); clearTimeout(c.to); c.tn.nodeValue = c.orig; node._cnt = null;
+}
+function runCount(node, e, down) {
+  stopCount(node);
+  const w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); let tn, m;
+  while ((tn = w.nextNode())) { m = /\d[\d,]*(?:\.\d+)?/.exec(tn.nodeValue); if (m) break; }
+  if (!tn || !m) return;
+  const orig = tn.nodeValue, raw = m[0], comma = raw.includes(','), dec = (raw.split('.')[1] || '').length, target = parseFloat(raw.replace(/,/g, ''));
+  if (!isFinite(target) || target <= 0) return;
+  const fmt = (v) => { let t = v.toFixed(dec); if (comma) { const [a, b] = t.split('.'); t = a.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (b ? '.' + b : ''); } return t; };
+  const put = (v) => { tn.nodeValue = orig.slice(0, m.index) + fmt(v) + orig.slice(m.index + raw.length); };
+  const c = node._cnt = { tn, orig, raf: 0, to: 0 };
+  const dur = down ? target * 1000 : (+e.dur || 1.6) * 1000, delay = down ? 0 : (+e.delay || 0) * 1000;
+  put(down ? target : 0);
+  c.to = setTimeout(() => {
+    const t0 = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / dur);
+      put(down ? Math.ceil(target * (1 - t) - 1e-9) : (dec ? target * (1 - Math.pow(1 - t, 3)) : Math.round(target * (1 - Math.pow(1 - t, 3)))));
+      if (t < 1) c.raf = requestAnimationFrame(tick); else if (!down) { tn.nodeValue = orig; node._cnt = null; } else node.dispatchEvent(new CustomEvent('countdown-end', { bubbles: true })); // 발표기: 장 설정에 따라 다음 장으로
+    };
+    c.raf = requestAnimationFrame(tick);
+  }, delay);
+}
+/* 단어씩 떠오르기(키네틱 타이포): 글자를 단어 단위 조각으로 나눠 차례로 (한 번만 나눔) */
+function splitWords(node, e) {
+  if (node._kw) return;
+  node._kw = true; let k = 0;
+  const step = Math.min(0.14, 1.1 / Math.max(1, (node.textContent.match(/\S+/g) || []).length)), base = +e.delay || 0;
+  const w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), list = [];
+  while (w.nextNode()) if (w.currentNode.nodeValue.trim()) list.push(w.currentNode);
+  for (const tn of list) {
+    const frag = document.createDocumentFragment();
+    for (const part of tn.nodeValue.split(/(\s+)/)) {
+      if (!part) continue;
+      if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); continue; }
+      const sp = document.createElement('span'); sp.className = 'kw'; sp.textContent = part; sp.style.animationDelay = (base + k++ * step).toFixed(2) + 's'; frag.appendChild(sp);
+    }
+    tn.parentNode.replaceChild(frag, tn);
+  }
+}
+function applyStepToNode(e, node, step, back) {
+  const s = e.step || 0;
+  stopCount(node);
+  node.classList.remove('step-hidden', ...ANIM_CLASSES);
+  node.style.animationDuration = e.dur ? e.dur + 's' : '';
+  node.style.animationDelay = e.delay ? e.delay + 's' : '';
+  if (s > step) { node.classList.add('step-hidden'); return; }
+  if (e.outStep && step >= e.outStep) { if (step === e.outStep && !back) node.classList.add('anim', 'anim-out'); else node.classList.add('step-hidden'); return; }
+  if (back) { /* 뒤로: 움직임 없이 */ }
+  else if (e.emStep && step === e.emStep) node.classList.add('anim', 'anim-' + (e.emAnim || 'pulse'));
+  else if (s > 0 && s === step && e.anim && e.anim !== 'none') node.classList.add('anim', 'anim-' + e.anim);
+  else if (s === 0 && e.enter && e.anim && e.anim !== 'none' && (step === 0 || ANIM_KEEP.includes(e.anim))) node.classList.add('anim', 'anim-' + e.anim); // 장이 열릴 때 바로 (클릭 없이)
+  // 여는 장면 전용(막 걷기 · 반짝임): 장이 처음 열릴 때만 — 다음 클릭이나 뒤로 왔을 때는 숨김 (막이 화면을 덮지 않게)
+  if (e.po && e.enter && ANIM_INTRO.includes(e.anim) && !node.classList.contains('anim')) { node.classList.add('step-hidden'); return; }
+  if (e.type === 'text' && node.classList.contains('anim-words')) splitWords(node, e);
+  if (e.type === 'text' && (node.classList.contains('anim-count') || node.classList.contains('anim-countdown'))) runCount(node, e, node.classList.contains('anim-countdown'));
+  if (e.type === 'text' && e.listSteps) {
+    const inner = node.querySelector('.el-text-inner'); if (!inner) return;
+    const base = listStepBase(e);
+    topLevelItems(inner).forEach((li, i) => {
+      const ls = base + i;
+      li.classList.remove('step-hidden', ...ANIM_CLASSES);
+      if (ls > step) li.classList.add('step-hidden');
+      else if (ls === step && step > 0 && !back) li.classList.add('anim', 'anim-' + (e.anim && e.anim !== 'none' ? e.anim : 'fade'));
+    });
+  }
+}
+
+const IMG_MASKS = { circle: 'ellipse(50% 50% at 50% 50%)', hexagon: 'polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%)', diamond: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)', triangle: 'polygon(50% 0, 100% 100%, 0 100%)', arch: 'inset(0 round 50% 50% 0 0 / 35% 35% 0 0)', blob: 'polygon(32% 3%, 70% 0, 96% 24%, 100% 62%, 80% 93%, 44% 100%, 12% 86%, 0 52%, 8% 18%)' };
+function renderImage(e, node, theme, mode) {
+  if (e.radius) node.style.borderRadius = e.radius + 'px';
+  if (e.shadow) node.style.boxShadow = '0 16px 48px rgba(0,0,0,.25)';
+  if (e.border) node.style.border = `${e.border}px solid ${themeColor(e.borderColor || '#ffffff', theme)}`;
+  if (e.mask && IMG_MASKS[e.mask]) { node.style.clipPath = IMG_MASKS[e.mask]; node.style.boxShadow = ''; }
+  if (!e.src) {
+    if (mode !== 'present') { node.classList.add('img-empty'); node.innerHTML = '<div class="img-hint">🖼 이미지<br><small>더블클릭 → 파일 선택 / 붙여넣기 / 드래그</small></div>'; }
+    return;
+  }
+  const img = document.createElement('img');
+  img.src = API.resolveSrc(e.src); img.draggable = false; img.alt = ''; img.decoding = 'async';
+  if (API.mode === 'github' && !/^(data:|blob:|https?:)/i.test(e.src)) img.onerror = () => { if (img.dataset.fb) return; img.dataset.fb = '1'; img.src = GH.rawUrl(e.src); };
+  img.style.objectFit = e.fit || 'contain';
+  const cx = e.cropX == null ? 50 : e.cropX, cy = e.cropY == null ? 50 : e.cropY, z = e.zoom || 1;
+  img.style.objectPosition = `${cx}% ${cy}%`;
+  if (z !== 1 || e.flip || e.flipV) { img.style.transform = `scale(${e.flip ? -z : z}, ${e.flipV ? -z : z})`; img.style.transformOrigin = `${cx}% ${cy}%`; }
+  const fx = e.fx || {}; const f = [];
+  if (fx.b != null && fx.b !== 100) f.push(`brightness(${fx.b}%)`);
+  if (fx.c != null && fx.c !== 100) f.push(`contrast(${fx.c}%)`);
+  if (fx.s != null && fx.s !== 100) f.push(`saturate(${fx.s}%)`);
+  if (fx.sepia) f.push(`sepia(${fx.sepia}%)`);
+  if (fx.blur) f.push(`blur(${fx.blur}px)`);
+  if (f.length) img.style.filter = f.join(' ');
+  node.appendChild(img);
+}
+
+function renderShape(e, node, theme, mode) {
+  const w = e.w, h = e.h;
+  const sw = e.strokeWidth || 0;
+  let fill = themeColor(e.fill || 'none', theme) || 'none';
+  const stroke = themeColor(e.stroke, theme);
+  const dash = e.dash ? ` stroke-dasharray="${Math.max(2, sw || 6) * 2.5} ${Math.max(2, sw || 6) * 1.8}"` : '';
+  const strokeAttr = (sw > 0 && stroke ? `stroke="${stroke}" stroke-width="${sw}"` : 'stroke="none"') + dash;
+  let defs = '';
+  const isLine = e.shape === 'line' || e.shape === 'arrow' || e.shape === 'dline';
+  if (e.fill2 && fill !== 'none' && !isLine) {
+    const gid = 'g' + uid();
+    defs = `<defs><linearGradient id="${gid}" gradientTransform="rotate(${e.gAngle == null ? 90 : e.gAngle} .5 .5)"><stop offset="0" stop-color="${fill}"/><stop offset="1" stop-color="${themeColor(e.fill2, theme)}" stop-opacity="${e.fill2Op == null ? 1 : e.fill2Op}"/></linearGradient></defs>`;
+    fill = `url(#${gid})`;
+  }
+  const r = e.radius || 0, i = sw / 2, W = w - sw, Hh = h - sw;
+  const P = (pts) => pts.map(([a, b]) => (i + a * W).toFixed(1) + ',' + (i + b * Hh).toFixed(1)).join(' ');
+  const poly = (pts) => `<polygon points="${P(pts)}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`;
+  const abs = (pts) => `<polygon points="${pts.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`;
+  let body = '';
+  switch (e.shape) {
+    case 'rect': body = `<rect x="${i}" y="${i}" width="${W}" height="${Hh}" rx="${Math.max(0, Math.min(r, W / 2, Hh / 2))}" fill="${fill}" ${strokeAttr}/>`; break;
+    case 'ellipse': body = `<ellipse cx="${w / 2}" cy="${h / 2}" rx="${W / 2}" ry="${Hh / 2}" fill="${fill}" ${strokeAttr}/>`; break;
+    case 'triangle': body = poly([[.5, 0], [1, 1], [0, 1]]); break;
+    case 'rtriangle': body = poly([[0, 0], [1, 1], [0, 1]]); break;
+    case 'diamond': body = poly([[.5, 0], [1, .5], [.5, 1], [0, .5]]); break;
+    case 'pentagon': body = poly([[.5, 0], [1, .38], [.81, 1], [.19, 1], [0, .38]]); break;
+    case 'hexagon': body = poly([[.25, 0], [.75, 0], [1, .5], [.75, 1], [.25, 1], [0, .5]]); break;
+    case 'octagon': body = poly([[.29, 0], [.71, 0], [1, .29], [1, .71], [.71, 1], [.29, 1], [0, .71], [0, .29]]); break;
+    case 'parallelogram': body = poly([[.2, 0], [1, 0], [.8, 1], [0, 1]]); break;
+    case 'trapezoid': body = poly([[.18, 0], [.82, 0], [1, 1], [0, 1]]); break;
+    case 'plus': { const t = .34, a = (1 - t) / 2, b = a + t; body = poly([[a, 0], [b, 0], [b, a], [1, a], [1, b], [b, b], [b, 1], [a, 1], [a, b], [0, b], [0, a], [a, a]]); break; }
+    case 'star': {
+      const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2 - sw, rr = R * 0.45; const pts = [];
+      for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5; const rad = k % 2 ? rr : R; pts.push([cx + rad * Math.cos(a), cy + rad * Math.sin(a)]); }
+      body = abs(pts); break;
+    }
+    case 'chevron': { const d = Math.min(h / 2, w * 0.25); body = abs([[0, 0], [w - d, 0], [w, h / 2], [w - d, h], [0, h], [d, h / 2]]); break; }
+    case 'blockArrow': { const d = Math.min(w * .45, h * .9); body = abs([[0, h * .28], [w - d, h * .28], [w - d, 0], [w, h / 2], [w - d, h], [w - d, h * .72], [0, h * .72]]); break; }
+    case 'doubleArrow': { const d = Math.min(w * .3, h * .9); body = abs([[0, h / 2], [d, 0], [d, h * .28], [w - d, h * .28], [w - d, 0], [w, h / 2], [w - d, h], [w - d, h * .72], [d, h * .72], [d, h]]); break; }
+    case 'ring': {
+      const ell = (rx, ry) => `M ${w / 2 - rx},${h / 2} a ${rx},${ry} 0 1,0 ${2 * rx},0 a ${rx},${ry} 0 1,0 ${-2 * rx},0 Z`;
+      body = `<path fill-rule="evenodd" d="${ell(W / 2, Hh / 2)} ${ell(W / 2 * .62, Hh / 2 * .62)}" fill="${fill}" ${strokeAttr}/>`; break;
+    }
+    case 'callout': {
+      const bh = h * .78, rr = Math.max(0, Math.min(r || 24, W / 2, bh / 2));
+      body = `<path d="M ${i + rr},${i} H ${w - i - rr} Q ${w - i},${i} ${w - i},${i + rr} V ${bh - rr} Q ${w - i},${bh} ${w - i - rr},${bh} H ${w * .36} L ${w * .14},${h - i} L ${w * .2},${bh} H ${i + rr} Q ${i},${bh} ${i},${bh - rr} V ${i + rr} Q ${i},${i} ${i + rr},${i} Z" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
+    }
+    case 'heart': {
+      const X = (v) => (i + v * W).toFixed(1), Y = (v) => (i + v * Hh).toFixed(1);
+      body = `<path d="M ${X(.5)},${Y(.28)} C ${X(.5)},${Y(.1)} ${X(.3)},${Y(0)} ${X(.16)},${Y(.06)} C ${X(-.02)},${Y(.15)} ${X(-.02)},${Y(.45)} ${X(.12)},${Y(.6)} L ${X(.5)},${Y(1)} L ${X(.88)},${Y(.6)} C ${X(1.02)},${Y(.45)} ${X(1.02)},${Y(.15)} ${X(.84)},${Y(.06)} C ${X(.7)},${Y(0)} ${X(.5)},${Y(.1)} ${X(.5)},${Y(.28)} Z" fill="${fill}" ${strokeAttr} stroke-linejoin="round"/>`; break;
+    }
+    case 'line': { const t = Math.max(2, sw || 6); const c = stroke || fill; body = `<line x1="${t / 2}" y1="${h / 2}" x2="${w - t / 2}" y2="${h / 2}" stroke="${c}" stroke-width="${t}" stroke-linecap="round"${dash}/>`; break; }
+    case 'arrow': case 'dline': {
+      const t = Math.max(4, sw || 10); const c = stroke || fill; const head = Math.min(w * 0.35, Math.max(h, t * 3), t * 4);
+      const two = e.shape === 'dline';
+      body = `<line x1="${two ? head * 0.8 : t / 2}" y1="${h / 2}" x2="${w - head * 0.8}" y2="${h / 2}" stroke="${c}" stroke-width="${t}" stroke-linecap="round"${dash}/>` +
+        `<polygon points="${w - head},${h / 2 - head * 0.6} ${w},${h / 2} ${w - head},${h / 2 + head * 0.6}" fill="${c}"/>` +
+        (two ? `<polygon points="${head},${h / 2 - head * 0.6} 0,${h / 2} ${head},${h / 2 + head * 0.6}" fill="${c}"/>` : ''); break;
+    }
+    default: body = `<rect width="${w}" height="${h}" fill="${fill}"/>`;
+  }
+  if (e.shadow) node.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,.25))';
+  if (e.flip || e.flipV) body = `<g transform="translate(${e.flip ? w : 0},${e.flipV ? h : 0}) scale(${e.flip ? -1 : 1},${e.flipV ? -1 : 1})">${body}</g>`; // 좌우·상하 반전 (글자는 그대로)
+  node.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">${defs}${body}</svg>`;
+  // 도형 안 글자 (편집 화면에서는 비어 있어도 상자를 만들어 둠)
+  if (!isLine && (e.html || mode === 'edit')) {
+    const box = document.createElement('div'); box.className = 'shape-text';
+    if (e.style && e.style.padding != null && e.style.padding !== '') box.style.padding = e.style.padding + 'px';
+    const inner = document.createElement('div'); inner.className = 'el-text-inner'; inner.innerHTML = safeHtml(e.html);
+    box.appendChild(inner); node.appendChild(box);
+    applyElementTextStyle(e, node, theme);
+  }
+}
+const SHAPES = [
+  { id: 'rect', name: '사각형 (모서리 조절)' }, { id: 'ellipse', name: '원 / 타원' }, { id: 'triangle', name: '삼각형' }, { id: 'rtriangle', name: '직각삼각형' },
+  { id: 'diamond', name: '마름모' }, { id: 'pentagon', name: '오각형' }, { id: 'hexagon', name: '육각형' }, { id: 'octagon', name: '팔각형' },
+  { id: 'parallelogram', name: '평행사변형' }, { id: 'trapezoid', name: '사다리꼴' }, { id: 'star', name: '별' }, { id: 'heart', name: '하트' },
+  { id: 'plus', name: '십자 (더하기)' }, { id: 'ring', name: '도넛 (고리)' }, { id: 'callout', name: '말풍선' }, { id: 'chevron', name: '화살 블록 (단계)' },
+  { id: 'blockArrow', name: '굵은 화살표' }, { id: 'doubleArrow', name: '양쪽 굵은 화살표' }, { id: 'line', name: '선' }, { id: 'arrow', name: '화살표 선' }, { id: 'dline', name: '양쪽 화살표 선' },
+];
+
+/* ---------- 표 ----------
+   e.rows  칸 내용(HTML) 2차원 배열
+   e.cols  열 너비 비율 · e.rh 행 높이 비율 (없으면 균등)
+   e.cells { "행,열": { cs, rs, fill, align, color } }  합친 칸(colspan/rowspan)과 칸별 꾸밈 */
+function tableWeights(arr, n) { // 저장된 비율 → n개 비율 (없거나 개수가 다르면 평균으로 채움), 합 = 1
+  const a = Array.isArray(arr) ? arr.slice(0, n).map(v => Math.max(0.01, +v || 0)) : [];
+  const avg = a.length ? a.reduce((s, v) => s + v, 0) / a.length : 1;
+  while (a.length < n) a.push(avg);
+  const sum = a.reduce((s, v) => s + v, 0) || 1;
+  return a.map(v => v / sum);
+}
+function tableCovered(cells, nr, nc) { // 합친 칸에 가려져 그리지 않는 자리
+  const cov = new Set();
+  for (const k in (cells || {})) {
+    const [r, c] = k.split(',').map(Number); const s = cells[k];
+    const rs = Math.min(s.rs || 1, nr - r), cs = Math.min(s.cs || 1, nc - c);
+    for (let i = 0; i < rs; i++) for (let j = 0; j < cs; j++) if (i || j) cov.add((r + i) + ',' + (c + j));
+  }
+  return cov;
+}
+function renderTable(e, node, theme, mode) {
+  const rows = e.rows && e.rows.length ? e.rows : [['']];
+  const nr = rows.length, nc = Math.max(1, ...rows.map(r => r.length));
+  const cells = e.cells || {}, covered = tableCovered(cells, nr, nc);
+  const t = document.createElement('table');
+  t.className = 'tbl lines-' + (e.lines || 'grid') + (e.band ? ' band' : '') + (e.header ? ' has-head' : '') + (e.firstCol ? ' first-col' : '');
+  t.style.setProperty('--head', themeColor(e.headFill || '$accent', theme));
+  t.style.setProperty('--headfg', themeColor(e.headColor || '#ffffff', theme));
+  t.style.setProperty('--line', themeColor(e.lineColor || '$muted', theme));
+  const cg = document.createElement('colgroup');
+  tableWeights(e.cols, nc).forEach(w => { const col = document.createElement('col'); col.style.width = (w * 100).toFixed(3) + '%'; cg.appendChild(col); });
+  t.appendChild(cg);
+  const rh = tableWeights(e.rh, nr);
+  const tb = document.createElement('tbody'); t.appendChild(tb);
+  rows.forEach((r, ri) => {
+    const tr = document.createElement('tr'); tr.style.height = (rh[ri] * 100).toFixed(3) + '%';
+    for (let ci = 0; ci < nc; ci++) {
+      const key = ri + ',' + ci; if (covered.has(key)) continue;
+      const td = document.createElement(ri === 0 && e.header ? 'th' : 'td'); td.innerHTML = safeHtml(r[ci]); td.dataset.r = ri; td.dataset.c = ci;
+      const s = cells[key];
+      if (s) {
+        if (s.cs > 1) td.colSpan = Math.min(s.cs, nc - ci); if (s.rs > 1) td.rowSpan = Math.min(s.rs, nr - ri);
+        if (s.fill) { td.style.background = themeColor(s.fill, theme); td.classList.add('filled'); }
+        if (s.align) td.style.textAlign = s.align; if (s.color) td.style.color = themeColor(s.color, theme);
+      }
+      tr.appendChild(td);
+    }
+    tb.appendChild(tr);
+  });
+  if (e.radius) { node.style.borderRadius = e.radius + 'px'; node.style.overflow = 'hidden'; }
+  node.appendChild(t);
+  applyElementTextStyle(e, node, theme);
+}
+
+/* ---------- 차트 ---------- */
+const CHART_KINDS = [['bar', '세로 막대'], ['hbar', '가로 막대'], ['stack', '누적 막대'], ['line', '꺾은선'], ['area', '영역'], ['pie', '원형'], ['donut', '도넛']];
+function parseChartData(text) {
+  const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const split = (l) => l.split(/\t|,/).map(s => s.trim());
+  const num = (s) => { const v = parseFloat(String(s == null ? '' : s).replace(/[^0-9.\-]/g, '')); return isNaN(v) ? 0 : v; };
+  if (!lines.length) return { labels: [], series: [] };
+  let head = split(lines[0]), body = lines.slice(1).map(split);
+  // 첫 줄이 숫자로만 되어 있으면 머리줄이 없는 것으로 봄
+  const isYear = (v) => /^(19|20)\d\d$/.test(v);
+  if (head.length > 1 && head.slice(1).every(v => v !== '' && /^-?[\d.,]+%?$/.test(v)) && !head.slice(1).every(isYear)) { body = lines.map(split); head = [''].concat(head.slice(1).map((_, i) => '값' + (i ? i + 1 : ''))); }
+  return { labels: body.map(r => r[0]), series: head.slice(1).map((name, i) => ({ name, values: body.map(r => num(r[i + 1])) })) };
+}
+function chartPalette(e, theme) {
+  const base = [theme.accent, theme.accent2, '#10b981', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316', '#64748b', '#ec4899', '#84cc16'];
+  if (e.colors && e.colors.length) return base.map((b, i) => e.colors[i] ? themeColor(e.colors[i], theme) : b);
+  return base;
+}
+function niceScale(min, max) {
+  min = Math.min(0, min); max = Math.max(0, max); if (max === min) max = min + 1;
+  const rough = (max - min) / 5, p = Math.pow(10, Math.floor(Math.log10(rough))), f = rough / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  return { step, min: Math.floor(min / step + 1e-9) * step, max: Math.ceil(max / step - 1e-9) * step };
+}
+function renderChart(e, node, theme, mode) {
+  const st = resolveTextStyle(e, theme);
+  const W = e.w, H = e.h, fs = st.fontSize, fg = themeColor(st.color, theme), muted = theme.muted;
+  const { labels, series } = parseChartData(e.data);
+  const pal = chartPalette(e, theme);
+  const fmt = (v) => Number(v.toFixed(2)).toLocaleString('ko-KR') + (e.unit || '');
+  const T = (x, y, s, o) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" ${o || ''}>${esc(s)}</text>`;
+  let svg = '';
+  const kind = e.kind || 'bar';
+  const pieEmpty = (kind === 'pie' || kind === 'donut') && series.length && !series[0].values.some(v => v > 0);
+  if (!labels.length || !series.length || pieEmpty) { svg = T(W / 2, H / 2, pieEmpty ? '0보다 큰 값을 입력하세요' : '데이터를 입력하세요', `text-anchor="middle" fill="${muted}"`); }
+  else if (kind === 'pie' || kind === 'donut') {
+    const vals = series[0].values.map(v => Math.max(0, v)); const total = vals.reduce((a, b) => a + b, 0) || 1;
+    const legendW = e.legend ? Math.min(W * 0.42, fs * 10) : 0;
+    const cx = (W - legendW) / 2, cy = H / 2, R = Math.max(10, Math.min(cx, cy) - fs * 0.6), r0 = kind === 'donut' ? R * 0.58 : 0;
+    const p = (rad, a) => `${(cx + rad * Math.cos(a)).toFixed(2)},${(cy + rad * Math.sin(a)).toFixed(2)}`;
+    let a0 = -Math.PI / 2;
+    vals.forEach((v, k) => {
+      const a1 = a0 + (v / total) * Math.PI * 2; const large = a1 - a0 > Math.PI ? 1 : 0;
+      let d;
+      if (v / total > 0.9999) d = `M ${p(R, 0)} A ${R},${R} 0 1,1 ${p(R, Math.PI)} A ${R},${R} 0 1,1 ${p(R, 0)}` + (r0 ? ` M ${p(r0, 0)} A ${r0},${r0} 0 1,0 ${p(r0, Math.PI)} A ${r0},${r0} 0 1,0 ${p(r0, 0)}` : '') + ' Z';
+      else d = r0 ? `M ${p(R, a0)} A ${R},${R} 0 ${large},1 ${p(R, a1)} L ${p(r0, a1)} A ${r0},${r0} 0 ${large},0 ${p(r0, a0)} Z` : `M ${cx},${cy} L ${p(R, a0)} A ${R},${R} 0 ${large},1 ${p(R, a1)} Z`;
+      svg += `<path class="cslice" style="animation-delay:${(k * 0.08).toFixed(2)}s;transform-origin:${cx}px ${cy}px" d="${d}" fill="${pal[k % pal.length]}" stroke="${theme.bg}" stroke-width="${Math.max(2, fs * 0.12)}" fill-rule="evenodd"/>`;
+      if (e.values && v / total > 0.04) {
+        const am = (a0 + a1) / 2, lr = r0 ? (R + r0) / 2 : R * 0.62;
+        svg += T(cx + lr * Math.cos(am), cy + lr * Math.sin(am) + fs * 0.35, Math.round(v / total * 100) + '%', `text-anchor="middle" fill="#fff" font-weight="700" class="cval"`);
+      }
+      a0 = a1;
+    });
+    if (kind === 'donut' && e.center) svg += T(cx, cy + fs * 0.55, e.center, `text-anchor="middle" fill="${fg}" font-weight="800" font-size="${fs * 1.6}"`);
+    if (e.legend) {
+      const lx = W - legendW + fs * 0.5, n = labels.length, lh = fs * 1.6, ly0 = cy - (n * lh) / 2 + lh / 2;
+      labels.forEach((l, k) => { const y = ly0 + k * lh; svg += `<rect x="${lx}" y="${(y - fs * 0.45).toFixed(1)}" width="${fs * 0.8}" height="${fs * 0.8}" rx="${fs * 0.15}" fill="${pal[k % pal.length]}"/>` + T(lx + fs * 1.2, y + fs * 0.32, l + (e.values ? '  ' + fmt(vals[k]) : ''), `fill="${fg}"`); });
+    }
+  } else {
+    const horiz = kind === 'hbar', stack = kind === 'stack';
+    const legendH = e.legend && series.length > 1 ? fs * 1.8 : 0;
+    let lo = 0, hi = 0;
+    if (stack) labels.forEach((_, j) => { let ps = 0, ng = 0; series.forEach(s => { const v = s.values[j]; if (v >= 0) ps += v; else ng += v; }); hi = Math.max(hi, ps); lo = Math.min(lo, ng); });
+    else series.forEach(s => s.values.forEach(v => { hi = Math.max(hi, v); lo = Math.min(lo, v); }));
+    const sc = niceScale(lo, hi);
+    const maxLabel = Math.max(...labels.map(l => String(l).length), 1);
+    const tickW = Math.max(...[sc.min, sc.max].map(v => fmt(v).length)) * fs * 0.62;
+    const padL = horiz ? Math.min(W * 0.32, maxLabel * fs * 0.95 + fs) : tickW + fs * 0.8;
+    const padB = fs * 2.1, padT = legendH + fs * (e.values ? 1.6 : 0.8), padR = horiz ? fs * (e.values ? 3.5 : 1) : fs * 0.6;
+    const pw = Math.max(10, W - padL - padR), ph = Math.max(10, H - padT - padB);
+    const vpos = (v) => horiz ? padL + (v - sc.min) / (sc.max - sc.min) * pw : padT + ph - (v - sc.min) / (sc.max - sc.min) * ph;
+    for (let v = sc.min; v <= sc.max + sc.step / 2; v += sc.step) {
+      const q = vpos(v);
+      if (e.grid !== false) svg += horiz ? `<line x1="${q}" y1="${padT}" x2="${q}" y2="${padT + ph}" stroke="${muted}" stroke-opacity=".28" stroke-width="2"/>` : `<line x1="${padL}" y1="${q}" x2="${padL + pw}" y2="${q}" stroke="${muted}" stroke-opacity=".28" stroke-width="2"/>`;
+      /* axis:false — 값이 막대에 직접 붙어 있을 때 눈금 숫자는 중복이라 끌 수 있게 한다 */
+      if (e.axis !== false) svg += horiz ? T(q, padT + ph + fs * 1.3, fmt(v), `text-anchor="middle" fill="${muted}" font-size="${fs * 0.85}"`) : T(padL - fs * 0.4, q + fs * 0.32, fmt(v), `text-anchor="end" fill="${muted}" font-size="${fs * 0.85}"`);
+    }
+    const zero = vpos(0);
+    svg += horiz ? `<line x1="${zero}" y1="${padT}" x2="${zero}" y2="${padT + ph}" stroke="${muted}" stroke-width="3"/>` : `<line x1="${padL}" y1="${zero}" x2="${padL + pw}" y2="${zero}" stroke="${muted}" stroke-width="3"/>`;
+    const n = labels.length, band = (horiz ? ph : pw) / n;
+    labels.forEach((l, j) => {
+      const c = (horiz ? padT : padL) + band * (j + 0.5);
+      svg += horiz ? T(padL - fs * 0.5, c + fs * 0.35, l, `text-anchor="end" fill="${fg}"`) : T(c, padT + ph + fs * 1.4, l, `text-anchor="middle" fill="${fg}"`);
+    });
+    if (kind === 'line' || kind === 'area') {
+      series.forEach((s, k) => {
+        const col = pal[k % pal.length];
+        const pts = s.values.map((v, j) => [padL + band * (j + 0.5), vpos(v)]);
+        const d = pts.map((q, j) => (j ? 'L' : 'M') + q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+        if (kind === 'area') svg += `<path class="carea" d="${d} L ${pts[pts.length - 1][0].toFixed(1)},${zero} L ${pts[0][0].toFixed(1)},${zero} Z" fill="${col}" fill-opacity=".22"/>`;
+        svg += `<path class="cline" pathLength="1" d="${d}" fill="none" stroke="${col}" stroke-width="${Math.max(3, fs * 0.2)}" stroke-linejoin="round" stroke-linecap="round"/>`;
+        pts.forEach((q, j) => {
+          svg += `<circle class="cdot" style="animation-delay:${(0.5 + j * 0.06).toFixed(2)}s" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${Math.max(4, fs * 0.28)}" fill="${theme.bg}" stroke="${col}" stroke-width="${Math.max(3, fs * 0.16)}"/>`;
+          if (e.values) svg += T(q[0], q[1] - fs * 0.7, fmt(s.values[j]), `text-anchor="middle" fill="${fg}" font-weight="700" font-size="${fs * 0.85}" class="cval"`);
+        });
+      });
+    } else {
+      const inner = band * 0.72, bw = stack ? inner : inner / series.length;
+      labels.forEach((_, j) => {
+        let pos = 0, neg = 0;
+        series.forEach((s, k) => {
+          const v = s.values[j];
+          /* pointColors: 막대 하나만 강조하고 나머지는 회색으로 둘 때 쓴다 (없으면 기존대로) */
+          const col = (e.pointColors && e.pointColors[j]) ? themeColor(e.pointColors[j], theme) : pal[k % pal.length];
+          let a, b;
+          if (stack) { if (v >= 0) { a = pos; b = pos + v; pos = b; } else { a = neg; b = neg + v; neg = b; } } else { a = 0; b = v; }
+          const off = (horiz ? padT : padL) + band * j + (band - inner) / 2 + (stack ? 0 : k * bw);
+          const p1 = vpos(a), p2 = vpos(b), lo2 = Math.min(p1, p2), len = Math.abs(p2 - p1);
+          const rad = Math.min(bw * 0.12, 10);
+          const delay = `animation-delay:${(j * 0.06 + k * 0.03).toFixed(2)}s`;
+          svg += horiz ? `<rect class="cbar-h" style="${delay}" x="${lo2.toFixed(1)}" y="${off.toFixed(1)}" width="${len.toFixed(1)}" height="${(bw * 0.92).toFixed(1)}" rx="${rad}" fill="${col}"/>`
+            : `<rect class="cbar" style="${delay}" x="${off.toFixed(1)}" y="${lo2.toFixed(1)}" width="${(bw * 0.92).toFixed(1)}" height="${len.toFixed(1)}" rx="${rad}" fill="${col}"/>`;
+          if (e.values && (!stack || len > fs * 1.2)) {
+            const vs = fs * 0.85;
+            if (stack) svg += horiz ? T(lo2 + len / 2, off + bw * 0.46 + fs * 0.32, fmt(v), `text-anchor="middle" fill="#fff" font-weight="700" font-size="${vs}" class="cval"`) : T(off + bw * 0.46, lo2 + len / 2 + fs * 0.3, fmt(v), `text-anchor="middle" fill="#fff" font-weight="700" font-size="${vs}" class="cval"`);
+            else svg += horiz ? T(v >= 0 ? lo2 + len + fs * 0.35 : lo2 - fs * 0.35, off + bw * 0.46 + fs * 0.32, fmt(v), `text-anchor="${v >= 0 ? 'start' : 'end'}" fill="${fg}" font-weight="700" font-size="${vs}" class="cval"`) : T(off + bw * 0.46, v >= 0 ? lo2 - fs * 0.4 : lo2 + len + fs * 1.05, fmt(v), `text-anchor="middle" fill="${fg}" font-weight="700" font-size="${vs}" class="cval"`);
+          }
+        });
+      });
+    }
+    if (legendH) {
+      let x = padL; const y = fs * 0.9;
+      series.forEach((s, k) => { svg += `<rect x="${x}" y="${y - fs * 0.55}" width="${fs * 0.8}" height="${fs * 0.8}" rx="${fs * 0.15}" fill="${pal[k % pal.length]}"/>` + T(x + fs * 1.1, y + fs * 0.2, s.name, `fill="${fg}"`); x += fs * 2 + String(s.name).length * fs * 0.95; });
+    }
+  }
+  node.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="${esc(fontCss(st.font))}" font-size="${fs}" style="display:block;overflow:visible">${svg}</svg>`;
+}
+
+/* ---------- 수식 (KaTeX, 쓰일 때만 불러옴) ---------- */
+const KATEX_V = '0.16.11';
+let _katexP = null;
+function loadKatex() {
+  if (window.katex) return Promise.resolve();
+  if (_katexP) return _katexP;
+  _katexP = new Promise((res, rej) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = `https://cdn.jsdelivr.net/npm/katex@${KATEX_V}/dist/katex.min.css`; document.head.appendChild(l);
+    const s = document.createElement('script'); s.src = `https://cdn.jsdelivr.net/npm/katex@${KATEX_V}/dist/katex.min.js`;
+    s.onload = () => res(); s.onerror = () => { _katexP = null; rej(new Error('수식 도구를 불러오지 못했습니다 (인터넷 연결 확인)')); };
+    document.head.appendChild(s);
+  });
+  return _katexP;
+}
+function renderMath(e, node, theme, mode) {
+  const box = document.createElement('div'); box.className = 'math-box';
+  node.appendChild(box);
+  applyElementTextStyle(e, node, theme);
+  const draw = () => { try { box.innerHTML = window.katex.renderToString(e.tex || '', { displayMode: true, throwOnError: false, output: 'html' }); box.classList.remove('math-pending'); } catch (err) { box.textContent = e.tex || ''; } };
+  if (window.katex) draw();
+  else { box.textContent = e.tex || ''; box.classList.add('math-pending'); loadKatex().then(draw, () => { }); }
+}
+
+/* ---------- 동영상 · 웹 페이지 ---------- */
+function parseEmbed(url) {
+  url = String(url || '').trim();
+  let m = url.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  if (m) {
+    const t = url.match(/[?&#](?:t|start)=([\dhms]+)/i); let st = 0;
+    if (t) { const v = t[1].toLowerCase(), p = v.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/); st = /^\d+$/.test(v) ? +v : p ? (+p[1] || 0) * 3600 + (+p[2] || 0) * 60 + (+p[3] || 0) : 0; }
+    return { kind: 'youtube', id: m[1], start: st };
+  }
+  m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/); if (m) return { kind: 'vimeo', id: m[1] };
+  if (/\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test(url)) return { kind: 'video', src: url };
+  if (/^https?:\/\//i.test(url)) return { kind: 'web', src: url };
+  return { kind: 'none' };
+}
+/* "1:30" · "90" · "1:02:03" → 초 */
+function parseClock(s) {
+  s = String(s == null ? '' : s).trim(); if (!s) return 0;
+  const parts = s.split(':').map(x => parseFloat(x) || 0); if (parts.length === 1) return Math.max(0, parts[0]);
+  return Math.max(0, parts.reduce((a, b) => a * 60 + b, 0));
+}
+function fmtClock(sec) { sec = Math.max(0, Math.round(sec || 0)); const m = Math.floor(sec / 60), s = sec % 60; return m + ':' + String(s).padStart(2, '0'); }
+/* 재생 범위: 요소의 start/end(초) · 주소의 ?t= 도 시작으로 인정 */
+function embedRange(e, p) { return { start: e.start || p.start || 0, end: e.end || 0 }; }
+/* 실제 재생 화면 (발표 · 편집 중 ▶ 를 눌렀을 때) */
+function embedPlayer(e, p, autoplay) {
+  const r = embedRange(e, p);
+  if (p.kind === 'video') {
+    const frag = r.start || r.end ? `#t=${r.start}${r.end ? ',' + r.end : ''}` : '';
+    const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.preload = 'metadata';
+    const big = API.blobs[p.src] ? null : BIGV.parse(p.src); // 100MB 가 넘어 조각으로 올린 영상
+    if (big) BIGV.attach(v, big, p.src, frag, autoplay); else v.src = API.resolveSrc(p.src) + frag;
+    const ps = embedPoster(e); if (ps && !autoplay) v.poster = API.resolveSrc(ps);
+    if (autoplay) v.autoplay = true; if (e.loop) v.loop = true; if (e.muted) v.muted = true;
+    // 방금 올린 영상: 사이트에 반영(1~2분)되기 전에는 저장소에서 바로 읽음
+    if (!big && API.mode === 'github' && GH.cfg && !/^(data:|blob:|https?:)/i.test(p.src) && !API.blobs[p.src]) v.addEventListener('error', () => { if (v.dataset.fb) return; v.dataset.fb = '1'; v.src = GH.rawUrl(p.src) + frag; if (autoplay) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); } });
+    if (r.end) v.addEventListener('timeupdate', () => { if (v.currentTime >= r.end) { if (e.loop) v.currentTime = r.start; else v.pause(); } });
+    VIDFIT.watch(v);
+    return v;
+  }
+  const f = document.createElement('iframe');
+  if (p.kind === 'youtube') f.src = `https://www.youtube-nocookie.com/embed/${p.id}?rel=0&modestbranding=1&playsinline=1${r.start ? '&start=' + r.start : ''}${r.end ? '&end=' + r.end : ''}${autoplay ? '&autoplay=1' : ''}${e.muted ? '&mute=1' : ''}${e.loop ? '&loop=1&playlist=' + p.id : ''}`;
+  else if (p.kind === 'vimeo') f.src = `https://player.vimeo.com/video/${p.id}${autoplay ? '?autoplay=1' : ''}${r.start ? '#t=' + r.start + 's' : ''}`;
+  else f.src = p.src;
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write'; f.allowFullscreen = true; f.referrerPolicy = 'strict-origin-when-cross-origin';
+  return f;
+}
+/* 실제 화면 찾기: 휴대폰 화면 녹화처럼 영상 둘레에 검은 여백이 붙은 동영상은 실제 화면이 작게 보이고,
+   전체화면으로 키워도 여백까지 함께 커져 화면이 꽉 차지 않음.
+   재생하는 동안 몇 장면을 작게 그려 보아 여백을 재고(장면마다 잰 값의 가운데 값),
+   그 안쪽만 보이게 잘라 냄(object-view-box) — 상자 안에서도, 영상의 전체화면 단추로 키웠을 때도 화면에 꽉 맞음.
+   이 속성을 모르는 브라우저(사파리 · 파이어폭스)는 지금처럼 여백째 보여 줌. 내용은 자르지 않고 검은 여백만 뺌 */
+const VIDFIT = {
+  ok: typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('object-view-box', 'inset(1px)'),
+  W: 120,        // 재 볼 때 줄이는 너비 (픽셀)
+  MIN: 0.03,     // 이보다 얇은 여백은 그대로 둠
+  watch(v) {
+    if (!this.ok) return;
+    const boxes = []; let cv = null, last = -1, timer = 0;
+    const sample = () => {
+      if (!v.isConnected) { clearInterval(timer); return; }
+      if (v.readyState < 2 || !v.videoWidth || (boxes.length && Math.abs(v.currentTime - last) < 0.4)) return;
+      last = v.currentTime;
+      const b = this.measure(v, cv || (cv = document.createElement('canvas')));
+      if (b === false) { clearInterval(timer); v.removeEventListener('seeked', sample); return; } // 그려 볼 수 없는 영상 (다른 사이트)
+      if (!b) return;                                                                             // 거의 검은 장면 (장면 전환)
+      boxes.push(b); if (boxes.length > 15) boxes.shift();
+      this.apply(v, boxes);
+    };
+    v.addEventListener('loadeddata', sample); v.addEventListener('seeked', sample);
+    v.addEventListener('play', () => { clearInterval(timer); timer = setInterval(() => { if (!v.paused) sample(); }, 600); });
+    v.addEventListener('pause', () => clearInterval(timer));
+    v.addEventListener('emptied', () => { boxes.length = 0; last = -1; v.style.objectViewBox = ''; delete v.dataset.fit; });
+  },
+  /* 한 장면의 여백 (각 변에서 몇 % 가 검은가). 그릴 수 없으면 false, 거의 검은 장면이면 null */
+  measure(v, cv) {
+    const w = this.W, h = Math.max(8, Math.round(w * v.videoHeight / v.videoWidth));
+    let d;
+    try { cv.width = w; cv.height = h; const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(v, 0, 0, w, h); d = x.getImageData(0, 0, w, h).data; }
+    catch (e) { return false; }
+    const lit = (x, y) => { const i = (y * w + x) * 4; return Math.max(d[i], d[i + 1], d[i + 2]) > 36; };
+    const rows = []; for (let y = 0; y < h; y++) { let n = 0; for (let x = 0; x < w; x++) if (lit(x, y)) n++; rows.push(n); }
+    let t = 0, b = h - 1; while (t < h && rows[t] < w * 0.1) t++; while (b > t && rows[b] < w * 0.1) b--;
+    if (b - t < h * 0.12) return null;
+    const cols = []; for (let x = 0; x < w; x++) { let n = 0; for (let y = t; y <= b; y++) if (lit(x, y)) n++; cols.push(n); }
+    const hh = b - t + 1; let l = 0, r = w - 1; while (l < w && cols[l] < hh * 0.1) l++; while (r > l && cols[r] < hh * 0.1) r--;
+    if (r - l < w * 0.12) return null;
+    return { t: t / h, b: (h - 1 - b) / h, l: l / w, r: (w - 1 - r) / w };
+  },
+  apply(v, boxes) {
+    const mid = (k) => { const a = boxes.map(x => x[k]).sort((p, q) => p - q); return a[a.length >> 1]; };
+    if (boxes.length < 3) return; // 한두 장면만으로는 정하지 않음 (시작 화면 · 자막만 있는 장면)
+    const m = { t: mid('t'), r: mid('r'), b: mid('b'), l: mid('l') };
+    for (const k in m) if (m[k] < this.MIN) m[k] = 0;
+    const cut = m.t + m.r + m.b + m.l ? `inset(${(m.t * 100).toFixed(1)}% ${(m.r * 100).toFixed(1)}% ${(m.b * 100).toFixed(1)}% ${(m.l * 100).toFixed(1)}%)` : '';
+    const prev = v.dataset.fit ? v.dataset.fit.split(',').map(Number) : [0, 0, 0, 0];
+    if ([m.t, m.r, m.b, m.l].every((x, i) => Math.abs(x - prev[i]) < 0.015)) return; // 거의 그대로면 움직이지 않음
+    v.dataset.fit = [m.t, m.r, m.b, m.l].map(x => x.toFixed(3)).join(',');
+    v.style.objectViewBox = cut;
+  },
+};
+/* 동영상 파일의 표지 그림 (그 영상에 맞춰 만든 것일 때만 — 주소를 바꾸면 쓰지 않음) */
+function embedPoster(e) { return e.poster && e.posterOf === e.url ? e.poster : ''; }
+function renderEmbed(e, node, theme, mode) {
+  const p = parseEmbed(e.url);
+  if (e.radius) node.style.borderRadius = e.radius + 'px';
+  if (e.shadow) node.style.boxShadow = '0 16px 48px rgba(0,0,0,.25)';
+  const live = mode === 'present' && window.GYOAN_LIVE;
+  if (live && p.kind !== 'none') { node.appendChild(embedPlayer(e, p, !!e.autoplay)); return; }
+  // 편집 / 미리보기 / 인쇄: 가벼운 대체 화면 (편집 중에는 ▶ 를 누르면 그 자리에서 재생)
+  const ph = document.createElement('div'); ph.className = 'embed-ph';
+  if (p.kind === 'youtube') ph.style.backgroundImage = `url("https://i.ytimg.com/vi/${p.id}/hqdefault.jpg")`;
+  else if (p.kind === 'video' && embedPoster(e)) ph.style.backgroundImage = `url("${API.resolveSrc(embedPoster(e))}")`;
+  const label = { youtube: 'YouTube', vimeo: 'Vimeo', video: '동영상 파일', web: '웹 페이지', none: '동영상·웹 주소를 넣으세요' }[p.kind];
+  const r = embedRange(e, p); const range = (r.start || r.end) ? ` · ${fmtClock(r.start)} ~ ${r.end ? fmtClock(r.end) : '끝'}` : '';
+  ph.innerHTML = `<div class="embed-play" ${mode === 'edit' && p.kind !== 'none' ? 'data-play="1" title="여기서 바로 재생"' : ''}>${p.kind === 'web' ? '🌐' : '▶'}</div><div class="embed-label">${esc(label)}${esc(range)}${p.kind === 'web' ? '<br><small>' + esc(p.src.slice(0, 70)) + '</small>' : ''}${mode === 'edit' && p.kind !== 'none' ? '<br><small>▶ 누르면 여기서 바로 재생</small>' : ''}</div>`;
+  node.appendChild(ph);
+}
+
+const RENDERERS = { text: renderText, image: renderImage, shape: renderShape, table: renderTable, chart: renderChart, math: renderMath, embed: renderEmbed };
+
+/* 컨테이너 크기에 맞게 슬라이드(1920x1080)를 축소/확대 */
+function fitSlide(container, slideEl, pad) {
+  pad = pad || 0;
+  const cw = container.clientWidth - pad * 2, ch = container.clientHeight - pad * 2;
+  const k = Math.max(0.01, Math.min(cw / SLIDE_W, ch / SLIDE_H));
+  slideEl.style.transform = `scale(${k})`;
+  slideEl.style.transformOrigin = '0 0';
+  slideEl.style.position = 'absolute';
+  slideEl.style.left = Math.round((container.clientWidth - SLIDE_W * k) / 2) + 'px';
+  slideEl.style.top = Math.round((container.clientHeight - SLIDE_H * k) / 2) + 'px';
+  return k;
+}
+
+/* ---------- 이미지 최적화: 넣기 전에 브라우저에서 크기·용량을 줄임 ---------- */
+const IMG_MAX = 2560; // 긴 변 최대 픽셀 (슬라이드 1920 기준 + 확대 여유)
+async function prepareImage(file) {
+  const type = file.type || '';
+  const name = (file.name || 'image.png').replace(/^.*[\\/]/, '');
+  const asIs = async () => { const d = await imageDims(URL.createObjectURL(file)); return { blob: file, name, w: d.w, h: d.h }; };
+  if (/svg|gif/i.test(type) || /\.(svg|gif)$/i.test(name)) return asIs(); // 벡터·애니메이션은 그대로
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); } // EXIF 회전 반영
+  catch (e) { try { bmp = await createImageBitmap(file); } catch (e2) { return asIs(); } }
+  const w0 = bmp.width, h0 = bmp.height;
+  const k = Math.min(1, IMG_MAX / Math.max(w0, h0));
+  const w = Math.max(1, Math.round(w0 * k)), h = Math.max(1, Math.round(h0 * k));
+  const isPng = /png/i.test(type), isJpg = /jpe?g/i.test(type), isWebp = /webp/i.test(type);
+  // 이미 작고(300KB 미만) 줄일 필요도 없으면 원본 그대로
+  if (k === 1 && file.size < 300 * 1024 && (isPng || isJpg || isWebp)) { if (bmp.close) bmp.close(); return { blob: file, name, w, h }; }
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'); ctx.drawImage(bmp, 0, 0, w, h); if (bmp.close) bmp.close();
+  // 투명 픽셀이 있으면 PNG 유지, 없으면 JPEG (사진·캡처 모두 충분한 화질)
+  let alpha = false;
+  if (isPng || isWebp) {
+    const sc = document.createElement('canvas'); sc.width = sc.height = 64; const sx = sc.getContext('2d'); sx.drawImage(c, 0, 0, 64, 64);
+    const px = sx.getImageData(0, 0, 64, 64).data; for (let i = 3; i < px.length; i += 4) if (px[i] < 250) { alpha = true; break; }
+  }
+  // 투명 없는 PNG(캡처 등)는 1.5MB 까지는 또렷함을 위해 원본 유지
+  if (k === 1 && isPng && !alpha && file.size < 1.5 * 1024 * 1024) return { blob: file, name, w, h };
+  const out = alpha ? 'image/png' : 'image/jpeg';
+  const blob = await new Promise(r => c.toBlob(r, out, 0.86));
+  if (!blob || (k === 1 && blob.size >= file.size)) return { blob: file, name, w, h }; // 줄어들지 않으면 원본
+  return { blob, name: name.replace(/\.[^.]+$/, '') + (alpha ? '.png' : '.jpg'), w, h };
+}
+function imageDims(url) {
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => res({ w: im.naturalWidth || 800, h: im.naturalHeight || 600 }); im.onerror = () => rej(new Error('이미지를 열 수 없습니다')); im.src = url; });
+}
+/* 파일명을 안전하게 + 짧은 꼬리표로 유일하게 (서버 왕복 없이 바로 src 를 정하기 위해) */
+function uniqueAssetName(name) {
+  let n = (name || 'image.png').replace(/^.*[\\/]/, '').replace(/[^\w.\-가-힣]/g, '_');
+  const dot = n.lastIndexOf('.'); let base = dot > 0 ? n.slice(0, dot) : n; const ext = dot > 0 ? n.slice(dot).toLowerCase() : '.png';
+  base = base.replace(/-[a-z0-9]{7}$/, ''); if (base.length > 32) base = base.slice(0, 32);
+  const tag = Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 5);
+  return `${base}-${tag}${ext}`;
+}
+function blobToDataURL(blob) { return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); }); }
+
+/* ---------- GitHub 저장소 직접 읽기/쓰기 (GitHub Pages 에서 열었을 때) ---------- */
+const GH = {
+  KEY: 'gyoan:gh',
+  cfg: null,
+  onPages: false,
+  /* kwonyujin119.github.io/test0/ → owner=kwonyujin119, repo=test0 */
+  detect() {
+    const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+    if (!m) return null;
+    const seg = location.pathname.split('/').filter(Boolean);
+    const repo = seg.length && !/\.html?$/i.test(seg[0]) ? decodeURIComponent(seg[0]) : m[1] + '.github.io';
+    return { owner: m[1], repo, branch: 'main' };
+  },
+  load() {
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(this.KEY) || 'null'); } catch (e) { }
+    const auto = this.detect(); this.onPages = !!auto;
+    if (!saved && !auto) return null;
+    this.cfg = Object.assign({ branch: 'main', token: '' }, auto || {}, saved || {});
+    return this.cfg;
+  },
+  save(c) { this.cfg = c; localStorage.setItem(this.KEY, JSON.stringify(c)); },
+  clear() { localStorage.removeItem(this.KEY); this.cfg = this.detect(); },
+  get token() { return (this.cfg && this.cfg.token) || ''; },
+  base() { return `https://api.github.com/repos/${this.cfg.owner}/${this.cfg.repo}`; },
+  headers(accept) {
+    const h = { 'Accept': accept || 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    if (this.token) h['Authorization'] = 'Bearer ' + this.token;
+    return h;
+  },
+  async api(method, path, body) {
+    const h = this.headers(); if (body) h['Content-Type'] = 'application/json';
+    const r = await fetch(this.base() + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
+    if (r.status === 404 && method === 'GET') return null;
+    if (!r.ok) {
+      let msg = r.status + ' ' + r.statusText; try { const j = await r.json(); if (j.message) msg = j.message; } catch (e) { }
+      const tooLarge = r.status === 413 || /too large/i.test(msg); // "Sorry, your input was too large to process…"
+      if (r.status === 401) msg = 'GitHub 토큰이 올바르지 않거나 만료되었습니다';
+      else if (tooLarge) msg = '파일이 너무 커서 GitHub 이 받지 않았습니다';
+      else if (r.status === 403 && /rate limit/i.test(msg)) msg = 'GitHub 요청 한도를 넘었습니다. 잠시 후 다시 시도하거나 토큰을 연결하세요';
+      else if (r.status === 403 || r.status === 404) msg = '저장소에 쓸 권한이 없습니다 (토큰 권한: Contents → Read and write)';
+      const err = new Error(msg); err.status = r.status; if (tooLarge) err.tooLarge = true; throw err;
+    }
+    if (r.status === 204) return null;
+    return r.json();
+  },
+  /* 파일 내용(텍스트) 읽기 – 캐시 없이 최신 커밋 기준 */
+  async raw(path) {
+    const r = await fetch(`${this.base()}/contents/${encPath(path)}?ref=${encodeURIComponent(this.cfg.branch)}`, { headers: this.headers('application/vnd.github.raw+json'), cache: 'no-store' });
+    if (r.status === 404) return null;
+    if (!r.ok) {
+      const e = new Error(r.status === 401 ? 'GitHub 토큰이 올바르지 않거나 만료되었습니다 — 목록 화면의 [GitHub 연결] 에서 새 토큰을 넣어 주세요'
+        : r.status === 403 || r.status === 429 ? 'GitHub 요청 한도를 넘었습니다 — 잠시 뒤에 다시 열어 주세요' : 'GitHub 에서 읽지 못했습니다 (' + r.status + ')');
+      e.status = r.status; throw e;
+    }
+    return r.text();
+  },
+  async dir(path) {
+    const list = await this.api('GET', `/contents/${encPath(path)}?ref=${encodeURIComponent(this.cfg.branch)}`);
+    return Array.isArray(list) ? list.filter(f => f.type === 'file') : [];
+  },
+  rawUrl(path) { return `https://raw.githubusercontent.com/${this.cfg.owner}/${this.cfg.repo}/${this.cfg.branch}/${encPath(path)}`; },
+  /* 여러 파일을 한 커밋으로 반영. changes = [{path, content} | {path, base64} | {path, delete: true}] */
+  async commit(message, changes) {
+    if (!this.token) { const e = new Error('GitHub 토큰이 연결되어 있지 않아 저장할 수 없습니다. 허브(첫 화면)의 [GitHub 연결] 을 눌러 주세요.'); e.noToken = true; throw e; }
+    const br = encodeURIComponent(this.cfg.branch);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const ref = await this.api('GET', `/git/ref/heads/${br}`);
+      if (!ref) throw new Error(`브랜치 "${this.cfg.branch}" 를 찾을 수 없습니다`);
+      const head = ref.object.sha;
+      const parent = await this.api('GET', `/git/commits/${head}`);
+      const tree = [];
+      for (const c of changes) {
+        if (c.delete) tree.push({ path: c.path, mode: '100644', type: 'blob', sha: null });
+        else if (c.base64 != null) {
+          if (c.error) continue; // 앞선 시도에서 너무 커서 거절된 파일
+          let b; try { b = c.sha ? { sha: c.sha } : await this.api('POST', '/git/blobs', { content: c.base64, encoding: 'base64' }); }
+          catch (e) { if (!e.tooLarge) throw e; c.error = e; continue; } // 너무 큰 파일 하나 때문에 교안 저장까지 막히지 않게: 그 파일만 빼고 나머지를 저장
+          c.sha = b.sha; tree.push({ path: c.path, mode: '100644', type: 'blob', sha: b.sha });
+        }
+        else tree.push({ path: c.path, mode: '100644', type: 'blob', content: c.content });
+      }
+      if (!tree.length) return null; // 올릴 것이 남지 않음 (모두 거절됨)
+      const nt = await this.api('POST', '/git/trees', { base_tree: parent.tree.sha, tree });
+      const nc = await this.api('POST', '/git/commits', { message, tree: nt.sha, parents: [head] });
+      try { await this.api('PATCH', `/git/refs/heads/${br}`, { sha: nc.sha }); return nc; }
+      catch (e) { if (e.status !== 422 && e.status !== 409) throw e; } // 그 사이 다른 커밋이 들어옴 → 다시 시도
+    }
+    throw new Error('저장이 계속 충돌합니다. 잠시 후 다시 시도해 주세요.');
+  },
+  /* 변경을 모아 한 커밋으로: 이미지 여러 장을 연달아 넣어도 커밋 1개, 저장 시 이미지+교안이 커밋 1개 */
+  _queue: [], _timer: null, _chain: Promise.resolve(),
+  enqueue(change, opts) {
+    opts = opts || {};
+    return new Promise((res, rej) => {
+      this._queue.push({ change, res, rej, message: opts.message });
+      clearTimeout(this._timer);
+      if (opts.now) this._flush(); else this._timer = setTimeout(() => this._flush(), 700);
+    });
+  },
+  _flush() {
+    const items = this._queue.splice(0); if (!items.length) return;
+    this._chain = this._chain.then(async () => {
+      const main = items.find(x => x.message);
+      const imgs = items.filter(x => !x.message && !x.change.delete).map(x => x.change.path.replace(/^assets\//, ''));
+      let msg = main ? main.message : '이미지 추가: ' + imgs.join(', ');
+      if (main && imgs.length) msg += ` (+이미지 ${imgs.length})`;
+      try { await this.commit(msg, items.map(x => x.change)); items.forEach(x => x.change.error ? x.rej(x.change.error) : x.res(true)); }
+      catch (e) { items.forEach(x => x.rej(e)); }
+    });
+    return this._chain;
+  },
+  /* 연결 창 (교안 허브·편집기·DPV 공통). 결과: true=연결됨, 'cleared'=해제, false=취소 */
+  connect(opts) {
+    opts = opts || {};
+    return new Promise(done => {
+      const c = this.cfg || this.detect() || { owner: '', repo: '', branch: 'main', token: '' };
+      const linked = !!c.token && !opts.expired && !opts.reason; // 이미 이 기기에 토큰이 있음 → 연결 상태를 먼저 보여 주고, 토큰 칸은 '바꾸기' 용
+      const bg = document.createElement('div'); bg.className = 'modal-bg';
+      bg.innerHTML = `<div class="modal" style="width:560px;max-width:94vw">
+      <h3>${linked ? 'GitHub 연결 — 연결되어 있습니다' : 'GitHub 저장소에 바로 저장'}</h3>
+      ${linked ? `<div class="gh-state" id="ghState">이 기기는 GitHub 저장소 <b>${esc(c.owner)}/${esc(c.repo)}</b> 에 연결되어 있습니다. <span id="ghStateMsg">연결 상태를 확인하는 중…</span></div>` : ''}
+      ${opts.reason ? `<p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ui-warn-fg)">${esc(opts.reason)}</p>` : ''}
+      ${opts.expired ? '' : linked ? `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">저장할 때마다 이 저장소에 커밋이 쌓입니다. PRESENTATION과 DOCUMENT가 같은 연결을 씁니다. 토큰을 바꾸려면 아래에 새 토큰을 붙여넣고 [바꾸기], 그대로 두려면 [닫기].</p>` : `<p class="muted" style="margin:0 0 12px;font-size:13px;line-height:1.55">토큰은 보안을 위해 <b>사이트에 넣어 두지 않고</b>, 지금 쓰는 <b>이 기기 · 이 브라우저(또는 설치한 앱)</b>에만 저장됩니다.
+      그래서 휴대폰, 다른 PC, 다른 브라우저에서는 처음 한 번씩 다시 넣어야 합니다. 한 번 넣으면 PRESENTATION과 DOCUMENT가 함께 씁니다.</p>`}
+      <div class="row"><label style="width:70px">저장소</label><input type="text" id="ghOwner" placeholder="사용자" value="${esc(c.owner)}" style="flex:1;min-width:0"> <span>/</span> <input type="text" id="ghRepo" placeholder="저장소" value="${esc(c.repo)}" style="flex:1;min-width:0"></div>
+      <div class="row"><label style="width:70px" for="ghToken">토큰</label><input type="password" id="ghToken" placeholder="${linked ? '바꿀 때만: 새 토큰 붙여넣기' : 'github_pat_… 또는 ghp_… 붙여넣기'}" value="" style="flex:1;min-width:0" autocomplete="off"></div>
+      <details class="gh-adv"><summary>고급 설정 (보통은 그대로 두세요)</summary>
+        <div class="row"><label style="width:70px" for="ghBranch">브랜치</label><input type="text" id="ghBranch" value="${esc(c.branch || 'main')}" style="width:140px"></div>
+      </details>
+      <details class="gh-howto"${c.token && !opts.expired ? '' : ' open'}>
+        <summary><b>토큰 만드는 법</b> (한 번만, 만든 토큰은 메모해 두면 다른 기기에서도 그대로 씁니다)</summary>
+        <ol>
+          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> 를 엽니다.</li>
+          <li>Token name 에 <code>gyoan</code>, Expiration 은 넉넉히(예: 1년).</li>
+          <li><b>Repository access</b> → <i>Only select repositories</i> → <code>${esc(c.repo || 'test0')}</code> 선택.</li>
+          <li><b>Permissions</b> → Repository permissions → <b>Contents</b> → <i>Read and write</i>.</li>
+          <li><i>Generate token</i> 을 누르고 나온 문자열을 위 칸에 붙여넣습니다.</li>
+        </ol>
+        ${opts.expired ? '<p style="margin:8px 0 0">기간이 끝난 토큰은 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">토큰 목록</a>에서 그 토큰을 열고 <i>Regenerate token</i> 을 누르면 같은 권한으로 새 문자열을 받습니다.</p>' : ''}
+      </details>
+      <div class="actions">
+        ${c.token ? '<button class="btn ghost danger" id="ghClear">연결 해제</button>' : ''}
+        <span class="spacer" style="flex:1"></span>
+        <button class="btn" id="ghCancel">${opts.cancelText || (linked ? '닫기' : '나중에')}</button>
+        <button class="btn primary" id="ghOk">${linked ? '바꾸기' : '연결'}</button>
+      </div></div>`;
+      document.body.appendChild(bg);
+      const $ = (id) => bg.querySelector('#' + id);
+      const close = (v) => { bg.remove(); done(v); };
+      const checking = () => $('ghOk').disabled; // 확인 중에는 닫지 않음 (닫힌 뒤에 결과가 오지 않게)
+      bg.onclick = (ev) => { if (ev.target === bg && !checking()) close(false); };
+      bg.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { if (!checking()) close(false); } else if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') $('ghOk').click(); });
+      $('ghCancel').onclick = () => { if (!checking()) close(false); };
+      if ($('ghClear')) $('ghClear').onclick = async () => { if (await uiConfirm('이 기기에 저장된 GitHub 토큰을 지울까요?', '지우면 이 기기에서는 저장소에 저장하지 못합니다. 다시 쓰려면 토큰을 새로 넣어야 합니다.', '토큰 지우기', true)) { this.clear(); close('cleared'); } };
+      if (linked) { // 지금 토큰으로 저장소에 쓸 수 있는지 바로 확인해 보여 줌
+        this.check().then(r => { const m = $('ghStateMsg'); if (!m) return; if (r.push) { $('ghState').classList.add('ok'); m.textContent = '확인했습니다 — 저장소에 쓸 수 있습니다.'; } else { $('ghState').classList.add('warn'); m.textContent = '이 토큰으로는 저장소에 쓸 수 없습니다 (Contents: Read and write 권한 필요). 새 토큰을 넣어 주세요.'; $('ghToken').placeholder = '새 토큰 붙여넣기'; } })
+          .catch(e => { const m = $('ghStateMsg'); if (!m) return; $('ghState').classList.add('warn'); m.textContent = e.status === 401 ? '저장해 둔 토큰이 만료되었거나 올바르지 않습니다. 새 토큰을 넣어 주세요.' : '지금은 확인하지 못했습니다 (' + e.message + ').'; if (e.status === 401) $('ghToken').placeholder = '새 토큰 붙여넣기'; });
+      }
+      $('ghOk').onclick = async () => {
+        const cfg = { owner: $('ghOwner').value.trim(), repo: $('ghRepo').value.trim(), branch: $('ghBranch').value.trim() || 'main', token: $('ghToken').value.trim().replace(/\s+/g, '') };
+        if (!cfg.owner || !cfg.repo) { (cfg.owner ? $('ghRepo') : $('ghOwner')).focus(); toast('저장소 이름을 입력하세요'); return; }
+        if (!cfg.token && linked && cfg.owner === c.owner && cfg.repo === c.repo) { close(true); return; } // 바꿀 토큰이 없으면 지금 연결 그대로
+        if (!cfg.token) { $('ghToken').focus(); toast(linked ? '바꾸려면 새 토큰을 붙여넣어 주세요' : '토큰을 붙여넣어 주세요'); return; }
+        $('ghOk').disabled = true; $('ghOk').textContent = '확인 중…';
+        const prev = this.cfg; this.cfg = cfg;
+        try {
+          const r = await this.check();
+          if (!r.push) throw new Error('이 토큰으로는 저장소에 쓸 수 없습니다. 토큰 권한에서 Contents → Read and write 를 확인하세요.');
+          this.save(cfg); toast(linked ? 'GitHub 토큰을 바꿨습니다' : 'GitHub 에 연결했습니다 — 이 기기에서는 다시 넣지 않아도 됩니다', 2600); close(true);
+        } catch (e) { this.cfg = prev; $('ghOk').disabled = false; $('ghOk').textContent = '연결'; uiAlert('연결하지 못했습니다', e.message); }
+      };
+      setTimeout(() => (linked ? $('ghCancel') : $('ghToken')).focus(), 50);
+    });
+  },
+  /* 연결 확인: 저장소 접근 가능 여부와 쓰기 권한 */
+  async check() {
+    const repo = await this.api('GET', '');
+    if (!repo) throw new Error('저장소를 찾을 수 없습니다: ' + this.cfg.owner + '/' + this.cfg.repo);
+    return { ok: true, push: !!(repo.permissions && repo.permissions.push), name: repo.full_name, private: !!repo.private };
+  },
+};
+/* GitHub 연결 넘겨주기 — 연결된 기기에서 링크(QR)를 만들고, 새 기기에서 열어 8자리 코드를 넣으면 같은 연결이 됨.
+   토큰은 코드로 암호화(PBKDF2 60만 번 + AES-GCM)해 링크의 # 뒤에만 실어 보냄 — # 뒤는 서버로 전송되지 않고, 저장소에도 남지 않음.
+   코드는 링크에 들어 있지 않으므로 화면을 본 사람만 씀. 15분이 지나면 열리지 않음. */
+const GHX = {
+  ABC: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
+  ITER: 600000,
+  b64u: u8 => { let s = ''; u8.forEach(b => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); },
+  unb64u: t => { const b = atob(t.replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); },
+  norm: c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''),
+  async key(code, salt) {
+    const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(this.norm(code)), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: this.ITER, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  },
+  async make(page) {
+    if (!GH.cfg || !GH.token) throw new Error('이 기기에 GitHub 연결이 없습니다');
+    const r = crypto.getRandomValues(new Uint8Array(8)); const code = Array.from(r, b => this.ABC[b % 32]).join('');
+    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    const body = new TextEncoder().encode(JSON.stringify({ o: GH.cfg.owner, r: GH.cfg.repo, b: GH.cfg.branch || 'main', t: GH.token, x: Date.now() + 15 * 60e3 }));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await this.key(code, salt), body));
+    const all = new Uint8Array(28 + ct.length); all.set(salt, 0); all.set(iv, 16); all.set(ct, 28);
+    const u = new URL(page || location.href); u.search = ''; u.hash = 'ghx=' + this.b64u(all);
+    return { link: u.href, code: code.slice(0, 4) + '-' + code.slice(4) };
+  },
+  pending() { const m = /[#&]ghx=([A-Za-z0-9_-]+)/.exec(location.hash); return m ? m[1] : ''; },
+  clear() { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } },
+  async take(payload, code) {
+    const all = this.unb64u(payload); if (all.length < 40) throw new Error('링크가 잘렸습니다. 링크 전체를 다시 열어 주세요');
+    let j; try { j = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: all.slice(16, 28) }, await this.key(code, all.slice(0, 16)), all.slice(28)))); }
+    catch (e) { const er = new Error('코드가 맞지 않습니다'); er.badCode = true; throw er; }
+    if (!(j.x > Date.now())) throw new Error('15분이 지난 링크입니다. 연결된 기기에서 다시 만들어 주세요');
+    const prev = GH.cfg; GH.cfg = { owner: j.o, repo: j.r, branch: j.b || 'main', token: j.t };
+    try { const c = await GH.check(); if (!c.push) throw new Error('이 연결로는 저장소에 쓸 수 없습니다'); }
+    catch (e) { GH.cfg = prev; throw e; }
+    GH.save(GH.cfg); return GH.cfg;
+  },
+  /* QR 그림 (app/vendor/qrcode.js 를 쓸 때만 불러옴). 못 불러오면 null */
+  async qrSvg(text) {
+    if (!window.qrcode) await new Promise(res => { setTimeout(res, 6000); const sc = document.createElement('script'); sc.src = new URL('app/vendor/qrcode.js', document.baseURI).href; /* qrcode-generator 1.4.4 (MIT, Kazuhiko Arase) — 사이트에 함께 둠 */ sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
+    if (!window.qrcode) return null;
+    try { const q = window.qrcode(0, 'L'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return null; }
+  },
+};
+function encPath(p) { return p.split('/').map(encodeURIComponent).join('/'); }
+function blobToBase64(blob) {
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+
+/* ---------- 큰 동영상 (6MB 가 넘는 파일 · 100MB 가 넘어도 됨) ----------
+   GitHub 저장소에는 파일 하나가 100MB 를 넘으면 올라가지 않고, 수십 MB 를 한 번에 보내도 거절되거나 끊깁니다.
+   그래서 큰 영상은 4MB 조각으로 나눠
+   저장소의 꼬리표(tag) 아래에 따로 올립니다 (main 브랜치·사이트에는 들어가지 않아 사이트는 가벼운 그대로).
+   주소:  bigvideo/소유자/저장소/꼬리표/조각수-조각크기-전체크기/이름.mp4
+   재생:  서비스 워커(sw.js)가 필요한 조각만 받아 이어 보냄 → 보통 영상처럼 바로 재생·위치 이동.
+          서비스 워커가 없는 화면(내보낸 HTML · 처음 연 화면)은 조각을 모두 받아 이어 붙인 뒤 재생. */
+const BIGV = {
+  CHUNK: 4 * 1048576,    // 조각 크기 (GitHub 은 한 번에 큰 덩어리를 보내면 거절하거나 끊기므로 작게)
+  LIMIT: 6 * 1048576,    // 이보다 큰 영상은 조각으로 올림
+  MAX: 1024 * 1048576,   // 영상 하나의 한도 (1GB)
+  RAW: 'https://raw.githubusercontent.com/',
+  jobs: {},   // src → { shas, done, n, active }  올리는 중인 영상 (끊기면 올린 조각 다음부터 이어서)
+  ready: {},  // 꼬리표 → Promise<blob 주소>  조각을 모두 받아 이어 붙인 것
+  got: {},    // 꼬리표 → 받은 비율 (0~1)
+  parse(src) {
+    const m = /(?:^|\/)bigvideo\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(\d+)-(\d+)-(\d+)\/([^\/?#]+)/.exec(String(src || ''));
+    if (!m || !+m[4] || !+m[5] || !+m[6]) return null;
+    return { owner: m[1], repo: m[2], tag: m[3], n: +m[4], chunk: +m[5], total: +m[6], name: m[7] };
+  },
+  partName(i) { return 'p' + String(i).padStart(4, '0'); },
+  partUrl(b, i) { return `${this.RAW}${b.owner}/${b.repo}/${b.tag}/${this.partName(i)}`; },
+  mime(name) { return /\.webm$/i.test(name) ? 'video/webm' : /\.og[gv]$/i.test(name) ? 'video/ogg' : 'video/mp4'; },
+  newSrc(file, filename) {
+    const tag = 'video-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    return `bigvideo/${GH.cfg.owner}/${GH.cfg.repo}/${tag}/${Math.ceil(file.size / this.CHUNK)}-${this.CHUNK}-${file.size}/${uniqueAssetName(filename)}`;
+  },
+  /* 올리는 중인 영상의 진행률(%) — 없으면 null */
+  pct() { let d = 0, t = 0; for (const k in this.jobs) { const j = this.jobs[k]; if (j.active) { d += j.done; t += j.n; } } return t ? Math.floor(d / t * 100) : null; },
+  async _try(fn) { // 인터넷이 잠깐 끊기거나 GitHub 이 바쁠 때: 조금 기다렸다 다시
+    for (let k = 0; ; k++) {
+      try { return await fn(); }
+      catch (e) {
+        const st = e.status;
+        if (k >= 3 || e.noRetry || e.tooLarge || st === 401 || st === 404 || st === 422 || (st === 403 && !/한도/.test(e.message || ''))) throw e;
+        await new Promise(r => setTimeout(r, [3000, 10000, 30000][k]));
+      }
+    }
+  },
+  /* 조각으로 나눠 올림: 조각(blob) → 묶음(tree) → 기록(commit, 부모 없음) → 꼬리표(tag) */
+  async upload(src, file) {
+    const b = this.parse(src); if (!b) throw new Error('영상 주소가 올바르지 않습니다');
+    const job = this.jobs[src] || (this.jobs[src] = { shas: [], done: 0, n: b.n });
+    job.active = true; API._notify();
+    try {
+      for (let i = 0; i < b.n; i++) {
+        if (!job.shas[i]) {
+          let b64;
+          try { b64 = await blobToBase64(file.slice(i * b.chunk, Math.min(b.total, (i + 1) * b.chunk))); }
+          catch (e) { const er = new Error('영상 파일을 읽지 못했습니다 (파일을 옮기거나 지웠으면 다시 넣어 주세요)'); er.noRetry = true; throw er; }
+          job.shas[i] = (await this._try(() => GH.api('POST', '/git/blobs', { content: b64, encoding: 'base64' }))).sha;
+        }
+        job.done = i + 1; API._notify();
+      }
+      const tree = await this._try(() => GH.api('POST', '/git/trees', { tree: job.shas.map((sha, i) => ({ path: this.partName(i), mode: '100644', type: 'blob', sha })) }));
+      const c = await this._try(() => GH.api('POST', '/git/commits', { message: `동영상: ${b.name} (${Math.round(b.total / 1048576)}MB · 조각 ${b.n}개)`, tree: tree.sha, parents: [] }));
+      try { await this._try(() => GH.api('POST', '/git/refs', { ref: 'refs/tags/' + b.tag, sha: c.sha })); }
+      catch (e) { if (e.status !== 422) throw e; } // 이미 만들어져 있음 (다시 시도한 경우)
+      delete this.jobs[src];
+    } finally { if (this.jobs[src]) this.jobs[src].active = false; API._notify(); }
+  },
+  /* 조각을 모두 받아 하나로 이어 붙임 (서비스 워커를 쓸 수 없을 때) */
+  assemble(b) {
+    if (this.ready[b.tag]) return this.ready[b.tag];
+    this.got[b.tag] = 0;
+    const p = (async () => {
+      const parts = new Array(b.n); let next = 0, got = 0;
+      const worker = async () => {
+        while (next < b.n) {
+          const i = next++; let r = null;
+          for (let k = 0; k < 3; k++) {
+            try { r = await fetch(this.partUrl(b, i)); } catch (e) { r = null; }
+            if (r && (r.ok || r.status === 404)) break;
+            await new Promise(w => setTimeout(w, 1500 * (k + 1)));
+          }
+          if (!r || !r.ok) throw new Error('영상 조각을 받지 못했습니다');
+          parts[i] = await r.blob(); got += parts[i].size; this.got[b.tag] = Math.min(1, got / b.total);
+        }
+      };
+      await Promise.all([worker(), worker(), worker()]);
+      return URL.createObjectURL(new Blob(parts, { type: this.mime(b.name) }));
+    })();
+    this.ready[b.tag] = p; p.catch(() => { delete this.ready[b.tag]; });
+    return p;
+  },
+  /* <video> 에 큰 영상을 연결 */
+  attach(v, b, src, frag, autoplay) {
+    const whole = () => {
+      if (v.dataset.bigv) return; v.dataset.bigv = '1';
+      let tip = null;
+      const show = (t) => { const host = v.parentNode; if (!host) return; if (!tip) { tip = document.createElement('div'); tip.className = 'bigv-wait'; } if (tip.parentNode !== host) host.appendChild(tip); tip.textContent = t; };
+      const timer = setInterval(() => show(`영상을 받는 중… ${Math.floor((this.got[b.tag] || 0) * 100)}%`), 300);
+      this.assemble(b).then((url) => {
+        clearInterval(timer); if (tip) tip.remove();
+        v.src = url + frag;
+        if (autoplay && v.isConnected) { const pl = v.play(); if (pl && pl.catch) pl.catch(() => { }); }
+      }, () => { clearInterval(timer); show('영상을 불러오지 못했습니다 — 인터넷 연결을 확인하거나, 영상이 다 올라간 뒤에 다시 열어 주세요'); });
+    };
+    const sw = typeof navigator !== 'undefined' && navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (this.ready[b.tag] || !sw || !/^https?:$/.test(location.protocol) || /^https?:/i.test(src)) { whole(); return; }
+    v.addEventListener('error', whole); // 서비스 워커가 아직 예전 것이거나 조각을 보내지 못함 → 모두 받아서 재생
+    v.src = src + frag;
+  },
+};
+
+/* ---------- 저장 API (로컬 서버 ↔ GitHub 저장소 ↔ 브라우저 저장소 폴백) ---------- */
+const API = {
+  mode: 'server', // 'server' | 'github' | 'local'
+  blobs: {},      // 방금 올린 이미지를 서버/배포를 기다리지 않고 바로 보여주기 위한 blob URL
+  pending: new Map(), // src → 진행 중인 업로드
+  queuing: new Set(), // GitHub 커밋 큐에 아직 들어가지 않은 이미지 (base64 변환 중)
+  failed: new Map(),  // src → blob (실패한 업로드, 저장 때 재시도)
+  sizes: {},          // src → 바이트 (이 화면에서 넣은 파일의 크기 — 교안 용량 표시에 씀)
+  onPending: null,    // 진행 중 개수가 바뀔 때 알림 (편집기 상태 표시)
+  _notify() { if (this.onPending) this.onPending(this.pending.size); },
+  /* 이미지를 넣을 때: src 를 즉시 돌려주고 업로드는 뒤에서 진행 */
+  async stage(blob, filename) {
+    if (this.mode === 'local' || (this.mode === 'github' && !GH.token)) return blobToDataURL(blob); // 연결 전: 교안 안에 넣어 두고, 연결 후 저장할 때 올림
+    const src = 'assets/' + uniqueAssetName(filename);
+    this.blobs[src] = URL.createObjectURL(blob); this.sizes[src] = blob.size;
+    this._start(src, blob);
+    return src;
+  },
+  /* 100MB 가 넘는 동영상 (GitHub 연결 상태에서만): 조각으로 나눠 올림. 주소는 바로 돌려줌 */
+  stageBig(file, filename) {
+    const src = BIGV.newSrc(file, filename);
+    this.blobs[src] = URL.createObjectURL(file);
+    this._start(src, file);
+    return src;
+  },
+  _start(src, blob) {
+    let p;
+    if (BIGV.parse(src)) {
+      p = BIGV.upload(src, blob);
+    } else if (this.mode === 'server') {
+      p = fetch('api/assets?name=' + encodeURIComponent(src.slice(7)), { method: 'POST', body: blob }).then(r => { if (!r.ok) throw new Error('업로드 실패 (' + r.status + ')'); });
+    } else {
+      // 큐에 들어가기까지(base64 변환)를 따로 기억 → 교안 저장이 이 이미지를 기다렸다가 같은 커밋에 담음
+      let enq = null;
+      const queued = blobToBase64(blob).then(b64 => { enq = GH.enqueue({ path: src, base64: b64 }); });
+      this.queuing.add(queued); const off = () => this.queuing.delete(queued); queued.then(off, off);
+      p = queued.then(() => enq);
+    }
+    p = p.then(() => { this.pending.delete(src); this._notify(); },
+      (e) => {
+        this.pending.delete(src);
+        if (e.tooLarge) { this._notify(); const nm = src.replace(/^assets\//, ''); setTimeout(() => alert(`파일이 너무 커서 GitHub 에 올리지 못했습니다.\n(${nm})\n\n교안 저장은 그대로 됩니다.\n그 그림·영상 상자를 지우고 더 작은 파일로 다시 넣어 주세요.`), 0); return; } // 다시 시도해도 같은 결과 → 저장을 막지 않음
+        this.failed.set(src, blob); this._notify(); if (!e.noToken && e.status !== 401) toast(BIGV.parse(src) ? '영상 올리기 실패: ' + e.message + ' — [저장] 을 누르면 올린 곳 다음부터 이어서 올립니다' : '이미지 업로드 실패: ' + e.message + ' — 저장할 때 다시 시도합니다', BIGV.parse(src) ? 8000 : 4000); });
+    this.pending.set(src, p); this._notify();
+  },
+  _retryFailed() { for (const [src, blob] of Array.from(this.failed)) { this.failed.delete(src); this._start(src, blob); } },
+  /* 저장 전에 호출: 실패한 업로드 재시도 + 진행 중인 업로드 완료 대기 */
+  async flush() {
+    this._retryFailed();
+    // 큰 동영상(몇 분씩 걸림)은 기다리지 않음 — 따로 계속 올라가고, 진행률은 화면 위쪽에 보임
+    const small = (m) => Array.from(m.keys()).filter(src => !BIGV.parse(src));
+    await Promise.all(small(this.pending).map(src => this.pending.get(src)));
+    const bad = small(this.failed).length;
+    if (bad) throw new Error(`이미지 ${bad}개를 올리지 못했습니다. 네트워크를 확인하고 다시 저장해 주세요`);
+  },
+  async init() {
+    if (location.protocol === 'file:') { this.mode = 'local'; return this.mode; }
+    try {
+      const r = await fetch('api/ping', { cache: 'no-store' });
+      if (r.ok && (await r.json()).ok) { this.mode = 'server'; return this.mode; }
+    } catch (e) { }
+    this.mode = GH.load() ? 'github' : 'local';
+    return this.mode;
+  },
+  resolveSrc(src) { return (src && this.blobs[src]) || src; },
+  _local() { try { return JSON.parse(localStorage.getItem('gyoan:decks') || '{}'); } catch (e) { return {}; } },
+  _saveLocal(all) { localStorage.setItem('gyoan:decks', JSON.stringify(all)); },
+  async list() {
+    if (this.mode === 'server') { const r = await fetch('api/decks', { cache: 'no-store' }); if (!r.ok) throw new Error('내 PC 서버가 목록을 주지 않았습니다 (' + r.status + ')'); return r.json(); }
+    if (this.mode === 'github') {
+      const files = await GH.dir('decks');
+      return files.filter(f => /\.json$/i.test(f.name)).map(f => {
+        const name = f.name.replace(/\.json$/i, '');
+        return { name, title: name, slides: '', theme: '', modified: '', size: f.size, sha: f.sha || '', partial: true }; // sha: 내용이 같은지 (목록 화면이 기억해 둔 제목·저장 시각을 그대로 써도 되는지)
+      });
+    }
+    const all = this._local();
+    return Object.keys(all).map(name => ({ name, title: all[name].title || name, slides: (all[name].slides || []).length, theme: all[name].theme || '', modified: all[name].modified || '' }));
+  },
+  /* 교안 읽기. 못 읽으면 까닭을 알 수 있는 오류 (없음 · 연결 안 됨 · 파일 손상) — notFound 면 그 이름의 교안이 없는 것 */
+  async load(name) {
+    const none = () => { const e = new Error('교안을 찾을 수 없습니다: ' + name); e.notFound = true; return e; };
+    if (this.mode === 'local') { const d = this._local()[name]; if (!d) throw none(); return d; }
+    let text = null;
+    try {
+      if (this.mode === 'server') {
+        const r = await fetch('api/decks/' + encodeURIComponent(name), { cache: 'no-store' });
+        if (r.status === 404) throw none();
+        if (!r.ok) throw new Error('내 PC 서버에서 교안을 읽지 못했습니다 (' + r.status + ')');
+        text = await r.text();
+      } else {
+        // 토큰 없이 Pages 에서 볼 때는 배포된 파일을 직접 읽음 (요청 한도 없음)
+        if (!GH.token && GH.onPages) { try { const r = await fetch('decks/' + encodeURIComponent(name) + '.json', { cache: 'no-store' }); if (r.ok) text = await r.text(); } catch (e) { } }
+        if (text == null) text = await GH.raw('decks/' + name + '.json');
+        if (text == null) throw none();
+      }
+    } catch (e) {
+      if (e instanceof TypeError) throw new Error(this.mode === 'server' ? '교안을 불러오지 못했습니다 — 내 PC 서버(start.cmd)가 켜져 있는지 확인해 주세요' : '교안을 불러오지 못했습니다 — 인터넷 연결을 확인해 주세요'); // 연결이 끊김
+      throw e;
+    }
+    let d = null; try { d = JSON.parse(text); } catch (e) { }
+    if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('교안 파일이 깨져 있어 읽을 수 없습니다: ' + name + '.json');
+    return d;
+  },
+  /* 지금 저장되어 있는 교안의 저장 시각. 교안이 없거나 저장 시각이 없으면 '' · 확인하지 못했으면(연결 끊김 등) null
+     — 저장 전에 다른 곳에서 고쳤는지 확인하는 데 씀 */
+  async peek(name) { try { const d = await this.load(name); return (d && d.modified) || ''; } catch (e) { return e.notFound ? '' : null; } },
+  /* 교안 저장. 저장 시각(modified)은 교안 파일이 실제로 저장된 뒤에만 화면의 교안(deck)에 적음
+     — 저장에 실패했는데 "저장한 시각"만 바뀌어, 나중에 어느 쪽이 새것인지 헷갈리는 일이 없게.
+     opts.keepTime: 저장 시각을 바꾸지 않음 (이름 바꾸기처럼 내용이 그대로일 때) */
+  async save(name, deck, opts) {
+    const stamp = (opts && opts.keepTime && deck.modified) || new Date().toISOString();
+    const body = () => JSON.stringify(Object.assign({}, deck, { modified: stamp }), null, 1);
+    if (this.mode === 'server') {
+      await this.flush();
+      const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: body() });
+      if (!r.ok) throw new Error('내 PC 서버가 저장하지 못했습니다 (' + r.status + ')');
+      deck.modified = stamp;
+      return { ok: true, name };
+    }
+    if (this.mode === 'github') {
+      if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
+      await this._liftImages(deck);
+      this._retryFailed();
+      await Promise.all(Array.from(this.queuing)).catch(() => { }); // 방금 옮긴 이미지가 큐에 다 들어갈 때까지 (교안이 이미지보다 먼저 올라가지 않게)
+      // 큐에 모인 이미지와 교안을 한 커밋으로
+      await GH.enqueue({ path: 'decks/' + name + '.json', content: body() }, { now: true, message: '교안 저장: ' + (deck.title || name) });
+      deck.modified = stamp; // 여기까지 오면 교안 파일은 저장소에 들어감
+      // 따로 올라가던 이미지가 실패했으면 다시 올리고, 그래도 안 되면 "교안은 저장됐지만 그림이 덜 올라감" 으로 알림
+      if (this.failed.size || this.pending.size) { try { await this.flush(); } catch (e) { e.partial = true; throw e; } }
+      return { ok: true, name };
+    }
+    const all = this._local(), text = body(); all[name] = JSON.parse(text);
+    try { this._saveLocal(all); }
+    catch (e) { Draft.clearOld(name); try { this._saveLocal(all); } catch (e2) { throw new Error('이 브라우저의 저장 공간이 가득 찼습니다. 이미지를 줄이거나 “내보내기”로 파일로 받아 두세요'); } } // 남겨 둔 옛 작업본을 비워 자리를 내고 한 번 더
+    deck.modified = stamp;
+    return { ok: true, name };
+  },
+  async remove(name) {
+    if (this.mode === 'server') {
+      const r = await fetch('api/decks/' + encodeURIComponent(name), { method: 'DELETE' });
+      if (r.status === 404) return { ok: true, gone: true }; // 이미 없음
+      if (!r.ok) throw new Error('삭제 실패 (' + r.status + ')');
+      return r.json();
+    }
+    if (this.mode === 'github') {
+      if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
+      const path = 'decks/' + name + '.json';
+      const info = await GH.api('GET', `/contents/${encPath(path)}?ref=${encodeURIComponent(GH.cfg.branch)}`);
+      if (!info) return { ok: true, gone: true }; // 이미 지워짐 (다른 창·기기에서) — 커밋하지 않음
+      // 이미지 커밋과 같은 줄에서 차례로 (동시에 커밋해서 충돌하지 않게)
+      await GH.enqueue({ path, delete: true }, { now: true, message: '교안 삭제: ' + name });
+      return { ok: true };
+    }
+    const all = this._local(); delete all[name]; this._saveLocal(all); return { ok: true };
+  },
+  /* 파일 이름 바꾸기: GitHub 은 새 파일 + 옛 파일 삭제를 커밋 하나로 */
+  /* 이름이 바뀐 교안 찾기: 번호만 바꾼 경우(37. ○○ → 301. ○○, ○○ → 302.○○)가 많아서, 앞 번호를 뺀 이름이 같은 교안이 하나뿐이면 그것.
+     옛 링크 · 즐겨찾기 · 공유한 발표 링크가 계속 열리게 함. 못 찾으면 '' */
+  async findMoved(name) {
+    const core = n => String(n || '').replace(/^\s*\d+\s*[.\-_)]?\s*/, '').trim().toLowerCase();
+    const want = core(name); if (!want) return '';
+    let list = []; try { list = await this.list(); } catch (e) { return ''; }
+    const hit = list.filter(d => d.name !== name && core(d.name) === want);
+    return hit.length === 1 ? hit[0].name : '';
+  },
+  async rename(from, to, given) { // given: 이미 읽어 둔(제목을 고친) 교안 — 있으면 그 내용으로 한 커밋에 바꿈
+    const deck = given || await this.load(from);
+    if (this.mode === 'github') {
+      if (!GH.token) { const e = new Error('이 기기에는 아직 GitHub 연결이 없습니다'); e.noToken = true; throw e; }
+      // 내용은 그대로이므로 저장 시각을 바꾸지 않음 (이 교안을 열어 둔 편집 화면이 "다른 곳에서 고쳤다"고 잘못 알지 않게)
+      await Promise.all([
+        GH.enqueue({ path: 'decks/' + to + '.json', content: JSON.stringify(deck, null, 1) }, { message: `교안 이름 바꾸기: ${from} → ${to}` }),
+        GH.enqueue({ path: 'decks/' + from + '.json', delete: true }, { now: true }),
+      ]);
+      return { ok: true };
+    }
+    await this.save(to, deck, { keepTime: true }); await this.remove(from); return { ok: true };
+  },
+  /* 연결 전에 교안 안에 넣어 둔 이미지(data:)를 저장소 이미지 파일로 옮김 */
+  async _liftImages(deck) {
+    const jobs = [];
+    for (const s of deck.slides || []) {
+      if (s.bg && /^data:image\//.test(s.bg.image || '')) jobs.push([s.bg, 'image']);
+      for (const e of s.elements || []) if (/^data:image\//.test(e.src || '')) jobs.push([e, 'src']);
+    }
+    for (const [o, k] of jobs) {
+      const blob = await (await fetch(o[k])).blob();
+      const ext = ({ 'image/jpeg': '.jpg', 'image/svg+xml': '.svg', 'image/gif': '.gif', 'image/webp': '.webp' })[blob.type] || '.png';
+      o[k] = await this.stage(blob, 'image' + ext);
+    }
+  },
+  /* (호환용) 올리고 끝날 때까지 기다림 */
+  async upload(blob, filename) { const src = await this.stage(blob, filename); await this.flush(); return src; },
+  async assets() {
+    if (this.mode === 'server') { const r = await fetch('api/assets', { cache: 'no-store' }); return r.json(); }
+    if (this.mode === 'github') return (await GH.dir('assets')).map(f => ({ name: f.name, src: 'assets/' + f.name, size: f.size }));
+    return [];
+  },
+};
+
+/* 임시 작업본: 저장하지 않은 편집 내용을 이 기기(브라우저)에만 보관 — 창을 닫아도 다음에 이어서 할 수 있게.
+   · 작업본   gyoan:draft:이름       (교안 내용 그대로 · 미리보기 창도 이것을 읽음)
+   · 꼬리표   gyoan:draftinfo:이름   { at: 마지막으로 고친 때, base: 이 작업본이 출발한 저장본의 저장 시각 }
+   · 보관본   gyoan:draftold:이름    { deck, info } — "저장된 교안으로 열기" 를 골랐을 때 버리지 않고 한 벌 남겨 둠 */
+const Draft = {
+  key(name) { return 'gyoan:draft:' + name; },
+  infoKey(name) { return 'gyoan:draftinfo:' + name; },
+  oldKey(name) { return 'gyoan:draftold:' + name; },
+  _read(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  _write(k, v) { try { localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); return true; } catch (e) { return false; } },
+  _del(k) { try { localStorage.removeItem(k); } catch (e) { } },
+  /* 넣지 못하면(공간 부족) false — 그때도 먼저 있던 작업본은 지우지 않음 */
+  put(name, deck, info) {
+    const text = JSON.stringify(deck);
+    if (!this._write(this.key(name), text)) { this._del(this.oldKey(name)); if (!this._write(this.key(name), text)) return false; } // 보관본을 비워 자리를 내고 한 번 더
+    this._write(this.infoKey(name), Object.assign({ at: new Date().toISOString() }, info || {}));
+    return true;
+  },
+  get(name) { const d = this._read(this.key(name)); return d && typeof d === 'object' && Array.isArray(d.slides) ? d : null; },
+  has(name) { try { return localStorage.getItem(this.key(name)) != null; } catch (e) { return false; } },
+  info(name) { const i = this._read(this.infoKey(name)); return i && typeof i === 'object' ? i : {}; },
+  clear(name) { this._del(this.key(name)); this._del(this.infoKey(name)); },
+  /* 지금 작업본을 보관본으로 옮김 (버리지 않고 남겨 두기) */
+  keep(name) {
+    const deck = this.get(name); if (!deck) { this.clear(name); return false; }
+    const ok = this._write(this.oldKey(name), { deck, info: this.info(name), kept: new Date().toISOString() });
+    if (ok) this.clear(name); // 옮기지 못했으면(공간 부족) 작업본을 그대로 둠
+    return ok;
+  },
+  old(name) { // 보관본 (30일이 지난 것은 치움)
+    const o = this._read(this.oldKey(name)); if (!o || !o.deck || !Array.isArray(o.deck.slides)) return null;
+    if (o.kept && Date.now() - Date.parse(o.kept) > 30 * 86400000) { this._del(this.oldKey(name)); return null; }
+    return o;
+  },
+  clearOld(name) { this._del(this.oldKey(name)); },
+  /* 교안을 지웠을 때: 그 이름의 작업본·보관본을 모두 치움 (같은 이름으로 새로 만든 교안에 옛 작업본이 뜨지 않게) */
+  forget(name) { this.clear(name); this.clearOld(name); },
+  /* 교안 이름을 바꿨을 때: 작업본도 새 이름으로 */
+  move(from, to, title) {
+    if (from !== to) for (const k of ['key', 'infoKey', 'oldKey']) { let v = null; try { v = localStorage.getItem(this[k](from)); } catch (e) { } if (v != null) { this._write(this[k](to), v); this._del(this[k](from)); } }
+    /* 작업본 안의 제목도 새 이름으로: 예전에는 옛 제목이 작업본에 남아, 편집기에서 [이 작업본 이어서 하기] 후 저장하면
+       목록 카드가 다시 옛 이름으로 돌아갔음 */
+    if (title) {
+      const d = this.get(to); if (d) { d.title = title; this._write(this.key(to), d); }
+      const o = this._read(this.oldKey(to)); if (o && o.deck) { o.deck.title = title; this._write(this.oldKey(to), o); }
+    }
+  },
+};
+/* 지난 때(ms 또는 ISO) → "방금" · "5분 전" · "3시간 전" · "어제" · "11월 3일" — 목록·첫 화면의 짧은 시각 (정확한 때는 fmtWhen) */
+function fmtAgo(t) {
+  t = typeof t === 'string' ? Date.parse(t) : +t; if (!t) return '';
+  const now = new Date(), d = new Date(t), mins = Math.floor((now - d) / 60000);
+  if (mins < 1) return '방금';
+  if (mins < 60) return mins + '분 전';
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (d >= today) return Math.floor(mins / 60) + '시간 전';
+  if (d >= new Date(today - 864e5)) return '어제';
+  return d.getFullYear() === now.getFullYear() ? `${d.getMonth() + 1}월 ${d.getDate()}일` : `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+}
+/* 저장 시각(ISO) → "11월 6일 오후 3:02" (이 기기의 시간대로) */
+function fmtWhen(iso) {
+  const d = new Date(iso); if (!iso || isNaN(d)) return '';
+  try { return d.toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { return String(iso); }
+}
+
+function qs(k) { return new URLSearchParams(location.search).get(k); }
+/* 확인 · 알림 창: DPV 인터랙션 레이어(motion.js)의 같은 모양 창, 없으면 브라우저 기본 창 */
+function uiConfirm(title, desc, ok, danger) { return window.DPV && DPV.confirm ? DPV.confirm(title, desc, ok, danger) : Promise.resolve(confirm(desc ? title + '\n\n' + desc : title)); }
+function uiAlert(title, desc) { return window.DPV && DPV.alert ? DPV.alert(title, desc) : Promise.resolve(alert(desc ? title + '\n\n' + desc : title)); }
+/* 화면 아래 짧은 알림 (화면 읽기 프로그램도 읽어 줌). act = { label: '되돌리기', run() {} } 를 주면 글자 단추 하나가 붙는다 */
+function toast(msg, ms, act) {
+  let t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.setAttribute('role', 'status'); t.setAttribute('aria-live', 'polite'); document.body.appendChild(t); }
+  t.textContent = msg;
+  const has = !!(act && act.label && act.run);
+  if (has) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'toast-act'; b.textContent = act.label;
+    b.onclick = () => { t.classList.remove('show'); act.run(); };
+    t.appendChild(b);
+  }
+  t.classList.toggle('has-act', has); t.classList.add('show');
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove('show'), ms || (has ? 6000 : 2200));
+}
