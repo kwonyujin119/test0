@@ -7,11 +7,13 @@
 /* 사진 한 장을 살아 있는 장면으로 — WebGL 셰이더로 사진 위에 움직임을 얹음 (라이브러리 없음)
    ?img=assets/fx-fireground.jpg &mode=fireground  : 불꽃 일렁임 · 열 아지랑이 · 경광등 빨강/파랑 번쩍임(건물·젖은 길에 비침) · 불티 · 연기 흐름
    ?img=assets/fx-water.jpg      &mode=water       : 물줄기 흐름 · 튀는 물방울 · 수증기 · 바닥 물보라 · 불꽃 일렁임
+   ?img=assets/아무사진.jpg       &mode=ambient     : 어느 사진이든 — 초점 맞은 곳이 더 움직이는 입체감 · 빛 훑기 · 떠다니는 먼지 · 밝은 곳 반짝임
+                                 &tone=light (밝은 사진) &amt=0.6 (효과 세기)
    좌표(0~1, 왼쪽 위 기준)를 바꾸려면 &l1=x,y,x2 (경광등 막대) &l2=... · &noz=x,y &tgt=x,y (관창 → 닿는 곳)
    &q=0.8 (해상도 비율) &still=6 (멈춘 장면) */
 (function () {
   const q = new URLSearchParams(location.search);
-  const MODE = q.get('mode') === 'water' ? 1 : 0;
+  const MODE = { fireground: 0, water: 1, ambient: 2 }[q.get('mode')] ?? 0, LIGHT = q.get('tone') === 'light' ? 1 : 0, AMT = +(q.get('amt') || 1);
   const IMG = new URL('../' + (q.get('img') || (MODE ? 'assets/fx-water.jpg' : 'assets/fx-fireground.jpg')), location.href).href;
   const v = (k, d) => (q.get(k) || d).split(',').map(Number);
   const L1 = v('l1', '.755,.66,.835'), L2 = v('l2', '.31,.745,.40'), NOZ = v('noz', '.661,.398'), TGT = v('tgt', '.911,.185');
@@ -19,7 +21,7 @@
   const STILL = q.get('still') != null ? +(q.get('still') || 6) : (RM ? 6 : null);
   const cv = document.getElementById('c'), gl = cv.getContext('webgl', { preserveDrawingBuffer: STILL != null });
   const FS = `precision highp float;
-uniform sampler2D I; uniform vec2 R, IS; uniform float T; uniform int M; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec3 L1, L2; uniform vec2 NZ, TG;
 float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
@@ -34,6 +36,11 @@ void main(){
  vec2 fc=gl_FragCoord.xy/R; fc.y=1.-fc.y; // 화면 0~1 (위가 0)
  float sa=R.x/R.y, ia=IS.x/IS.y; vec2 u=fc; if(sa>ia){u.y=(fc.y-.5)*ia/sa+.5;}else{u.x=(fc.x-.5)*sa/ia+.5;} // cover
  float z=1.025+.02*sin(T*.07); u=(u-vec2(.6,.5))/z+vec2(.6,.5)+vec2(sin(T*.05)*.004,0.); // 아주 느린 카메라 숨쉬기
+ if(M==2){ // 입체감: 선명한(초점 맞은) 곳일수록 더 움직임
+  vec2 px=1./IS*3.;vec3 a=tex(u);vec3 bl=(tex(u+vec2(px.x,0.))+tex(u-vec2(px.x,0.))+tex(u+vec2(0.,px.y))+tex(u-vec2(0.,px.y)))*.25;
+  float sharp=smoothstep(.01,.08,length(a-bl));float dep=clamp(sharp*.7+(u.y-.3)*.4,0.,1.);
+  u+=vec2(sin(T*.13),cos(T*.11))*.0045*AM*(dep-.4);
+ }
  vec3 c0=tex(u); float fm=fireMask(c0);
  // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임
  vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
@@ -74,14 +81,21 @@ void main(){
   c+=vec3(.9,.95,1.)*embers(vec2(u.x,1.-u.y),sa,1.2,.05,vec4(.5,.02,.75,.12))*.8;
   c+=vec3(1.,.5,.15)*embers(u,sa,-.3,.05,vec4(.68,.0,1.,.5));
  }
- c*=1.-.22*pow(length((fc-.5)*vec2(1.,.9))*1.25,2.);
+ if(M==2){
+  float lum=dot(c,vec3(.3,.6,.1));
+  c+=c*smoothstep(.78,1.,lum)*.08*AM*(.5+.5*sin(T*1.3+u.x*20.+u.y*13.)); // 화면 · 조명 반짝임
+  float sw=fract(T/11.);float band=exp(-pow((u.x+u.y*.55-(sw*2.4-.4))*7.,2.));c+=(LT==1?vec3(1.):vec3(.55,.7,1.))*band*.07*AM; // 빛 훑기
+  float dust=0.;for(int i=0;i<2;i++){float fi=float(i);vec2 g=vec2(u.x*sa,u.y)*(9.+fi*7.)+vec2(sin(u.y*4.+T*.3+fi)*.5,T*(.05+fi*.04));
+   vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*3.1);if(r<.14){vec2 o=vec2(h2(id+1.)-.5,h2(id+2.)-.5)*.5;dust+=smoothstep(.12-fi*.04,0.,length(f-o))*(.4+.6*sin(T*.8+r*30.));}}
+  c+=(LT==1?vec3(1.,1.,1.):vec3(.6,.75,1.))*dust*.22*AM;
+ }else c*=1.-.22*pow(length((fc-.5)*vec2(1.,.9))*1.25,2.);
  gl_FragColor=vec4(c+(h2(gl_FragCoord.xy+T)-.5)/255.,1.);}`;
   const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; };
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}')); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = (n) => gl.getUniformLocation(pr, n);
-  gl.uniform1i(U('M'), MODE); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
+  gl.uniform1i(U('M'), MODE); gl.uniform1i(U('LT'), LIGHT); gl.uniform1f(U('AM'), AMT); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
   function size() { cv.width = Math.round(innerWidth * QUAL * Math.min(1.5, devicePixelRatio || 1)); cv.height = Math.round(innerHeight * QUAL * Math.min(1.5, devicePixelRatio || 1)); gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(U('R'), cv.width, cv.height); }
   addEventListener('resize', size); size();
   const im = new Image(); im.onload = () => {
