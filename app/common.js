@@ -1756,8 +1756,14 @@ const Draft = {
   /* 교안을 지웠을 때: 그 이름의 작업본·보관본을 모두 치움 (같은 이름으로 새로 만든 교안에 옛 작업본이 뜨지 않게) */
   forget(name) { this.clear(name); this.clearOld(name); },
   /* 교안 이름을 바꿨을 때: 작업본도 새 이름으로 */
-  move(from, to) {
-    for (const k of ['key', 'infoKey', 'oldKey']) { let v = null; try { v = localStorage.getItem(this[k](from)); } catch (e) { } if (v != null) { this._write(this[k](to), v); this._del(this[k](from)); } }
+  move(from, to, title) {
+    if (from !== to) for (const k of ['key', 'infoKey', 'oldKey']) { let v = null; try { v = localStorage.getItem(this[k](from)); } catch (e) { } if (v != null) { this._write(this[k](to), v); this._del(this[k](from)); } }
+    /* 작업본 안의 제목도 새 이름으로: 예전에는 옛 제목이 작업본에 남아, 편집기에서 [이 작업본 이어서 하기] 후 저장하면
+       목록 카드가 다시 옛 이름으로 돌아갔음 */
+    if (title) {
+      const d = this.get(to); if (d) { d.title = title; this._write(this.key(to), d); }
+      const o = this._read(this.oldKey(to)); if (o && o.deck) { o.deck.title = title; this._write(this.oldKey(to), o); }
+    }
   },
 };
 /* 지난 때(ms 또는 ISO) → "방금" · "5분 전" · "3시간 전" · "어제" · "11월 3일" — 목록·첫 화면의 짧은 시각 (정확한 때는 fmtWhen) */
