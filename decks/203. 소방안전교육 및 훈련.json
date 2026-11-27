@@ -1,5 +1,5 @@
 {
- "title": "3. 소방안전교육 및 훈련",
+ "title": "203. 소방안전교육 및 훈련",
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
@@ -1098,7 +1098,7 @@
       "bold": true,
       "letterSpacing": -4
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.03
     },
     {
@@ -1345,7 +1345,7 @@
       "bold": true,
       "letterSpacing": -4
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.03
     },
     {
@@ -1454,7 +1454,7 @@
       "bold": true,
       "letterSpacing": -4
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.03
     },
     {
@@ -1786,7 +1786,7 @@
       "letterSpacing": -5,
       "valign": "middle"
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.33
     },
     {
@@ -3341,7 +3341,7 @@
      "mk": "sl52tusid",
      "enter": true,
      "delay": 0.26,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "x3hpyti3n",
@@ -3597,7 +3597,7 @@
      },
      "enter": true,
      "delay": 0.68,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "edv004",
@@ -7177,7 +7177,7 @@
      },
      "enter": true,
      "delay": 0.68,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "edv013",
@@ -14305,7 +14305,7 @@
       "lineHeight": 1,
       "font": "blackhan"
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.31
     },
     {
@@ -14375,7 +14375,7 @@
       "lineHeight": 1,
       "font": "blackhan"
      },
-     "dur": 1.0,
+     "dur": 1,
      "delay": 0.31
     },
     {
@@ -14651,7 +14651,7 @@
      },
      "enter": true,
      "delay": 0.78,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ed0609",
