@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>사진 → 빛 알갱이</title>
+<style>
+html, body { margin: 0; height: 100%; background: #04060B; overflow: hidden; }
+canvas { display: block; width: 100%; height: 100%; }
+</style></head><body>
+<canvas id="c"></canvas>
+<script>
+/* 사진을 빛 알갱이로: 흩어진 알갱이가 3D 로 날아와 사진 모양으로 모이고, 사진이 그 아래에서 드러납니다.
+   사진을 여러 장 주면(쉼표) 알갱이가 다음 사진 모양으로 흩어졌다 다시 모입니다.
+   주소 옵션: ?img=assets/a.jpg,assets/b.jpg  &hold=5 (한 장 머무는 초)  &still=1 (멈춘 한 장면) */
+(function () {
+  const q = new URLSearchParams(location.search);
+  const SRC = (q.get('img') || 'assets/pt37-cover-robot-high.jpg').split(',').map(s => new URL('../' + s.trim(), location.href).href);
+  const HOLD = +(q.get('hold') || 5), STILL = q.get('still') === '1' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cv = document.getElementById('c'), g = cv.getContext('2d');
+  let W = 0, H = 0; const DPR = Math.min(1.5, devicePixelRatio || 1);
+  function size() { W = cv.width = Math.round(innerWidth * DPR); H = cv.height = Math.round(innerHeight * DPR); }
+  addEventListener('resize', size); size();
+  const load = (u) => new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = u; });
+
+  /* 사진에서 밝은 곳을 골라 알갱이 목표 자리로 (가로 220칸 기준) */
+  function sample(im) {
+    const GW = 220, GH = Math.round(GW * 9 / 16), c = document.createElement('canvas'); c.width = GW; c.height = GH;
+    const x = c.getContext('2d'); const k = Math.max(GW / im.width, GH / im.height);
+    x.drawImage(im, (GW - im.width * k) / 2, (GH - im.height * k) / 2, im.width * k, im.height * k);
+    const d = x.getImageData(0, 0, GW, GH).data, pts = [];
+    for (let y = 0; y < GH; y++) for (let i = 0; i < GW; i++) {
+      const o = (y * GW + i) * 4, r = d[o], gg = d[o + 1], b = d[o + 2], L = (0.3 * r + 0.59 * gg + 0.11 * b) / 255;
+      if (L > 0.32 && Math.random() < 0.15 + L * 0.55) pts.push({ x: (i + Math.random()) / GW, y: (y + Math.random()) / GH, r, g: gg, b, L });
+    }
+    return pts;
+  }
+  const N = 5200;
+  let shots = [], P = [];
+  let seed = 3; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  function targetsFor(pts) { // 알갱이 수 N 에 맞춰 목표를 골라 줌
+    const out = []; for (let i = 0; i < N; i++) out.push(pts[Math.floor(rnd() * pts.length)]); return out;
+  }
+  const spr = (() => { const s = document.createElement('canvas'); s.width = s.height = 16; const c = s.getContext('2d'); const gr = c.createRadialGradient(8, 8, 0, 8, 8, 8); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = gr; c.fillRect(0, 0, 16, 16); return s; })();
+  const tint = {}; // 색을 몇 단계로 묶어 미리 칠한 알갱이
+  function sp(r, gg, b) {
+    const key = (r >> 5) + ',' + (gg >> 5) + ',' + (b >> 5); if (tint[key]) return tint[key];
+    const s = document.createElement('canvas'); s.width = s.height = 16; const c = s.getContext('2d'); c.drawImage(spr, 0, 0);
+    c.globalCompositeOperation = 'source-in'; c.fillStyle = `rgb(${Math.min(255, (r >> 5) * 32 + 60)},${Math.min(255, (gg >> 5) * 32 + 60)},${Math.min(255, (b >> 5) * 32 + 70)})`; c.fillRect(0, 0, 16, 16);
+    return (tint[key] = s);
+  }
+
+  (async function () {
+    const ims = (await Promise.all(SRC.map(load))).filter(Boolean); if (!ims.length) return;
+    shots = ims.map(im => ({ im, t: targetsFor(sample(im)) }));
+    P = Array.from({ length: N }, () => ({ sx: (rnd() - 0.5) * 2.4, sy: (rnd() - 0.5) * 2.4, sz: rnd() * 2.5 + 0.5, ph: rnd() * 6.283, d: rnd() * 0.9 }));
+    const t0 = performance.now();
+    function frame(now) {
+      const t = STILL ? 6 : Math.max(0, (now - t0) / 1000);
+      const per = HOLD + 2.4, one = shots.length === 1, idx = one ? 0 : Math.floor(t / per) % shots.length, u = one ? Math.min(t, HOLD + 1.5) : t - Math.floor(t / per) * per; // u: 이 사진에서 지난 초
+      const cur = shots[idx], prev = shots[(idx + shots.length - 1) % shots.length], first = t < per;
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.fillStyle = '#04060B'; g.fillRect(0, 0, W, H);
+      /* 사진(아래): 알갱이가 모인 뒤 서서히 드러남, 아주 느린 확대 */
+      const reveal = Math.max(0, Math.min(1, (u - 1.6) / 1.4)) * (u > HOLD + 1.6 ? Math.max(0, 1 - (u - HOLD - 1.6) / 0.8) : 1);
+      const z = one ? 1.02 + 0.03 * Math.sin(t * 0.08) : 1.02 + 0.04 * (u / per);
+      const cover = (im) => { const k = Math.max(W / im.width, H / im.height) * z; g.drawImage(im, (W - im.width * k) / 2, (H - im.height * k) / 2, im.width * k, im.height * k); };
+      if (reveal > 0) { g.globalAlpha = reveal * 0.92; cover(cur.im); }
+      /* 알갱이: 흩어진 3D 자리 ↔ 사진 자리 */
+      g.globalCompositeOperation = 'lighter';
+      const cx = W / 2, cy = H / 2;
+      for (let i = 0; i < N; i++) {
+        const p = P[i], a = cur.t[i], b = prev.t[i];
+        // 모이기 0 → 1 (알갱이마다 조금씩 늦게), 머문 뒤 흩어지기
+        let m = Math.max(0, Math.min(1, (u - p.d * 0.6) / 1.6)); m = 1 - Math.pow(1 - m, 3);
+        let out = u > HOLD + 1.6 ? Math.min(1, (u - HOLD - 1.6) / 0.8) : 0; out = out * out;
+        const from = first ? null : b;
+        const fx = from ? from.x : 0.5 + p.sx * 0.5, fy = from ? from.y : 0.5 + p.sy * 0.5, fz = from ? 1 : p.sz;
+        const w = Math.sin(t * 0.9 + p.ph) * 0.004;
+        const zs = one ? z : 1;
+        let x = fx + (a.x - fx) * m + w, y = fy + (a.y - fy) * m + Math.cos(t * 0.7 + p.ph) * 0.004, zz = fz + (1 - fz) * m;
+        if (out) { x += p.sx * 0.03 * out; y += p.sy * 0.03 * out; zz += out * 0.08; }
+        const X = cx + (x - 0.5) * W * zs / zz, Y = cy + (y - 0.5) * H * zs / zz;
+        const r = (1.6 + a.L * 2.4) * DPR * (1.4 / zz);
+        g.globalAlpha = Math.min(1, 0.25 + 0.55 * a.L) * (0.55 + 0.45 * Math.sin(t * 2 + p.ph) ** 2) * (1 - reveal * 0.55);
+        g.drawImage(sp(a.r, a.g, a.b), X - r * 2, Y - r * 2, r * 4, r * 4);
+      }
+      /* 훑는 빛 한 줄 */
+      g.globalCompositeOperation = 'lighter'; const sx = ((t * 0.12) % 1.4 - 0.2) * W;
+      const lg = g.createLinearGradient(sx - 120 * DPR, 0, sx + 120 * DPR, 0); lg.addColorStop(0, 'rgba(120,160,255,0)'); lg.addColorStop(0.5, 'rgba(120,160,255,.10)'); lg.addColorStop(1, 'rgba(120,160,255,0)');
+      g.globalAlpha = 1; g.fillStyle = lg; g.fillRect(sx - 120 * DPR, 0, 240 * DPR, H);
+      g.globalCompositeOperation = 'source-over';
+      if (!STILL) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+  /* 발표 화면 안에 넣었을 때: 키 · 클릭을 발표 화면으로 넘김 */
+  if (window.parent !== window) {
+    const fwd = (key, ev) => { try { parent.document.dispatchEvent(new KeyboardEvent('keydown', { key, code: ev && ev.code, shiftKey: ev && ev.shiftKey, ctrlKey: ev && ev.ctrlKey, bubbles: true })); parent.focus(); } catch (e) { } };
+    addEventListener('keydown', (ev) => { ev.preventDefault(); fwd(ev.key, ev); });
+    addEventListener('click', () => fwd('ArrowRight'));
+  }
+})();
+</script>
+</body></html>
