@@ -617,7 +617,7 @@ const PPTX = (() => {
 
       /* 전환 */
       const tr = s.transition || deck.transition || 'fade';
-      const trXml = { fade: '<p:fade/>', blur: '<p:fade/>', morph: '<p:fade/>', slide: '<p:push dir="l"/>', up: '<p:push dir="u"/>', cover: '<p:cover dir="l"/>', wipe: '<p:wipe dir="l"/>', zoom: '<p:zoom dir="in"/>' }[tr];
+      const trXml = { fade: '<p:fade/>', blur: '<p:fade/>', morph: '<p:fade/>', slide: '<p:push dir="l"/>', up: '<p:push dir="u"/>', cover: '<p:cover dir="l"/>', wipe: '<p:wipe dir="l"/>', zoom: '<p:zoom dir="in"/>', warp: '<p:zoom dir="in"/>', card: '<p:fade/>', portal: '<p:zoom dir="in"/>', liquid: '<p:wipe dir="l"/>', tear: '<p:split orient="vert" dir="out"/>' }[tr];
 
       /* 노트 */
       const notes = String(s.notes || '').trim();

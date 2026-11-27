@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>라이브 3D 배경</title>
+<style>
+html, body { margin: 0; height: 100%; background: #05070B; overflow: hidden; }
+canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+</style></head><body>
+<canvas id="gl"></canvas><canvas id="rain"></canvas>
+<script>
+/* 라이브 3D 배경 — 라이브러리 없이 WebGL 셰이더 한 장으로 그림.
+   ?scene=alps   산 · 호수 위를 드론처럼 날아감 (해 질 녘)
+          space  우주 성운 + 빛이 도는 행성
+          lake   숲 호수 — 해 질 녘에서 밤으로 (오두막 불이 켜짐)
+          city   네온 도시 거리를 따라 날아감
+          sky    구름 위 비행기 → 구름을 뚫고 내려가 농경지
+   &speed=1 (카메라 속도) &q=0.6 (그림 해상도 비율, 느린 PC 는 0.4) &rain=1 (유리창 빗방울) &still=8 (8초 장면에서 멈춤) */
+(function () {
+  const q = new URLSearchParams(location.search);
+  const SCENE = { alps: 0, space: 1, lake: 2, city: 3, sky: 4 }[q.get('scene') || 'alps'] || 0;
+  const SPEED = +(q.get('speed') || 1), QUAL = Math.min(1, +(q.get('q') || 0.6)), RAIN = q.get('rain') === '1';
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STILL = q.get('still') != null ? +(q.get('still') || 8) : (RM ? 8 : null);
+  const cv = document.getElementById('gl'), gl = cv.getContext('webgl', { antialias: false, preserveDrawingBuffer: STILL != null });
+  if (!gl) { document.body.style.background = '#0B1020'; return; }
+  const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+  const FS = `precision highp float;
+uniform vec2 R; uniform float T; uniform int S;
+float h1(float n){return fract(sin(n)*43758.5453);}
+float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+ return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*vn(p);p=mat2(1.6,1.2,-1.2,1.6)*p;a*=.5;}return s;}
+float fbm3(vec2 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*vn(p);p=mat2(1.6,1.2,-1.2,1.6)*p;a*=.5;}return s;}
+mat3 cam(vec3 ro,vec3 ta){vec3 f=normalize(ta-ro),r=normalize(cross(f,vec3(0,1,0))),u=cross(r,f);return mat3(r,u,f);}
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
+
+/* ---------- 0 산 · 호수 ---------- */
+float path(float z){return sin(z*.07)*3.+sin(z*.023)*5.;}
+float terr(vec2 p){float r=0.,a=1.,f=.22;for(int i=0;i<5;i++){float n=1.-abs(vn(p*f)*2.-1.);r+=a*n*n;a*=.48;f*=2.05;}
+ float v=exp(-pow(p.x-path(p.y),2.)/7.);return (r*2.1-1.15)*(1.-v*.85)-v*.5;} // 비행 길: 호수가 이어진 골짜기
+vec3 alpsSky(vec3 rd,vec3 sd){float s=max(dot(rd,sd),0.);vec3 c=mix(vec3(.95,.72,.55),vec3(.32,.45,.7),pow(max(rd.y,0.),.45));
+ c+=vec3(1.,.75,.45)*pow(s,8.)*.6+vec3(1.,.9,.7)*pow(s,300.)*6.;
+ float cl=fbm(rd.xz/(rd.y+.12)*1.6+T*.02);c=mix(c,vec3(1.,.88,.78),smoothstep(.55,.85,cl)*.5*smoothstep(0.,.25,rd.y));return c;}
+vec3 alps(vec2 uv){
+ float t=T*.55; float z=t*1.6; vec3 ro=vec3(path(z),.75+.12*sin(t*.3),z);
+ vec3 ta=vec3(path(z+3.),.45,z+3.);
+ vec3 rd=cam(ro,ta)*normalize(vec3(uv,1.6)); vec3 sd=normalize(vec3(-.35,.16,1.));
+ float d=.05,hit=-1.;for(int i=0;i<96;i++){vec3 p=ro+rd*d;float h=p.y-max(terr(p.xz),0.);if(h<.002*d){hit=d;break;}d+=h*.45;if(d>40.)break;}
+ vec3 col=alpsSky(rd,sd);
+ if(hit>0.){vec3 p=ro+rd*hit;float tg=terr(p.xz);
+  if(tg<0.){ // 호수
+   vec3 rr=reflect(rd,vec3(0,1,0));rr.xz+=(vec2(vn(p.xz*6.+T*.5),vn(p.zx*6.-T*.4))-.5)*.05;
+   float fr=.25+.75*pow(1.-max(-rd.y,0.),5.);col=mix(vec3(.04,.08,.12),alpsSky(normalize(rr),sd),fr);
+   col+=vec3(1.,.8,.55)*pow(max(dot(normalize(rr),sd),0.),120.)*2.;
+  }else{
+   vec2 e=vec2(.02,0.);vec3 n=normalize(vec3(terr(p.xz-e.xy)-terr(p.xz+e.xy),2.*e.x,terr(p.xz-e.yx)-terr(p.xz+e.yx)));
+   float dif=max(dot(n,sd),0.),sky=.5+.5*n.y;
+   vec3 rock=mix(vec3(.32,.27,.22),vec3(.18,.24,.14),smoothstep(.55,.85,n.y)*smoothstep(1.1,.3,tg));
+   rock=mix(rock,vec3(.95,.93,.92),smoothstep(.75,1.05,tg+n.y*.25));
+   col=rock*(dif*vec3(1.6,1.2,.9)+sky*vec3(.25,.3,.42));
+  }
+  col=mix(col,alpsSky(rd,sd)*.95,1.-exp(-hit*hit*.0016));
+ }
+ return col;}
+
+/* ---------- 1 우주 ---------- */
+vec3 space(vec2 uv){
+ vec2 p=uv*.9+vec2(T*.006,T*.003);float z=1.+.04*sin(T*.05);p/=z;
+ vec2 w=vec2(fbm(p*1.5+T*.01),fbm(p*1.5+vec2(5.2,1.3)-T*.008));float n=fbm(p*1.8+w*2.2);
+ vec3 c=mix(vec3(.02,.02,.06),vec3(.42,.16,.62),smoothstep(.25,.75,n));c=mix(c,vec3(.25,.75,.95),smoothstep(.6,.95,fbm(p*2.6-w)) *.75);
+ c+=vec3(.9,.55,1.)*pow(smoothstep(.55,1.,n),3.)*.6;
+ vec2 g=floor(uv*R.y*.5);float st=h2(g);c+=vec3(1.)*step(.9975,st)*(.6+.4*sin(T*2.+st*80.));
+ vec2 g2=floor(uv*R.y*.18);c+=vec3(.8,.9,1.)*step(.997,h2(g2+7.))*.8;
+ // 행성
+ vec2 pc=vec2(-.32,-.2);float r=.27;vec2 d=(uv-pc)/r;float l=dot(d,d);
+ if(l<1.){vec3 nn=vec3(d,sqrt(1.-l));float a=T*.04;vec3 L=normalize(vec3(cos(a)*1.,.25,sin(a)*.8+.2));
+  float lon=atan(nn.x,nn.z)+T*.03;vec2 sp=vec2(lon*2.,nn.y*3.);
+  vec3 sf=mix(vec3(.55,.6,.7),vec3(.92,.9,.88),fbm(sp*2.+vec2(0.,fbm(sp*4.))));
+  float dif=smoothstep(-.05,.35,dot(nn,L));c=mix(c,sf*dif+vec3(.02,.02,.05),smoothstep(1.,.97,l));
+  c+=vec3(.5,.7,1.)*pow(1.-nn.z,3.)*dif*.6;}
+ c+=vec3(.45,.6,1.)*smoothstep(1.25,1.,sqrt(l))*smoothstep(.98,1.02,sqrt(l))*.35;
+ return c;}
+
+/* ---------- 2 숲 호수 (해 질 녘 → 밤) ---------- */
+float pine(vec2 uv,float seed,float dens,float hgt){ // 침엽수 줄: 안이면 1
+ float x=uv.x*dens,i=floor(x);float best=0.;
+ for(int k=-1;k<=1;k++){float id=i+float(k);float r=h1(id*13.1+seed);float c=id+.5+(r-.5)*.7;
+  float th=hgt*(.55+.7*h1(id*7.7+seed))*dens;float y=uv.y*dens;
+  float tier=.72+.28*fract((th-y)/th*5.);float w=.42*(1.-y/th)*tier+.03;
+  best=max(best,step(abs(x-c),w)*step(0.,y)*step(y,th));}
+ return best;}
+vec3 lakeSky(vec2 uv,float k){vec3 top=mix(vec3(.22,.3,.55),vec3(.01,.02,.06),k),hor=mix(vec3(1.,.62,.45),vec3(.07,.08,.16),k);
+ vec3 c=mix(hor,top,smoothstep(0.,.55,uv.y));c+=vec3(1.,.5,.35)*exp(-abs(uv.y)*7.)*exp(-pow((uv.x-.35)*2.2,2.))*(1.-k)*.6;
+ float st=step(.996,h2(floor(uv*R.y*.5)));c+=vec3(.9,.95,1.)*st*smoothstep(.45,.9,k)*smoothstep(0.,.2,uv.y);
+ c+=vec3(.95,.95,.85)*smoothstep(.032,.028,length(uv-vec2(-.45,.42)))*smoothstep(.5,.9,k);
+ return c;}
+vec3 lakeLand(vec2 uv,float k,inout float a){ // 숲 · 오두막 (덮으면 a=1)
+ vec3 col=vec3(0.);a=0.;
+ for(int i=2;i>=0;i--){float fi=float(i);vec2 tp=vec2(uv.x+T*.004*(3.-fi)+fi*3.7,uv.y);
+  float hg=.16-fi*.035;if(pine(tp,fi*31.,14.+fi*10.,hg)>.5){vec3 tc=mix(vec3(.16,.18,.22)-fi*.03,vec3(.012,.018,.03),k);
+   tc=mix(tc,mix(vec3(.55,.42,.45),vec3(.04,.05,.09),k),fi*.28);col=tc;a=1.;}}
+ vec2 cb=uv-vec2(.28,.012); // 오두막
+ if(abs(cb.x)<.035&&cb.y>0.&&cb.y<.03+.02*(1.-abs(cb.x)/.035)){col=mix(vec3(.1,.07,.06),vec3(.02,.015,.02),k);a=1.;
+  float on=smoothstep(.35,.5,k)*(.9+.1*sin(T*7.));if(abs(cb.x-.01)<.008&&abs(cb.y-.014)<.007)col=vec3(1.,.72,.35)*on*2.+col;}
+ return col;}
+vec3 lake(vec2 uv){
+ float k=clamp(T/22.,0.,1.); k=k*k*(3.-2.*k); // 22초 동안 해가 지고 밤이 됨
+ uv.y+=.08; vec3 col;
+ if(uv.y>0.){float a;vec3 l=lakeLand(uv,k,a);col=mix(lakeSky(uv,k),l,a);
+  vec2 cb=uv-vec2(.29,.026);col+=vec3(1.,.7,.35)*smoothstep(.06,0.,length(cb))*smoothstep(.35,.5,k)*.35;}
+ else{vec2 r=vec2(uv.x,-uv.y);float rip=sin(uv.y*160./(.05-uv.y)+T*1.5)*.004+(vn(vec2(uv.x*40.,uv.y*300.+T))-.5)*.006;
+  r.x+=rip;r.y+=abs(rip)*.5;float a;vec3 l=lakeLand(r,k,a);col=mix(lakeSky(r,k),l,a)*.65;
+  col+=vec3(1.,.7,.35)*smoothstep(.01,0.,abs(uv.x-.29+rip*2.))*smoothstep(-.35,0.,uv.y)*smoothstep(.35,.5,k)*.8;
+  col=mix(col,vec3(.02,.03,.05),smoothstep(0.,-.5,uv.y)*.5);}
+ float m=exp(-pow(uv.y*9.,2.))*.35;col=mix(col,mix(vec3(.85,.7,.65),vec3(.1,.12,.2),k),m*.5); // 물안개
+ return col;}
+
+/* ---------- 3 네온 도시 ---------- */
+float bld(vec3 p,out float id,out float hh){ // 길 양쪽 건물
+ float side=sign(p.x);vec3 q=vec3(abs(p.x),p.y,p.z);float cz=floor(q.z/4.);id=cz*2.+(side>0.?1.:0.);
+ float r=h1(id*3.17);hh=4.+r*12.;float wx=1.6+h1(id*1.3)*.8;
+ vec3 c=vec3(3.+wx,hh*.5,(cz+.5)*4.);vec3 b=vec3(wx,hh*.5,1.75);vec3 d=abs(q-c)-b;
+ return length(max(d,0.))+min(max(d.x,max(d.y,d.z)),0.);}
+float cityMap(vec3 p,out float id,out float hh){return bld(p,id,hh);}
+vec3 cityShade(vec3 ro,vec3 rd,out float hitd){
+ float d=.1,id=0.,hh=0.;hitd=-1.;
+ for(int i=0;i<80;i++){vec3 p=ro+rd*d;float s=cityMap(p,id,hh);if(s<.004*d){hitd=d;break;}d+=s;if(d>70.)break;}
+ vec3 fogc=vec3(.16,.1,.24);
+ if(hitd<0.)return mix(fogc,vec3(.05,.05,.14),clamp(rd.y*2.,0.,1.));
+ vec3 p=ro+rd*hitd;vec2 e=vec2(.01,0.);float a,b;
+ vec3 n=normalize(vec3(cityMap(p+e.xyy,a,b)-cityMap(p-e.xyy,a,b),cityMap(p+e.yxy,a,b)-cityMap(p-e.yxy,a,b),cityMap(p+e.yyx,a,b)-cityMap(p-e.yyx,a,b)));
+ vec3 col=vec3(.05,.05,.08)*(.4+.6*max(n.y,0.));
+ if(abs(n.x)>.5){vec2 w=vec2(p.z,p.y);vec2 g=floor(w/vec2(.28,.34)),f=fract(w/vec2(.28,.34));
+  float on=step(.55,h2(g+id*9.1));vec3 wc=mix(vec3(1.,.78,.45),vec3(.75,.9,1.),step(.6,h2(g*1.7+id)));
+  float win=step(.15,f.x)*step(f.x,.85)*step(.2,f.y)*step(f.y,.8);col+=wc*on*win*1.4*step(1.6,p.y);
+  float neon=step(.5,p.y)*step(p.y,1.0)*step(.3,fract(p.z*.5+id*.37));vec3 nc=mix(vec3(1.,.3,.75),vec3(.2,.9,1.),step(.5,h1(id*5.3)));
+  col=mix(col,nc*1.6,neon*step(.35,h1(id*2.9))*(.85+.15*sin(T*3.+id)));}
+ col=mix(col,fogc,1.-exp(-hitd*.035));return col;}
+vec3 city(vec2 uv){
+ float t=T*2.2;vec3 ro=vec3(0.,.9,t);vec3 rd=cam(ro,ro+vec3(.0,.08,1.))*normalize(vec3(uv,1.3));
+ float hd;vec3 col;
+ if(rd.y<0.){float tg=-ro.y/rd.y;vec3 p=ro+rd*tg;float dd;vec3 rr=reflect(rd,vec3(0,1,0));
+  rr.x+=(vn(p.xz*vec2(3.,.5))-.5)*.03;vec3 refl=cityShade(p+vec3(0,.01,0),normalize(rr),dd);
+  float lane=step(abs(p.x),.06)*step(.5,fract(p.z*.25));col=refl*.55+vec3(.9)*lane*.4;
+  float bh;float hd2;vec3 dir=cityShade(ro,rd,hd2);if(hd2>0.&&hd2<tg)col=dir; else col=mix(col,vec3(.16,.1,.24),1.-exp(-tg*.03));}
+ else col=cityShade(ro,rd,hd);
+ for(int i=0;i<12;i++){float fi=float(i);vec3 lp=vec3((h1(fi)-.5)*4.,1.5+h1(fi*3.)*4.,floor(t/6.)*6.+fi*5.);
+  vec3 v=lp-ro;float z=dot(v,vec3(0,0,1));if(z>.5){vec2 s=v.xy/z*1.3;col+=vec3(1.,.85,.6)*.0006/(dot(uv-s,uv-s)+.00002)/z;}}
+ return col;}
+
+/* ---------- 4 구름 위 → 농경지 ---------- */
+float cloudD(vec2 p){return smoothstep(.28,.62,fbm(p*.35+vec2(T*.02,0.)));}
+vec3 farm(vec2 p){vec2 g=floor(p*.6+vec2(fbm(p*.1)*2.,0.)*.3);float r=h2(g);
+ vec3 c=mix(vec3(.32,.45,.2),vec3(.58,.6,.3),r);c=mix(c,vec3(.7,.62,.38),step(.8,r));c*=.8+.2*fbm(p*3.);
+ vec2 f=fract(p*.6);c*=.75+.25*smoothstep(0.,.04,min(min(f.x,1.-f.x),min(f.y,1.-f.y)));return c;}
+vec3 sky(vec2 uv){
+ float tt=T,des=smoothstep(7.,19.,tt);float y=mix(2.2,-3.,des);
+ vec3 ro=vec3(0.,y,tt*.9);vec3 rd=cam(ro,ro+vec3(0.,mix(-.25,-.3,des),1.))*normalize(vec3(uv,1.5));
+ vec3 sd=normalize(vec3(.4,.5,1.));vec3 skyc=mix(vec3(.75,.85,.95),vec3(.3,.5,.85),pow(max(rd.y,0.),.5))+vec3(1.,.95,.8)*pow(max(dot(rd,sd),0.),200.)*3.;
+ vec3 col=skyc;
+ if(y>0.){ // 구름 바다 위
+  if(rd.y<0.){float tg=-y/rd.y;vec3 p=ro+rd*tg;float cd=cloudD(p.xz);
+   vec3 under=farm((ro.xz+rd.xz*((y+12.)/-rd.y))*1.3)*.75;
+   vec3 cl=mix(vec3(.75,.8,.88),vec3(1.),fbm(p.xz*.8))*(.85+.15*max(dot(sd,vec3(0,1,0)),0.));
+   col=mix(under,cl,cd*.95+.05);col=mix(col,skyc,1.-exp(-tg*.02));}
+ }else{ // 구름 아래
+  if(rd.y<0.){float tg=(-12.-y)/rd.y;vec3 p=ro+rd*tg;col=farm(p.xz*1.3)*(.95);col=mix(col,vec3(.72,.78,.85),1.-exp(-tg*.006));}
+  else{float tg=-y/rd.y;vec3 p=ro+rd*tg;float cd=cloudD(p.xz);col=mix(vec3(.6,.7,.82),vec3(.78,.8,.85),cd);col=mix(col,vec3(.75,.8,.86),1.-exp(-tg*.03));}
+ }
+ float fog=exp(-y*y*2.5)*.9;col=mix(col,vec3(.9,.92,.95),fog); // 구름 속
+ // 비행기 (구름 위에서만)
+ vec2 a=uv-vec2(.42-tt*.004,.22+.01*sin(tt*.6));a*=mat2(cos(.08),-sin(.08),sin(.08),cos(.08));
+ float body=length(a*vec2(1.,6.5))-.06;
+ float wing=max(abs(a.x-.004+a.y*1.8)-.016,abs(a.y+.003)-.0045);
+ float tail=max(abs(a.x+.052+(a.y-.012)*.9)-.007,abs(a.y-.013)-.013);
+ float pl=min(min(body,wing),tail);col=mix(col,vec3(.28,.3,.34),smoothstep(.002,0.,pl)*(1.-des));
+ return col;}
+
+void main(){vec2 uv=(gl_FragCoord.xy-.5*R)/R.y;vec3 c;
+ if(S==0)c=alps(uv);else if(S==1)c=space(uv);else if(S==2)c=lake(uv);else if(S==3)c=city(uv);else c=sky(uv);
+ c=aces(c*1.05);c*=1.-.25*dot(uv*.8,uv*.8);c+=(h2(gl_FragCoord.xy+T)-.5)/255.;
+ gl_FragColor=vec4(pow(c,vec3(.95)),1.);}`;
+  function sh(t, s) { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; }
+  const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
+  const uR = gl.getUniformLocation(pr, 'R'), uT = gl.getUniformLocation(pr, 'T'), uS = gl.getUniformLocation(pr, 'S');
+  gl.uniform1i(uS, SCENE);
+  /* 빗방울 (2D 캔버스를 위에 겹침) */
+  const rc = document.getElementById('rain'), rx = rc.getContext('2d'); let drops = [];
+  function size() {
+    const W = Math.round(innerWidth * QUAL * Math.min(1.5, devicePixelRatio || 1)), H = Math.round(innerHeight * QUAL * Math.min(1.5, devicePixelRatio || 1));
+    cv.width = W; cv.height = H; gl.viewport(0, 0, W, H); gl.uniform2f(uR, W, H);
+    rc.width = innerWidth; rc.height = innerHeight;
+    if (RAIN) drops = Array.from({ length: Math.round(innerWidth * innerHeight / 9000) }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: 2 + Math.pow(Math.random(), 3) * 12, v: 0, a: Math.random() * 6 }));
+  }
+  addEventListener('resize', size); size();
+  function rain(t, dt) {
+    rx.clearRect(0, 0, rc.width, rc.height); if (!RAIN) return;
+    for (const d of drops) {
+      if (d.r > 9 && Math.random() < .004) d.v = 40 + Math.random() * 60; // 큰 방울은 가끔 흘러내림
+      d.y += d.v * dt; d.v *= .985; if (d.y > rc.height + 20) { d.y = -10; d.x = Math.random() * rc.width; d.v = 0; }
+      const g = rx.createRadialGradient(d.x - d.r * .3, d.y - d.r * .35, 0, d.x, d.y, d.r);
+      g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(.35, 'rgba(255,255,255,.08)'); g.addColorStop(.8, 'rgba(0,0,0,.18)'); g.addColorStop(1, 'rgba(255,255,255,.25)');
+      rx.fillStyle = g; rx.beginPath(); rx.arc(d.x, d.y, d.r, 0, 6.283); rx.fill();
+    }
+  }
+  const t0 = performance.now(); let last = t0;
+  function frame(now) {
+    const t = STILL != null ? STILL : Math.max(0, (now - t0) / 1000) * SPEED;
+    gl.uniform1f(uT, t); gl.drawArrays(gl.TRIANGLES, 0, 3);
+    rain(t, Math.min(.05, (now - last) / 1000)); last = now;
+    if (STILL == null) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  /* 발표 화면 안에 넣었을 때: 키 · 클릭을 발표 화면으로 넘김 */
+  if (window.parent !== window) {
+    const fwd = (key, ev) => { try { parent.document.dispatchEvent(new KeyboardEvent('keydown', { key, code: ev && ev.code, shiftKey: ev && ev.shiftKey, ctrlKey: ev && ev.ctrlKey, bubbles: true })); parent.focus(); } catch (e) { } };
+    addEventListener('keydown', (ev) => { ev.preventDefault(); fwd(ev.key, ev); });
+    addEventListener('click', () => fwd('ArrowRight'));
+  }
+})();
+</script>
+</body></html>

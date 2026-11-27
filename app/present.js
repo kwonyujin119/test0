@@ -169,7 +169,10 @@ if (!window.EMBEDDED_DECK && !document.querySelector('link[href$="pres-fx.css"]'
       layer.classList.add('in');
       pstage.appendChild(layer); curLayer = layer;
       fitSlide(layer, layer.firstChild);
-      if (old) setTimeout(() => old.remove(), 700);
+      if (old) setTimeout(() => old.remove(), TR_MS[tr] || 700);
+      if (old && tr === 'warp') warpFx();
+      if (old && tr === 'liquid') liquidFx(old, layer);
+      if (old && tr === 'tear') tearFx(old);
     }
     curNodes = Array.from(layer.querySelectorAll('.slide > .el')).map(n => ({ n, e: slideOf(i).elements.find(e => e.id === n.dataset.id) }));
     st.idx = i; st.step = step;
@@ -178,6 +181,68 @@ if (!window.EMBEDDED_DECK && !document.querySelector('link[href$="pres-fx.css"]'
     fxSlide(fromIdx, i, !!old);
     preloadAround(i);
     if (!window.EMBEDDED_DECK) { try { const u = new URL(location.href); u.searchParams.set('start', i); history.replaceState(null, '', u); } catch (e) { } } // 새로 고침해도 보던 슬라이드에서 이어짐
+  }
+  /* ---- 영상 레퍼런스 ② 전환: 물결 · 빗방울 · 종이 찢기 · 워프 빛줄기 ---- */
+  const TR_MS = { warp: 1300, card: 2250, portal: 1750, liquid: 1650, tear: 1650 };
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function svgFx() {
+    if (document.getElementById('pfFx')) return;
+    const d = document.createElement('div'); d.id = 'pfFx'; d.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    d.innerHTML = '<svg width="0" height="0"><filter id="pfLiqA" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.008 0.022" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>'
+      + '<filter id="pfLiqF" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.05" numOctaves="3" seed="9"/><feDisplacementMap in="SourceGraphic" scale="70" xChannelSelector="R" yChannelSelector="G"/></filter></svg>';
+    document.body.appendChild(d);
+  }
+  const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  function warpFx() { if (RM) return; const w = document.createElement('div'); w.className = 'p-warp'; pstage.appendChild(w); setTimeout(() => w.remove(), 1150); }
+  function liquidFx(old, layer) {
+    if (RM) return;
+    svgFx(); const dm = document.querySelector('#pfLiqA feDisplacementMap'), tb = document.querySelector('#pfLiqA feTurbulence');
+    const foam = document.createElement('div'); foam.className = 'p-foam'; foam.style.filter = 'url(#pfLiqF)';
+    foam.style.backgroundImage = 'linear-gradient(115deg, transparent 39%, rgba(200,230,255,.25) 42%, rgba(235,246,255,.95) 44.6%, rgba(150,205,240,.45) 46.4%, rgba(120,190,235,.15) 49%, transparent 52%)';
+    pstage.appendChild(foam);
+    const mask = 'linear-gradient(115deg, #000 0%, #000 44%, transparent 47%, transparent 100%)';
+    Object.assign(layer.style, { webkitMaskImage: mask, maskImage: mask, webkitMaskSize: '300% 100%', maskSize: '300% 100%', filter: 'url(#pfLiqA)' });
+    const t0 = performance.now(), D = 1500;
+    (function f(now) {
+      const t = Math.min(1, (now - t0) / D), e = ease(t), pos = (100 * (1 - e)).toFixed(2) + '% 0';
+      layer.style.webkitMaskPosition = layer.style.maskPosition = pos; foam.style.backgroundPosition = pos;
+      dm.setAttribute('scale', (90 * (1 - e)).toFixed(1)); tb.setAttribute('baseFrequency', `0.008 ${(0.022 + 0.006 * Math.sin(t * 9)).toFixed(4)}`);
+      foam.style.opacity = t > .85 ? (1 - t) / .15 : 1;
+      if (t < 1 && layer.isConnected) requestAnimationFrame(f);
+      else { foam.remove(); ['webkitMaskImage', 'maskImage', 'webkitMaskSize', 'maskSize', 'webkitMaskPosition', 'maskPosition', 'filter'].forEach(k => layer.style[k] = ''); if (layer.isConnected) dropsFx(); }
+    })(t0);
+  }
+  function dropsFx() {
+    if (RM) return; pstage.querySelectorAll('.p-drops').forEach(x => x.remove());
+    const box = document.createElement('div'); box.className = 'p-drops'; const W = innerWidth, H = innerHeight;
+    for (let k = 0; k < Math.round(W * H / 22000); k++) {
+      const i = document.createElement('i'), r = 5 + Math.pow(Math.random(), 2.4) * 26;
+      i.style.cssText = `left:${Math.random() * W}px;top:${Math.random() * H}px;width:${r}px;height:${r * (1 + Math.random() * .25)}px`;
+      const slide = r > 18 && Math.random() < .5 ? 40 + Math.random() * 160 : 0, hold = 1600 + Math.random() * 2200;
+      i.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)', offset: .06 }, { opacity: 1, transform: `translateY(${slide * .6}px)`, offset: .7 }, { opacity: 0, transform: `translateY(${slide}px) scale(.8)` }],
+        { duration: hold + 900, delay: Math.random() * 350, easing: 'ease-out', fill: 'both' });
+      box.appendChild(i);
+    }
+    pstage.appendChild(box); setTimeout(() => box.remove(), 5200);
+  }
+  function tearFx(old) {
+    if (RM || !old) return;
+    const pts = []; let x = 50 + (Math.random() - .5) * 8;
+    for (let y = 0; y <= 100; y += 2.5) { x += (Math.random() - .5) * 3.2; x = Math.max(38, Math.min(62, x)); pts.push(`${x.toFixed(2)}% ${y}%`); }
+    const L = `polygon(0 0, ${pts.join(', ')}, 0 100%)`, Rr = `polygon(${pts.join(', ')}, 100% 100%, 100% 0)`;
+    const piece = (clip, side) => {
+      const w = document.createElement('div'); w.className = 'p-tear';
+      const c = old.cloneNode(true); c.classList.remove('out', 'in');
+      c.querySelectorAll('iframe,video').forEach(n => { const p = n.closest('.el-embed'); if (p) p.style.background = 'transparent'; n.remove(); }); // 조각에는 웹 화면 대신 배경 사진
+      c.style.clipPath = clip; w.appendChild(c);
+      w.style.filter = `drop-shadow(${side * 5}px 0 0 #EFEBE2) drop-shadow(${side * 2}px 0 1px rgba(0,0,0,.35)) drop-shadow(${side * 14}px 6px 22px rgba(0,0,0,.5))`;
+      w.style.transformOrigin = side < 0 ? '100% 100%' : '0% 100%';
+      pstage.appendChild(w);
+      w.animate([{ transform: 'none' }, { transform: `perspective(1600px) rotateY(${side * 4}deg) rotate(${side * -1.5}deg) translateX(${side * -1}%)`, offset: .22 },
+        { transform: `perspective(1600px) rotateY(${side * 38}deg) rotate(${side * -20}deg) translate(${side * -62}%, 14%)`, opacity: .95 }],
+        { duration: 1500, easing: 'cubic-bezier(.55,0,.75,.35)', fill: 'forwards' }).onfinish = () => w.remove();
+    };
+    piece(L, 1); piece(Rr, -1); old.style.visibility = 'hidden';
   }
   /* 모핑: 앞뒤 슬라이드에서 같은 요소(복제로 이어진 요소)는 위치·크기·회전이 부드럽게 바뀜 */
   function morph(old, layer, fromIdx, toIdx) {
