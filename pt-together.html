@@ -40,75 +40,29 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 </style>
 </head><body>
 <header><div class="kick">303 · Let's Make PT Together</div><h1 id="ttl"></h1><p id="sub"></p></header>
-<div class="tabs" role="tablist"><button role="tab" data-t="1">① 툴 초안</button><button role="tab" data-t="2">② 업그레이드</button><button role="tab" data-t="3">③ 교안 제작</button><button role="tab" data-t="4">④ GPT 이미지</button><button role="tab" data-t="5">⑤ 퀄리티</button></div>
-<main id="tab1" data-h="PT 툴 초안 만들기" data-s="발표기 · 편집기 · 교안 목록을 한 번에. 붙여넣고 「계속」만 누르세요." hidden>
-<section class="card on"><div class="step">1-1</div><h2>한 번에 만들기</h2><p class="when">Claude Code에서 my-pt 저장소를 고르고 첫 메시지로</p><button class="copy" type="button">복사</button><pre class="fold">너는 웹 개발자야. 나는 코딩을 모르는 강사야.
-지금 연결된 저장소에 브라우저에서 쓰는 나만의 발표 프로그램(PT 툴)을 처음부터 끝까지 만들어 줘.
-아래 순서대로 네가 알아서 진행하고, 단계마다 직접 확인한 뒤 다음으로 넘어가. 내가 직접 눌러야 하는 것만 화면 순서대로 짧게 알려 줘.
+<div class="tabs" role="tablist"><button role="tab" data-t="1">① 툴 복사</button><button role="tab" data-t="2">② 내 것으로</button><button role="tab" data-t="3">③ 교안 제작</button><button role="tab" data-t="4">④ GPT 이미지</button><button role="tab" data-t="5">⑤ 퀄리티</button></div>
+<main id="tab1" data-h="PT 툴 복사해서 시작" data-s="강사 툴(PRESENTATION)만 그대로 가져옵니다. 다른 작업장 · 강사 교안은 들어가지 않습니다." hidden><section class="card on"><div class="step">1-1</div><h2>PT 툴 복사해 오기</h2><p class="when">빈 저장소 my-pt(Public)를 만들고, Claude Code에서 그 저장소를 고른 뒤 첫 메시지로</p><button class="copy" type="button">복사</button><pre>이 저장소에 PT 툴을 복사해 넣어 줘. 코딩은 네가 하고, 내가 눌러야 하는 것만 화면 순서대로 짧게 알려 줘.
 
-1) 교안 형식
-- 교안 1개 = JSON 파일 1개 (decks/ 폴더). 슬라이드 1920×1080 좌표
-- 요소: 글 · 그림 · 도형. 각 요소에 step(몇 번째 클릭에 나타날지)
-- 형식 설명은 docs/format.md 에 한국어로
-
-2) 발표 화면 present.html  (발표기)
-- → · Space · 클릭: 다음 / ← 이전 / 숫자+Enter 이동
-- F5 전체 화면 · B 검은 화면 · S 발표자 보기(다음 장 · 노트 · 시간)
-- 16:9 비율 유지, 휴대폰은 밀어서 넘기기
-- 참고: reveal.js 와 PowerPoint 쇼의 조작 방식 (라이브러리는 쓰지 말 것)
-
-3) 교안 목록 index.html (첫 화면)
-- 교안을 카드로: 첫 장 미리보기 · 제목 · 장 수. 누르면 발표
-- 검색칸. 휴대폰 1열 · PC 3~4열
-
-3-1) 편집 화면 editor.html  (편집기)
-- 교안 목록 카드의 [편집]으로 열기. 왼쪽 장 목록 · 가운데 슬라이드 · 오른쪽 속성
-- 글 더블클릭해 고치기, 끌어서 옮기기 · 크기 바꾸기, 장 추가 · 복제 · 삭제 · 순서 끌기
-- 고친 내용은 이 기기에 자동 저장, [JSON 내려받기] 로 파일 받기 (받은 파일을 이 대화창에 올리면 저장소에 반영)
-
-4) 예시 교안 하나
-- 주제: (내 강의 주제) · 대상: (예: 신입 직원) · 10장 안팎
-- 표지 → 목차 → 본문 → 정리. 한 장에 한 메시지, 글자 24px 이상, 설명은 발표자 노트에
-
-5) 인터넷에 공개
-- GitHub Pages 로 공개. 내가 눌러야 하는 설정이 있으면 순서대로 알려 줘
-
-6) 작업 규칙 문서 CLAUDE.md
-- 고치기 전에 최신 상태 받기 · 한 번에 한 가지만 · 고친 뒤 화면으로 확인 · 비밀 자료와 토큰은 절대 올리지 않기
-
-[편집기에서 꼭 지킬 것]
-- 끌기를 시작하면 이벤트가 바깥 상자로 모일 수 있으니, 두 번 눌러 글 고치기는 누른 자리의 요소를 직접 찾을 것
-- 글을 고치는 중에 다른 곳을 누르면 먼저 저장한 뒤 화면을 다시 그릴 것
-
-[하지 말 것]
-- npm · React 같은 빌드 도구 금지. HTML · CSS · JS 파일만
-- 비밀번호 · 토큰을 대화창에 붙여넣으라고 하지 말 것
+1) 아래 공개 저장소에서 pt-tool 폴더 안의 파일만 가져와 이 저장소 맨 위에 그대로 넣을 것. 다른 폴더는 가져오지 말 것
+   git clone --depth 1 --filter=blob:none --sparse https://github.com/kwonyujin119/test0.git /tmp/src
+   cd /tmp/src &amp;&amp; git sparse-checkout set pt-tool
+   그다음 /tmp/src/pt-tool/ 안의 것(숨은 폴더 .github 포함)을 이 저장소 맨 위로 복사
+2) 커밋하고 기본 브랜치(main)에 올릴 것
+3) GitHub Pages 켜기: 내가 저장소 Settings → Pages → Source 를 「GitHub Actions」로 고르게 안내
+4) 배포가 끝나면 주소 확인: https://(내 아이디).github.io/my-pt/gyoan.html
 
 [끝나면 보고]
-- 사이트 주소와 예시 교안 발표 주소
-- 단축키를 하나씩 시험한 결과 표
-- 편집기에서 글 고치기 · 끌어 옮기기 · 크기 · 장 추가 · 순서 끌기 · 되돌리기 · 새로 고침 후 유지 · JSON 내려받기를 직접 시험한 결과 표
-- PC · 휴대폰 화면 캡처
-- 앞으로 내가 말로 시킬 수 있는 예시 5개 (예: &quot;3장 제목 바꿔 줘&quot;)</pre></section>
-<button class="copy next" type="button" data-t="2">다음 단계 → ② 업그레이드</button></main>
-<main id="tab2" data-h="결과물 업그레이드" data-s="레퍼런스를 모아 비교하고, 기준대로 고칩니다. 누가 해도 같은 결과가 나오게 「완료 기준」을 넣었습니다." hidden>
-<section class="card on"><div class="step">2-1</div><h2>레퍼런스 모아 고치기</h2><p class="when">툴 초안이 나온 뒤</p><button class="copy" type="button">복사</button><pre>내가 만든 PT 툴을 업그레이드해 줘. 순서대로 진행하고 단계마다 화면으로 직접 확인해.
-
-1) 레퍼런스 조사: PowerPoint · Keynote · Google Slides · reveal.js · Pitch 의 발표 · 편집 · 목록 화면에서 좋은 점을 기능별로 표로 정리
-2) 우리 툴과 비교: 표에 &#x27;우리 툴 있음 / 없음 / 부족&#x27; 칸을 붙이고, 효과 큰 순서로 10가지 고를 것
-3) 디자인 기준(이대로 고정)
-- 글꼴: Pretendard(없으면 맑은 고딕), 제목 56~72px · 본문 28~36px, 24px 미만 금지
-- 색: 바탕 #FAFAF7, 글자 #15181C, 강조 #2457D6 하나만, 경고 #B3261E
-- 여백: 슬라이드 가장자리 96px, 카드 모서리 24px
-4) 10가지를 하나씩 고치고, 하나 끝날 때마다 PC · 휴대폰 화면 캡처로 확인
-
-[완료 기준]
-- 비교 표, 고친 10가지 목록과 전 · 후 캡처
-- 발표 · 편집 · 목록 화면의 단축키 시험 결과 표
-- 예시 교안의 글 넘침 · 겹침 0개</pre></section>
-<button class="copy next" type="button" data-t="3">다음 단계 → ③ 교안 제작</button></main>
+- 교안 목록 · 편집기 · 발표 화면을 열어 본 캡처 (예시 교안이 보여야 함)
+- 웹에서 바로 저장하고 싶을 때 [GitHub 연결] 에 넣을 토큰 만드는 법 (권한: 이 저장소 Contents 읽기/쓰기만)</pre></section><button class="copy next" type="button" data-t="2">다음 단계 → ② 내 것으로</button></main>
+<main id="tab2" data-h="내 것으로 다듬기" data-s="툴은 완성돼 있으니 이름 · 색 · 로고만 숫자와 이름으로 정확히 말하세요." hidden><section class="card on"><div class="step">2-1</div><h2>내 것으로 다듬기</h2><p class="when">툴이 열린 뒤, 바꿀 것만 골라서</p><button class="copy" type="button">복사</button><pre>이 PT 툴을 내 것으로 다듬어 줘. 앱 기능은 그대로 두고 아래만 바꿀 것.
+- 목록 화면 이름: (예: 안전교육 교안함)
+- 예시 교안 표지의 기관명 · 강사 이름: (예: ○○소방서 · 홍길동) — 로고 그림은 내가 올린 파일로
+- 강조색: (예: #C62828), 글꼴은 그대로
+- 추가로 필요한 것: (예: 발표 화면 오른쪽 아래에 우리 기관 로고 작게)
+app/ 파일을 고쳤으면 sw.js 의 CACHE 숫자를 하나 올릴 것.
+[끝나면 보고] 바뀐 화면 캡처, 바꾼 파일 목록</pre></section><button class="copy next" type="button" data-t="3">다음 단계 → ③ 교안 제작</button></main>
 <main id="tab3" data-h="PT 초안 → 점검 → 피드백" data-s="초안을 만들고, AI가 스스로 점검한 뒤, 내가 말로 고칩니다." hidden>
-<section class="card on"><div class="step">3-1</div><h2>1. 초안 만들기</h2><p class="when">주제만 바꿔서</p><button class="copy" type="button">복사</button><pre>새 교안 초안을 만들어 줘.
+<section class="card on"><div class="step">3-1</div><h2>1. 초안 만들기</h2><p class="when">주제만 바꿔서</p><button class="copy" type="button">복사</button><pre>새 교안 초안을 만들어 줘. 예시 교안 「예시 · Let&#x27;s Make PT Together」와 같은 형식 · 같은 디자인(바탕 · 글꼴 · 카드 · 장 표지)으로.
 - 주제: (예: 소화기 사용법) · 대상: (예: 신입 직원) · 시간: (예: 20분) · 10장 안팎
 - 표지 → 목차 → 본문 → 정리. 한 장에 메시지 하나, 제목은 결론 문장으로
 - 설명은 발표자 노트에, 화면 글은 짧게. 숫자는 크게 하나만
@@ -135,47 +89,19 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 - 파일 이름은 영어 소문자로, 용량은 500KB 이하로 줄여서
 끝나면 바뀐 장을 캡처해서 보여 줘.</pre></section>
 <button class="copy next" type="button" data-t="5">다음 단계 → ⑤ 퀄리티</button></main>
-<main id="tab5" data-h="AI 모션 · PT 기법으로 퀄리티 올리기" data-s="프롬프트 하나에 효과 12가지가 모두 들어 있습니다. 복사해서 한 번에 붙여넣으세요." hidden>
-<section class="card on"><div class="step">5-1</div><h2>퀄리티 한 번에 올리기</h2><p class="when">PT 툴과 교안이 나온 뒤</p><button class="copy" type="button">복사</button><pre class="fold">내가 만든 PT 툴에 아래 효과들을 하나씩 추가해 줘. 하나 끝날 때마다 예시 교안에서 직접 확인하고, 다음으로 넘어가. 라이브러리는 쓰지 말고 HTML · CSS · JS만.
+<main id="tab5" data-h="AI 모션 · PT 기법으로 퀄리티 올리기" data-s="효과는 툴에 이미 들어 있습니다. 프롬프트 하나로 교안에 걸면 됩니다." hidden><section class="card on"><div class="step">5-1</div><h2>퀄리티 한 번에 올리기</h2><p class="when">교안 초안이 나온 뒤</p><button class="copy" type="button">복사</button><pre>교안 「(교안 이름)」에 효과를 걸어 줘. 효과는 이 툴에 이미 있는 것만 쓰고, 새로 만들거나 앱 코드를 고치지 말 것.
+예시 교안 「예시 · Let&#x27;s Make PT Together」를 먼저 열어 어떻게 쓰였는지 보고 같은 방식으로.
 
-1. 모든 장 등장 모션
-장이 열리면 요소가 위에서 아래로 0.1초 간격으로 차례로 나타나게 해 줘. 제목은 아래에서 떠오르게, 사진은 살짝 커지며 나타나게. 미리보기 · 인쇄 화면에는 효과 없이 완성된 모습으로 보이게.
+1. 모든 장: 장이 열리면 자동으로(enter) 위에서 아래로 0.1초 간격 — 제목 words, 카드 up, 번호 pop, 사진 zoom, 선 wipe
+2. 장 표지: 배경 사진 kenburns(22초), 큰 번호 focus, 시작 막 out(발표 화면 전용 po), 제목 반짝임 sheen
+3. 클릭 단계(step): 카드 · 항목이 클릭마다 하나씩, 같은 클릭 안에서는 위쪽부터 0.1초씩 늦게
+4. 큰 숫자: count (0 → 값), 시간이 핵심인 숫자 하나는 강조 countdown(실제 초)
+5. 가장 중요한 칸 하나만 glow
+6. 사진 위 글: 글 쪽을 어둡게 덮는 그라데이션 도형(fill2)으로 읽히게
+7. 장 넘김: 장 표지는 blur, 나머지는 fade
 
-2. 클릭할 때마다 하나씩
-발표 중 클릭(→ · Space)할 때마다 카드 · 항목이 하나씩 나타나게 해 줘. 뒤로 가면 움직임 없이 사라지게. 편집기에서 요소마다 &#x27;몇 번째 클릭&#x27;을 고를 수 있게.
-
-3. 장 표지를 영화처럼
-장 표지에 들어가면 검은 막이 1초 동안 걷히고, 배경 사진이 20초 동안 아주 천천히 확대되게 해 줘. 큰 번호는 흐릿하다가 선명해지게.
-
-4. 제목 단어씩 떠오르기
-제목 글자를 단어 단위로 나눠 0.1초 간격으로 흐림에서 선명해지며 떠오르게 해 줘.
-
-5. 숫자 0부터 올라가기
-큰 숫자(예: 1,250명, 300만원)는 장이 열리면 0부터 그 값까지 1.5초 동안 올라가게 해 줘. 쉼표와 단위는 그대로.
-
-6. 실제 시간 카운트다운
-숫자 하나를 클릭하면 실제 초 단위로 0까지 줄어들게 해 줘(예: 42초). 줄어드는 동안 화면이 점점 어두워지고, 0이 되면 1.5초 뒤 다음 장으로 넘어가게.
-
-7. 강조: 빛나기 · 한 곳만 색
-강조하고 싶은 칸은 은은하게 한 번 빛나게 하고, 사진은 흑백으로 바꾼 뒤 중요한 부분만 색이 남게 하는 효과를 추가해 줘.
-
-8. 사진 위 글자 읽히게
-배경 사진 위에 글이 있으면 글 쪽을 어둡게(또는 밝게) 덮는 그라데이션을 깔아 글이 어디서나 읽히게 해 줘.
-
-9. 스포트라이트 · 돋보기
-사진에서 한 곳만 밝게 남기고 주변을 어둡게 하는 스포트라이트, 한 부분을 동그랗게 확대하는 돋보기 효과를 클릭 단계로 쓸 수 있게 해 줘.
-
-10. 진행 표시
-발표 화면 위쪽에 얇은 진행 막대와 &#x27;지금 몇 번째 파트&#x27; 표시를 넣어 줘. 장 표지에는 전체 파트 중 현재 파트만 진하게.
-
-11. 장 넘김 효과
-장 전환을 장마다 고를 수 있게 해 줘: 서서히 · 흐림 · 밀어내기 · 확대. 기본은 서서히(0.5초).
-
-12. 편하게 보는 설정
-컴퓨터의 &#x27;움직임 줄이기&#x27; 설정을 켠 사람에게는 큰 움직임 대신 서서히 나타나기만 쓰게 해 줘. 글자는 24px 이상, 배경과 글자 대비는 4.5:1 이상 유지.
-
-[끝나면 보고] 효과별로 어느 장에서 볼 수 있는지 표로.</pre></section>
-</main>
+[지킬 것] 글 · 내용 · 배치는 바꾸지 말 것. 장마다 효과 2~4가지 이내.
+[끝나면 보고] 발표 화면을 장마다 열어 3초 뒤 캡처, 글 넘침 0개 확인.</pre></section></main>
 <footer>인천소방학교 지휘역량강화센터 · 공개 페이지입니다. 비밀 자료나 개인정보를 프롬프트에 넣지 마세요.</footer>
 <script>
 (function () {

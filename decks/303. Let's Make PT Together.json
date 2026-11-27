@@ -20,8 +20,8 @@
   "bg": "#FAFAF7"
  },
  "title": "303. Let's Make PT Together",
- "created": "2026-11-27T07:53:35.000Z",
- "modified": "2026-11-27T08:11:04.000Z",
+ "created": "2026-11-27T08:51:31.000Z",
+ "modified": "2026-11-27T08:51:31.000Z",
  "slides": [
   {
    "id": "m3-s1",
@@ -230,7 +230,7 @@
      "w": 1500,
      "h": 110,
      "role": "text",
-     "html": "만들고 · 키우고 · 채우고 · 꾸미기",
+     "html": "복사하고 · 다듬고 · 채우고 · 꾸미기",
      "style": {
       "fontSize": 38,
       "color": "#C9CED8",
@@ -377,9 +377,9 @@
      "opacity": 1,
      "type": "text",
      "x": 140,
-     "y": 330,
+     "y": 322,
      "w": 120,
-     "h": 90,
+     "h": 112,
      "role": "body",
      "html": "1",
      "style": {
@@ -406,7 +406,7 @@
      "w": 270,
      "h": 60,
      "role": "body",
-     "html": "툴 초안",
+     "html": "툴 복사",
      "style": {
       "fontSize": 36,
       "color": "#15181C",
@@ -430,7 +430,7 @@
      "w": 270,
      "h": 120,
      "role": "body",
-     "html": "발표기 · 편집기 · 교안 목록",
+     "html": "강사 툴을 그대로",
      "style": {
       "fontSize": 26,
       "color": "#5B6168",
@@ -497,9 +497,9 @@
      "opacity": 1,
      "type": "text",
      "x": 484,
-     "y": 330,
+     "y": 322,
      "w": 120,
-     "h": 90,
+     "h": 112,
      "role": "body",
      "html": "2",
      "style": {
@@ -526,7 +526,7 @@
      "w": 270,
      "h": 60,
      "role": "body",
-     "html": "업그레이드",
+     "html": "내 것으로",
      "style": {
       "fontSize": 36,
       "color": "#15181C",
@@ -550,7 +550,7 @@
      "w": 270,
      "h": 120,
      "role": "body",
-     "html": "레퍼런스로 다듬기",
+     "html": "이름 · 색 · 기능",
      "style": {
       "fontSize": 26,
       "color": "#5B6168",
@@ -617,9 +617,9 @@
      "opacity": 1,
      "type": "text",
      "x": 828,
-     "y": 330,
+     "y": 322,
      "w": 120,
-     "h": 90,
+     "h": 112,
      "role": "body",
      "html": "3",
      "style": {
@@ -737,9 +737,9 @@
      "opacity": 1,
      "type": "text",
      "x": 1172,
-     "y": 330,
+     "y": 322,
      "w": 120,
-     "h": 90,
+     "h": 112,
      "role": "body",
      "html": "4",
      "style": {
@@ -857,9 +857,9 @@
      "opacity": 1,
      "type": "text",
      "x": 1516,
-     "y": 330,
+     "y": 322,
      "w": 120,
-     "h": 90,
+     "h": 112,
      "role": "body",
      "html": "5",
      "style": {
@@ -1189,7 +1189,7 @@
      "w": 1600,
      "h": 110,
      "role": "title",
-     "html": "PT 툴 초안 만들기",
+     "html": "PT 툴 복사해서 시작",
      "style": {
       "fontSize": 84,
       "color": "#FFFFFF",
@@ -1212,7 +1212,7 @@
      "w": 1600,
      "h": 60,
      "role": "text",
-     "html": "발표기 · 편집기 · 교안 목록을 한 번에",
+     "html": "강사 툴을 그대로 — 첫날부터 같은 엔진",
      "style": {
       "fontSize": 34,
       "color": "#C9CED8",
@@ -1254,7 +1254,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "01 툴 초안",
+     "html": "01 툴 복사",
      "style": {
       "fontSize": 24,
       "color": "#FFFFFF",
@@ -1277,7 +1277,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "02 업그레이드",
+     "html": "02 내 것으로",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -1390,7 +1390,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[2분] 코딩은 하지 않습니다. 저장소를 고르고, 붙여넣고, 결과를 눈으로 확인만.",
+   "notes": "[2분] 처음부터 만들지 않고 강사 툴을 그대로 복사합니다. 그래서 첫날부터 같은 모션 · 장 표지 연출 · PPTX 내보내기를 씁니다. 복사되는 것은 교안 목록 · 편집기 · 발표 화면과 예시 교안 하나뿐.",
    "elements": [
     {
      "id": "m30084",
@@ -1404,7 +1404,7 @@
      "w": 1300,
      "h": 40,
      "role": "body",
-     "html": "01 · 툴 초안",
+     "html": "01 · 툴 복사",
      "style": {
       "fontSize": 26,
       "color": "#2457D6",
@@ -1429,7 +1429,7 @@
      "w": 1700,
      "h": 90,
      "role": "body",
-     "html": "붙여넣기 한 번이면 초안이 나옵니다",
+     "html": "복사 한 번이면 같은 툴입니다",
      "style": {
       "fontSize": 58,
       "color": "#15181C",
@@ -1501,7 +1501,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "저장소 고르기",
+     "html": "빈 저장소",
      "style": {
       "fontSize": 40,
       "color": "#15181C",
@@ -1525,7 +1525,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "Claude Code에서 my-pt",
+     "html": "my-pt · Public",
      "style": {
       "fontSize": 28,
       "color": "#5B6168",
@@ -1621,7 +1621,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "프롬프트 붙여넣기",
+     "html": "QR ① 붙여넣기",
      "style": {
       "fontSize": 40,
       "color": "#15181C",
@@ -1645,7 +1645,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "QR ① 칸 복사",
+     "html": "Claude Code 첫 메시지",
      "style": {
       "fontSize": 28,
       "color": "#5B6168",
@@ -1741,7 +1741,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "「계속」만",
+     "html": "Pages 켜기",
      "style": {
       "fontSize": 40,
       "color": "#15181C",
@@ -1765,7 +1765,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "AI가 만들고 확인",
+     "html": "설정 한 번",
      "style": {
       "fontSize": 28,
       "color": "#5B6168",
@@ -1861,7 +1861,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "세 화면 완성",
+     "html": "세 화면 그대로",
      "style": {
       "fontSize": 40,
       "color": "#FFFFFF",
@@ -1885,7 +1885,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "발표기 · 편집기 · 목록",
+     "html": "목록 · 편집기 · 발표",
      "style": {
       "fontSize": 28,
       "color": "#DCE6F8",
@@ -1932,7 +1932,7 @@
      "w": 1620,
      "h": 100,
      "role": "body",
-     "html": "내가 할 일은 고르기 · 붙여넣기 · 확인 세 가지",
+     "html": "PRESENTATION 툴만 — 다른 작업장 · 강사 교안은 빼고",
      "style": {
       "fontSize": 38,
       "color": "#FFFFFF",
@@ -1961,7 +1961,7 @@
      "strokeWidth": 0,
      "radius": 28,
      "shadow": false,
-     "html": "✦ QR · ① 툴 초안",
+     "html": "✦ QR · ① 툴 복사",
      "style": {
       "fontSize": 18,
       "color": "#FFFFFF",
@@ -2175,7 +2175,7 @@
      "w": 1600,
      "h": 110,
      "role": "title",
-     "html": "결과물 업그레이드",
+     "html": "내 것으로 다듬기",
      "style": {
       "fontSize": 84,
       "color": "#FFFFFF",
@@ -2198,7 +2198,7 @@
      "w": 1600,
      "h": 60,
      "role": "text",
-     "html": "레퍼런스를 모으고, 기준대로 고친다",
+     "html": "이름 · 색 · 로고, 필요한 기능은 말로",
      "style": {
       "fontSize": 34,
       "color": "#C9CED8",
@@ -2240,7 +2240,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "01 툴 초안",
+     "html": "01 툴 복사",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -2263,7 +2263,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "02 업그레이드",
+     "html": "02 내 것으로",
      "style": {
       "fontSize": 24,
       "color": "#FFFFFF",
@@ -2376,7 +2376,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[2분] 처음 쓰는 사람도 같은 결과가 나오는 이유: 프롬프트에 글꼴 크기 · 색 · 여백을 숫자로 고정하고 완료 기준을 넣었기 때문.",
+   "notes": "[2분] 툴은 이미 완성돼 있으니 내 기관 · 내 강의에 맞게 바꾸기만 합니다. 바꿀 것은 색 코드 · 크기처럼 숫자로 말해야 한 번에 맞습니다.",
    "elements": [
     {
      "id": "m30128",
@@ -2390,7 +2390,7 @@
      "w": 1300,
      "h": 40,
      "role": "body",
-     "html": "02 · 업그레이드",
+     "html": "02 · 내 것으로",
      "style": {
       "fontSize": 26,
       "color": "#2457D6",
@@ -2415,7 +2415,7 @@
      "w": 1700,
      "h": 90,
      "role": "body",
-     "html": "같은 결과를 내는 비결은 「기준」",
+     "html": "바꿀 것은 숫자로 말하기",
      "style": {
       "fontSize": 58,
       "color": "#15181C",
@@ -2487,7 +2487,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "레퍼런스 모으기",
+     "html": "이름 · 로고",
      "style": {
       "fontSize": 40,
       "color": "#15181C",
@@ -2511,7 +2511,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "PowerPoint · Keynote · reveal.js",
+     "html": "목록 제목 · 표지 로고",
      "style": {
       "fontSize": 28,
       "color": "#5B6168",
@@ -2607,7 +2607,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "비교표 만들기",
+     "html": "색 · 글꼴",
      "style": {
       "fontSize": 40,
       "color": "#15181C",
@@ -2631,7 +2631,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "있음 · 없음 · 부족",
+     "html": "색 코드로 정확히",
      "style": {
       "fontSize": 28,
       "color": "#5B6168",
@@ -2727,7 +2727,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "기준 고정",
+     "html": "필요한 기능",
      "style": {
       "fontSize": 40,
       "color": "#15181C",
@@ -2751,7 +2751,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "글꼴 · 크기 · 색 · 여백",
+     "html": "한 문장씩",
      "style": {
       "fontSize": 28,
       "color": "#5B6168",
@@ -2847,7 +2847,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "10가지 고치기",
+     "html": "캡처로 확인",
      "style": {
       "fontSize": 40,
       "color": "#FFFFFF",
@@ -2871,7 +2871,7 @@
      "w": 327,
      "h": 110,
      "role": "body",
-     "html": "하나씩 캡처로 확인",
+     "html": "고칠 때마다",
      "style": {
       "fontSize": 28,
       "color": "#DCE6F8",
@@ -2918,7 +2918,7 @@
      "w": 1620,
      "h": 100,
      "role": "body",
-     "html": "기준을 숫자로 적으면, 누가 해도 같은 결과",
+     "html": "「강조색 #2457D6 → #C62828」 — 숫자로 말하면 정확",
      "style": {
       "fontSize": 38,
       "color": "#FFFFFF",
@@ -2947,7 +2947,7 @@
      "strokeWidth": 0,
      "radius": 28,
      "shadow": false,
-     "html": "✦ QR · ② 업그레이드",
+     "html": "✦ QR · ② 내 것으로",
      "style": {
       "fontSize": 18,
       "color": "#FFFFFF",
@@ -3226,7 +3226,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "01 툴 초안",
+     "html": "01 툴 복사",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -3249,7 +3249,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "02 업그레이드",
+     "html": "02 내 것으로",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -4092,7 +4092,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "01 툴 초안",
+     "html": "01 툴 복사",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -4115,7 +4115,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "02 업그레이드",
+     "html": "02 내 것으로",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -5078,7 +5078,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "01 툴 초안",
+     "html": "01 툴 복사",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -5101,7 +5101,7 @@
      "w": 320,
      "h": 40,
      "role": "text",
-     "html": "02 업그레이드",
+     "html": "02 내 것으로",
      "style": {
       "fontSize": 24,
       "color": "#9AA1AD",
@@ -5214,7 +5214,7 @@
     "color": "#FAFAF7"
    },
    "transition": "fade",
-   "notes": "[3분] 이 교안 자체가 예시입니다. 화면에 보이는 효과마다 그 한 문장을 읽어 주세요.",
+   "notes": "[3분] 이 교안 자체가 예시입니다. 효과를 새로 만들 필요 없이, 툴에 있는 효과를 교안에 거는 프롬프트 하나면 됩니다.",
    "elements": [
     {
      "id": "m30266",
@@ -5253,7 +5253,7 @@
      "w": 1700,
      "h": 90,
      "role": "body",
-     "html": "이 효과들, 전부 말로 만들었습니다",
+     "html": "이 효과들, 복사한 툴에 다 들어 있습니다",
      "style": {
       "fontSize": 58,
       "color": "#15181C",
@@ -6020,7 +6020,7 @@
      "w": 1620,
      "h": 100,
      "role": "body",
-     "html": "효과 하나 = 말 한 문장 · 전부는 QR ⑤ 프롬프트 하나로",
+     "html": "효과는 툴에 이미 있음 · QR ⑤ 프롬프트 하나로 전부",
      "style": {
       "fontSize": 38,
       "color": "#FFFFFF",
@@ -6195,7 +6195,7 @@
      "w": 1100,
      "h": 100,
      "role": "text",
-     "html": "① 툴 초안 → ② 업그레이드 → ③ 교안 제작<br>→ ④ GPT 이미지 → ⑤ 퀄리티",
+     "html": "① 툴 복사 → ② 내 것으로 → ③ 교안 제작<br>→ ④ GPT 이미지 → ⑤ 퀄리티",
      "style": {
       "fontSize": 32,
       "color": "#C9CED8",
@@ -6306,7 +6306,7 @@
      "w": 480,
      "h": 150,
      "role": "text",
-     "html": "<b>만들고</b>   툴 초안 · 업그레이드",
+     "html": "<b>복사하고</b>   툴 복사 · 내 것으로",
      "style": {
       "fontSize": 38,
       "color": "#FFFFFF",

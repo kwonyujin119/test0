@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko" data-ws="pres">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>편집 · PRESENTATION</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23fdeee4'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='%239c4512' font-family='sans-serif' font-weight='800'>P</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="app/ui.css">
+<link rel="stylesheet" href="app/ai-motion.css">
+<link rel="stylesheet" href="app/slide.css">
+<link rel="stylesheet" href="app/pres-fx.css">
+<script src="app/access.js"></script>
+<script>/* 게스트(보기 전용)는 편집 화면 대신 발표 화면으로 */ if (Access.isGuest) location.replace('present.html' + location.search);</script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="app/icons/icon-192.png">
+</head>
+<body>
+<div class="ed">
+  <div class="ed-top" id="top">
+    <a class="ed-home" href="gyoan.html" title="교안 목록으로" aria-label="교안 목록으로"><i data-ic="back"></i><span class="mark">P</span></a>
+    <div class="title"><input id="deckTitle" title="교안 제목" aria-label="교안 제목"><span class="dirty" title="저장되지 않은 변경"></span><span class="savestate" id="saveState"></span><span class="upchip" id="upStatus"></span></div>
+    <div class="grow"></div>
+    <div class="tgroup g-undo"><button class="btn icon" id="btnUndo" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소"><i data-ic="undo"></i></button>
+    <button class="btn icon" id="btnRedo" title="다시 실행 (Ctrl+Y)" aria-label="다시 실행"><i data-ic="redo"></i></button></div>
+    <div class="tgroup g-view"><button class="btn icon" id="btnFind" title="찾기 (Ctrl+F) · 바꾸기 (Ctrl+H)" aria-label="찾기"><i data-ic="search"></i></button>
+    <button class="btn icon" id="btnCmd" title="명령창 — 문장으로 편집 (Ctrl+K)" aria-label="명령창"><i data-ic="chat"></i></button>
+    <button class="btn icon" id="btnLayers" title="개체 목록 · 선택 창 (Alt+F10)" aria-label="개체 목록"><i data-ic="layers"></i></button>
+    <button class="btn icon" data-ui-theme title="화면을 어둡게"></button>
+    <button class="btn icon" id="btnHelp" title="단축키 (F1)" aria-label="단축키"><i data-ic="help"></i></button></div>
+    <div class="tgroup g-design"><label class="lbl muted" for="theme">테마</label>
+    <select id="theme" aria-label="테마"></select>
+    <button class="btn" id="btnDesign" title="테마 · 색 · 글꼴 · 꼬리말(슬라이드 번호)"><i data-ic="palette"></i>디자인</button></div>
+    <div class="tgroup g-file"><button class="btn" id="btnSave" title="저장 (Ctrl+S)"><i data-ic="save"></i>저장</button>
+    <button class="btn" id="btnImportSlides" title="가져오기 — PowerPoint(.pptx)나 교안 파일(.json)의 슬라이드를 이 교안에 넣습니다 (편집기에 끌어다 놓아도 됩니다)"><i data-ic="import"></i>가져오기</button>
+    <button class="btn" id="btnExport" title="내보내기"><i data-ic="export"></i>내보내기</button>
+    <button class="btn" id="btnNewWin" title="다른 교안을 새 창으로 열기 — 두 창을 나란히 두고, 왼쪽 슬라이드 목록에서 복사(Ctrl+C) → 다른 창 목록을 눌러 붙여넣기(Ctrl+V)"><i data-ic="expand"></i>새 창</button></div>
+    <div class="tgroup g-show"><button class="btn" id="btnPreview" title="저장하지 않고 현재 슬라이드부터 미리보기"><i data-ic="eye"></i>미리보기</button>
+    <button class="btn ink" id="btnPresent" title="저장하고 현재 슬라이드부터 발표 (Shift+F5 · 처음부터는 F5)"><i data-ic="play"></i>발표</button></div>
+    <button class="btn" id="btnProps" title="선택한 슬라이드·개체의 속성"><i data-ic="sliders"></i>속성</button>
+  </div>
+  <div class="ed-tools" role="toolbar" aria-label="넣기">
+    <div class="group g-slide">
+      <button class="btn" id="btnAddSlide" title="새 슬라이드 (Ctrl+M)"><i data-ic="slideAdd"></i>슬라이드</button>
+    </div>
+    <span class="sep"></span>
+    <div class="group g-insert">
+      <button class="btn" id="btnAddText" title="텍스트 상자"><i data-ic="text"></i>텍스트</button>
+      <button class="btn" id="btnAddImage" title="이미지 (붙여넣기 Ctrl+V · 끌어다 놓기도 됨)"><i data-ic="image"></i>이미지</button>
+      <button class="btn" id="btnAddShape" title="도형 (더블클릭하면 안에 글 쓰기)"><i data-ic="shape"></i>도형</button>
+      <button class="btn" id="btnAddTable" title="표 (엑셀 표는 Ctrl+V 로 바로)"><i data-ic="table"></i>표</button>
+      <button class="btn" id="btnAddChart" title="차트"><i data-ic="chart"></i>차트</button>
+      <button class="btn" id="btnAddIcon" title="아이콘 · 기호"><i data-ic="smile"></i>아이콘</button>
+      <button class="btn" id="btnAddMore" title="수식 · 동영상(주소·파일·PPT) · 개요로 만들기 · 사진 앨범"><i data-ic="more"></i>더보기</button>
+    </div>
+  </div>
+  <div class="ed-ctx" role="toolbar" aria-label="선택한 개체 정리">
+    <div class="group g-align" id="alignGroup">
+      <button class="btn icon sm" data-align="left" title="왼쪽 정렬" aria-label="왼쪽 정렬"><i data-ic="alignL"></i></button>
+      <button class="btn icon sm" data-align="hcenter" title="가로 가운데" aria-label="가로 가운데"><i data-ic="alignH"></i></button>
+      <button class="btn icon sm" data-align="right" title="오른쪽 정렬" aria-label="오른쪽 정렬"><i data-ic="alignR"></i></button>
+      <button class="btn icon sm" data-align="top" title="위 정렬" aria-label="위 정렬"><i data-ic="alignT"></i></button>
+      <button class="btn icon sm" data-align="vcenter" title="세로 가운데" aria-label="세로 가운데"><i data-ic="alignV"></i></button>
+      <button class="btn icon sm" data-align="bottom" title="아래 정렬" aria-label="아래 정렬"><i data-ic="alignB"></i></button>
+    </div>
+    <span class="sep"></span>
+    <div class="group g-arrange">
+      <button class="btn sm primary" id="btnEditText" title="글 고치기 (두 번 두드려도 됩니다)" hidden><i data-ic="edit"></i>글 고치기</button>
+      <button class="btn sm" id="btnOrder" title="앞뒤 순서 · 등간격">순서</button>
+      <button class="btn sm" id="btnGroup" title="묶기 (Ctrl+G) / 풀기 (Ctrl+Shift+G)">묶기</button>
+      <button class="btn sm" id="btnDup" title="복제 (Ctrl+D)">복제</button>
+      <button class="btn sm danger" id="btnDel" title="삭제 (Delete)">삭제</button>
+    </div>
+  </div>
+  <div class="ed-side">
+    <div class="side-head"><span class="sh-t">슬라이드 <span id="slideCount"></span></span></div>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="add-split">
+      <button class="btn" id="btnAddSlide2" title="빈 슬라이드를 지금 슬라이드 다음에 넣습니다"><i data-ic="plus"></i><span class="wide">새 슬라이드</span></button>
+      <button class="btn" id="btnAddSlide3" title="모양(레이아웃)을 골라서 넣기" aria-label="슬라이드 모양 골라서 넣기"><i data-ic="chevronDown"></i></button>
+    </div>
+  </div>
+  <div class="ed-main" id="main">
+    <div class="stage" id="stage"><div class="overlay" id="overlay"></div></div>
+    <div class="stage-foot">
+      <span id="footSlide"></span>
+      <span class="muted" id="hint">더블클릭 = 글 편집 · Ctrl+V = 이미지·표 붙여넣기 · F1 = 단축키</span>
+      <span class="grow"></span>
+      <span id="footSel" class="muted"></span>
+      <button class="btn sm" id="btnCheck" title="발표 점검 — 글 양 · 글자 크기 · 대비 · 장별 발표 시간">점검</button>
+      <button class="btn sm" id="btnSize" title="이 교안의 용량 — 누르면 무엇이 얼마나 차지하는지 보여 줍니다">용량 …</button>
+      <button class="btn sm" id="btnGrid" title="격자 보기 · 격자에 맞춰 붙기"><i data-ic="grid"></i>격자</button>
+      <button class="btn sm" id="btnMinUi" title="양옆 패널 숨기기 · 보이기 (Ctrl+\)" aria-pressed="false"><i data-ic="panels"></i>패널</button>
+      <span class="sep"></span>
+      <select id="zoom" aria-label="확대"><option value="fit">맞춤</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option></select>
+    </div>
+    <div class="dropzone-hint">이미지·동영상·PPT 파일을 여기에 놓으세요</div>
+  </div>
+  <div class="ed-props" id="props"></div>
+  <button class="btn" id="propsClose" title="속성 닫기"><i data-ic="x"></i>닫기</button>
+</div>
+<input type="file" id="fileImage" accept="image/*" multiple style="display:none">
+<input type="file" id="fileBg" accept="image/*" style="display:none">
+<input type="file" id="fileReplace" accept="image/*" style="display:none">
+<input type="file" id="fileImportSlides" accept=".pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps,.json,application/json" style="display:none">
+<input type="file" id="fileAlbum" accept="image/*" multiple style="display:none">
+<input type="file" id="fileVideo" accept="video/*,.mp4,.m4v,.mov,.webm" style="display:none">
+<input type="file" id="filePpt" accept=".pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps" style="display:none">
+<script src="app/common.js"></script>
+<script src="app/motion.js"></script>
+<script src="app/ai-motion.js"></script>
+<script src="app/prestime.js"></script>
+<script src="app/folderlock.js"></script>
+<script src="app/editor.js"></script>
+<script src="app/pwa.js"></script>
+</body>
+</html>

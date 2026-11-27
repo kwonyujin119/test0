@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko" data-ws="pres">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>PRESENTATION</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23fdeee4'/><text x='50' y='69' font-size='54' text-anchor='middle' fill='%239c4512' font-family='sans-serif' font-weight='800'>P</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="app/ui.css">
+<link rel="stylesheet" href="app/slide.css">
+<link rel="stylesheet" href="app/hub.css">
+<link rel="stylesheet" href="app/pres-fx.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="app/icons/icon-192.png">
+</head>
+<body>
+<div class="shell">
+  <aside class="rail" aria-label="PRESENTATION 메뉴">
+    <a class="brand" href="gyoan.html"><span class="mark">P</span><b>PRESENTATION</b></a>
+    <div class="rail-role" id="roleChip"></div>
+    <button class="btn ink wide" id="btnNew" data-admin><i data-ic="plus"></i>새 교안</button>
+    <nav class="rail-nav" id="nav" aria-label="교안 분류">
+      <button class="rail-item on" data-filter="all"><i data-ic="stack"></i><span>모든 교안</span><em id="cAll"></em></button>
+      <button class="rail-item" data-filter="week"><i data-ic="clock"></i><span>최근 7일</span><em id="cWeek"></em></button>
+      <button class="rail-item" data-filter="draft" data-admin><i data-ic="edit"></i><span>저장 안 한 작업본</span><em id="cDraft"></em></button>
+    </nav>
+    <nav class="rail-nav rail-folders" id="railFolders" aria-label="폴더" hidden></nav>
+    <div class="rail-grow"></div>
+    <nav class="rail-nav quiet" aria-label="도구">
+      <button class="rail-item" id="btnImport" data-admin title="PowerPoint 파일(.pptx)이나 내보내기로 받아 둔 교안 파일(.json)을 교안으로 가져옵니다"><i data-ic="import"></i><span>파일 가져오기</span></button>
+      <button class="rail-item" id="btnGh" data-admin title="GitHub 저장소에 바로 저장하도록 토큰 연결" style="display:none"><i data-ic="link"></i><span>GitHub 연결</span></button>
+      <button class="rail-item" id="btnGuide"><i data-ic="help"></i><span>사용 안내</span></button>
+    </nav>
+  </aside>
+
+  <main class="hub">
+    <div class="ws-hero" aria-hidden="true"><img src="assets/ui/ws-pres.webp" alt="" width="960" height="640" decoding="async"><div class="wh-t"><b>PRESENTATION</b><span>강의 교안을 만들고, 리모컨으로 바로 발표합니다</span><div class="wh-s" id="heroStats"></div></div></div>
+    <header class="hub-bar">
+      <h1 id="pageTitle">모든 교안</h1>
+      <span class="hub-count" id="sub"></span>
+      <div class="hub-tools">
+        <label class="searchbox"><i data-ic="search"></i><input type="search" id="q" placeholder="교안 검색" aria-label="교안 검색"><kbd>/</kbd></label>
+        <select id="sort" aria-label="정렬">
+          <option value="recent">최근 저장순</option>
+          <option value="title">제목순</option>
+          <option value="slides">슬라이드 많은 순</option>
+        </select>
+        <div class="seg" role="group" aria-label="보기 방식">
+          <button class="seg-b on" data-view="grid" title="격자로 보기" aria-label="격자로 보기"><i data-ic="gallery"></i></button>
+          <button class="seg-b" data-view="list" title="목록으로 보기" aria-label="목록으로 보기"><i data-ic="rows"></i></button>
+        </div>
+        <button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button>
+      </div>
+    </header>
+    <div class="hub-notice" id="notice" style="display:none"></div>
+    <section class="resume" id="resume" style="display:none" aria-label="이어서 작업"></section>
+    <div class="folder-bar" id="folderBar" style="display:none"></div>
+    <h2 class="hub-h2" id="gridHead" style="display:none">모든 교안</h2>
+    <div class="deck-grid" id="grid"></div>
+    <div class="hub-empty" id="empty" style="display:none"></div>
+    <section class="folder-sec" id="folderSec" style="display:none" aria-labelledby="folderHead">
+      <div class="folder-head"><h2 class="hub-h2" id="folderHead">폴더 <em id="folderCount"></em></h2><button class="btn sm ghost" id="btnNewFolder" data-admin><i data-ic="folderPlus"></i>새 폴더</button></div>
+      <div class="deck-grid folder-grid" id="folderGrid"></div>
+    </section>
+  </main>
+</div>
+<input type="file" id="fileImport" accept=".json,.pptx,.ppsx,.pptm,.ppsm,.potx,.ppt,.pps,application/json" style="display:none">
+<div class="drop-veil"><div><i data-ic="import"></i><b>여기에 놓으면 교안으로 가져옵니다</b><span>PowerPoint(.pptx) · 교안 파일(.json)</span></div></div>
+<script src="app/common.js"></script>
+<script src="app/motion.js"></script>
+<script src="app/access.js"></script>
+<script src="app/hub.js"></script>
+<script src="app/pwa.js"></script>
+</body>
+</html>
