@@ -1,56 +1,56 @@
 {
  "date": "2026-11-27",
- "generatedAt": "2026-11-27T13:12+09:00",
- "feedsOk": 17,
+ "generatedAt": "2026-11-27T13:29+09:00",
+ "feedsOk": 19,
  "feeds": 19,
- "articles": 1312,
- "issues": 973,
+ "articles": 1402,
+ "issues": 1057,
  "method": "여러 언론이 함께 다룬 정도 + 시장 핵심어 + 최신순 (AI 사용 안 함)",
  "items": [
   {
    "rank": 1,
-   "title": "코스피 장중 상승폭 커져 2% 안팎 강세…코스닥 6%대 급등",
-   "link": "https://www.yna.co.kr/view/AKR20261127070800008",
+   "title": "코스닥 상승세 강해져 5%대 급등…매수 사이드카 발동",
+   "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE83eUQzakhZbjFMZUJlRnVrVENMdURiUEtOdDlfOV9RRGdwYXM2S0tMVGd4MU8xYm5HZVVNdko5YnRLUXM4di1xVXpGWmZ3S3ItbFFZaUhxWjJWTkHSAWBBVV95cUxOYUgwYlpWVE90aFg3LWl0QWRuUDFIckU1TEJvblh1bUtSaXRlY3ByNTcxSWhTXzAtNnJKYXhhVUFRQThGREVxNkRNMXBQNTAwZlA0T2VJNjNrNXJURUN4WWs?oc=5",
    "source": "연합뉴스",
-   "time": "2026-11-27T11:13+09:00",
+   "time": "2026-11-27T10:29+09:00",
    "category": "국내 증시",
-   "sources": 22,
-   "articles": 27,
+   "sources": 20,
+   "articles": 22,
    "keywords": [
     "코스피",
     "코스닥",
-    "나스닥",
-    "S&P",
     "급등",
-    "외국인"
+    "폭등",
+    "외국인",
+    "기관"
    ],
-   "score": 107,
+   "score": 95,
    "related": [
     {
-     "title": "코스닥 상승세 강해져 5%대 급등…매수 사이드카 발동",
-     "source": "연합뉴스",
-     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE83eUQzakhZbjFMZUJlRnVrVENMdURiUEtOdDlfOV9RRGdwYXM2S0tMVGd4MU8xYm5HZVVNdko5YnRLUXM4di1xVXpGWmZ3S3ItbFFZaUhxWjJWTkHSAWBBVV95cUxOYUgwYlpWVE90aFg3LWl0QWRuUDFIckU1TEJvblh1bUtSaXRlY3ByNTcxSWhTXzAtNnJKYXhhVUFRQThGREVxNkRNMXBQNTAwZlA0T2VJNjNrNXJURUN4WWs?oc=5"
-    },
-    {
-     "title": "증안펀드 기대·외국인 매수에 코스닥 6%대 급등…코스피 4,800대",
+     "title": "코스닥 매수 사이드카…장중 5% 넘게 급등 |",
      "source": "연합인포맥스",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE01ZE9HNU1IR1JqUUJNbjBfWVVtSWpJYXVYekFuSUFPZTYzZmQ1c3pIWGxRQnVURTFwX0NjamlnVllOU3g0cENQaFQwRTFueUJfTGpuaS1VR2JIZjZ0dGlCMVBRZG40YVlPZEdjbHhmOVA?oc=5"
-    },
-    {
-     "title": "[오전시황] 증안펀드 기대에 코스닥 5%대 급등...코스피도 4800선 회복",
-     "source": "한국경제",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBtLTBFcGJZQjFwRTZDTnNnQjNENkZwMUc5ZzhRWEplWURMclpsemR2NG9IQUowek5BRmstazhBYXg5WUtQeTlmdnJiVFlhY3k2VFQzdGdlZ25oUQ?oc=5"
+     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1kemVXeTZxSGlhTlFGV0lpTVdGYnZmb29QZE1heEpjSUlyaXM2b0RUdjN2am8yM18tR193UXVJaXZZc291dlVkWlhvZzYydURmd25aQjd0WnpzQUdiSUl4WFRsQkdlaVkxQU1ONXd4b0s1SGxP?oc=5"
     },
     {
      "title": "10조원 풀지도 않았는데…외국인 돌변에 코스닥 5%대 급등",
      "source": "한국경제",
      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9pWFltTkVETFRrbG5rNklOUGhvUUloTERkaGJOMVlwRHFqUWFjNEU4TGd4QWJMa3REWnRWRHJlaUFhalRXcEcybVNvWE11VVBoZTF5bW0wZHg4UQ?oc=5"
+    },
+    {
+     "title": "코스피, 상승폭 확대...코스닥, 매수 사이드카 발동",
+     "source": "YTN",
+     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1sQjI1NGhjYWFsUUU1endGOV9WU3RtazBQUC1tZHNuV1VXZ00tcGMxUXpGX3o5RlBKTUtMd0oyemRwTlczWHRLY2NZWnB5WDQ4OTlwTVpuLXlwcG1TcVE?oc=5"
+    },
+    {
+     "title": "[속보] 코스닥 5%대 급등세에 매수 사이드카 발동",
+     "source": "YTN",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE85eklkek1QNGkyRDc1NjFpRWd2RlQtdmRpZDVVa0Z4WTF5a01pWUdubG9DVzlaTkczWXNSajloR3pFZEppS1d5emV0c0Z1dTFwd2NZNzhVR29KT1dFLWRrb3IxcGt1VGlXWUhETmRtaw?oc=5"
     }
    ]
   },
   {
    "rank": 2,
-   "title": "비트코인 6만달러대 소폭 반등…투심은 ‘극도 공포’ [코인 모닝콜]",
+   "title": "비트코인 6만달러선서 소폭 반등…투자심리는 ‘극도의 공포’ [코인 모닝콜]",
    "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNU2tLTGdVcGZReTVrVERBWDh0aTREWHdpVnNJenpfSWExY05YbWFpV3NmZTQ2MVdZNnBISWpJU3U4NmpJTERNelAwUGlibnNsbTFiUkM0TWFGU0xzcm0tb3dsQjM3ZlM4TmE2MEtkMk03dEx0b0hPTmZpNVRCNGYyMg?oc=5",
    "source": "이데일리",
    "time": "2026-11-27T08:45+09:00",
@@ -90,78 +90,80 @@
   },
   {
    "rank": 3,
-   "title": "신현송 \"내년 4.1% 성장 자신\"… 기준금리 인상 재시동",
-   "link": "https://www.mk.co.kr/news/economy/12219713",
-   "source": "매일경제",
-   "time": "2026-11-26T17:42+09:00",
-   "category": "거시 · 금리",
+   "title": "코스피 장중 상승폭 커져 2% 안팎 강세…코스닥 6%대 급등",
+   "link": "https://www.yna.co.kr/view/AKR20261127070800008",
+   "source": "연합뉴스",
+   "time": "2026-11-27T11:13+09:00",
+   "category": "국내 증시",
    "sources": 13,
-   "articles": 17,
+   "articles": 15,
    "keywords": [
-    "기준금리",
-    "금리",
-    "환율",
-    "반도체"
+    "코스피",
+    "코스닥",
+    "나스닥",
+    "S&P",
+    "급등",
+    "외국인"
    ],
    "score": 68,
    "related": [
     {
-     "title": "한은 \"내년 韓경제, 4.1% 성장 전망\"…기준금리 연 3.25%로 올렸다",
-     "source": "머니투데이",
-     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE8zYW5hQlJlaFJRRGVzVk5oSXVtanl6YjNONWg0X1Q3M1AyZERvYlpCU2d1dVMxTHJSQzZKYWhOWktYVkhFaTgtSHBjME9SRXpRU0xuaENRNWgtS01SbkVvMTJFYXRLT0Fxa25N0gFwQVVfeXFMUEJtZkFDWVZMdkx2WW5ndlhOV0VPU01DckU1WmpxY2huUXFEb2haQjMxbGF1UHI4bE1lcnlXWjlWR2x2eG9lNmFRLVc4WncyRFZyTlRjVlg5a1RUZ3lNd2tOZURGdXZoLWs5MkVTR0E0Zw?oc=5"
+     "title": "증안펀드 기대·외국인 매수에 코스닥 6%대 급등…코스피 4,800대 |",
+     "source": "연합인포맥스",
+     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1oR1V4Y0V1Rl9PdlczT25fdkZCM0tfZ0xSWFhJME5IUFBheWZrR3UwT2wyYVAxbElKTHY3bm5CYkZkSUNBWWgwQ0h4RHgzZ2hVM25teS1aYmhzQ09XX2dkTl9ELTlPV01kWEd6MHdfeC1Na0RV?oc=5"
     },
     {
-     "title": "한은, 기준금리 3.25%로 인상…내년 韓성장률 '4.1%' 파격 전망",
-     "source": "머니투데이",
-     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBMZ2p6M1Z3UG8zZUdySkhLS3MwVHZRYXQ3RWxlVXk1dGE2X3RoUzZ2aTI2Q3lvQmgxSVFEb3lvS1prdDdFSVMxOC1uNFRwOWp0ekhwQWk3VTgtQ0Q5cml0dWlMUjJEazVDTF9R0gFwQVVfeXFMUHRwWlc4cHRISExFLVlYdlMwd21rTmxYZGQwblRWWE40VUpGZ1N3ZjJUb1BPZ0FVbVhBUjdrSU1SdFJzSG1GVDRyS2RoN2lKZzgwT3hEb2x0cjRyNnRMUHZLZmVzOS1SQjhTODdtU19vMQ?oc=5"
+     "title": "[오전시황] 증안펀드 기대에 코스닥 5%대 급등...코스피도 4800선 회복",
+     "source": "한국경제",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBtLTBFcGJZQjFwRTZDTnNnQjNENkZwMUc5ZzhRWEplWURMclpsemR2NG9IQUowek5BRmstazhBYXg5WUtQeTlmdnJiVFlhY3k2VFQzdGdlZ25oUQ?oc=5"
     },
     {
-     "title": "[스타트 경제] \"내년 성장률 4.1%\" 반도체가 끌어올린 금리...같은 날 가계 실질소득 2.1%↓ 발표",
-     "source": "YTN",
-     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE0tVDdTSXg2X09VWFRjWGptQjRPb3pfOVZjMFNDTU94cG1NRENjQkpXQWRqcWRtemg1enM3bTdqQ2ZTMHR4WHZvSVc4ZmNkeWRrb3FyUTN3dy1zRGFoLXc?oc=5"
+     "title": "[개장시황] 코스피 소폭 상승·코스닥 2%대 강세…로봇·바이오 약진",
+     "source": "한국경제",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE01MEJwSzltd3pRSzRpVVdmSURPSHF6bFd0M2YtQWRaZTl4WGtrTVdEX0lIbWhELTcwZjNFSHZxR1RYX2thTXpieW1RRkszUmk3ekZkQ1JXT2Yydw?oc=5"
     },
     {
-     "title": "[YTN 실시간뉴스] 기준금리 연 3.25%로...내년 성장률 4.1%",
-     "source": "YTN",
-     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5jakJPR0RMSUt0R3dISnBiTm0yS3lRa0tJUVo0SFR1SUw3Um93TFYySkRnazB5QXhyV2FuMUtCX0dkWjJnajI3Q3h5aENKWmFFNXF6NUt4eDc1eWxuSGc?oc=5"
+     "title": "코스닥, 5.9% 급등에 매수사이드카…코스피도 4800선 회복",
+     "source": "뉴시스",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9OUWRkWU9RWGZrZTRfZk1sS3pLRFlQSkpHbDV3NkdzYm5Hd1AyRmMtVWF6MmJ3WnFyTlBQZ0pYRlNwYkllQ1dFSmp6RnE2Vk5HbXNmanpMOEtxZUpncGh2adIBeEFVX3lxTE9EbTIzVEZTbGdpZHNiaUtVWUJKYzhzckwzai1Od1dNSXU4cVFicURLOWhvc1dQZmNQTUxiVkNqVHVTV0lKMFVnRVNOM0ZFUERub3dFR1BWMEg4ZlRNd01yVUo5OTh3Q2ZOSktHWk4zcVBtQnpUcHREMA?oc=5"
     }
    ]
   },
   {
    "rank": 4,
-   "title": "삼성전자, 3분기 주주 배당금 지급…1주당 4601원",
-   "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE42ZXJ1alF4TGNiUWlSTTZYbnVEaXVKZVFITTN0RXpCaUM0MFJfbkZ1OGRycm9sclRQVE9JbW1vMGUxRC11Ui1jRlkwVUtEMTRFel8tWUs5NlA4RTY5ZnF1aERIUlNxZnVZR0E?oc=5",
-   "source": "한겨레",
-   "time": "2026-11-27T11:53+09:00",
+   "title": "삼성전자, 오늘 역대 최대 30조 배당금 지급…추가 주주환원도 예고",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1WSnd5UlVqdk1FWWc3amRGSzVqM0pPVE1EWjNCa3VBVmxwMW5IZ3o1MHU3QVdRLUVZMzdaRWxrdzZ3SlpyZWdlMUNYRXJyV01Tal9WUExnbFE3dy1qYTV3OdIBeEFVX3lxTFBPdzVhOEMwVkVfTmJlc1Y0dy1IUDlyWUFOVlVKd2V1d1BqQ0s5RHdhZFE1cE03dWZlaXduQ0NKcTRNVEttWWRSRVRqM2NrS0V4dEctT3E3ZHhUcU9iSHhXVXRMTW5XcDRqUUkwOHN4MVVBbzFLNTNiag?oc=5",
+   "source": "뉴시스",
+   "time": "2026-11-27T11:46+09:00",
    "category": "국내 증시",
-   "sources": 14,
-   "articles": 14,
+   "sources": 15,
+   "articles": 15,
    "keywords": [
     "주가",
     "외국인",
     "배당"
    ],
-   "score": 61,
+   "score": 65,
    "related": [
     {
-     "title": "삼성전자, 오늘 30조원 현금배당한다…주당 4601원 지급",
-     "source": "파이낸셜포스트",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5SQnppQlJ2dHcwSUZsZTB3MVVrNGUyYmdtaDZ4eWFHb1FFYzhNbm4yeDNDOGZHbFdac29hOGJ3TjlTTUQ1cU05Nkg0UUEtSm5CZTZFbS0zdUpLV09mR0pkZU9zRVJkRjl2YVZHTWR0RWhtUnNr?oc=5"
+     "title": "삼성전자, 오늘 역대 최대 30조 배당...이재용 4,488억",
+     "source": "YTN",
+     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE52MENVSmhRUGM3NGdUYTZxenAyOVlvZ2NVNEs3MnFJQnhma1E5bEk4cnBkRGZqTV9TaVhNVVVZWmM4X2E0d05JcTRpVVJNdHNWMUdfV25BdDAzQnhnZWc?oc=5"
+    },
+    {
+     "title": "삼성전자, 오늘 30조 배당…이재용 회장 4400억",
+     "source": "한겨레",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE42ZXJ1alF4TGNiUWlSTTZYbnVEaXVKZVFITTN0RXpCaUM0MFJfbkZ1OGRycm9sclRQVE9JbW1vMGUxRC11Ui1jRlkwVUtEMTRFel8tWUs5NlA4RTY5ZnF1aERIUlNxZnVZR0E?oc=5"
+    },
+    {
+     "title": "오늘 풀리는 ‘삼성전자’ 배당 30조…이재용 계좌엔 얼마가?",
+     "source": "JTBC",
+     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9uSXFVbldjX2FHUXhickp3XzZkWXFueHBoeUoxWTAxb25pemZVRXZYX3lYcUlBYzJmbGNOWjFmc1ozZ2ZSNkJ5RURyT1RPY1JoZmoxeA?oc=5"
     },
     {
      "title": "삼성전자, 오늘 역대 최대 30조원 배당…100주 보유하면 세후 39만원",
      "source": "경북도민일보",
      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0wdHhqYU9jTGlQQ3dKOWVscEVfS2hkajc2X0hRWFFaUnlrUVM4ME5ZVUNpMkRJWDU1Y3BHUDR5VGd0TlZYNWtiaDU3UmRrdWpBUDc0ejdnMUpLYlVHME1Ecjg5N2Z3M0JBM1E?oc=5"
-    },
-    {
-     "title": "삼성전자 3분기 30조 배당에 이재용 4488억 수령, 올해 배당금 1조 넘나",
-     "source": "비즈니스포스트",
-     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9jMGVnYkg0SnJmd1I1bUxqQjJUazVZTVBJUHUxN1Z6Ni03YkNlSFF6cm1mYUlNeGYyay05Q3M4bFdQRExGdGxWSUFzMWQ3TXlMZmJWR2xrMV9SSElaZVlqb2QtSGs3V0xIcW53djF3QjZfb1k?oc=5"
-    },
-    {
-     "title": "주가는 반토막, 배당은 12배…삼성전자 100주면 39만원 들어온다",
-     "source": "더팩트",
-     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9KUjZFcDRxUVBabVNCbHRBMlY2eEtMN1g4cE9CUTBoM05MaDk2RlZ1Nmc1T2JjblZsZXVsbGpTalFLNnhkemltWHRaTkFwSmJzTm1fMW9HYjJJZ9IBVEFVX3lxTFB0bUxsSWx6VHM3bUFwTkJna1dtN2JVbE1WcW9QZldENFoweWdCbkZiMDR6MzU1aXRfRXFOaUc2MTJNZi1lNlN5T2dGVXlaTnJYdHVsaA?oc=5"
     }
    ]
   },
@@ -173,14 +175,15 @@
    "time": "2026-11-27T11:31+09:00",
    "category": "국내 증시",
    "sources": 1,
-   "articles": 49,
+   "articles": 50,
    "keywords": [
     "주가",
     "AI",
     "외국인",
+    "기관",
     "순매수"
    ],
-   "score": 58,
+   "score": 60,
    "related": [
     {
      "title": "[장중수급포착] 알멕, 외국인 5일 연속 순매수행진... 주가 +5.94%",
@@ -206,18 +209,94 @@
   },
   {
    "rank": 6,
+   "title": "[현장너머]수출 1조 달러에 가려진 착시효과",
+   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1tZF9VS0JsdzgtQVkxR19GSmxHTGdpVTNoNF9lOWx3RHhBdm9udTJnVXVoWWdBZUlKWlhNdnUzcm5sZ3pnaE9Yd1pVVDRsZ3EteDJZUUFLSU1YWDVrRUE5RQ?oc=5",
+   "source": "아시아경제",
+   "time": "2026-11-27T10:55+09:00",
+   "category": "정책 · 무역",
+   "sources": 11,
+   "articles": 11,
+   "keywords": [
+    "달러",
+    "수출",
+    "반도체",
+    "AI"
+   ],
+   "score": 52,
+   "related": [
+    {
+     "title": "[심민정의 시각] 뱀과 머리카락 팔던 나라가 수출 1조 달러 강국이 됐습니다",
+     "source": "평화나무",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5RXzZhZ3ladVJISk9ic0Y2MHAtX21KSHRvOC1aRHJqRjVCazY4NlUwT0RRM0JNd21aSmtzeVQ5c1o1c2tMUXBaQktKb1VteEJaVXBJRmFvd1BuOW1tUUxWdDBzRnE5RXZYMWc?oc=5"
+    },
+    {
+     "title": "수출 1조 달러 시대 열었지만···반도체 쏠림·가격 의존 ‘경고등’",
+     "source": "이뉴스투데이",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE53YzRiVWpEMkZHR3NaTFZtR2MyTTFxOUd2elVoUUdKWFNFQndfRjgzTG1KZEdEQnFWM2VKUlViQ0JPZnpRM1BlaFFMUEs3VUZBcmhFSnJjaGhUcnNkTHBMdzQyRHhXa0FLOGxkX3BQOVPSAXRBVV95cUxNTTBmZ0pzaXp6ZzJiSV9qOHhfbGdIRkZUazNMUWxZV0FRbEx4S3h2dy1tUVg5ekYzNHZfWlgzMXA4YXUwWUw4VXhlZ1A3c1hZNFRyQVBscDBsZFFieWFpQlFtaHFMVndvT19Db1VBR3ZuU3MyZw?oc=5"
+    },
+    {
+     "title": "[AI로 읽는 경제] 세계 4번째 '수출 1조달러 시대' 열렸지만…반도체 의존 숙제",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE05b2VUV25tNXRmR001S2JOSE1WbVlkeDdET1FxMDlCZ2pwcTl3Z2VmRzRtdzJ5MEM1cUJUS01OMFVYMkk2QlpJQ2ZMQ0FmczBfY24xNG5fVnhUdDdH?oc=5"
+    },
+    {
+     "title": "수출 1조 달러 시대에도 통상 불확실성 지속 … 경제계·정부, 민관 공조 강화",
+     "source": "워크투데이",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1iSkhYdkdOSkp2TDdBZ0FfVXFfeWlFRzFDUTdVU0JKUkcxWjNXMGNPZWtrNEg1YVhnYjVwa2RpbVYxOWF5YWw3dnBucG1kTzNhTDRzdmRHMWF0LXlrOGN3cV9ueTNBSVdXYmNSVg?oc=5"
+    }
+   ]
+  },
+  {
+   "rank": 7,
+   "title": "신현송 \"내년 4.1% 성장 자신\"… 기준금리 인상 재시동",
+   "link": "https://www.mk.co.kr/news/economy/12219713",
+   "source": "매일경제",
+   "time": "2026-11-26T17:42+09:00",
+   "category": "거시 · 금리",
+   "sources": 10,
+   "articles": 12,
+   "keywords": [
+    "기준금리",
+    "금리"
+   ],
+   "score": 50,
+   "related": [
+    {
+     "title": "한은 \"내년 韓경제, 4.1% 성장 전망\"…기준금리 연 3.25%로 올렸다",
+     "source": "머니투데이",
+     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE8zYW5hQlJlaFJRRGVzVk5oSXVtanl6YjNONWg0X1Q3M1AyZERvYlpCU2d1dVMxTHJSQzZKYWhOWktYVkhFaTgtSHBjME9SRXpRU0xuaENRNWgtS01SbkVvMTJFYXRLT0Fxa25N0gFwQVVfeXFMUEJtZkFDWVZMdkx2WW5ndlhOV0VPU01DckU1WmpxY2huUXFEb2haQjMxbGF1UHI4bE1lcnlXWjlWR2x2eG9lNmFRLVc4WncyRFZyTlRjVlg5a1RUZ3lNd2tOZURGdXZoLWs5MkVTR0E0Zw?oc=5"
+    },
+    {
+     "title": "한은, 기준금리 3.25%로 인상…내년 韓성장률 '4.1%' 파격 전망",
+     "source": "머니투데이",
+     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBMZ2p6M1Z3UG8zZUdySkhLS3MwVHZRYXQ3RWxlVXk1dGE2X3RoUzZ2aTI2Q3lvQmgxSVFEb3lvS1prdDdFSVMxOC1uNFRwOWp0ekhwQWk3VTgtQ0Q5cml0dWlMUjJEazVDTF9R0gFwQVVfeXFMUHRwWlc4cHRISExFLVlYdlMwd21rTmxYZGQwblRWWE40VUpGZ1N3ZjJUb1BPZ0FVbVhBUjdrSU1SdFJzSG1GVDRyS2RoN2lKZzgwT3hEb2x0cjRyNnRMUHZLZmVzOS1SQjhTODdtU19vMQ?oc=5"
+    },
+    {
+     "title": "[YTN 실시간뉴스] 기준금리 연 3.25%로...내년 성장률 4.1%",
+     "source": "YTN",
+     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5jakJPR0RMSUt0R3dISnBiTm0yS3lRa0tJUVo0SFR1SUw3Um93TFYySkRnazB5QXhyV2FuMUtCX0dkWjJnajI3Q3h5aENKWmFFNXF6NUt4eDc1eWxuSGc?oc=5"
+    },
+    {
+     "title": "기준금리 연 3.25%로 인상...내년 초도 금리 오를까?",
+     "source": "YTN",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBBMFdpR291TkNncTdFajA3ejRtMy0zcmNpdGw2Skg1NVVtaUFpNFA1RDNxeGxRUVhVNGs0M3RTMklVc0R4T1JJVWxOVjJLNVBPM1hmMWpHOXBjTG1BdWc0Wl9XazhKQXNiZDRad3VlNA?oc=5"
+    }
+   ]
+  },
+  {
+   "rank": 8,
    "title": "큐리언트, 706억 규모 유상증자 성공 소식에 … 장 초반 20% 급등",
    "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9pRGhldVZzcWpIRWlNcmRWOGZBbktrT0NOU19senFRRmlXdlUteVJTVVRCX3JvZmdmcUl5LXJjaTQ5NHAwWHdBVzF3TzNjNlc2Q0QtYjIxalFVUQ?oc=5",
    "source": "한국경제",
    "time": "2026-11-27T09:41+09:00",
    "category": "기업 · 실적",
-   "sources": 12,
-   "articles": 13,
+   "sources": 10,
+   "articles": 11,
    "keywords": [
     "급등",
     "유상증자"
    ],
-   "score": 55,
+   "score": 47,
    "related": [
     {
      "title": "큐리언트, 706억원 규모 유상증자 성공 … 구주주 청약률 106%",
@@ -242,91 +321,51 @@
    ]
   },
   {
-   "rank": 7,
-   "title": "코스닥 매수 사이드카…장중 5% 넘게 급등",
-   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9GajZ4U19jS3Y1RGl4TEI4cEc5bGRtS3g5dGV6Qk5RRHJKN1QwLWtRY1hNWnhvMTJMazZweEhWUU1YcDZ6UU5oSnoxN1cxWDVyVUN3MFZCRG1KZDhiUXEyUVppMUFQN0pONFJPMV90Nk0?oc=5",
-   "source": "연합인포맥스",
-   "time": "2026-11-27T10:44+09:00",
-   "category": "국내 증시",
-   "sources": 11,
-   "articles": 11,
-   "keywords": [
-    "코스닥",
-    "급등",
-    "폭등"
-   ],
-   "score": 52,
-   "related": [
-    {
-     "title": "[종합] 코스닥 5%대 급등…증안펀드 기대에 3거래일 만에 매수 사이드카",
-     "source": "뉴스웍스",
-     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE8xVlhkTC1jNXc5SE9Vc3lLYXVWN3Nqd2JWTy1RLWFZTGhUazhBTW95enJEYUl5TXZjYXZjSzh6SHRXVWJXMmFKOE9ZUlpLSVhwWncwWUU5S3dwbGhVSWhObkkzOVhKY3UxQ0ZIRjFfZ9IBc0FVX3lxTE9YYlEzTUlpTWgyQ1JoWEZtSDFTd1ZMUDZELUt5Yl9tT1Q2dm8zN3FaNVZqWEJxbnBhekt6ZzRkM3pBbkhxYmU3cmNGY1ByMVRRcjlNVGpTcVZTT0xxU3ZUV2oteXk3ODFaZkFLV2l5UVhNdm8?oc=5"
-    },
-    {
-     "title": "증안펀드 기대에 코스닥 사이드카 발동 … 5%대 급등 690선 '점프'",
-     "source": "뉴데일리 경제",
-     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOQzBGMkhhbFhRMm5wRGRHX0MtUWlhQWlkMXdnbWFsRm1ubzRDNDhYUzVoZ0lXLTFtcDl6MkRRb3NYeURQQ3hXQlVpSGtVbFA4VjgwZ2IyTlYtazQwTnQySUxGb2Z2SWtRTjN4TUV2Q3N0VXFrRnI2RHYyVTItQmZ0aNIBgAFBVV95cUxOQzBGMkhhbFhRMm5wRGRHX0MtUWlhQWlkMXdnbWFsRm1ubzRDNDhYUzVoZ0lXLTFtcDl6MkRRb3NYeURQQ3hXQlVpSGtVbFA4VjgwZ2IyTlYtazQwTnQySUxGb2Z2SWtRTjN4TUV2Q3N0VXFrRnI2RHYyVTItQmZ0aA?oc=5"
-    },
-    {
-     "title": "코스닥 장중 5% 급등‥'매수 사이드카' 발동",
-     "source": "MBC 뉴스",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE05VlE3MzJxZ0JTdUUtbW5ITXFzdERHc3NkQy1DR0pQSENGUGhGNU80cXlrSWZaVm5MZzdiaVk0Rk9tZ3V3bzZNMXk3dVlmZ2MxUFJzUU5ZVGQ2Tmp5MVRZZmU0RHVqdHRsNmpsclpSdTk4ajVQ0gF0QVVfeXFMUFh2bk13Q0FDU3FRdndkY2wxS2xaamZtanBzWF91alA4QWxybmV5cUEzSlQ0RkZ1aGRqWmg2UzBSSTJRQzdZb2ZLSl92cVIwTUhtWDF1WGRUNmlNeHlBTmtJaUpsVThPY0ZCS3ExczJ5MDNPZ1c?oc=5"
-    },
-    {
-     "title": "코스닥 사이드카 발동",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBJTkc5YUJJc2F5OVNqVDIzSllHdnV5MWYweDQtbVI2cHBrUGNxdmlPTXp2cjVYMnJBXzV5UlF0ZHAyb1FxYVNoU2ZSMHVMYzZlRFVzbldWSy1CVUpo?oc=5"
-    }
-   ]
-  },
-  {
-   "rank": 8,
-   "title": "[현장너머]수출 1조 달러에 가려진 착시효과",
-   "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1tZF9VS0JsdzgtQVkxR19GSmxHTGdpVTNoNF9lOWx3RHhBdm9udTJnVXVoWWdBZUlKWlhNdnUzcm5sZ3pnaE9Yd1pVVDRsZ3EteDJZUUFLSU1YWDVrRUE5RQ?oc=5",
-   "source": "아시아경제",
-   "time": "2026-11-27T10:55+09:00",
-   "category": "정책 · 무역",
+   "rank": 9,
+   "title": "삼성카드, 배당성향 50%로 높인다…자사주 소각도 추진",
+   "link": "https://www.yna.co.kr/view/AKR20261126170400002",
+   "source": "연합뉴스",
+   "time": "2026-11-26T17:13+09:00",
+   "category": "기업 · 실적",
    "sources": 10,
    "articles": 10,
    "keywords": [
-    "달러",
-    "수출",
-    "반도체",
-    "AI"
+    "자사주",
+    "배당"
    ],
-   "score": 48,
+   "score": 44,
    "related": [
     {
-     "title": "[AI로 읽는 경제] 세계 4번째 '수출 1조달러 시대' 열렸지만…반도체 의존 숙제",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE05b2VUV25tNXRmR001S2JOSE1WbVlkeDdET1FxMDlCZ2pwcTl3Z2VmRzRtdzJ5MEM1cUJUS01OMFVYMkk2QlpJQ2ZMQ0FmczBfY24xNG5fVnhUdDdH?oc=5"
+     "title": "삼성카드, 주주환원 확대…배당성향 50%↑·자사주 소각",
+     "source": "연합인포맥스",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8wendJNHRUQjYyTkZndFgyUXNDYkxBbUdDQ0NzYklITGV0UjhtWVI2VU82aFlpVWFCRHpLa0gwN0xGU1M1UmVyUzZGRWJOSThYUFd2cHh4N0RER1lRRUstdGVBeUZVTzZpTUdFelB2MXg?oc=5"
     },
     {
-     "title": "수출 1조 달러 시대에도 통상 불확실성 지속 … 경제계·정부, 민관 공조 강화",
-     "source": "워크투데이",
-     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1iSkhYdkdOSkp2TDdBZ0FfVXFfeWlFRzFDUTdVU0JKUkcxWjNXMGNPZWtrNEg1YVhnYjVwa2RpbVYxOWF5YWw3dnBucG1kTzNhTDRzdmRHMWF0LXlrOGN3cV9ueTNBSVdXYmNSVg?oc=5"
+     "title": "삼성카드, 배당성향 50% 추진…내년 1분기 자사주 소각",
+     "source": "뉴시스",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBiMFVPWVRfTFFTLTMyc2pNQU1YbFVfZ1U2NU4td2lKSk9RNjNrVHZSU092M2c2ZmRIaDNFNEVxalNKR2o4MDlFV0Nla2lwTjFHWkVCb2ZYVEpCcXc5WjlwM9IBeEFVX3lxTE5pSXpoUGJrdklidmRkQTdxbEc0REZuYk9nUTdwOG9sNjNCV09TaFF2d3pJS1NyTUpyRmVsX1RFa2s5RXV2N2NNOUdNVTBGOEJjYkVNUFJ6bDNwU3Y4OTdkZGRONy01SU85ZWlhbGFwQ2g4Z0I0LWhhRg?oc=5"
     },
     {
-     "title": "수출 1조달러 시대…산업연구원 \"비반도체 수출 규모 키워야\"",
-     "source": "매일일보",
-     "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9JcEpPT0NUaF9xTHJBUmp5bExRdWk1ZkszdTNHblZiR0ZuYk1RTFVGdmhaS0JGY0NCVHRESU9ZZDRwQnZmR2p3VlJudEJ6d3pJblNTc0VMTl9DOE1kcHIwbV8zYlg?oc=5"
+     "title": "삼성카드, 배당성향 50%로 상향…자사주 소각추진",
+     "source": "아시아경제",
+     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5GUk8zcjVDVnc0QVRxeEpxd2puWUcxUGtNVGRLVU15MHFvdEhuYkthSmdHVFNZRTZraGVKTkpCZXk2QVhGRUxlanozVlpEOTBwNVNjNjh2eG0taTUtQlMtdg?oc=5"
     },
     {
-     "title": "반도체 수출 1조6000억달러⋯원유·가스 첫 추월",
-     "source": "포커스온경제",
-     "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE0xdmVYMUVVNm53dzZOX0dveURCQUdlM1gwb3pXTjlpakVPdWZicVVFcFFpTkxQazNTOGJ0QUJURldYZUlnMldfYU16M3BuWlp6TUt5c1phZGtOYlBPNzVV?oc=5"
+     "title": "삼성카드, 배당성향 50%로 상향…자사주 7.9% 소각",
+     "source": "뉴스투데이",
+     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9ScTIxRE00RzJ2TllDTWdnQ0ZLaHBVbkNLd19tMkRLVEQ5LU81RE5iaEdWSzZCMFdCN1AzdTZyVk5kLWcxTHJQRU1SVWpnMXRjQTMwYnNkaVBVMDNRZmc?oc=5"
     }
    ]
   },
   {
-   "rank": 9,
+   "rank": 10,
    "title": "원/달러 환율, 금리 인상에도 보합권…전날보다 0.5원↓(종합)",
    "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5LLTFVSE8xTEc5NktUWXVjc1ZNTnc1N0JjRmFBU1dFemhUTG5SQWdVU0JmRGo1cUpTZFNGRlhTeDdTeGlNNTZLa21lRHhobGtrVUtIS0s5amd4XzQ?oc=5",
    "source": "연합뉴스",
    "time": "2026-11-26T16:11+09:00",
    "category": "환율 · 원자재",
-   "sources": 8,
-   "articles": 10,
+   "sources": 7,
+   "articles": 9,
    "keywords": [
     "금리",
     "환율",
@@ -335,7 +374,7 @@
     "달러",
     "수출"
    ],
-   "score": 48,
+   "score": 44,
    "related": [
     {
      "title": "[외환] 원/달러 환율 0.5원 내린 1,342.7원(15:30 기준가)",
@@ -360,96 +399,25 @@
    ]
   },
   {
-   "rank": 10,
-   "title": "삼성카드, 배당성향 50%로 높인다…자사주 소각도 추진",
-   "link": "https://www.yna.co.kr/view/AKR20261126170400002",
-   "source": "연합뉴스",
-   "time": "2026-11-26T17:13+09:00",
-   "category": "기업 · 실적",
-   "sources": 9,
-   "articles": 9,
-   "keywords": [
-    "자사주",
-    "배당"
-   ],
-   "score": 40,
-   "related": [
-    {
-     "title": "삼성카드, 주주환원 확대…배당성향 50%↑·자사주 소각",
-     "source": "연합인포맥스",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE8wendJNHRUQjYyTkZndFgyUXNDYkxBbUdDQ0NzYklITGV0UjhtWVI2VU82aFlpVWFCRHpLa0gwN0xGU1M1UmVyUzZGRWJOSThYUFd2cHh4N0RER1lRRUstdGVBeUZVTzZpTUdFelB2MXg?oc=5"
-    },
-    {
-     "title": "삼성카드, 배당성향 50%로 상향…자사주 소각추진",
-     "source": "아시아경제",
-     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5GUk8zcjVDVnc0QVRxeEpxd2puWUcxUGtNVGRLVU15MHFvdEhuYkthSmdHVFNZRTZraGVKTkpCZXk2QVhGRUxlanozVlpEOTBwNVNjNjh2eG0taTUtQlMtdg?oc=5"
-    },
-    {
-     "title": "삼성카드, 배당성향 50%로 높인다… 자사주 소각으로 주주환원 강화",
-     "source": "Korea IT Times",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBYd0VPNUR1UGNiQ0pFMmJOeWFzdmdERXlrcVpBelZTd1NvMlFZSjNLendicC15WTl1MnVjTEk0dF82VjVKNUxyTXdRYWxPX051eHFhazByMy1YdnpaQ2Nlc25nRWRBZEZDRnhpY1ZfYlA?oc=5"
-    },
-    {
-     "title": "삼성카드 배당성향 46.3%→50%…보유 자사주 소각 추진",
-     "source": "자본시장뉴스",
-     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE4tYzRWTnhTX2NVS2wzVnNfYU9UZ2RKWlVHWHZaVGZRb25lbkpoVU03SmFZMzBnS2FhQVJ4SlR3MWVoVFRCZGxoQVBqTUt3LWp2amxIX3o3bWVZajlSZXdWVkNYeElwcTQ?oc=5"
-    }
-   ]
-  },
-  {
    "rank": 11,
-   "title": "[장중수급포착] 제주반도체, 외국인/기관 동시 순매수… 주가 +7.55%",
-   "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1FTWhKdjFzLVg3X1VhWER1V0xmWXdic1BIU0FsM09TMk9zN2FWVTExN3RJODZvYVVQeldFc0cxczZPWUl6MDdIQjhieGN5eWJYRUdJbFhVdkxqQnZM?oc=5",
-   "source": "뉴스핌",
-   "time": "2026-11-27T11:32+09:00",
-   "category": "국내 증시",
-   "sources": 1,
-   "articles": 25,
-   "keywords": [
-    "주가",
-    "외국인",
-    "기관",
-    "순매수"
-   ],
-   "score": 34,
-   "related": [
-    {
-     "title": "[장중수급포착] 에이프릴바이오, 외국인/기관 동시 순매수… 주가 +13.73%",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1SUnVyQmRacHhsV3BobXVCbzlFXzZQcTRZWDJ1dFB6NEU0RHZCcGJJRE5aTzhyN292WVROVVJQMmNtNWtYUkR0QlpwZWMyZUI2bXh5azFmaXV4MHpW?oc=5"
-    },
-    {
-     "title": "[장중수급포착] 엘티씨, 외국인/기관 동시 순매수… 주가 +16.91%",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE54X1hNbmFjeFY3NFpwdEtZZ1FvMnhTRGpZazJoc2dYTWRLWVVlV1N5cHpjM2JvTVM2WVZRbFNaYUhKZlprb1h1aXhSU1lHbnlHOW9WWG5yc0ZoVjlP?oc=5"
-    },
-    {
-     "title": "[장중수급포착] 쎄트렉아이, 외국인/기관 동시 순매수… 주가 +12.45%",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE90T2dnNHZCdEhmUlc1ZW82cFN4dVRoakZXU1dIOVJaTEh4WXdUWUNJTTNsVXlxRjh5MGwyVndOYWczVGdhY0szU09jcDV2ZFVJanlpV0xnWlFkbTBk?oc=5"
-    },
-    {
-     "title": "[장중수급포착] 레이크머티리얼즈, 외국인/기관 동시 순매수… 주가 +18.81%",
-     "source": "뉴스핌",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE9JN284aEdDYS0xLU96WktORUtZOVhMYkh2dmppZENSMWduOHoyMHg3NFJRcjB0MW5JaThiam4xczA3eV9aME9YU3lDbnZXZGRweE9IeUhpOFIyRlRH?oc=5"
-    }
-   ]
-  },
-  {
-   "rank": 12,
    "title": "도이체방크 \"기술주 바닥 임박…내년 S&P 9,000 전망\"",
    "link": "https://www.yna.co.kr/view/AKR20261127023700009",
    "source": "연합뉴스",
    "time": "2026-11-27T08:34+09:00",
    "category": "해외 증시",
-   "sources": 7,
-   "articles": 7,
+   "sources": 9,
+   "articles": 9,
    "keywords": [
     "S&P",
     "급락"
    ],
-   "score": 34,
+   "score": 42,
    "related": [
+    {
+     "title": "도이치뱅크 \"기술주 곧 바닥 찾을 것…내년 S&P500지수 9000 간다\"",
+     "source": "머니투데이",
+     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE0zVk90MjMxcmt1Nmtfa29KdkRLQ1R0OWdSWkNYMkY0dVRxNUhYNjY1czE4eXZxRl9YWmQ2RUhZVDVVbWFZa2NZbkk5V0xYQXlMZEJOTlQzMzhEc3lNWHBwNlY3TTdJMkhm0gFuQVVfeXFMTWZMblBBYjBZNjRTclJ4QlhmR0x0TzZpV0t6bmNaRzdBX2lwUFUtUUlZYUpTUG1FNkQxZ1JtWC1JQy1FVm9jV1FLMEFEcGxHQ3FnbWNFRmdzVXc0UDVDYjdOSklVaVRFLWRXMGJmTGc?oc=5"
+    },
     {
      "title": "“기술주 급락 끝이 보인다”…도이체방크, 내년 S&P500 9000 전망",
      "source": "헤럴드경제",
@@ -464,16 +432,130 @@
      "title": "\"기술주 급락 바닥 임박...내년 말 S&P500 9,000 전망\"",
      "source": "YTN",
      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE4yeXR5ZkpuZDd1NW1Nb1hwWlkxaS1RY2hUendQM1JxMlJodFpzM2hMajNWM1EtSE1NUVZ4QmlNZGwzMFgwbTk0bUtZb056SlpENmVHUUhmRVJ2UFFPNHc?oc=5"
+    }
+   ]
+  },
+  {
+   "rank": 12,
+   "title": "[장중수급포착] 한화오션, 외국인/기관 동시 순매수… 주가 +5.68%",
+   "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBXTlVzSGdMOHZWM3dwWUFyMFJVd1NrR1ZtclRqOXlWUjdLT18xLXJMMVpCblBkakI5NDBiaWhKT29nSGRDNkVwVkJqQmZFNk5CVGZtYTlmLWR6cDZM?oc=5",
+   "source": "뉴스핌",
+   "time": "2026-11-27T11:33+09:00",
+   "category": "국내 증시",
+   "sources": 1,
+   "articles": 27,
+   "keywords": [
+    "주가",
+    "외국인",
+    "기관",
+    "순매수"
+   ],
+   "score": 36,
+   "related": [
+    {
+     "title": "[장중수급포착] 제주반도체, 외국인/기관 동시 순매수… 주가 +7.55%",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1FTWhKdjFzLVg3X1VhWER1V0xmWXdic1BIU0FsM09TMk9zN2FWVTExN3RJODZvYVVQeldFc0cxczZPWUl6MDdIQjhieGN5eWJYRUdJbFhVdkxqQnZM?oc=5"
     },
     {
-     "title": "도이체방크 \"기술주 바닥 임박\"…내년 S&P 500 9000 전망",
-     "source": "싱글리스트",
-     "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5rZkx1Rmh6azM2cHktekhtOWFmdk5waXQtaVFOTmIzRWVkMk1OVS1vZGIxR1ZsbXdMZ05nVElGWnVoRkNiOGVleUxQSnZsRG9jRWVNWl92dGtSb2xDYTFxM2RuU1J4QQ?oc=5"
+     "title": "[장중수급포착] 에이프릴바이오, 외국인/기관 동시 순매수… 주가 +13.73%",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1SUnVyQmRacHhsV3BobXVCbzlFXzZQcTRZWDJ1dFB6NEU0RHZCcGJJRE5aTzhyN292WVROVVJQMmNtNWtYUkR0QlpwZWMyZUI2bXh5azFmaXV4MHpW?oc=5"
+    },
+    {
+     "title": "[장중수급포착] 엘티씨, 외국인/기관 동시 순매수… 주가 +16.91%",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE54X1hNbmFjeFY3NFpwdEtZZ1FvMnhTRGpZazJoc2dYTWRLWVVlV1N5cHpjM2JvTVM2WVZRbFNaYUhKZlprb1h1aXhSU1lHbnlHOW9WWG5yc0ZoVjlP?oc=5"
+    },
+    {
+     "title": "[장중수급포착] 쎄트렉아이, 외국인/기관 동시 순매수… 주가 +12.45%",
+     "source": "뉴스핌",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE90T2dnNHZCdEhmUlc1ZW82cFN4dVRoakZXU1dIOVJaTEh4WXdUWUNJTTNsVXlxRjh5MGwyVndOYWczVGdhY0szU09jcDV2ZFVJanlpV0xnWlFkbTBk?oc=5"
     }
    ]
   },
   {
    "rank": 13,
+   "title": "[외환] 배당·네고 '밀당'에 보합권…1,340원 초반대 유지",
+   "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE82bmJGekpfYWlULU9MRlNYZXlXXzNjV2VvTkRmcGRLdWltcUhnUF95bDFzazF6OEF2bEg4eWt6T2hfZkpmOFpWRGVwdEEtekdvd2lqbnBNUlJZOW1CdnhOUnhlVjUtTkVPQjBtd05hcnfSAXRBVV95cUxOdDhPRko5Yk1pUlREQXRsUWM2M05zT2p1Q1BzZ3FEcmJKNks1UzhqTWhLWjFfdXJleUR1Sks4UEpnbDdkSzF3bkNmTnROb1R2ZmtudFE2el90Z3VudUY4UkdkalJ4SEtHZGswMGw0Tnl2UmdkMA?oc=5",
+   "source": "연합인포맥스",
+   "time": "2026-11-27T13:07+09:00",
+   "category": "거시 · 금리",
+   "sources": 5,
+   "articles": 6,
+   "keywords": [
+    "기준금리",
+    "금리",
+    "환율",
+    "달러",
+    "코스피",
+    "배당"
+   ],
+   "score": 35,
+   "related": [
+    {
+     "title": "[외환-마감] 금통위보다 '양방향 수급'에 방향 상실…1,340원대 초중반",
+     "source": "연합인포맥스",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBITlpXSExaSnR1TlFROW1QOHBZR2lmbHg4ZWFTWHJPTVlZTm5mWjVWNE10QVY2ME1aQno1Q2M4NDR6OEtpM01scm9vOVV0OFEtMExTV1U5UzAyMXBrWUlwQjdnWkU1QVlwNVhvTFZQVUM?oc=5"
+    },
+    {
+     "title": "달러-원, 뉴욕장서 횡보…1,340원대 초중반",
+     "source": "KB Think",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9tcnNPb3lTLWpTckZCQWZnMUszVzZ2YTVsejFTTG5kRVFFdV9LRkJiOHkwRHhfRTFkaFVXYzk4YnNVQTl2RFZPdW05cmxhelFtSFppTlJ0SktVZ040Z3VmM0hUU0FIcm9VM3hYejZjd3hZQQ?oc=5"
+    },
+    {
+     "title": "한은 금리 3.25%로 인상…환율은 1,340원대 보합권",
+     "source": "스페셜타임스",
+     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1RbFRaRWJ2RVdWenhxUDJ5MS00OG53OVVpUGpVVWdYajA4VTNUYWh0aWhNdExPY3lGVDlMeWZoNVpXM0ViOVV4V0tHQXQycWd6S0diOW5MNC1HcUpXVXdXa1F5RGxsbmI0MFNlVGxveUZVNUU?oc=5"
+    },
+    {
+     "title": "한은 3번째 인상에도 코스피 반등…환율 1,340원 밑",
+     "source": "코인리더스",
+     "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE13VmdHTTBYNXN0UzVyYVMwZEcteHp3QkNkWFpfazRyU0dubWRiVE5LNjA5ZzlVbzdtTlJqUTBiVzg0eXRjQUljaGtn?oc=5"
+    }
+   ]
+  },
+  {
+   "rank": 14,
+   "title": "무신사, 3분기 영업익 196억원…작년 동기보다 67% 증가",
+   "link": "https://www.yna.co.kr/view/AKR20261127060200030",
+   "source": "연합뉴스",
+   "time": "2026-11-27T10:47+09:00",
+   "category": "기업 · 실적",
+   "sources": 5,
+   "articles": 5,
+   "keywords": [
+    "실적",
+    "영업이익",
+    "매출",
+    "IPO"
+   ],
+   "score": 28,
+   "related": [
+    {
+     "title": "무신사 영업익 전년비 67% 증가…\"오프라인 확대, 뷰티 강화 효과\"",
+     "source": "한국경제",
+     "link": "https://www.hankyung.com/article/202611273840g"
+    },
+    {
+     "title": "무신사, 3분기 누적 매출 역대 최대…영업익 67% 급증",
+     "source": "매일경제",
+     "link": "https://www.mk.co.kr/news/business/12219980"
+    },
+    {
+     "title": "무신사, 3분기 영업이익 67% 증가...오프라인 스토어가 실적 견인",
+     "source": "코리아리포트",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1uVHpHUng4VHloTHkyaDk4dnFicGYzWjdmS21uOFY5RXBSS1M3MjljRDIzNlloT1ZQRDBBX3dzQVdJa3gyMHJVdGswbFc5ckxtMzRkMzZKV2xWQ1gtUHh0VUZ6ejZrbUw3MWpsV1NBNFQ?oc=5"
+    },
+    {
+     "title": "IPO 순항하는 무신사...3분기 영업익 67% 급증·순이익 흑자전환",
+     "source": "테크M",
+     "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE96akloRHlTTmJWajFLcTVHNjBfbkZPYlltQjlaN0RCd29XZFFzX2pXMUlxek9xQmxGejJJLXByVXpLWHAtZHRBODB4WHJKWWw2b1c3NWZpYWhfdC1RcWRFaGdhRTdOd9IBakFVX3lxTE1mUER6Mko0V2c1Z3laLVRDSkYtVGRXTFA0X0RvNXdlWkFSd1BYV1dXdGdsdDhxMXVrTlloV21IeFJUU29Ib2VFYmtxeVhsSmh6M2x1TllWdUlkWnRZcUFONnMxM0NucUc4RFE?oc=5"
+    }
+   ]
+  },
+  {
+   "rank": 15,
    "title": "\"이재용, '반도체 장기구매할게' 머스크에 '그럼 뭘 해줄건데'\"",
    "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE04TjBVSEh1SHQ5RXFaM0tOSHBrMzZmTDJPUzhINVlFN29Ea2ZVaGs5c0Vya1R2aTZHUEY2R2VmNnR2YW1pZXROY2ZwaTRkZXhXWkVoc1h3S1V5RE3SAWBBVV95cUxNbWxwczBRbUktS3BrampndUk4bDdxODRSMHA2VXVjMjk4ZTk4Tm5SVW1UNU1xVjMtNXg2eVNSdG9Sa1JFLTJxc3FhQUE4WDJQRlEyazMyV0didWNXd05tSEU?oc=5",
    "source": "연합뉴스",
@@ -507,127 +589,52 @@
      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBSc0FUU2xQdHNmY2dEa2ROQXhjSHhKcEQydVEzeWdFZnNRaV9kLVdHODh2bE12MnNWMjkwY1NKMEV2ODF6em9yQk1uZGwyLXZaTWUxVWhuaUhHbXk3NjZxR3VfLXpWMk0?oc=5"
     }
    ]
-  },
-  {
-   "rank": 14,
-   "title": "뉴욕증시, 추수감사절 휴장…블랙프라이데이 소비 주목",
-   "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1GRFJMeHB0S3ZKWkhKVWZPYlZ4b2EwT2FJMUExU1MwMzZZNEtwbnl1bVpPdEJLd0RqZFZYUVlueG9vZGlZVXhCYng4aVhTWUVEbFR0bFUxbFpxcmpkaEE?oc=5",
-   "source": "뉴스톱",
-   "time": "2026-11-27T09:18+09:00",
-   "category": "해외 증시",
-   "sources": 5,
-   "articles": 5,
-   "keywords": [
-    "나스닥",
-    "증시",
-    "뉴욕증시"
-   ],
-   "score": 28,
-   "related": [
-    {
-     "title": "[굿모닝 마켓] 뉴욕증시, 추수감사절 휴장…나스닥 선물 0.4%↑",
-     "source": "SBS Biz",
-     "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5UdTh3bXFQVk1wWkNvZXhwN2kyYWN1VWQ5RWNybDFKV0tSd0lYYUtkUVBHWGQyTG5RUzFidUJCREh1N2hydVdiYkJhaWhqc2x1SXNB0gFYQVVfeXFMUEVzTjRmN0pBeUtlZEhQQzlzSGxNWFBDYWdoMUtQVERQRmNSNzVfd1JRdjVZcC13ZlJkOHhGaEE4SzZVcE9mWXRqeHVlWlk4Y3RHRXhEUmNScw?oc=5"
-    },
-    {
-     "title": "美증시, 추수감사절 맞아 전면 휴장…블랙프라이데이엔 단축거래",
-     "source": "뉴시안",
-     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFAzbDFpbW5nNHJqa1lmVWFkYzc1dllTZW9TZDF2MEp2ZkFPaXB5ZGxwMU0yWUpTdEpva3dEOE14b1ZLc29jTl9TZWI3c05sSzdUalVzYzZxdVNYelV6SXIwcnZEc1JtRENJeWZOTw?oc=5"
-    },
-    {
-     "title": "미국증시 추수감사절 휴장…블랙프라이데이 한국시간 28일 새벽 3시 마감",
-     "source": "강릉뉴스",
-     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFAwMUJDRkpGVUUzYUhINWh1eHFsR3JmVWs0S1owTDFRanlUYVh2amdYVEtzSUlwekp4NXJ2UDZkME15ZnJld2lIeTg1bWtsS0hiVVVJQUZ1X0hjM0RVelVpVkFjME10dzhNZVVwMFROQQ?oc=5"
-    },
-    {
-     "title": "[뉴욕증시 개장전] 추수감사절 휴장…나스닥100 선물 0.6%↑, 유럽·아시아 동반 반등",
-     "source": "더페어",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBJNzJXUnJ2UWpxSlZwOWhzNnM5RldmbVRzMGxUXzBNRTVoU0dETEhzNDE1TklFb3pmMFF1cFJUaDZ3b0xwQjE5VEJ4dGs3NUxENEdXamJqSUQ5OXl5LTFSeXc2LWotRzVKM2lnNGE1MjPSAXRBVV95cUxPdWgyMEhyd2F6MExwMWhzUE1FZTI5aERXekVpbHJ1VENhLVlmN2hLblRLS3JVbTdlY1J6NnZla3NvbjN5OGw1cnpSbTlYSk14OTR5aDA0cU5MYmJqeE5Wak1VQ2NLM1ZUcmtWN2FRM0Y0dFc3Zw?oc=5"
-    }
-   ]
-  },
-  {
-   "rank": 15,
-   "title": "美, 15% 관세 상한 지켰지만…'25% 인상' 카드 쥐고 한국 압박",
-   "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBOTXJJa3Rxb1ZNZkRmZkxaeElSeFp0eFhWbURqR041SHVIQUVKX1Q3OE9GLTdYM3o0Qi13emRPR1Y2UmpqQkFMTDdKanBQU3RlTjlxY2xMVmxZb2ROZDdmYkJsM1RkZDNm0gFuQVVfeXFMTmlqSWstTjd2RkdPdGVZemktTndXcW9wRVRFc3VPVmo5OWY4R2NYbnNaMG9SVG1XVWdnS3MzSjZ6X3lxY0tyc1czQzNnTTVnc3NVckVoV1E5bGU1ZHZtOFFHMHhvT21EVm04NGhkSGc?oc=5",
-   "source": "머니투데이",
-   "time": "2026-11-27T08:21+09:00",
-   "category": "정책 · 무역",
-   "sources": 5,
-   "articles": 5,
-   "keywords": [
-    "관세",
-    "반도체"
-   ],
-   "score": 27,
-   "related": [
-    {
-     "title": "미, 한국관세 15% 유지했지만…‘K반도체 전략’ 콕 찍어 시비",
-     "source": "한겨레",
-     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9nOFUzQ2RGU2JxZjVGOEJCcy1NazlmcjYxN0NDbUgtVXpsRC16V1VTeUhNY1N4dTJiWlFFZFh0TzRIamZCbTRxcDh5TXN4YVJXNzBXd25oRnNnLVcxdVVuVGZIXzV1Vm9MOFFBOFZ5LXl0dw?oc=5"
-    },
-    {
-     "title": "한국, '관세 15% 상한' 지켰지만 대미 투자·산업 압박 카드에 노출돼",
-     "source": "논객닷컴",
-     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBQZV9QRmY1NFN1anhtOFdnLVY2aGRPY1RJWkNyNm5oc0VBazVIb3VvTENpUXVrZGpPNTJ2SUxCeGlOaTU2QTlRZ0Q2UXByYlVWak9NbVVPc1JoaE5XYXR3dVh0eDRUWGFiX3hr0gFrQVVfeXFMUFBlX1BGZjU0U3VqeG04V2ctVjZoZE9jVElaQ3I2bmhzRUFrNUhvdW9MQ2lRdWtkak81MnZJTEJ4aU5pNTZBOVFnRDZRcHJiVVZqT01tVU9zUmhoTldhdHd1WHR4NFRYYWJfeGs?oc=5"
-    },
-    {
-     "title": "美 USTR, 한국에 15% 관세 제안… \"내년 25% 상향 가능성도\"",
-     "source": "오늘의한국",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1udm9lY0cySldjcjBnSmxrc0V5MHd2cnFxdVBhR2tOQXdSR3dNX01halBjV0Y4QnpPcXEzLXJXdVRIRVBWX3ZHQUMtN1NWTWFobW1Ib2doTV82YXlsVV84Yzc3aC10TGtW?oc=5"
-    },
-    {
-     "title": "관세 근거로 \"호남 반도체\"…‘15% 사수’ 최악은 면했지만",
-     "source": "JTBC",
-     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE81WEFCWHBBWU4xZWNvRUQ1di1hbHM0TDhkZ3M1bFlKRlRiQm5MVW9ycWw3ZUZJR2lId21wdE9KUkxMNEhvVUQ0a1ZZQ0llSVFaWF9LWQ?oc=5"
-    }
-   ]
   }
  ],
- "feedItems": 85,
+ "feedItems": 95,
  "byFeed": [
   {
    "name": "구글 뉴스 · 경제 헤드라인",
    "items": [
     {
      "rank": 1,
-     "title": "[속보] 코스닥 5%대 급등에 매수 사이드카 발동",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1uU2JOdWFkWEdlNjQ0X0Q1aE1tREtHYVhNVEhyWDg3R2Z0eXdMQ0g2VW1rT2FrMldFd0JNM3BzaTFvaEp3SUxCOUUyY0JxN3N3dmc?oc=5",
-     "source": "매일경제",
-     "time": "2026-11-27T10:25+09:00",
-     "category": "국내 증시",
-     "sources": 22,
-     "score": 107
-    },
-    {
-     "rank": 2,
-     "title": "삼성전자, 오늘 역대 최대 30조원 배당… 개미들에 5조원, 이재용 4500억",
-     "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQMG5OQ2o0YkxVZ3BMal84VVpCQkVRYnVmSTBaMFl1bThJUjZmS1dwS3BYMzBfRGwweElScHdwakdJalE0ZElVdnVOV2Y1SWlKSnZiTmw0SHlGcThhcEFNQjFQWjFqN3VoX01ZRjBqY21iakNBVFlEQUpYQUV6T0hRc1kxQQ?oc=5",
-     "source": "조선일보",
-     "time": "2026-11-27T09:43+09:00",
-     "category": "국내 증시",
-     "sources": 14,
-     "score": 61
-    },
-    {
-     "rank": 3,
      "title": "코스닥 장중 5% 급등‥'매수 사이드카' 발동",
      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE05VlE3MzJxZ0JTdUUtbW5ITXFzdERHc3NkQy1DR0pQSENGUGhGNU80cXlrSWZaVm5MZzdiaVk0Rk9tZ3V3bzZNMXk3dVlmZ2MxUFJzUU5ZVGQ2Tmp5MVRZZmU0RHVqdHRsNmpsclpSdTk4ajVQ0gF0QVVfeXFMUFh2bk13Q0FDU3FRdndkY2wxS2xaamZtanBzWF91alA4QWxybmV5cUEzSlQ0RkZ1aGRqWmg2UzBSSTJRQzdZb2ZLSl92cVIwTUhtWDF1WGRUNmlNeHlBTmtJaUpsVThPY0ZCS3ExczJ5MDNPZ1c?oc=5",
      "source": "MBC 뉴스",
      "time": "2026-11-27T11:33+09:00",
      "category": "국내 증시",
-     "sources": 11,
-     "score": 52
+     "sources": 20,
+     "score": 95
     },
     {
-     "rank": 4,
+     "rank": 2,
      "title": "대한민국 수출 1조 달러 달성 기념우표 12월 4일 발행",
      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBCNGlxaFAzWFJ4bHdGOWQ3aHZuZEVKN0wwczdVTmNVdTMza2xlQmN3T3lRSFhpTUlNekxPYjNJVWk5Rmh4MEltdW5HTmZIMUlLb2Q0ZzBlRUl3cDFiUlFoLWljVGdMaF9WQXc?oc=5",
      "source": "헬로디디",
      "time": "2026-11-26T15:10+09:00",
      "category": "정책 · 무역",
-     "sources": 10,
-     "score": 48
+     "sources": 11,
+     "score": 52
+    },
+    {
+     "rank": 3,
+     "title": "정부 “공매도 특이 동향 없어…증시 변동성 확대 대응태세 유지”",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFBWMzkwQVY4eGpDQ2dvYjlUdGE2OXZERlZMd2VXWHBBemVEYWM5bUNvVjZlMVFicTJLdUhJcVZmTm5JaWZoSnFuQl85RXE2bUxlTC1aWEExOGtiSVBMaENZZEtjSVJRS3RWdjV1ajVWRWZYQQ?oc=5",
+     "source": "한겨레",
+     "time": "2026-11-27T11:22+09:00",
+     "category": "국내 증시",
+     "sources": 4,
+     "score": 22
+    },
+    {
+     "rank": 4,
+     "title": "5% 안팎 대출금리 더 뛴다…올 3번째 기준금리 인상에 가계·기업 ‘비상’",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE4zVG9IWkxIZTJWeHRZRVFzTFhPN2VCZkVhYW8zV3hNd1NoYWhQbFFUM2Y2RFJuMUEyUTI2SnVKcFNMenZCVzhlMFNHc2UxQUNnS0lFemV1eWMwVkhHWXhRNWRraW1SUUk?oc=5",
+     "source": "한겨레",
+     "time": "2026-11-26T22:32+09:00",
+     "category": "거시 · 금리",
+     "sources": 2,
+     "score": 16
     },
     {
      "rank": 5,
@@ -636,8 +643,8 @@
      "source": "JTBC",
      "time": "2026-11-26T19:05+09:00",
      "category": "정책 · 무역",
-     "sources": 5,
-     "score": 27
+     "sources": 2,
+     "score": 15
     }
    ]
   },
@@ -646,26 +653,46 @@
    "items": [
     {
      "rank": 1,
+     "title": "[경제읽기] 코스닥 매수 사이드카 발동…홈플러스 또 영업 중단",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5PWEhKSUZpZzRBamZmQzBQVTJXdlBsc3ZWR0xMWVBzSThpNmJIeFhFNFRzLU9XV2xJb0JkUTNCUzBrdWFZeUt3X1REYlFKRE5pR3N1X3NoT2RzaHZOSjlMUGdZamwzM1k?oc=5",
+     "source": "연합뉴스TV",
+     "time": "2026-11-27T13:11+09:00",
+     "category": "국내 증시",
+     "sources": 20,
+     "score": 95
+    },
+    {
+     "rank": 2,
      "title": "코스피, 3% 이상 상승세…코스닥은 6% 급등에 '매수 사이드카'",
      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOekhCdHB4ZjA3bnpGMThYT3F5bnVYMHNwSEhvSnVsS3h4S2ZxckRWV2pPWTB4alE1andHMmtlcmxjOVhrYi1HaUZQSzhsWC12SEFvX0JHdUhaNWwtQ3A2dHhDSWozVWY1Tm15YXF4YnhJN1ZNYWFkN2ZkZ1hWdnhzaEpOWVBvQm9y?oc=5",
      "source": "글로벌이코노믹",
      "time": "2026-11-27T13:02+09:00",
      "category": "국내 증시",
-     "sources": 22,
-     "score": 107
-    },
-    {
-     "rank": 2,
-     "title": "[종합] 코스닥 5%대 급등…증안펀드 기대에 3거래일 만에 매수 사이드카",
-     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE8xVlhkTC1jNXc5SE9Vc3lLYXVWN3Nqd2JWTy1RLWFZTGhUazhBTW95enJEYUl5TXZjYXZjSzh6SHRXVWJXMmFKOE9ZUlpLSVhwWncwWUU5S3dwbGhVSWhObkkzOVhKY3UxQ0ZIRjFfZ9IBc0FVX3lxTE9YYlEzTUlpTWgyQ1JoWEZtSDFTd1ZMUDZELUt5Yl9tT1Q2dm8zN3FaNVZqWEJxbnBhekt6ZzRkM3pBbkhxYmU3cmNGY1ByMVRRcjlNVGpTcVZTT0xxU3ZUV2oteXk3ODFaZkFLV2l5UVhNdm8?oc=5",
-     "source": "뉴스웍스",
-     "time": "2026-11-27T11:55+09:00",
-     "category": "국내 증시",
-     "sources": 11,
-     "score": 52
+     "sources": 13,
+     "score": 68
     },
     {
      "rank": 3,
+     "title": "코스피 강보합…코스닥 4%대 급등",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE4tQmxCYTN1MkxVWlcxeG84bko4enViRUNHcmVWNkpPZndGTU9oN1JKVG1vbnkzUVJtM1pKSTQ1OWRhMWpSdURYRVBvMG1rR1psZi1uUk9ZdV9pZW0zTXhET3J2YUYzMUE?oc=5",
+     "source": "연합뉴스TV",
+     "time": "2026-11-27T10:24+09:00",
+     "category": "국내 증시",
+     "sources": 6,
+     "score": 35
+    },
+    {
+     "rank": 4,
+     "title": "코스피 2%대·코스닥 5%대 급등…외국인 매수세에 증시 반등",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9DSzhlSjNmd3ZVUlJsanZRUlZrOHhBb1pNeDVaNWgzNUtLdWtNYThIdXdscmRJT2pTVWgyVEFvTlVFTWJ1bmVyS1JEQnQzSDdicU5WUXpTcGcxakFkdkhjMmtIcUpESWdYMV9NWmYyY1XSAXRBVV95cUxQcFFaS0FVZ0Z3cUdCSVoyemlHZDVlRURnSkpvd3hlbnlXcTl0dTMzRXZPTER0SGttUldNMkxKZG1jZjBtQkNUNGRfNXhmM1pCS2NncWtRcUNCUllfUHU1YTJtR3NXclFwVG1JV1ZCclkxVGFVRA?oc=5",
+     "source": "산경투데이",
+     "time": "2026-11-27T12:50+09:00",
+     "category": "국내 증시",
+     "sources": 4,
+     "score": 30
+    },
+    {
+     "rank": 5,
      "title": "“공매도 이상 징후 없다”…정부, 증시 변동성 확대에 대응태세 유지",
      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1aTFdLZWlsall2SlAyTnN4TUw0SzFuSDZTMHNCSGgzREQ5djdVbUdPdWJsVHNjR2F6bG5FV0JlWmU1NjRDZFdmQWJLWWdMOURUR2lhdVoycTBxX0t5aEp4TDFB?oc=5",
      "source": "디지털데일리",
@@ -673,26 +700,6 @@
      "category": "국내 증시",
      "sources": 4,
      "score": 22
-    },
-    {
-     "rank": 4,
-     "title": "코스피 강보합…코스닥 4%대 급등",
-     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE4tQmxCYTN1MkxVWlcxeG84bko4enViRUNHcmVWNkpPZndGTU9oN1JKVG1vbnkzUVJtM1pKSTQ1OWRhMWpSdURYRVBvMG1rR1psZi1uUk9ZdV9pZW0zTXhET3J2YUYzMUE?oc=5",
-     "source": "연합뉴스TV",
-     "time": "2026-11-27T10:24+09:00",
-     "category": "국내 증시",
-     "sources": 3,
-     "score": 21
-    },
-    {
-     "rank": 5,
-     "title": "[속보] 코스피, 0.37% 오른 4,728.80 개장",
-     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5mZzlJLWZUMjNwbXZZZXh1ZjRXb0RSMU9XV3FWd0NldDhRRjZMaXJBQlM1MmpwQXdhWXIxRVBONzNoOVlMU3o2SWhVY3YtaDJCUWIzMGt1SENjV01yNHlqNG5nQ21xU2c?oc=5",
-     "source": "연합뉴스TV",
-     "time": "2026-11-27T09:10+09:00",
-     "category": "국내 증시",
-     "sources": 2,
-     "score": 16
     }
    ]
   },
@@ -706,8 +713,8 @@
      "source": "BeInCrypto",
      "time": "2026-11-26T18:22+09:00",
      "category": "국내 증시",
-     "sources": 22,
-     "score": 107
+     "sources": 13,
+     "score": 68
     },
     {
      "rank": 2,
@@ -716,18 +723,18 @@
      "source": "자본시장뉴스",
      "time": "2026-11-27T08:00+09:00",
      "category": "정책 · 무역",
-     "sources": 10,
-     "score": 48
+     "sources": 11,
+     "score": 52
     },
     {
      "rank": 3,
-     "title": "“기술주 급락 끝이 보인다”…도이체방크, 내년 S&P500 9000 전망",
-     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5QeWlrVmQ2UWQtZ3g1ZzdsMThscXA5T2hqRXlkUnExVmlyM1liUDI0QnZpaWdFNkluRlNxLTRudmltTGZTZDZmYXNpVDBxWVg0QXkycHJB?oc=5",
-     "source": "헤럴드경제",
-     "time": "2026-11-27T10:01+09:00",
+     "title": "도이체방크 \"기술주 곧 바닥…내년 S&P500 지수 9,000 간다\"",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9CeTVIX2RQTmpOT214TmUtd2ZucVZRU0l4cGp4dUozbGstSGRnanYydUhsSWF0MTdPU0l6dTFmWnlfTS1vZzl0amNreHRvck55Snk5SjA0T29LTEF6NDd0Z3lENTE5SDQ?oc=5",
+     "source": "연합뉴스TV",
+     "time": "2026-11-27T13:25+09:00",
      "category": "해외 증시",
-     "sources": 7,
-     "score": 34
+     "sources": 9,
+     "score": 42
     },
     {
      "rank": 4,
@@ -766,13 +773,13 @@
     },
     {
      "rank": 2,
-     "title": "한은 \"내년 韓경제, 4.1% 성장 전망\"…기준금리 연 3.25%로 올렸다",
-     "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE8zYW5hQlJlaFJRRGVzVk5oSXVtanl6YjNONWg0X1Q3M1AyZERvYlpCU2d1dVMxTHJSQzZKYWhOWktYVkhFaTgtSHBjME9SRXpRU0xuaENRNWgtS01SbkVvMTJFYXRLT0Fxa25N0gFwQVVfeXFMUEJtZkFDWVZMdkx2WW5ndlhOV0VPU01DckU1WmpxY2huUXFEb2haQjMxbGF1UHI4bE1lcnlXWjlWR2x2eG9lNmFRLVc4WncyRFZyTlRjVlg5a1RUZ3lNd2tOZURGdXZoLWs5MkVTR0E0Zw?oc=5",
-     "source": "머니투데이",
-     "time": "2026-11-27T12:55+09:00",
+     "title": "기준금리 3.25%, 수도권 집값 더 오를까 내릴까",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5tbzNSQ1VMREwtR0Fhejd3QjhXbnUzRGVJaXNnTS0xQjF1eUozVXVvUHg3VlBYWDg2WWUwejc5LW84MHV5SDFLSjVNYmNuaWVObGZlLUxKU2Z4ajZLWEpTVHFyYlBNWVplUkpHdzlpYw?oc=5",
+     "source": "이코리아",
+     "time": "2026-11-27T13:04+09:00",
      "category": "거시 · 금리",
-     "sources": 13,
-     "score": 68
+     "sources": 10,
+     "score": 50
     },
     {
      "rank": 3,
@@ -781,11 +788,21 @@
      "source": "중기이코노미",
      "time": "2026-11-27T10:24+09:00",
      "category": "환율 · 원자재",
-     "sources": 8,
-     "score": 48
+     "sources": 7,
+     "score": 44
     },
     {
      "rank": 4,
+     "title": "한은, 기준금리 0.25%p 인상…2년 만에 연 3.25%",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9kaWJkTjM5bmJlYUh1RFVHbWdhSTdLOVRLY2oxTDZhNFE0QTJMTzlLV0VoSGVpRmg3NVZoYUR2dWVra0VIdnEtakJTUFR1N0IwbzBETlBNNXRMMTlRYUlmUFcyb2xsVGJXMWhjbWVDM09tZw?oc=5",
+     "source": "한겨레",
+     "time": "2026-11-26T13:52+09:00",
+     "category": "거시 · 금리",
+     "sources": 5,
+     "score": 35
+    },
+    {
+     "rank": 5,
      "title": "대출 증가·금리 상승에 은행 곳간 ‘두둑’…이자이익 48조원 넘어",
      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFB0RHZBYWRiN1FXNGl3QzR2RHpTbzhYNmZhR29UcmNlWHZiRDIzLVRMT0FrOXJTWFRaX3dqZWp0QWczWThKRmZRTzlveDJwdi16OVFEWlVVa1pDdDZtS1p1dzhaWjV4ZXNlTEQ3RXY1VdIBc0FVX3lxTE9zakZld0htaDN5QmViYmRpN3BEeEdtQjkyZmdaSURRbmFqd0RLaUg3U0QxTE5GLWJaS3FxMnFNTW5sVnlaQTJYVTFXSWVNcExZdUFVZ2JvRWQwMVY5N1YweUNJSklxc2lSTG1YZDRRc3VHdHc?oc=5",
      "source": "시사저널",
@@ -793,16 +810,6 @@
      "category": "거시 · 금리",
      "sources": 5,
      "score": 25
-    },
-    {
-     "rank": 5,
-     "title": "[금/유가] 중동 공급 차질 우려에 브렌트유 상승…美 금리 우려에 금값 약세",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1QUmdmdHVSUnZqVXVhMXRuSDZTNGpqN3BlTEdCSVJJY0pYUm9jblIwaDVjWnByYzJ4TU1YVzJNVzJuNklVT1dWZXUtb2NGVWdzcDVtcmt0WkxUbmta?oc=5",
-     "source": "뉴스핌",
-     "time": "2026-11-27T05:41+09:00",
-     "category": "환율 · 원자재",
-     "sources": 3,
-     "score": 21
     }
    ]
   },
@@ -811,23 +818,23 @@
    "items": [
     {
      "rank": 1,
-     "title": "한은 금리 3.25%로 인상…환율은 1,340원대 보합권",
-     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE41NG92MmJDTktWZGQ0OXRXSnNHZkh1T3JTWXNqb3lnT3YxM1VPdUdUdS1IRzFlSHYxSVBMc0xGanRfUGl6QlNQaEpkUmpONUJ4ZFRNdFdwekRFdEJIYmpkZ2dwQk53eG9TYUZxeHM1TWFaQQ?oc=5",
-     "source": "스페셜타임스",
-     "time": "2026-11-26T16:21+09:00",
-     "category": "거시 · 금리",
-     "sources": 13,
-     "score": 68
-    },
-    {
-     "rank": 2,
      "title": "원달러 환율 1342.7원 마감…한은 금리 인상에도 보합",
      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE92OVFCZHdud0JmYTlNVWFIMXUxbktlQjNWVmx0RWZDN0RoMnZhOU9pdnRsSGV6OHAzaUNKYkFocEtYd1lhOFN2MmpSbmFidnI1OURNZk9BXzVRN3lTWXlwbHdyTHhQTy1rS2c?oc=5",
      "source": "중기이코노미",
      "time": "2026-11-27T10:24+09:00",
      "category": "환율 · 원자재",
-     "sources": 8,
-     "score": 48
+     "sources": 7,
+     "score": 44
+    },
+    {
+     "rank": 2,
+     "title": "달러-원, 뉴욕장서 횡보…1,340원대 초중반",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9tcnNPb3lTLWpTckZCQWZnMUszVzZ2YTVsejFTTG5kRVFFdV9LRkJiOHkwRHhfRTFkaFVXYzk4YnNVQTl2RFZPdW05cmxhelFtSFppTlJ0SktVZ040Z3VmM0hUU0FIcm9VM3hYejZjd3hZQQ?oc=5",
+     "source": "KB Think",
+     "time": "2026-11-26T22:45+09:00",
+     "category": "거시 · 금리",
+     "sources": 5,
+     "score": 35
     },
     {
      "rank": 3,
@@ -836,21 +843,11 @@
      "source": "위클리오늘",
      "time": "2026-11-27T10:17+09:00",
      "category": "환율 · 원자재",
-     "sources": 4,
-     "score": 26
+     "sources": 3,
+     "score": 22
     },
     {
      "rank": 4,
-     "title": "원/달러 환율, 금통위 금리 인상에 1,340원선 하회",
-     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBXalhYaVBaQkoxQnVneGdxTG1JR1dUb0QwdklDRW1GOE91RVExOFVZd1IzVU82dzhjZmJYVnBBYTlTRGZIY3VyRW9Wa2U4NDVIY3hrOFl3MzkxSnBGMFB2Uzlxa09qMzVMTHc?oc=5",
-     "source": "nbn 시사경제",
-     "time": "2026-11-27T09:52+09:00",
-     "category": "거시 · 금리",
-     "sources": 3,
-     "score": 24
-    },
-    {
-     "rank": 5,
      "title": "금리 인상에도 환율 보합…국고채는 매파 점도표에 상승 [김혜란의 FX]",
      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1JWnJyNW9iNlhwU1p5UzM1eDRaa3FTZE5BczFfUHJ3QTNlVk5haThscG5rVHhRZUJfWGlRTm5kck5hYjRneFVxa0FPX3YzdlZRWFHSAVNBVV95cUxPQUJzRWcxYkRzSTlQNGlmb1h4TXpXSVRZVDdaUF9TZWpFUmpLa2taYTlJQktJNDc4eTRlRHA0S19jUW51Y3EzeE1ScDZzb0xUT0syTQ?oc=5",
      "source": "서울경제",
@@ -858,51 +855,6 @@
      "category": "거시 · 금리",
      "sources": 2,
      "score": 17
-    }
-   ]
-  },
-  {
-   "name": "구글 뉴스 · 원자재 · 금",
-   "items": [
-    {
-     "rank": 1,
-     "title": "오늘(26일) 금시세 1만1000원 반등…순금 1돈 67만9000원 ‘1년 전보다 18만원↓’",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBfMTA4Z3gweW4xMExhem1lVVhrNjV5ZGktcWVjTTFQdnZibkRlbHh5aFppakxYUHpxLUxUZnB0SHByVUZnVjdGNExTZS1OMlBHVFlCVG5TX0JLR1NZZVBtQVJmVzhRNVRTVzd3TU9Jb3TSAXRBVV95cUxPcjYzcjhVV3E1ZXJ1Yl9xRXRweUhZQzBPd0k2VEt0X2c4N2p4RXFoMi1DaTFFa0pET2QwQkJfZ01rdENqMXV4MTczNXk4VS1nS21yR2MyVTRwTFpfeExPOWlpTGk5QzZtSUFVYUxfc3Z0MV9fUw?oc=5",
-     "source": "더페어",
-     "time": "2026-11-26T13:14+09:00",
-     "category": "국내 증시",
-     "sources": 14,
-     "score": 61
-    },
-    {
-     "rank": 2,
-     "title": "[국제유가] 중동 원유 공급 차질 우려에 상승…브렌트유 97달러 육박",
-     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBzQlk1R2ZXZlQwNVdQSlg4cFFKMVM0bXFzN2h1a3VzNnJpY0dmdjNnWEtsb1cxcG1pZDBHT1hQRk5DRVZkamh0RDlUU3NiZ2MzWVJRNGdUbURGRGF2b2swMUtLSjFxaUNnQWZLag?oc=5",
-     "source": "굿모닝경제",
-     "time": "2026-11-27T08:58+09:00",
-     "category": "환율 · 원자재",
-     "sources": 3,
-     "score": 21
-    },
-    {
-     "rank": 3,
-     "title": "연준 금리 인상 전망에 금값 15개월 저점 부근…기술주 주도 랠리에도 약세",
-     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5qS2NMdXp4S1N2ZFNhd1dQS2JldTNISElRNmRxNm12XzduU25aallldkwzM2tINzVlMFdRay1ER0hhbHpGLUlVT1JuLXQtUEdEM0FLQ2ZPaUtSM0VTWk1ZcHRMS054ZXNkbmhVVWV3aw?oc=5",
-     "source": "Investing.com 한국어",
-     "time": "2026-11-27T10:27+09:00",
-     "category": "거시 · 금리",
-     "sources": 2,
-     "score": 17
-    },
-    {
-     "rank": 4,
-     "title": "사우디 정유시설 일부 가동 중단에 국제유가 상승",
-     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9yZWc4Y2ZVc1RBci1KbVE2eGdQYnRJeGltTTVCelhPY2ExeDJIMF9wcmljTmlhVHlFblBkLVAtX2x0VC1HZTBZT2hNSE1NX3V1VzhYVzYySjl4OXFKSzdLcm9TZG5GaVXSAWtBVV95cUxNNmQtMlB1b0MyTExCNmR3UWVsN2F4ZmZqNEx5NUU0Y3ByS2VRT2V6N2luZ3BBLV84c2pmXzAwdVh0NVFpOXNQV1J1SmNrVEtwRU5jb3hyYkozVW1Dczdpd3Q2a1BOR1g4Wm9UNA?oc=5",
-     "source": "이투뉴스",
-     "time": "2026-11-27T10:54+09:00",
-     "category": "기타",
-     "sources": 3,
-     "score": 16
     },
     {
      "rank": 5,
@@ -917,6 +869,61 @@
    ]
   },
   {
+   "name": "구글 뉴스 · 원자재 · 금",
+   "items": [
+    {
+     "rank": 1,
+     "title": "[국제유가] 중동 원유 공급 차질 우려에 상승…브렌트유 97달러 육박",
+     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBzQlk1R2ZXZlQwNVdQSlg4cFFKMVM0bXFzN2h1a3VzNnJpY0dmdjNnWEtsb1cxcG1pZDBHT1hQRk5DRVZkamh0RDlUU3NiZ2MzWVJRNGdUbURGRGF2b2swMUtLSjFxaUNnQWZLag?oc=5",
+     "source": "굿모닝경제",
+     "time": "2026-11-27T08:58+09:00",
+     "category": "환율 · 원자재",
+     "sources": 3,
+     "score": 21
+    },
+    {
+     "rank": 2,
+     "title": "연준 금리 인상 전망에 금값 15개월 저점 부근…기술주 주도 랠리에도 약세",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5qS2NMdXp4S1N2ZFNhd1dQS2JldTNISElRNmRxNm12XzduU25aallldkwzM2tINzVlMFdRay1ER0hhbHpGLUlVT1JuLXQtUEdEM0FLQ2ZPaUtSM0VTWk1ZcHRMS054ZXNkbmhVVWV3aw?oc=5",
+     "source": "Investing.com 한국어",
+     "time": "2026-11-27T10:27+09:00",
+     "category": "거시 · 금리",
+     "sources": 2,
+     "score": 17
+    },
+    {
+     "rank": 3,
+     "title": "사우디 정유시설 일부 가동 중단에 국제유가 상승",
+     "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9yZWc4Y2ZVc1RBci1KbVE2eGdQYnRJeGltTTVCelhPY2ExeDJIMF9wcmljTmlhVHlFblBkLVAtX2x0VC1HZTBZT2hNSE1NX3V1VzhYVzYySjl4OXFKSzdLcm9TZG5GaVXSAWtBVV95cUxNNmQtMlB1b0MyTExCNmR3UWVsN2F4ZmZqNEx5NUU0Y3ByS2VRT2V6N2luZ3BBLV84c2pmXzAwdVh0NVFpOXNQV1J1SmNrVEtwRU5jb3hyYkozVW1Dczdpd3Q2a1BOR1g4Wm9UNA?oc=5",
+     "source": "이투뉴스",
+     "time": "2026-11-27T10:54+09:00",
+     "category": "기타",
+     "sources": 3,
+     "score": 16
+    },
+    {
+     "rank": 4,
+     "title": "“영업이익 88% 급감에 배당까지 반토막…환율·원자재·중동 악재에 갇힌 세방전지”",
+     "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5qb1I1d2NjeVpIZGVNVnRrZm9Qby1mdGdVRzJMTzIwLTFsazRQNUs0ZXNmLVk3eGt1dVZQVGdLVlJKYTVMZFZzQXNNalRTeEhkNWJoTF8xMEhMVjFkT1VoN0d6UlJJY29RUUYtcXUyZw?oc=5",
+     "source": "뉴스퀘스트",
+     "time": "2026-11-27T11:39+09:00",
+     "category": "환율 · 원자재",
+     "sources": 2,
+     "score": 15
+    },
+    {
+     "rank": 5,
+     "title": "국제 금값 사상 최고치 대비 37% 급락…미국 추가 금리 인상 우려",
+     "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5hdWVhbFM0dU9XU0NZR0hRZ3gwdzhMNFBtdzNrWU1ZZGNGTUlDSUtqbnBiYnZycFY5NEJRQXI1cW44SHl2bDA1UXlvR3A1eFZrRFJTeVhwTm5jRjNOaDVlbGVpTHJSZ21oRGRBUkh0SmlHbWc?oc=5",
+     "source": "코리아이글뉴스",
+     "time": "2026-11-26T15:09+09:00",
+     "category": "거시 · 금리",
+     "sources": 1,
+     "score": 14
+    }
+   ]
+  },
+  {
    "name": "구글 뉴스 · 실적",
    "items": [
     {
@@ -926,11 +933,21 @@
      "source": "코리아리포트",
      "time": "2026-11-27T11:59+09:00",
      "category": "기업 · 실적",
-     "sources": 4,
-     "score": 24
+     "sources": 5,
+     "score": 28
     },
     {
      "rank": 2,
+     "title": "다음주 한국·미국 증시 주요 일정｜미국 고용보고서·한국 CPI·마벨·크레도 AI 반도체 실적 주목",
+     "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1BR3otZ3llZEtDcTRyQlkzTWJIRE81bi01aTJTcUY0dVY5N2o4X0IxcDlYWWZWOVlEcWlucWZFSWh0aERHOWJsRTNlN0ZOQTdfb195bDhqWUFqdzZaclA1SU1CVUlaQjlKcU9mNWk4R0pXREx5RjdUMk5vYi1UZw?oc=5",
+     "source": "네이버 프리미엄콘텐츠",
+     "time": "2026-11-27T09:59+09:00",
+     "category": "거시 · 금리",
+     "sources": 1,
+     "score": 18
+    },
+    {
+     "rank": 3,
      "title": "실적 발표: Freetrailer Group AS, 2024년 3분기 매출 34% 증가",
      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5oT0FDcjQtYnNRTlF5cmVFVi15dDEtOV9ESmkyRXhRV2Z6TzlLMXQ2MG5NV1pmRGZVblpkdVFfV1Q4ZjVzOWxHcFVPZDNSMjNSaGVpazUxRnplUlo1cEZ3Yl83Q2JJcDN6MWNidU5NZw?oc=5",
      "source": "Investing.com 한국어",
@@ -940,7 +957,17 @@
      "score": 14
     },
     {
-     "rank": 3,
+     "rank": 4,
+     "title": "[광통신 대해부①] AI가 키운 광통신 실적…매출은 최대, 주가는 급락",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE13RjItcmVqbmpkcUcwYmVJdXBLU1FxX3JwVlVTZWU3RkJ3ekI4bGJGblhfbEFwRjFMTGhBYzRBUllodHlSVVdzc25WT0Fwb2M1cDY4Y2tRZlhJZGk5Y3A5dFozeUlhTE4wV3B6VzFTb2rSAXRBVV95cUxONWRjSlFnbkx3Y2taN1U2NXFOa21ZYWlUUFdrMFp0eHZ5RTZGdGR6SFdRMjVHRF9zdzZRUGg4enBmVGRyM0dpY0JmZ3V4ZVVKMUtvdEtDdGQtelhQMHlzcEJ6d2E4V0pDQUFKUjVOSE9ZOUpqRw?oc=5",
+     "source": "더페어",
+     "time": "2026-11-27T01:55+09:00",
+     "category": "기업 · 실적",
+     "sources": 1,
+     "score": 12
+    },
+    {
+     "rank": 5,
      "title": "씽크풀 : [실적속보]파이온엑스, 올해 3Q 매출액 18.1억(+82%) 영업이익 -14.7억(적자지속) (연결)",
      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBOOGE2YmZoNDhPaWtTVFR2c2ZQWS1OSWMxQ21LLUlwT0VRcFBrQkcwN3RZQW5Gb3N5MkpfZUFHaTdDVzhyUkt3T2E5NkUxY2xkcE84Xw?oc=5",
      "source": "ThinkPool",
@@ -948,26 +975,6 @@
      "category": "기업 · 실적",
      "sources": 1,
      "score": 11
-    },
-    {
-     "rank": 4,
-     "title": "경동나비엔, 3분기 영업익 373% 증가…4분기 성수기 실적 확대 전망",
-     "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9XcllRcGpma0ltY05zTTFXY1pkVzVjVXNrb0I0NG9Kd2hSa2VQcTU2ekR6UmExYzdrLS1aVnd5UDFjRi10alJWY0V1V3g3QUhEczFhd1dadE5kZlpqQTZtTUxnOEJGUGJEdU4tdnJqaDRvZWZybUNzU2llU3dOUQ?oc=5",
-     "source": "더파워",
-     "time": "2026-11-27T10:21+09:00",
-     "category": "기업 · 실적",
-     "sources": 1,
-     "score": 8
-    },
-    {
-     "rank": 5,
-     "title": "어플라이드 머티어리얼즈(AMAT) 목표가 하향 릴레이…실적 성장과 밸류에이션 조정 사이",
-     "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBGVTJQTjFDYWtYREZscVVTbnNhVlZ6Y004VjZ5Z0xWLXNCR1piUDh0cDczdGRGcndnRUEtSFQ2UWE4S1ZEWFVCOXRrM3hyVDhWZWg2aFdNQzdVak91bjdVOXYxYjh5SEJlaGpiZ1llOFZVTGR6UFE?oc=5",
-     "source": "인포스탁데일리",
-     "time": "2026-11-27T10:05+09:00",
-     "category": "기업 · 실적",
-     "sources": 1,
-     "score": 8
     }
    ]
   },
@@ -982,10 +989,20 @@
      "time": "2026-11-27T11:32+09:00",
      "category": "국내 증시",
      "sources": 1,
-     "score": 34
+     "score": 36
     },
     {
      "rank": 2,
+     "title": "코스피, 기관 매수에 장중 4770선 수성…반도체 반등에 코스닥도 2%대 상승",
+     "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1UU0h2ZHhvMkVOUVpmdi11aDhzV2ZpY2VuazlJTFk3aENWRkRzQ3FSSkJ4SWFOS1hhdlpCN2l4MUNuZjN6MU9laDFLclNoLXhHdnBfeQ?oc=5",
+     "source": "이투데이",
+     "time": "2026-11-26T13:53+09:00",
+     "category": "국내 증시",
+     "sources": 4,
+     "score": 30
+    },
+    {
+     "rank": 3,
      "title": "머스크, 삼성에 반도체 장기계약·공장 금융보증 제안…이재용은 “뭘 더 해줄 수 있나”",
      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTFByNm16Qmk2U1N0WUJuZHNUU0RUMWk1U0ZrMzNseFR2LTdERkdTbWFPTWVDRm5TUW44MnhnQWZPcVFhXy1PcmdHVE0xLXh5U1BIMjNuSGkwZUZCSEs2UzhWN3RuYzhuai0yaWRMa3I2UXZKLTdqc3fSAWZBVV95cUxPd19uYndmb2xnc3NseWNOUVUyNmlHRllRd0FYOHV2bExqYzZCT1dUUmdtTmZvVktJVXpjVDUxMFc5djgwUEhZY2RPUGYwZlg4cFJTMTJGMFBKamh3a2YzdEd6cm9GOVE?oc=5",
      "source": "동아일보",
@@ -995,7 +1012,17 @@
      "score": 28
     },
     {
-     "rank": 3,
+     "rank": 4,
+     "title": "엔비디아, 동남아 서버 출하 중단…中 AI 우회로 봉쇄",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5YaURXZmJ5T3lEMUdsNVpCUFkteFRnejlQaHlic3d0VlluZklsZEtZTnhlbnF0WUdmN0MwV2ZjMEc3bHQ1ak9FX0xfR0YtQjkxTnhidHdTN2pTQQ?oc=5",
+     "source": "파이낸셜뉴스",
+     "time": "2026-11-27T02:33+09:00",
+     "category": "해외 증시",
+     "sources": 5,
+     "score": 25
+    },
+    {
+     "rank": 5,
      "title": "신현송 “영업익 700조 반도체 시총은 2000조 불과 설명 어려운 면 있어”",
      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE81UXVodjg5ZjJ5YkpsTm5iWEduYTlGb0dBdWtGVUNuazJCQWJ1TDJRU3pvZjVoYUdKZjA0RGxPSlpwQmZPZ2E1WlBKVF9kdTlhUm1PMW9FVkNkbmJMRnBB0gFfQVVfeXFMTzVRdWh2ODlmMnliSmxObmJYR25hOUZvR0F1a0ZVQ25rMkJBYnVMMlFTem9mNWhhR0pmMDREbE9KWnBCZk9nYTVaUEpUX2R1OWFSbU8xb0VWQ2RuYkxGcEE?oc=5",
      "source": "경향신문",
@@ -1003,26 +1030,6 @@
      "category": "거시 · 금리",
      "sources": 4,
      "score": 24
-    },
-    {
-     "rank": 4,
-     "title": "“삼성전자·SK하이닉스만의 문제 아니었다”…美마이크론 이틀 새 15% 폭락, 반도체 무슨 일?",
-     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9sZmVycFMwR3hWa3hNalF4VHJLa3I2X2dvVUF4U2ZOdkJGVUpGRXphN2FDZ0tEeUdHR2gwdU5fNnNrV3c0RXk0ZElEZFh5VGx4MzJXOVE5ZmJ1akFEWjZwb3AtdnhfdUkyT2hKaA?oc=5",
-     "source": "데일리25",
-     "time": "2026-11-27T03:50+09:00",
-     "category": "해외 증시",
-     "sources": 2,
-     "score": 19
-    },
-    {
-     "rank": 5,
-     "title": "\"삼전닉스 시총, 수익 3배 불과\"…한은 총재의 이례적 저평가 진단",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFAwT2xSSVJJa3E0MVl1d1M1c25uNGxLaEt2eDdsa1k1WmFFdnBaWl80ZW1XUFZCNVVxSjB6Z1d5MWU5Z3ByNHk0YnU4NUpnN0pGNE1YR2xpbW1oWFpRSHJtYnNfcG5hdzM2?oc=5",
-     "source": "TradingView",
-     "time": "2026-11-26T18:07+09:00",
-     "category": "거시 · 금리",
-     "sources": 3,
-     "score": 15
     }
    ]
   },
@@ -1031,23 +1038,23 @@
    "items": [
     {
      "rank": 1,
-     "title": "[AI로 읽는 경제] 세계 4번째 '수출 1조달러 시대' 열렸지만…반도체 의존 숙제",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE05b2VUV25tNXRmR001S2JOSE1WbVlkeDdET1FxMDlCZ2pwcTl3Z2VmRzRtdzJ5MEM1cUJUS01OMFVYMkk2QlpJQ2ZMQ0FmczBfY24xNG5fVnhUdDdH?oc=5",
-     "source": "뉴스핌",
-     "time": "2026-11-27T12:05+09:00",
+     "title": "[심민정의 시각] 뱀과 머리카락 팔던 나라가 수출 1조 달러 강국이 됐습니다",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5RXzZhZ3ladVJISk9ic0Y2MHAtX21KSHRvOC1aRHJqRjVCazY4NlUwT0RRM0JNd21aSmtzeVQ5c1o1c2tMUXBaQktKb1VteEJaVXBJRmFvd1BuOW1tUUxWdDBzRnE5RXZYMWc?oc=5",
+     "source": "평화나무",
+     "time": "2026-11-27T13:06+09:00",
      "category": "정책 · 무역",
-     "sources": 10,
-     "score": 48
+     "sources": 11,
+     "score": 52
     },
     {
      "rank": 2,
-     "title": "미, 한국관세 15% 유지했지만…‘K반도체 전략’ 콕 찍어 시비",
-     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9nOFUzQ2RGU2JxZjVGOEJCcy1NazlmcjYxN0NDbUgtVXpsRC16V1VTeUhNY1N4dTJiWlFFZFh0TzRIamZCbTRxcDh5TXN4YVJXNzBXd25oRnNnLVcxdVVuVGZIXzV1Vm9MOFFBOFZ5LXl0dw?oc=5",
-     "source": "한겨레",
-     "time": "2026-11-27T11:38+09:00",
-     "category": "정책 · 무역",
-     "sources": 5,
-     "score": 27
+     "title": "[AI MY 증시전망] 코스피, 美 관세 우려 완화에 상승 전망…외국인 수급 관건",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1tMW5pblJFZzdoMGo5TURoU3plaGh0WllnWE9GbzBUVjM4c0dXV2ZjWXh6RURZdE1DZl8zZTNaVUdKeXhjRXdFUXA1cUplZjdaYXlSbnlDbW9YbjBD?oc=5",
+     "source": "뉴스핌",
+     "time": "2026-11-27T08:11+09:00",
+     "category": "국내 증시",
+     "sources": 1,
+     "score": 16
     },
     {
      "rank": 3,
@@ -1056,11 +1063,21 @@
      "source": "메가충청뉴스",
      "time": "2026-11-27T12:32+09:00",
      "category": "정책 · 무역",
-     "sources": 3,
-     "score": 19
+     "sources": 2,
+     "score": 15
     },
     {
      "rank": 4,
+     "title": "미, 한국관세 15% 유지했지만…‘K반도체 전략’ 콕 찍어 시비",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9nOFUzQ2RGU2JxZjVGOEJCcy1NazlmcjYxN0NDbUgtVXpsRC16V1VTeUhNY1N4dTJiWlFFZFh0TzRIamZCbTRxcDh5TXN4YVJXNzBXd25oRnNnLVcxdVVuVGZIXzV1Vm9MOFFBOFZ5LXl0dw?oc=5",
+     "source": "한겨레",
+     "time": "2026-11-27T11:38+09:00",
+     "category": "정책 · 무역",
+     "sources": 2,
+     "score": 15
+    },
+    {
+     "rank": 5,
      "title": "트럼프, 韓 반도체 투자까지 문제 삼았다…관세 25% 경고",
      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5NSmVva25ZcHRGWFpKcGRJRFN4ZTZxVlYzd1E1REQ3cExyV3NDXzlSVWhNZHZHc2I4eFgxQVZoNzItSzk1Y3Rtb18wRnpKVUFia2NFMng3RVhJa2RwWEVObzRQMUZOMXls?oc=5",
      "source": "테크월드",
@@ -1068,16 +1085,6 @@
      "category": "정책 · 무역",
      "sources": 2,
      "score": 15
-    },
-    {
-     "rank": 5,
-     "title": "반도체, 세계 수출서 원유 규모 넘어서",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBPQ1NUQWxwSXJad3VlSVZ0U3dKdFZIME55bE5zVlFtaG5GUW5EcU1URUwzUmZCdmprb3gtN3NDbWRpUVVhMUZrVE9BeVZQOWpGYmt1Tlc3dU1YR19qTlU0UmMtdGlKZEtBNUFWc0RDTC0tQlVM0gF0QVVfeXFMTlZzUE9Dd2xiWUxtUmhxUGxCQmMzdXlyMkFnLVlMaGtwT3U4Wkp5LUgtRXJzVVlTejU0eEk1dUlFcW5xR093UE1sWEFJQkdQRzB0WHMxd3Y1Qk5QZGM3eWxBNWFGS3hKS0psTHV0eTJDbktETW4?oc=5",
-     "source": "MBC 뉴스",
-     "time": "2026-11-27T10:08+09:00",
-     "category": "정책 · 무역",
-     "sources": 2,
-     "score": 14
     }
    ]
   },
@@ -1091,8 +1098,8 @@
      "source": "산경투데이",
      "time": "2026-11-27T11:24+09:00",
      "category": "국내 증시",
-     "sources": 22,
-     "score": 107
+     "sources": 13,
+     "score": 68
     },
     {
      "rank": 2,
@@ -1102,37 +1109,37 @@
      "time": "2026-11-27T11:31+09:00",
      "category": "국내 증시",
      "sources": 1,
-     "score": 58
+     "score": 60
     },
     {
      "rank": 3,
-     "title": "[장중수급포착] 제주반도체, 외국인/기관 동시 순매수… 주가 +7.55%",
-     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1FTWhKdjFzLVg3X1VhWER1V0xmWXdic1BIU0FsM09TMk9zN2FWVTExN3RJODZvYVVQeldFc0cxczZPWUl6MDdIQjhieGN5eWJYRUdJbFhVdkxqQnZM?oc=5",
+     "title": "[장중수급포착] 한화오션, 외국인/기관 동시 순매수… 주가 +5.68%",
+     "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBXTlVzSGdMOHZWM3dwWUFyMFJVd1NrR1ZtclRqOXlWUjdLT18xLXJMMVpCblBkakI5NDBiaWhKT29nSGRDNkVwVkJqQmZFNk5CVGZtYTlmLWR6cDZM?oc=5",
      "source": "뉴스핌",
-     "time": "2026-11-27T11:32+09:00",
+     "time": "2026-11-27T11:33+09:00",
      "category": "국내 증시",
      "sources": 1,
-     "score": 34
+     "score": 36
     },
     {
      "rank": 4,
-     "title": "모닝 숫자 11월 27일, 외국인 매도 847억원으로 줄었는데 코스피는 0.29%만 올랐습니다",
-     "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPenN2enVBYUdBTWxMWmJwS3VlQll1VDFodEFaM1lTMllxa05RU0hEdmZWdFFnZGRuNlhRRGZoRy1sUWVPM1doenE1WVpaS21Ba1d1LXkyU2FnN2JhdU43VTkxU0RFMHpDU0VXT193UGIzRmZkR184aVB0ak4xdXN0eVNvTUFsQ28?oc=5",
-     "source": "네이버 프리미엄콘텐츠",
-     "time": "2026-11-27T06:50+09:00",
+     "title": "코스피, 외인 1조 순매수에 4% 강세…코스닥 6.6%대 급등",
+     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9qR21VNzhJLXhpZEZDbVhaSUE3QldOVlVzVTl1X0RNSXB6Q0c1ejBMVmE2RmI1VnE4VXVPNTAwUHhxdUpjdHM4bUVRWk0zalRrY0VCeFlDZHRjWnRaVzY3Z3BMUWsxVDZyQVlOdkI1N0N4SU91?oc=5",
+     "source": "이투데이",
+     "time": "2026-11-27T13:22+09:00",
      "category": "국내 증시",
-     "sources": 3,
-     "score": 18
+     "sources": 6,
+     "score": 35
     },
     {
      "rank": 5,
-     "title": "카카오페이증권, 외국인·기관 당일 순매수 흐름 30분 단위 제공",
-     "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9xV0l4dDdSSF94ZHhPRGxMRU1ycjRqM3BTT2dlUFAzR2t0RFFJeFJBNGFUM1RwZS15TzJ5WXdJUTVDd29mRHlnV0lhVnRma2JxOUtiRGJVOTVGWS1DeG5FNlo5MTlUUjc3RmNTbWZybDAyTUk3SlI00gF3QVVfeXFMT3FXSXh0N1JIX3hkeE9EbExFTXJyNGozcFNPZ2VQUDNHa3REUUl4UkE0YVQzVHBlLXlPMnlZd0lRNUN3b2ZEeWdXSWFWdGZrYnE5S2JEYlU5NUZZLUN4bkU2WjkxOVRSNzdGY1NtZnJsMDJNSTdKUjQ?oc=5",
-     "source": "인사이트코리아",
-     "time": "2026-11-27T00:45+09:00",
+     "title": "코스피 2%대·코스닥 5%대 급등…외국인 매수세에 증시 반등",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9DSzhlSjNmd3ZVUlJsanZRUlZrOHhBb1pNeDVaNWgzNUtLdWtNYThIdXdscmRJT2pTVWgyVEFvTlVFTWJ1bmVyS1JEQnQzSDdicU5WUXpTcGcxakFkdkhjMmtIcUpESWdYMV9NWmYyY1XSAXRBVV95cUxQcFFaS0FVZ0Z3cUdCSVoyemlHZDVlRURnSkpvd3hlbnlXcTl0dTMzRXZPTER0SGttUldNMkxKZG1jZjBtQkNUNGRfNXhmM1pCS2NncWtRcUNCUllfUHU1YTJtR3NXclFwVG1JV1ZCclkxVGFVRA?oc=5",
+     "source": "산경투데이",
+     "time": "2026-11-27T12:50+09:00",
      "category": "국내 증시",
-     "sources": 3,
-     "score": 15
+     "sources": 4,
+     "score": 30
     }
    ]
   },
@@ -1141,13 +1148,13 @@
    "items": [
     {
      "rank": 1,
-     "title": "삼성전자, 3분기 주주 배당금 지급…1주당 4601원",
+     "title": "삼성전자, 오늘 30조 배당…이재용 회장 4400억",
      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE42ZXJ1alF4TGNiUWlSTTZYbnVEaXVKZVFITTN0RXpCaUM0MFJfbkZ1OGRycm9sclRQVE9JbW1vMGUxRC11Ui1jRlkwVUtEMTRFel8tWUs5NlA4RTY5ZnF1aERIUlNxZnVZR0E?oc=5",
      "source": "한겨레",
-     "time": "2026-11-27T11:53+09:00",
+     "time": "2026-11-27T11:57+09:00",
      "category": "국내 증시",
-     "sources": 14,
-     "score": 61
+     "sources": 15,
+     "score": 65
     },
     {
      "rank": 2,
@@ -1156,38 +1163,38 @@
      "source": "글로벌이코노믹",
      "time": "2026-11-27T10:01+09:00",
      "category": "기업 · 실적",
-     "sources": 12,
-     "score": 55
+     "sources": 10,
+     "score": 47
     },
     {
      "rank": 3,
-     "title": "삼성카드, 배당성향 50%로 상향…자사주 소각추진",
-     "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5GUk8zcjVDVnc0QVRxeEpxd2puWUcxUGtNVGRLVU15MHFvdEhuYkthSmdHVFNZRTZraGVKTkpCZXk2QVhGRUxlanozVlpEOTBwNVNjNjh2eG0taTUtQlMtdg?oc=5",
-     "source": "아시아경제",
-     "time": "2026-11-27T11:09+09:00",
+     "title": "삼성카드, 배당성향 50%로 상향…자사주 7.9% 소각",
+     "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9ScTIxRE00RzJ2TllDTWdnQ0ZLaHBVbkNLd19tMkRLVEQ5LU81RE5iaEdWSzZCMFdCN1AzdTZyVk5kLWcxTHJQRU1SVWpnMXRjQTMwYnNkaVBVMDNRZmc?oc=5",
+     "source": "뉴스투데이",
+     "time": "2026-11-27T13:17+09:00",
      "category": "기업 · 실적",
-     "sources": 9,
-     "score": 40
+     "sources": 10,
+     "score": 44
     },
     {
      "rank": 4,
-     "title": "삼성SDI 1.4조 자사주 전량 소각…공시 이튿날 주가 반등",
-     "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5lMW9UTzMxMmZ4T2d1U0dMZzg0cjBhWE9SQzdEWk1JVGRvcHp1ZkVQZzQ0VXlOVURzVV9jOWVRZ2RqVy1EYUtfNnREUlpPN05KcHBoTkNhTU9NcjZQdWEyNXJjbWNjNkVDRTkybUx3?oc=5",
-     "source": "중소기업신문",
-     "time": "2026-11-27T10:44+09:00",
-     "category": "기업 · 실적",
-     "sources": 2,
-     "score": 12
+     "title": "[외환] 배당·네고 '밀당'에 보합권…1,340원 초반대 유지",
+     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE82bmJGekpfYWlULU9MRlNYZXlXXzNjV2VvTkRmcGRLdWltcUhnUF95bDFzazF6OEF2bEg4eWt6T2hfZkpmOFpWRGVwdEEtekdvd2lqbnBNUlJZOW1CdnhOUnhlVjUtTkVPQjBtd05hcnfSAXRBVV95cUxOdDhPRko5Yk1pUlREQXRsUWM2M05zT2p1Q1BzZ3FEcmJKNks1UzhqTWhLWjFfdXJleUR1Sks4UEpnbDdkSzF3bkNmTnROb1R2ZmtudFE2el90Z3VudUY4UkdkalJ4SEtHZGswMGw0Tnl2UmdkMA?oc=5",
+     "source": "연합인포맥스",
+     "time": "2026-11-27T13:07+09:00",
+     "category": "거시 · 금리",
+     "sources": 5,
+     "score": 35
     },
     {
      "rank": 5,
-     "title": "증자 당일 연기만 5번 KS인더스트리, 반값에 50억 새 유증",
-     "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE0ySFMzWUZJVkpZRmFkb1Y3V3k4aFRIQWU1M0trWldpQnF3NHQtb18tMTE3Yl9ldXRqOWFYb3Q4VFdsV1kyc0lQNWJhZWJvUjhsOEpoWnBJZ1VUcXVrdmpRTmJzd1VublFLZms0cW5xbDQ?oc=5",
-     "source": "리드경제",
-     "time": "2026-11-27T10:16+09:00",
+     "title": "‘2심 무죄’ 오세훈 상고심 대법 2부 배당…주심 권영준",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOeV9xZjFsSzlzRzdpcjhsYVY5ak5Xa1Q2THBBU0tLWW5JbzNpYTk4YVFuU0Y0Tm95RFNhMlB4cGxjSncySy1aMENXNjN2dFAzZC1RbjVGcl9KSnk3VUpqTVBSYXhGWlJEanZFZEg2NXlhMDYtR3k5ZExzcV9sQlROUA?oc=5",
+     "source": "이데일리",
+     "time": "2026-11-27T12:24+09:00",
      "category": "기업 · 실적",
-     "sources": 2,
-     "score": 12
+     "sources": 3,
+     "score": 15
     }
    ]
   },
@@ -1251,26 +1258,16 @@
    "items": [
     {
      "rank": 1,
-     "title": "큐리언트, 706억원 유상증자 마무리…구주주 청약률 106.33%",
-     "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5UUC1iODBuT3kwLTJWOFRjMmZPTXl6UWs4ZDA3cWJpWTA1X2xGSXVLeVZYaXlDUlBtbG1iTXFoVVFCMm9JR2Q0OGh4aGhmUlVvd2tWaW41ZU9HY0ZJYTZvSGZIekJqWG5YcGpELdIBcEFVX3lxTE1YUS0wd3hWdUlyTnQ5UnpHMHNuSDkxRDNEemltcFMxdEtPQVBoR1daSkMtQS1vQVRPN0N2Ym1sc1FnLWZRdjNURmtfYTZ4Y0laeXh5VFp4UlJrS1pIV0ZpQ3AwVUxVcDhsODdXN1UyY08?oc=5",
-     "source": "더바이오",
-     "time": "2026-11-27T08:36+09:00",
-     "category": "기업 · 실적",
-     "sources": 12,
-     "score": 55
-    },
-    {
-     "rank": 2,
      "title": "IPO 순항하는 무신사...3분기 영업익 67% 급증·순이익 흑자전환",
      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE96akloRHlTTmJWajFLcTVHNjBfbkZPYlltQjlaN0RCd29XZFFzX2pXMUlxek9xQmxGejJJLXByVXpLWHAtZHRBODB4WHJKWWw2b1c3NWZpYWhfdC1RcWRFaGdhRTdOd9IBakFVX3lxTE1mUER6Mko0V2c1Z3laLVRDSkYtVGRXTFA0X0RvNXdlWkFSd1BYV1dXdGdsdDhxMXVrTlloV21IeFJUU29Ib2VFYmtxeVhsSmh6M2x1TllWdUlkWnRZcUFONnMxM0NucUc4RFE?oc=5",
      "source": "테크M",
      "time": "2026-11-27T10:50+09:00",
      "category": "기업 · 실적",
-     "sources": 4,
-     "score": 24
+     "sources": 5,
+     "score": 28
     },
     {
-     "rank": 3,
+     "rank": 2,
      "title": "로봇 상장기업 2026년 11월 브랜드평판...두산, 레인보우로보틱스, LIG D&A 順",
      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFA2aXJXQUNwMXpDcmRaclNlRWFhampHVDdZQTlXbWhwU0dRSjNWTjFHRVFvaWZmZHU0S2hhYUNPQlR2TkJ1bTNreWxFSURZRUlCT192c1NOYlFlci10YzQ2em9uMzJJOVhrU1lGV1NCM0lpZw?oc=5",
      "source": "에너지신문",
@@ -1280,7 +1277,7 @@
      "score": 15
     },
     {
-     "rank": 4,
+     "rank": 3,
      "title": "IPO 철회 업체 이달만 6곳...ANH스트럭쳐도 합류",
      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB1bWozME9qdkdyMk03aGdTckhnRHhxUnY3TzFlcTlYYkk2aE9uZld6RVhRcmZ2UEhoSG5xWGhDclRfUDN4NXZueFJxb1RoTDNxZ1l5LVpsbjctbGc0LWFXeG9ndjQ0MEc0X1E?oc=5",
      "source": "금융소비자뉴스",
@@ -1290,13 +1287,23 @@
      "score": 14
     },
     {
-     "rank": 5,
+     "rank": 4,
      "title": "[현장] 금리 오르자 상장리츠, 배당 지키기 나서",
      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE15NV8yY2pZdEhGa0xfV21GdVdHX3VrX0ZnRzJHOG9TM2FxSkdJX2p0emNfSldqVWtDVFpqb3R3YUlDZVhLdUhQYmItZ1dnZDF0a0NjbnNGNlpnVkdudWszTzl1aw?oc=5",
      "source": "국토일보",
      "time": "2026-11-27T10:24+09:00",
      "category": "기업 · 실적",
      "sources": 1,
+     "score": 11
+    },
+    {
+     "rank": 5,
+     "title": "ANH스트럭쳐, 코스닥 상장 철회",
+     "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE04cWZhb29Eb0dNUDdBSXpmRkh3Y0pYLTRRRnRzMy11OTNrbEtodFB2X3VIUXVCOUVzVEhTYUEzaHltTW42SEZ1Zmh6SHlzbElhbTFUSU93NTkxU2ctN1FPaU12X0VRdw?oc=5",
+     "source": "디일렉",
+     "time": "2026-11-26T18:07+09:00",
+     "category": "국내 증시",
+     "sources": 2,
      "score": 11
     }
    ]
@@ -1306,33 +1313,33 @@
    "items": [
     {
      "rank": 1,
+     "title": "코스닥 상승세 강해져 5%대 급등…매수 사이드카 발동",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE83eUQzakhZbjFMZUJlRnVrVENMdURiUEtOdDlfOV9RRGdwYXM2S0tMVGd4MU8xYm5HZVVNdko5YnRLUXM4di1xVXpGWmZ3S3ItbFFZaUhxWjJWTkHSAWBBVV95cUxOYUgwYlpWVE90aFg3LWl0QWRuUDFIckU1TEJvblh1bUtSaXRlY3ByNTcxSWhTXzAtNnJKYXhhVUFRQThGREVxNkRNMXBQNTAwZlA0T2VJNjNrNXJURUN4WWs?oc=5",
+     "source": "연합뉴스",
+     "time": "2026-11-27T10:29+09:00",
+     "category": "국내 증시",
+     "sources": 20,
+     "score": 95
+    },
+    {
+     "rank": 2,
      "title": "코스피 장중 상승폭 커져 2% 안팎 강세…코스닥 6%대 급등",
      "link": "https://www.yna.co.kr/view/AKR20261127070800008",
      "source": "연합뉴스",
      "time": "2026-11-27T11:13+09:00",
      "category": "국내 증시",
-     "sources": 22,
-     "score": 107
+     "sources": 13,
+     "score": 68
     },
     {
-     "rank": 2,
+     "rank": 3,
      "title": "삼성카드, 배당성향 50%로 높인다…자사주 소각도 추진",
      "link": "https://www.yna.co.kr/view/AKR20261126170400002",
      "source": "연합뉴스",
      "time": "2026-11-26T17:13+09:00",
      "category": "기업 · 실적",
-     "sources": 9,
-     "score": 40
-    },
-    {
-     "rank": 3,
-     "title": "대출 늘고 금리 오르며…은행 3분기까지 이자이익 48조원 넘어",
-     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFB1dFBfdmJLNzVvbEFrbDZuLTctY0tLYTlOdUp4NjNPZU5laHlkamY3TS1kQ1RfUzZ4Rlg5T3pqVFdrYmItOEh0c3FHM1RnbXZnM3RpTWYyX3JLYVHSAWBBVV95cUxNTW1UVzRiQ1c5czI1LUNNMWNWMUZSQU5CN3B6WS1xdThVWVVycnBQc0xyQUt1RkMxNlpMUllfeVZMRVBhdThpZ0dXR3RlczRlVk43bVIxenY1NDdEenJEMTc?oc=5",
-     "source": "연합뉴스",
-     "time": "2026-11-27T06:00+09:00",
-     "category": "거시 · 금리",
-     "sources": 5,
-     "score": 25
+     "sources": 10,
+     "score": 44
     },
     {
      "rank": 4,
@@ -1341,18 +1348,18 @@
      "source": "연합뉴스",
      "time": "2026-11-27T09:31+09:00",
      "category": "국내 증시",
-     "sources": 3,
-     "score": 21
+     "sources": 6,
+     "score": 35
     },
     {
      "rank": 5,
-     "title": "국고채 금리, 기준금리 인상·매파적 점도표에 상승(종합)",
-     "link": "https://www.yna.co.kr/view/AKR20261126162551008",
+     "title": "대출 늘고 금리 오르며…은행 3분기까지 이자이익 48조원 넘어",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFB1dFBfdmJLNzVvbEFrbDZuLTctY0tLYTlOdUp4NjNPZU5laHlkamY3TS1kQ1RfUzZ4Rlg5T3pqVFdrYmItOEh0c3FHM1RnbXZnM3RpTWYyX3JLYVHSAWBBVV95cUxNTW1UVzRiQ1c5czI1LUNNMWNWMUZSQU5CN3B6WS1xdThVWVVycnBQc0xyQUt1RkMxNlpMUllfeVZMRVBhdThpZ0dXR3RlczRlVk43bVIxenY1NDdEenJEMTc?oc=5",
      "source": "연합뉴스",
-     "time": "2026-11-26T16:50+09:00",
+     "time": "2026-11-27T06:00+09:00",
      "category": "거시 · 금리",
-     "sources": 2,
-     "score": 17
+     "sources": 5,
+     "score": 25
     }
    ]
   },
@@ -1361,23 +1368,23 @@
    "items": [
     {
      "rank": 1,
+     "title": "코스닥 상승세 강해져 5%대 급등…매수 사이드카 발동",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE83eUQzakhZbjFMZUJlRnVrVENMdURiUEtOdDlfOV9RRGdwYXM2S0tMVGd4MU8xYm5HZVVNdko5YnRLUXM4di1xVXpGWmZ3S3ItbFFZaUhxWjJWTkHSAWBBVV95cUxOYUgwYlpWVE90aFg3LWl0QWRuUDFIckU1TEJvblh1bUtSaXRlY3ByNTcxSWhTXzAtNnJKYXhhVUFRQThGREVxNkRNMXBQNTAwZlA0T2VJNjNrNXJURUN4WWs?oc=5",
+     "source": "연합뉴스",
+     "time": "2026-11-27T10:29+09:00",
+     "category": "국내 증시",
+     "sources": 20,
+     "score": 95
+    },
+    {
+     "rank": 2,
      "title": "코스피 장중 상승폭 커져 2% 안팎 강세…코스닥 6%대 급등",
      "link": "https://www.yna.co.kr/view/AKR20261127070800008",
      "source": "연합뉴스",
      "time": "2026-11-27T11:13+09:00",
      "category": "국내 증시",
-     "sources": 22,
-     "score": 107
-    },
-    {
-     "rank": 2,
-     "title": "[외환] 원/달러 환율 0.5원 내린 1,342.7원(15:30 기준가)",
-     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1YWW9RUzFCaXVrX0JtMndvX19FXzFaYzlrZVhWM3Q4ZERHaklZTUFhNF90aGFSTmZ2cFhPNk1SZVM5bk9EeWNCYXhNSDV5R0lwcGVCcW1qQ1RaUEXSAWBBVV95cUxPZXVaRHFLaUNEM25mcnRtWUZXRGVRX1ZjSFp1dmxlYS1HaGdwTUNBRkNqOHJWcHpEY1Zaa2JfSjM3V243RnU5ek91SG5La1FaQzRKRzY5U2R0cTRtYXVweTU?oc=5",
-     "source": "연합뉴스",
-     "time": "2026-11-26T15:37+09:00",
-     "category": "환율 · 원자재",
-     "sources": 8,
-     "score": 48
+     "sources": 13,
+     "score": 68
     },
     {
      "rank": 3,
@@ -1386,38 +1393,140 @@
      "source": "연합뉴스",
      "time": "2026-11-26T17:13+09:00",
      "category": "기업 · 실적",
-     "sources": 9,
-     "score": 40
+     "sources": 10,
+     "score": 44
     },
     {
      "rank": 4,
+     "title": "[외환] 원/달러 환율 0.5원 내린 1,342.7원(15:30 기준가)",
+     "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1YWW9RUzFCaXVrX0JtMndvX19FXzFaYzlrZVhWM3Q4ZERHaklZTUFhNF90aGFSTmZ2cFhPNk1SZVM5bk9EeWNCYXhNSDV5R0lwcGVCcW1qQ1RaUEXSAWBBVV95cUxPZXVaRHFLaUNEM25mcnRtWUZXRGVRX1ZjSFp1dmxlYS1HaGdwTUNBRkNqOHJWcHpEY1Zaa2JfSjM3V243RnU5ek91SG5La1FaQzRKRzY5U2R0cTRtYXVweTU?oc=5",
+     "source": "연합뉴스",
+     "time": "2026-11-26T15:37+09:00",
+     "category": "환율 · 원자재",
+     "sources": 7,
+     "score": 44
+    },
+    {
+     "rank": 5,
      "title": "도이체방크 \"기술주 바닥 임박…내년 S&P 9,000 전망\"",
      "link": "https://www.yna.co.kr/view/AKR20261127023700009",
      "source": "연합뉴스",
      "time": "2026-11-27T08:34+09:00",
      "category": "해외 증시",
-     "sources": 7,
-     "score": 34
-    },
-    {
-     "rank": 5,
-     "title": "무신사, 3분기 영업익 196억원…작년 동기보다 67% 증가",
-     "link": "https://www.yna.co.kr/view/AKR20261127060200030",
-     "source": "연합뉴스",
-     "time": "2026-11-27T10:47+09:00",
-     "category": "기업 · 실적",
-     "sources": 4,
-     "score": 24
+     "sources": 9,
+     "score": 42
     }
    ]
   },
   {
    "name": "한국경제 · 증권",
-   "items": []
+   "items": [
+    {
+     "rank": 1,
+     "title": "10조원 풀지도 않았는데…외국인 돌변에 코스닥 5%대 급등",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9pWFltTkVETFRrbG5rNklOUGhvUUloTERkaGJOMVlwRHFqUWFjNEU4TGd4QWJMa3REWnRWRHJlaUFhalRXcEcybVNvWE11VVBoZTF5bW0wZHg4UQ?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-27T10:39+09:00",
+     "category": "국내 증시",
+     "sources": 20,
+     "score": 95
+    },
+    {
+     "rank": 2,
+     "title": "[오전시황] 증안펀드 기대에 코스닥 5%대 급등...코스피도 4800선 회복",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBtLTBFcGJZQjFwRTZDTnNnQjNENkZwMUc5ZzhRWEplWURMclpsemR2NG9IQUowek5BRmstazhBYXg5WUtQeTlmdnJiVFlhY3k2VFQzdGdlZ25oUQ?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-27T11:28+09:00",
+     "category": "국내 증시",
+     "sources": 13,
+     "score": 68
+    },
+    {
+     "rank": 3,
+     "title": "코스피 장 초반 강보합세…코스닥 1%대 상승",
+     "link": "https://www.hankyung.com/article/2026112739256",
+     "source": "한국경제",
+     "time": "2026-11-27T09:04+09:00",
+     "category": "국내 증시",
+     "sources": 6,
+     "score": 35
+    },
+    {
+     "rank": 4,
+     "title": "[마감시황] 장 막판 상승폭 반납한 코스피…0.29% 오른 4711.21 마감",
+     "link": "https://www.hankyung.com/article/202611262700i",
+     "source": "한국경제",
+     "time": "2026-11-26T16:08+09:00",
+     "category": "국내 증시",
+     "sources": 2,
+     "score": 14
+    },
+    {
+     "rank": 5,
+     "title": "금리보다 유가가 핵심 변수… '80달러 vs 130달러' 극과 극 전망 [2027년 대전망]",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9uaV90SlNrYm1JczVMcDg4N00zMWZHWlBMY3BqeVllN1Z6SG5udVZnMWtWMEZ0SXU0endOcGVlZzhwNkhKM29SWThCZlBJWVlMbXBrWldodkxGUQ?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-27T08:01+09:00",
+     "category": "환율 · 원자재",
+     "sources": 1,
+     "score": 12
+    }
+   ]
   },
   {
    "name": "한국경제 · 경제",
-   "items": []
+   "items": [
+    {
+     "rank": 1,
+     "title": "무신사 영업익 전년비 67% 증가…\"오프라인 확대, 뷰티 강화 효과\"",
+     "link": "https://www.hankyung.com/article/202611273840g",
+     "source": "한국경제",
+     "time": "2026-11-27T11:19+09:00",
+     "category": "기업 · 실적",
+     "sources": 5,
+     "score": 28
+    },
+    {
+     "rank": 2,
+     "title": "[밤 사이 해외뉴스 영상] \"우회로마저 막았다\" 엔비디아, 동남아 서버 출하 전격 중단",
+     "link": "https://www.hankyung.com/article/202611273726i",
+     "source": "한국경제",
+     "time": "2026-11-27T08:07+09:00",
+     "category": "해외 증시",
+     "sources": 5,
+     "score": 25
+    },
+    {
+     "rank": 3,
+     "title": "'한은 금리 인상 사이클 사실상 끝'…해외 증권사 '반전' 전망",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9aUGUwUXQ2ejg3cnAzRXVVMlFyNVpvenlfblpjTkdfQWZIR1pBNzIxdjVqenkyckFiUjAzWnNmRHJ2ZmVCT09nTm8ydHB4ZFVZRC1RXzFPLU1NZw?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-27T11:04+09:00",
+     "category": "거시 · 금리",
+     "sources": 2,
+     "score": 13
+    },
+    {
+     "rank": 4,
+     "title": "트럼프 추가 관세에 아시아 반발…미·중 휴전 위기",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1lczNhQUVjWl9yaGREdzRFN1RxZFVrQWZCRHRfbjJlblJCY2RucFR5ZjZ6bVEzSlVyMmFsSnlFOC1LMGtzWVhJTlo0UGV3YUJtVHBkdU8wNFRLQQ?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-27T08:31+09:00",
+     "category": "정책 · 무역",
+     "sources": 1,
+     "score": 9
+    },
+    {
+     "rank": 5,
+     "title": "[밤 사이 해외뉴스] 중간선거 끝나자마자 터진 트럼프의 관세 폭탄, 수십 개국 동시 압박",
+     "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBpMERLSUZqX3dFTFNvT1lDY0RZcjVBNFhsMzktVlhPNDRnTTZldGdaX3YyZzBGcmNHQktlTWxDdFpWRVQtSzFCVjMyNDJxUkRTUEZNRVAzOXhXQQ?oc=5",
+     "source": "한국경제",
+     "time": "2026-11-27T08:02+09:00",
+     "category": "정책 · 무역",
+     "sources": 1,
+     "score": 9
+    }
+   ]
   },
   {
    "name": "매일경제 · 증권",
@@ -1425,12 +1534,12 @@
     {
      "rank": 1,
      "title": "[속보] 코스닥 5%대 급등에 매수 사이드카 발동",
-     "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1uU2JOdWFkWEdlNjQ0X0Q1aE1tREtHYVhNVEhyWDg3R2Z0eXdMQ0g2VW1rT2FrMldFd0JNM3BzaTFvaEp3SUxCOUUyY0JxN3N3dmc?oc=5",
-     "source": "매일경제",
-     "time": "2026-11-27T10:25+09:00",
+     "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE01LTlsUEZqZm5iM0FRUWpOME9FU0VKZC1zRUVjWXhzdk1fZ3NoRjdDVjUtNDhGQUhJRC03ODRYZnVWQXZtRWwzcTNEQktqeUtjd2N5bGV3?oc=5",
+     "source": "중앙일보",
+     "time": "2026-11-27T10:24+09:00",
      "category": "국내 증시",
-     "sources": 22,
-     "score": 107
+     "sources": 20,
+     "score": 95
     },
     {
      "rank": 2,
@@ -1439,21 +1548,11 @@
      "source": "매일경제",
      "time": "2026-11-27T10:34+09:00",
      "category": "기업 · 실적",
-     "sources": 4,
-     "score": 24
+     "sources": 5,
+     "score": 28
     },
     {
      "rank": 3,
-     "title": "브랜드501 인수한 에이피알…증권가 “인수가 3900억은 솔직히” [오늘 나온 보고서]",
-     "link": "https://www.mk.co.kr/news/stock/12219844",
-     "source": "매일경제",
-     "time": "2026-11-27T08:53+09:00",
-     "category": "기업 · 실적",
-     "sources": 3,
-     "score": 15
-    },
-    {
-     "rank": 4,
      "title": "삼성SDI도 1.4조원 자사주 전량 소각",
      "link": "https://www.mk.co.kr/news/stock/12219678",
      "source": "매일경제",
@@ -1463,7 +1562,7 @@
      "score": 12
     },
     {
-     "rank": 5,
+     "rank": 4,
      "title": "금리·AI 수익성 우려에 관세까지…여의도 족집게 “반등 시그널 이때 나온다” [머니닥터 시장진단]",
      "link": "https://www.mk.co.kr/news/stock/12219730",
      "source": "매일경제",
@@ -1471,6 +1570,16 @@
      "category": "거시 · 금리",
      "sources": 1,
      "score": 11
+    },
+    {
+     "rank": 5,
+     "title": "삼성전자 로봇에 힘주자 관련주 줄줄이 급등…제닉스로보틱스 상한가",
+     "link": "https://www.mk.co.kr/news/stock/12219958",
+     "source": "매일경제",
+     "time": "2026-11-27T10:02+09:00",
+     "category": "기타",
+     "sources": 1,
+     "score": 8
     }
    ]
   },
@@ -1484,8 +1593,8 @@
      "source": "매일경제",
      "time": "2026-11-26T17:42+09:00",
      "category": "거시 · 금리",
-     "sources": 13,
-     "score": 68
+     "sources": 10,
+     "score": 50
     },
     {
      "rank": 2,
@@ -1509,16 +1618,6 @@
     },
     {
      "rank": 4,
-     "title": "은행 돈으로 저축銀 대출…중저신용자 금리 3~5%P 낮춘다",
-     "link": "https://www.mk.co.kr/news/economy/12219202",
-     "source": "매일경제",
-     "time": "2026-11-26T11:30+09:00",
-     "category": "거시 · 금리",
-     "sources": 2,
-     "score": 11
-    },
-    {
-     "rank": 5,
      "title": "환율, 물가, 마지막은 주가 … 한은 총재가 통화정책에 고려하는 우선 순위",
      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE0zZkRDZExLM1ZuZHNvYXJCdmwzdXI5eVFsUlk2b2Y5UEx2YkExR0NENjA4S0NHbUZGZXBQX0hTa2hLZG1VTWFyZERzYkZFVzE3LTdVcg?oc=5",
      "source": "매일경제",
@@ -1526,6 +1625,16 @@
      "category": "거시 · 금리",
      "sources": 1,
      "score": 10
+    },
+    {
+     "rank": 5,
+     "title": "中대사 “한미동맹 현대화, 中겨냥해선 안돼…관세전쟁 끝까지 응전”",
+     "link": "https://www.mk.co.kr/news/world/12219976",
+     "source": "매일경제",
+     "time": "2026-11-27T10:30+09:00",
+     "category": "정책 · 무역",
+     "sources": 1,
+     "score": 9
     }
    ]
   }
