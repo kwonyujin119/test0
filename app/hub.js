@@ -656,7 +656,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       const done = busy();
       if (safe === d.name) { // 파일 이름은 그대로이고 보이는 이름(괄호 · 쉼표 등)만 바뀜: 제목만 저장
         let deck = null;
-        try { deck = await ghTry(() => API.load(d.name)); deck.title = nn.trim(); await ghTry(() => API.save(d.name, deck, { keepTime: true })); fillMeta(d, deck.title, (deck.slides || []).length, deck.modified || deck.created || ''); if (deckMeta[d.name]) { deckMeta[d.name].title = deck.title; saveMeta(); } }
+        try { deck = await ghTry(() => API.load(d.name)); deck.title = nn.trim(); await ghTry(() => API.save(d.name, deck, { keepTime: true })); Draft.move(d.name, d.name, deck.title); fillMeta(d, deck.title, (deck.slides || []).length, deck.modified || deck.created || ''); if (deckMeta[d.name]) { deckMeta[d.name].title = deck.title; saveMeta(); } }
         catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
         done(); render(); toast('이름을 바꿨습니다', 2500); if (bus) bus.postMessage({ type: 'renamed', name: d.name, to: d.name, title: deck.title }); return;
       }
@@ -674,7 +674,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       catch (e) { done(); fail('이름 바꾸기 실패: ', e); return; }
       const newTitle = sameTitle ? deck.title : null;
       toast(sameTitle ? '이름을 바꿨습니다' : '파일 이름을 바꿨습니다 — 화면 제목은 따로 정한 것이라 그대로 두었습니다(편집기 맨 위에서 바꿀 수 있습니다)', sameTitle ? 2500 : 6000);
-      Draft.forget(safe); Draft.move(d.name, safe); // 이 기기에 남은 작업본도 새 이름으로
+      Draft.forget(safe); Draft.move(d.name, safe, deck.title); // 이 기기에 남은 작업본도 새 이름으로
       if (Folders.of(d.name)) Folders.do({ t: 'renameDeck', from: d.name, to: safe }, `이름 바꾼 교안 ${d.name} → ${safe}`); // 폴더도 새 이름으로
       removed.set(d.name, Date.now());
       /* 화면은 바로 바꿈: GitHub 목록이 따라올 때까지(최대 2분) 새 이름 카드를 그대로 둠 */
