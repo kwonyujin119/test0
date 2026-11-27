@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-25T11:35:13.000Z",
- "modified": "2026-11-27T07:44:16.727Z",
+ "modified": "2026-11-27T13:09:37.000Z",
  "footer": {
   "text": "",
   "num": true,
@@ -49,6 +49,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "pimg301a",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/particle-image.html?img=assets/pt37-cover-robot-high.jpg",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 0.6
     },
     {
      "id": "p7002",
@@ -371,6 +390,25 @@
      "enter": true,
      "delay": 5.2,
      "dur": 8
+    },
+    {
+     "id": "pimg301b",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/particle-image.html?img=assets/pt37-open-h-f1.jpg,assets/pt37-open-h-f2.jpg,assets/pt37-open-h-f3.jpg&hold=4",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 0.6
     },
     {
      "id": "q7017",
