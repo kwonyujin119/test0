@@ -1915,10 +1915,10 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
     const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return '#' + [m[1], m[2], m[3]].map(x => (+x).toString(16).padStart(2, '0')).join('');
     return '#000000';
   }
-  const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['rise', '마스크 위로 (솟아오르기)'], ['focus', '초점 맞추며'], ['count', '숫자 올라가기 (0 → 값)'], ['words', '단어씩 떠오르기 (키네틱)'], ['kenburns', '느린 확대 (배경 사진)'], ['float', '떠다니기 (계속)'], ['type', '타자 (한 글자씩)'], ['scan', '훑기 빛줄기 (계속)'], ['cycle4', '프레임 순환 (사진 겹쳐 바꾸기 · 계속)'], ['sheen', '빛 스침 (한 번 지나감)'], ['none', '효과 없음']];
+  const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['rise', '마스크 위로 (솟아오르기)'], ['focus', '초점 맞추며'], ['count', '숫자 올라가기 (0 → 값)'], ['words', '단어씩 떠오르기 (키네틱)'], ['kenburns', '느린 확대 (배경 사진)'], ['float', '떠다니기 (계속)'], ['type', '타자 (한 글자씩)'], ['scan', '훑기 빛줄기 (계속)'], ['cycle4', '프레임 순환 (사진 겹쳐 바꾸기 · 계속)'], ['sheen', '빛 스침 (한 번 지나감)'], ['cine', '시네마틱 제목 (빛나며 모임)'], ['none', '효과 없음']];
   const EMPHS = [['pulse', '두근 (크게)'], ['shake', '흔들기'], ['glow', '빛나기'], ['countdown', '실제 시간 카운트다운 (숫자 → 0)']];
   const SPEEDS = [['', '기본'], ['0.3', '빠르게'], ['0.5', '보통'], ['1', '느리게'], ['2', '아주 느리게']];
-  const TRANS = [['', '기본 (교안 설정)'], ['none', '없음'], ['fade', '페이드'], ['slide', '밀어내기'], ['up', '위로 밀기'], ['cover', '덮기'], ['wipe', '닦아내기'], ['zoom', '확대'], ['blur', '흐리게'], ['morph', '모핑 (같은 요소가 움직임)']];
+  const TRANS = [['', '기본 (교안 설정)'], ['none', '없음'], ['fade', '페이드'], ['slide', '밀어내기'], ['up', '위로 밀기'], ['cover', '덮기'], ['wipe', '닦아내기'], ['zoom', '확대'], ['blur', '흐리게'], ['morph', '모핑 (같은 요소가 움직임)'], ['warp', '워프 (방사 줌 블러)'], ['card', '3D 카드 축소'], ['portal', '포털 확장'], ['liquid', '물결 + 빗방울'], ['tear', '종이 찢기']];
   const DECORS = [['', '테마 기본'], ['none', '없음'], ['bar-left', '왼쪽 바'], ['bar-top', '위쪽 바'], ['band-bottom', '아래 띠'], ['corner', '모서리 원'], ['frame', '테두리'], ['grid', '모눈']];
   const LISTS = [['', '• 기본'], ['check', '✔ 체크'], ['arrow', '➜ 화살표'], ['dash', '– 줄표'], ['square', '■ 네모'], ['star', '★ 별'], ['none', '기호 없음']];
   const MASKS = [['', '사각형'], ['circle', '원'], ['hexagon', '육각형'], ['diamond', '마름모'], ['triangle', '삼각형'], ['arch', '아치'], ['blob', '자유 모양']];
@@ -2028,7 +2028,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
     return `${row('글꼴', `<select data-k="style.font">${fontOptions(st.font)}</select>`)}
       ${row('크기', num('style.fontSize', st.fontSize, 2, 8, 400) + choice('style.fontSize', st.fontSize, (o.sizes || [24, 32, 40, 56, 72]).map(v => [v, String(v)])))}
       ${row('색', colorIn('style.color', st.color) + '<div style="flex:3">' + swatches('style.color') + '</div>')}
-      ${row('스타일', tog('style.bold', st.bold, '<b>B</b>', '굵게 (Ctrl+B)') + tog('style.italic', st.italic, '<i>I</i>', '기울임 (Ctrl+I)') + tog('style.underline', st.underline, '<u>U</u>', '밑줄') + tog('style.tshadow', st.tshadow, '그림자', '글자 그림자 (사진 위 글자에 좋음)') + (e.type === 'text' || e.type === 'shape' ? tog('style.vertical', st.vertical, '세로', '세로 쓰기') : ''))}
+      ${row('스타일', tog('style.bold', st.bold, '<b>B</b>', '굵게 (Ctrl+B)') + tog('style.italic', st.italic, '<i>I</i>', '기울임 (Ctrl+I)') + tog('style.underline', st.underline, '<u>U</u>', '밑줄') + tog('style.tshadow', st.tshadow, '그림자', '글자 그림자 (사진 위 글자에 좋음)') + tog('style.tglow', st.tglow, '빛', '글자 빛 (어두운 배경의 표지 제목)') + (e.type === 'text' || e.type === 'shape' ? tog('style.vertical', st.vertical, '세로', '세로 쓰기') : ''))}
       ${row('외곽선', num('style.outline', st.outline || 0, 0.5, 0, 10, '글자 테두리 두께 (0 = 없음)') + colorIn('style.outlineColor', st.outlineColor || '#000000'))}
       ${row('가로 정렬', choice('style.align', st.align || 'left', [['left', icon('alignL', 16), '왼쪽'], ['center', icon('alignH', 16), '가운데'], ['right', icon('alignR', 16), '오른쪽']]))}
       ${o.valign === false ? '' : row('세로 정렬', choice('style.valign', st.valign || 'top', [['top', icon('alignT', 16), '위'], ['middle', icon('alignV', 16), '가운데'], ['bottom', icon('alignB', 16), '아래']]))}`;
@@ -2109,7 +2109,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
         ${line ? '' : row('그라데이션', `<button class="btn sm ${e.fill2 ? 'active' : ''}" data-act="gradToggle">${e.fill2 ? '켜짐' : '꺼짐'}</button>` + (e.fill2 ? colorIn('fill2', e.fill2) + num('gAngle', e.gAngle == null ? 90 : e.gAngle, 15, 0, 360, '방향 (도)') : ''))}
         ${row(line ? '굵기' : '선', num('strokeWidth', e.strokeWidth || 0, 1, 0, 60) + (line ? '' : colorIn('stroke', e.stroke || '$accent')) + tog('dash', e.dash, '점선'))}
         ${e.shape === 'rect' || e.shape === 'callout' ? row('모서리', num('radius', e.radius || 0, 4, 0, 400)) : ''}
-        ${row('효과', tog('shadow', e.shadow, '그림자') + (line ? '' : tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전')))}
+        ${row('효과', tog('shadow', e.shadow, '그림자') + (line ? '' : tog('glass', e.glass, '유리', '유리 카드: 뒤 배경이 흐리게 비침 (채우기는 반투명 색으로)') + tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전')))}
       </section>
       ${line ? '' : `<section><h4>도형 안 글자 <span class="muted" style="text-transform:none;font-weight:400">더블클릭으로 입력</span></h4>${fontRows(e, st)}
         ${row('안쪽 여백', num('style.padding', st.padding == null ? '' : st.padding, 4, 0, 300, '비우면 자동 (도형 크기의 4%·8%)'))}</section>`}`;
@@ -2811,7 +2811,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
   let styleClip = null;
   /* 서식 복사·붙여넣기: 종류별로 꾸밈 속성 전부 (같은 종류끼리는 그대로, 다른 종류끼리는 글자 서식과 공통 속성만) */
   const STYLE_KEYS = {
-    text: ['role', 'opacity'], shape: ['fill', 'fill2', 'fill2Op', 'gAngle', 'stroke', 'strokeWidth', 'dash', 'radius', 'shadow', 'opacity', 'flip', 'flipV'],
+    text: ['role', 'opacity'], shape: ['fill', 'fill2', 'fill2Op', 'gAngle', 'stroke', 'strokeWidth', 'dash', 'radius', 'shadow', 'glass', 'opacity', 'flip', 'flipV'],
     image: ['radius', 'shadow', 'border', 'borderColor', 'fit', 'mask', 'fx', 'flip', 'flipV', 'opacity'], table: ['header', 'band', 'firstCol', 'lines', 'headFill', 'headColor', 'lineColor', 'radius', 'opacity'],
     chart: ['values', 'legend', 'grid', 'axis', 'colors', 'unit', 'opacity'], embed: ['radius', 'shadow', 'opacity'], math: ['opacity'],
   };

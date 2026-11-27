@@ -551,7 +551,7 @@ function setFontStyles(box, st, theme) {
   box.style.lineHeight = st.lineHeight || 1.5;
   box.style.textAlign = st.align || 'left';
   box.style.letterSpacing = st.letterSpacing ? st.letterSpacing + 'px' : '';
-  box.style.textShadow = st.tshadow ? '0 4px 18px rgba(0,0,0,.45)' : '';
+  box.style.textShadow = [st.tshadow ? '0 4px 18px rgba(0,0,0,.45)' : '', st.tglow ? `0 0 28px ${st.tglowColor || 'rgba(255,214,170,.65)'}, 0 0 64px ${st.tglowColor || 'rgba(255,170,110,.35)'}` : ''].filter(Boolean).join(', '); // 글자 빛 (표지 제목)
   box.style.webkitTextStroke = st.outline ? `${st.outline}px ${themeColor(st.outlineColor || '#000000', theme)}` : '';
   box.style.writingMode = st.vertical ? 'vertical-rl' : '';
   box.style.setProperty('--pg', st.paraGap ? st.paraGap + 'px' : '0px');
@@ -618,7 +618,7 @@ function normalizeDeck(d) {
   }
   return d;
 }
-const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-count', 'anim-countdown', 'anim-words', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen'];
+const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-count', 'anim-countdown', 'anim-words', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen', 'anim-cine'];
 const ANIM_KEEP = ['kenburns', 'float', 'scan', 'cycle4']; // 계속 움직이는 효과: 다음 클릭에도 멈추지 않음
 const ANIM_INTRO = ['out', 'sheen']; // 발표 화면에서 장이 열릴 때 한 번만 쓰는 효과
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
@@ -783,6 +783,10 @@ function renderShape(e, node, theme, mode) {
     default: body = `<rect width="${w}" height="${h}" fill="${fill}"/>`;
   }
   if (e.shadow) node.style.filter = 'drop-shadow(0 12px 24px rgba(0,0,0,.25))';
+  if (e.glass && !isLine) { // 유리 카드: 뒤가 흐리게 비침
+    node.classList.add('el-glass'); node.style.borderRadius = Math.max(0, Math.min(r, w / 2, h / 2)) + 'px';
+    node.style.setProperty('--glass', (e.glass === true ? 20 : +e.glass || 20) + 'px');
+  }
   if (e.flip || e.flipV) body = `<g transform="translate(${e.flip ? w : 0},${e.flipV ? h : 0}) scale(${e.flip ? -1 : 1},${e.flipV ? -1 : 1})">${body}</g>`; // 좌우·상하 반전 (글자는 그대로)
   node.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">${defs}${body}</svg>`;
   // 도형 안 글자 (편집 화면에서는 비어 있어도 상자를 만들어 둠)
