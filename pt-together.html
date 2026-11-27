@@ -76,6 +76,10 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 6) 작업 규칙 문서 CLAUDE.md
 - 고치기 전에 최신 상태 받기 · 한 번에 한 가지만 · 고친 뒤 화면으로 확인 · 비밀 자료와 토큰은 절대 올리지 않기
 
+[편집기에서 꼭 지킬 것]
+- 끌기를 시작하면 이벤트가 바깥 상자로 모일 수 있으니, 두 번 눌러 글 고치기는 누른 자리의 요소를 직접 찾을 것
+- 글을 고치는 중에 다른 곳을 누르면 먼저 저장한 뒤 화면을 다시 그릴 것
+
 [하지 말 것]
 - npm · React 같은 빌드 도구 금지. HTML · CSS · JS 파일만
 - 비밀번호 · 토큰을 대화창에 붙여넣으라고 하지 말 것
@@ -83,6 +87,7 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 [끝나면 보고]
 - 사이트 주소와 예시 교안 발표 주소
 - 단축키를 하나씩 시험한 결과 표
+- 편집기에서 글 고치기 · 끌어 옮기기 · 크기 · 장 추가 · 순서 끌기 · 되돌리기 · 새로 고침 후 유지 · JSON 내려받기를 직접 시험한 결과 표
 - PC · 휴대폰 화면 캡처
 - 앞으로 내가 말로 시킬 수 있는 예시 5개 (예: &quot;3장 제목 바꿔 줘&quot;)</pre></section>
 <button class="copy next" type="button" data-t="2">다음 단계 → ② 업그레이드</button></main>
@@ -130,8 +135,8 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 - 파일 이름은 영어 소문자로, 용량은 500KB 이하로 줄여서
 끝나면 바뀐 장을 캡처해서 보여 줘.</pre></section>
 <button class="copy next" type="button" data-t="5">다음 단계 → ⑤ 퀄리티</button></main>
-<main id="tab5" data-h="AI 모션 · PT 기법으로 퀄리티 올리기" data-s="하나씩 복사하거나 [전부 한 번에 복사]." hidden>
-<section class="card on"><div class="step">5-1</div><h2>전부 한 번에</h2><p class="when">PT 툴과 교안이 나온 뒤</p><button class="copy" type="button">복사</button><pre class="fold">내가 만든 PT 툴에 아래 효과들을 하나씩 추가해 줘. 하나 끝날 때마다 예시 교안에서 직접 확인하고, 다음으로 넘어가. 라이브러리는 쓰지 말고 HTML · CSS · JS만.
+<main id="tab5" data-h="AI 모션 · PT 기법으로 퀄리티 올리기" data-s="프롬프트 하나에 효과 12가지가 모두 들어 있습니다. 복사해서 한 번에 붙여넣으세요." hidden>
+<section class="card on"><div class="step">5-1</div><h2>퀄리티 한 번에 올리기</h2><p class="when">PT 툴과 교안이 나온 뒤</p><button class="copy" type="button">복사</button><pre class="fold">내가 만든 PT 툴에 아래 효과들을 하나씩 추가해 줘. 하나 끝날 때마다 예시 교안에서 직접 확인하고, 다음으로 넘어가. 라이브러리는 쓰지 말고 HTML · CSS · JS만.
 
 1. 모든 장 등장 모션
 장이 열리면 요소가 위에서 아래로 0.1초 간격으로 차례로 나타나게 해 줘. 제목은 아래에서 떠오르게, 사진은 살짝 커지며 나타나게. 미리보기 · 인쇄 화면에는 효과 없이 완성된 모습으로 보이게.
@@ -170,18 +175,6 @@ footer { max-width:760px; margin:0 auto; padding:8px 16px 40px; color:var(--mute
 컴퓨터의 &#x27;움직임 줄이기&#x27; 설정을 켠 사람에게는 큰 움직임 대신 서서히 나타나기만 쓰게 해 줘. 글자는 24px 이상, 배경과 글자 대비는 4.5:1 이상 유지.
 
 [끝나면 보고] 효과별로 어느 장에서 볼 수 있는지 표로.</pre></section>
-<section class="card"><div class="step">5-2</div><h2>모든 장 등장 모션</h2><button class="copy" type="button">복사</button><pre>장이 열리면 요소가 위에서 아래로 0.1초 간격으로 차례로 나타나게 해 줘. 제목은 아래에서 떠오르게, 사진은 살짝 커지며 나타나게. 미리보기 · 인쇄 화면에는 효과 없이 완성된 모습으로 보이게.</pre></section>
-<section class="card"><div class="step">5-3</div><h2>클릭할 때마다 하나씩</h2><button class="copy" type="button">복사</button><pre>발표 중 클릭(→ · Space)할 때마다 카드 · 항목이 하나씩 나타나게 해 줘. 뒤로 가면 움직임 없이 사라지게. 편집기에서 요소마다 &#x27;몇 번째 클릭&#x27;을 고를 수 있게.</pre></section>
-<section class="card"><div class="step">5-4</div><h2>장 표지를 영화처럼</h2><button class="copy" type="button">복사</button><pre>장 표지에 들어가면 검은 막이 1초 동안 걷히고, 배경 사진이 20초 동안 아주 천천히 확대되게 해 줘. 큰 번호는 흐릿하다가 선명해지게.</pre></section>
-<section class="card"><div class="step">5-5</div><h2>제목 단어씩 떠오르기</h2><button class="copy" type="button">복사</button><pre>제목 글자를 단어 단위로 나눠 0.1초 간격으로 흐림에서 선명해지며 떠오르게 해 줘.</pre></section>
-<section class="card"><div class="step">5-6</div><h2>숫자 0부터 올라가기</h2><button class="copy" type="button">복사</button><pre>큰 숫자(예: 1,250명, 300만원)는 장이 열리면 0부터 그 값까지 1.5초 동안 올라가게 해 줘. 쉼표와 단위는 그대로.</pre></section>
-<section class="card"><div class="step">5-7</div><h2>실제 시간 카운트다운</h2><button class="copy" type="button">복사</button><pre>숫자 하나를 클릭하면 실제 초 단위로 0까지 줄어들게 해 줘(예: 42초). 줄어드는 동안 화면이 점점 어두워지고, 0이 되면 1.5초 뒤 다음 장으로 넘어가게.</pre></section>
-<section class="card"><div class="step">5-8</div><h2>강조: 빛나기 · 한 곳만 색</h2><button class="copy" type="button">복사</button><pre>강조하고 싶은 칸은 은은하게 한 번 빛나게 하고, 사진은 흑백으로 바꾼 뒤 중요한 부분만 색이 남게 하는 효과를 추가해 줘.</pre></section>
-<section class="card"><div class="step">5-9</div><h2>사진 위 글자 읽히게</h2><button class="copy" type="button">복사</button><pre>배경 사진 위에 글이 있으면 글 쪽을 어둡게(또는 밝게) 덮는 그라데이션을 깔아 글이 어디서나 읽히게 해 줘.</pre></section>
-<section class="card"><div class="step">5-10</div><h2>스포트라이트 · 돋보기</h2><button class="copy" type="button">복사</button><pre>사진에서 한 곳만 밝게 남기고 주변을 어둡게 하는 스포트라이트, 한 부분을 동그랗게 확대하는 돋보기 효과를 클릭 단계로 쓸 수 있게 해 줘.</pre></section>
-<section class="card"><div class="step">5-11</div><h2>진행 표시</h2><button class="copy" type="button">복사</button><pre>발표 화면 위쪽에 얇은 진행 막대와 &#x27;지금 몇 번째 파트&#x27; 표시를 넣어 줘. 장 표지에는 전체 파트 중 현재 파트만 진하게.</pre></section>
-<section class="card"><div class="step">5-12</div><h2>장 넘김 효과</h2><button class="copy" type="button">복사</button><pre>장 전환을 장마다 고를 수 있게 해 줘: 서서히 · 흐림 · 밀어내기 · 확대. 기본은 서서히(0.5초).</pre></section>
-<section class="card"><div class="step">5-13</div><h2>편하게 보는 설정</h2><button class="copy" type="button">복사</button><pre>컴퓨터의 &#x27;움직임 줄이기&#x27; 설정을 켠 사람에게는 큰 움직임 대신 서서히 나타나기만 쓰게 해 줘. 글자는 24px 이상, 배경과 글자 대비는 4.5:1 이상 유지.</pre></section>
 </main>
 <footer>인천소방학교 지휘역량강화센터 · 공개 페이지입니다. 비밀 자료나 개인정보를 프롬프트에 넣지 마세요.</footer>
 <script>
