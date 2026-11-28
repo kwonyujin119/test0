@@ -3,7 +3,8 @@ SACHIL:47 서버(교안의 guestbook.src)의 공개 방명록(/api/guestbook: �
 교안 파일에 한 장당 guestbook.per(기본 15)개씩 슬라이드(gb: true)로 저장한다. 최신 글이 먼저.
 화면 배치는 app/common.js 의 Guestbook.expand 와 같다(발표 화면은 열 때 최신으로 다시 채움).
 서버에 못 닿거나 응답이 이상하면 아무것도 바꾸지 않는다(저장된 방명록 장을 지우지 않음).
-바뀐 것이 있으면 0, 없으면 3 으로 끝난다(워크플로가 커밋 여부를 고름)."""
+바뀐 것이 있으면 0, 없으면 3 으로 끝난다(워크플로가 커밋 여부를 고름).
+저장된 글이 있는데 서버가 빈 목록을 주면 지우지 않는다(3)."""
 import datetime, json, math, re, sys, urllib.request
 
 DECK = 'decks/999. SACHIL 방명록.json'
@@ -17,6 +18,8 @@ def esc(s):
 
 def when(ts):
     try:
+        if float(ts) <= 0:
+            return ''
         d = datetime.datetime.fromtimestamp(float(ts), KST)
     except (TypeError, ValueError, OverflowError, OSError):
         return ''
@@ -24,7 +27,11 @@ def when(ts):
 
 
 def build(items, g):
-    per = max(1, min(30, int(g.get('per') or 15)))
+    try:
+        per = int(float(g.get('per') or 15))
+    except (TypeError, ValueError):
+        per = 15
+    per = max(1, min(30, per))
     cols = 5
     rows = math.ceil(per / cols)
     X0, Y0, GAP = 80, 180, 24
@@ -32,8 +39,11 @@ def build(items, g):
     H = (1040 - Y0 - GAP * (rows - 1)) // rows
     iw, ih = W - 44, H - 44 - 26
 
+    def u16(t):   # 화면(JS)과 같게 UTF-16 단위로 센다(이모지 = 2)
+        return len(t.encode('utf-16-le')) // 2
+
     def lines(txt, fs):
-        return sum(max(1, math.ceil(len(l) * fs / iw)) for l in txt.split('\n'))
+        return sum(max(1, math.ceil(u16(l) * fs / iw)) for l in txt.split('\n'))
 
     pages = max(1, math.ceil(len(items) / per))
     out = []
@@ -51,7 +61,7 @@ def build(items, g):
         for i, m in enumerate(part):
             t = re.sub(r'\n{3,}', '\n\n', m['text'].strip())
             fs = next((f for f in (32, 28, 24, 21, 19, 17) if lines(t, f) * f * 1.45 <= ih), 17)
-            while lines(t, fs) * fs * 1.45 > ih and len(t) > 10:
+            while lines(t, fs) * fs * 1.45 > ih and u16(t) > 10:
                 t = t[:int(len(t) * 0.9)].rstrip() + '…'
             tm = when(m.get('ts'))
             els.append({'id': f'gb{k + 1}c{i + 1}', 'type': 'text', 'role': 'body', 'step': 0,
@@ -83,10 +93,14 @@ def main():
     items = [x for x in items if isinstance(x, dict) and isinstance(x.get('text'), str) and x['text'].strip()][::-1]
     new = build(items, g)
     old = [s for s in deck.get('slides', []) if s.get('gb')]
+    had = sum(1 for s in old for e in s.get('elements', []) if re.fullmatch(r'gb\d+c\d+', str(e.get('id', ''))))
+    if had and not items:   # 저장된 글이 있는데 서버가 빈 목록 — 방을 비웠거나 서버를 새로 깐 경우일 수 있어 지우지 않는다
+        print('서버 목록이 비어 있음 — 저장된', had, '개를 그대로 둠'); return 3
     if old == new:
         print('바뀐 것 없음 · 글', len(items)); return 3
     deck['slides'] = [s for s in deck.get('slides', []) if not s.get('gb')] + new
-    deck['modified'] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+    # modified(저장 시각)는 바꾸지 않는다 — 편집기에서 999를 열어 둔 사람에게 '다른 곳에서 저장됨' 창이 계속 뜨지 않게.
+    # 편집기가 옛 방명록 장으로 저장해도 다음 실행에서 다시 채운다.
     with open(DECK, 'w', encoding='utf-8') as f:
         f.write(json.dumps(deck, ensure_ascii=False, indent=1))
     print('저장 · 글', len(items), '· 방명록 장', len(new)); return 0

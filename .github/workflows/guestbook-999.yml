@@ -33,9 +33,9 @@ jobs:
             if [ $rc -eq 3 ]; then exit 0; fi
             if [ $rc -ne 0 ]; then exit $rc; fi
             git add "decks/999. SACHIL 방명록.json"
-            git commit -q -m "교안 저장: 999. SACHIL 방명록 (방명록 자동 저장)"
+            git commit -q -m "방명록 자동 저장: 999. SACHIL 방명록 (bot)"
             if git push -q origin HEAD:main; then
-              gh workflow run pages.yml --ref main
+              gh workflow run pages.yml --ref main || { sleep 10; gh workflow run pages.yml --ref main; } || echo "::warning::Pages 배포를 부르지 못함 — 다음 푸시 때 반영"
               exit 0
             fi
             sleep 5
