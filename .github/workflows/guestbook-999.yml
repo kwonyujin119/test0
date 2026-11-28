@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '*/10 * * * *'
   workflow_dispatch:
+    inputs:
+      allow_empty:
+        description: '방명록 글을 모두 지웠을 때 교안의 방명록 장도 비우기'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -24,6 +29,7 @@ jobs:
       - name: Save guestbook into deck 999
         env:
           GH_TOKEN: ${{ github.token }}
+          GB_ALLOW_EMPTY: ${{ inputs.allow_empty && '1' || '0' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

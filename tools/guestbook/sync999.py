@@ -5,7 +5,7 @@ SACHIL:47 서버(교안의 guestbook.src)의 공개 방명록(/api/guestbook: �
 서버에 못 닿거나 응답이 이상하면 아무것도 바꾸지 않는다(저장된 방명록 장을 지우지 않음).
 바뀐 것이 있으면 0, 없으면 3 으로 끝난다(워크플로가 커밋 여부를 고름).
 저장된 글이 있는데 서버가 빈 목록을 주면 지우지 않는다(3)."""
-import datetime, json, math, re, sys, urllib.request
+import datetime, json, math, os, re, sys, urllib.request
 
 DECK = 'decks/999. SACHIL 방명록.json'
 KST = datetime.timezone(datetime.timedelta(hours=9))
@@ -94,7 +94,7 @@ def main():
     new = build(items, g)
     old = [s for s in deck.get('slides', []) if s.get('gb')]
     had = sum(1 for s in old for e in s.get('elements', []) if re.fullmatch(r'gb\d+c\d+', str(e.get('id', ''))))
-    if had and not items:   # 저장된 글이 있는데 서버가 빈 목록 — 방을 비웠거나 서버를 새로 깐 경우일 수 있어 지우지 않는다
+    if had and not items and os.environ.get('GB_ALLOW_EMPTY') != '1':   # 관리자가 일부러 모두 지웠으면 Actions 수동 실행에서 '비우기 허용'을 켜고 돌린다   # 저장된 글이 있는데 서버가 빈 목록 — 방을 비웠거나 서버를 새로 깐 경우일 수 있어 지우지 않는다
         print('서버 목록이 비어 있음 — 저장된', had, '개를 그대로 둠'); return 3
     if old == new:
         print('바뀐 것 없음 · 글', len(items)); return 3
