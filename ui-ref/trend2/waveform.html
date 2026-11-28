@@ -1,0 +1,7 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>음성 파형</title><link rel="stylesheet" href="../trend/base.css"><style>.w{width:70vw;text-align:center}.bars{display:flex;align-items:center;justify-content:center;gap:.5vw;height:40vh}
+.bars i{width:.9vw;border-radius:9px;background:linear-gradient(#6EA8FF,#2457D6);height:2vh}
+.r{display:inline-flex;align-items:center;gap:1vw;font-size:3.2vh;padding:1.4vh 2vw;border-radius:999px;background:#B3261E22;border:1px solid #B3261E;margin-bottom:5vh}.r b{width:1.6vh;height:1.6vh;border-radius:50%;background:#FF5A4E;animation:bk 1s infinite}@keyframes bk{50%{opacity:.2}}
+p{font-size:3.4vh;margin-top:5vh;min-height:5vh}</style></head><body><div class="w"><div class="r"><b></b>무전 수신 중 · 지휘 1</div><div class="bars" id="b"></div><p id="t"></p></div><script>const b=document.getElementById('b'),t=document.getElementById('t');const N=48;const is=[];for(let i=0;i<N;i++){const e=document.createElement('i');b.appendChild(e);is.push(e)}
+const L=['「지휘 1, 3층 요구조자 2명 확인」','「굴절차 전개, 남측 창문으로 진입」','「1번 관창 2층 내부 공격 개시」'];let li=0,ci=0,talk=1,t0=performance.now();
+(function f(n){const s=(n-t0)/1000;is.forEach((e,i)=>{const a=talk?(.25+.75*Math.abs(Math.sin(s*7+i*.5)*Math.sin(s*2.3+i*.17))):0.05;e.style.height=(2+a*36)+'vh'});requestAnimationFrame(f)})(t0);
+setInterval(()=>{const L0=L[li];if(ci<=L0.length){t.textContent=L0.slice(0,ci);ci++;talk=1}else{talk=0;if(ci++>L0.length+25){li=(li+1)%L.length;ci=0}}},55);</script></body></html>

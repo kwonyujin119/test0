@@ -1,0 +1,6 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>격자 점등 배경</title><link rel="stylesheet" href="../trend/base.css"><style>body{background:#07090E}
+.g{position:absolute;inset:0;display:grid;grid-template-columns:repeat(32,1fr);grid-template-rows:repeat(18,1fr)}
+.g i{border:1px solid #141A26;transition:background 1.2s}
+.g i.on{background:rgba(255,107,53,.35);transition:background .15s}
+h1{position:relative;font-size:10vh;margin:0;text-align:center;text-shadow:0 0 4vh #000}p{position:relative;text-align:center;font-size:3.2vh;opacity:.8}</style></head><body><div class="g" id="g"></div><div><h1>화재 대응 체계</h1><p>구역마다 불이 켜지듯 — 표지 · 장 표지 배경</p></div><script>const g=document.getElementById('g');for(let i=0;i<32*18;i++)g.appendChild(document.createElement('i'));const cs=g.children;
+setInterval(()=>{for(let k=0;k<6;k++){const c=cs[Math.floor(Math.random()*cs.length)];c.classList.add('on');setTimeout(()=>c.classList.remove('on'),300)}},120);</script></body></html>

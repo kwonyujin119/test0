@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>원형 진행률</title><link rel="stylesheet" href="../trend/base.css"><style>.g{display:flex;gap:5vw}.c{text-align:center}
+svg{width:30vh;height:30vh;transform:rotate(-90deg)}circle{fill:none;stroke-width:9}
+.bg{stroke:#1E2533}.fg{stroke-linecap:round;transition:stroke-dashoffset 1.8s cubic-bezier(.2,.8,.2,1)}
+.v{margin-top:-19vh;height:19vh;font-size:6.5vh;font-weight:800;font-variant-numeric:tabular-nums}
+.c p{font-size:2.8vh;opacity:.8;margin:0}</style></head><body><div class="g" id="g"></div><script>const D=[['소방계획 수립',96,'#0F7B6C'],['자위소방대 훈련',72,'#2457D6'],['피난 유도 훈련',48,'#FF6B35']],g=document.getElementById('g');const C=2*Math.PI*45;
+const els=D.map(([n,v,c])=>{const d=document.createElement('div');d.className='c';d.innerHTML=`<svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="45"/><circle class="fg" cx="50" cy="50" r="45" stroke="${c}" stroke-dasharray="${C}" stroke-dashoffset="${C}"/></svg><div class="v">0%</div><p>${n}</p>`;g.appendChild(d);return[d,v]});
+function run(){els.forEach(([d,v])=>{const f=d.querySelector('.fg'),t=d.querySelector('.v');f.style.transition='none';f.style.strokeDashoffset=C;t.textContent='0%';requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='';f.style.strokeDashoffset=C*(1-v/100);const t0=performance.now();(function a(n){const p=Math.min(1,(n-t0)/1800),e=1-Math.pow(1-p,3);t.textContent=Math.round(v*e)+'%';if(p<1)requestAnimationFrame(a)})(t0)}))})}
+setTimeout(run,300);setInterval(run,5500);</script></body></html>

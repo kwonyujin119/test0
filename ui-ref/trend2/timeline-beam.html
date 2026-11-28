@@ -1,0 +1,15 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>타임라인 빔</title><link rel="stylesheet" href="../trend/base.css"><style>.w{position:relative;width:70vw;padding-left:5vw}
+.ln{position:absolute;left:2vw;top:2vh;bottom:2vh;width:3px;background:#232B3A;border-radius:3px}
+.bm{position:absolute;left:2vw;top:2vh;width:3px;height:0;background:linear-gradient(#FF8A4C,#FF3D3D);box-shadow:0 0 1.6vh #FF6B35;border-radius:3px}
+.e{position:relative;margin:4.4vh 0;opacity:.3;transition:opacity .5s}
+.e.on{opacity:1}.e::before{content:"";position:absolute;left:calc(-3vw - .9vh);top:1vh;width:1.8vh;height:1.8vh;border-radius:50%;background:#232B3A;transition:.5s}
+.e.on::before{background:#FF6B35;box-shadow:0 0 1.6vh #FF6B35}
+.e b{font-size:3.6vh;color:#FF8A4C;margin-right:1.6vw}.e span{font-size:3.4vh}</style></head><body><div class="w"><div class="ln"></div><div class="bm" id="bm"></div>
+<div class="e"><b>07:32</b><span>신고 접수 — 1층 응급실 천장에서 연기</span></div>
+<div class="e"><b>07:35</b><span>선착대 도착 · 이미 2층까지 연기 확산</span></div>
+<div class="e"><b>07:41</b><span>대응 2단계 발령 · 인명 구조 집중</span></div>
+<div class="e"><b>08:13</b><span>초진 — 방화문 철거로 계단실이 굴뚝 역할</span></div>
+<div class="e"><b>10:26</b><span>완진 · 교훈: 방화구획이 생명을 지킨다</span></div></div><script>const es=[...document.querySelectorAll('.e')],bm=document.getElementById('bm'),w=document.querySelector('.w');let k=0;
+function st(){if(k>es.length){k=0;es.forEach(e=>e.classList.remove('on'));bm.style.transition='none';bm.style.height=0;requestAnimationFrame(()=>bm.style.transition='height .9s ease');}
+else{const e=es[Math.min(k,es.length)-1];if(e){e.classList.add('on');bm.style.height=(e.offsetTop+e.offsetHeight/2)+'px'}}k++}
+bm.style.transition='height .9s ease';setInterval(st,1300);</script></body></html>

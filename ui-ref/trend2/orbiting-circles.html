@@ -1,0 +1,9 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>궤도 아이콘</title><link rel="stylesheet" href="../trend/base.css"><style>.w{position:relative;width:78vh;height:78vh}
+.ring{position:absolute;inset:0;margin:auto;border-radius:50%;border:1px dashed #3A4458}
+.ctr{position:absolute;inset:0;margin:auto;width:17vh;height:17vh;border-radius:50%;background:#B3261E;display:grid;place-items:center;font-size:3.1vh;font-weight:800;text-align:center;line-height:1.2;box-shadow:0 0 5vh #B3261E88}
+.o{position:absolute;left:50%;top:50%;width:0;height:0;animation:o linear infinite}
+.o span{position:absolute;transform:translate(-50%,-50%);padding:1.1vh 1.6vh;border-radius:999px;background:#151B27;border:1px solid #2E3850;font-size:2.4vh;white-space:nowrap;animation:k linear infinite}
+@keyframes o{to{transform:rotate(360deg)}}@keyframes k{to{transform:translate(-50%,-50%) rotate(-360deg)}}</style></head><body><div class="w" id="w"><div class="ctr">현장<br>지휘관</div></div><script>const w=document.getElementById('w');const R=[[24,['경찰','한전','가스']],[37,['구급대','구조대','진압대','의료기관','시청']]];
+R.forEach(([r,names],ri)=>{const g=document.createElement('div');g.className='ring';g.style.width=g.style.height=(2*r)+'vh';w.appendChild(g);
+names.forEach((n,i)=>{const o=document.createElement('div');o.className='o';const d=(ri?40:26)+'s';o.style.animationDuration=d;o.style.animationDelay=(-i/names.length*parseFloat(d))+'s';if(ri)o.style.animationDirection='reverse';
+o.innerHTML=`<span style="left:${r}vh;animation-duration:${d};animation-delay:${-i/names.length*parseFloat(d)}s;${ri?'animation-direction:reverse':''}">${n}</span>`;w.appendChild(o)})});</script></body></html>

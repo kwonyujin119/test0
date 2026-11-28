@@ -1,0 +1,4 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>회전 단어</title><link rel="stylesheet" href="../trend/base.css"><style>h1{font-size:10vh;font-weight:800;margin:0;display:flex;align-items:center;gap:2vw}
+.box{display:inline-block;padding:1vh 2.4vw;border-radius:20px;background:#FF6B35;color:#14161B;overflow:hidden;height:1.35em;line-height:1.35;transition:width .5s cubic-bezier(.3,.7,.2,1);text-align:center}
+.box span{display:block;animation:rt .7s cubic-bezier(.2,.8,.2,1) both}@keyframes rt{from{transform:translateY(110%)}}
+p{font-size:3vh;opacity:.7;text-align:center}</style></head><body><div><h1>초기 대응은 <span class="box" id="b"><span>소화</span></span></h1><p>관계인의 3가지 의무 — 화재 발생 시 순서대로</p></div><script>const W=['소화','통보','피난'],b=document.getElementById('b');let k=0;setInterval(()=>{k=(k+1)%W.length;b.innerHTML='<span>'+W[k]+'</span>'},1800);</script></body></html>
