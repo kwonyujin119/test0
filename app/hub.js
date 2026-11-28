@@ -753,6 +753,9 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       it.innerHTML = `<div class="fp-thumb loading"></div><div class="fp-text"><div class="fp-title">${esc(d.title)}</div><div class="fp-meta">${d.slides !== '' ? `슬라이드 ${d.slides}장` : ''}${t ? ' · ' + esc(t) : ''}</div></div>${GUEST ? '' : `<button class="btn sm icon ghost fp-play" type="button" title="발표" aria-label="${esc(d.title)} 발표">${icon('play', 14)}</button>`}`;
       it.onclick = (ev) => { if (ev.target.closest('.fp-play')) { openPresent(d.name); hidePeek(); return; } openEditor(d.name); };
       it.onkeydown = (ev) => { if (ev.key === 'Enter') openEditor(d.name); };
+      /* 오른쪽 클릭 · 길게 누르기 · 메뉴 키: 목록 카드와 같은 메뉴 (편집 · 발표 · 새 탭 · 폴더 옮기기 · 사본 · 이름 바꾸기 · 링크 · 받기 · 삭제).
+         메뉴를 열면 미리보기 창은 닫고, 일하는 동안은 폴더 카드를 흐리게 */
+      pressMenu(it, d, card, (at) => { hidePeek(); actionMenu(null, d, card, at); });
       list.appendChild(it);
       const th = it.querySelector('.fp-thumb');
       loadDeck(d).then(deck => { if (deck.slides && deck.slides.length && el.isConnected) drawSlide(th, deck.slides[0], deck); else th.classList.remove('loading'); }).catch(() => th.classList.remove('loading'));
