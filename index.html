@@ -40,7 +40,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 /* 머리 · 꼬리 */
 
 /* 무대: 이 상자 안에 마우스가 있는 동안 열려 있음 */
-.stage { --rxmax: 320px; --rymax: 225px; --rx: 320px; --ry: 225px; --cw: 210px; --ch: 236px; /* --rx · --ry 는 JS 가 화면 크기에 맞춰 줄임 (폴드 펼친 화면처럼 네모난 화면) */
+.stage { --rxmax: 320px; --rymax: 225px; --rx: 320px; --ry: 225px; --cw: 210px; --ch: 210px; /* --rx · --ry 는 JS 가 화면 크기에 맞춰 줄임 (폴드 펼친 화면처럼 네모난 화면) */
   position: fixed; inset: 0; z-index: 2; display: grid; place-items: center; perspective: 1400px; }
 .orbit { position: relative; width: calc(var(--rx) * 2 + var(--cw)); height: calc(var(--ry) * 2 + var(--ch)); max-width: 100vw; max-height: 100dvh; display: grid; place-items: center; transform-style: preserve-3d; }
 
@@ -57,6 +57,21 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 .hub .body { position: absolute; inset: 0; transform: rotateY(var(--ty, 0deg)) rotateX(var(--tx, 0deg)); transition: transform .6s cubic-bezier(.2,.8,.2,1); animation: float 5s ease-in-out infinite; }
 .hub img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; -webkit-user-drag: none; } /* drop-shadow 필터는 3D 회전과 겹치면 캐릭터 둘레에 네모 자국을 남겨서 쓰지 않음 — 빛은 아래 .hub::before 로 */
 .hub::before { content: ''; position: absolute; left: -30%; right: -30%; top: 8%; bottom: 4%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(90,140,255,.22), transparent 70%); }
+
+/* 47 캐릭터 아우라: ① 숨 쉬는 후광 ② 뒤에서 천천히 도는 빛 고리 ③ 위로 떠오르는 불씨
+   (그림에 drop-shadow · blur 필터를 걸면 3D 회전과 겹쳐 캐릭터 둘레에 네모 자국이 생겨서, 빛은 그라데이션 층으로만) */
+.aura { position: absolute; left: 50%; top: 46%; width: 175%; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; z-index: -1; }
+.aura .au1 { position: absolute; inset: -8%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,214,90,.55), rgba(255,190,60,.22) 32%, rgba(90,140,255,.28) 54%, transparent 76%); animation: breathe 4s ease-in-out infinite; }
+.aura .au2 { position: absolute; inset: 6%; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0 10%, rgba(255,210,63,.85) 18%, transparent 28% 50%, rgba(90,160,255,.8) 60%, transparent 70% 100%);
+  -webkit-mask: radial-gradient(closest-side, transparent 78%, #000 84%, #000 90%, transparent 96%); mask: radial-gradient(closest-side, transparent 78%, #000 84%, #000 90%, transparent 96%); animation: spin 12s linear infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(.94); opacity: .8; } 50% { transform: scale(1.08); opacity: 1; } }
+.aura .sp { position: absolute; bottom: 18%; width: 4px; height: 4px; border-radius: 50%; background: #ffd23f; box-shadow: 0 0 8px #ffd23f; opacity: 0; animation: ember 4.2s ease-in infinite; }
+.aura .sp:nth-child(3) { left: 30%; animation-delay: .3s; } .aura .sp:nth-child(4) { left: 62%; animation-delay: 1.1s; background: #8fb4ff; box-shadow: 0 0 8px #8fb4ff; }
+.aura .sp:nth-child(5) { left: 45%; animation-delay: 1.9s; } .aura .sp:nth-child(6) { left: 72%; animation-delay: 2.6s; }
+.aura .sp:nth-child(7) { left: 22%; animation-delay: 3.2s; background: #8fb4ff; box-shadow: 0 0 8px #8fb4ff; } .aura .sp:nth-child(8) { left: 55%; animation-delay: 3.8s; }
+@keyframes ember { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-220px) scale(.4); opacity: 0; } }
+.open-all .aura .au1 { animation-duration: 2.4s; }
+.hub.dragging .aura { opacity: .4; }
 @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
 .hub:focus-visible { outline: none; } .hub:focus-visible .body img { filter: drop-shadow(0 0 0 2px var(--gold)) drop-shadow(0 0 18px var(--gold)); }
 .hub.dragging { cursor: grabbing; transition: none; z-index: 9; }
@@ -79,14 +94,8 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
   background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.02) 50%), rgba(12,18,36,.72);
   box-shadow: 0 0 0 1px rgba(255,255,255,.09) inset, 0 30px 60px -20px rgba(0,0,0,.7), 0 0 50px -18px var(--c);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-.card .art { position: absolute; left: 0; right: 0; top: 0; height: 58%; overflow: hidden; }
-.card .art img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.08); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
-.card .art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(12,18,36,.95)); }
-.card .meta { position: absolute; left: 18px; right: 18px; bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-.card .no { font-size: 10.5px; letter-spacing: .16em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c); font-weight: 700; }
-.card b { font-size: 28px; white-space: nowrap; font-weight: 800; letter-spacing: .06em; line-height: 1; }
-.card small { font-size: 12.5px; color: var(--dim); letter-spacing: .01em; }
-.card .go { position: absolute; right: 16px; bottom: 16px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 22%, transparent); color: var(--c); font-size: 17px; transition: transform .3s, background .3s; }
+.card .art { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; } /* 정사각 카드에 그림을 가득 (그림 속 D · P · V · S 가 이름) */
+.card .art img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.02); transition: transform .6s cubic-bezier(.2,.8,.2,1); }
 /* 샤인 보더: 가장자리를 도는 빛 + 표면 반사 */
 .card .rim { position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
   background: conic-gradient(from var(--spin, 0deg), transparent 0 70%, var(--c) 80%, #fff 84%, var(--c) 88%, transparent 96%);
@@ -95,8 +104,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
   background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.65), transparent 45%); }
 .card:hover .rim, .card:focus-visible .rim, .card.drop-on .rim { opacity: 1; animation: rim 2.4s linear infinite; }
 .card:hover .glare, .card:focus-visible .glare { opacity: 1; }
-.card:hover .art img { transform: scale(1.16); }
-.card:hover .go, .card:focus-visible .go { transform: translateX(3px); background: var(--c); color: #0b1020; }
+.card:hover .art img { transform: scale(1.08); }
 @property --spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @keyframes rim { to { --spin: 360deg; } }
 .card[data-ws="doc"] { --c: var(--doc); } .card[data-ws="pres"] { --c: var(--pres); } .card[data-ws="video"] { --c: var(--video); } .card[data-ws="secret"] { --c: var(--secret); }
@@ -104,7 +112,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 .card[data-pos="1"]  { --x: var(--rx);            --y: calc(var(--ry) * -1); --rz: 4deg; }
 .card[data-pos="5"]  { --x: var(--rx);            --y: var(--ry);            --rz: -4deg; }
 .card[data-pos="7"]  { --x: calc(var(--rx) * -1); --y: var(--ry);            --rz: 4deg; }
-.card.locked .art img { filter: grayscale(.7) brightness(.6); }
 .card .lock { display: none; position: absolute; top: 12px; right: 12px; z-index: 2; padding: 7px; line-height: 0; border-radius: 999px; font-size: 11px; letter-spacing: .08em; background: rgba(6,10,21,.7); color: var(--ink); box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset; }
 .card.locked .lock { display: block; }
 .card.drop-on .in { box-shadow: 0 0 0 2px var(--c) inset, 0 0 70px -6px var(--c); }
@@ -143,27 +150,24 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 
 /* 휴대폰: 카드는 위 둘 · 아래 둘, 캐릭터는 작게 */
 @media (max-width: 640px) {
-  .stage { --rxmax: 92px; --rymax: 262px; --cw: 160px; --ch: 168px; }
+  .stage { --rxmax: 92px; --rymax: 262px; --cw: 160px; --ch: 160px; }
   .hub { width: 112px; height: 218px; }
   .pad { top: calc(50% + 92px); width: 220px; height: 220px; margin: -110px 0 0 -110px; }
-  .card b { font-size: 22px; } .card small { display: none; } .card .meta { left: 14px; bottom: 13px; gap: 4px; }
-  .card .go { width: 28px; height: 28px; right: 12px; bottom: 12px; font-size: 14px; }
-  .card .art { height: 52%; }
   .card[data-pos] { --rz: 0deg; }
   .modal-bg .ws-gate-modal { min-width: 0; padding-top: 70px; }
 }
 /* 갤럭시 폴드 접은 화면(커버 약 344px)처럼 아주 좁은 화면: 카드를 조금 좁게 */
-@media (max-width: 380px) { .stage { --cw: 146px; --ch: 160px; } .card b { font-size: 20px; } }
+@media (max-width: 380px) { .stage { --cw: 146px; --ch: 146px; } }
 /* 갤럭시 폴드 펼친 화면 · 작은 태블릿 (거의 정사각형): 카드와 캐릭터를 한 단계 작게 */
 @media (min-width: 641px) and (max-width: 960px) {
-  .stage { --rymax: 250px; --cw: 188px; --ch: 210px; }
+  .stage { --rymax: 250px; --cw: 188px; --ch: 188px; }
   .hub { width: 150px; height: 292px; }
   .pad { top: calc(50% + 120px); width: 290px; height: 290px; margin: -145px 0 0 -145px; }
-  .card b { font-size: 26px; }
 }
-@media (max-height: 700px) and (min-width: 641px) { .stage { --rymax: 190px; --ch: 210px; } .hub { width: 140px; height: 274px; } .pad { top: calc(50% + 112px); }  }
+@media (max-height: 700px) and (min-width: 641px) { .stage { --rymax: 190px; --cw: 190px; --ch: 190px; } .hub { width: 140px; height: 274px; } .pad { top: calc(50% + 112px); }  }
 @media (prefers-reduced-motion: reduce) {
-  .aurora i, .pad .p1, .hub .body, .beam, .card .rim { animation: none !important; }
+  .aurora i, .pad .p1, .hub .body, .beam, .card .rim, .aura i { animation: none !important; }
+  .aura .sp { display: none; }
   .card, .card .in, .hub, .hub .body, .beam { transition-duration: .01s !important; transition-delay: 0s !important; }
   .ripple { display: none; }
 }
@@ -184,11 +188,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
     <i class="beam" data-for="pres" style="--c:var(--pres)" aria-hidden="true"></i>
     <i class="beam" data-for="video" style="--c:var(--video)" aria-hidden="true"></i>
     <i class="beam" data-for="secret" style="--c:var(--secret)" aria-hidden="true"></i>
-    <button type="button" class="hub" id="hub" aria-expanded="false" aria-label="SACHIL AI — 작업장 열기"><span class="body"><img src="assets/ui/sachil-ai-full.webp" alt="" width="369" height="720" draggable="false"></span></button>
-    <a class="card" data-pos="11" data-ws="doc" href="hangul.html"><span class="in"><span class="art"><img src="assets/ui/ws-doc.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>DOC</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
-    <a class="card" data-pos="1" data-ws="pres" href="gyoan.html"><span class="in"><span class="art"><img src="assets/ui/ws-pres.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>PRES</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
-    <a class="card" data-pos="5" data-ws="video" href="videos.html"><span class="in"><span class="art"><img src="assets/ui/ws-video.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>VIDEO</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
-    <a class="card" data-pos="7" data-ws="secret" href="secret.html" id="tabSecret"><span class="in"><span class="lock" aria-label="잠김"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span class="art"><img src="assets/ui/ws-secret.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>SECRET</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
+    <button type="button" class="hub" id="hub" aria-expanded="false" aria-label="SACHIL AI — 작업장 열기"><span class="aura" aria-hidden="true"><i class="au1"></i><i class="au2"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i></span><span class="body"><img src="assets/ui/sachil-ai-full.webp" alt="" width="369" height="720" draggable="false"></span></button>
+    <a class="card" data-pos="11" data-ws="doc" href="hangul.html" aria-label="DOC — 한글 문서"><span class="in"><span class="art"><img src="assets/ui/card-doc.webp" alt="" width="640" height="640" loading="eager" decoding="async"></span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="1" data-ws="pres" href="gyoan.html" aria-label="PRES — 교안 · 발표"><span class="in"><span class="art"><img src="assets/ui/card-pres.webp" alt="" width="640" height="640" loading="eager" decoding="async"></span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="5" data-ws="video" href="videos.html" aria-label="VIDEO — 영상"><span class="in"><span class="art"><img src="assets/ui/card-video.webp" alt="" width="640" height="640" loading="eager" decoding="async"></span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="7" data-ws="secret" href="secret.html" id="tabSecret" aria-label="SECRET — 관리자 전용"><span class="in"><span class="lock" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span class="art"><img src="assets/ui/card-secret.webp" alt="" width="640" height="640" loading="eager" decoding="async"></span><i class="glare"></i></span><i class="rim"></i></a>
   </nav>
 </main>
 
