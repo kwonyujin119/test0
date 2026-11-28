@@ -21,7 +21,7 @@
   const STILL = q.get('still') != null ? +(q.get('still') || 6) : (RM ? 6 : null);
   const cv = document.getElementById('c'), gl = cv.getContext('webgl', { preserveDrawingBuffer: STILL != null });
   const FS = `precision highp float;
-uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW; uniform vec3 L1, L2; uniform vec2 NZ, TG;
 float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
@@ -32,6 +32,24 @@ float embers(vec2 u,float asp,float sp,float dens,vec4 box){float a=0.;
   vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*7.3);if(r<dens){vec2 o=vec2(h2(id+3.)-.5,h2(id+5.)-.5)*.55;
    a+=smoothstep(.1+fi*.02,0.,length(f-o))*(.45+.55*sin(T*7.+r*50.));}}
  return a*smoothstep(box.x-.1,box.x,u.x)*smoothstep(box.z+.1,box.z,u.x)*smoothstep(box.y-.1,box.y,u.y)*smoothstep(box.w+.1,box.w,u.y);}
+vec4 flowNet(vec2 u,float ia){ // 경로를 따라 흐르는 전기 (뿌리 → 줄기 → 가지 → 화면) · 도착하면 화면이 켜짐
+ float s=mod(T,PER)*SPD,tt=mod(T,PER);vec3 sig=vec3(0.);float G=0.;
+ for(int i=0;i<28;i++){if(i>=NS)break;vec4 g=SG[i];vec2 A=g.xy,B=g.zw;
+  vec2 P=(u-A)*vec2(ia,1.),AB=(B-A)*vec2(ia,1.);float L=max(length(AB),1e-4);vec2 ax=AB/L,nr=vec2(-ax.y,ax.x);
+  float t=clamp(dot(P,ax)/L,0.,1.);float p=mix(SD[i].x,SD[i].y,t);
+  float lit=exp(-pow((s-p)/.025,2.))*1.6+step(p,s)*exp(-(s-p)/.09)*.9;
+  float jag=(vn(vec2(p*90.+float(i)*7.,floor(T*16.)))-.5)*(.004+.006*lit)*LW;
+  float d=length(P-ax*t*L-nr*jag);
+  float base=.18*(.7+.3*sin(T*9.+p*40.));
+  sig+=vec3(.3,.62,1.)*(base*exp(-d/(.0022*LW))+lit*(exp(-d/(.0035*LW))*1.1+exp(-d/(.016*LW))*(LT==1?.0:.35)));
+  sig+=vec3(.9,.97,1.)*lit*smoothstep(.0028*LW,0.,d);}
+ for(int j=0;j<12;j++){if(j>=NN)break;vec4 n=ND[j];float since=tt-n.z/SPD;
+  float f=(since>0.?exp(-since*1.2)*1.1:0.)+.18+.06*sin(T*3.+float(j));
+  vec2 q=(u-n.xy)/(NR*n.w);float m=smoothstep(1.,.35,length(q));G+=m*f;
+  sig+=vec3(.4,.7,1.)*exp(-length(q)*3.5)*(since>0.?exp(-since*2.5):0.)*(LT==1?.25:.8);
+  if(n.w<.7){float bt=.55+.45*pow(.5+.5*sin(T*5.),2.);sig+=vec3(.35,.7,1.)*(exp(-length(q)*2.2)*1.3*bt+exp(-length(q*vec2(.35,2.4))*2.)*.9*bt);} // AI 눈: 늘 맥박 · 가로로 번지는 빛
+  float rr=since*.9;sig+=vec3(.35,.65,1.)*smoothstep(.06,0.,abs(length(q)-rr))*(since>0.&&rr<1.4?(1.-rr/1.4):0.)*(LT==1?0.:.5);}
+ return vec4(sig,G);}
 vec3 sigAt(vec2 u,vec2 A,vec2 B,float ia,float seed){ // 두 점 사이: 꼬이며 도는 3D 전기 신호
  vec2 P=(u-A)*vec2(ia,1.),AB=(B-A)*vec2(ia,1.);float L=length(AB);vec2 ax=AB/L,nr=vec2(-ax.y,ax.x);
  float t=dot(P,ax)/L,side=dot(P,nr);float env=sin(clamp(t,0.,1.)*3.14159);float inr=step(0.,t)*step(t,1.);
@@ -107,8 +125,12 @@ void main(){
    vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*3.1);if(r<.14){vec2 o=vec2(h2(id+1.)-.5,h2(id+2.)-.5)*.5;dust+=smoothstep(.12-fi*.04,0.,length(f-o))*(.4+.6*sin(T*.8+r*30.));}}
   c+=(LT==1?vec3(1.,1.,1.):vec3(.6,.75,1.))*dust*.22*AM;
   vec3 sg=vec3(0.);float ia=IS.x/IS.y;
+  if(NS>0){vec4 fn=flowNet(u,ia);float G=clamp(fn.w,0.,1.6);
+   if(LT==1){c=mix(c,c*vec3(.72,.9,1.2)+vec3(0.,.04,.14),clamp(G*.75,0.,.85));}
+   else{c=c*(1.+G*.85)+vec3(.15,.4,1.)*G*.18+vec3(.25,.5,1.)*G*.12*step(.55,fract(u.y*160.-T*2.));}
+   sg+=fn.rgb;}
   for(int k=0;k<3;k++){if(k<LN){vec4 L4=k==0?LK0:(k==1?LK1:LK2);sg+=sigAt(u,L4.xy,L4.zw,ia,float(k));}}
-  if(LT==1){float a=clamp(dot(sg,vec3(.3,.4,.3))*1.15,0.,.92);c=mix(c,vec3(.1,.42,1.),a)+vec3(.15,.3,.5)*a*a;}  // 밝은 배경: 진한 파랑으로
+  if(LT==1){float a=clamp(dot(sg,vec3(.3,.4,.3))*(NS>0?2.4:1.15),0.,.95);c=mix(c,vec3(.1,.42,1.),a)+vec3(.15,.3,.5)*a*a;}  // 밝은 배경: 진한 파랑으로
   else c=c+sg*AM*(1.-c*.35);
  }else c*=1.-.22*pow(length((fc-.5)*vec2(1.,.9))*1.25,2.);
  gl_FragColor=vec4(c*DM+(h2(gl_FragCoord.xy+T)-.5)/255.,1.);}`;
@@ -118,6 +140,24 @@ void main(){
   const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = (n) => gl.getUniformLocation(pr, n);
   const LKv = q.get('link') ? q.get('link').split(',').map(Number) : []; const LNn = Math.min(3, Math.floor(LKv.length / 4)); for (let k = 0; k < 3; k++) gl.uniform4f(U('LK' + k), ...(k < LNn ? LKv.slice(k * 4, k * 4 + 4) : [0, 0, 0, 0])); gl.uniform1i(U('LN'), LNn); gl.uniform1f(U('LA'), +(q.get('lamp') || 1)); gl.uniform1f(U('DM'), +(q.get('dim') || 1)); gl.uniform1i(U('M'), MODE); gl.uniform1i(U('LT'), LIGHT); gl.uniform1f(U('AM'), AMT); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
+  /* 흐름 경로: &net=x,y,x,y,…;x,y,… (첫 줄이 시작 · 다음 줄은 이미 있는 점에서 갈라짐) &nodes=x,y,크기;… (도착하면 켜지는 화면) */
+  (function () {
+    const ia = 16 / 9, segs = [], dist = [], verts = [];
+    const lines = (q.get('net') || '').split(';').map(l => l.split(',').map(Number)).filter(a => a.length >= 4);
+    for (const a of lines) {
+      const pts = []; for (let i = 0; i + 1 < a.length; i += 2) pts.push([a[i], a[i + 1]]);
+      let d0 = 0; if (verts.length) { let best = 1e9; for (const v of verts) { const e = Math.hypot((v[0] - pts[0][0]) * ia, v[1] - pts[0][1]); if (e < best) { best = e; d0 = v[2]; } } }
+      verts.push([pts[0][0], pts[0][1], d0]);
+      for (let i = 1; i < pts.length; i++) { const L = Math.hypot((pts[i][0] - pts[i - 1][0]) * ia, pts[i][1] - pts[i - 1][1]); segs.push([...pts[i - 1], ...pts[i]]); dist.push([d0, d0 + L]); d0 += L; verts.push([pts[i][0], pts[i][1], d0]); }
+    }
+    const nodes = (q.get('nodes') || '').split(';').map(l => l.split(',').map(Number)).filter(a => a.length >= 2).map(([x, y, k]) => {
+      let best = 1e9, d = 0; for (const v of verts) { const e = Math.hypot((v[0] - x) * ia, v[1] - y); if (e < best) { best = e; d = v[2] + e; } } return [x, y, d, k || 1]; });
+    const NSn = Math.min(28, segs.length), NNn = Math.min(12, nodes.length);
+    for (let i = 0; i < NSn; i++) { gl.uniform4f(U('SG[' + i + ']'), ...segs[i]); gl.uniform2f(U('SD[' + i + ']'), ...dist[i]); }
+    for (let j = 0; j < NNn; j++) gl.uniform4f(U('ND[' + j + ']'), ...nodes[j]);
+    gl.uniform1i(U('NS'), NSn); gl.uniform1i(U('NN'), NNn);
+    gl.uniform2f(U('NR'), ...(q.get('nr') || '.055,.05').split(',').map(Number)); gl.uniform1f(U('SPD'), +(q.get('spd') || .5)); gl.uniform1f(U('LW'), +(q.get('lw') || 1)); gl.uniform1f(U('PER'), +(q.get('per') || 3.6));
+  })();
   function size() { cv.width = Math.round(innerWidth * QUAL * Math.min(1.5, devicePixelRatio || 1)); cv.height = Math.round(innerHeight * QUAL * Math.min(1.5, devicePixelRatio || 1)); gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(U('R'), cv.width, cv.height); }
   addEventListener('resize', size); size();
   const im = new Image(); im.onload = () => {
