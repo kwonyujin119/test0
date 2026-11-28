@@ -25,7 +25,7 @@
   if (!gl) { fallback(); return; }
   let lost = false; cv.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; fallback(); });
   const FS = `precision highp float;
-uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW, FA; uniform int FX, LQ, EM, GR; uniform float FA2; uniform sampler2D MK; uniform int HM, SMK; uniform float SMA; uniform vec4 WS[16]; uniform vec2 WD[16]; uniform vec2 WE[6]; uniform int NWS, NWE; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW, FA; uniform int FX, LQ, EM, GR; uniform float FA2; uniform sampler2D MK; uniform int HM, SMK, RGD, DBG; uniform float SMA; uniform vec4 WS[16]; uniform vec2 WD[16]; uniform vec2 WE[6]; uniform int NWS, NWE; uniform vec3 L1, L2; uniform vec2 NZ, TG;
 float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
@@ -96,9 +96,7 @@ void main(){
  float z=1.025+.02*sin(T*.07); u=(u-vec2(.6,.5))/z+vec2(.6,.5)+vec2(sin(T*.05)*.004,0.); // 아주 느린 카메라 숨쉬기
  vec2 ub=u;
  if(M==2){ // 입체감: 선명한(초점 맞은) 곳일수록 더 움직임
-  float dep=clamp(.35+(u.y-.3)*.4,0.,1.);
-  if(LQ==0){vec2 px=1./IS*3.;vec3 a=tex(u);vec3 bl=(tex(u+vec2(px.x,0.))+tex(u-vec2(px.x,0.))+tex(u+vec2(0.,px.y))+tex(u-vec2(0.,px.y)))*.25;
-   float sharp=smoothstep(.01,.08,length(a-bl));dep=clamp(sharp*.7+(u.y-.3)*.4,0.,1.);} // 가벼운 모드: 사진 분석 없이 아래쪽일수록 앞
+  float dep=clamp(.35+(u.y-.3)*.4,0.,1.); // 아래쪽일수록 앞 — 부드럽게 변해서 건물 · 사다리 선이 휘지 않음
   u+=vec2(sin(T*.13),cos(T*.11))*.0045*AM*(dep-.4);
  }
  float smm=0.;
@@ -108,10 +106,16 @@ void main(){
   smm=smoothstep(.2,.08,mx-mn)*smoothstep(.72,.48,L)*smoothstep(.02,.1,L)*smoothstep(.95,.35,u.y)*smoothstep(.1,.035,ed); // 채도 낮고 · 부드럽고 · 위쪽
   vec2 fl=vec2(fbm(u*vec2(2.6,3.2)+vec2(T*.06,T*.55))-.5,fbm(u*vec2(2.6,3.2)+vec2(5.2,1.3+T*.62))-.5); // 결이 위로 빠르게 흘러 올라감
   vec2 fl2=vec2(fbm(u*vec2(6.,7.)+vec2(2.,T*1.1))-.5,fbm(u*vec2(6.,7.)+vec2(8.,T*1.2))-.5);   // 잔 소용돌이
-  u+=(fl*.05+fl2*.012)*SMA*smm+vec2(0.,.012*SMA*smm*(.5+.5*sin(T*.9+u.x*6.)));            // 아래쪽 사진을 끌어올려 피어오르는 느낌
+  vec2 off=(fl*.05+fl2*.012)*SMA*smm+vec2(0.,.012*SMA*smm*(.5+.5*sin(T*.9+u.x*6.)));
+  vec3 s1=tex(u+off);float mx1=max(s1.r,max(s1.g,s1.b)),mn1=min(s1.r,min(s1.g,s1.b));float L1=dot(s1,vec3(.3,.59,.11));
+  u+=off*smoothstep(.2,.08,mx1-mn1)*smoothstep(.72,.48,L1)*smoothstep(.02,.1,L1); // 연기가 아닌 곳(건물 · 사다리)을 끌어오지 않음            // 아래쪽 사진을 끌어올려 피어오르는 느낌
  }
  vec3 c0=tex(u); vec3 c=c0;
- if(SMK==1){float roll=fbm(u*vec2(4.,5.)+vec2(T*.08,T*.9));c*=1.+(roll-.5)*.5*SMA*smm;c+=vec3(.06)*smoothstep(.55,.8,roll)*SMA*smm;} // 굴러 올라가는 연기 결 · 밝은 가장자리 // 굴러가는 연기 결
+ float rig=0.;
+ if(RGD==1){vec3 o=tex(ub);float g=0.;vec2 r=2.5/IS;
+  for(int k=0;k<8;k++){float a=float(k)*.785;g+=length(tex(ub+vec2(cos(a),sin(a))*r)-o);}
+  rig=smoothstep(.05,.13,g/8.);c=mix(c,o,rig);if(DBG==1){gl_FragColor=vec4(vec3(rig),1.);return;}} // 건물 · 사다리 · 소방차: 휘지 않게 제자리
+ if(SMK==1){float roll=fbm(u*vec2(4.,5.)+vec2(T*.08,T*.9));c*=1.+(roll-.5)*.5*SMA*smm*(1.-rig);c+=vec3(.06)*smoothstep(.55,.8,roll)*SMA*smm*(1.-rig);} // 굴러 올라가는 연기 결 · 밝은 가장자리 // 굴러가는 연기 결
  if(FX==1){ // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임 (불이 있는 사진만)
   float fm=fireMask(c0);
   vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
@@ -214,7 +218,7 @@ void main(){
   const AT = (q.get('at') || '').split(',').map(Number).filter(isFinite), CYC = +(q.get('cyc') || 8);
   const shots = SRCS.map((src, i) => ({ src: new URL('../' + src, location.href).href, net: parseNet(NETS[i], NODES[i]) }));
   gl.uniform2f(U('NR'), ...(q.get('nr') || '.055,.05').split(',').map(Number)); gl.uniform1f(U('SPD'), +(q.get('spd') || .5)); gl.uniform1f(U('LW'), +(q.get('lw') || 1)); gl.uniform1f(U('PER'), +(q.get('per') || 3.6));
-  gl.uniform1i(U('FX'), q.get('fire') ? +(q.get('fire') === '1') : +(MODE < 2)); gl.uniform1i(U('LQ'), +LITE); gl.uniform1i(U('EM'), +(q.get('embers') === '1')); gl.uniform1i(U('GR'), +(q.get('green') === '1')); gl.uniform1i(U('SMK'), +(q.get('smoke') === '1')); gl.uniform1f(U('SMA'), +(q.get('sma') || 1)); gl.uniform1f(U('FA2'), +(q.get('emb') || 1));
+  gl.uniform1i(U('FX'), q.get('fire') ? +(q.get('fire') === '1') : +(MODE < 2)); gl.uniform1i(U('LQ'), +LITE); gl.uniform1i(U('EM'), +(q.get('embers') === '1')); gl.uniform1i(U('GR'), +(q.get('green') === '1')); gl.uniform1i(U('SMK'), +(q.get('smoke') === '1')); gl.uniform1i(U('DBG'), +(q.get('dbg') === '1')); gl.uniform1i(U('RGD'), q.get('rigid') ? +(q.get('rigid') === '1') : +(q.get('smoke') === '1' || q.get('fire') === '1')); gl.uniform1f(U('SMA'), +(q.get('sma') || 1)); gl.uniform1f(U('FA2'), +(q.get('emb') || 1));
   /* 발표 화면 「프레임 순환」(8초 중 0~8% 나타남 · 25% 까지 · 33% 에 사라짐) 과 같은 불투명도 */
   const cycA = (t, at) => { if (t < at) return 0; const ph = ((t - at) % CYC) / CYC, sm = (x) => x * x * (3 - 2 * x); return ph < .08 ? sm(ph / .08) : ph < .25 ? 1 : ph < .33 ? 1 - sm((ph - .25) / .08) : 0; };
   /* 물줄기 &water=x,y,x,y,…;… (관창 → 닿는 곳, 사진 0~1 좌표) · 인물 보호 &mask=assets/x.png (흰 곳은 효과 없이 원래 사진) */
