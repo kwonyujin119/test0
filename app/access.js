@@ -32,6 +32,16 @@ const Access = {
     return Array.from(u8, b => b.toString(16).padStart(2, '0')).join('');
   },
   async verify(code) { return (await this.hash(code)) === this.HASH; },
+  /* 잠긴 폴더 열람: 게스트가 관리자 접속코드를 넣으면 그 폴더만 이 기기에서 12시간 동안 볼 수 있음 (게스트 모드 그대로 — 고치거나 저장은 못 함).
+     kind: 'pres' | 'doc'. 화면에서 막는 잠금이라, 파일 주소를 직접 아는 사람까지 막지는 못함 */
+  FOPEN: 'ws:folderOpen', FOPEN_H: 12,
+  folderOpened(kind, id) { try { const t = (JSON.parse(localStorage.getItem(this.FOPEN) || '{}'))[kind + ':' + id]; return !!(t && Date.now() - t < this.FOPEN_H * 36e5); } catch (e) { return false; } },
+  async openLocked(kind, id, name) {
+    if (this.isAdmin || this.folderOpened(kind, id)) return true;
+    const ok = await this.prompt({ verifyOnly: true, title: `Lock · 「${name}」 폴더`, desc: `잠긴 폴더입니다. 관리자 접속코드를 넣으면 이 기기에서 ${this.FOPEN_H}시간 동안 안의 내용을 볼 수 있습니다 (보기만 — 고치거나 저장하지는 않습니다).`, ok: '열기' });
+    if (ok) { try { const m = JSON.parse(localStorage.getItem(this.FOPEN) || '{}'), now = Date.now(); for (const k in m) if (now - m[k] > this.FOPEN_H * 36e5) delete m[k]; m[kind + ':' + id] = now; localStorage.setItem(this.FOPEN, JSON.stringify(m)); } catch (e) { } }
+    return ok;
+  },
   async enterAdmin(code) { if (!(await this.verify(code))) return false; this._save({ role: 'admin', at: Date.now() }); return true; },
   /* 게스트 모드에서 저장·업로드를 막을 때 던지는 오류 */
   denied() { const e = new Error('보기 전용(게스트) 모드라 저장할 수 없습니다 — 첫 화면에서 관리자로 입장하세요'); e.guest = true; e.quiet = true; return e; },
@@ -65,11 +75,11 @@ const Access = {
     return new Promise(done => {
       const bg = document.createElement('div'); bg.className = 'modal-bg';
       bg.innerHTML = `<div class="modal ws-gate-modal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-        <h3 id="gateTitle">관리자로 입장</h3>
-        <p class="modal-desc">접속코드를 입력하면 이 기기에서 ${this.ADMIN_DAYS}일 동안 교안과 문서를 만들고 고칠 수 있습니다.</p>
+        <h3 id="gateTitle">${opts.title ? esc(opts.title) : '관리자로 입장'}</h3>
+        <p class="modal-desc">${opts.desc ? esc(opts.desc) : `접속코드를 입력하면 이 기기에서 ${this.ADMIN_DAYS}일 동안 교안과 문서를 만들고 고칠 수 있습니다.`}</p>
         <div class="row"><input type="password" id="gateCode" inputmode="numeric" autocomplete="off" placeholder="접속코드" aria-label="접속코드" style="flex:1;height:44px;font-size:18px;letter-spacing:.2em;text-align:center"></div>
         <div class="ws-gate-err" id="gateErr" hidden>접속코드가 맞지 않습니다</div>
-        <div class="actions"><button class="btn" id="gateCancel">취소</button><button class="btn ink" id="gateOk">입장</button></div></div>`;
+        <div class="actions"><button class="btn" id="gateCancel">취소</button><button class="btn ink" id="gateOk">${opts.ok ? esc(opts.ok) : '입장'}</button></div></div>`;
       document.body.appendChild(bg);
       const $ = id => bg.querySelector('#' + id);
       const close = v => { bg.remove(); done(v); };
@@ -80,7 +90,7 @@ const Access = {
         const v = $('gateCode').value.trim(); if (!v) { $('gateCode').focus(); return; }
         $('gateOk').disabled = true;
         try {
-          if (await this.enterAdmin(v)) { close(true); return; }
+          if (opts.verifyOnly ? await this.verify(v) : await this.enterAdmin(v)) { close(true); return; }
           $('gateErr').hidden = false; $('gateCode').value = ''; $('gateCode').focus(); bg.querySelector('.modal').classList.remove('shake'); void bg.offsetWidth; bg.querySelector('.modal').classList.add('shake');
         } catch (e) { $('gateErr').textContent = e.message; $('gateErr').hidden = false; }
         $('gateOk').disabled = false;
