@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-28T04:00:00.000Z",
- "modified": "2026-11-28T09:22:19.000Z",
+ "modified": "2026-11-28T09:30:49.000Z",
  "footer": {
   "text": "ThreeUI 레퍼런스",
   "num": true,
@@ -183,7 +183,7 @@
      "w": 1400,
      "h": 140,
      "role": "text",
-     "html": "소방 교안에 맞는 3D 인터랙티브 5가지<br>최근 인기 급상승 UI 10가지 · 유니크 UI 30가지 — 모두 실제로 움직입니다",
+     "html": "소방 교안에 맞는 3D 인터랙티브 5가지<br>최근 인기 급상승 UI 10가지 — 모두 실제로 움직입니다",
      "style": {
       "fontSize": 40,
       "color": "#E6EAF2",
@@ -7085,6 +7085,372 @@
     }
    ],
    "notes": "[2분] 아이콘이 차례로 커지며 이름이 뜬다. macOS 독에서 온 magicui · react-bits 부품.\n쓰는 곳: 기능 소개(찾기 · AI · 체크 · 보고 · 47망 · 복기)를 순서대로.\n주의: 원래는 마우스 반응 효과. 여기서는 저절로 돌게 만들었다."
+  },
+  {
+   "id": "tus18",
+   "bg": {
+    "color": "#FAFAF7"
+   },
+   "transition": "fade",
+   "decor": "none",
+   "elements": [
+    {
+     "id": "tu0344",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 120,
+     "y": 60,
+     "w": 1680,
+     "h": 80,
+     "role": "text",
+     "html": "쓰기 전에 알아 둘 다섯 가지",
+     "style": {
+      "fontSize": 56,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0345",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 210,
+     "w": 70,
+     "h": 70,
+     "shape": "rect",
+     "fill": "#E4521B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 35,
+     "shadow": false,
+     "html": "1",
+     "style": {
+      "fontSize": 32,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.15,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "tu0346",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 190,
+     "w": 1580,
+     "h": 50,
+     "role": "text",
+     "html": "인터넷이 있어야 움직인다",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0347",
+     "step": 0,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 246,
+     "w": 1580,
+     "h": 90,
+     "role": "text",
+     "html": "연결이 없으면 정지 사진이 보인다. 강의실 PC 에서 미리 열어 볼 것.",
+     "style": {
+      "fontSize": 28,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0348",
+     "step": 1,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 375,
+     "w": 70,
+     "h": 70,
+     "shape": "rect",
+     "fill": "#E4521B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 35,
+     "shadow": false,
+     "html": "2",
+     "style": {
+      "fontSize": 32,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.15,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "tu0349",
+     "step": 1,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 355,
+     "w": 1580,
+     "h": 50,
+     "role": "text",
+     "html": "사양을 탄다",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0350",
+     "step": 1,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 411,
+     "w": 1580,
+     "h": 90,
+     "role": "text",
+     "html": "3D(WebGL) 부품은 오래된 노트북에서 끊기거나 팬이 돈다. 표지 · 전환 장에만.",
+     "style": {
+      "fontSize": 28,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0351",
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 540,
+     "w": 70,
+     "h": 70,
+     "shape": "rect",
+     "fill": "#E4521B",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 35,
+     "shadow": false,
+     "html": "3",
+     "style": {
+      "fontSize": 32,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.15,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "tu0352",
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 520,
+     "w": 1580,
+     "h": 50,
+     "role": "text",
+     "html": "화면은 키보드 · 리모컨으로 넘긴다",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0353",
+     "step": 2,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 576,
+     "w": 1580,
+     "h": 90,
+     "role": "text",
+     "html": "움직이는 화면 위에 투명 덮개를 씌워 두었지만, 넘기기는 키보드가 확실하다.",
+     "style": {
+      "fontSize": 28,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0354",
+     "step": 3,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 705,
+     "w": 70,
+     "h": 70,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 35,
+     "shadow": false,
+     "html": "4",
+     "style": {
+      "fontSize": 32,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.15,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "tu0355",
+     "step": 3,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 685,
+     "w": 1580,
+     "h": 50,
+     "role": "text",
+     "html": "「인기 급상승」의 근거",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0356",
+     "step": 3,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 741,
+     "w": 1580,
+     "h": 90,
+     "role": "text",
+     "html": "ThreeUI 사이트에는 인기 순위가 없다. 아래 10개는 GitHub 별이 많은 효과 모음(react-bits · magicui)과 2025~26년 유행을 바탕으로 고른 판단이다.",
+     "style": {
+      "fontSize": 28,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0357",
+     "step": 4,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "shape",
+     "x": 120,
+     "y": 870,
+     "w": 70,
+     "h": 70,
+     "shape": "rect",
+     "fill": "#2457D6",
+     "stroke": "",
+     "strokeWidth": 0,
+     "radius": 35,
+     "shadow": false,
+     "html": "5",
+     "style": {
+      "fontSize": 32,
+      "color": "#FFFFFF",
+      "bold": true,
+      "lineHeight": 1.15,
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "tu0358",
+     "step": 4,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 850,
+     "w": 1580,
+     "h": 50,
+     "role": "text",
+     "html": "출처 · 라이선스",
+     "style": {
+      "fontSize": 34,
+      "color": "#15181C",
+      "bold": true,
+      "lineHeight": 1.35
+     }
+    },
+    {
+     "id": "tu0359",
+     "step": 4,
+     "anim": "up",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "x": 220,
+     "y": 906,
+     "w": 1580,
+     "h": 90,
+     "role": "text",
+     "html": "ThreeUI Community 부품은 MIT. 아래 10개는 이 교안용으로 새로 만든 코드다.",
+     "style": {
+      "fontSize": 28,
+      "color": "#2A2F35",
+      "bold": false,
+      "lineHeight": 1.35
+     }
+    }
+   ],
+   "notes": "[2분] 화려한 효과는 첫인상은 강하지만, 내용과 무관하면 오히려 집중을 뺏습니다(Mayer 「유혹적 세부사항」). 표지 · 전환 · 시연 장면에 한정해서 쓰세요."
   },
   {
    "id": "tuo01",
@@ -20666,372 +21032,6 @@
     }
    ],
    "notes": "[2분] 도넛이 조각별로 차오르며 범례가 따라 나온다.\n쓰는 곳: 화재 원인 · 장소별 비율.\n주의: 조각 5개까지. 수치 · 출처를 함께."
-  },
-  {
-   "id": "tus18",
-   "bg": {
-    "color": "#FAFAF7"
-   },
-   "transition": "fade",
-   "decor": "none",
-   "elements": [
-    {
-     "id": "tu0344",
-     "step": 0,
-     "anim": "fade",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 120,
-     "y": 60,
-     "w": 1680,
-     "h": 80,
-     "role": "text",
-     "html": "쓰기 전에 알아 둘 다섯 가지",
-     "style": {
-      "fontSize": 56,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0345",
-     "step": 0,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 210,
-     "w": 70,
-     "h": 70,
-     "shape": "rect",
-     "fill": "#E4521B",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 35,
-     "shadow": false,
-     "html": "1",
-     "style": {
-      "fontSize": 32,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.15,
-      "align": "center",
-      "valign": "middle"
-     }
-    },
-    {
-     "id": "tu0346",
-     "step": 0,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 190,
-     "w": 1580,
-     "h": 50,
-     "role": "text",
-     "html": "인터넷이 있어야 움직인다",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0347",
-     "step": 0,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 246,
-     "w": 1580,
-     "h": 90,
-     "role": "text",
-     "html": "연결이 없으면 정지 사진이 보인다. 강의실 PC 에서 미리 열어 볼 것.",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0348",
-     "step": 1,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 375,
-     "w": 70,
-     "h": 70,
-     "shape": "rect",
-     "fill": "#E4521B",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 35,
-     "shadow": false,
-     "html": "2",
-     "style": {
-      "fontSize": 32,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.15,
-      "align": "center",
-      "valign": "middle"
-     }
-    },
-    {
-     "id": "tu0349",
-     "step": 1,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 355,
-     "w": 1580,
-     "h": 50,
-     "role": "text",
-     "html": "사양을 탄다",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0350",
-     "step": 1,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 411,
-     "w": 1580,
-     "h": 90,
-     "role": "text",
-     "html": "3D(WebGL) 부품은 오래된 노트북에서 끊기거나 팬이 돈다. 표지 · 전환 장에만.",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0351",
-     "step": 2,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 540,
-     "w": 70,
-     "h": 70,
-     "shape": "rect",
-     "fill": "#E4521B",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 35,
-     "shadow": false,
-     "html": "3",
-     "style": {
-      "fontSize": 32,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.15,
-      "align": "center",
-      "valign": "middle"
-     }
-    },
-    {
-     "id": "tu0352",
-     "step": 2,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 520,
-     "w": 1580,
-     "h": 50,
-     "role": "text",
-     "html": "화면은 키보드 · 리모컨으로 넘긴다",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0353",
-     "step": 2,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 576,
-     "w": 1580,
-     "h": 90,
-     "role": "text",
-     "html": "움직이는 화면 위에 투명 덮개를 씌워 두었지만, 넘기기는 키보드가 확실하다.",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0354",
-     "step": 3,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 705,
-     "w": 70,
-     "h": 70,
-     "shape": "rect",
-     "fill": "#2457D6",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 35,
-     "shadow": false,
-     "html": "4",
-     "style": {
-      "fontSize": 32,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.15,
-      "align": "center",
-      "valign": "middle"
-     }
-    },
-    {
-     "id": "tu0355",
-     "step": 3,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 685,
-     "w": 1580,
-     "h": 50,
-     "role": "text",
-     "html": "「인기 급상승」의 근거",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0356",
-     "step": 3,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 741,
-     "w": 1580,
-     "h": 90,
-     "role": "text",
-     "html": "ThreeUI 사이트에는 인기 순위가 없다. 아래 10개는 GitHub 별이 많은 효과 모음(react-bits · magicui)과 2025~26년 유행을 바탕으로 고른 판단이다.",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0357",
-     "step": 4,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "shape",
-     "x": 120,
-     "y": 870,
-     "w": 70,
-     "h": 70,
-     "shape": "rect",
-     "fill": "#2457D6",
-     "stroke": "",
-     "strokeWidth": 0,
-     "radius": 35,
-     "shadow": false,
-     "html": "5",
-     "style": {
-      "fontSize": 32,
-      "color": "#FFFFFF",
-      "bold": true,
-      "lineHeight": 1.15,
-      "align": "center",
-      "valign": "middle"
-     }
-    },
-    {
-     "id": "tu0358",
-     "step": 4,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 850,
-     "w": 1580,
-     "h": 50,
-     "role": "text",
-     "html": "출처 · 라이선스",
-     "style": {
-      "fontSize": 34,
-      "color": "#15181C",
-      "bold": true,
-      "lineHeight": 1.35
-     }
-    },
-    {
-     "id": "tu0359",
-     "step": 4,
-     "anim": "up",
-     "rotate": 0,
-     "opacity": 1,
-     "type": "text",
-     "x": 220,
-     "y": 906,
-     "w": 1580,
-     "h": 90,
-     "role": "text",
-     "html": "ThreeUI Community 부품은 MIT. 아래 10개는 이 교안용으로 새로 만든 코드다.",
-     "style": {
-      "fontSize": 28,
-      "color": "#2A2F35",
-      "bold": false,
-      "lineHeight": 1.35
-     }
-    }
-   ],
-   "notes": "[2분] 화려한 효과는 첫인상은 강하지만, 내용과 무관하면 오히려 집중을 뺏습니다(Mayer 「유혹적 세부사항」). 표지 · 전환 · 시연 장면에 한정해서 쓰세요."
   }
  ]
 }
