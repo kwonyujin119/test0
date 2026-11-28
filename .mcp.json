@@ -7,7 +7,8 @@
       ],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY:-proxy-injected}",
-        "OPENAI_IMAGE_MODEL": "${OPENAI_IMAGE_MODEL:-gpt-image-2.6-sunburst}"
+        "OPENAI_IMAGE_MODEL": "${OPENAI_IMAGE_MODEL:-gpt-image-2.6-sunburst}",
+        "OPENAI_IMAGE_ALLOW": "${OPENAI_IMAGE_ALLOW:-0}"
       }
     },
     "gemini-image": {
