@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>픽셀 전환</title><link rel="stylesheet" href="../trend/base.css"><style>.w{position:relative;width:64vw;height:72vh;border-radius:22px;overflow:hidden}
+.a,.b{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.a{background:linear-gradient(135deg,#3A1410,#7A2A12)}.b{background:linear-gradient(135deg,#0E2A1C,#16573A)}
+.a h2,.b h2{font-size:8vh;margin:0}.a p,.b p{font-size:3vh;opacity:.85}
+.px{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr)}
+.px i{background:#0B0F17;opacity:0;transition:opacity .08s}</style></head><body><div class="w"><div class="b"><div><h2>훈련 후</h2><p>정지 버튼 대신 재작동 절차를 안다 · 3분 내 대응</p></div></div><div class="a" id="a"><div><h2>훈련 전</h2><p>경보가 울리면 「오작동」부터 의심</p></div></div><div class="px" id="px"></div></div><script>const px=document.getElementById('px'),a=document.getElementById('a');const N=16*9;for(let i=0;i<N;i++){const e=document.createElement('i');px.appendChild(e)}px.style.gridTemplateRows='repeat(9,1fr)';
+const cs=[...px.children];let showA=true;function go(){const ord=cs.map((c,i)=>i).sort(()=>Math.random()-.5);ord.forEach((i,k)=>setTimeout(()=>cs[i].style.opacity=1,k*4));setTimeout(()=>{showA=!showA;a.style.display=showA?'grid':'none';ord.sort(()=>Math.random()-.5).forEach((i,k)=>setTimeout(()=>cs[i].style.opacity=0,k*4))},N*4+200)}
+setInterval(go,4200);setTimeout(go,1500);</script></body></html>

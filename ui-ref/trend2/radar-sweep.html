@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>레이더 스캔</title><link rel="stylesheet" href="../trend/base.css"><style>.w{position:relative;width:76vh;height:76vh;border-radius:50%;background:radial-gradient(circle,#0E1E14 0,#07120B 70%);border:2px solid #1E5C35;overflow:hidden}
+.g{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 9.4vh,#1E5C3560 9.4vh calc(9.4vh + 1px)),linear-gradient(#1E5C3560,#1E5C3560) center/1px 100% no-repeat,linear-gradient(90deg,#1E5C3560,#1E5C3560) center/100% 1px no-repeat}
+.s{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(60,255,140,.45),rgba(60,255,140,0) 60deg,transparent 360deg);animation:s 4s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.b{position:absolute;width:1.6vh;height:1.6vh;margin:-.8vh;border-radius:50%;background:#FF5A4E;box-shadow:0 0 2vh #FF5A4E;opacity:0}
+.b i{position:absolute;left:2.2vh;top:-1vh;font-style:normal;font-size:2.2vh;color:#FFC9C4;white-space:nowrap}</style></head><body><div class="w"><div class="g"></div><div class="s"></div></div><script>const w=document.querySelector('.w');const P=[[.68,.3,'요구조자 3층'],[.3,.62,'가스 누출'],[.75,.7,'LPG 용기'],[.38,.25,'고립자 옥상']];
+const bs=P.map(([x,y,n])=>{const b=document.createElement('div');b.className='b';b.style.left=x*100+'%';b.style.top=y*100+'%';b.innerHTML='<i>'+n+'</i>';w.appendChild(b);return{b,a:(Math.atan2(y-.5,x-.5)*180/Math.PI+90+360)%360}});
+const t0=performance.now();(function f(n){const ang=((n-t0)/4000*360)%360;bs.forEach(o=>{const d=(ang-o.a+360)%360;o.b.style.opacity=Math.max(0,1-d/260)});requestAnimationFrame(f)})(t0);</script></body></html>

@@ -1,0 +1,5 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>형광펜 강조</title><link rel="stylesheet" href="../trend/base.css"><style>.w{width:74vw;font-size:5vh;line-height:1.8;font-weight:600}
+mark{background:none;color:inherit;position:relative;white-space:nowrap}
+mark::before{content:"";position:absolute;left:-.15em;right:-.15em;bottom:.08em;height:.55em;background:#FFD23F;opacity:.55;border-radius:.2em;transform:scaleX(0) skewX(-8deg);transform-origin:left;transition:transform .8s cubic-bezier(.3,.7,.2,1);z-index:-1}
+mark.on::before{transform:scaleX(1) skewX(-8deg)}
+mark.r::before{background:#FF5A4E}</style></head><body><div class="w">스프링클러는 있었습니다. 그러나 <mark>관계자가 정지 버튼을 눌렀고</mark>, 재작동하려 했을 땐 <mark class="r">배선이 타서 불능</mark>이었습니다. 시설보다 <mark>사람의 훈련</mark>이 먼저입니다.</div><script>const ms=[...document.querySelectorAll('mark')];let k=0;setInterval(()=>{if(k<ms.length)ms[k].classList.add('on');else if(k>ms.length+1){ms.forEach(m=>m.classList.remove('on'));k=-1}k++},1100);</script></body></html>

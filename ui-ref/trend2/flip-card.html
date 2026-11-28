@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>뒤집기 카드</title><link rel="stylesheet" href="../trend/base.css"><style>.g{display:flex;gap:3vw;perspective:1600px}
+.c{width:24vw;height:56vh;position:relative;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.7,.2,1)}
+.c.on{transform:rotateY(180deg)}
+.f,.k{position:absolute;inset:0;border-radius:24px;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:4vh 2.4vw}
+.f{background:#151B27;border:1px solid #2A3346}.k{background:#2457D6;transform:rotateY(180deg)}
+.f small,.k small{font-size:2.4vh;opacity:.7}.f h3{font-size:4.6vh;margin:2vh 0}.k h3{font-size:6vh;margin:2vh 0}.k p,.f p{font-size:2.8vh;line-height:1.5;margin:0}</style></head><body><div class="g"><div class="c"><div class="f"><small>문제 1</small><h3>소방계획 수립 시기는?</h3><p>뒤집으면 정답</p></div><div class="k"><small>정답</small><h3>매년 12월 31일까지</h3><p>평가 3분기 · 반영 4분기</p></div></div>
+<div class="c"><div class="f"><small>문제 2</small><h3>최종 책임자는?</h3><p>뒤집으면 정답</p></div><div class="k"><small>정답</small><h3>대표 · 소유자</h3><p>실무 책임 = 소방안전관리자</p></div></div>
+<div class="c"><div class="f"><small>문제 3</small><h3>연소의 3요소는?</h3><p>뒤집으면 정답</p></div><div class="k"><small>정답</small><h3>가연물 · 산소 · 점화원</h3><p>하나만 없애도 꺼진다</p></div></div></div><script>const cs=[...document.querySelectorAll('.c')];let k=0;setInterval(()=>{if(k<3)cs[k].classList.add('on');else cs.forEach(c=>c.classList.remove('on'));k=(k+1)%4},1700);</script></body></html>
