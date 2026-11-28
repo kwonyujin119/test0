@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-10T14:00:00.000Z",
- "modified": "2026-11-28T06:02:05.000Z",
+ "modified": "2026-11-28T06:10:37.000Z",
  "footer": {
   "text": "소방 교육 훈련 · 권유진",
   "num": true,
@@ -672,7 +672,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[1:00] 소개는 30초 안에. 숫자 하나만 강조: \"현장에서 11년 동안 불을 껐습니다. 그 현장 이야기를 오늘 드립니다.\"\n[보강] 뒤 불꽃이 일렁이고 불티가 날아오름",
+   "notes": "[1:00] 소개는 30초 안에. 숫자 하나만 강조: \"현장에서 11년 동안 불을 껐습니다. 그 현장 이야기를 오늘 드립니다.\"\n[보강] 뒤 불꽃이 일렁이고 불티가 날아오름\n[보강] 인물은 효과 없이 선명하게, 배경 불꽃 · 불티만 움직임",
    "elements": [
     {
      "id": "7jzc49olo",
@@ -705,7 +705,7 @@
      "y": 0,
      "w": 760,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-profile.jpg&fire=1&embers=1&emb=1.6",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-profile.jpg&fire=1&embers=1&emb=1.6&mask=assets/edu-profile-mask.png",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -5848,7 +5848,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[추가 사례] 2026년 3월 20일 대전 대덕구 문평동 자동차 부품 공장. 앞의 청라(사람이 스프링클러를 멈춤) · 화성(출구를 몰랐음) · 원창동(샌드위치패널) 사례가 한 건물에서 한꺼번에 일어난 경우로 소개합니다.\n\"경보기는 울렸습니다. 그런데 5초에서 30초 만에 꺼졌다는 진술이 나왔습니다. 스프링클러는 차단돼 있었습니다. 사망자 다수는 2층과 3층 사이, 불법으로 증축한 공간에서 발견됐습니다.\"\n질문: \"우리 공장 수신기 경보음 스위치, 누가 끌 수 있습니까? 끄면 누구에게 보고합니까?\"\n※ 원인 · 책임은 수사 중(입건 5명 → 8명 보도, 기소 여부 미확인)이므로 확정적으로 말하지 말 것. 숫자는 강의 전 최신 기사로 다시 확인.\n※ 사진: 화재 당시 항공 사진 — 언론 보도 사진이면 출처를 함께 밝힐 것.\n출처: 뉴시스(2026.3.21 · 3.23 · 3.26) · 머니투데이(3.25) · 위키트리 · 다음(6.17) 보도\n[보강] CASE 파트처럼: 사진 새로(샌드위치패널 공장 화재) + 불꽃 일렁임 · 불티",
+   "notes": "[추가 사례] 2026년 3월 20일 대전 대덕구 문평동 자동차 부품 공장. 앞의 청라(사람이 스프링클러를 멈춤) · 화성(출구를 몰랐음) · 원창동(샌드위치패널) 사례가 한 건물에서 한꺼번에 일어난 경우로 소개합니다.\n\"경보기는 울렸습니다. 그런데 5초에서 30초 만에 꺼졌다는 진술이 나왔습니다. 스프링클러는 차단돼 있었습니다. 사망자 다수는 2층과 3층 사이, 불법으로 증축한 공간에서 발견됐습니다.\"\n질문: \"우리 공장 수신기 경보음 스위치, 누가 끌 수 있습니까? 끄면 누구에게 보고합니까?\"\n※ 원인 · 책임은 수사 중(입건 5명 → 8명 보도, 기소 여부 미확인)이므로 확정적으로 말하지 말 것. 숫자는 강의 전 최신 기사로 다시 확인.\n※ 사진: 화재 당시 항공 사진 — 언론 보도 사진이면 출처를 함께 밝힐 것.\n출처: 뉴시스(2026.3.21 · 3.23 · 3.26) · 머니투데이(3.25) · 위키트리 · 다음(6.17) 보도\n[보강] CASE 파트처럼: 사진 새로(샌드위치패널 공장 화재) + 불꽃 일렁임 · 불티\n[보강] 물줄기가 관창에서 끝으로 흐르며 퍼지고, 닿는 곳에 물보라 · 떨어지는 물방울 (불은 불대로 일렁임)",
    "elements": [
     {
      "id": "dnzkvsj18",
@@ -5880,7 +5880,7 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case18.jpg&fire=1&embers=1",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case18.jpg&fire=1&embers=1&water=.14,.38,.28,.40,.44,.46;.80,.28,.70,.31,.62,.43;.74,.71,.61,.63",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -11225,7 +11225,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[28:00] 0 : 20 대비를 3초 보여주고 시작. 자위소방대의 피난유도팀 장면과 연결.\n\"차이는 시설이 아니라, 누군가 '이쪽으로!'라고 외쳤느냐였습니다.\"\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
+   "notes": "[28:00] 0 : 20 대비를 3초 보여주고 시작. 자위소방대의 피난유도팀 장면과 연결.\n\"차이는 시설이 아니라, 누군가 '이쪽으로!'라고 외쳤느냐였습니다.\"\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름\n[보강] 물줄기가 관창에서 끝으로 흐르며 퍼지고, 닿는 곳에 물보라 · 떨어지는 물방울 (불은 불대로 일렁임)",
    "elements": [
     {
      "id": "l93ev88mo",
@@ -11258,7 +11258,7 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case32.jpg&fire=1&embers=1",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case32.jpg&fire=1&embers=1&water=.65,.30,.57,.275,.50,.27",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -12002,7 +12002,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[32:00] ★오프닝의 42초 회수.\n\"처음에 드린 질문 기억하십니까? 42초 동안 무엇을 할 수 있느냐. 이 공장의 직원 대부분은 출구가 어느 쪽인지 배운 적이 없었습니다.\"\n→ 3초 침묵 후 다음.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
+   "notes": "[32:00] ★오프닝의 42초 회수.\n\"처음에 드린 질문 기억하십니까? 42초 동안 무엇을 할 수 있느냐. 이 공장의 직원 대부분은 출구가 어느 쪽인지 배운 적이 없었습니다.\"\n→ 3초 침묵 후 다음.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름\n[보강] 물줄기가 관창에서 끝으로 흐르며 퍼지고, 닿는 곳에 물보라 · 떨어지는 물방울 (불은 불대로 일렁임)",
    "elements": [
     {
      "id": "xykqmgud3",
@@ -12034,7 +12034,7 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case34.jpg&fire=1&embers=1",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case34.jpg&fire=1&embers=1&water=.19,.80,.27,.68,.36,.58",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -12344,7 +12344,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[34:00] 여기서부터 '우리 동네' 사례. 앞의 '보이지 않는 위험(샌드위치패널)' 장면과 연결.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
+   "notes": "[34:00] 여기서부터 '우리 동네' 사례. 앞의 '보이지 않는 위험(샌드위치패널)' 장면과 연결.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름\n[보강] 물줄기가 관창에서 끝으로 흐르며 퍼지고, 닿는 곳에 물보라 · 떨어지는 물방울 (불은 불대로 일렁임)",
    "elements": [
     {
      "id": "cghiid556",
@@ -12376,7 +12376,7 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case35.jpg&fire=1&embers=1",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case35.jpg&fire=1&embers=1&water=.155,.18,.28,.25;.83,.31,.72,.31,.61,.36;.62,.56,.53,.51,.44,.52;.41,.61,.31,.59;.90,.51,.80,.46",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -12686,7 +12686,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[35:30] 올해 우리 지역 사례. 원인은 조사 중이므로 확정적으로 말하지 말 것.\n메시지: 이런 구조는 초기에 못 잡으면 소방력으로도 오래 걸린다 → 초기 소화 훈련이 답.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
+   "notes": "[35:30] 올해 우리 지역 사례. 원인은 조사 중이므로 확정적으로 말하지 말 것.\n메시지: 이런 구조는 초기에 못 잡으면 소방력으로도 오래 걸린다 → 초기 소화 훈련이 답.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름\n[보강] 물줄기가 관창에서 끝으로 흐르며 퍼지고, 닿는 곳에 물보라 · 떨어지는 물방울 (불은 불대로 일렁임)",
    "elements": [
     {
      "id": "a3czcnrcr",
@@ -12718,7 +12718,7 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case36.jpg&fire=1&embers=1",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case36.jpg&fire=1&embers=1&water=.37,.25,.56,.24,.75,.32;.25,.59,.44,.60",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -15872,7 +15872,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[43:00] 질문이 없으면 미리 준비한 질문: \"훈련을 하라고 하면 직원들이 반발합니다. 어떻게 하죠?\" → 짧게 10분 불시 훈련부터.\n[보강] 뒤 불꽃이 일렁이고 불티가 날아오름",
+   "notes": "[43:00] 질문이 없으면 미리 준비한 질문: \"훈련을 하라고 하면 직원들이 반발합니다. 어떻게 하죠?\" → 짧게 10분 불시 훈련부터.\n[보강] 뒤 불꽃이 일렁이고 불티가 날아오름\n[보강] 인물은 효과 없이 선명하게, 배경 불꽃 · 불티만 움직임",
    "elements": [
     {
      "id": "h9ukj3jzf",
@@ -15905,7 +15905,7 @@
      "y": 0,
      "w": 920,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-profile.jpg&fire=1&embers=1&emb=1.6",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-profile.jpg&fire=1&embers=1&emb=1.6&mask=assets/edu-profile-mask.png",
      "radius": 0,
      "autoplay": true,
      "shadow": false,

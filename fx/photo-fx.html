@@ -25,7 +25,7 @@
   if (!gl) { fallback(); return; }
   let lost = false; cv.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; fallback(); });
   const FS = `precision highp float;
-uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW, FA; uniform int FX, LQ, EM, GR; uniform float FA2; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW, FA; uniform int FX, LQ, EM, GR; uniform float FA2; uniform sampler2D MK; uniform int HM; uniform vec4 WS[16]; uniform vec2 WD[16]; uniform vec2 WE[6]; uniform int NWS, NWE; uniform vec3 L1, L2; uniform vec2 NZ, TG;
 float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
@@ -36,6 +36,21 @@ float embers(vec2 u,float asp,float sp,float dens,vec4 box){float a=0.;
   vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*7.3);if(r<dens){vec2 o=vec2(h2(id+3.)-.5,h2(id+5.)-.5)*.55;
    a+=smoothstep(.1+fi*.02,0.,length(f-o))*(.45+.55*sin(T*7.+r*50.));}}
  return a*smoothstep(box.x-.1,box.x,u.x)*smoothstep(box.z+.1,box.z,u.x)*smoothstep(box.y-.1,box.y,u.y)*smoothstep(box.w+.1,box.w,u.y);}
+vec3 waterNet(vec2 u,float sa,inout float mist){ // 물줄기: 관창에서 끝으로 물결이 흘러가며 퍼지고 끝에서 물보라
+ vec3 add=vec3(0.);
+ for(int i=0;i<16;i++){if(i>=NWS)break;vec4 g=WS[i];vec2 A=g.xy,B=g.zw;
+  vec2 P=(u-A)*vec2(sa,1.),AB=(B-A)*vec2(sa,1.);float L=max(length(AB),1e-4);vec2 ax=AB/L,nr=vec2(-ax.y,ax.x);
+  float t=clamp(dot(P,ax)/L,0.,1.);float d=length(P-ax*t*L);if(d>.05)continue;
+  float s=mix(WD[i].x,WD[i].y,t);float w=mix(.0022,.011,s);
+  float wav=sin(s*40.-T*11.)*.0012*s;d=abs(dot(P-ax*t*L,nr)-wav);
+  float st=vn(vec2(s*46.-T*13.,d*260.));float core=smoothstep(w,0.,d);
+  add+=vec3(.82,.92,1.)*core*(.25+.85*smoothstep(.45,.85,st))*.75+vec3(.6,.75,.95)*exp(-d/(w*2.6))*.10*(.5+s);
+  float sp=h2(floor(vec2(s*90.-T*30.,dot(P-ax*t*L,nr)*700.)));add+=vec3(.9,.96,1.)*step(.985,sp)*smoothstep(w*3.,w,d)*s; // 튀는 물방울
+ }
+ for(int j=0;j<6;j++){if(j>=NWE)break;vec2 E=WE[j];vec2 q=(u-E)*vec2(sa,1.);
+  float m=fbm(q*vec2(9.,7.)+vec2(T*.35,-T*.6))*exp(-length(q*vec2(1.,1.3))/.05);mist=max(mist,m);
+  add+=vec3(.85,.92,1.)*embers(u,sa,.55,.10,vec4(E.x-.07,E.y-.02,E.x+.07,E.y+.16))*.7;}
+ return add;}
 vec4 flowNet(vec2 u,float ia){ // 경로를 따라 흐르는 전기 (뿌리 → 줄기 → 가지 → 화면) · 도착하면 화면이 켜짐
  float s=mod(T,PER)*SPD,tt=mod(T,PER);vec3 sig=vec3(0.);float G=0.;
  for(int i=0;i<28;i++){if(i>=NS)break;vec4 g=SG[i];vec2 A=g.xy,B=g.zw;
@@ -79,6 +94,7 @@ void main(){
  vec2 fc=gl_FragCoord.xy/R; fc.y=1.-fc.y; // 화면 0~1 (위가 0)
  float sa=R.x/R.y, ia=IS.x/IS.y; vec2 u=fc; if(sa>ia){u.y=(fc.y-.5)*ia/sa+.5;}else{u.x=(fc.x-.5)*sa/ia+.5;} // cover
  float z=1.025+.02*sin(T*.07); u=(u-vec2(.6,.5))/z+vec2(.6,.5)+vec2(sin(T*.05)*.004,0.); // 아주 느린 카메라 숨쉬기
+ vec2 ub=u;
  if(M==2){ // 입체감: 선명한(초점 맞은) 곳일수록 더 움직임
   float dep=clamp(.35+(u.y-.3)*.4,0.,1.);
   if(LQ==0){vec2 px=1./IS*3.;vec3 a=tex(u);vec3 bl=(tex(u+vec2(px.x,0.))+tex(u-vec2(px.x,0.))+tex(u+vec2(0.,px.y))+tex(u-vec2(0.,px.y)))*.25;
@@ -143,6 +159,8 @@ void main(){
    float sw=fract(T/6.);c+=vec3(.2,1.,.45)*exp(-pow((u.y-(.2+sw*.6))*40.,2.))*smoothstep(.45,.5,u.x)*.05; // 화면을 훑는 스캔선
   }
   if(EM==1){c+=vec3(1.,.55,.18)*embers(u,sa,-.32,.08*FA2,vec4(.0,.0,1.,.9))*1.2*FA2;c+=vec3(1.,.6,.2)*embers(u*.7+3.,sa,-.2,.05,vec4(.0,.0,1.,.9))*.8;} // 불티가 위로 날아오름
+  if(NWS>0){float mist=0.;vec3 wa=waterNet(u,sa,mist);c=mix(c,vec3(.86,.89,.93),clamp(mist*.75,0.,.7));c+=wa;}
+  if(HM==1){float mk=texture2D(MK,ub).r;c=mix(c,tex(ub),mk);} // 인물은 그대로 (효과 없이 선명하게)
   c*=DM; // 사진만 어둡게 · 전기 신호는 그대로 밝게
   vec3 sg=vec3(0.);float ia=IS.x/IS.y;
   if(NS>0){vec4 fn=flowNet(u,ia);float G=clamp(fn.w,0.,1.6);
@@ -189,6 +207,22 @@ void main(){
   gl.uniform1i(U('FX'), q.get('fire') ? +(q.get('fire') === '1') : +(MODE < 2)); gl.uniform1i(U('LQ'), +LITE); gl.uniform1i(U('EM'), +(q.get('embers') === '1')); gl.uniform1i(U('GR'), +(q.get('green') === '1')); gl.uniform1f(U('FA2'), +(q.get('emb') || 1));
   /* 발표 화면 「프레임 순환」(8초 중 0~8% 나타남 · 25% 까지 · 33% 에 사라짐) 과 같은 불투명도 */
   const cycA = (t, at) => { if (t < at) return 0; const ph = ((t - at) % CYC) / CYC, sm = (x) => x * x * (3 - 2 * x); return ph < .08 ? sm(ph / .08) : ph < .25 ? 1 : ph < .33 ? 1 - sm((ph - .25) / .08) : 0; };
+  /* 물줄기 &water=x,y,x,y,…;… (관창 → 닿는 곳, 사진 0~1 좌표) · 인물 보호 &mask=assets/x.png (흰 곳은 효과 없이 원래 사진) */
+  (function () {
+    const lines = (q.get('water') || '').split(';').map(l => l.split(',').map(Number)).filter(a => a.length >= 4 && a.every(isFinite));
+    const segs = [], ds = [], ends = [];
+    for (const a of lines) { const pts = []; for (let i = 0; i + 1 < a.length; i += 2) pts.push([a[i], a[i + 1]]);
+      const L = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); L.push(l); tot += l; }
+      let acc = 0; for (let i = 1; i < pts.length; i++) { segs.push([...pts[i - 1], ...pts[i]]); ds.push([acc / tot, (acc + L[i - 1]) / tot]); acc += L[i - 1]; }
+      ends.push(pts[pts.length - 1]); }
+    segs.slice(0, 16).forEach((g, i) => { gl.uniform4f(U('WS[' + i + ']'), ...g); gl.uniform2f(U('WD[' + i + ']'), ...ds[i]); });
+    ends.slice(0, 6).forEach((e, i) => gl.uniform2f(U('WE[' + i + ']'), ...e));
+    gl.uniform1i(U('NWS'), Math.min(16, segs.length)); gl.uniform1i(U('NWE'), Math.min(6, ends.length));
+    gl.uniform1i(U('HM'), 0); gl.uniform1i(U('MK'), 1);
+    const mk = q.get('mask'); if (mk) { const im = new Image(); im.onload = () => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, im); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.activeTexture(gl.TEXTURE0); gl.uniform1i(U('HM'), 1); }; im.src = new URL('../' + mk, location.href).href; }
+  })();
   function size() { const r = Math.min(DPRM, devicePixelRatio || 1); cv.width = Math.round(innerWidth * QUAL * r); cv.height = Math.round(innerHeight * QUAL * r); gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(U('R'), cv.width, cv.height); }
   addEventListener('resize', size); size();
   gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
