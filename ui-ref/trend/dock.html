@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>독 확대</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:linear-gradient(180deg,#1B2440,#0B0F17)}
+.dock{display:flex;align-items:flex-end;gap:1.2vw;padding:1.6vh 1.4vw;border-radius:28px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)}
+.i{width:7vw;height:7vw;max-width:96px;max-height:96px;border-radius:24%;display:grid;place-items:center;font-size:clamp(20px,3.4vw,46px);transition:transform .35s cubic-bezier(.2,.8,.2,1);transform-origin:bottom;position:relative}
+.i span{position:absolute;bottom:115%;font-size:clamp(12px,2.2vh,22px);font-weight:700;white-space:nowrap;opacity:0;transition:opacity .2s;color:#fff}
+.i.on span{opacity:1}
+</style></head><body><div class="dock" id="d"></div>
+<script>
+const I=[['🔎','찾기','#2457D6'],['🤖','AI','#5B4BD6'],['✅','체크','#0F7B6C'],['📝','보고','#E4521B'],['📡','47망','#9A5B00'],['💬','복기','#7A7F86']],d=document.getElementById('d');
+I.forEach(([e,n,c])=>d.insertAdjacentHTML('beforeend',`<div class="i" style="background:${c}">${e}<span>${n}</span></div>`));
+const els=[...d.children];let k=0;
+setInterval(()=>{els.forEach((el,j)=>{const dist=Math.abs(j-k),s=dist===0?1.6:dist===1?1.25:1;el.style.transform=`scale(${s})`;el.classList.toggle('on',dist===0)});k=(k+1)%els.length},1100);
+</script></body></html>

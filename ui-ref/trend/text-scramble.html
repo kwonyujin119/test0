@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>텍스트 스크램블</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#07120C;color:#7CF2A8}
+.w{text-align:center}
+#t{font:800 clamp(32px,10vh,110px)/1.15 "Pretendard Variable",sans-serif;min-height:1.2em}
+.k{opacity:.6;font-size:clamp(14px,2.6vh,26px);letter-spacing:.2em}
+#t .x{color:#2E6B47}
+</style></head><body><div class="w"><div class="k">DECRYPT · 해독</div><div id="t"></div></div>
+<script>
+const L=['지휘권 선언','방면 설정','RIT 지정','최종 보고'],C='가나다라마바사아자차카타파하#%&@0123456789',el=document.getElementById('t');let i=0;
+function go(to){const from=el.textContent;let f=0;const len=Math.max(from.length,to.length),q=[...Array(len)].map((_,k)=>({to:to[k]||'',s:Math.floor(Math.random()*20),e:Math.floor(Math.random()*20)+20}));
+(function u(){let o='',d=0;q.forEach(c=>{if(f>=c.e){d++;o+=c.to}else if(f>=c.s){o+='<span class="x">'+C[Math.floor(Math.random()*C.length)]+'</span>'}else o+=''});el.innerHTML=o;if(d<q.length){f++;requestAnimationFrame(u)}else setTimeout(()=>go(L[++i%L.length]),1800)})()}
+go(L[0]);
+</script></body></html>

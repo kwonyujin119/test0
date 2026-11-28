@@ -1,0 +1,6 @@
+/* 305번 교안 · 인기 급상승 UI 10 — 공통. 발표 화면에 삽입되므로 마우스 없이 저절로 움직인다 */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:grid;place-items:center;background:#0B0F17;color:#E8ECF4}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important}}

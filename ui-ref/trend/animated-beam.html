@@ -1,0 +1,24 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>애니메이티드 빔</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#F7F8FA;color:#15181C}
+svg{width:92vw;height:86vh}
+.node rect{fill:#fff;stroke:#D5DDEB;stroke-width:2}
+.node text{font:700 22px "Pretendard Variable",sans-serif;fill:#15181C;text-anchor:middle;dominant-baseline:middle}
+.hub rect{fill:#2457D6;stroke:none}.hub text{fill:#fff;font:700 26px "Pretendard Variable",sans-serif;text-anchor:middle;dominant-baseline:middle}
+.path{fill:none;stroke:#E2E6EE;stroke-width:4}
+.beam{fill:none;stroke:url(#g);stroke-width:5;stroke-linecap:round;stroke-dasharray:120 900;animation:f 2.4s linear infinite}
+@keyframes f{from{stroke-dashoffset:1020}to{stroke-dashoffset:0}}
+</style></head><body>
+<svg viewBox="0 0 1000 560"><defs><linearGradient id="g"><stop offset="0" stop-color="#FDD000" stop-opacity="0"/><stop offset=".6" stop-color="#FF6B35"/><stop offset="1" stop-color="#E4521B"/></linearGradient></defs>
+<g id="p"></g>
+<g class="node"><rect x="40" y="60" width="200" height="80" rx="18"/><text x="140" y="100">119 신고</text></g>
+<g class="node"><rect x="40" y="240" width="200" height="80" rx="18"/><text x="140" y="280">건축물대장</text></g>
+<g class="node"><rect x="40" y="420" width="200" height="80" rx="18"/><text x="140" y="460">소화전 위치</text></g>
+<g class="hub"><rect x="400" y="230" width="200" height="100" rx="22"/><text x="500" y="280">현장지휘소</text></g>
+<g class="node"><rect x="760" y="140" width="200" height="80" rx="18"/><text x="860" y="180">진압대</text></g>
+<g class="node"><rect x="760" y="340" width="200" height="80" rx="18"/><text x="860" y="380">구조대</text></g>
+</svg>
+<script>
+const P=[[240,100,400,280],[240,280,400,280],[240,460,400,280],[600,280,760,180],[600,280,760,380]],g=document.getElementById('p');
+P.forEach(([a,b,c,d],i)=>{const m=(a+c)/2,dd=`M${a} ${b} C${m} ${b},${m} ${d},${c} ${d}`;g.insertAdjacentHTML('beforeend',`<path class="path" d="${dd}"/><path class="beam" d="${dd}" style="animation-delay:${(i<3?0:1.2)+i*.15}s"/>`)});
+</script></body></html>

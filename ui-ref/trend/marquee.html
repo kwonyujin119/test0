@@ -1,0 +1,17 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>마퀴</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#FAFAF7;color:#15181C;display:flex;flex-direction:column;justify-content:center;gap:4vh}
+.row{display:flex;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.t{display:flex;gap:2vw;padding-right:2vw;flex:none;animation:s 28s linear infinite}
+.row.r .t{animation-direction:reverse;animation-duration:34s}
+@keyframes s{to{transform:translateX(-100%)}}
+.p{flex:none;padding:2.2vh 2.4vw;border-radius:999px;background:#fff;border:2px solid #E3E0D8;font-size:clamp(18px,3.6vh,36px);font-weight:700;white-space:nowrap}
+.p b{color:#E4521B}
+h2{text-align:center;margin:0 0 1vh;font-size:clamp(20px,4vh,40px)}
+</style></head><body><h2>오늘 배운 한 줄 (예시)</h2>
+<div class="row"><div class="t" id="a"></div><div class="t" aria-hidden="true" id="a2"></div></div>
+<div class="row r"><div class="t" id="b"></div><div class="t" aria-hidden="true" id="b2"></div></div>
+<script>
+const A=['<b>무전</b>이 먼저라는 걸 다시 배웠다','체크리스트 <b>시각 기록</b>이 좋다','복기는 <b>사람 말고 절차</b>','소화전 <b>현장 확인</b> 필수','AI 답도 <b>원문 확인</b>'],B=['지휘소 위치 <b>60m</b>','<b>RIT</b> 대기 위치','<b>방면</b> 설정','체크리스트 <b>시각 기록</b> 복사','정보는 <b>현장 대원</b>에게'];
+const f=(id,L)=>{const h=L.map(x=>'<span class="p">'+x+'</span>').join('');document.getElementById(id).innerHTML=h;document.getElementById(id+'2').innerHTML=h};f('a',A);f('b',B);
+</script></body></html>

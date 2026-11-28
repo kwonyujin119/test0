@@ -1,0 +1,13 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오로라 배경</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#05070D}
+.a{position:fixed;inset:-20%;filter:blur(60px);opacity:.85}
+.a i{position:absolute;width:55vw;height:55vw;border-radius:50%;mix-blend-mode:screen;animation:m 18s ease-in-out infinite alternate}
+.a i:nth-child(1){background:#FF6B35;left:5%;top:10%}
+.a i:nth-child(2){background:#2457D6;left:40%;top:30%;animation-duration:22s;animation-direction:alternate-reverse}
+.a i:nth-child(3){background:#7A4BC2;left:20%;top:45%;animation-duration:26s}
+@keyframes m{50%{transform:translate(12vw,-8vh) scale(1.2)}100%{transform:translate(-8vw,6vh) scale(.9)}}
+h1{position:relative;font-size:clamp(32px,10vh,110px);font-weight:800;margin:0;text-align:center;line-height:1.1}
+h1 small{display:block;font-size:.3em;font-weight:500;opacity:.8;margin-top:1vh}
+</style></head><body><div class="a"><i></i><i></i><i></i></div>
+<h1>현장지휘관 과정<small>표지 · 구역 전환 장 배경으로만</small></h1></body></html>
