@@ -28,6 +28,13 @@ body.pf.pf-awake:not(.pf-dock-off) .pnum:not(.keep) { opacity: 0; } /* 조작 �
 .pf-b:active { transform: scale(.94); }
 .pf-b:focus-visible, .pf-sec:focus-visible, .pf-time:focus-visible { outline: 2px solid var(--pf-acc); outline-offset: 1px; }
 .pf-b.on { background: color-mix(in srgb, var(--pf-acc) 30%, transparent); color: #ffd9c2; }
+/* 독 확대(약하게): 마우스로 가리킨 단추 하나만 1.1배 — transform 만 써서 막대 폭 · 단추 자리는 그대로.
+   36px 단추가 양옆으로 1.8px 씩 커져 단추 사이 간격(2px)을 넘지 않음 → 이웃 단추를 잘못 누르지 않음 */
+@media (hover: hover) and (pointer: fine) {
+  .pf-b { transform-origin: 50% 100%; transition: background-color .12s, transform .16s var(--ease); }
+  .pf-b:hover, .pf-b:focus-visible { transform: scale(1.1); }
+  .pf-b:active { transform: scale(.96); }
+}
 .pf-pos { display: flex; align-items: baseline; gap: 4px; padding: 0 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pf-pos b { font-size: 15px; font-weight: 700; min-width: 2ch; text-align: right; }
 .pf-pos span { font-size: 13px; color: rgba(238,238,240,.62); }
@@ -153,6 +160,7 @@ body.hide-cursor .pf-cd { cursor: none; }
   .pf-track, .pf-track .sg i, .pf-dock, .pf-cue, .pf-cold, .pf-cold .hint, .pf-cd, .pf-cd .ring .fg, .pf-b, .pf-cd-opts button { transition: none !important; }
   .pf-pop, .pend.show .pf-end > *, .pf-cd.done:not(.big) { animation: none !important; }
   body.pf-awake .pf-track { transform: none; }
+  .pf-b:hover, .pf-b:focus-visible { transform: none; } /* 독 확대 끔 */
 }
 
 /* ============================ 교안 목록 ============================ */
