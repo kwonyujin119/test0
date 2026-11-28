@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-10T14:00:00.000Z",
- "modified": "2026-11-28T04:46:47.000Z",
+ "modified": "2026-11-28T06:02:05.000Z",
  "footer": {
   "text": "소방 교육 훈련 · 권유진",
   "num": true,
@@ -672,7 +672,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[1:00] 소개는 30초 안에. 숫자 하나만 강조: \"현장에서 11년 동안 불을 껐습니다. 그 현장 이야기를 오늘 드립니다.\"",
+   "notes": "[1:00] 소개는 30초 안에. 숫자 하나만 강조: \"현장에서 11년 동안 불을 껐습니다. 그 현장 이야기를 오늘 드립니다.\"\n[보강] 뒤 불꽃이 일렁이고 불티가 날아오름",
    "elements": [
     {
      "id": "7jzc49olo",
@@ -693,6 +693,25 @@
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e21b4",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 760,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-profile.jpg&fire=1&embers=1&emb=1.6",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "vze2fcg9z",
@@ -5829,7 +5848,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[추가 사례] 2026년 3월 20일 대전 대덕구 문평동 자동차 부품 공장. 앞의 청라(사람이 스프링클러를 멈춤) · 화성(출구를 몰랐음) · 원창동(샌드위치패널) 사례가 한 건물에서 한꺼번에 일어난 경우로 소개합니다.\n\"경보기는 울렸습니다. 그런데 5초에서 30초 만에 꺼졌다는 진술이 나왔습니다. 스프링클러는 차단돼 있었습니다. 사망자 다수는 2층과 3층 사이, 불법으로 증축한 공간에서 발견됐습니다.\"\n질문: \"우리 공장 수신기 경보음 스위치, 누가 끌 수 있습니까? 끄면 누구에게 보고합니까?\"\n※ 원인 · 책임은 수사 중(입건 5명 → 8명 보도, 기소 여부 미확인)이므로 확정적으로 말하지 말 것. 숫자는 강의 전 최신 기사로 다시 확인.\n※ 사진: 화재 당시 항공 사진 — 언론 보도 사진이면 출처를 함께 밝힐 것.\n출처: 뉴시스(2026.3.21 · 3.23 · 3.26) · 머니투데이(3.25) · 위키트리 · 다음(6.17) 보도",
+   "notes": "[추가 사례] 2026년 3월 20일 대전 대덕구 문평동 자동차 부품 공장. 앞의 청라(사람이 스프링클러를 멈춤) · 화성(출구를 몰랐음) · 원창동(샌드위치패널) 사례가 한 건물에서 한꺼번에 일어난 경우로 소개합니다.\n\"경보기는 울렸습니다. 그런데 5초에서 30초 만에 꺼졌다는 진술이 나왔습니다. 스프링클러는 차단돼 있었습니다. 사망자 다수는 2층과 3층 사이, 불법으로 증축한 공간에서 발견됐습니다.\"\n질문: \"우리 공장 수신기 경보음 스위치, 누가 끌 수 있습니까? 끄면 누구에게 보고합니까?\"\n※ 원인 · 책임은 수사 중(입건 5명 → 8명 보도, 기소 여부 미확인)이므로 확정적으로 말하지 말 것. 숫자는 강의 전 최신 기사로 다시 확인.\n※ 사진: 화재 당시 항공 사진 — 언론 보도 사진이면 출처를 함께 밝힐 것.\n출처: 뉴시스(2026.3.21 · 3.23 · 3.26) · 머니투데이(3.25) · 위키트리 · 다음(6.17) 보도\n[보강] CASE 파트처럼: 사진 새로(샌드위치패널 공장 화재) + 불꽃 일렁임 · 불티",
    "elements": [
     {
      "id": "dnzkvsj18",
@@ -5842,13 +5861,32 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/edu2-case-anjeon.jpg",
+     "src": "assets/edu3-case18.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e21b18",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case18.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "30o74h69w",
@@ -15478,7 +15516,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[42:00] 마무리 멘트를 천천히 읽고 3초 침묵.\n\"아무 일도 없는 하루 — 그것이 여러분이 훈련한 결과입니다.\"\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
+   "notes": "[42:00] 마무리 멘트를 천천히 읽고 3초 침묵.\n\"아무 일도 없는 하루 — 그것이 여러분이 훈련한 결과입니다.\"\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)\n[보강] 계기판 · 모니터의 초록 불빛이 숨쉬듯 빛나고 번지며, 초록 빛 알갱이가 떠오름 — 「오늘도 정상」",
    "elements": [
     {
      "id": "d2r103",
@@ -15509,7 +15547,7 @@
      "y": 0,
      "w": 1920,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/d2-closing.jpg",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/d2-closing.jpg&green=1",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -15834,7 +15872,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[43:00] 질문이 없으면 미리 준비한 질문: \"훈련을 하라고 하면 직원들이 반발합니다. 어떻게 하죠?\" → 짧게 10분 불시 훈련부터.",
+   "notes": "[43:00] 질문이 없으면 미리 준비한 질문: \"훈련을 하라고 하면 직원들이 반발합니다. 어떻게 하죠?\" → 짧게 10분 불시 훈련부터.\n[보강] 뒤 불꽃이 일렁이고 불티가 날아오름",
    "elements": [
     {
      "id": "h9ukj3jzf",
@@ -15855,6 +15893,25 @@
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e21b43",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1000,
+     "y": 0,
+     "w": 920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-profile.jpg&fire=1&embers=1&emb=1.6",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "8c7pqbh9p",
