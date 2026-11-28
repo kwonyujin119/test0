@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-27T23:02:33.000Z",
- "modified": "2026-11-27T23:02:33.000Z",
+ "modified": "2026-11-28T00:35:47.000Z",
  "footer": {
   "text": "",
   "num": true,
@@ -6935,7 +6935,7 @@
     "color": "#14161B"
    },
    "transition": "warp",
-   "notes": "세 번째: AI에게 일을 시키는 법.\n[증강판] 표지 사진이 살아 움직임(fx/photo-fx.html ambient) · 장 제목 = 시네마틱 · 들어오는 전환 = 워프(새 장으로 들어감)",
+   "notes": "세 번째: AI에게 일을 시키는 법.\n[증강판] 표지 사진이 살아 움직임(fx/photo-fx.html ambient) · 장 제목 = 시네마틱 · 들어오는 전환 = 워프(새 장으로 들어감)\n[증강판] 사람 ↔ AI 사이 파란 전기 신호가 3D 나선으로 꼬이며 오가고(번개 떨림 · 데이터 펄스), AI 눈에서 신호 고리가 퍼짐 — 「AI와 대화한다」",
    "decor": "none",
    "elements": [
     {
@@ -6961,13 +6961,13 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.55,
+     "opacity": 0.85,
      "type": "embed",
      "x": 0,
      "y": 0,
      "w": 1920,
      "h": 1080,
-     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/pt37-sech-3.jpg",
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/pt37-sech-3.jpg&link=.665,.485,.79,.315",
      "radius": 0,
      "autoplay": true,
      "shadow": false,
@@ -6989,7 +6989,7 @@
      "shape": "rect",
      "fill": "#0B0D11",
      "fill2": "#0B0D11",
-     "fill2Op": 0.35,
+     "fill2Op": 0.12,
      "gAngle": 0,
      "strokeWidth": 0,
      "stroke": "",
