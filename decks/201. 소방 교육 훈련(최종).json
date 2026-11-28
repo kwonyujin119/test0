@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-10T14:00:00.000Z",
- "modified": "2026-11-26T11:38:34.000Z",
+ "modified": "2026-11-28T04:40:25.000Z",
  "footer": {
   "text": "소방 교육 훈련 · 권유진",
   "num": true,
@@ -29,7 +29,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[0:00 — 콜드 오픈, 인사 전에 시작]\n(화면에 42초만 띄우고 3초 침묵)\n클릭① \"첫 폭발에서 작업장이 완전히 암흑이 되기까지, 42초 걸렸습니다.\"\n클릭② \"그 42초 동안 여러분의 직원은 무엇을 할 수 있습니까? 소화기 위치를 압니까? 비상구가 어느 쪽인지 압니까?\"\n→ 답을 듣지 말고 바로 다음 장. 이 질문은 사례 파트(화성)에서 다시 회수합니다.",
+   "notes": "[0:00 — 콜드 오픈, 인사 전에 시작]\n(화면에 42초만 띄우고 3초 침묵)\n클릭① \"첫 폭발에서 작업장이 완전히 암흑이 되기까지, 42초 걸렸습니다.\"\n클릭② \"그 42초 동안 여러분의 직원은 무엇을 할 수 있습니까? 소화기 위치를 압니까? 비상구가 어느 쪽인지 압니까?\"\n→ 답을 듣지 말고 바로 다음 장. 이 질문은 사례 파트(화성)에서 다시 회수합니다.\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "fpm0001",
@@ -48,6 +48,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x1",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-hook.jpg&fire=1&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0002",
@@ -3062,8 +3081,8 @@
    "bg": {
     "color": "#15181C"
    },
-   "transition": "blur",
-   "notes": "[3:00] 1부 시작.",
+   "transition": "warp",
+   "notes": "[3:00] 1부 시작.\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "fpm0006",
@@ -3082,6 +3101,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x9",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-what.jpg&fire=1&embers=1&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0007",
@@ -5026,8 +5064,8 @@
    "bg": {
     "color": "#15181C"
    },
-   "transition": "blur",
-   "notes": "[9:00] 2부 시작. 톤을 낮추고 천천히.",
+   "transition": "warp",
+   "notes": "[9:00] 2부 시작. 톤을 낮추고 천천히.\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "fpm0013",
@@ -5046,6 +5084,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x15",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-why.jpg&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0014",
@@ -5502,7 +5559,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[9:30] 사진을 3초 보여준 뒤 헤드라인. 영상으로 연결.",
+   "notes": "[9:30] 사진을 3초 보여준 뒤 헤드라인. 영상으로 연결.\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "szl9u02ni",
@@ -5521,6 +5578,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x16",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu-daejeon.jpg&fire=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "s3orei5vc",
@@ -6922,7 +6998,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[16:00] 특전사 경험 한 줄 (30초 이내). 그리고 HOW로.",
+   "notes": "[16:00] 특전사 경험 한 줄 (30초 이내). 그리고 HOW로.\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "fpm0022",
@@ -6941,6 +7017,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x22",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-why.jpg&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0023",
@@ -7156,8 +7251,8 @@
    "bg": {
     "color": "#15181C"
    },
-   "transition": "blur",
-   "notes": "[17:00] 3부 시작.",
+   "transition": "warp",
+   "notes": "[17:00] 3부 시작.\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "fpm0027",
@@ -7176,6 +7271,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x23",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-how.jpg&fire=1&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0028",
@@ -9497,8 +9611,8 @@
    "bg": {
     "color": "#15181C"
    },
-   "transition": "blur",
-   "notes": "[25:00] 4부 시작. 가장 무거운 파트.",
+   "transition": "warp",
+   "notes": "[25:00] 4부 시작. 가장 무거운 파트.\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "fpm0034",
@@ -9517,6 +9631,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x29",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-case.jpg&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0035",
@@ -10712,7 +10845,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[26:00] 오늘의 핵심 메시지 ②(사람)를 보여주는 사례.\n\"시설은 정상이었습니다. 화재 신호가 오작동인 줄 알고 1분 만에 정지시켰습니다.\"\n질문: \"우리 사업장에서 수신기 정지·복구 버튼, 누가 누를 수 있습니까? 그 사람은 훈련받았습니까?\"\n\n(상세 표: 숨김 부록 슬라이드)",
+   "notes": "[26:00] 오늘의 핵심 메시지 ②(사람)를 보여주는 사례.\n\"시설은 정상이었습니다. 화재 신호가 오작동인 줄 알고 1분 만에 정지시켰습니다.\"\n질문: \"우리 사업장에서 수신기 정지·복구 버튼, 누가 누를 수 있습니까? 그 사람은 훈련받았습니까?\"\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
    "elements": [
     {
      "id": "gpfdwrwnz",
@@ -10725,13 +10858,32 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/edu2-case26.jpg",
+     "src": "assets/edu3-case31.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e20xc31",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case31.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "y3gvabs5w",
@@ -11035,7 +11187,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[28:00] 0 : 20 대비를 3초 보여주고 시작. 자위소방대의 피난유도팀 장면과 연결.\n\"차이는 시설이 아니라, 누군가 '이쪽으로!'라고 외쳤느냐였습니다.\"\n\n(상세 표: 숨김 부록 슬라이드)",
+   "notes": "[28:00] 0 : 20 대비를 3초 보여주고 시작. 자위소방대의 피난유도팀 장면과 연결.\n\"차이는 시설이 아니라, 누군가 '이쪽으로!'라고 외쳤느냐였습니다.\"\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
    "elements": [
     {
      "id": "l93ev88mo",
@@ -11048,7 +11200,7 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/clipboard-1794316580146-ri2notm.png",
+     "src": "assets/edu3-case32.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
@@ -11056,6 +11208,25 @@
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e20xc32",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case32.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "1w5zrje2v",
@@ -11451,7 +11622,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[30:00] 메시지: 소방대가 오기 전 3분은 관계인의 시간. 방화문 하나가 연기를 막는다.\n\n(상세 표: 숨김 부록 슬라이드)",
+   "notes": "[30:00] 메시지: 소방대가 오기 전 3분은 관계인의 시간. 방화문 하나가 연기를 막는다.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
    "elements": [
     {
      "id": "n5m9xcvir",
@@ -11464,13 +11635,32 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/edu2-case29.jpg",
+     "src": "assets/edu3-case33.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e20xc33",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case33.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "dgsplrp5x",
@@ -11774,7 +11964,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[32:00] ★오프닝의 42초 회수.\n\"처음에 드린 질문 기억하십니까? 42초 동안 무엇을 할 수 있느냐. 이 공장의 직원 대부분은 출구가 어느 쪽인지 배운 적이 없었습니다.\"\n→ 3초 침묵 후 다음.\n\n(상세 표: 숨김 부록 슬라이드)",
+   "notes": "[32:00] ★오프닝의 42초 회수.\n\"처음에 드린 질문 기억하십니까? 42초 동안 무엇을 할 수 있느냐. 이 공장의 직원 대부분은 출구가 어느 쪽인지 배운 적이 없었습니다.\"\n→ 3초 침묵 후 다음.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
    "elements": [
     {
      "id": "xykqmgud3",
@@ -11787,13 +11977,32 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/edu2-case30.jpg",
+     "src": "assets/edu3-case34.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e20xc34",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case34.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "m3sotgx1c",
@@ -12097,7 +12306,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[34:00] 여기서부터 '우리 동네' 사례. 앞의 '보이지 않는 위험(샌드위치패널)' 장면과 연결.\n\n(상세 표: 숨김 부록 슬라이드)",
+   "notes": "[34:00] 여기서부터 '우리 동네' 사례. 앞의 '보이지 않는 위험(샌드위치패널)' 장면과 연결.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
    "elements": [
     {
      "id": "cghiid556",
@@ -12110,13 +12319,32 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/edu2-case27.jpg",
+     "src": "assets/edu3-case35.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e20xc35",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case35.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "sgwe13s8u",
@@ -12420,7 +12648,7 @@
     "color": "#15181C"
    },
    "transition": "",
-   "notes": "[35:30] 올해 우리 지역 사례. 원인은 조사 중이므로 확정적으로 말하지 말 것.\n메시지: 이런 구조는 초기에 못 잡으면 소방력으로도 오래 걸린다 → 초기 소화 훈련이 답.\n\n(상세 표: 숨김 부록 슬라이드)",
+   "notes": "[35:30] 올해 우리 지역 사례. 원인은 조사 중이므로 확정적으로 말하지 말 것.\n메시지: 이런 구조는 초기에 못 잡으면 소방력으로도 오래 걸린다 → 초기 소화 훈련이 답.\n\n(상세 표: 숨김 부록 슬라이드)\n[보강] 사례 사진을 새로(실사 · 간판 글자 없음), 불꽃이 일렁이고 불티가 오름",
    "elements": [
     {
      "id": "a3czcnrcr",
@@ -12433,13 +12661,32 @@
      "y": 0,
      "w": 880,
      "h": 1080,
-     "src": "assets/edu2-case25.jpg",
+     "src": "assets/edu3-case36.jpg",
      "fit": "cover",
      "radius": 0,
      "shadow": false,
      "enter": true,
      "delay": 0.1,
      "dur": 0.6
+    },
+    {
+     "id": "e20xc36",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 1040,
+     "y": 0,
+     "w": 880,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/edu3-case36.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "tf4kyf8cf",
@@ -13091,8 +13338,8 @@
    "bg": {
     "color": "#15181C"
    },
-   "transition": "blur",
-   "notes": "[38:00] 5부 시작. 톤을 다시 올린다.",
+   "transition": "warp",
+   "notes": "[38:00] 5부 시작. 톤을 다시 올린다.\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "fpm0041",
@@ -13111,6 +13358,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x38",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fe-sec-todo.jpg&fire=1&embers=1&dim=0.75",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0042",
@@ -15212,7 +15478,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[42:00] 마무리 멘트를 천천히 읽고 3초 침묵.\n\"아무 일도 없는 하루 — 그것이 여러분이 훈련한 결과입니다.\"",
+   "notes": "[42:00] 마무리 멘트를 천천히 읽고 3초 침묵.\n\"아무 일도 없는 하루 — 그것이 여러분이 훈련한 결과입니다.\"\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "d2r103",
@@ -15231,6 +15497,25 @@
      "shadow": false,
      "enter": true,
      "dur": 24
+    },
+    {
+     "id": "e20x42",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/d2-closing.jpg",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "d2r104",

@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T00:54:32.000Z",
- "modified": "2026-11-26T09:50:12.000Z",
+ "modified": "2026-11-28T04:40:25.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -2642,8 +2642,8 @@
    "bg": {
     "color": "#FAFAF7"
    },
-   "transition": "blur",
-   "notes": "[0:07–0:07] 제1장 시작. 핵심 질문: \"소방계획서를 해마다 내는데, 그게 정말 화재 때 쓰이나요?\" — 이 장의 답은 「실행우선」입니다. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)",
+   "transition": "warp",
+   "notes": "[0:07–0:07] 제1장 시작. 핵심 질문: \"소방계획서를 해마다 내는데, 그게 정말 화재 때 쓰이나요?\" — 이 장의 답은 「실행우선」입니다. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "sp0073",
@@ -2685,6 +2685,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x6",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": -29,
+     "y": 0,
+     "w": 1949,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-ch1b.jpg&fire=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "sp0075",
@@ -5505,7 +5524,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[0:25] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 이 계단 대피, 누가 언제 정해 두었을까요?",
+   "notes": "[0:25] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 이 계단 대피, 누가 언제 정해 두었을까요?\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "decor": "none",
    "noFooter": true,
    "elements": [
@@ -5526,6 +5545,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x13",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-drill.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "dv0002",
@@ -8223,7 +8261,7 @@
     "color": "#FAFAF7"
    },
    "transition": "blur",
-   "notes": "[0:35~0:50] 문제풀이 1. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).",
+   "notes": "[0:35~0:50] 문제풀이 1. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "sp0745",
@@ -8265,6 +8303,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x18",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fp-bg-quiz.jpg&fire=1&embers=1&dim=0.7",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0007",
@@ -9024,7 +9081,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -9032,7 +9089,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0775",
@@ -9084,7 +9142,7 @@
     {
      "id": "sp0777",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -9101,7 +9159,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -9586,7 +9644,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -9594,7 +9652,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0798",
@@ -9646,7 +9705,7 @@
     {
      "id": "sp0800",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -9663,7 +9722,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -10149,14 +10208,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0821",
@@ -10207,7 +10267,7 @@
     {
      "id": "sp0823",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -10224,7 +10284,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "sp0824",
@@ -10708,7 +10768,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -10716,7 +10776,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0844",
@@ -10768,7 +10829,7 @@
     {
      "id": "sp0846",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -10785,7 +10846,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -11270,7 +11331,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -11278,7 +11339,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0867",
@@ -11330,7 +11392,7 @@
     {
      "id": "sp0869",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -11347,7 +11409,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -11832,7 +11894,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -11840,7 +11902,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0890",
@@ -11892,7 +11955,7 @@
     {
      "id": "sp0892",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -11909,7 +11972,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -12394,7 +12457,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -12402,7 +12465,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0913",
@@ -12454,7 +12518,7 @@
     {
      "id": "sp0915",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -12471,7 +12535,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -12957,14 +13021,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0936",
@@ -13015,7 +13080,7 @@
     {
      "id": "sp0938",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -13032,7 +13097,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "sp0939",
@@ -13109,7 +13174,7 @@
     "color": "#FAFAF7"
    },
    "transition": "blur",
-   "notes": "[0:50~1:00] 휴식. 보내기 전에 앞 블록에서 가장 많이 틀린 1문항을 한 문장으로 다시 말하고 보냄. 재개 2분 전에 화면을 켜고 「생각해 오기」 질문을 읽어 줌. 다음: 제2장 자위소방대 및 초기대응체계.",
+   "notes": "[0:50~1:00] 휴식. 보내기 전에 앞 블록에서 가장 많이 틀린 1문항을 한 문장으로 다시 말하고 보냄. 재개 2분 전에 화면을 켜고 「생각해 오기」 질문을 읽어 줌. 다음: 제2장 자위소방대 및 초기대응체계.\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "sp0942",
@@ -13151,6 +13216,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x27",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fp-bg-break.jpg&fire=1&dim=0.7",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0011",
@@ -13385,8 +13469,8 @@
    "bg": {
     "color": "#FAFAF7"
    },
-   "transition": "blur",
-   "notes": "[1:00–1:01] 제2장 시작. 소방계획서의 제2장(자위소방대 운영계획)에 해당합니다. 질문: \"우리 건물에서 불이 나면, 119에 전화하는 사람은 정해져 있나요?\" (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)",
+   "transition": "warp",
+   "notes": "[1:00–1:01] 제2장 시작. 소방계획서의 제2장(자위소방대 운영계획)에 해당합니다. 질문: \"우리 건물에서 불이 나면, 119에 전화하는 사람은 정해져 있나요?\" (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "sp0263",
@@ -13428,6 +13512,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x29",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-ch2b.jpg",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "sp0265",
@@ -18353,7 +18456,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[1:21] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 줄 선 이 사람들, 누가 세어야 할까요?",
+   "notes": "[1:21] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 줄 선 이 사람들, 누가 세어야 할까요?\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "decor": "none",
    "noFooter": true,
    "elements": [
@@ -18374,6 +18477,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x37",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-assembly.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "dv0010",
@@ -21377,7 +21499,7 @@
     "color": "#FAFAF7"
    },
    "transition": "blur",
-   "notes": "[1:35~1:50] 문제풀이 2. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).",
+   "notes": "[1:35~1:50] 문제풀이 2. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "sp0947",
@@ -21419,6 +21541,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x42",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fp-bg-quiz.jpg&fire=1&embers=1&dim=0.7",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0020",
@@ -22055,7 +22196,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -22063,7 +22204,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0972",
@@ -22115,7 +22257,7 @@
     {
      "id": "sp0974",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -22132,7 +22274,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -22618,14 +22760,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp0995",
@@ -22676,7 +22819,7 @@
     {
      "id": "sp0997",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -22693,7 +22836,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "sp0998",
@@ -23177,7 +23320,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -23185,7 +23328,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1018",
@@ -23237,7 +23381,7 @@
     {
      "id": "sp1020",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -23254,7 +23398,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -23739,7 +23883,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -23747,7 +23891,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1041",
@@ -23799,7 +23944,7 @@
     {
      "id": "sp1043",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -23816,7 +23961,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -24302,14 +24447,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1064",
@@ -24360,7 +24506,7 @@
     {
      "id": "sp1066",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -24377,7 +24523,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "sp1067",
@@ -24861,7 +25007,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -24869,7 +25015,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1087",
@@ -24921,7 +25068,7 @@
     {
      "id": "sp1089",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -24938,7 +25085,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -25423,7 +25570,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -25431,7 +25578,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1110",
@@ -25483,7 +25631,7 @@
     {
      "id": "sp1112",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -25500,7 +25648,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -25985,7 +26133,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -25993,7 +26141,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1133",
@@ -26045,7 +26194,7 @@
     {
      "id": "sp1135",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -26062,7 +26211,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -26140,7 +26289,7 @@
     "color": "#FAFAF7"
    },
    "transition": "blur",
-   "notes": "[1:50~2:00] 휴식. 보내기 전에 앞 블록에서 가장 많이 틀린 1문항을 한 문장으로 다시 말하고 보냄. 재개 2분 전에 화면을 켜고 「생각해 오기」 질문을 읽어 줌. 다음: 제3장 화재대응 및 피난.",
+   "notes": "[1:50~2:00] 휴식. 보내기 전에 앞 블록에서 가장 많이 틀린 1문항을 한 문장으로 다시 말하고 보냄. 재개 2분 전에 화면을 켜고 「생각해 오기」 질문을 읽어 줌. 다음: 제3장 화재대응 및 피난.\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "sp1139",
@@ -26182,6 +26331,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x51",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fp-bg-break.jpg&fire=1&dim=0.7",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0024",
@@ -26771,8 +26939,8 @@
    "bg": {
     "color": "#FAFAF7"
    },
-   "transition": "blur",
-   "notes": "[2:00–2:01] 제3장 시작. 소방계획서의 제3장(피난계획)에 해당합니다. 질문: \"불을 처음 본 사람이 해야 할 첫 행동은?\" → 「불이야!」 외치고 발신기. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)",
+   "transition": "warp",
+   "notes": "[2:00–2:01] 제3장 시작. 소방계획서의 제3장(피난계획)에 해당합니다. 질문: \"불을 처음 본 사람이 해야 할 첫 행동은?\" → 「불이야!」 외치고 발신기. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "sp0517",
@@ -26814,6 +26982,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x53",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-ch3b.jpg",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "sp0519",
@@ -29109,7 +29296,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[2:12] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 소방대가 도착했습니다. 첫마디는 무엇입니까?",
+   "notes": "[2:12] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 소방대가 도착했습니다. 첫마디는 무엇입니까?\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "decor": "none",
    "noFooter": true,
    "elements": [
@@ -29130,6 +29317,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x58",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/ed-joint.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "dv0018",
@@ -32063,7 +32269,7 @@
     "color": "#FAFAF7"
    },
    "transition": "blur",
-   "notes": "[2:35~2:50] 문제풀이 3. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).",
+   "notes": "[2:35~2:50] 문제풀이 3. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "sp1144",
@@ -32105,6 +32311,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x64",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fp-bg-quiz.jpg&fire=1&embers=1&dim=0.7",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0033",
@@ -32741,7 +32966,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -32749,7 +32974,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1169",
@@ -32801,7 +33027,7 @@
     {
      "id": "sp1171",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -32818,7 +33044,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -33303,7 +33529,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -33311,7 +33537,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1192",
@@ -33363,7 +33590,7 @@
     {
      "id": "sp1194",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -33380,7 +33607,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -33865,7 +34092,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -33873,7 +34100,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1215",
@@ -33925,7 +34153,7 @@
     {
      "id": "sp1217",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -33942,7 +34170,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -34428,14 +34656,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1238",
@@ -34486,7 +34715,7 @@
     {
      "id": "sp1240",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -34503,7 +34732,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "sp1241",
@@ -34987,7 +35216,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -34995,7 +35224,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1261",
@@ -35047,7 +35277,7 @@
     {
      "id": "sp1263",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -35064,7 +35294,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -35549,7 +35779,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -35557,7 +35787,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1284",
@@ -35609,7 +35840,7 @@
     {
      "id": "sp1286",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -35626,7 +35857,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -36112,14 +36343,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1307",
@@ -36170,7 +36402,7 @@
     {
      "id": "sp1309",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -36187,7 +36419,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "sp1310",
@@ -36671,7 +36903,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -36679,7 +36911,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "sp1330",
@@ -36731,7 +36964,7 @@
     {
      "id": "sp1332",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -36748,7 +36981,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {

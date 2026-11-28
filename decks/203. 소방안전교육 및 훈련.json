@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-20T01:27:02.000Z",
- "modified": "2026-11-26T09:50:12.000Z",
+ "modified": "2026-11-28T04:40:25.000Z",
  "colors": {
   "bg": "#FAFAF7",
   "fg": "#2A2F35",
@@ -3531,8 +3531,8 @@
    "bg": {
     "color": "#FAFAF7"
    },
-   "transition": "blur",
-   "notes": "[0:03–0:03] 제1절 시작. 핵심 질문: \"같은 훈련을 받았는데, 왜 어떤 사람만 몸이 기억할까요?\" — 이 절의 답은 실시원칙 7가지와 동기부여입니다. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)",
+   "transition": "warp",
+   "notes": "[0:03–0:03] 제1절 시작. 핵심 질문: \"같은 훈련을 받았는데, 왜 어떤 사람만 몸이 기억할까요?\" — 이 절의 답은 실시원칙 7가지와 동기부여입니다. (질문은 클릭 1에 등장, 두세 명 답을 듣고 시작)\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "edv001",
@@ -3574,6 +3574,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x9",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-ch2.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "edv003",
@@ -5309,7 +5328,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[0:11] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 처음 잡은 소화기, 성공! 이 사람, 다음 훈련에 또 올까요?",
+   "notes": "[0:11] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 처음 잡은 소화기, 성공! 이 사람, 다음 훈련에 또 올까요?\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "decor": "none",
    "noFooter": true,
    "elements": [
@@ -5330,6 +5349,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x13",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/ed-success.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "dv0093",
@@ -7111,8 +7149,8 @@
    "bg": {
     "color": "#FAFAF7"
    },
-   "transition": "blur",
-   "notes": "[0:17–0:17] 제2절 시작. 핵심 질문: \"작년 훈련 결과, 지금 서류로 보여 줄 수 있습니까?\" — 계획(11~12월) → 준비·실시 → 평가·기록(13호·28호)의 순서로 답합니다. (질문은 클릭 1에 등장)",
+   "transition": "warp",
+   "notes": "[0:17–0:17] 제2절 시작. 핵심 질문: \"작년 훈련 결과, 지금 서류로 보여 줄 수 있습니까?\" — 계획(11~12월) → 준비·실시 → 평가·기록(13호·28호)의 순서로 답합니다. (질문은 클릭 1에 등장)\n[보강] 장 표지 사진이 살아 움직임(불이 있으면 일렁임 · 불티) · 들어올 때 워프 전환",
    "elements": [
     {
      "id": "edv010",
@@ -7154,6 +7192,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x17",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/sp-ch1.jpg",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "edv012",
@@ -11303,7 +11360,7 @@
     "color": "#15181C"
    },
    "transition": "blur",
-   "notes": "[0:25] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 소방대가 도착하는 이 장면, 시나리오 몇 번째 줄입니까?",
+   "notes": "[0:25] 사진 한 장 · 30초. 질문만 던지고 답은 받지 않고 다음 장으로. 클릭하면 아래 한 줄이 나옴.\n질문: 소방대가 도착하는 이 장면, 시나리오 몇 번째 줄입니까?\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "decor": "none",
    "noFooter": true,
    "elements": [
@@ -11324,6 +11381,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x22",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/ed-joint.jpg&fire=1&embers=1",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "dv0101",
@@ -14542,7 +14618,7 @@
     "color": "#FAFAF7"
    },
    "transition": "blur",
-   "notes": "[0:35~0:50] 문제풀이 1. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).",
+   "notes": "[0:35~0:50] 문제풀이 1. 8문항 × 약 1분 50초.\n문항마다: 1분 혼자 풀기 → 번호별 손 들기 → 클릭 1 정답 → 많이 틀렸으면 클릭 2 풀이 → 가장 많이 틀린 문항 번호를 메모해 정리 때 다시.\n문항은 교재 본문 기반 예상문항(공식 기출 아님).\n[보강] 사진이 살아 움직임(불이 있으면 일렁임 · 불티)",
    "elements": [
     {
      "id": "ed0606",
@@ -14584,6 +14660,25 @@
      "shadow": false,
      "enter": true,
      "dur": 22
+    },
+    {
+     "id": "e20x28",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "embed",
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 1080,
+     "url": "https://kwonyujin119.github.io/test0/fx/photo-fx.html?mode=ambient&img=assets/fp-bg-quiz.jpg&fire=1&embers=1&dim=0.7",
+     "radius": 0,
+     "autoplay": true,
+     "shadow": false,
+     "po": true,
+     "enter": true,
+     "dur": 1.0
     },
     {
      "id": "fpm0012",
@@ -15343,7 +15438,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -15351,7 +15446,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0636",
@@ -15403,7 +15499,7 @@
     {
      "id": "ed0638",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -15420,7 +15516,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -15906,14 +16002,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0659",
@@ -15964,7 +16061,7 @@
     {
      "id": "ed0661",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -15981,7 +16078,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "ed0662",
@@ -16465,7 +16562,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -16473,7 +16570,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0682",
@@ -16525,7 +16623,7 @@
     {
      "id": "ed0684",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -16542,7 +16640,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
@@ -17027,7 +17125,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -17035,7 +17133,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0705",
@@ -17087,7 +17186,7 @@
     {
      "id": "ed0707",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -17104,7 +17203,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -17590,14 +17689,15 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
       "fontSize": 28,
       "color": "#FFFFFF"
      },
-     "dur": 0.5
+     "dur": 0.5,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0728",
@@ -17648,7 +17748,7 @@
     {
      "id": "ed0730",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -17665,7 +17765,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5
+     "dur": 0.7
     },
     {
      "id": "ed0731",
@@ -18149,7 +18249,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -18157,7 +18257,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.14
+     "delay": 0.14,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0751",
@@ -18209,7 +18310,7 @@
     {
      "id": "ed0753",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -18226,7 +18327,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.14
     },
     {
@@ -18711,7 +18812,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -18719,7 +18820,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.07
+     "delay": 0.07,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0774",
@@ -18771,7 +18873,7 @@
     {
      "id": "ed0776",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -18788,7 +18890,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.07
     },
     {
@@ -19273,7 +19375,7 @@
      "fill": "#15181C",
      "stroke": "",
      "strokeWidth": 0,
-     "radius": 0,
+     "radius": 10,
      "shadow": false,
      "html": "",
      "style": {
@@ -19281,7 +19383,8 @@
       "color": "#FFFFFF"
      },
      "dur": 0.5,
-     "delay": 0.22
+     "delay": 0.22,
+     "beam": "#FF8A6B"
     },
     {
      "id": "ed0797",
@@ -19333,7 +19436,7 @@
     {
      "id": "ed0799",
      "step": 1,
-     "anim": "pop",
+     "anim": "scramble",
      "rotate": 0,
      "opacity": 1,
      "type": "text",
@@ -19350,7 +19453,7 @@
       "align": "right",
       "valign": "middle"
      },
-     "dur": 0.5,
+     "dur": 0.7,
      "delay": 0.21
     },
     {
