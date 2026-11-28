@@ -106,11 +106,12 @@ void main(){
   vec3 s0=tex(u);float mx=max(s0.r,max(s0.g,s0.b)),mn=min(s0.r,min(s0.g,s0.b));float L=dot(s0,vec3(.3,.59,.11));
   vec2 e=vec2(1.5/IS.x,1.5/IS.y);float ed=length(tex(u+vec2(e.x,0.))-tex(u-vec2(e.x,0.)))+length(tex(u+vec2(0.,e.y))-tex(u-vec2(0.,e.y))); // 건물 · 사다리처럼 윤곽이 뚜렷한 곳은 제외
   smm=smoothstep(.2,.08,mx-mn)*smoothstep(.72,.48,L)*smoothstep(.02,.1,L)*smoothstep(.95,.35,u.y)*smoothstep(.1,.035,ed); // 채도 낮고 · 부드럽고 · 위쪽
-  vec2 fl=vec2(fbm(u*vec2(3.,4.)+vec2(T*.05,T*.28))-.5,fbm(u*vec2(3.,4.)+vec2(5.2,1.3+T*.32))-.5);
-  u+=fl*.03*SMA*smm+vec2(0.,.004*SMA*smm*sin(T*.6+u.x*8.));
+  vec2 fl=vec2(fbm(u*vec2(2.6,3.2)+vec2(T*.06,T*.55))-.5,fbm(u*vec2(2.6,3.2)+vec2(5.2,1.3+T*.62))-.5); // 결이 위로 빠르게 흘러 올라감
+  vec2 fl2=vec2(fbm(u*vec2(6.,7.)+vec2(2.,T*1.1))-.5,fbm(u*vec2(6.,7.)+vec2(8.,T*1.2))-.5);   // 잔 소용돌이
+  u+=(fl*.05+fl2*.012)*SMA*smm+vec2(0.,.012*SMA*smm*(.5+.5*sin(T*.9+u.x*6.)));            // 아래쪽 사진을 끌어올려 피어오르는 느낌
  }
  vec3 c0=tex(u); vec3 c=c0;
- if(SMK==1){float roll=fbm(u*vec2(5.,6.)+vec2(T*.08,T*.45));c*=1.+(roll-.5)*.38*SMA*smm;} // 굴러가는 연기 결
+ if(SMK==1){float roll=fbm(u*vec2(4.,5.)+vec2(T*.08,T*.9));c*=1.+(roll-.5)*.5*SMA*smm;c+=vec3(.06)*smoothstep(.55,.8,roll)*SMA*smm;} // 굴러 올라가는 연기 결 · 밝은 가장자리 // 굴러가는 연기 결
  if(FX==1){ // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임 (불이 있는 사진만)
   float fm=fireMask(c0);
   vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
