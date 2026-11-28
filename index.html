@@ -38,15 +38,9 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
   -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 10%, transparent 60%); mask-image: radial-gradient(ellipse at 50% 0%, #000 10%, transparent 60%); }
 
 /* 머리 · 꼬리 */
-.brand { position: fixed; left: 28px; top: max(24px, env(safe-area-inset-top)); z-index: 5; display: flex; align-items: baseline; gap: 12px; }
-.brand b { font-size: 22px; font-weight: 800; letter-spacing: .14em; }
-.brand span { font-size: 12px; letter-spacing: .22em; color: var(--dim); text-transform: uppercase; }
-.brand i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 12px var(--gold); margin-left: 2px; transform: translateY(-2px); }
-.foot { position: fixed; left: 28px; right: 28px; bottom: max(22px, env(safe-area-inset-bottom)); z-index: 5; display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--dim); letter-spacing: .02em; }
-.foot b { color: var(--ink); font-weight: 600; }
 
 /* 무대: 이 상자 안에 마우스가 있는 동안 열려 있음 */
-.stage { --rx: 320px; --ry: 225px; --cw: 210px; --ch: 236px;
+.stage { --rxmax: 320px; --rymax: 225px; --rx: 320px; --ry: 225px; --cw: 210px; --ch: 236px; /* --rx · --ry 는 JS 가 화면 크기에 맞춰 줄임 (폴드 펼친 화면처럼 네모난 화면) */
   position: fixed; inset: 0; z-index: 2; display: grid; place-items: center; perspective: 1400px; }
 .orbit { position: relative; width: calc(var(--rx) * 2 + var(--cw)); height: calc(var(--ry) * 2 + var(--ch)); max-width: 100vw; max-height: 100dvh; display: grid; place-items: center; transform-style: preserve-3d; }
 
@@ -68,10 +62,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 .hub.dragging { cursor: grabbing; transition: none; z-index: 9; }
 .hub.dragging .body { animation: none; }
 .hub.back { transition: transform .5s cubic-bezier(.2,.9,.25,1.15); }
-.hint { position: absolute; left: 50%; top: calc(50% + 214px); transform: translateX(-50%); white-space: nowrap; z-index: 3; pointer-events: none;
-  font-size: 12.5px; letter-spacing: .16em; color: var(--dim); transition: opacity .25s; }
-.hint::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-right: 10px; transform: translateY(-1px); animation: blink 1.8s ease-in-out infinite; }
-@keyframes blink { 50% { opacity: .2; } }
 
 /* 빛줄기: 발판에서 각 카드로 흐르는 빛 (열렸을 때) */
 .beam { position: absolute; left: 50%; top: 50%; height: 2px; width: var(--len, 0px); transform-origin: 0 50%; transform: rotate(var(--ang, 0deg)) scaleX(0); z-index: 1; pointer-events: none;
@@ -115,7 +105,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 .card[data-pos="5"]  { --x: var(--rx);            --y: var(--ry);            --rz: -4deg; }
 .card[data-pos="7"]  { --x: calc(var(--rx) * -1); --y: var(--ry);            --rz: 4deg; }
 .card.locked .art img { filter: grayscale(.7) brightness(.6); }
-.card .lock { display: none; position: absolute; top: 12px; right: 12px; z-index: 2; padding: 5px 9px; border-radius: 999px; font-size: 11px; letter-spacing: .08em; background: rgba(6,10,21,.7); color: var(--ink); box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset; }
+.card .lock { display: none; position: absolute; top: 12px; right: 12px; z-index: 2; padding: 7px; line-height: 0; border-radius: 999px; font-size: 11px; letter-spacing: .08em; background: rgba(6,10,21,.7); color: var(--ink); box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset; }
 .card.locked .lock { display: block; }
 .card.drop-on .in { box-shadow: 0 0 0 2px var(--c) inset, 0 0 70px -6px var(--c); }
 
@@ -127,7 +117,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 .open-all .card:hover, .open-all .card:focus-visible, .open-all .card.drop-on { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) translateZ(40px) rotate(0deg) scale(1.05); transition-delay: 0s; z-index: 6; }
 .open-all .beam { opacity: 1; transform: rotate(var(--ang)) scaleX(1); animation: flow 2.2s linear infinite; }
 @keyframes flow { from { background-position: 100% 0; } to { background-position: -100% 0; } }
-.open-all .hint { opacity: 0; }
 .open-all .hub { transform: translateY(-6px) scale(1.03); }
 
 /* 물결 파문 */
@@ -154,20 +143,27 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 
 /* 휴대폰: 카드는 위 둘 · 아래 둘, 캐릭터는 작게 */
 @media (max-width: 640px) {
-  .stage { --rx: 92px; --ry: 262px; --cw: 160px; --ch: 168px; }
+  .stage { --rxmax: 92px; --rymax: 262px; --cw: 160px; --ch: 168px; }
   .hub { width: 112px; height: 218px; }
   .pad { top: calc(50% + 92px); width: 220px; height: 220px; margin: -110px 0 0 -110px; }
-  .hint { top: calc(50% + 140px); font-size: 12px; letter-spacing: .1em; }
   .card b { font-size: 22px; } .card small { display: none; } .card .meta { left: 14px; bottom: 13px; gap: 4px; }
   .card .go { width: 28px; height: 28px; right: 12px; bottom: 12px; font-size: 14px; }
   .card .art { height: 52%; }
-  .brand { left: 18px; } .foot { left: 18px; right: 18px; }
   .card[data-pos] { --rz: 0deg; }
   .modal-bg .ws-gate-modal { min-width: 0; padding-top: 70px; }
 }
-@media (max-height: 700px) and (min-width: 641px) { .stage { --ry: 190px; --ch: 210px; } .hub { width: 140px; height: 274px; } .pad { top: calc(50% + 112px); } .hint { top: calc(50% + 172px); } }
+/* 갤럭시 폴드 접은 화면(커버 약 344px)처럼 아주 좁은 화면: 카드를 조금 좁게 */
+@media (max-width: 380px) { .stage { --cw: 146px; --ch: 160px; } .card b { font-size: 20px; } }
+/* 갤럭시 폴드 펼친 화면 · 작은 태블릿 (거의 정사각형): 카드와 캐릭터를 한 단계 작게 */
+@media (min-width: 641px) and (max-width: 960px) {
+  .stage { --rymax: 250px; --cw: 188px; --ch: 210px; }
+  .hub { width: 150px; height: 292px; }
+  .pad { top: calc(50% + 120px); width: 290px; height: 290px; margin: -145px 0 0 -145px; }
+  .card b { font-size: 26px; }
+}
+@media (max-height: 700px) and (min-width: 641px) { .stage { --rymax: 190px; --ch: 210px; } .hub { width: 140px; height: 274px; } .pad { top: calc(50% + 112px); }  }
 @media (prefers-reduced-motion: reduce) {
-  .aurora i, .pad .p1, .hub .body, .hint::before, .beam, .card .rim { animation: none !important; }
+  .aurora i, .pad .p1, .hub .body, .beam, .card .rim { animation: none !important; }
   .card, .card .in, .hub, .hub .body, .beam { transition-duration: .01s !important; transition-delay: 0s !important; }
   .ripple { display: none; }
 }
@@ -179,7 +175,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 <div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
-<header class="brand"><b>DPV<i></i></b><span>with SACHIL AI</span></header>
 <h1 class="sr-only">DPV — 작업장 고르기</h1>
 
 <main class="stage" id="stage">
@@ -190,15 +185,13 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
     <i class="beam" data-for="video" style="--c:var(--video)" aria-hidden="true"></i>
     <i class="beam" data-for="secret" style="--c:var(--secret)" aria-hidden="true"></i>
     <button type="button" class="hub" id="hub" aria-expanded="false" aria-label="SACHIL AI — 작업장 열기"><span class="body"><img src="assets/ui/sachil-ai-full.webp" alt="" width="369" height="720" draggable="false"></span></button>
-    <span class="hint" id="hint">SACHIL AI 에게 마우스를 올리세요</span>
-    <a class="card" data-pos="11" data-ws="doc" href="hangul.html"><span class="in"><span class="art"><img src="assets/ui/ws-doc.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><span class="no">01 · DOCUMENT</span><b>DOC</b><small>한글 문서 · 열람 · 인쇄</small></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
-    <a class="card" data-pos="1" data-ws="pres" href="gyoan.html"><span class="in"><span class="art"><img src="assets/ui/ws-pres.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><span class="no">02 · PRESENTATION</span><b>PRES</b><small>교안 · 발표</small></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
-    <a class="card" data-pos="5" data-ws="video" href="videos.html"><span class="in"><span class="art"><img src="assets/ui/ws-video.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><span class="no">03 · VIDEO</span><b>VIDEO</b><small>영상 편집 · 자막</small></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
-    <a class="card" data-pos="7" data-ws="secret" href="secret.html" id="tabSecret"><span class="in"><span class="lock">LOCK</span><span class="art"><img src="assets/ui/ws-secret.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><span class="no">04 · SECRET</span><b>SECRET</b><small id="secSub">관리자 전용</small></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="11" data-ws="doc" href="hangul.html"><span class="in"><span class="art"><img src="assets/ui/ws-doc.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>DOC</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="1" data-ws="pres" href="gyoan.html"><span class="in"><span class="art"><img src="assets/ui/ws-pres.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>PRES</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="5" data-ws="video" href="videos.html"><span class="in"><span class="art"><img src="assets/ui/ws-video.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>VIDEO</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
+    <a class="card" data-pos="7" data-ws="secret" href="secret.html" id="tabSecret"><span class="in"><span class="lock" aria-label="잠김"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span class="art"><img src="assets/ui/ws-secret.webp" alt="" loading="eager" decoding="async"></span><span class="meta"><b>SECRET</b></span><span class="go" aria-hidden="true">→</span><i class="glare"></i></span><i class="rim"></i></a>
   </nav>
 </main>
 
-<footer class="foot"><span id="mode"></span></footer>
 
 <script src="app/common.js"></script>
 <script src="app/access.js"></script>
@@ -213,7 +206,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
   const $ = id => document.getElementById(id);
   const stage = $('stage'), orbit = $('orbit'), hub = $('hub'), secret = $('tabSecret');
   const cards = [...orbit.querySelectorAll('.card')], still = matchMedia('(prefers-reduced-motion: reduce)').matches, touch = matchMedia('(hover: none)').matches;
-  if (touch) $('hint').textContent = 'SACHIL AI 를 누르세요';
 
   /* 열고 닫기: PC 는 무대 가운데 영역에 마우스가 있는 동안, 휴대폰은 누를 때 */
   let pinned = false, hovering = false;
@@ -230,7 +222,10 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 
   /* 빛줄기: 발판 가운데에서 각 카드 가운데까지 길이 · 각도 계산 */
   function layout() {
-    const ob = orbit.getBoundingClientRect(), cs = getComputedStyle(stage), rx = parseFloat(cs.getPropertyValue('--rx')), ry = parseFloat(cs.getPropertyValue('--ry'));
+    /* 카드가 화면 밖으로 나가지 않게 궤도 크기를 화면에 맞춤 (갤럭시 폴드 펼친 화면 약 690×830 · 가로로 들면 830×690) */
+    const cs = getComputedStyle(stage), cw = parseFloat(cs.getPropertyValue('--cw')), ch = parseFloat(cs.getPropertyValue('--ch'));
+    const W = innerWidth, H = innerHeight, rx = Math.max(60, Math.min(parseFloat(cs.getPropertyValue('--rxmax')), W / 2 - cw / 2 - 16)), ry = Math.max(80, Math.min(parseFloat(cs.getPropertyValue('--rymax')), H / 2 - ch / 2 - 18));
+    stage.style.setProperty('--rx', rx + 'px'); stage.style.setProperty('--ry', ry + 'px');
     const pos = { doc: [-rx, -ry], pres: [rx, -ry], video: [rx, ry], secret: [-rx, ry] };
     orbit.querySelectorAll('.beam').forEach(b => { const [x, y] = pos[b.dataset.for]; b.style.setProperty('--len', Math.hypot(x, y) * .82 + 'px'); b.style.setProperty('--ang', Math.atan2(y, x) * 180 / Math.PI + 'deg'); });
   }
@@ -275,7 +270,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
     justDragged = true; setTimeout(() => { justDragged = false; }, 0);
     hub.classList.remove('dragging'); hub.classList.add('back'); hub.style.transform = ''; secret.classList.remove('drop-on'); sync();
     /* SECRET 이 아닌 곳에 놓으면: 관리자 → 게스트(보기 전용)로 전환. 손이 살짝 미끄러진 것(60px 이하)은 무시 */
-    if (!hit) { if (up && far && Access.isAdmin) { Access.enterGuest(); const [x, y] = center(hub); ripple(x, y, 'rgba(142,154,184,.9)', 2); toast('게스트(보기 전용)로 바꿨습니다', 2400); paint(); } return; }
+    if (!hit) { if (up && far && Access.isAdmin) { Access.enterGuest(); const [x, y] = center(hub); ripple(x, y, 'rgba(142,154,184,.9)', 2); paint(); } return; }
     const [x, y] = center(secret); ripple(x, y, getComputedStyle(document.documentElement).getPropertyValue('--secret'), 3);
     if (Access.isAdmin || await Access.prompt({ title: '관리자 접속코드', desc: '접속코드를 넣으면 관리자로 입장해 SECRET 을 엽니다.', ok: '입장' })) location.href = 'secret.html';
   };
@@ -287,10 +282,9 @@ body { margin: 0; background: var(--bg); color: var(--ink); overflow: hidden; fo
 
   function paint() {
     const admin = Access.isAdmin;
-    $('mode').innerHTML = Access.chosen ? `지금 · <b>${admin ? '관리자' : '게스트 · 보기 전용'}</b>` : '작업장을 고르면 보기 전용으로 들어갑니다';
-    secret.classList.toggle('locked', !admin); $('secSub').textContent = admin ? '투자 도우미' : '관리자 전용';
+    secret.classList.toggle('locked', !admin);
   }
-  async function toAdmin() { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); paint(); } }
+  async function toAdmin() { if (await Access.prompt()) paint(); }
   paint();
   if (new URLSearchParams(location.search).has('mode') && !Access.isAdmin) setTimeout(toAdmin, 150);
 })();
