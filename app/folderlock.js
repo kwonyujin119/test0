@@ -24,10 +24,12 @@ const FolderLock = {
     const j = await this.folders(); if (!j || !j.decks || !Array.isArray(j.folders)) return '';
     const id = j.decks[name]; const f = id && j.folders.find(x => x && x.id === id);
     if (!(f && f.locked === true)) return '';
-    try { const t = (JSON.parse(localStorage.getItem('ws:folderOpen') || '{}'))['pres:' + f.id]; if (t && Date.now() - t < 12 * 36e5) return ''; } catch (e) { } // 게스트가 접속코드로 연 폴더 (access.js openLocked)
+    const coded = !!(f.code && typeof f.code.h === 'string'); // 관리자가 코드 설정한 폴더: 기록 이름에 해시 앞부분 (access.js _fkey 와 같음)
+    try { const t = (JSON.parse(localStorage.getItem('ws:folderOpen') || '{}'))['pres:' + f.id + (coded ? ':' + f.code.h.slice(0, 10) : '')]; if (t && Date.now() - t < 12 * 36e5) return ''; } catch (e) { }
+    this._coded = coded; // 게스트가 접속코드로 연 폴더 (access.js openLocked)
     this._id = f.id; return String(f.name || '잠긴 폴더');
   },
   screen(folderName) {
-    return `<div class="pend show"><div class="pend-t">잠긴 교안입니다</div><div style="color:#c9cbd1;max-width:560px;padding:0 20px;text-align:center;font-size:15px;line-height:1.65;word-break:keep-all">「${esc(folderName)}」 폴더는 잠겨 있습니다(Lock). 관리자 접속코드를 넣으면 볼 수 있습니다.</div><div class="pend-a"><a class="btn ink" href="gyoan.html#f=${encodeURIComponent(this._id || '')}">접속코드 넣고 보기</a><a class="btn" href="index.html?mode=1">관리자로 입장</a><a class="btn" href="gyoan.html">교안 목록으로</a></div></div>`;
+    return `<div class="pend show"><div class="pend-t">잠긴 교안입니다</div><div style="color:#c9cbd1;max-width:560px;padding:0 20px;text-align:center;font-size:15px;line-height:1.65;word-break:keep-all">「${esc(folderName)}」 폴더는 잠겨 있습니다(Lock). ${this._coded ? '관리자에게 받은 폴더 코드' : '관리자 접속코드'}를 넣으면 볼 수 있습니다.</div><div class="pend-a"><a class="btn ink" href="gyoan.html#f=${encodeURIComponent(this._id || '')}">${this._coded ? '폴더 코드' : '접속코드'} 넣고 보기</a><a class="btn" href="index.html?mode=1">관리자로 입장</a><a class="btn" href="gyoan.html">교안 목록으로</a></div></div>`;
   },
 };
