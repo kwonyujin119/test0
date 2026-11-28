@@ -97,45 +97,7 @@
     b.textContent = open ? '접기' : b.dataset.more;
   });
 
-  /* ---------- 4. 입장: 맨 위 「SECRET」 글자 섞였다 맞춰지기 ----------
-     같은 탭에서 처음 그 글자가 보일 때 한 번만(sessionStorage) · 0.38초 · 라틴 대문자와 숫자만 섞음
-     글자마다 원래 폭으로 고정해 자리가 흔들리지 않게 하고, 끝나면 원래 글자(원래 DOM)로 되돌림.
-     덩어리(.ws-hero)는 aria-hidden 이라 화면낭독기에는 영향 없음 · 동작 줄이기면 안 함 */
-  const SCR_KEY = 'sec:fx-scramble', SCR_MS = 380, SCR_CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const scrDone = () => { try { return sessionStorage.getItem(SCR_KEY) === '1'; } catch (e) { return true; } };
-  const scrMark = () => { try { sessionStorage.setItem(SCR_KEY, '1'); } catch (e) { } };
-  function scramble(b) {
-    if (!b || b._fxScr || RM.matches || scrDone()) return false;
-    const text = b.textContent; if (!/^[A-Z0-9]{2,12}$/.test(text.trim())) return false;
-    b._fxScr = 1; scrMark();
-    const orig = [...b.childNodes];
-    const h0 = b.getBoundingClientRect().height;
-    const spans = [...text].map(c => { const s = document.createElement('span'); s.textContent = c; s.style.cssText = 'display:inline-block;vertical-align:top;text-align:center'; return s; });
-    b.replaceChildren(...spans);
-    if (Math.abs(b.getBoundingClientRect().height - h0) > .5) { b.replaceChildren(...orig); return false; } // 줄 높이가 달라지면 하지 않음
-    spans.forEach(s => { s.style.width = s.getBoundingClientRect().width + 'px'; }); // 원래 글자 폭으로 고정
-    const t0 = performance.now(), n = spans.length;
-    let lastT = -1;
-    const end = () => { b.replaceChildren(...orig); };
-    const step = now => {
-      if (!b.isConnected) return end();
-      const k = (now - t0) / SCR_MS;
-      if (k >= 1) return end();
-      if (now - lastT >= 34) { // 초당 30번쯤만 바꿈
-        lastT = now;
-        const fixed = Math.floor(k * (n + 1)); // 왼쪽부터 차례로 맞춰짐
-        spans.forEach((s, i) => { s.textContent = i < fixed || text[i] === ' ' ? text[i] : SCR_CH[(Math.random() * SCR_CH.length) | 0]; });
-      }
-      requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-    return true;
-  }
-  const heroB = document.querySelector('#vToday .ws-hero .wh-t b');
-  if (heroB && !RM.matches && !scrDone() && 'IntersectionObserver' in window) {
-    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); scramble(heroB); } });
-    io.observe(heroB);
-  }
+  /* ---------- 4. 입장: 맨 위 「SECRET」 글자 섞였다 맞춰지기 → app/motion.js 「작업장 제목 스크램블」로 옮김 (세 작업장 공용) ---------- */
 
   /* ---------- 지켜보기 ---------- */
   let q = new Set(), raf = 0;
