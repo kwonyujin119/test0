@@ -1,0 +1,17 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>벤토 그리드</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#F4F1EA;color:#15181C}
+.g{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:2vh;width:88vw;height:82vh}
+.c{border-radius:28px;background:#fff;padding:3vh 2vw;box-shadow:0 2px 0 rgba(0,0,0,.04);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translateY(24px) scale(.98);animation:in .7s cubic-bezier(.2,.8,.2,1) forwards}
+.c:nth-child(1){grid-row:span 2;background:#E4521B;color:#fff;animation-delay:.1s}
+.c:nth-child(2){animation-delay:.35s}.c:nth-child(3){animation-delay:.5s}.c:nth-child(4){grid-column:span 2;animation-delay:.65s;background:#15181C;color:#fff}
+@keyframes in{to{opacity:1;transform:none}}
+.t{font-size:clamp(13px,2.2vh,22px);opacity:.75;font-weight:600}
+.n{font-size:clamp(40px,14vh,150px);font-weight:800;line-height:1}
+.s{font-size:clamp(22px,6vh,60px);font-weight:800;line-height:1.05}
+</style></head><body><div class="g">
+<div class="c"><div class="t">이번 달 출동</div><div class="n">1,284</div><div class="t">전월 대비 +6%</div></div>
+<div class="c"><div class="t">평균 도착</div><div class="s">6분 41초</div></div>
+<div class="c"><div class="t">인명 구조</div><div class="s">57명</div></div>
+<div class="c"><div class="t">가상 훈련 데이터 · 한 칸만 크게 = 가장 중요한 것</div><div class="s">크기로 중요도를 보여 준다</div></div>
+</div></body></html>

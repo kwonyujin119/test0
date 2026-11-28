@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>넘버 티커</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#14161B}
+.w{text-align:center}
+.n{display:inline-flex;font-size:clamp(70px,30vh,320px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+.d{height:1em;overflow:hidden;display:inline-block}
+.d span{display:block;transition:transform 1.8s cubic-bezier(.2,.8,.1,1)}
+.d span i{display:block;font-style:normal;height:1em}
+.u{font-size:.35em;align-self:flex-end;margin:0 0 .12em .1em;color:#FF6B35}
+p{font-size:clamp(18px,3.6vh,36px);opacity:.8;margin:2vh 0 0}
+</style></head><body><div class="w"><div class="n" id="n"></div><p>2025년 화재 인명피해(사망 346 · 부상 2,390) — 소방청 「2025년도 화재통계연감」</p></div>
+<script>
+const v='2,736',n=document.getElementById('n');
+for(const ch of v){if(ch===','){n.insertAdjacentHTML('beforeend','<span>,</span>');continue}
+const d=document.createElement('span');d.className='d';d.innerHTML='<span>'+[...Array(10).keys(),...Array(10).keys()].map(k=>'<i>'+k+'</i>').join('')+'</span>';d.dataset.t=+ch+10;n.appendChild(d)}
+n.insertAdjacentHTML('beforeend','<span class="u">명</span>');
+const run=()=>{n.querySelectorAll('.d>span').forEach(s=>{s.style.transition='none';s.style.transform='translateY(0)'});requestAnimationFrame(()=>requestAnimationFrame(()=>n.querySelectorAll('.d').forEach((d,i)=>{const s=d.firstChild;s.style.transition='';s.style.transitionDelay=i*.12+'s';s.style.transform=`translateY(-${d.dataset.t}em)`})))};
+setTimeout(run,300);setInterval(run,7000);
+</script></body></html>

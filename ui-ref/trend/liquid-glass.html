@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>리퀴드 글래스</title><link rel="stylesheet" href="base.css">
+<style>
+body{background:#0B0F17}
+.bg{position:fixed;inset:0;background:radial-gradient(40% 50% at 25% 35%,#FF6B35 0,transparent 70%),radial-gradient(45% 55% at 75% 65%,#2457D6 0,transparent 70%),radial-gradient(30% 40% at 60% 20%,#FDD000 0,transparent 70%),#0B0F17;animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{to{transform:scale(1.15) translate(-3%,2%)}}
+.card{position:relative;width:min(62vw,720px);padding:5vh 4vw;border-radius:36px;background:rgba(255,255,255,.12);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -12px 30px rgba(255,255,255,.08),0 30px 80px rgba(0,0,0,.45);overflow:hidden}
+.card::before{content:"";position:absolute;inset:-40% -20% auto;height:60%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);animation:shine 5s ease-in-out infinite}
+@keyframes shine{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}
+.k{font-size:clamp(14px,2.2vh,22px);letter-spacing:.2em;opacity:.8}
+h1{margin:.4em 0 .2em;font-size:clamp(28px,7vh,72px);font-weight:800}
+p{margin:0;font-size:clamp(16px,3vh,30px);opacity:.92}
+</style></head><body><div class="bg"></div>
+<div class="card"><div class="k">가상 훈련 · 상황판</div><h1>2단계 대응 발령</h1><p>지휘소 설치 완료 · 소방력 32대 · 인원 108명</p></div>
+</body></html>

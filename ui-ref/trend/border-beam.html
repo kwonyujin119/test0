@@ -1,0 +1,11 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>보더 빔</title><link rel="stylesheet" href="base.css">
+<style>
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+body{background:#0B0F17}
+.b{position:relative;width:min(70vw,820px);padding:6vh 4vw;border-radius:28px;background:#121826}
+.b::before{content:"";position:absolute;inset:-2px;border-radius:30px;padding:2px;background:conic-gradient(from var(--a),transparent 0 70%,#FDD000 80%,#FF6B35 88%,transparent 95%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:r 3.2s linear infinite}
+@keyframes r{to{--a:360deg}}
+.k{color:#FDD000;font-weight:700;font-size:clamp(14px,2.4vh,24px);letter-spacing:.15em}
+h1{margin:.4em 0 .2em;font-size:clamp(26px,6.5vh,66px)}
+p{margin:0;font-size:clamp(16px,3vh,30px);opacity:.85}
+</style></head><body><div class="b"><div class="k">AI 가 검토 중</div><h1>소방활동 상황보고서</h1><p>빛이 도는 동안 = 아직 일하는 중</p></div></body></html>
