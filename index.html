@@ -32,6 +32,15 @@ body { margin: 0; background: var(--ui-bg); color: var(--ui-fg); overflow: hidde
   content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--ui-ink) 35%, transparent);
   animation: breathe 2.6s ease-in-out infinite; pointer-events: none; }
 @keyframes breathe { 0%, 100% { transform: scale(1); opacity: .7; } 50% { transform: scale(1.12); opacity: 0; } }
+.hub { background: radial-gradient(circle at 50% 35%, #2c4f9e, #13245a 70%); overflow: visible; }
+.hub img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 0; display: block; pointer-events: none; -webkit-user-drag: none; }
+.hub { touch-action: none; user-select: none; -webkit-user-select: none; }
+.hub.dragging { cursor: grabbing; transition: none; z-index: 6; box-shadow: 0 18px 40px rgba(0,0,0,.28); }
+.hub.dragging::after { animation: none; opacity: 0; }
+.hub.back { transition: transform .38s cubic-bezier(.2,.9,.25,1.15); }
+/* DPV 를 SECRET 위로 끌어 오면: SECRET 이 커지며 받을 준비 */
+.tab.drop-on { box-shadow: 0 0 0 3px var(--ws-dot), 0 14px 34px rgba(0,0,0,.2); }
+.orbit .tab.drop-on { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.12); }
 .hub:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 6px; }
 .hint { position: absolute; z-index: 1; top: calc(50% + 86px); left: 50%; transform: translateX(-50%); white-space: nowrap;
   font-size: 13px; color: var(--ui-muted); transition: opacity .2s; pointer-events: none; }
@@ -95,14 +104,29 @@ body { margin: 0; background: var(--ui-bg); color: var(--ui-fg); overflow: hidde
   .hub::after { animation: none; }
   .tab, .rays i, .hub { transition-duration: .01s !important; transition-delay: 0s !important; }
 }
+
+/* ── 3D · 인터랙티브 레퍼런스(PRES 「002. 3D, 인터랙티브 UI 레퍼런스」)에서 고른 셋 ──
+   10 안내 캐릭터: 가운데 SACHIL AI 가 마우스 쪽으로 고개를 돌림 (CSS 3D 회전만 — Three.js 없이)
+   01 반응 입자: 바탕의 점들이 천천히 떠다니다 마우스가 다가가면 비켜 감 (canvas 2D, 점 최대 90개)
+   05 물결 파문: 탭이 펼쳐질 때 · SECRET 에 끌어 놓을 때 동심원이 퍼짐
+   첫 화면이라 무거운 3D(지구본 · 은하 · 하이퍼스피드)는 넣지 않음. 움직임 줄이기 설정이면 모두 멈춤 */
+#bg { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.home { z-index: 1; }
+.hub { perspective: 500px; }
+.hub img { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .5s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+.ripple { position: fixed; z-index: 0; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; pointer-events: none;
+  border: 2px solid var(--c, var(--ui-fg)); opacity: .45; transform: scale(.6); animation: ripple .9s cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes ripple { to { transform: scale(3.2); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ripple { display: none; } .hub img { transform: none !important; } }
 </style>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
 <main class="home">
   <h1 class="sr-only">DPV — 작업장 고르기</h1>
   <nav class="orbit" id="orbit" aria-label="작업장">
     <div class="rays" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <button type="button" class="hub" id="hub" aria-expanded="false" aria-label="DPV — 작업장 열기">DPV</button>
+    <button type="button" class="hub" id="hub" aria-expanded="false" aria-label="DPV — 작업장 열기 (SACHIL AI)"><img src="assets/ui/sachil-ai-bust.webp" alt="" width="320" height="320" draggable="false"></button>
     <span class="hint" id="hint">마우스를 올려 작업장을 고르세요</span>
     <a class="tab" data-pos="11" data-ws="doc" href="hangul.html"><span class="tile" aria-hidden="true">D</span><span>DOC<small>한글 문서</small></span></a>
     <a class="tab" data-pos="1" data-ws="pres" href="gyoan.html"><span class="tile" aria-hidden="true">P</span><span>PRES<small>교안 · 발표</small></span></a>
@@ -125,7 +149,34 @@ body { margin: 0; background: var(--ui-bg); color: var(--ui-fg); overflow: hidde
   if (matchMedia('(hover: none)').matches) $('hint').textContent = '눌러서 작업장을 고르세요';
 
   const setOpen = on => { orbit.classList.toggle('open', on); hub.setAttribute('aria-expanded', on ? 'true' : 'false'); };
-  hub.addEventListener('click', () => setOpen(!orbit.classList.contains('open')));
+  /* 가운데 DPV 를 끌어 SECRET 위에 놓으면 접속코드 창 (맞으면 관리자로 SECRET 입장). 그냥 누르면 탭 열기/닫기 */
+  const secret = $('tabSecret');
+  let drag = null, justDragged = false;
+  const overSecret = (x, y) => { const r = secret.getBoundingClientRect(); return x > r.left - 16 && x < r.right + 16 && y > r.top - 16 && y < r.bottom + 16; };
+  hub.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, on: false };
+  });
+  hub.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.on) { if (Math.hypot(dx, dy) < 8) return; drag.on = true; try { hub.setPointerCapture(e.pointerId); } catch (_) { } hub.classList.remove('back'); hub.classList.add('dragging'); setOpen(true); }
+    hub.style.transform = `translate(${dx}px, ${dy}px) scale(.8)`;
+    secret.classList.toggle('drop-on', overSecret(e.clientX, e.clientY));
+  });
+  const endDrag = async e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const was = drag.on, hit = was && e.type === 'pointerup' && overSecret(e.clientX, e.clientY); drag = null;
+    if (!was) return;
+    justDragged = true; setTimeout(() => { justDragged = false; }, 0);
+    hub.classList.remove('dragging'); hub.classList.add('back'); hub.style.transform = '';
+    secret.classList.remove('drop-on');
+    if (!hit) return;
+    { const b = secret.getBoundingClientRect(); window.dpvRipple && dpvRipple(b.left + b.width / 2, b.top + b.height / 2, getComputedStyle(secret).getPropertyValue('--ws-dot'), 3); }
+    if (Access.isAdmin || await Access.prompt({ title: '관리자 접속코드', desc: '접속코드를 넣으면 관리자로 입장해 SECRET 을 엽니다.', ok: '입장' })) location.href = 'secret.html';
+  };
+  hub.addEventListener('pointerup', endDrag); hub.addEventListener('pointercancel', endDrag);
+  hub.addEventListener('click', () => { if (justDragged) return; setOpen(!orbit.classList.contains('open')); });
   document.addEventListener('click', e => { if (!orbit.contains(e.target)) setOpen(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { setOpen(false); if (orbit.contains(document.activeElement)) document.activeElement.blur(); } });
 
@@ -137,14 +188,66 @@ body { margin: 0; background: var(--ui-bg); color: var(--ui-fg); overflow: hidde
   function paint() {
     const admin = Access.isAdmin;
     $('mode').innerHTML = Access.chosen ? `지금: <b>${admin ? '관리자' : '게스트 · 보기 전용'}</b>` : '';
-    $('btnMode').textContent = admin ? '게스트로 바꾸기' : '관리자로 입장';
+    $('btnMode').textContent = '게스트로 바꾸기'; $('btnMode').hidden = !admin; // 관리자 입장 링크는 없앰 — DPV 를 SECRET 으로 끌어 놓으면 접속코드 창
     $('tabSecret').classList.toggle('locked', !admin);
     $('tabSecret').querySelector('small').textContent = admin ? '투자 도우미' : '관리자 전용';
   }
   async function toAdmin() { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); paint(); } }
-  $('btnMode').onclick = () => { if (Access.isAdmin) { Access.enterGuest(); toast('게스트(보기 전용)로 바꿨습니다', 2000); paint(); } else toAdmin(); };
+  $('btnMode').onclick = () => { Access.enterGuest(); toast('게스트(보기 전용)로 바꿨습니다', 2000); paint(); };
   paint();
   if (new URLSearchParams(location.search).has('mode') && !Access.isAdmin) setTimeout(toAdmin, 150);
+})();
+
+/* 01 반응 입자 · 10 안내 캐릭터 · 05 물결 파문 */
+(() => {
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hub = document.getElementById('hub'), img = hub.querySelector('img'), orbit = document.getElementById('orbit');
+  const ptr = { x: -999, y: -999 };
+  addEventListener('pointermove', e => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+  addEventListener('pointerleave', () => { ptr.x = ptr.y = -999; });
+
+  /* 물결 파문 */
+  window.dpvRipple = (x, y, color, n = 2) => { if (still) return; for (let i = 0; i < n; i++) { const r = document.createElement('i'); r.className = 'ripple'; r.style.left = x + 'px'; r.style.top = y + 'px'; if (color) r.style.setProperty('--c', color); r.style.animationDelay = i * .14 + 's'; document.body.appendChild(r); setTimeout(() => r.remove(), 1200 + i * 140); } };
+  const center = el => { const b = el.getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2]; };
+  let wasOpen = false;
+  const watchOpen = () => { const on = orbit.matches(':hover') || orbit.classList.contains('open') || orbit.matches(':focus-within'); if (on && !wasOpen) { const [x, y] = center(hub); dpvRipple(x, y); } wasOpen = on; };
+  orbit.addEventListener('pointerenter', () => setTimeout(watchOpen, 0)); orbit.addEventListener('pointerleave', () => setTimeout(watchOpen, 0));
+  new MutationObserver(watchOpen).observe(orbit, { attributes: true, attributeFilter: ['class'] }); orbit.addEventListener('focusin', watchOpen); orbit.addEventListener('focusout', () => setTimeout(watchOpen, 0));
+
+  if (still) return;
+  /* 안내 캐릭터: 마우스 쪽으로 고개 돌리기 (최대 14도) */
+  addEventListener('pointermove', e => {
+    if (hub.classList.contains('dragging')) return;
+    const [cx, cy] = center(hub), dx = (e.clientX - cx) / innerWidth, dy = (e.clientY - cy) / innerHeight;
+    img.style.setProperty('--ry', (Math.max(-1, Math.min(1, dx * 2)) * 14).toFixed(1) + 'deg');
+    img.style.setProperty('--rx', (Math.max(-1, Math.min(1, -dy * 2)) * 10).toFixed(1) + 'deg');
+  }, { passive: true });
+
+  /* 반응 입자 */
+  const cv = document.getElementById('bg'), cx2 = cv.getContext('2d'); let W = 0, H = 0, dots = [], raf = 0;
+  function size() {
+    const d = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; cx2.setTransform(d, 0, 0, d, 0, 0);
+    const n = Math.min(90, Math.round(W * H / 14000));
+    dots = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, ox: 0, oy: 0 }));
+  }
+  function frame() {
+    const dark = document.documentElement.dataset.theme === 'dark', rgb = dark ? '220,226,240' : '40,56,110';
+    cx2.clearRect(0, 0, W, H);
+    for (const p of dots) {
+      p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > W) p.vx *= -1; if (p.y < 0 || p.y > H) p.vy *= -1;
+      const dx = p.x - ptr.x, dy = p.y - ptr.y, d2 = dx * dx + dy * dy, R = 130;
+      if (d2 < R * R) { const d = Math.sqrt(d2) || 1, f = (1 - d / R) * 26; p.ox += (dx / d * f - p.ox) * .2; p.oy += (dy / d * f - p.oy) * .2; } else { p.ox *= .92; p.oy *= .92; }
+    }
+    for (let i = 0; i < dots.length; i++) {
+      const a = dots[i], ax = a.x + a.ox, ay = a.y + a.oy;
+      for (let j = i + 1; j < dots.length; j++) { const b = dots[j], bx = b.x + b.ox, by = b.y + b.oy, dx = ax - bx, dy = ay - by, d2 = dx * dx + dy * dy; if (d2 < 110 * 110) { cx2.strokeStyle = `rgba(${rgb},${(1 - Math.sqrt(d2) / 110) * (dark ? .14 : .1)})`; cx2.lineWidth = 1; cx2.beginPath(); cx2.moveTo(ax, ay); cx2.lineTo(bx, by); cx2.stroke(); } }
+      cx2.fillStyle = `rgba(${rgb},${dark ? .38 : .28})`; cx2.beginPath(); cx2.arc(ax, ay, 1.6, 0, 6.283); cx2.fill();
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  size(); addEventListener('resize', size);
+  document.addEventListener('visibilitychange', () => { cancelAnimationFrame(raf); if (!document.hidden) raf = requestAnimationFrame(frame); });
+  raf = requestAnimationFrame(frame);
 })();
 </script>
 <script src="app/pwa.js"></script>
