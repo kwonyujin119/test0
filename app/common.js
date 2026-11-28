@@ -518,8 +518,48 @@ function renderElement(e, theme, mode) {
   if (e.hide) node.classList.add('el-hide');
   const fn = RENDERERS[e.type];
   if (fn) fn(e, node, theme, mode);
+  if (e.beam || e.shimmer || e.marquee || e.dock) applyUiFx(e, node, theme, mode);
   return node;
 }
+/* ===== UI 효과 (발표 화면에서만): 보더빔 · 쉬머 글자 · 마퀴 · 독 확대 — 요소 속성으로 켬 ===== */
+function parseRgb(c) { const m = /rgba?\(([^)]+)\)/.exec(c || ''); if (m) return m[1].split(',').slice(0, 3).map(Number); const h = (c || '').replace('#', ''); return h.length === 6 ? [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)) : null; }
+function applyUiFx(e, node, theme, mode) {
+  if (mode !== 'present') return; // 편집 · 인쇄 · 썸네일에서는 그대로 (인쇄에서 글자가 사라지지 않게)
+  if (e.beam && e.type !== 'text') { // 보더빔: 테두리를 따라 빛줄기가 돎
+    node.classList.add('fx-beam'); node.style.borderRadius = (e.radius || 0) + 'px';
+    node.style.setProperty('--beam', typeof e.beam === 'string' ? themeColor(e.beam, theme) : '#6EA8FF');
+  }
+  const box = e.type === 'shape' ? node.querySelector('.shape-text') : node.querySelector('.el-text-inner');
+  if (e.shimmer && box) { // 쉬머: 글자 위로 빛이 훑고 지나감
+    const rgb = parseRgb((e.type === 'shape' ? box : node).style.color) || [255, 255, 255], lum = (rgb[0] * .3 + rgb[1] * .59 + rgb[2] * .11) / 255;
+    box.classList.add('fx-shimmer');
+    box.style.setProperty('--sh-c', lum > .6 ? `rgba(${rgb},.6)` : `rgb(${rgb})`);
+    box.style.setProperty('--sh-hi', lum > .6 ? '#ffffff' : (typeof e.shimmer === 'string' ? themeColor(e.shimmer, theme) : '#3B82F6'));
+  }
+  if (e.marquee && e.type === 'text' && box) { // 마퀴: 글이 옆으로 끝없이 흐름
+    const html = box.innerHTML; node.classList.add('fx-marquee');
+    box.innerHTML = `<div class="mq-track" style="--mq:${+e.marquee > 1 ? +e.marquee : 26}s"><span>${html}</span><span aria-hidden="true">${html}</span></div>`;
+  }
+  if (e.dock) { node.classList.add('fx-dock'); node.dataset.dock = typeof e.dock === 'string' ? e.dock : 'd'; }
+}
+/* 텍스트 스크램블: 글자가 뒤섞이다가 왼쪽부터 제자리로 (한글은 한글로, 영문 · 기호는 기호로) */
+function stopScramble(node) { const c = node._scr; if (!c) return; cancelAnimationFrame(c.raf); clearTimeout(c.to); c.list.forEach((x) => { x.tn.nodeValue = x.orig; }); node._scr = null; }
+function runScramble(node, e) {
+  stopScramble(node);
+  const w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), list = []; let total = 0;
+  while (w.nextNode()) { const tn = w.currentNode; if (tn.nodeValue.trim()) { list.push({ tn, orig: tn.nodeValue, at: total }); total += tn.nodeValue.length; } }
+  if (!total) return;
+  const SYM = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*+=/<>?$@';
+  const rnd = (ch) => /\s/.test(ch) ? ch : /[가-힣]/.test(ch) ? String.fromCharCode(0xAC00 + Math.floor(Math.random() * 11172)) : SYM[Math.floor(Math.random() * SYM.length)];
+  const c = node._scr = { list, raf: 0, to: 0 }, dur = (+e.dur || 1.4) * 1000;
+  const paint = (k) => list.forEach((x) => { let s = ''; for (let i = 0; i < x.orig.length; i++) s += x.at + i < k ? x.orig[i] : rnd(x.orig[i]); x.tn.nodeValue = s; });
+  paint(0);
+  c.to = setTimeout(() => { const t0 = performance.now(); let last = 0;
+    const tick = (now) => { const t = Math.min(1, (now - t0) / dur); if (now - last > 45 || t >= 1) { last = now; paint(Math.floor(total * t * t * (3 - 2 * t))); }
+      if (t < 1) c.raf = requestAnimationFrame(tick); else { list.forEach((x) => { x.tn.nodeValue = x.orig; }); node._scr = null; } };
+    c.raf = requestAnimationFrame(tick); }, (+e.delay || 0) * 1000);
+}
+
 
 /* 요소 종류별 글자 기본값 */
 /* 저장된 글(HTML)에서 실행될 수 있는 것 제거 — 가져온 교안 · 웹에서 끌어온 글 대비. 대부분의 글은 검사만 하고 그대로 통과 */
@@ -618,7 +658,7 @@ function normalizeDeck(d) {
   }
   return d;
 }
-const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-count', 'anim-countdown', 'anim-words', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen', 'anim-cine'];
+const ANIM_CLASSES = ['anim', 'anim-fade', 'anim-up', 'anim-down', 'anim-left', 'anim-right', 'anim-zoom', 'anim-pop', 'anim-wipe', 'anim-blur', 'anim-spin', 'anim-pulse', 'anim-shake', 'anim-glow', 'anim-out', 'anim-rise', 'anim-count', 'anim-countdown', 'anim-words', 'anim-focus', 'anim-kenburns', 'anim-float', 'anim-scan', 'anim-type', 'anim-cycle4', 'anim-sheen', 'anim-cine', 'anim-scramble'];
 const ANIM_KEEP = ['kenburns', 'float', 'scan', 'cycle4']; // 계속 움직이는 효과: 다음 클릭에도 멈추지 않음
 const ANIM_INTRO = ['out', 'sheen']; // 발표 화면에서 장이 열릴 때 한 번만 쓰는 효과
 /* 발표 단계에 맞게 요소 표시/애니메이션 클래스 적용 */
@@ -668,7 +708,7 @@ function splitWords(node, e) {
 }
 function applyStepToNode(e, node, step, back) {
   const s = e.step || 0;
-  stopCount(node);
+  stopCount(node); stopScramble(node);
   node.classList.remove('step-hidden', ...ANIM_CLASSES);
   node.style.animationDuration = e.dur ? e.dur + 's' : '';
   node.style.animationDelay = e.delay ? e.delay + 's' : '';
@@ -681,6 +721,7 @@ function applyStepToNode(e, node, step, back) {
   // 여는 장면 전용(막 걷기 · 반짝임): 장이 처음 열릴 때만 — 다음 클릭이나 뒤로 왔을 때는 숨김 (막이 화면을 덮지 않게)
   if (e.po && e.enter && ANIM_INTRO.includes(e.anim) && !node.classList.contains('anim')) { node.classList.add('step-hidden'); return; }
   if (e.type === 'text' && node.classList.contains('anim-words')) splitWords(node, e);
+  if ((e.type === 'text' || e.type === 'shape') && node.classList.contains('anim-scramble')) runScramble(node, e);
   if (e.type === 'text' && (node.classList.contains('anim-count') || node.classList.contains('anim-countdown'))) runCount(node, e, node.classList.contains('anim-countdown'));
   if (e.type === 'text' && e.listSteps) {
     const inner = node.querySelector('.el-text-inner'); if (!inner) return;
