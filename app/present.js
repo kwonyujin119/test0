@@ -28,6 +28,7 @@ if (!window.EMBEDDED_DECK && !document.querySelector('link[href$="pres-fx.css"]'
       if (e && e.notFound) { const to = await API.findMoved(name); if (to) { const u = new URL(location.href); u.searchParams.set('deck', to); location.replace(u.href); return; } } /* 이름(번호)이 바뀐 교안의 옛 링크 */
       document.body.innerHTML = `<div class="pend show"><div class="pend-t">교안을 열 수 없습니다</div><div style="color:#c9cbd1;max-width:560px;padding:0 20px;text-align:center;font-size:15px;line-height:1.65;word-break:keep-all">${esc(e.message)}</div><div class="pend-a"><a class="btn ink" href="gyoan.html">교안 목록으로</a></div></div>`; return; }
   }
+  if (deck.guestbook && typeof Guestbook !== 'undefined') await Guestbook.expand(deck); /* SACHIL 방명록 교안: 열 때 최신 방명록을 슬라이드로 */
   normalizeDeck(deck);
   if (!deck.slides.length) deck.slides = [newSlide('blank')];
   document.title = (deck.title || name || '교안') + (role === 'notes' ? ' · 발표자 보기' : ' · 발표');

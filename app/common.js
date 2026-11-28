@@ -650,6 +650,45 @@ function elementMaxStep(e) {
   return Math.max(m, e.outStep || 0, e.emStep || 0);
 }
 /* 빠진 값 채우기 (손으로 쓴 교안 파일 · 가져온 파일): id, elements, notes, step */
+/* SACHIL 방명록 연동 — 교안에 guestbook: { src: 'https://app.sachil47.com', per: 15 } 이 있으면 발표 화면을 열 때
+   SACHIL:47 서버의 방명록(이름 없이 글·시각)을 받아 기존 슬라이드 뒤에 한 장당 per(기본 15)개씩 슬라이드로 붙인다.
+   교안 파일(JSON)에는 저장하지 않음 — 열 때마다 최신 방명록. 서버에 못 닿으면 기존 슬라이드만 보여 줌 */
+const Guestbook = {
+  async expand(deck) {
+    const g = deck && deck.guestbook; if (!g || !g.src) return 0;
+    const src = String(g.src).replace(/\/+$/, ''); if (!/^https:\/\/[a-z0-9.\-]+(:\d+)?$/i.test(src)) return 0;
+    let items;
+    try {
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 8000);
+      const r = await fetch(src + '/api/guestbook', { cache: 'no-store', signal: ctl.signal }); clearTimeout(t);
+      if (!r.ok) return 0; const j = await r.json(); items = Array.isArray(j.items) ? j.items : null;
+    } catch (e) { return 0; }
+    if (!items) return 0;
+    items = items.filter(x => x && typeof x.text === 'string' && x.text.trim());
+    const per = Math.max(1, Math.min(30, +g.per || 15)), cols = 5, rows = Math.ceil(per / cols);
+    const X0 = 80, Y0 = 180, GAP = 24, W = Math.floor((1920 - X0 * 2 - GAP * (cols - 1)) / cols), H = Math.floor((1040 - Y0 - GAP * (rows - 1)) / rows);
+    const when = ts => { const d = new Date(ts * 1000), p = x => String(x).padStart(2, '0'); return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}. ${p(d.getHours())}:${p(d.getMinutes())}`; };
+    const pages = Math.max(1, Math.ceil(items.length / per)), out = [];
+    for (let k = 0; k < pages; k++) {
+      const part = items.slice(k * per, k * per + per), els = [];
+      els.push({ id: uid(), type: 'text', role: 'heading', step: 0, x: X0, y: 48, w: 1300, h: 100, html: esc(g.title || 'SACHIL 방명록'), style: { fontSize: 56, valign: 'middle' } });
+      els.push({ id: uid(), type: 'text', role: 'caption', step: 0, x: 1440, y: 58, w: 400, h: 80, html: `${k + 1} / ${pages} · 모두 ${items.length}개`, style: { align: 'right', valign: 'middle', fontSize: 26 } });
+      if (!part.length) els.push({ id: uid(), type: 'text', role: 'body', step: 0, x: X0, y: 420, w: 1920 - X0 * 2, h: 200, html: '아직 남긴 글이 없어요', style: { align: 'center', valign: 'middle', color: '$muted' } });
+      part.forEach((m, i) => {
+        /* 칸 안에 들어가는 가장 큰 글자 크기(한글 한 자 ≈ 글자 크기 폭) — 가장 작은 크기로도 넘치면 뒤를 줄임 */
+        const iw = W - 44, ih = H - 44 - 26, lines = (txt, fs) => txt.split('\n').reduce((a, l) => a + Math.max(1, Math.ceil(l.length * fs * 0.95 / iw)), 0);
+        let t = m.text.trim().replace(/\n{3,}/g, '\n\n'), fs = [32, 28, 24, 21, 19, 17].find(f => lines(t, f) * f * 1.45 <= ih) || 17;
+        while (lines(t, fs) * fs * 1.45 > ih && t.length > 10) t = t.slice(0, Math.floor(t.length * 0.9)).trimEnd() + '…';
+        els.push({ id: uid(), type: 'text', role: 'body', step: 0, x: X0 + (i % cols) * (W + GAP), y: Y0 + Math.floor(i / cols) * (H + GAP), w: W, h: H,
+          html: esc(t).replace(/\n/g, '<br>') + `<br><span style="font-size:15px;opacity:.6">${when(m.ts)}</span>`,
+          style: { fontSize: fs, lineHeight: 1.45, color: '$fg', bg: '#ffffff', radius: 18, padding: 22, shadow: true, valign: 'top' } });
+      });
+      out.push({ id: 'gb' + (k + 1), bg: null, transition: '', notes: `방명록 ${k * per + 1}–${k * per + part.length}번째 글`, gb: true, elements: els });
+    }
+    deck.slides = (deck.slides || []).filter(s => !s.gb).concat(out);
+    return out.length;
+  }
+};
 function normalizeDeck(d) {
   if (!Array.isArray(d.slides)) d.slides = [];
   for (const s of d.slides) {
