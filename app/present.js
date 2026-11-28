@@ -276,6 +276,25 @@ if (!window.EMBEDDED_DECK && !document.querySelector('link[href$="pres-fx.css"]'
     if (bgOf(from) !== bgOf(to)) { layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' }); setTimeout(() => old.remove(), 520); }
     else old.remove();
   }
+  /* ---- 독 확대: 마우스(또는 포인터)가 다가가면 아이콘이 커지고 이웃도 조금 — 마우스가 쉬면 3초마다 한 번 저절로 훑음 ---- */
+  let dockMouse = null, dockIdle = 0, dockRaf = 0;
+  function dockPaint(px, py) {
+    if (!curLayer) return; const ns = curLayer.querySelectorAll('.fx-dock'); if (!ns.length) return;
+    ns.forEach((n) => { const r = n.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = Math.max(r.width, r.height) * 2.4;
+      const d = px == null ? 1e9 : Math.hypot(px - cx, py - cy), k = Math.max(0, 1 - d / R), s = 1 + .5 * k * k * (3 - 2 * k);
+      n.style.scale = s.toFixed(3); n.style.translate = `0 ${(-(s - 1) * (parseFloat(n.style.height) || r.height) * .32).toFixed(1)}px`; });
+  }
+  pstage.addEventListener('mousemove', (ev) => { dockMouse = [ev.clientX, ev.clientY]; dockIdle = performance.now(); dockPaint(ev.clientX, ev.clientY); });
+  pstage.addEventListener('mouseleave', () => { dockMouse = null; dockPaint(null); });
+  (function dockAuto(now) {
+    dockRaf = requestAnimationFrame(dockAuto);
+    if (!curLayer || (dockMouse && now - dockIdle < 3000)) return;
+    const ns = Array.from(curLayer.querySelectorAll('.fx-dock')); if (!ns.length) return;
+    const rs = ns.map(n => n.getBoundingClientRect()), x0 = Math.min(...rs.map(r => r.left)) - 60, x1 = Math.max(...rs.map(r => r.right)) + 60, y0 = Math.min(...rs.map(r => r.top)) - 60, y1 = Math.max(...rs.map(r => r.bottom)) + 60;
+    const ph = (now / 1000) % 4.5; // 4.5초마다: 1.8초 동안 한쪽 끝에서 다른 쪽 끝까지 훑기
+    if (ph > 1.8) { dockPaint(null); return; } const t = ph / 1.8;
+    dockPaint(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t);
+  })(performance.now());
   /* 다음 두 슬라이드의 이미지를 미리 받아 두어 넘길 때 끊김이 없게 */
   const preloaded = new Set();
   function preloadAround(i) {

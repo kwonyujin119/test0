@@ -1915,7 +1915,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
     const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (m) return '#' + [m[1], m[2], m[3]].map(x => (+x).toString(16).padStart(2, '0')).join('');
     return '#000000';
   }
-  const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['rise', '마스크 위로 (솟아오르기)'], ['focus', '초점 맞추며'], ['count', '숫자 올라가기 (0 → 값)'], ['words', '단어씩 떠오르기 (키네틱)'], ['kenburns', '느린 확대 (배경 사진)'], ['float', '떠다니기 (계속)'], ['type', '타자 (한 글자씩)'], ['scan', '훑기 빛줄기 (계속)'], ['cycle4', '프레임 순환 (사진 겹쳐 바꾸기 · 계속)'], ['sheen', '빛 스침 (한 번 지나감)'], ['cine', '시네마틱 제목 (빛나며 모임)'], ['none', '효과 없음']];
+  const ANIMS = [['fade', '페이드'], ['up', '아래서 위로'], ['down', '위에서 아래로'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['zoom', '확대'], ['pop', '튀어나오기'], ['wipe', '닦아내기'], ['blur', '흐림 → 선명'], ['spin', '회전하며'], ['rise', '마스크 위로 (솟아오르기)'], ['focus', '초점 맞추며'], ['count', '숫자 올라가기 (0 → 값)'], ['words', '단어씩 떠오르기 (키네틱)'], ['kenburns', '느린 확대 (배경 사진)'], ['float', '떠다니기 (계속)'], ['type', '타자 (한 글자씩)'], ['scan', '훑기 빛줄기 (계속)'], ['cycle4', '프레임 순환 (사진 겹쳐 바꾸기 · 계속)'], ['sheen', '빛 스침 (한 번 지나감)'], ['cine', '시네마틱 제목 (빛나며 모임)'], ['scramble', '글자 뒤섞이며 등장 (스크램블)'], ['none', '효과 없음']];
   const EMPHS = [['pulse', '두근 (크게)'], ['shake', '흔들기'], ['glow', '빛나기'], ['countdown', '실제 시간 카운트다운 (숫자 → 0)']];
   const SPEEDS = [['', '기본'], ['0.3', '빠르게'], ['0.5', '보통'], ['1', '느리게'], ['2', '아주 느리게']];
   const TRANS = [['', '기본 (교안 설정)'], ['none', '없음'], ['fade', '페이드'], ['slide', '밀어내기'], ['up', '위로 밀기'], ['cover', '덮기'], ['wipe', '닦아내기'], ['zoom', '확대'], ['blur', '흐리게'], ['morph', '모핑 (같은 요소가 움직임)'], ['warp', '워프 (방사 줌 블러)'], ['card', '3D 카드 축소'], ['portal', '포털 확장'], ['liquid', '물결 + 빗방울'], ['tear', '종이 찢기']];
@@ -2073,6 +2073,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
         ${row('안쪽 여백', num('style.padding', st.padding || 0, 4, 0, 200) + small('모서리') + num('style.radius', st.radius || 0, 4, 0, 200))}
         ${row('테두리', num('style.border', st.border || 0, 1, 0, 40) + colorIn('style.borderColor', st.borderColor || '$accent'))}
         ${row('효과', tog('style.shadow', st.shadow, '그림자') + tog('style.accentBar', st.accentBar, '왼쪽 강조선'))}
+        ${row('UI 효과', tog('shimmer', e.shimmer, '쉬머', '글자 위로 빛이 훑음 (발표 화면)') + tog('marquee', e.marquee, '마퀴', '글이 옆으로 끝없이 흐름 · 한 줄 글에 (발표 화면)'))}
       </section>`;
     } else if (e.type === 'image') {
       const fx = e.fx || {};
@@ -2084,6 +2085,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
         ${row('모서리', num('radius', e.radius || 0, 4, 0, 400))}
         ${row('테두리', num('border', e.border || 0, 1, 0, 40) + colorIn('borderColor', e.borderColor || '#ffffff'))}
         ${row('효과', tog('shadow', e.shadow, '그림자') + tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전'))}
+        ${row('UI 효과', tog('dock', e.dock, '독 확대', '마우스가 다가가면 커짐 (발표 화면)'))}
       </section>
       ${posSection(e)}
       <section><h4>자르기 <span class="muted" style="text-transform:none;font-weight:400">보여줄 부분 고르기</span></h4>
@@ -2110,6 +2112,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
         ${row(line ? '굵기' : '선', num('strokeWidth', e.strokeWidth || 0, 1, 0, 60) + (line ? '' : colorIn('stroke', e.stroke || '$accent')) + tog('dash', e.dash, '점선'))}
         ${e.shape === 'rect' || e.shape === 'callout' ? row('모서리', num('radius', e.radius || 0, 4, 0, 400)) : ''}
         ${row('효과', tog('shadow', e.shadow, '그림자') + (line ? '' : tog('glass', e.glass, '유리', '유리 카드: 뒤 배경이 흐리게 비침 (채우기는 반투명 색으로)') + tog('flip', e.flip, '좌우 반전') + tog('flipV', e.flipV, '상하 반전')))}
+        ${line ? '' : row('UI 효과', tog('beam', e.beam, '보더빔', '테두리를 따라 빛줄기가 돎 (발표 화면)') + tog('shimmer', e.shimmer, '쉬머', '글자 위로 빛이 훑음 (발표 화면)') + tog('dock', e.dock, '독 확대', '마우스가 다가가면 커짐 · 같은 장의 독끼리 함께 (발표 화면)'))}
       </section>
       ${line ? '' : `<section><h4>도형 안 글자 <span class="muted" style="text-transform:none;font-weight:400">더블클릭으로 입력</span></h4>${fontRows(e, st)}
         ${row('안쪽 여백', num('style.padding', st.padding == null ? '' : st.padding, 4, 0, 300, '비우면 자동 (도형 크기의 4%·8%)'))}</section>`}`;
