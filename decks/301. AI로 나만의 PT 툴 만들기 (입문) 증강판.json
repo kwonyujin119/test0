@@ -4,7 +4,7 @@
  "transition": "fade",
  "decor": "none",
  "created": "2026-11-27T23:02:33.000Z",
- "modified": "2026-11-28T00:50:57.000Z",
+ "modified": "2026-11-28T00:53:37.000Z",
  "footer": {
   "text": "",
   "num": true,
@@ -20590,11 +20590,11 @@
      "step": 0,
      "anim": "fade",
      "rotate": 0,
-     "opacity": 0.96,
+     "opacity": 0.72,
      "type": "shape",
      "x": 0,
      "y": 0,
-     "w": 1500,
+     "w": 1100,
      "h": 1080,
      "shape": "rect",
      "fill": "#0B0D11",
@@ -20648,7 +20648,8 @@
       "fontSize": 30,
       "color": "#9FB4F0",
       "bold": true,
-      "lineHeight": 1.35
+      "lineHeight": 1.35,
+      "tshadow": true
      },
      "enter": true,
      "delay": 0.2
@@ -20673,7 +20674,8 @@
       "lineHeight": 1.2,
       "letterSpacing": -2,
       "tglow": true,
-      "tglowColor": "rgba(255,190,140,.45)"
+      "tglowColor": "rgba(255,190,140,.45)",
+      "tshadow": true
      },
      "enter": true,
      "delay": 0.4,
@@ -20696,7 +20698,8 @@
       "fontSize": 32,
       "color": "#C9CED8",
       "bold": false,
-      "lineHeight": 1.5
+      "lineHeight": 1.5,
+      "tshadow": true
      },
      "enter": true,
      "delay": 1,
