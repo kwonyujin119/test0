@@ -8,7 +8,7 @@
    ?img=assets/fx-fireground.jpg &mode=fireground  : 불꽃 일렁임 · 열 아지랑이 · 경광등 빨강/파랑 번쩍임(건물·젖은 길에 비침) · 불티 · 연기 흐름
    ?img=assets/fx-water.jpg      &mode=water       : 물줄기 흐름 · 튀는 물방울 · 수증기 · 바닥 물보라 · 불꽃 일렁임
    ?img=assets/아무사진.jpg       &mode=ambient     : 어느 사진이든 — 초점 맞은 곳이 더 움직이는 입체감 · 빛 훑기 · 떠다니는 먼지 · 밝은 곳 반짝임
-                                 &tone=light (밝은 사진) &amt=0.6 (효과 세기) &lite=1 (저사양: 절반 해상도 · 초당 30번 · 사진 분석 생략) &fire=1 (불꽃 일렁임) &embers=1 (불티) &emb=1.6 (불티 양) &green=1 (초록 불빛 · 계기판 · 화면) &link=ax,ay,bx,by[,ax,ay,bx,by …] (두 점 사이 3D 전기 신호, 최대 3줄 — 사람 ↔ AI) &lamp=0.4 (신호 휘감는 폭) &dim=0.55 (전체 밝기)
+                                 &tone=light (밝은 사진) &amt=0.6 (효과 세기) &lite=1 (저사양: 절반 해상도 · 초당 30번 · 사진 분석 생략) &fire=1 (불꽃 일렁임) &embers=1 (불티) &emb=1.6 (불티 양) &green=1 (초록 불빛 · 계기판 · 화면) &smoke=1 (연기가 굽이치며 흐름) &sma=1.3 (연기 세기) &link=ax,ay,bx,by[,ax,ay,bx,by …] (두 점 사이 3D 전기 신호, 최대 3줄 — 사람 ↔ AI) &lamp=0.4 (신호 휘감는 폭) &dim=0.55 (전체 밝기)
    좌표(0~1, 왼쪽 위 기준)를 바꾸려면 &l1=x,y,x2 (경광등 막대) &l2=... · &noz=x,y &tgt=x,y (관창 → 닿는 곳)
    &q=0.8 (해상도 비율) &still=6 (멈춘 장면) */
 (function () {
@@ -25,7 +25,7 @@
   if (!gl) { fallback(); return; }
   let lost = false; cv.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; fallback(); });
   const FS = `precision highp float;
-uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW, FA; uniform int FX, LQ, EM, GR; uniform float FA2; uniform sampler2D MK; uniform int HM; uniform vec4 WS[16]; uniform vec2 WD[16]; uniform vec2 WE[6]; uniform int NWS, NWE; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec4 SG[28]; uniform vec2 SD[28]; uniform vec4 ND[12]; uniform int NS, NN; uniform vec2 NR; uniform float SPD, PER, LW, FA; uniform int FX, LQ, EM, GR; uniform float FA2; uniform sampler2D MK; uniform int HM, SMK; uniform float SMA; uniform vec4 WS[16]; uniform vec2 WD[16]; uniform vec2 WE[6]; uniform int NWS, NWE; uniform vec3 L1, L2; uniform vec2 NZ, TG;
 float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
@@ -101,7 +101,16 @@ void main(){
    float sharp=smoothstep(.01,.08,length(a-bl));dep=clamp(sharp*.7+(u.y-.3)*.4,0.,1.);} // 가벼운 모드: 사진 분석 없이 아래쪽일수록 앞
   u+=vec2(sin(T*.13),cos(T*.11))*.0045*AM*(dep-.4);
  }
+ float smm=0.;
+ if(SMK==1){ // 연기: 회색 · 검은 연기 영역이 위로 뭉게뭉게 굽이치며 흐름
+  vec3 s0=tex(u);float mx=max(s0.r,max(s0.g,s0.b)),mn=min(s0.r,min(s0.g,s0.b));float L=dot(s0,vec3(.3,.59,.11));
+  vec2 e=vec2(1.5/IS.x,1.5/IS.y);float ed=length(tex(u+vec2(e.x,0.))-tex(u-vec2(e.x,0.)))+length(tex(u+vec2(0.,e.y))-tex(u-vec2(0.,e.y))); // 건물 · 사다리처럼 윤곽이 뚜렷한 곳은 제외
+  smm=smoothstep(.2,.08,mx-mn)*smoothstep(.72,.48,L)*smoothstep(.02,.1,L)*smoothstep(.95,.35,u.y)*smoothstep(.1,.035,ed); // 채도 낮고 · 부드럽고 · 위쪽
+  vec2 fl=vec2(fbm(u*vec2(3.,4.)+vec2(T*.05,T*.28))-.5,fbm(u*vec2(3.,4.)+vec2(5.2,1.3+T*.32))-.5);
+  u+=fl*.03*SMA*smm+vec2(0.,.004*SMA*smm*sin(T*.6+u.x*8.));
+ }
  vec3 c0=tex(u); vec3 c=c0;
+ if(SMK==1){float roll=fbm(u*vec2(5.,6.)+vec2(T*.08,T*.45));c*=1.+(roll-.5)*.38*SMA*smm;} // 굴러가는 연기 결
  if(FX==1){ // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임 (불이 있는 사진만)
   float fm=fireMask(c0);
   vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
@@ -204,7 +213,7 @@ void main(){
   const AT = (q.get('at') || '').split(',').map(Number).filter(isFinite), CYC = +(q.get('cyc') || 8);
   const shots = SRCS.map((src, i) => ({ src: new URL('../' + src, location.href).href, net: parseNet(NETS[i], NODES[i]) }));
   gl.uniform2f(U('NR'), ...(q.get('nr') || '.055,.05').split(',').map(Number)); gl.uniform1f(U('SPD'), +(q.get('spd') || .5)); gl.uniform1f(U('LW'), +(q.get('lw') || 1)); gl.uniform1f(U('PER'), +(q.get('per') || 3.6));
-  gl.uniform1i(U('FX'), q.get('fire') ? +(q.get('fire') === '1') : +(MODE < 2)); gl.uniform1i(U('LQ'), +LITE); gl.uniform1i(U('EM'), +(q.get('embers') === '1')); gl.uniform1i(U('GR'), +(q.get('green') === '1')); gl.uniform1f(U('FA2'), +(q.get('emb') || 1));
+  gl.uniform1i(U('FX'), q.get('fire') ? +(q.get('fire') === '1') : +(MODE < 2)); gl.uniform1i(U('LQ'), +LITE); gl.uniform1i(U('EM'), +(q.get('embers') === '1')); gl.uniform1i(U('GR'), +(q.get('green') === '1')); gl.uniform1i(U('SMK'), +(q.get('smoke') === '1')); gl.uniform1f(U('SMA'), +(q.get('sma') || 1)); gl.uniform1f(U('FA2'), +(q.get('emb') || 1));
   /* 발표 화면 「프레임 순환」(8초 중 0~8% 나타남 · 25% 까지 · 33% 에 사라짐) 과 같은 불투명도 */
   const cycA = (t, at) => { if (t < at) return 0; const ph = ((t - at) % CYC) / CYC, sm = (x) => x * x * (3 - 2 * x); return ph < .08 ? sm(ph / .08) : ph < .25 ? 1 : ph < .33 ? 1 - sm((ph - .25) / .08) : 0; };
   /* 물줄기 &water=x,y,x,y,…;… (관창 → 닿는 곳, 사진 0~1 좌표) · 인물 보호 &mask=assets/x.png (흰 곳은 효과 없이 원래 사진) */
