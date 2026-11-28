@@ -1,0 +1,52 @@
+{
+ "title": "999. SACHIL 방명록",
+ "theme": "ocean",
+ "created": "2026-11-28T13:09:01.874Z",
+ "slides": [
+  {
+   "id": "bdau7kfw2",
+   "bg": null,
+   "transition": "",
+   "notes": "",
+   "elements": [
+    {
+     "id": "y1xq25fw2",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "title",
+     "x": 120,
+     "y": 330,
+     "w": 1680,
+     "h": 220,
+     "html": "999. SACHIL 방명록",
+     "style": {
+      "align": "center",
+      "valign": "middle"
+     }
+    },
+    {
+     "id": "0d8qy6fw2",
+     "step": 0,
+     "anim": "fade",
+     "rotate": 0,
+     "opacity": 1,
+     "type": "text",
+     "role": "subtitle",
+     "x": 120,
+     "y": 570,
+     "w": 1680,
+     "h": 120,
+     "html": "부제목 · 강의자 이름 · 날짜",
+     "style": {
+      "align": "center",
+      "valign": "top"
+     }
+    }
+   ]
+  }
+ ],
+ "modified": "2026-11-28T13:09:01.874Z"
+}
