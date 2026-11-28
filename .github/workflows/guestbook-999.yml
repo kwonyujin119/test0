@@ -1,0 +1,49 @@
+# 999. SACHIL 방명록 교안 자동 저장 — SACHIL:47 방명록을 10분마다 받아 교안 파일에 슬라이드로 저장
+# (tools/guestbook/sync999.py). 바뀐 것이 있을 때만 커밋하고, 그때 Pages 배포를 직접 실행한다
+# (GITHUB_TOKEN 으로 푸시하면 push 배포가 자동으로 돌지 않으므로).
+name: Guestbook 999 autosave
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      allow_empty:
+        description: '방명록 글을 모두 지웠을 때 교안의 방명록 장도 비우기'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: guestbook-999
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Save guestbook into deck 999
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GB_ALLOW_EMPTY: ${{ inputs.allow_empty && '1' || '0' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3; do
+            git fetch -q origin main && git reset -q --hard origin/main   # 웹 편집기에서 방금 저장한 내용 위에서 다시 만든다
+            set +e; python3 tools/guestbook/sync999.py; rc=$?; set -e
+            if [ $rc -eq 3 ]; then exit 0; fi
+            if [ $rc -ne 0 ]; then exit $rc; fi
+            git add "decks/999. SACHIL 방명록.json"
+            git commit -q -m "방명록 자동 저장: 999. SACHIL 방명록 (bot)"
+            if git push -q origin HEAD:main; then
+              gh workflow run pages.yml --ref main || { sleep 10; gh workflow run pages.yml --ref main; } || echo "::warning::Pages 배포를 부르지 못함 — 다음 푸시 때 반영"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "푸시 실패(다음 실행에서 다시)"; exit 1
