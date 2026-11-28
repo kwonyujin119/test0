@@ -8,7 +8,7 @@
    ?img=assets/fx-fireground.jpg &mode=fireground  : 불꽃 일렁임 · 열 아지랑이 · 경광등 빨강/파랑 번쩍임(건물·젖은 길에 비침) · 불티 · 연기 흐름
    ?img=assets/fx-water.jpg      &mode=water       : 물줄기 흐름 · 튀는 물방울 · 수증기 · 바닥 물보라 · 불꽃 일렁임
    ?img=assets/아무사진.jpg       &mode=ambient     : 어느 사진이든 — 초점 맞은 곳이 더 움직이는 입체감 · 빛 훑기 · 떠다니는 먼지 · 밝은 곳 반짝임
-                                 &tone=light (밝은 사진) &amt=0.6 (효과 세기) &link=ax,ay,bx,by (두 점 사이 3D 전기 신호 — 사람 ↔ AI) &dim=0.55 (전체 밝기)
+                                 &tone=light (밝은 사진) &amt=0.6 (효과 세기) &link=ax,ay,bx,by[,ax,ay,bx,by …] (두 점 사이 3D 전기 신호, 최대 3줄 — 사람 ↔ AI) &lamp=0.4 (신호 휘감는 폭) &dim=0.55 (전체 밝기)
    좌표(0~1, 왼쪽 위 기준)를 바꾸려면 &l1=x,y,x2 (경광등 막대) &l2=... · &noz=x,y &tgt=x,y (관창 → 닿는 곳)
    &q=0.8 (해상도 비율) &still=6 (멈춘 장면) */
 (function () {
@@ -21,7 +21,7 @@
   const STILL = q.get('still') != null ? +(q.get('still') || 6) : (RM ? 6 : null);
   const cv = document.getElementById('c'), gl = cv.getContext('webgl', { preserveDrawingBuffer: STILL != null });
   const FS = `precision highp float;
-uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK; uniform float DM; uniform vec3 L1, L2; uniform vec2 NZ, TG;
+uniform sampler2D I; uniform vec2 R, IS; uniform float T, AM; uniform int M, LT; uniform vec4 LK0, LK1, LK2; uniform int LN; uniform float DM, LA; uniform vec3 L1, L2; uniform vec2 NZ, TG;
 float h1(float n){return fract(sin(n)*43758.5453);} float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
 float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+7.1;a*=.5;}return s;}
@@ -32,6 +32,24 @@ float embers(vec2 u,float asp,float sp,float dens,vec4 box){float a=0.;
   vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*7.3);if(r<dens){vec2 o=vec2(h2(id+3.)-.5,h2(id+5.)-.5)*.55;
    a+=smoothstep(.1+fi*.02,0.,length(f-o))*(.45+.55*sin(T*7.+r*50.));}}
  return a*smoothstep(box.x-.1,box.x,u.x)*smoothstep(box.z+.1,box.z,u.x)*smoothstep(box.y-.1,box.y,u.y)*smoothstep(box.w+.1,box.w,u.y);}
+vec3 sigAt(vec2 u,vec2 A,vec2 B,float ia,float seed){ // 두 점 사이: 꼬이며 도는 3D 전기 신호
+ vec2 P=(u-A)*vec2(ia,1.),AB=(B-A)*vec2(ia,1.);float L=length(AB);vec2 ax=AB/L,nr=vec2(-ax.y,ax.x);
+ float t=dot(P,ax)/L,side=dot(P,nr);float env=sin(clamp(t,0.,1.)*3.14159);float inr=step(0.,t)*step(t,1.);
+ vec3 sig=vec3(0.);
+ for(int k=0;k<4;k++){float fk=float(k);float ph=t*10.-T*(3.+fk*.6)+fk*1.571+seed*2.;
+  float off=sin(ph)*L*(.09+.03*fk)*env*LA;float dep=cos(ph);
+  float jag=(vn(vec2(t*38.+fk*7.+seed*11.,floor(T*14.)+fk*3.))-.5)*L*.05*env*LA;
+  float d=abs(side-off-jag);float w=L*(.006+.006*(dep*.5+.5))*mix(1.,LA,.6);
+  float br=(.45+.55*(dep*.5+.5))*(.75+.25*sin(T*23.+fk*2.));
+  sig+=vec3(.35,.68,1.)*(smoothstep(w*5.,0.,d)*.35+exp(-d/(w*1.2))*.7)*br*inr;
+  sig+=vec3(.85,.95,1.)*smoothstep(w,0.,d)*br*inr*.9;}
+ for(int i=0;i<10;i++){float fi=float(i);float dir=mod(fi,2.)<.5?1.:-1.;float st=fract(T*(.55+.07*fi)+fi*.13+seed*.37);if(dir<0.)st=1.-st;
+  float ph=st*10.-T*(3.+mod(fi,4.)*.6)+mod(fi,4.)*1.571+seed*2.;vec2 q=ax*st*L+nr*sin(ph)*L*(.09+.03*mod(fi,4.))*sin(st*3.14159)*LA;
+  float dd=length(P-q);sig+=vec3(.7,.9,1.)*(exp(-dd/(L*.012))*1.2+exp(-dd/(L*.05))*.25);}
+ float pa=exp(-length(P)/(L*.07)),pb=exp(-length(P-AB)/(L*.1));float beat=.6+.4*pow(.5+.5*sin(T*4.2+seed),3.);
+ sig+=vec3(.4,.7,1.)*(pa*.9+pb*1.2)*beat;
+ for(int r=0;r<3;r++){float rr=fract(T*.45+float(r)/3.+seed*.21);float ring=abs(length(P-AB)-rr*L*.55);sig+=vec3(.35,.65,1.)*smoothstep(L*.012,0.,ring)*(1.-rr)*.45;}
+ return sig;}
 void main(){
  vec2 fc=gl_FragCoord.xy/R; fc.y=1.-fc.y; // 화면 0~1 (위가 0)
  float sa=R.x/R.y, ia=IS.x/IS.y; vec2 u=fc; if(sa>ia){u.y=(fc.y-.5)*ia/sa+.5;}else{u.x=(fc.x-.5)*sa/ia+.5;} // cover
@@ -88,25 +106,10 @@ void main(){
   float dust=0.;for(int i=0;i<2;i++){float fi=float(i);vec2 g=vec2(u.x*sa,u.y)*(9.+fi*7.)+vec2(sin(u.y*4.+T*.3+fi)*.5,T*(.05+fi*.04));
    vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*3.1);if(r<.14){vec2 o=vec2(h2(id+1.)-.5,h2(id+2.)-.5)*.5;dust+=smoothstep(.12-fi*.04,0.,length(f-o))*(.4+.6*sin(T*.8+r*30.));}}
   c+=(LT==1?vec3(1.,1.,1.):vec3(.6,.75,1.))*dust*.22*AM;
-  if(LK.x>0.){ // 사람 ↔ AI 교감: 꼬이며 도는 3D 전기 신호
-   vec2 A=LK.xy,B=LK.zw;vec2 P=(u-A)*vec2(sa,1.),AB=(B-A)*vec2(sa,1.);float L=length(AB);vec2 ax=AB/L,nr=vec2(-ax.y,ax.x);
-   float t=dot(P,ax)/L,side=dot(P,nr);float env=sin(clamp(t,0.,1.)*3.14159);float inr=step(0.,t)*step(t,1.);
-   vec3 sig=vec3(0.);
-   for(int k=0;k<4;k++){float fk=float(k);float ph=t*10.-T*(3.+fk*.6)+fk*1.571;
-    float off=sin(ph)*L*(.09+.03*fk)*env;float dep=cos(ph);                         // 나선: 앞(밝고 굵게) · 뒤(어둡고 가늘게)
-    float jag=(vn(vec2(t*38.+fk*7.,floor(T*14.)+fk*3.))-.5)*L*.05*env;              // 번개처럼 떨림 (초당 14번 새 모양)
-    float d=abs(side-off-jag);float w=L*(.006+.006*(dep*.5+.5));
-    float br=(.45+.55*(dep*.5+.5))*(.75+.25*sin(T*23.+fk*2.));
-    sig+=vec3(.35,.68,1.)*(smoothstep(w*5.,0.,d)*.35+exp(-d/(w*1.2))*.7)*br*inr;
-    sig+=vec3(.85,.95,1.)*smoothstep(w,0.,d)*br*inr*.9;}
-   for(int i=0;i<10;i++){float fi=float(i);float dir=mod(fi,2.)<.5?1.:-1.;float st=fract(T*(.55+.07*fi)+fi*.13);if(dir<0.)st=1.-st;  // 오가는 데이터 펄스
-    float ph=st*10.-T*(3.+mod(fi,4.)*.6)+mod(fi,4.)*1.571;vec2 q=ax*st*L+nr*sin(ph)*L*(.09+.03*mod(fi,4.))*sin(st*3.14159);
-    float dd=length(P-q);sig+=vec3(.7,.9,1.)*(exp(-dd/(L*.012))*1.2+exp(-dd/(L*.05))*.25);}
-   float pa=exp(-length(P)/(L*.07)),pb=exp(-length(P-AB)/(L*.1));float beat=.6+.4*pow(.5+.5*sin(T*4.2),3.);
-   sig+=vec3(.4,.7,1.)*(pa*.9+pb*1.2)*beat;
-   for(int r=0;r<3;r++){float rr=fract(T*.45+float(r)/3.);float ring=abs(length(P-AB)-rr*L*.55);sig+=vec3(.35,.65,1.)*smoothstep(L*.012,0.,ring)*(1.-rr)*.45;} // 닿는 곳에서 퍼지는 고리
-   c=c+sig*AM*(1.-c*.35);
-  }
+  vec3 sg=vec3(0.);float ia=IS.x/IS.y;
+  for(int k=0;k<3;k++){if(k<LN){vec4 L4=k==0?LK0:(k==1?LK1:LK2);sg+=sigAt(u,L4.xy,L4.zw,ia,float(k));}}
+  if(LT==1){float a=clamp(dot(sg,vec3(.3,.4,.3))*1.15,0.,.92);c=mix(c,vec3(.1,.42,1.),a)+vec3(.15,.3,.5)*a*a;}  // 밝은 배경: 진한 파랑으로
+  else c=c+sg*AM*(1.-c*.35);
  }else c*=1.-.22*pow(length((fc-.5)*vec2(1.,.9))*1.25,2.);
  gl_FragColor=vec4(c*DM+(h2(gl_FragCoord.xy+T)-.5)/255.,1.);}`;
   const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; };
@@ -114,7 +117,7 @@ void main(){
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = (n) => gl.getUniformLocation(pr, n);
-  const LKv = q.get('link') ? q.get('link').split(',').map(Number) : [0, 0, 0, 0]; gl.uniform4f(U('LK'), ...LKv); gl.uniform1f(U('DM'), +(q.get('dim') || 1)); gl.uniform1i(U('M'), MODE); gl.uniform1i(U('LT'), LIGHT); gl.uniform1f(U('AM'), AMT); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
+  const LKv = q.get('link') ? q.get('link').split(',').map(Number) : []; const LNn = Math.min(3, Math.floor(LKv.length / 4)); for (let k = 0; k < 3; k++) gl.uniform4f(U('LK' + k), ...(k < LNn ? LKv.slice(k * 4, k * 4 + 4) : [0, 0, 0, 0])); gl.uniform1i(U('LN'), LNn); gl.uniform1f(U('LA'), +(q.get('lamp') || 1)); gl.uniform1f(U('DM'), +(q.get('dim') || 1)); gl.uniform1i(U('M'), MODE); gl.uniform1i(U('LT'), LIGHT); gl.uniform1f(U('AM'), AMT); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
   function size() { cv.width = Math.round(innerWidth * QUAL * Math.min(1.5, devicePixelRatio || 1)); cv.height = Math.round(innerHeight * QUAL * Math.min(1.5, devicePixelRatio || 1)); gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(U('R'), cv.width, cv.height); }
   addEventListener('resize', size); size();
   const im = new Image(); im.onload = () => {
