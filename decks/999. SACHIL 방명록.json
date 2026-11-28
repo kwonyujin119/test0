@@ -1,6 +1,10 @@
 {
  "title": "999. SACHIL 방명록",
  "theme": "ocean",
+ "guestbook": {
+  "src": "https://app.sachil47.com",
+  "per": 15
+ },
  "created": "2026-11-28T13:09:01.874Z",
  "slides": [
   {
