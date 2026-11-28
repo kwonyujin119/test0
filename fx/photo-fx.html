@@ -34,7 +34,7 @@ float fireMask(vec3 c){return smoothstep(.5,.85,c.r)*smoothstep(.12,.4,c.r-c.b)*
 float embers(vec2 u,float asp,float sp,float dens,vec4 box){float a=0.;
  for(int i=0;i<3;i++){float fi=float(i);vec2 g=vec2(u.x*asp,u.y)*(26.+fi*14.)+vec2(sin(u.y*9.+T*.8+fi*2.)*.7,T*sp*(1.+fi*.4));
   vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*7.3);if(r<dens){vec2 o=vec2(h2(id+3.)-.5,h2(id+5.)-.5)*.55;
-   a+=smoothstep(.1+fi*.02,0.,length(f-o))*(.45+.55*sin(T*7.+r*50.));}}
+   float dd=length((f-o)*vec2(1.,.6));a+=(smoothstep(.07+fi*.015,0.,dd)*.9+exp(-dd*14.)*.25)*(.35+.65*pow(.5+.5*sin(T*6.+r*50.),2.))*(.4+.6*r/dens);}}
  return a*smoothstep(box.x-.1,box.x,u.x)*smoothstep(box.z+.1,box.z,u.x)*smoothstep(box.y-.1,box.y,u.y)*smoothstep(box.w+.1,box.w,u.y);}
 vec3 waterNet(vec2 u,float sa,inout float mist){ // 물줄기: 관창에서 끝으로 물결이 흘러가며 퍼지고 끝에서 물보라
  vec3 add=vec3(0.);
@@ -44,7 +44,7 @@ vec3 waterNet(vec2 u,float sa,inout float mist){ // 물줄기: 관창에서 끝�
   float s=mix(WD[i].x,WD[i].y,t);float w=mix(.0022,.011,s);
   float wav=sin(s*40.-T*11.)*.0012*s;d=abs(dot(P-ax*t*L,nr)-wav);
   float st=vn(vec2(s*46.-T*13.,d*260.));float core=smoothstep(w,0.,d);
-  add+=vec3(.82,.92,1.)*core*(.25+.85*smoothstep(.45,.85,st))*.75+vec3(.6,.75,.95)*exp(-d/(w*2.6))*.10*(.5+s);
+  add+=vec3(.82,.92,1.)*core*(.15+.6*smoothstep(.45,.85,st))*.45*(1.-.4*s)+vec3(.6,.75,.95)*exp(-d/(w*2.6))*.07*(.5+s);
   float sp=h2(floor(vec2(s*90.-T*30.,dot(P-ax*t*L,nr)*700.)));add+=vec3(.9,.96,1.)*step(.985,sp)*smoothstep(w*3.,w,d)*s; // 튀는 물방울
  }
  for(int j=0;j<6;j++){if(j>=NWE)break;vec2 E=WE[j];vec2 q=(u-E)*vec2(sa,1.);
@@ -99,30 +99,38 @@ void main(){
   float dep=clamp(.35+(u.y-.3)*.4,0.,1.); // 아래쪽일수록 앞 — 부드럽게 변해서 건물 · 사다리 선이 휘지 않음
   u+=vec2(sin(T*.13),cos(T*.11))*.0045*AM*(dep-.4);
  }
- float smm=0.;
- if(SMK==1){ // 연기: 회색 · 검은 연기 영역이 위로 뭉게뭉게 굽이치며 흐름
-  vec3 s0=tex(u);float mx=max(s0.r,max(s0.g,s0.b)),mn=min(s0.r,min(s0.g,s0.b));float L=dot(s0,vec3(.3,.59,.11));
-  vec2 e=vec2(1.5/IS.x,1.5/IS.y);float ed=length(tex(u+vec2(e.x,0.))-tex(u-vec2(e.x,0.)))+length(tex(u+vec2(0.,e.y))-tex(u-vec2(0.,e.y))); // 건물 · 사다리처럼 윤곽이 뚜렷한 곳은 제외
-  smm=smoothstep(.2,.08,mx-mn)*smoothstep(.72,.48,L)*smoothstep(.02,.1,L)*smoothstep(.95,.35,u.y)*smoothstep(.1,.035,ed); // 채도 낮고 · 부드럽고 · 위쪽
-  vec2 fl=vec2(fbm(u*vec2(2.6,3.2)+vec2(T*.06,T*.55))-.5,fbm(u*vec2(2.6,3.2)+vec2(5.2,1.3+T*.62))-.5); // 결이 위로 빠르게 흘러 올라감
-  vec2 fl2=vec2(fbm(u*vec2(6.,7.)+vec2(2.,T*1.1))-.5,fbm(u*vec2(6.,7.)+vec2(8.,T*1.2))-.5);   // 잔 소용돌이
-  vec2 off=(fl*.05+fl2*.012)*SMA*smm+vec2(0.,.012*SMA*smm*(.5+.5*sin(T*.9+u.x*6.)));
-  vec3 s1=tex(u+off);float mx1=max(s1.r,max(s1.g,s1.b)),mn1=min(s1.r,min(s1.g,s1.b));float L1=dot(s1,vec3(.3,.59,.11));
-  u+=off*smoothstep(.2,.08,mx1-mn1)*smoothstep(.72,.48,L1)*smoothstep(.02,.1,L1); // 연기가 아닌 곳(건물 · 사다리)을 끌어오지 않음            // 아래쪽 사진을 끌어올려 피어오르는 느낌
+ float smm=0.;vec3 c0=tex(u);vec3 c=c0;
+ float sl0=smoothstep(.2,.08,max(c0.r,max(c0.g,c0.b))-min(c0.r,min(c0.g,c0.b)))*smoothstep(.72,.48,dot(c0,vec3(.3,.59,.11)))*smoothstep(.02,.1,dot(c0,vec3(.3,.59,.11))); // 연기다움 (채도 낮고 어두운 회색)
+ if(SMK==1){ // 연기: 플로맵 — 아래쪽 연기를 끌어올려 끊임없이 피어오르게 (두 박자를 엇갈려 섞어 늘어짐 없음)
+  smm=sl0*smoothstep(.95,.35,u.y);
+  if(smm>.01){
+   vec2 cn=vec2(fbm(u*vec2(2.2,2.8)+vec2(0.,T*.07))-.5,fbm(u*vec2(2.2,2.8)+vec2(4.3,1.7+T*.07))-.5);
+   vec2 dir=vec2(cn.x*1.3,1.)+vec2(0.,cn.y*.6);                         // 위로 + 옆으로 흔들리며
+   float L=.045*SMA,sp=.16;float p1=fract(T*sp),p2=fract(T*sp+.5),w=abs(1.-2.*p1);
+   vec3 a=tex(u+dir*p1*L),b=tex(u+dir*p2*L);
+   float sa1=smoothstep(.2,.08,max(a.r,max(a.g,a.b))-min(a.r,min(a.g,a.b)))*smoothstep(.72,.5,dot(a,vec3(.3,.59,.11))),sb1=smoothstep(.2,.08,max(b.r,max(b.g,b.b))-min(b.r,min(b.g,b.b)))*smoothstep(.72,.5,dot(b,vec3(.3,.59,.11)));
+   float ma=length(a-c0),mb=length(b-c0);sa1*=smoothstep(.35,.12,ma);sb1*=smoothstep(.35,.12,mb); // 색이 크게 다른 것(흰 사다리 · 바구니)은 끌어오지 않음
+   a=mix(c0,a,sa1);b=mix(c0,b,sb1);                                  // 연기가 아닌 것은 끌어오지 않음
+   vec3 fl=mix(a,b,w);
+   float br=fbm(u*vec2(3.,3.6)+vec2(T*.03,T*.35));fl*=1.+(br-.5)*.22*SMA; // 부드러운 명암 결 (위로 흐름)
+   c=mix(c0,fl,smm);
+  }
  }
- vec3 c0=tex(u); vec3 c=c0;
+ if(FX==1){ // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임 (불이 있는 사진만)
+  float fm=fireMask(c0);
+  if(fm>.01){
+   vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
+   vec2 u2=u+hz*(fm+.25*smoothstep(.0,.6,fm))*1.6+vec2(0.,.004*fm*sin(T*9.+u.x*40.));
+   vec3 cf=tex(u2); float f2=fireMask(cf);
+   float fl=fbm(vec2(u.x*14.,u.y*10.+T*3.2));cf*=1.+(fl-.45)*.6*f2;cf+=vec3(1.,.45,.1)*pow(f2,2.)*.14*(.5+.5*sin(T*11.+u.x*60.));
+   c=mix(c,cf,smoothstep(.0,.25,fm));
+  }
+ }
  float rig=0.;
  if(RGD==1){vec3 o=tex(ub);float g=0.;vec2 r=2.5/IS;
   for(int k=0;k<8;k++){float a=float(k)*.785;g+=length(tex(ub+vec2(cos(a),sin(a))*r)-o);}
-  rig=smoothstep(.05,.13,g/8.);c=mix(c,o,rig);if(DBG==1){gl_FragColor=vec4(vec3(rig),1.);return;}} // 건물 · 사다리 · 소방차: 휘지 않게 제자리
- if(SMK==1){float roll=fbm(u*vec2(4.,5.)+vec2(T*.08,T*.9));c*=1.+(roll-.5)*.5*SMA*smm*(1.-rig);c+=vec3(.06)*smoothstep(.55,.8,roll)*SMA*smm*(1.-rig);} // 굴러 올라가는 연기 결 · 밝은 가장자리 // 굴러가는 연기 결
- if(FX==1){ // 불꽃: 위로 핥는 아지랑이 + 밝기 일렁임 (불이 있는 사진만)
-  float fm=fireMask(c0);
-  vec2 hz=vec2(vn(vec2(u.x*40.,u.y*25.+T*4.))-.5,vn(vec2(u.x*30.+9.,u.y*20.+T*5.))-.5)*.006;
-  vec2 u2=u+hz*(fm+.25*smoothstep(.0,.6,fm))*1.6+vec2(0.,.004*fm*sin(T*9.+u.x*40.));
-  c=tex(u2); float f2=fireMask(c);
-  float fl=fbm(vec2(u.x*14.,u.y*10.+T*3.2));c*=1.+(fl-.45)*.75*f2;c+=vec3(1.,.45,.1)*pow(f2,2.)*.18*(.5+.5*sin(T*11.+u.x*60.));
- }
+  rig=smoothstep(.06,.16,g/8.)*(1.-sl0*.85)*(1.-fireMask(o));  // 연기 테두리 · 불꽃은 고정하지 않음
+  c=mix(c,o*(1.+(c.r-o.r)*0.),rig);if(DBG==1){gl_FragColor=vec4(vec3(rig),1.);return;}} // 건물 · 사다리 · 소방차: 휘지 않게 제자리
  float glow=M<2?fbm(vec2(T*1.7,1.))*.5+.5:0.;
  if(M==0){
   // 연기 흐름 (위쪽 어두운 부분)
@@ -163,7 +171,7 @@ void main(){
   float sw=fract(T/11.);float band=exp(-pow((u.x+u.y*.55-(sw*2.4-.4))*7.,2.));c+=(LT==1?vec3(1.):vec3(.55,.7,1.))*band*.07*AM; // 빛 훑기
   float dust=0.;for(int i=0;i<2;i++){float fi=float(i);vec2 g=vec2(u.x*sa,u.y)*(9.+fi*7.)+vec2(sin(u.y*4.+T*.3+fi)*.5,T*(.05+fi*.04));
    vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*3.1);if(r<.14){vec2 o=vec2(h2(id+1.)-.5,h2(id+2.)-.5)*.5;dust+=smoothstep(.12-fi*.04,0.,length(f-o))*(.4+.6*sin(T*.8+r*30.));}}
-  c+=(LT==1?vec3(1.,1.,1.):vec3(.6,.75,1.))*dust*.22*AM;
+  if(FX==0&&SMK==0&&EM==0)c+=(LT==1?vec3(1.,1.,1.):vec3(.6,.75,1.))*dust*.22*AM;
   if(GR==1){ // 초록 불빛: 계기판 · 화면의 초록이 숨쉬듯 빛나고 번지며, 작은 빛 알갱이가 떠오름
    float gm=smoothstep(.06,.22,c0.g-max(c0.r,c0.b))*smoothstep(.18,.5,c0.g);
    float pul=.55+.45*sin(T*2.2+u.x*14.+u.y*9.);
@@ -172,7 +180,7 @@ void main(){
    c+=vec3(.4,1.,.55)*embers(u,sa,-.12,.05,vec4(.45,.15,1.,.75))*.55;
    float sw=fract(T/6.);c+=vec3(.2,1.,.45)*exp(-pow((u.y-(.2+sw*.6))*40.,2.))*smoothstep(.45,.5,u.x)*.05; // 화면을 훑는 스캔선
   }
-  if(EM==1){c+=vec3(1.,.55,.18)*embers(u,sa,-.32,.08*FA2,vec4(.0,.0,1.,.9))*1.2*FA2;c+=vec3(1.,.6,.2)*embers(u*.7+3.,sa,-.2,.05,vec4(.0,.0,1.,.9))*.8;} // 불티가 위로 날아오름
+  if(EM==1){c+=vec3(1.,.55,.18)*embers(u,sa,-.32,.06*FA2,vec4(.0,.0,1.,.9))*1.1*FA2*smoothstep(.0,.45,u.y);c+=vec3(1.,.6,.2)*embers(u*.7+3.,sa,-.2,.05,vec4(.0,.0,1.,.9))*.8;} // 불티가 위로 날아오름
   if(NWS>0){float mist=0.;vec3 wa=waterNet(u,sa,mist);c=mix(c,vec3(.86,.89,.93),clamp(mist*.75,0.,.7));c+=wa;}
   if(HM==1){float mk=texture2D(MK,ub).r;c=mix(c,tex(ub),mk);} // 인물은 그대로 (효과 없이 선명하게)
   c*=DM; // 사진만 어둡게 · 전기 신호는 그대로 밝게
