@@ -435,11 +435,56 @@
   function artLoad(root) { (root || document).querySelectorAll('.ws-art img:not(.ok), .ws-hero img:not(.ok)').forEach(img => { const ok = () => img.classList.add('ok'); if (img.complete && img.naturalWidth) ok(); else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', () => { const box = img.closest('.ws-art'); if (box) box.style.display = 'none'; else img.remove(); }, { once: true }); } }); }
   if (PAGE === 'index.html' && 'MutationObserver' in window) new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.querySelector && n.querySelector('.ws-art img')) artLoad(n); }).observe(document.querySelector('.ws') || document.body, { childList: true, subtree: true }); // 첫 화면만 (SECRET 카드를 나중에 붙임)
 
+  /* ---------- 8. 작업장 제목 스크램블 (PRESENTATION · DOCUMENT · SECRET 위쪽 큰 글자) ----------
+     작업장마다 같은 탭에서 처음 그 글자가 보일 때 한 번만(sessionStorage) · 0.38초 · 라틴 대문자와 숫자만 섞음
+     글자마다 원래 폭으로 고정해 자리가 흔들리지 않게 하고, 끝나면 원래 글자(원래 DOM)로 되돌림.
+     덩어리(.ws-hero)는 aria-hidden 이라 화면낭독기에는 영향 없음 · 동작 줄이기면 안 함 */
+  const SCR_MS = 380, SCR_CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const scrKey = t => 'dpv:scr:' + t;
+  const scrDone = t => { try { return sessionStorage.getItem(scrKey(t)) === '1'; } catch (e) { return true; } };
+  const scrMark = t => { try { sessionStorage.setItem(scrKey(t), '1'); } catch (e) { } };
+  function scramble(b) {
+    if (!b || b._fxScr || RM.matches) return false;
+    const text = b.textContent; if (!/^[A-Z0-9]{2,12}$/.test(text.trim()) || scrDone(text)) return false;
+    b._fxScr = 1; scrMark(text);
+    const orig = [...b.childNodes];
+    const h0 = b.getBoundingClientRect().height;
+    const spans = [...text].map(c => { const s = document.createElement('span'); s.textContent = c; s.style.cssText = 'display:inline-block;vertical-align:top;text-align:center'; return s; });
+    b.replaceChildren(...spans);
+    if (Math.abs(b.getBoundingClientRect().height - h0) > .5) { b.replaceChildren(...orig); return false; } // 줄 높이가 달라지면 하지 않음
+    spans.forEach(s => { s.style.width = s.getBoundingClientRect().width + 'px'; }); // 원래 글자 폭으로 고정
+    const t0 = performance.now(), n = spans.length;
+    let lastT = -1;
+    const end = () => { b.replaceChildren(...orig); };
+    const step = now => {
+      if (!b.isConnected) return end();
+      const k = (now - t0) / SCR_MS;
+      if (k >= 1) return end();
+      if (now - lastT >= 34) { // 초당 30번쯤만 바꿈
+        lastT = now;
+        const fixed = Math.floor(k * (n + 1)); // 왼쪽부터 차례로 맞춰짐
+        spans.forEach((s, i) => { s.textContent = i < fixed || text[i] === ' ' ? text[i] : SCR_CH[(Math.random() * SCR_CH.length) | 0]; });
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    return true;
+  }
+  function heroScramble() {
+    if (RM.matches || !('IntersectionObserver' in window)) return;
+    document.querySelectorAll('.ws-hero .wh-t b').forEach(hb => {
+      if (scrDone(hb.textContent)) return;
+      const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); scramble(hb); } });
+      io.observe(hb);
+    });
+  }
+
   /* ---------- 시작 ---------- */
   function boot() {
     artLoad();
     if (PAGE !== 'present.html') watchAI(); // 발표 화면에는 AI 단추가 없음
     openWindow(document.body, 2200);
+    heroScramble();
     if (PAGE === 'secret.html' || document.querySelector('[data-count]')) watchCounts();
     if (PAGE === 'index.html') setTimeout(watchIndex, 0); // 처음 그리기(입장 모드 고르기)는 나타나기가 맡음
     document.querySelectorAll('button[title], a[title]').forEach(el => { if (!el.textContent.trim() && !el.getAttribute('aria-label')) el.setAttribute('aria-label', el.getAttribute('title')); });
