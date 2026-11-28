@@ -124,6 +124,7 @@ void main(){
   float dust=0.;for(int i=0;i<2;i++){float fi=float(i);vec2 g=vec2(u.x*sa,u.y)*(9.+fi*7.)+vec2(sin(u.y*4.+T*.3+fi)*.5,T*(.05+fi*.04));
    vec2 id=floor(g),f=fract(g)-.5;float r=h2(id+fi*3.1);if(r<.14){vec2 o=vec2(h2(id+1.)-.5,h2(id+2.)-.5)*.5;dust+=smoothstep(.12-fi*.04,0.,length(f-o))*(.4+.6*sin(T*.8+r*30.));}}
   c+=(LT==1?vec3(1.,1.,1.):vec3(.6,.75,1.))*dust*.22*AM;
+  c*=DM; // 사진만 어둡게 · 전기 신호는 그대로 밝게
   vec3 sg=vec3(0.);float ia=IS.x/IS.y;
   if(NS>0){vec4 fn=flowNet(u,ia);float G=clamp(fn.w,0.,1.6);
    if(LT==1){c=mix(c,c*vec3(.72,.9,1.2)+vec3(0.,.04,.14),clamp(G*.75,0.,.85));}
@@ -133,20 +134,20 @@ void main(){
   if(LT==1){float a=clamp(dot(sg,vec3(.3,.4,.3))*(NS>0?2.4:1.15),0.,.95);c=mix(c,vec3(.1,.42,1.),a)+vec3(.15,.3,.5)*a*a;}  // 밝은 배경: 진한 파랑으로
   else c=c+sg*AM*(1.-c*.35);
  }else c*=1.-.22*pow(length((fc-.5)*vec2(1.,.9))*1.25,2.);
- gl_FragColor=vec4(c*DM+(h2(gl_FragCoord.xy+T)-.5)/255.,1.);}`;
+ gl_FragColor=vec4(c*(M==2?1.:DM)+(h2(gl_FragCoord.xy+T)-.5)/255.,1.);}`;
   const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; };
   const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}')); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
   const U = (n) => gl.getUniformLocation(pr, n);
   const LKv = q.get('link') ? q.get('link').split(',').map(Number) : []; const LNn = Math.min(3, Math.floor(LKv.length / 4)); for (let k = 0; k < 3; k++) gl.uniform4f(U('LK' + k), ...(k < LNn ? LKv.slice(k * 4, k * 4 + 4) : [0, 0, 0, 0])); gl.uniform1i(U('LN'), LNn); gl.uniform1f(U('LA'), +(q.get('lamp') || 1)); gl.uniform1f(U('DM'), +(q.get('dim') || 1)); gl.uniform1i(U('M'), MODE); gl.uniform1i(U('LT'), LIGHT); gl.uniform1f(U('AM'), AMT); gl.uniform3f(U('L1'), ...L1); gl.uniform3f(U('L2'), ...L2); gl.uniform2f(U('NZ'), ...NOZ); gl.uniform2f(U('TG'), ...TGT);
-  /* 흐름 경로: &net=x,y,x,y,…;x,y,… (첫 줄이 시작 · 다음 줄은 이미 있는 점에서 갈라짐) &nodes=x,y,크기;… (도착하면 켜지는 화면) */
+  /* 흐름 경로: &net=x,y,x,y,…;x,y,… (첫 줄이 시작 · 다음 줄은 이미 있는 점에서 갈라짐 · 줄 앞에 ! 를 붙이면 그 줄도 처음부터 동시에 출발) &nodes=x,y,크기;… (도착하면 켜지는 화면) */
   (function () {
     const ia = 16 / 9, segs = [], dist = [], verts = [];
-    const lines = (q.get('net') || '').split(';').map(l => l.split(',').map(Number)).filter(a => a.length >= 4);
+    const lines = (q.get('net') || '').split(';').map(l => { const z = l.trim().startsWith('!'); const a = l.replace('!', '').split(',').map(Number); a.z = z; return a; }).filter(a => a.length >= 4);
     for (const a of lines) {
       const pts = []; for (let i = 0; i + 1 < a.length; i += 2) pts.push([a[i], a[i + 1]]);
-      let d0 = 0; if (verts.length) { let best = 1e9; for (const v of verts) { const e = Math.hypot((v[0] - pts[0][0]) * ia, v[1] - pts[0][1]); if (e < best) { best = e; d0 = v[2]; } } }
+      let d0 = 0; if (verts.length && !a.z) { let best = 1e9; for (const v of verts) { const e = Math.hypot((v[0] - pts[0][0]) * ia, v[1] - pts[0][1]); if (e < best) { best = e; d0 = v[2]; } } }
       verts.push([pts[0][0], pts[0][1], d0]);
       for (let i = 1; i < pts.length; i++) { const L = Math.hypot((pts[i][0] - pts[i - 1][0]) * ia, pts[i][1] - pts[i - 1][1]); segs.push([...pts[i - 1], ...pts[i]]); dist.push([d0, d0 + L]); d0 += L; verts.push([pts[i][0], pts[i][1], d0]); }
     }
