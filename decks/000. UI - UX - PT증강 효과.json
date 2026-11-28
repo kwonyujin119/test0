@@ -1,5 +1,5 @@
 {
- "title": "0. UI - UX - PT증강 효과",
+ "title": "000. UI - UX - PT증강 효과",
  "theme": "clean",
  "transition": "fade",
  "decor": "none",
@@ -13204,7 +13204,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 0.0
+     "delay": 0
     },
     {
      "id": "u05238",
@@ -13233,7 +13233,7 @@
       "valign": "middle"
      },
      "enter": true,
-     "delay": 0.0
+     "delay": 0
     },
     {
      "id": "u05239",
@@ -13255,7 +13255,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0
+     "delay": 2
     },
     {
      "id": "u05240",
@@ -13284,7 +13284,7 @@
       "valign": "middle"
      },
      "enter": true,
-     "delay": 2.0
+     "delay": 2
     },
     {
      "id": "u05241",
@@ -13306,7 +13306,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 4.0
+     "delay": 4
     },
     {
      "id": "u05242",
@@ -13335,7 +13335,7 @@
       "valign": "middle"
      },
      "enter": true,
-     "delay": 4.0
+     "delay": 4
     },
     {
      "id": "u05243",
@@ -13357,7 +13357,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 6.0
+     "delay": 6
     },
     {
      "id": "u05244",
@@ -13386,7 +13386,7 @@
       "valign": "middle"
      },
      "enter": true,
-     "delay": 6.0
+     "delay": 6
     },
     {
      "id": "u05245",
@@ -13948,7 +13948,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 1.0
+     "delay": 1
     },
     {
      "id": "u08013",
@@ -16126,7 +16126,7 @@
      "style": {},
      "enter": true,
      "delay": 2.54,
-     "dur": 2.0
+     "dur": 2
     },
     {
      "id": "u08111",
@@ -19800,7 +19800,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 0.0
+     "delay": 0
     },
     {
      "id": "u08275",
@@ -29960,7 +29960,7 @@
      "shadow": false,
      "enter": true,
      "delay": 1.42,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0047",
@@ -30128,7 +30128,7 @@
      "shadow": false,
      "enter": true,
      "delay": 1.7,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0055",
@@ -30965,7 +30965,7 @@
      "shadow": false,
      "enter": true,
      "delay": 3.1,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0094",
@@ -31133,7 +31133,7 @@
      "shadow": false,
      "enter": true,
      "delay": 3.38,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0102",
@@ -31301,7 +31301,7 @@
      "shadow": false,
      "enter": true,
      "delay": 3.66,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0110",
@@ -31469,7 +31469,7 @@
      "shadow": false,
      "enter": true,
      "delay": 3.94,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0118",
@@ -31847,7 +31847,7 @@
      "radius": 12,
      "shadow": false,
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 8
     },
     {
@@ -31866,7 +31866,7 @@
      "radius": 12,
      "shadow": false,
      "enter": true,
-     "delay": 4.0,
+     "delay": 4,
      "dur": 8
     },
     {
@@ -31885,7 +31885,7 @@
      "radius": 12,
      "shadow": false,
      "enter": true,
-     "delay": 6.0,
+     "delay": 6,
      "dur": 8
     },
     {
@@ -32424,7 +32424,7 @@
      "gAngle": 0,
      "enter": true,
      "delay": 5.34,
-     "dur": 2.0
+     "dur": 2
     },
     {
      "id": "ix0163",
@@ -33005,7 +33005,7 @@
      "shadow": false,
      "enter": true,
      "delay": 6.18,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0190",
@@ -33173,7 +33173,7 @@
      "shadow": false,
      "enter": true,
      "delay": 6.46,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0198",
@@ -33341,7 +33341,7 @@
      "shadow": false,
      "enter": true,
      "delay": 6.74,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0206",
@@ -33509,7 +33509,7 @@
      "shadow": false,
      "enter": true,
      "delay": 7.02,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "ix0214",
@@ -37484,7 +37484,7 @@
      "radius": 6,
      "shadow": false,
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 8
     },
     {
@@ -37503,7 +37503,7 @@
      "radius": 6,
      "shadow": false,
      "enter": true,
-     "delay": 4.0,
+     "delay": 4,
      "dur": 8
     },
     {
@@ -37522,7 +37522,7 @@
      "radius": 6,
      "shadow": false,
      "enter": true,
-     "delay": 6.0,
+     "delay": 6,
      "dur": 8
     },
     {
@@ -67874,7 +67874,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -67899,7 +67899,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -68773,7 +68773,7 @@
      "radius": 14,
      "shadow": false,
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.6
     },
     {
@@ -68795,7 +68795,7 @@
      "shadow": false,
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "fill2": "#05070B",
      "fill2Op": 0,
      "gAngle": 270,
@@ -69713,7 +69713,7 @@
      "radius": 14,
      "shadow": false,
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.6
     },
     {
@@ -69735,7 +69735,7 @@
      "shadow": false,
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "fill2": "#05070B",
      "fill2Op": 0,
      "gAngle": 270,
@@ -70228,7 +70228,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -70253,7 +70253,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -70357,7 +70357,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 1/12 라이브 3D 배경. 배경: 웹 페이지 넣기 ▸ fx/scene3d.html?scene=space&shift=0.67 (shift 로 장면을 오른쪽으로). 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -70727,7 +70727,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -70752,7 +70752,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -70856,7 +70856,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 2/12 드론 비행 카메라. scene=alps · 속도는 &speed=0.5 처럼. 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -71226,7 +71226,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -71251,7 +71251,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -71355,7 +71355,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 3/12 시간 흐름. scene=lake · 22초에 걸쳐 밤이 됨. 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -71725,7 +71725,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -71750,7 +71750,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -71854,7 +71854,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     },
     {
      "id": "fx12-04-gc",
@@ -71876,7 +71876,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 1.0,
+     "delay": 1,
      "glass": 22,
      "dur": 0.8
     },
@@ -72800,7 +72800,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -72825,7 +72825,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -72929,7 +72929,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 6/12 시네마틱 제목. 제목 = 효과 [시네마틱] + 글자 [빛]. 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -73299,7 +73299,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -73324,7 +73324,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -73428,7 +73428,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 7/12 워프 전환. 이 장에 들어올 때 보신 전환 (← → 로 다시 보기). 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -73798,7 +73798,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -73823,7 +73823,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -73927,7 +73927,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 8/12 3D 카드 축소. 이 장에 들어올 때 보신 전환 (← → 로 다시 보기). 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -74297,7 +74297,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -74322,7 +74322,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -74426,7 +74426,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 9/12 물결 와이프. 이 장에 들어올 때 보신 전환 (← → 로 다시 보기). 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -74796,7 +74796,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -74821,7 +74821,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -74925,7 +74925,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 10/12 유리창 빗방울. scene=lake&rain=1. 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -75295,7 +75295,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -75320,7 +75320,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -75424,7 +75424,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 11/12 종이 찢기. 이 장에 들어올 때 보신 전환 (← → 로 다시 보기). 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -75794,7 +75794,7 @@
      "html": "",
      "style": {},
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -75819,7 +75819,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 2.0,
+     "delay": 2,
      "dur": 0.45
     },
     {
@@ -75923,7 +75923,7 @@
       "valign": "top"
      },
      "enter": true,
-     "delay": 3.0
+     "delay": 3
     }
    ],
    "notes": "[1분] 영상 레퍼런스 ② · 12/12 포털 확장. 이 장에 들어올 때 보신 전환 (← → 로 다시 보기). 발표 화면에서만 배경이 움직이고, 목록 · 편집 · 인쇄에서는 멈춘 사진."
@@ -75955,7 +75955,7 @@
      "shadow": false,
      "po": true,
      "enter": true,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "fire3-1-gt",
@@ -76528,7 +76528,7 @@
      "shadow": false,
      "po": true,
      "enter": true,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "fire3-2-gt",
@@ -77102,7 +77102,7 @@
      "shadow": false,
      "po": true,
      "enter": true,
-     "dur": 1.0
+     "dur": 1
     },
     {
      "id": "fire3-3-gt",
