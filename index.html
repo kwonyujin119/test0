@@ -8,276 +8,145 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script>try{var t=localStorage.getItem('ws:theme');if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="app/ui.css">
-<link rel="stylesheet" href="app/ai-motion.css">
-<link rel="stylesheet" href="app/hub.css">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="app/icons/icon-192.png">
+<style>
+/* DPV 첫 화면 — 가운데 둥근 심벌 하나. 마우스를 올리거나(PC) 누르면(휴대폰) 탭 넷이 11 · 1 · 5 · 7시 방향으로 떠오름 */
+html, body { height: 100%; }
+body { margin: 0; background: var(--ui-bg); color: var(--ui-fg); overflow: hidden; }
+.home { position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; }
+.home::before { /* 은은한 바탕 원 — 심벌 둘레만 살짝 밝게 */
+  content: ''; position: absolute; left: 50%; top: 50%; width: min(760px, 150vw); aspect-ratio: 1; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--ui-fg) 6%, transparent), transparent); pointer-events: none; }
+
+/* 궤도: 이 상자 안에 마우스가 있는 동안은 열려 있음 (탭으로 옮겨 가는 사이에 닫히지 않게) */
+.orbit { --r: 190px; --dx: calc(var(--r) * .5); --dy: calc(var(--r) * .866);
+  position: relative; width: calc(var(--r) + 300px); height: calc(var(--r) * 1.732 + 120px); max-width: 100%; display: grid; place-items: center; }
+
+.hub { position: relative; z-index: 2; width: 128px; height: 128px; border-radius: 50%; border: 0; cursor: pointer; padding: 0;
+  background: var(--ui-ink); color: var(--ui-on-ink); font-family: inherit; font-weight: 800; font-size: 30px; line-height: 1; letter-spacing: .04em;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18), 0 0 0 8px color-mix(in srgb, var(--ui-ink) 10%, transparent);
+  transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; display: grid; place-items: center; }
+.hub::after { /* 숨쉬는 테두리: 닫혀 있을 때만, 여기를 건드리라는 표시 */
+  content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--ui-ink) 35%, transparent);
+  animation: breathe 2.6s ease-in-out infinite; pointer-events: none; }
+@keyframes breathe { 0%, 100% { transform: scale(1); opacity: .7; } 50% { transform: scale(1.12); opacity: 0; } }
+.hub:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 6px; }
+.hint { position: absolute; z-index: 1; top: calc(50% + 86px); left: 50%; transform: translateX(-50%); white-space: nowrap;
+  font-size: 13px; color: var(--ui-muted); transition: opacity .2s; pointer-events: none; }
+
+.tab { --x: 0px; --y: 0px; position: absolute; left: 50%; top: 50%; z-index: 3;
+  display: flex; align-items: center; gap: 10px; padding: 10px 18px 10px 10px; border-radius: 999px; text-decoration: none; cursor: pointer;
+  background: var(--ws-bg); color: var(--ws-fg); border: 1px solid var(--ws-line); font-family: inherit; font-weight: 700; font-size: 16px; line-height: 1; letter-spacing: .03em;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(.4);
+  transition: transform .34s cubic-bezier(.2,.9,.25,1.15), opacity .2s, box-shadow .2s; transition-delay: 0s; }
+.tab .tile { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--ws-dot); color: #fff; font-weight: 800; font-size: 15px; }
+.tab small { display: block; font-weight: 500; font-size: 11.5px; letter-spacing: 0; opacity: .8; margin-top: 3px; }
+.tab[data-pos="11"] { --x: calc(var(--dx) * -1); --y: calc(var(--dy) * -1); }
+.tab[data-pos="1"]  { --x: var(--dx);            --y: calc(var(--dy) * -1); }
+.tab[data-pos="5"]  { --x: var(--dx);            --y: var(--dy); }
+.tab[data-pos="7"]  { --x: calc(var(--dx) * -1); --y: var(--dy); }
+.tab.locked { filter: saturate(.55); }
+
+/* 열림: PC 는 마우스를 올리면, 키보드는 심벌에 초점이 오면, 휴대폰은 누르면(.open) */
+@media (hover: hover) {
+  .orbit:hover .tab { opacity: 1; pointer-events: auto; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1); }
+  .orbit:hover .hint { opacity: 0; }
+  .orbit:hover .hub::after { animation: none; opacity: 0; }
+  .orbit:hover .hub { transform: scale(.92); }
+  .orbit:hover .rays i { transform: rotate(var(--a)) scaleX(1); }
+}
+.orbit:focus-within .tab, .orbit.open .tab { opacity: 1; pointer-events: auto; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1); }
+.orbit:focus-within .hint, .orbit.open .hint { opacity: 0; }
+.orbit.open .hub::after, .orbit:focus-within .hub::after { animation: none; opacity: 0; }
+.orbit.open .hub, .orbit:focus-within .hub { transform: scale(.92); }
+/* 하나씩 시계 방향으로 (11 → 1 → 5 → 7) */
+.orbit:hover .tab[data-pos="1"], .orbit.open .tab[data-pos="1"], .orbit:focus-within .tab[data-pos="1"] { transition-delay: .04s; }
+.orbit:hover .tab[data-pos="5"], .orbit.open .tab[data-pos="5"], .orbit:focus-within .tab[data-pos="5"] { transition-delay: .08s; }
+.orbit:hover .tab[data-pos="7"], .orbit.open .tab[data-pos="7"], .orbit:focus-within .tab[data-pos="7"] { transition-delay: .12s; }
+.tab:hover, .tab:focus-visible { box-shadow: 0 12px 30px rgba(0,0,0,.18), 0 0 0 2px var(--ws-dot); outline: none; }
+.orbit .tab:hover { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.06); transition-delay: 0s; }
+
+/* 심벌과 탭을 잇는 가는 선 (열렸을 때만) */
+.rays { position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 1; pointer-events: none; }
+.rays i { position: absolute; left: 0; top: 0; width: var(--r); height: 1.5px; transform-origin: 0 50%; background: linear-gradient(90deg, transparent 30%, color-mix(in srgb, var(--ui-fg) 18%, transparent));
+  transform: rotate(var(--a)) scaleX(0); transition: transform .3s ease; }
+.rays i:nth-child(1) { --a: -120deg; } .rays i:nth-child(2) { --a: -60deg; } .rays i:nth-child(3) { --a: 60deg; } .rays i:nth-child(4) { --a: 120deg; }
+.orbit.open .rays i, .orbit:focus-within .rays i { transform: rotate(var(--a)) scaleX(1); }
+
+/* 구석: 지금 모드 · 관리자 입장 · 화면 밝기 */
+.corner { position: fixed; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); display: flex; gap: 8px; align-items: center; z-index: 5; font-size: 13px; }
+.corner .lnk { background: none; border: 0; color: var(--ui-muted); font: inherit; cursor: pointer; padding: 8px 6px; text-decoration: underline; text-underline-offset: 3px; }
+.corner .lnk:hover { color: var(--ui-fg); }
+.mode { position: fixed; left: 16px; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 5; font-size: 13px; color: var(--ui-muted); }
+.mode b { color: var(--ui-fg); font-weight: 600; }
+
+@media (max-width: 560px) {
+  .orbit { --r: 150px; width: 100%; }
+  .hub { width: 104px; height: 104px; font-size: 25px; }
+  .hint { top: calc(50% + 72px); }
+  .tab { padding: 8px 14px 8px 8px; font-size: 14.5px; }
+  .tab small { display: none; }
+  .tab .tile { width: 30px; height: 30px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub::after { animation: none; }
+  .tab, .rays i, .hub { transition-duration: .01s !important; transition-delay: 0s !important; }
+}
+</style>
 </head>
 <body>
-<div class="ws">
-  <header class="ws-head">
-    <div class="brand">
-      <div class="ws-mark" aria-hidden="true">DPV</div>
-      <div>
-        <h1>DPV</h1>
-        <div class="sub" id="headSub">사무실에서도, 집에서도 같은 화면에서 이어서 작업합니다.</div>
-      </div>
-    </div>
-    <div class="tools" id="headTools"><button class="btn" id="btnApp" hidden title="DPV 를 앱으로 설치합니다 (바탕화면 · 홈 화면 아이콘, 주소창 없는 창)"><i data-ic="download"></i><span>앱 설치</span></button><button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button></div>
-  </header>
+<main class="home">
+  <h1 class="sr-only">DPV — 작업장 고르기</h1>
+  <nav class="orbit" id="orbit" aria-label="작업장">
+    <div class="rays" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <button type="button" class="hub" id="hub" aria-expanded="false" aria-label="DPV — 작업장 열기">DPV</button>
+    <span class="hint" id="hint">마우스를 올려 작업장을 고르세요</span>
+    <a class="tab" data-pos="11" data-ws="doc" href="hangul.html"><span class="tile" aria-hidden="true">D</span><span>DOC<small>한글 문서</small></span></a>
+    <a class="tab" data-pos="1" data-ws="pres" href="gyoan.html"><span class="tile" aria-hidden="true">P</span><span>PRES<small>교안 · 발표</small></span></a>
+    <a class="tab" data-pos="5" data-ws="video" href="videos.html"><span class="tile" aria-hidden="true">V</span><span>VIDEO<small>영상</small></span></a>
+    <a class="tab" data-pos="7" data-ws="secret" href="secret.html" id="tabSecret"><span class="tile" aria-hidden="true">S</span><span>SECRET<small>관리자 전용</small></span></a>
+  </nav>
+</main>
+<div class="mode" id="mode"></div>
+<div class="corner"><button type="button" class="lnk" id="btnMode"></button><button class="btn icon ghost" data-ui-theme title="화면을 어둡게"></button></div>
 
-  <!-- AI 히어로: 입장 전 · 뒤 모두. app/ai-motion.js 가 글 · "이어서 할 일"을 채우고 보여 줌 (그 파일이 없으면 숨은 채로) -->
-  <section class="aim-hero" id="aimHero" aria-labelledby="aimHeroT" hidden>
-    <div class="aim-aura" aria-hidden="true"><i data-ws="doc"></i><i data-ws="pres"></i><i data-ws="video"></i><i data-ws="secret"></i></div>
-    <div class="aim-hero-main">
-      <p class="aim-kicker" id="aimKicker"></p>
-      <h2 id="aimHeroT"></h2>
-      <p class="aim-lead" id="aimLead"></p>
-      <ul class="aim-feats" id="aimFeats" aria-label="할 수 있는 일"></ul>
-    </div>
-    <div class="aim-today" id="aimToday" hidden></div>
-  </section>
-
-  <!-- 입장: 게스트 / 관리자 -->
-  <main id="gate" hidden>
-    <div class="ws-gate">
-      <section class="ws-banner guest">
-        <div class="bn-top"><span class="bn-ico" aria-hidden="true"><i data-ic="eye"></i></span><span class="bn-kicker">보기 전용</span></div>
-        <h2><button type="button" class="bn-hit" id="bnGuest">게스트로 입장</button></h2>
-        <p>교안을 보고 발표하거나, 한글 문서를 열어 인쇄합니다. 고치거나 저장하지는 않습니다.</p>
-        <ul>
-          <li><i data-ic="list"></i>교안 목록 · 발표 (리모컨 · 전체 화면)</li>
-          <li><i data-ic="doc"></i>한글(hwpx) 문서 열람 · 인쇄</li>
-        </ul>
-        <span class="bn-go" aria-hidden="true">바로 입장<i data-ic="arrowRight"></i></span>
-      </section>
-      <section class="ws-banner admin">
-        <div class="bn-top"><span class="bn-ico" aria-hidden="true"><i data-ic="lock"></i></span><span class="bn-kicker">편집 가능</span></div>
-        <h2><button type="button" class="bn-hit" id="bnAdmin">관리자로 입장</button></h2>
-        <p>접속코드를 넣으면 교안 · 한글 문서 · 영상을 만들고 고쳐 저장합니다.</p>
-        <ul>
-          <li><i data-ic="edit"></i>교안 편집 · 새 교안 · PowerPoint 가져오기</li>
-          <li><i data-ic="save"></i>한글 문서 편집 · 저장 · 문서함 · best 문서</li>
-          <li><i data-ic="play"></i>영상 편집 · 화면 녹화 · 자동 자막</li>
-        </ul>
-        <span class="bn-go" aria-hidden="true"><i data-ic="key"></i>접속코드 입력</span>
-      </section>
-    </div>
-    <details class="ws-gate-note">
-      <summary><i data-ic="info"></i>접속코드는 무엇인가요?<i class="chev" data-ic="chevronDown"></i></summary>
-      <p>접속코드는 <b>실수로 고치는 것을 막는 문</b>입니다. 브라우저 안에서만 확인하므로 진짜 보안 장치는 아닙니다. 실제로 저장할 수 있는 권한은 GitHub 토큰을 넣어 둔 <b>관리자 기기</b>와 <b>내 PC 서버</b>에만 있습니다. 공용 PC 에서는 게스트로 들어가세요.</p>
-    </details>
-  </main>
-
-  <!-- 입장 뒤: 작업장 고르기 (순서는 늘 같게) -->
-  <main id="space" hidden>
-    <div class="ws-grid">
-      <article class="ws-card" data-ws="doc" data-spot>
-        <div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-doc.webp" alt="" width="960" height="640" decoding="async"></div>
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">D</div><h2><a class="card-link" href="hangul.html">DOCUMENT</a></h2></div>
-        <p class="desc" data-admin>설치 없이 · 한글과 같은 단축키 · hwpx 그대로 저장</p>
-        <p class="desc" data-guest>hwpx 문서를 열어 보고 인쇄합니다.</p>
-        <div class="stat" id="hwpStat">문서함 · best 문서 · 내 PC 파일</div>
-        <a class="resume-link empty" id="hwpResume"><span class="rl-text"><span class="rl-title">저장하지 않고 닫은 문서가 없습니다</span></span></a>
-        <span class="go" aria-hidden="true">DOCUMENT 열기<i data-ic="arrowRight"></i></span>
-      </article>
-      <article class="ws-card" data-ws="pres" data-spot>
-        <div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-pres.webp" alt="" width="960" height="640" decoding="async"></div>
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">P</div><h2><a class="card-link" href="gyoan.html">PRESENTATION</a></h2></div>
-        <p class="desc">강의 교안을 만들고 리모컨으로 바로 발표합니다.</p>
-        <div class="stat" id="deckStat">교안 목록을 읽는 중…</div>
-        <a class="resume-link empty" id="deckResume"><span class="rl-text"><span class="rl-title">최근 교안을 찾는 중…</span></span></a>
-        <span class="go" aria-hidden="true">PRESENTATION 열기<i data-ic="arrowRight"></i></span>
-      </article>
-      <article class="ws-card" data-ws="video" data-spot>
-        <div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-video.webp" alt="" width="960" height="640" decoding="async"></div>
-        <div class="card-top"><div class="ws-ico" aria-hidden="true">V</div><h2><a class="card-link" href="videos.html">VIDEO</a></h2></div>
-        <p class="desc">강의 영상을 자르고 자막을 넣습니다. 파일은 이 기기에서만 처리합니다.</p>
-        <div class="stat" id="videoStat">컷 편집 · 화면 녹화 · 자동 자막</div>
-        <a class="resume-link empty" id="videoResume"><span class="rl-text"><span class="rl-title">이 기기에서 만든 영상이 없습니다</span></span></a>
-        <span class="go" aria-hidden="true">VIDEO 열기<i data-ic="arrowRight"></i></span>
-      </article>
-    </div>
-
-    <div class="ws-app" id="appBox" hidden></div>
-    <div class="ws-foot" id="foot"></div>
-  </main>
-</div>
 <script src="app/common.js"></script>
-<script src="app/motion.js"></script>
-<script src="app/ai-motion.js"></script>
 <script src="app/access.js"></script>
 <script>
+/* 탭을 누르면 게스트(보기 전용)로 입장. 이미 관리자로 들어온 기기는 관리자 그대로 둠 (누를 때마다 게스트로 내려가면 관리자가 일을 못 함).
+   SECRET 은 게스트에게 열지 않고 "관리자에게 문의하세요." 만 띄움.
+   관리자 입장은 오른쪽 아래 작은 링크. 다른 화면의 모드 표식(index.html?mode=1)을 눌러 오면 접속코드 창을 바로 띄움 */
 (() => {
   const $ = id => document.getElementById(id);
-  const params = new URLSearchParams(location.search);
-  const wantMode = params.has('mode'); // 작업장 머리의 모드 표식을 눌러 왔을 때: 다시 고르기
-  const next = params.get('next') || '';
-  const enc = encodeURIComponent;
+  const orbit = $('orbit'), hub = $('hub');
+  if (matchMedia('(hover: none)').matches) $('hint').textContent = '눌러서 작업장을 고르세요';
 
-  function showGate() {
-    $('gate').hidden = false; $('space').hidden = true;
-    $('headSub').textContent = '어떻게 들어올지 고르세요. 보기만 하려면 게스트, 고치려면 관리자입니다.';
-    $('headTools').querySelectorAll('.ws-chip, #btnLeave').forEach(n => n.remove());
-  }
-  function showSpace() {
-    $('gate').hidden = true; $('space').hidden = false;
-    $('headSub').textContent = Access.isAdmin ? '사무실에서도, 집에서도 같은 화면에서 이어서 작업합니다.' : '보기 전용으로 들어왔습니다. 교안 목록 · 발표 · 문서 열람을 할 수 있습니다.';
-    const tools = $('headTools');
-    tools.querySelectorAll('.ws-chip, #btnLeave').forEach(n => n.remove());
-    tools.insertAdjacentHTML('afterbegin', Access.chip() + `<button class="btn ghost" id="btnLeave" title="입장 모드를 다시 고릅니다">${icon('logout', 16)}나가기</button>`);
-    $('btnLeave').onclick = () => { Access.leave(); showGate(); };
-    tools.querySelector('.ws-chip').onclick = (ev) => { ev.preventDefault(); showGate(); };
-    renderAppBox(); renderFoot();
-    gen++; liveDecks(); liveHwp(); liveVideo(); secretCard();
-  }
-  /* SECRET: 관리자일 때만 카드를 만든다 (게스트 화면에는 아예 넣지 않음). S 표시 · 제목 · [SECRET 열기] 만, 설명은 넣지 않음 */
-  function secretCard() {
-    const old = $('secretCard'); if (old) old.remove();
-    if (!Access.isAdmin) return;
-    $('space').querySelector('.ws-grid').insertAdjacentHTML('beforeend', `<article class="ws-card" id="secretCard" data-ws="secret" data-spot><div class="ws-art" aria-hidden="true"><img src="assets/ui/ws-secret.webp" alt="" width="960" height="640" decoding="async"></div><div class="card-top"><div class="ws-ico" aria-hidden="true">S</div><h2><a class="card-link" href="secret.html">SECRET</a></h2></div><p class="desc">투자 원칙 점검 · 시장 브리핑 · AI 어시스턴트</p><div class="stat" id="secStat">투자 기록을 읽는 중…</div><a class="resume-link empty" id="secResume"><span class="rl-text"><span class="rl-title">수익 엔진 점검</span></span></a><span class="go" aria-hidden="true">SECRET 열기${icon('arrowRight')}</span></article>`);
-    /* 이 기기에 저장된 SECRET 기록을 읽기만 함: 관심 종목 · 매매 일지 수, 수익 엔진 상태(절반 · 중지) */
-    const rd = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
-    const w = rd('sec:watch'), j = rd('sec:journal'), dot = (() => { try { return localStorage.getItem('dpv:dot:secret') || ''; } catch (e) { return ''; } })();
-    const nw = w && Array.isArray(w.items) ? w.items.length : 0, hold = w && Array.isArray(w.items) ? w.items.filter(x => +x.qty > 0).length : 0, nj = Array.isArray(j) ? j.length : 0;
-    $('secStat').textContent = nw || nj ? `관심 · 보유 ${nw}종목${hold ? ` (보유 ${hold})` : ''} · 매매 일지 ${nj}건` : '관심 종목 · 매매 일지가 아직 없습니다';
-    resume('secResume', 'secret.html#engine', '수익 엔진', dot === 'stop' ? '새 매매 중지 상태 — 원인부터 점검' : dot === 'half' ? '새 매매 크기 절반 — 규칙 점검' : '오늘 규칙 · 비중 · 낙폭 점검', 'chart');
-  }
-  $('bnGuest').onclick = () => { Access.enterGuest(); go(); };
-  $('bnAdmin').onclick = async () => { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); go(); } };
-  function go() { if (next && /^[\w.-]+\.html(\?[^\s#]*)?$/.test(next)) { location.href = next; return; } showSpace(); }
+  const setOpen = on => { orbit.classList.toggle('open', on); hub.setAttribute('aria-expanded', on ? 'true' : 'false'); };
+  hub.addEventListener('click', () => setOpen(!orbit.classList.contains('open')));
+  document.addEventListener('click', e => { if (!orbit.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { setOpen(false); if (orbit.contains(document.activeElement)) document.activeElement.blur(); } });
 
-  /* ---------- 카드의 지금 상태: 각 작업장이 이미 쓰는 저장소를 읽기만 함 ---------- */
-  const stat = (id, parts) => { $(id).innerHTML = parts.filter(Boolean).join('<span class="dv" aria-hidden="true">·</span>'); };
-  /* 빈 칸으로 되돌림: 모드를 바꿔 다시 그릴 때 앞 모드의 링크가 남지 않게 */
-  const placeholder = (id, text) => {
-    const a = $(id);
-    a.className = 'resume-link empty'; a.removeAttribute('href'); a.removeAttribute('title'); delete a.dataset.t;
-    a.innerHTML = '<span class="rl-text"><span class="rl-title"></span></span>';
-    a.querySelector('.rl-title').textContent = text;
-  };
-  /* showSpace 를 다시 부르면 앞서 읽던 결과는 버림 (늦게 끝난 읽기가 새 모드의 칸을 덮지 않게) */
-  let gen = 0;
-  function resume(id, href, label, title, ic, t) {
-    const a = $(id);
-    a.className = 'resume-link'; a.href = href; if (t) a.dataset.t = t; else delete a.dataset.t; // 저장 시각: 첫 화면 히어로의 "이어서 할 일" 순서
-    a.title = `${label}: ${title}`;
-    a.innerHTML = `${icon(ic || 'clock', 16)}<span class="rl-text"><span class="rl-lbl">${esc(label)}</span><span class="rl-title">${esc(title)}</span></span><span class="rl-go">${icon('arrowRight', 16)}</span>`;
-  }
-  /* 저장 시각: 내 PC 서버는 "2026-11-08 18:03", 브라우저 보관은 ISO */
-  const when = s => { const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(s || ''); return !m ? 0 : /T.*(Z|[+-]\d\d:?\d\d)$/.test(s) ? Date.parse(s) || 0 : new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]).getTime(); };
+  orbit.querySelectorAll('.tab').forEach(a => a.addEventListener('click', e => {
+    if (a.dataset.ws === 'secret' && !Access.isAdmin) { e.preventDefault(); toast('관리자에게 문의하세요.', 2600); return; }
+    if (!Access.isAdmin) Access.enterGuest();
+  }));
 
-  /* GitHub 저장소: 목록에 날짜가 없으므로 decks/ 를 마지막으로 바꾼 커밋 하나만 봄 (10분 동안 이 탭에 기억 — 요청 한도 아낌) */
-  async function ghLatest(list) {
-    const KEY = 'ws:hubDeckLatest';
-    try { const c = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (c && Date.now() - c.at < 6e5) return c; } catch (e) { }
-    const cs = await GH.api('GET', `/commits?path=decks&per_page=5&sha=${enc(GH.cfg.branch)}`);
-    if (!Array.isArray(cs) || !cs.length) return {};
-    /* 시각과 제목은 같은 '교안 저장:' 커밋에서 (병합 커밋은 저장이 아님). 목록의 파일 이름과 맞으면 그 교안으로 바로 감 */
-    const saves = cs.map(c => ({ c, title: (/^교안 저장: (.+)$/m.exec(c.commit.message) || [])[1] })).filter(x => x.title);
-    const hit = saves.map(x => ({ ...x, d: list.find(d => d.name === x.title || d.title === x.title) })).find(x => x.d);
-    const pick = hit || saves[0] || { c: cs[0], title: '' };
-    const r = { at: Date.now(), t: Date.parse(pick.c.commit.committer.date) || 0, name: hit ? hit.d.name : '', title: hit ? (hit.d.title || hit.d.name) : pick.title };
-    try { sessionStorage.setItem(KEY, JSON.stringify(r)); } catch (e) { }
-    return r;
+  function paint() {
+    const admin = Access.isAdmin;
+    $('mode').innerHTML = Access.chosen ? `지금: <b>${admin ? '관리자' : '게스트 · 보기 전용'}</b>` : '';
+    $('btnMode').textContent = admin ? '게스트로 바꾸기' : '관리자로 입장';
+    $('tabSecret').classList.toggle('locked', !admin);
+    $('tabSecret').querySelector('small').textContent = admin ? '투자 도우미' : '관리자 전용';
   }
-  async function liveDecks() {
-    const g0 = gen;
-    stat('deckStat', ['교안 목록을 읽는 중…']); placeholder('deckResume', '최근 교안을 찾는 중…');
-    try {
-      await API.init();
-      const list = await API.list();
-      if (g0 !== gen || !Array.isArray(list)) return;
-      let latest = null, t = 0;
-      if (list.some(d => d.partial)) { const g = await ghLatest(list).catch(() => ({})); if (g0 !== gen) return; t = g.t || 0; if (g.title) latest = { name: g.name, title: g.title }; }
-      else for (const d of list) { const x = when(d.modified); if (x > t) { t = x; latest = d; } }
-      const drafts = Access.isAdmin ? list.filter(d => Draft.has(d.name)).length : 0;
-      stat('deckStat', [list.length ? `교안 ${list.length}개` : '아직 교안이 없습니다', t ? `마지막 저장 ${fmtAgo(t)}` : '', drafts ? `<span class="dot" aria-hidden="true"></span>저장 안 한 작업본 ${drafts}개` : '']);
-      if (!latest) { placeholder('deckResume', list.length ? '최근에 저장한 교안을 찾지 못했습니다' : (Access.isAdmin ? '첫 교안을 만들어 보세요' : '관리자가 만든 교안이 여기에 보입니다')); return; }
-      if (!latest.name) resume('deckResume', 'gyoan.html', '교안 목록에서 열기', latest.title, 'list', t); // 커밋 제목만 알고 파일은 못 찾음
-      else if (Access.isGuest) resume('deckResume', 'present.html?deck=' + enc(latest.name), '바로 발표', latest.title, 'play', t);
-      else resume('deckResume', 'editor.html?deck=' + enc(latest.name), '이어서 편집', latest.title, 'edit', t);
-    } catch (e) { if (g0 === gen) { stat('deckStat', ['교안 목록을 읽지 못했습니다']); placeholder('deckResume', '작업장을 열면 다시 읽습니다'); } }
-  }
-
-  /* 이 기기의 IndexedDB 를 읽기만 함. 없는 저장소는 만들지 않음 (만들어 버리면 작업장이 처음 열 때 칸을 못 만든다) */
-  async function idbAll(name, store) {
-    try { if (!indexedDB.databases || !(await indexedDB.databases()).some(d => d.name === name)) return []; } catch (e) { return []; }
-    return new Promise(res => {
-      const r = indexedDB.open(name);
-      r.onupgradeneeded = () => r.transaction.abort();
-      r.onerror = () => res([]);
-      r.onsuccess = () => {
-        const db = r.result, out = [];
-        if (!db.objectStoreNames.contains(store)) { db.close(); res(out); return; }
-        const q = db.transaction(store).objectStore(store).openCursor();
-        q.onsuccess = () => { const c = q.result; if (c) { out.push(c.value); c.continue(); } else { db.close(); res(out); } };
-        q.onerror = () => { db.close(); res(out); };
-      };
-    });
-  }
-  async function liveHwp() {
-    const g0 = gen;
-    if (Access.isGuest) { stat('hwpStat', ['hwpx 열람 · 인쇄 · PDF 저장']); placeholder('hwpResume', 'PC 의 hwpx 파일을 열어 봅니다'); return; }
-    stat('hwpStat', ['문서함 · best 문서 · 내 PC 파일']); placeholder('hwpResume', '저장하지 않고 닫은 문서가 없습니다');
-    const drafts = (await idbAll('hwp-ws', 'drafts')).filter(d => d && d.name).sort((a, b) => (b.time || 0) - (a.time || 0));
-    if (g0 !== gen || !drafts.length) return;
-    stat('hwpStat', [`<span class="dot" aria-hidden="true"></span>저장 안 한 문서 ${drafts.length}개`, `마지막 ${fmtAgo(drafts[0].time)}`]);
-    resume('hwpResume', 'hangul.html', '작업본 목록에서 열기', drafts[0].name, 'doc', drafts[0].time); // hangul.html 은 주소로 문서를 바로 열지 않음: 첫 화면 목록으로
-  }
-  async function liveVideo() {
-    const g0 = gen;
-    if (Access.isGuest) { stat('videoStat', ['관리자 전용']); placeholder('videoResume', '관리자로 입장하면 쓸 수 있습니다'); return; }
-    stat('videoStat', ['컷 편집 · 화면 녹화 · 자동 자막']); placeholder('videoResume', '이 기기에서 만든 영상이 없습니다');
-    const ps = (await idbAll('ws-video', 'projects')).filter(p => p && p.id).sort((a, b) => (b.updated || 0) - (a.updated || 0));
-    if (g0 !== gen || !ps.length) return;
-    let sync = {}, sent = {}; try { sync = JSON.parse(localStorage.getItem('ve:sync') || '{}') || {}; sent = (JSON.parse(localStorage.getItem('ve:syncState') || '{}') || {}).p || {}; } catch (e) { }
-    const unsent = sync.on ? ps.filter(p => ((sent[p.id] || {}).rev || 0) < (p.updated || 0) && ((p.media || []).length || (p.clips || []).length)).length : 0;
-    stat('videoStat', [`영상 ${ps.length}개`, unsent ? `${unsent}개 아직 안 올라감` : '', `마지막 편집 ${fmtAgo(ps[0].updated)}`]);
-    resume('videoResume', 'video.html?p=' + enc(ps[0].id), '이어서 편집', ps[0].name || '새 영상', 'play', ps[0].updated);
-  }
-
-  /* ---------- 앱 설치 안내: 닫으면 이 기기에서는 다시 보이지 않음 ---------- */
-  const HINT = 'ws:installHint';
-  function renderAppBox() {
-    const box = $('appBox');
-    let off = false; try { off = localStorage.getItem(HINT) === 'off'; } catch (e) { }
-    if (!window.PWA || PWA.standalone || off) { box.hidden = true; return; }
-    const mobile = /ios|android/.test(PWA.os);
-    const close = `<button type="button" class="btn icon ghost sm app-x" title="닫기" aria-label="설치 안내 닫기">${icon('x', 16)}</button>`;
-    if (PWA.installed) box.innerHTML = `${icon('check', 20)}<div class="t"><b>앱을 설치했습니다</b><p>${mobile ? '홈 화면' : '바탕화면 · 시작 메뉴'}의 <b>DPV</b> 아이콘으로 여세요. 이 탭은 닫아도 됩니다.</p></div>${close}`;
-    else box.innerHTML = `${icon('download', 20)}<div class="t"><b>DPV를 앱으로 설치</b><p>${mobile ? '홈 화면에 아이콘이 생기고 앱처럼 전체 화면으로 열립니다.' : '바탕화면 · 시작 메뉴에 아이콘이 생기고, 주소창 없는 창으로 열립니다. hwpx 파일도 바로 열립니다.'}</p></div><div class="acts"><button type="button" class="btn" id="btnInstall">앱으로 설치</button>${PWA.os === 'windows' ? '<a href="install/setup.cmd" download="DPV 설치.cmd">안 되면: Windows 설치 파일</a>' : ''}</div>${close}`;
-    box.hidden = false;
-    const b = $('btnInstall'); if (b) b.onclick = () => PWA.start();
-    box.querySelector('.app-x').onclick = () => { try { localStorage.setItem(HINT, 'off'); } catch (e) { } box.hidden = true; };
-  }
-  window.addEventListener('pwa-change', () => { if (!$('space').hidden) renderAppBox(); appBtn(); });
-  /* 위쪽 [앱 설치] 단추: 설치한 앱 안에서 열었을 때만 숨김. 누르면 바로 설치 창(되는 브라우저) 또는 기기에 맞는 설치 안내 */
-  function appBtn() {
-    const b = $('btnApp'); if (!b) return;
-    const P = window.PWA; b.hidden = !P || P.standalone;
-    if (!P) return;
-    b.querySelector('span').textContent = P.installed ? '앱 열기' : '앱 설치';
-    b.title = P.installed ? '설치된 DPV 앱으로 엽니다' : 'DPV 를 앱으로 설치합니다 (바탕화면 · 홈 화면 아이콘, 주소창 없는 창)';
-  }
-  $('btnApp').onclick = () => { if (window.PWA) PWA.start(); };
-  window.addEventListener('load', appBtn);
-
-  function renderFoot() {
-    const foot = $('foot'); foot.innerHTML = '';
-    if (Access.isGuest) { foot.innerHTML = '게스트 모드에서는 GitHub 에 연결하거나 저장하지 않습니다. 고치려면 <a href="#" id="toAdmin">관리자로 입장</a>하세요.'; $('toAdmin').onclick = async (ev) => { ev.preventDefault(); if (await Access.prompt()) showSpace(); }; return; }
-    const cfg = GH.load();
-    if (cfg && GH.token) foot.innerHTML = `GitHub 저장소 <b>${esc(cfg.owner)}/${esc(cfg.repo)}</b> 에 연결되어 있습니다. 세 작업장이 같은 연결을 씁니다.`;
-    else if (cfg) {
-      foot.innerHTML = `이 기기에는 아직 GitHub 연결이 없습니다. 보기 · 발표 · 내 PC 파일 작업은 그대로 됩니다. 저장소에 저장하려면 <a href="#" id="ghOn">GitHub 연결</a>을 눌러 토큰을 한 번 넣으세요.`;
-      $('ghOn').onclick = async (ev) => { ev.preventDefault(); if (await GH.connect()) renderFoot(); };
-    }
-  }
-  if (Access.chosen && !wantMode) showSpace(); else showGate();
+  async function toAdmin() { if (await Access.prompt()) { toast('관리자로 입장했습니다', 2000); paint(); } }
+  $('btnMode').onclick = () => { if (Access.isAdmin) { Access.enterGuest(); toast('게스트(보기 전용)로 바꿨습니다', 2000); paint(); } else toAdmin(); };
+  paint();
+  if (new URLSearchParams(location.search).has('mode') && !Access.isAdmin) setTimeout(toAdmin, 150);
 })();
 </script>
 <script src="app/pwa.js"></script>
-<script src="app/appnav.js"></script>
 </body>
 </html>
