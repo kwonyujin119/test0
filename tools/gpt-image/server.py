@@ -10,6 +10,8 @@
 
 환경 변수
   OPENAI_API_KEY      OpenAI API 키(ChatGPT 구독과 별개, 이미지당 과금). 필수.
+  OPENAI_IMAGE_ALLOW  1 일 때만 실제로 만든다(과금). 없거나 1 이 아니면 만들지 않고 멈춘다 — 사용자가 추가 결제를 막아 둠(2026-11-28).
+                      켜려면 사용자가 그 대화에서 허락한 뒤 한 번만: OPENAI_IMAGE_ALLOW=1 python3 tools/gpt-image/server.py --cli ...
   OPENAI_IMAGE_MODEL  기본 gpt-image-2.6-sunburst
   GPT_IMAGE_OUT_DIR   저장 폴더. 기본 ./generated-images
 """
@@ -99,6 +101,10 @@ def _multipart(fields, files):
 
 def generate(prompt, size="1024x1024", quality="low", n=1, background="auto", filename=None, model=None,
              output_format="png", reference_images=None, input_fidelity=None):
+    # 과금 잠금: 사용자가 OpenAI 추가 결제를 막아 둠. 허락 없이 Claude 세션이 이미지를 만들지 못하게 여기서 멈춤
+    if os.environ.get("OPENAI_IMAGE_ALLOW") != "1":
+        raise RuntimeError("OpenAI 이미지 생성이 꺼져 있습니다(과금 잠금). 사용자가 이 대화에서 생성을 허락한 경우에만 "
+                           "OPENAI_IMAGE_ALLOW=1 을 붙여 실행하세요. MCP 로 쓸 때는 .mcp.json 의 OPENAI_IMAGE_ALLOW 기본값이 0 입니다.")
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise RuntimeError("OPENAI_API_KEY 가 없습니다. platform.openai.com 에서 API 키를 만들어 환경 변수로 넣어 주세요.")
