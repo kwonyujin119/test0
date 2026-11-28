@@ -35,12 +35,67 @@ const Access = {
   /* 잠긴 폴더 열람: 게스트가 관리자 접속코드를 넣으면 그 폴더만 이 기기에서 12시간 동안 볼 수 있음 (게스트 모드 그대로 — 고치거나 저장은 못 함).
      kind: 'pres' | 'doc'. 화면에서 막는 잠금이라, 파일 주소를 직접 아는 사람까지 막지는 못함 */
   FOPEN: 'ws:folderOpen', FOPEN_H: 12,
-  folderOpened(kind, id) { try { const t = (JSON.parse(localStorage.getItem(this.FOPEN) || '{}'))[kind + ':' + id]; return !!(t && Date.now() - t < this.FOPEN_H * 36e5); } catch (e) { return false; } },
-  async openLocked(kind, id, name) {
-    if (this.isAdmin || this.folderOpened(kind, id)) return true;
-    const ok = await this.prompt({ verifyOnly: true, title: `Lock · 「${name}」 폴더`, desc: `잠긴 폴더입니다. 관리자 접속코드를 넣으면 이 기기에서 ${this.FOPEN_H}시간 동안 안의 내용을 볼 수 있습니다 (보기만 — 고치거나 저장하지는 않습니다).`, ok: '열기' });
-    if (ok) { try { const m = JSON.parse(localStorage.getItem(this.FOPEN) || '{}'), now = Date.now(); for (const k in m) if (now - m[k] > this.FOPEN_H * 36e5) delete m[k]; m[kind + ':' + id] = now; localStorage.setItem(this.FOPEN, JSON.stringify(m)); } catch (e) { } }
+  /* 잠금 두 가지 — 폴더 기록 { locked: true } 는 둘 다 같고, 코드 잠금은 code: { s(소금), h(해시), i(반복 횟수) } 가 더 붙음.
+     · 게스트에게 숨기기: 관리자 접속코드로 연다
+     · 관리자가 코드 설정: 관리자가 정한 이 폴더만의 코드(또는 관리자 접속코드)로 연다. 코드 자체는 어디에도 저장하지 않고 PBKDF2 해시만 저장
+     예전 화면(code 를 모르는 판)은 locked: true 만 보고 관리자 코드 잠금으로 다룬다 — 더 열리는 일은 없음 */
+  _f(id) { return id && typeof id === 'object' ? id : { id }; },
+  hasCode(f) { return !!(f && f.code && typeof f.code.h === 'string' && typeof f.code.s === 'string'); },
+  /* 코드를 바꾸면 전에 연 기기도 다시 코드를 넣어야 하도록, 기록 이름에 해시 앞부분을 붙임 */
+  _fkey(kind, f) { return kind + ':' + f.id + (this.hasCode(f) ? ':' + f.code.h.slice(0, 10) : ''); },
+  folderOpened(kind, idOrF) { const f = this._f(idOrF); try { const t = (JSON.parse(localStorage.getItem(this.FOPEN) || '{}'))[this._fkey(kind, f)]; return !!(t && Date.now() - t < this.FOPEN_H * 36e5); } catch (e) { return false; } },
+  async _pbkdf(code, salt, iter) {
+    if (!(window.crypto && crypto.subtle)) throw new Error('이 환경(http 주소)에서는 코드를 확인할 수 없습니다. https 주소나 내 PC 서버(localhost)에서 열어 주세요.');
+    const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(code || '').trim()), 'PBKDF2', false, ['deriveBits']);
+    const b = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode('ws-folder-v1:' + salt), iterations: iter }, k, 256);
+    return Array.from(new Uint8Array(b), x => x.toString(16).padStart(2, '0')).join('');
+  },
+  /* 관리자가 정한 코드 → 폴더에 저장할 값 */
+  async makeFolderCode(code) {
+    const s = Array.from(crypto.getRandomValues(new Uint8Array(12)), x => x.toString(16).padStart(2, '0')).join(''), i = 150000;
+    return { s, h: await this._pbkdf(code, s, i), i };
+  },
+  async checkFolderCode(f, code) { return this.hasCode(f) && (await this._pbkdf(code, f.code.s, f.code.i || 150000)) === f.code.h; },
+  async openLocked(kind, idOrF, name) {
+    const f = this._f(idOrF);
+    if (this.isAdmin || this.folderOpened(kind, f)) return true;
+    const coded = this.hasCode(f);
+    const ok = await this.prompt({
+      verifyOnly: true, title: `Lock · 「${name}」 폴더`, ok: '열기',
+      desc: coded ? `관리자가 코드를 정해 둔 폴더입니다. 받은 폴더 코드를 넣으면 이 기기에서 ${this.FOPEN_H}시간 동안 볼 수 있습니다 (보기만 — 고치거나 저장하지는 않습니다).`
+        : `잠긴 폴더입니다. 관리자 접속코드를 넣으면 이 기기에서 ${this.FOPEN_H}시간 동안 안의 내용을 볼 수 있습니다 (보기만 — 고치거나 저장하지는 않습니다).`,
+      placeholder: coded ? '폴더 코드' : '접속코드',
+      check: coded ? async v => (await this.checkFolderCode(f, v)) || (await this.verify(v)) : null,
+    });
+    if (ok) { try { const m = JSON.parse(localStorage.getItem(this.FOPEN) || '{}'), now = Date.now(); for (const k in m) if (now - m[k] > this.FOPEN_H * 36e5) delete m[k]; m[this._fkey(kind, f)] = now; localStorage.setItem(this.FOPEN, JSON.stringify(m)); } catch (e) { } }
     return ok;
+  },
+  /* 관리자: 폴더 코드 정하기 창. 맞게 두 번 넣으면 저장할 값({s,h,i}), 취소면 null */
+  askFolderCode(name, changing) {
+    return new Promise(done => {
+      const bg = document.createElement('div'); bg.className = 'modal-bg';
+      bg.innerHTML = `<div class="modal ws-gate-modal" role="dialog" aria-modal="true" aria-labelledby="fcTitle">
+        <h3 id="fcTitle">「${esc(name)}」 폴더 코드 ${changing ? '바꾸기' : '정하기'}</h3>
+        <p class="modal-desc">이 코드를 알려 준 사람만 이 폴더를 볼 수 있습니다 (그 기기에서 ${this.FOPEN_H}시간 · 보기만). 관리자 접속코드로도 열립니다.${changing ? ' 코드를 바꾸면 전에 연 기기도 새 코드를 넣어야 합니다.' : ''}<br>코드는 저장되지 않습니다(해시만 저장). 잊으면 새로 정하면 됩니다. 4자 이상, 짧은 숫자보다 글자를 섞은 6자 이상을 권합니다.</p>
+        <div class="row" style="flex-direction:column;gap:8px"><input type="text" id="fcA" autocomplete="off" placeholder="새 폴더 코드" aria-label="새 폴더 코드" style="height:44px;font-size:18px;letter-spacing:.12em;text-align:center"><input type="text" id="fcB" autocomplete="off" placeholder="한 번 더" aria-label="폴더 코드 한 번 더" style="height:44px;font-size:18px;letter-spacing:.12em;text-align:center"></div>
+        <div class="ws-gate-err" id="fcErr" hidden></div>
+        <div class="actions"><button class="btn" id="fcCancel">취소</button><button class="btn ink" id="fcOk">${changing ? '바꾸기' : '잠그기'}</button></div></div>`;
+      document.body.appendChild(bg);
+      const $ = id => bg.querySelector('#' + id), err = t => { $('fcErr').textContent = t; $('fcErr').hidden = false; };
+      const close = v => { bg.remove(); done(v); };
+      bg.addEventListener('mousedown', ev => { if (ev.target === bg) close(null); });
+      bg.addEventListener('keydown', ev => { if (ev.key === 'Escape') close(null); else if (ev.key === 'Enter') $('fcOk').click(); ev.stopPropagation(); });
+      $('fcCancel').onclick = () => close(null);
+      $('fcOk').onclick = async () => {
+        const a = $('fcA').value.trim(), b = $('fcB').value.trim();
+        if (a.length < 4) { err('코드는 4자 이상으로 정해 주세요'); $('fcA').focus(); return; }
+        if (a !== b) { err('두 칸의 코드가 다릅니다'); $('fcB').value = ''; $('fcB').focus(); return; }
+        $('fcOk').disabled = true;
+        try { if (await this.verify(a)) { err('관리자 접속코드와 같은 코드는 쓸 수 없습니다 — 다른 코드를 정해 주세요'); $('fcOk').disabled = false; return; } close(await this.makeFolderCode(a)); }
+        catch (e) { err(e.message); $('fcOk').disabled = false; }
+      };
+      setTimeout(() => $('fcA').focus(), 30);
+    });
   },
   async enterAdmin(code) { if (!(await this.verify(code))) return false; this._save({ role: 'admin', at: Date.now() }); return true; },
   /* 게스트 모드에서 저장·업로드를 막을 때 던지는 오류 */
@@ -77,8 +132,8 @@ const Access = {
       bg.innerHTML = `<div class="modal ws-gate-modal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
         <h3 id="gateTitle">${opts.title ? esc(opts.title) : '관리자로 입장'}</h3>
         <p class="modal-desc">${opts.desc ? esc(opts.desc) : `접속코드를 입력하면 이 기기에서 ${this.ADMIN_DAYS}일 동안 교안과 문서를 만들고 고칠 수 있습니다.`}</p>
-        <div class="row"><input type="password" id="gateCode" inputmode="numeric" autocomplete="off" placeholder="접속코드" aria-label="접속코드" style="flex:1;height:44px;font-size:18px;letter-spacing:.2em;text-align:center"></div>
-        <div class="ws-gate-err" id="gateErr" hidden>접속코드가 맞지 않습니다</div>
+        <div class="row"><input type="password" id="gateCode" ${opts.check ? '' : 'inputmode="numeric"'} autocomplete="off" placeholder="${opts.placeholder ? esc(opts.placeholder) : '접속코드'}" aria-label="${opts.placeholder ? esc(opts.placeholder) : '접속코드'}" style="flex:1;height:44px;font-size:18px;letter-spacing:.2em;text-align:center"></div>
+        <div class="ws-gate-err" id="gateErr" hidden>${opts.placeholder ? esc(opts.placeholder) : '접속코드'}가 맞지 않습니다</div>
         <div class="actions"><button class="btn" id="gateCancel">취소</button><button class="btn ink" id="gateOk">${opts.ok ? esc(opts.ok) : '입장'}</button></div></div>`;
       document.body.appendChild(bg);
       const $ = id => bg.querySelector('#' + id);
@@ -90,7 +145,7 @@ const Access = {
         const v = $('gateCode').value.trim(); if (!v) { $('gateCode').focus(); return; }
         $('gateOk').disabled = true;
         try {
-          if (opts.verifyOnly ? await this.verify(v) : await this.enterAdmin(v)) { close(true); return; }
+          if (opts.check ? await opts.check(v) : opts.verifyOnly ? await this.verify(v) : await this.enterAdmin(v)) { close(true); return; }
           $('gateErr').hidden = false; $('gateCode').value = ''; $('gateCode').focus(); bg.querySelector('.modal').classList.remove('shake'); void bg.offsetWidth; bg.querySelector('.modal').classList.add('shake');
         } catch (e) { $('gateErr').textContent = e.message; $('gateErr').hidden = false; }
         $('gateOk').disabled = false;

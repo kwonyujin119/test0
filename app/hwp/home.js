@@ -149,17 +149,18 @@ const HwpHome = (() => {
   /* ---------- 폴더: 관리자가 만들고 잠금. 잠긴 폴더는 게스트 화면(목록 · 검색 · 이어서 작업) 어디에도 안 보임 ---------- */
   const folderOf = id => box.folders.find(f => f.id === id) || null;
   /* 잠긴 폴더: 게스트에게도 폴더는 보이되 'Lock' 표시, 안의 문서는 관리자 접속코드를 넣어야 보임(그 기기에서 12시간 · 보기만) */
-  const shutDoc = id => GUEST && !!(folderOf(id) || {}).locked && !Access.folderOpened('doc', id);
+  const shutDoc = id => GUEST && !!(folderOf(id) || {}).locked && !Access.folderOpened('doc', folderOf(id));
+  const lockTip = f => f.locked ? (Access.hasCode(f) ? ' — 코드 잠금: 폴더 코드를 받은 사람만 봄' : ' — 잠금: 게스트는 접속코드를 넣어야 봄') : '';
   const hiddenForGuest = it => !!it.folder && shutDoc(it.folder);
   const visibleFolders = () => box.folders;
   async function goFilter(k) {
-    if (/^f:/.test(k)) { const f = folderOf(k.slice(2)); if (f && shutDoc(f.id)) { if (!(await Access.openLocked('doc', f.id, f.name))) return; toast(`「${f.name}」 폴더를 열었습니다 — 이 기기에서 ${Access.FOPEN_H}시간 동안 보입니다`, 3000); } }
+    if (/^f:/.test(k)) { const f = folderOf(k.slice(2)); if (f && shutDoc(f.id)) { if (!(await Access.openLocked('doc', f, f.name))) return; toast(`「${f.name}」 폴더를 열었습니다 — 이 기기에서 ${Access.FOPEN_H}시간 동안 보입니다`, 3000); } }
     setFilter(k); render(); root.scrollTop = 0;
   }
   function renderFolders() {
     const nav = $('hmFolders'), head = $('hmFoldHead'); const fs = visibleFolders();
     head.hidden = GUEST && !fs.length;
-    nav.innerHTML = fs.map(f => `<button class="rail-item${filter === 'f:' + f.id ? ' on' : ''}" data-filter="f:${esc(f.id)}" data-drop-folder="${esc(f.id)}" title="${esc(f.name)}${f.locked ? ' — 잠금: 게스트는 접속코드를 넣어야 봄' : ''}">${icon(f.locked ? 'lock' : 'folder')}<span>${esc(f.name)}</span><em>${shutDoc(f.id) ? 'Lock' : box.items.filter(x => x.folder === f.id).length || ''}</em></button>`).join('');
+    nav.innerHTML = fs.map(f => `<button class="rail-item${filter === 'f:' + f.id ? ' on' : ''}" data-filter="f:${esc(f.id)}" data-drop-folder="${esc(f.id)}" title="${esc(f.name)}${lockTip(f)}">${icon(f.locked ? 'lock' : 'folder')}<span>${esc(f.name)}</span><em>${shutDoc(f.id) ? 'Lock' : box.items.filter(x => x.folder === f.id).length || ''}</em></button>`).join('');
   }
   async function folderNew() {
     if (!(await U().boxEnsure())) return;
@@ -174,8 +175,9 @@ const HwpHome = (() => {
       if (what === 'rename') { const v = await U().askText('폴더 이름 바꾸기', '폴더 이름', f.name, '바꾸기'); if (!v || v === f.name) return; await U().boxRun(() => HwpStore.box.folder.rename(f.id, v)); }
       if (what === 'lock') { if (!(await U().askConfirm(`"${f.name}" 폴더를 잠글까요?`, `게스트(보기 전용) 화면에는 이 폴더가 Lock 으로 보이고, 안의 문서 ${n}개는 관리자 접속코드를 넣어야 보입니다.<br>다만 저장소가 공개라서, 파일 주소를 직접 아는 사람은 받을 수 있습니다.`, '잠그기'))) return; await U().boxRun(() => HwpStore.box.folder.lock(f.id, true)); }
       if (what === 'unlock') await U().boxRun(() => HwpStore.box.folder.lock(f.id, false));
+      if (what === 'lockcode') { const code = await Access.askFolderCode(f.name, Access.hasCode(f)); if (!code) return; what = Access.hasCode(f) ? 'recode' : 'lockcode'; await U().boxRun(() => HwpStore.box.folder.lock(f.id, true, code)); }
       if (what === 'del') { if (!(await U().askConfirm(`"${f.name}" 폴더를 지울까요?`, `폴더만 지웁니다. 안의 문서 ${n}개는 지우지 않고 '모든 문서'로 나옵니다.`, '폴더 지우기', true))) return; await U().boxRun(() => HwpStore.box.folder.remove(f.id)); setFilter('all'); }
-      toast({ rename: '폴더 이름을 바꿨습니다', lock: `"${f.name}" 폴더를 잠갔습니다 — 게스트에게는 Lock 으로 보이고, 접속코드를 넣어야 열립니다`, unlock: `"${f.name}" 폴더 잠금을 풀었습니다`, del: '폴더를 지웠습니다' }[what], 2600);
+      toast({ rename: '폴더 이름을 바꿨습니다', lock: `"${f.name}" 폴더를 잠갔습니다 — 게스트에게는 Lock 으로 보이고, 접속코드를 넣어야 열립니다`, unlock: `"${f.name}" 폴더 잠금을 풀었습니다`, lockcode: `"${f.name}" 폴더를 코드로 잠갔습니다 — 코드를 알려 준 사람만 볼 수 있습니다`, recode: `"${f.name}" 폴더 코드를 바꿨습니다 — 전에 연 기기도 새 코드를 넣어야 합니다`, del: '폴더를 지웠습니다' }[what], 2600);
     } catch (e) { U().tell('하지 못했습니다', e.message); }
     loadBox();
   }
@@ -196,7 +198,7 @@ const HwpHome = (() => {
     const body = $('foldBody');
     if (!fs.length) { body.replaceChildren(empty('<b>아직 폴더가 없습니다</b><span>[새 폴더]로 만든 뒤 문서를 끌어다 놓으면 옮겨집니다.</span>')); return; }
     const g = document.createElement('div'); g.className = 'fold-grid';
-    g.innerHTML = fs.map(f => `<button class="fold-tile" data-filter="f:${esc(f.id)}" data-drop-folder="${esc(f.id)}" title="${esc(f.name)}${f.locked ? ' — 잠금: 게스트는 접속코드를 넣어야 봄' : ''}">${icon(f.locked ? 'lock' : 'folder', 22)}<span class="ft-name">${esc(f.name)}</span><em>${shutDoc(f.id) ? 'Lock' : cnt(f.id) + '개'}</em></button>`).join('');
+    g.innerHTML = fs.map(f => `<button class="fold-tile" data-filter="f:${esc(f.id)}" data-drop-folder="${esc(f.id)}" title="${esc(f.name)}${lockTip(f)}">${icon(f.locked ? 'lock' : 'folder', 22)}<span class="ft-name">${esc(f.name)}</span><em>${shutDoc(f.id) ? 'Lock' : cnt(f.id) + '개'}</em></button>`).join('');
     g.onclick = e => { const b = e.target.closest('[data-filter]'); if (!b) return; goFilter(b.dataset.filter); };
     body.replaceChildren(g);
   }
@@ -357,9 +359,12 @@ const HwpHome = (() => {
     const W = U().W;
     const vf = filter.startsWith('f:') ? folderOf(filter.slice(2)) : null;
     if (vf && !GUEST) { // 폴더 안: 관리자 도구
-      head.textContent = vf.locked ? '잠긴 폴더 — 게스트는 접속코드를 넣어야 봄' : '폴더'; head.hidden = false;
+      head.textContent = vf.locked ? (Access.hasCode(vf) ? '코드 잠금 폴더 — 폴더 코드를 받은 사람만 봄' : '잠긴 폴더 — 게스트는 접속코드를 넣어야 봄') : '폴더'; head.hidden = false;
       headBtn(acts, '이름 바꾸기', 'edit', () => folderAct(vf, 'rename'), 'ghost');
-      headBtn(acts, vf.locked ? '잠금 풀기' : '잠그기', vf.locked ? 'unlock' : 'lock', () => folderAct(vf, vf.locked ? 'unlock' : 'lock'), 'ghost');
+      /* 잠금 두 가지: 게스트에게 숨기기(관리자 접속코드) · 관리자가 코드 설정(이 폴더만의 코드) */
+      if (!vf.locked || Access.hasCode(vf)) headBtn(acts, vf.locked ? '관리자 코드 잠금으로' : '잠그기 (게스트에게 숨기기)', 'lock', () => folderAct(vf, 'lock'), 'ghost');
+      headBtn(acts, Access.hasCode(vf) ? '폴더 코드 바꾸기' : vf.locked ? '폴더 코드 잠금으로' : '코드 잠금 (관리자가 코드 설정)', 'key', () => folderAct(vf, 'lockcode'), 'ghost');
+      if (vf.locked) headBtn(acts, '잠금 풀기', 'unlock', () => folderAct(vf, 'unlock'), 'ghost');
       headBtn(acts, '폴더 지우기', 'trash', () => folderAct(vf, 'del'), 'ghost');
     } else if (filter === 'all' && !GUEST && box.state === 'ok') headBtn(acts, '파일 올리기', 'upload', boxUpload).title = '내 PC 의 .hwpx 파일을 올려 모든 기기에서 보이게 합니다';
     $('secDocs').querySelector('.hm-head').hidden = !hero && !acts.children.length && !vf;

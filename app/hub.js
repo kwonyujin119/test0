@@ -29,7 +29,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
     st: { folders: [], decks: {} }, pend: [], timer: 0, chain: Promise.resolve(),
     clean(x) {
       const o = { folders: [], decks: {} };
-      if (x && Array.isArray(x.folders)) for (const f of x.folders) if (f && f.id && typeof f.name === 'string' && !o.folders.some(g => g.id === String(f.id))) o.folders.push(Object.assign({ id: String(f.id), name: f.name }, f.locked === true ? { locked: true } : {}));
+      if (x && Array.isArray(x.folders)) for (const f of x.folders) if (f && f.id && typeof f.name === 'string' && !o.folders.some(g => g.id === String(f.id))) o.folders.push(Object.assign({ id: String(f.id), name: f.name }, f.locked === true ? { locked: true } : {}, f.locked === true && f.code && typeof f.code.h === 'string' && typeof f.code.s === 'string' ? { code: { s: f.code.s, h: f.code.h, i: +f.code.i || 150000 } } : {}));
       if (x && x.decks && typeof x.decks === 'object') for (const k in x.decks) if (o.folders.some(f => f.id === x.decks[k])) o.decks[k] = x.decks[k];
       return o;
     },
@@ -42,7 +42,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       else if (op.t === 'delete') { st.folders = st.folders.filter(f => f.id !== op.id); for (const k in st.decks) if (st.decks[k] === op.id) delete st.decks[k]; }
       else if (op.t === 'move') { if (op.to && st.folders.some(f => f.id === op.to)) st.decks[op.deck] = op.to; else delete st.decks[op.deck]; }
       else if (op.t === 'forget') delete st.decks[op.deck];
-      else if (op.t === 'lock') { const f = st.folders.find(x => x.id === op.id); if (f) { if (op.on) f.locked = true; else delete f.locked; } }
+      else if (op.t === 'lock') { const f = st.folders.find(x => x.id === op.id); if (f) { if (op.on) { f.locked = true; if (op.code) f.code = op.code; else delete f.code; } else { delete f.locked; delete f.code; } } }
       else if (op.t === 'renameDeck') { if (st.decks[op.from]) { st.decks[op.to] = st.decks[op.from]; delete st.decks[op.from]; } }
     },
     cacheLoad() { try { const c = JSON.parse(localStorage.getItem(this.CACHE) || 'null'); if (c) this.st = this.clean(c); } catch (e) { } },
@@ -138,7 +138,10 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
   const GUEST = Access.isGuest; // 보기 전용: 새 교안·가져오기·편집·⋯ 메뉴를 감추고 저장 API 는 access.js 가 막음
   /* 잠긴 폴더: 관리자만 잠그고 풀 수 있고, 게스트에게는 폴더 안 교안이 목록 · 검색 · 최근 교안 어디에도 보이지 않음 */
   const lockedFolder = (id) => { const f = id && Folders.get(id); return !!(f && f.locked); };
-  const shutFor = (id) => GUEST && lockedFolder(id) && !Access.folderOpened('pres', id); // 게스트가 접속코드로 연 폴더는 이 기기에서 12시간 동안 보임
+  const shutFor = (id) => GUEST && lockedFolder(id) && !Access.folderOpened('pres', Folders.get(id));
+  /* 잠금 종류 문구: 코드 잠금이면 '폴더 코드', 아니면 '관리자 접속코드' */
+  const codeWord = (f) => Access.hasCode(f) ? '폴더 코드' : '관리자 접속코드';
+  const lockKind = (f) => Access.hasCode(f) ? '코드 잠금' : '잠금'; // 게스트가 접속코드로 연 폴더는 이 기기에서 12시간 동안 보임
   const hiddenDeck = (name) => shutFor(Folders.of(name));
   const visDecks = () => decks.filter(d => !hiddenDeck(d.name));
   $('roleChip').innerHTML = Access.chip();
@@ -359,7 +362,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
     empty.style.display = none ? '' : 'none';
     if (none) {
       empty.innerHTML = kw ? `<b>"${esc(kw)}" 이(가) 들어간 교안이 없습니다</b><span>검색 칸을 비우면 전체가 보입니다.</span>`
-        : shut ? `<b>${icon('lock', 18)} Lock · 잠긴 폴더입니다</b><span>관리자 접속코드를 넣으면 볼 수 있습니다.</span><button type="button" class="btn ink" data-unlock>${icon('unlock', 16)}접속코드 넣고 보기</button>`
+        : shut ? `<b>${icon('lock', 18)} Lock · 잠긴 폴더입니다</b><span>${codeWord(vf)}를 넣으면 볼 수 있습니다.</span><button type="button" class="btn ink" data-unlock>${icon('unlock', 16)}${Access.hasCode(vf) ? '폴더 코드' : '접속코드'} 넣고 보기</button>`
         : vf ? `<b>이 폴더는 비어 있습니다</b><span>${GUEST ? '관리자가 교안을 넣으면 여기에 보입니다.' : '목록의 교안을 이 폴더로 끌어다 놓거나, 교안의 ⋯ 메뉴(휴대폰은 길게 누르기)에서 [폴더로 옮기기] 를 고르세요.'}</span>`
         : filter === 'draft' ? '<b>저장하지 않은 작업본이 없습니다</b><span>편집하다가 저장하지 않고 닫으면 여기에 모입니다.</span>'
           : filter === 'week' ? '<b>최근 7일 동안 저장한 교안이 없습니다</b>'
@@ -701,7 +704,7 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
   function folderDecks(id) { return sorted(decks.filter(d => Folders.of(d.name) === id)); }
   function openFolder(id) { location.hash = 'f=' + encodeURIComponent(id); }
   /* 게스트: 잠긴 폴더를 누르면 관리자 접속코드 창 — 맞으면 그 폴더만 보기 (게스트 모드 그대로) */
-  async function unlockFolder(f) { if (!f || !shutFor(f.id)) return; if (await Access.openLocked('pres', f.id, f.name)) { toast(`「${f.name}」 폴더를 열었습니다 — 이 기기에서 ${Access.FOPEN_H}시간 동안 보입니다`, 3000); render(); } }
+  async function unlockFolder(f) { if (!f || !shutFor(f.id)) return; if (await Access.openLocked('pres', f, f.name)) { toast(`「${f.name}」 폴더를 열었습니다 — 이 기기에서 ${Access.FOPEN_H}시간 동안 보입니다`, 3000); render(); } }
   function leaveFolder() { if (folderOfHash()) history.pushState(null, '', location.pathname + location.search); filter = 'all'; render(); }
   window.addEventListener('hashchange', () => { const id = folderOfHash(); filter = id ? 'f:' + id : 'all'; render(); window.scrollTo(0, 0); });
   window.addEventListener('popstate', () => { const id = folderOfHash(); const f = id ? 'f:' + id : (filter.startsWith('f:') ? 'all' : filter); if (f !== filter) { filter = f; render(); } });
@@ -719,12 +722,12 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
       });
       th.appendChild(mo);
     } else th.innerHTML = shut ? `<div class="folder-empty folder-locked">${icon('lock', 34)}<span>Lock</span></div>` : `<div class="folder-empty">${icon('folder', 34)}<span>비어 있음</span></div>`;
-    if (f.locked) th.insertAdjacentHTML('beforeend', `<span class="folder-lock-badge" title="${GUEST ? '잠긴 폴더 — 관리자 접속코드를 넣으면 볼 수 있습니다' : '잠금 — 게스트는 접속코드를 넣어야 볼 수 있습니다'}">${icon('lock', 14)}${GUEST ? 'Lock' : '잠금'}</span>`);
+    if (f.locked) th.insertAdjacentHTML('beforeend', `<span class="folder-lock-badge" title="${GUEST ? `잠긴 폴더 — ${codeWord(f)}를 넣으면 볼 수 있습니다` : Access.hasCode(f) ? '코드 잠금 — 관리자가 정한 폴더 코드를 받은 사람만 볼 수 있습니다' : '잠금 — 게스트는 관리자 접속코드를 넣어야 볼 수 있습니다'}">${icon('lock', 14)}${GUEST ? 'Lock' : lockKind(f)}</span>`);
     th.onclick = () => openFolder(f.id);
     th.onkeydown = (ev) => { if (ev.key === 'Enter' && ev.target === th) openFolder(f.id); };
     c.appendChild(th);
     const body = document.createElement('div'); body.className = 'deck-body';
-    body.innerHTML = `<div class="deck-text"><div class="deck-title folder-title" title="${esc(f.name)}">${icon(f.locked ? 'lock' : 'folder', 16)}<span>${esc(f.name)}</span></div><div class="deck-meta"><span>${shut ? 'Lock · 접속코드를 넣으면 보입니다' : `교안 ${ds.length}개${f.locked ? ' · 잠금' : ''}`}</span></div></div>
+    body.innerHTML = `<div class="deck-text"><div class="deck-title folder-title" title="${esc(f.name)}">${icon(f.locked ? 'lock' : 'folder', 16)}<span>${esc(f.name)}</span></div><div class="deck-meta"><span>${shut ? `Lock · ${codeWord(f)}를 넣으면 보입니다` : `교안 ${ds.length}개${f.locked ? ' · ' + lockKind(f) : ''}`}</span></div></div>
       ${GUEST ? '' : `<button class="btn icon ghost kebab" data-more title="폴더 메뉴" aria-label="${esc(f.name)} 폴더 메뉴">${icon('dots')}</button>`}`;
     body.querySelector('.deck-text').onclick = () => openFolder(f.id);
     const more = body.querySelector('[data-more]'); if (more) more.onclick = (ev) => { ev.stopPropagation(); folderMenu(more, f); };
@@ -775,10 +778,27 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
   window.addEventListener('hashchange', hidePeek);
   function folderMenu(btn, f, at) {
     const n = folderDecks(f.id).length;
-    showMenu(btn, at, f.name, `폴더 · 교안 ${n}개${f.locked ? ' · 잠금' : ''}`, [['open', 'folder', '열기'], null, ['frename', 'text', '폴더 이름 바꾸기'], f.locked ? ['unlock', 'unlock', '잠금 풀기'] : ['lock', 'lock', '잠금 설정 (게스트에게 숨기기)'], null, ['fdel', 'trash', '폴더 삭제']], (a) => folderAct(a, f));
+    showMenu(btn, at, f.name, `폴더 · 교안 ${n}개${f.locked ? ' · ' + lockKind(f) : ''}`, [['open', 'folder', '열기'], null, ['frename', 'text', '폴더 이름 바꾸기'], null].concat(lockItems(f), [null, ['fdel', 'trash', '폴더 삭제']]), (a) => folderAct(a, f));
+  }
+  /* 잠금 메뉴 항목: 잠금 두 가지 (게스트에게 숨기기 = 관리자 접속코드 · 관리자가 코드 설정 = 이 폴더만의 코드) */
+  function lockItems(f) {
+    const coded = Access.hasCode(f);
+    return [
+      f.locked && !coded ? null : ['lock', 'lock', f.locked ? '관리자 코드 잠금으로 바꾸기 (게스트에게 숨기기)' : '잠금 설정 (게스트에게 숨기기)'],
+      ['lockcode', 'key', coded ? '폴더 코드 바꾸기' : f.locked ? '폴더 코드 잠금으로 바꾸기 (관리자가 코드 설정)' : '잠금 설정 (관리자가 코드 설정)'],
+      f.locked ? ['unlock', 'unlock', '잠금 풀기'] : null,
+    ].filter(Boolean);
   }
   async function folderAct(a, f) {
     if (a === 'open') return openFolder(f.id);
+    if (a === 'lockcode') {
+      if (GUEST) return;
+      const code = await Access.askFolderCode(f.name, Access.hasCode(f)); if (!code) return;
+      const was = Access.hasCode(f);
+      Folders.do({ t: 'lock', id: f.id, on: true, code }, `폴더 코드 ${was ? '바꾸기' : '잠금'} ${f.name}`);
+      toast(was ? `"${f.name}" 폴더 코드를 바꿨습니다 — 전에 연 기기도 새 코드를 넣어야 합니다` : `"${f.name}" 폴더를 코드로 잠갔습니다 — 코드를 알려 준 사람만 볼 수 있습니다`, 3200);
+      return;
+    }
     if (a === 'lock' || a === 'unlock') {
       if (GUEST) return; // 관리자만
       const on = a === 'lock', n = folderDecks(f.id).length;
@@ -813,13 +833,13 @@ if (!document.querySelector('link[href$="pres-fx.css"]')) document.head.insertAd
     const bar = $('folderBar');
     bar.style.display = vf ? '' : 'none'; if (!vf) { bar.innerHTML = ''; return; }
     bar.innerHTML = `<button class="btn sm ghost fb-back" data-drop="" title="모든 교안으로 (교안을 여기에 끌어다 놓으면 폴더에서 뺍니다)">${icon('back', 16)}모든 교안</button>
-      <span class="fb-name">${icon(vf.locked ? 'lock' : 'folder', 16)}<b>${esc(vf.name)}</b>${vf.locked && !GUEST ? '<em class="fb-lock">잠금 · 게스트는 접속코드 필요</em>' : ''}</span>
+      <span class="fb-name">${icon(vf.locked ? 'lock' : 'folder', 16)}<b>${esc(vf.name)}</b>${vf.locked && !GUEST ? `<em class="fb-lock">${Access.hasCode(vf) ? '코드 잠금 · 폴더 코드를 받은 사람만' : '잠금 · 게스트는 접속코드 필요'}</em>` : ''}</span>
       <span class="flex"></span>
-      ${GUEST ? '' : `<button class="btn sm ghost" data-fa="lock">${icon(vf.locked ? 'unlock' : 'lock', 15)}${vf.locked ? '잠금 풀기' : '잠그기'}</button><button class="btn sm ghost" data-fa="frename">${icon('text', 15)}이름 바꾸기</button><button class="btn icon ghost" data-more title="폴더 메뉴" aria-label="${esc(vf.name)} 폴더 메뉴">${icon('dots')}</button>`}
+      ${GUEST ? '' : `<button class="btn sm ghost" data-fa="lock">${icon(vf.locked ? 'unlock' : 'lock', 15)}${vf.locked ? '잠금 ▾' : '잠그기 ▾'}</button><button class="btn sm ghost" data-fa="frename">${icon('text', 15)}이름 바꾸기</button><button class="btn icon ghost" data-more title="폴더 메뉴" aria-label="${esc(vf.name)} 폴더 메뉴">${icon('dots')}</button>`}
       <div class="drop-out" data-drop="">${icon('folderOut', 18)}여기에 놓으면 폴더에서 빼서 목록으로 꺼냅니다</div>`;
     bar.querySelector('.fb-back').onclick = leaveFolder;
     const rn = bar.querySelector('[data-fa=frename]'); if (rn) rn.onclick = () => folderAct('frename', vf);
-    const lk = bar.querySelector('[data-fa=lock]'); if (lk) lk.onclick = () => folderAct(vf.locked ? 'unlock' : 'lock', vf);
+    const lk = bar.querySelector('[data-fa=lock]'); if (lk) lk.onclick = () => showMenu(lk, null, vf.name, '잠금', lockItems(vf), (a) => folderAct(a, vf));
     const more = bar.querySelector('[data-more]'); if (more) more.onclick = () => folderMenu(more, vf);
   }
   /* 왼쪽 메뉴의 폴더 목록: 누르면 열고, 교안을 끌어다 놓으면 넣음 (목록이 길어 아래의 폴더 칸이 화면 밖이어도) */

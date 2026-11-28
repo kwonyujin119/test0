@@ -271,7 +271,7 @@ const HwpStore = (() => {
     skipped: () => last.legacySkipped,
     create: name => { const id = newFid(); return pidx((items, fs) => { fs.push({ id, name }); return '문서 폴더 만들기: ' + name; }).then(() => id); },
     rename: (id, name) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; f.name = name; return '문서 폴더 이름: ' + name; }),
-    lock: (id, on) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; if (on) f.locked = true; else delete f.locked; return `문서 폴더 ${on ? '잠금' : '잠금 풀기'}: ${f.name}`; }),
+    lock: (id, on, code) => pidx((items, fs) => { const f = fs.find(x => x.id === id); if (!f) return null; if (on) { f.locked = true; if (code) f.code = code; else delete f.code; } else { delete f.locked; delete f.code; } return `문서 폴더 ${on ? (code ? '코드 잠금' : '잠금') : '잠금 풀기'}: ${f.name}`; }), // code: 관리자가 정한 폴더 코드의 해시 {s,h,i} (access.js)
     remove: id => pidx((items, fs) => { const i = fs.findIndex(x => x.id === id); if (i < 0) return null; const n = fs[i].name; fs.splice(i, 1); items.forEach(it => { if (it.folder === id) delete it.folder; }); return '문서 폴더 지우기(안의 문서는 밖으로): ' + n; }),
     move: (docId, fid) => pidx(items => { const it = items.find(x => x.id === docId); if (!it) return null; if (fid) it.folder = fid; else delete it.folder; return '문서 폴더 옮기기: ' + it.name; }),
   };
